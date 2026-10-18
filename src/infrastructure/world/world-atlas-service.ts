@@ -36,12 +36,17 @@ export type UpsertWorldAtlasMapInput = {
 };
 
 class WorldAtlasService {
-  async listMaps(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
+  async listMaps(
+    worldProfileId: string,
+    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
+  ): Promise<WorldAtlasMapSummary[]> {
     await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
     const { data, error } = await supabase.rpc('list_world_atlas_maps', {
       p_world_profile_id: id,
+      p_player_view: options.playerView === true,
+      p_saga_public_id: options.sagaPublicId?.trim() || null,
     });
     if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);
     return parseWorldAtlasMapList(data);
@@ -58,13 +63,18 @@ class WorldAtlasService {
     return parseWorldAtlasMapList(data);
   }
 
-  async getMap(mapId: string, playerView = false): Promise<WorldAtlasMapVm> {
+  async getMap(
+    mapId: string,
+    playerView = false,
+    sagaPublicId?: string | null,
+  ): Promise<WorldAtlasMapVm> {
     await assertSupabaseJwtSession();
     const id = mapId.trim();
     if (!id) throw new Error('Karten-ID fehlt');
     const { data, error } = await supabase.rpc('get_world_atlas_map', {
       p_map_id: id,
       p_player_view: playerView,
+      p_saga_public_id: sagaPublicId?.trim() || null,
     });
     if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);
     return parseWorldAtlasMapVm(data);
@@ -115,9 +125,12 @@ class WorldAtlasService {
   }
 
   async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
+    await assertSupabaseJwtSession();
+    const path = storagePath.trim();
+    if (!path) throw new Error('Storage-Pfad fehlt');
     const { data, error } = await supabase.storage
       .from(ATLAS_BUCKET)
-      .createSignedUrl(storagePath, expiresSec);
+      .createSignedUrl(path, expiresSec);
     if (error || !data?.signedUrl) {
       throw new Error(error?.message || 'Download-URL fehlgeschlagen.');
     }
