@@ -224,6 +224,14 @@ function checkAtlasWorldbuilderEvidence() {
   });
 }
 
+function checkAtlasWorldbuilderDomain() {
+  console.log('Atlas worldbuilder domain (#714): WorldNodeKind hierarchy + legacy map...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-domain-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2314,6 +2322,7 @@ checkLocalAdminAuthPolicy();
 checkDonaluP0AuthGate();
 checkDonaluWorldPlaces();
 checkAtlasWorldbuilderEvidence();
+checkAtlasWorldbuilderDomain();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
