@@ -1,0 +1,13 @@
+asset_kind,reveal,n,with_place_fk
+character,party,4,0
+item,gm_only,1,0
+item,party,3,0
+location,gm_only,2,2
+location,party,3,3
+lore,gm_only,1,0
+lore,party,2,0
+map,party,1,0
+npc,gm_only,2,0
+npc,party,3,0
+quest,gm_only,1,0
+quest,party,2,0

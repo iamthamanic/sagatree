@@ -1,0 +1,141 @@
+pg_restore: error: could not execute query: ERROR:  function public.world_place_map_links_enforce_same_world() does not exist
+Command was: CREATE TRIGGER trg_world_place_map_links_same_world BEFORE INSERT OR UPDATE ON public.world_place_map_links FOR EACH ROW EXECUTE FUNCTION public.world_place_map_links_enforce_same_world();
+
+
+pg_restore: error: could not execute query: ERROR:  function public.world_places_enforce_same_world() does not exist
+Command was: CREATE TRIGGER trg_world_places_same_world BEFORE INSERT OR UPDATE ON public.world_places FOR EACH ROW EXECUTE FUNCTION public.world_places_enforce_same_world();
+
+
+pg_restore: error: could not execute query: ERROR:  function public.ensure_public_id() does not exist
+Command was: CREATE TRIGGER trg_world_profiles_ensure_public_id BEFORE INSERT ON public.world_profiles FOR EACH ROW EXECUTE FUNCTION public.ensure_public_id('WO');
+
+
+pg_restore: error: could not execute query: ERROR:  function public.forbid_public_id_change() does not exist
+Command was: CREATE TRIGGER trg_world_profiles_forbid_public_id_change BEFORE UPDATE ON public.world_profiles FOR EACH ROW EXECUTE FUNCTION public.forbid_public_id_change();
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: ALTER TABLE ONLY public.world_profiles
+    ADD CONSTRAINT world_profiles_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: ALTER TABLE ONLY public.worlds
+    ADD CONSTRAINT worlds_creator_user_id_fkey FOREIGN KEY (creator_user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+
+
+pg_restore: error: could not execute query: ERROR:  relation "public.rulesets" does not exist
+Command was: ALTER TABLE ONLY public.worlds
+    ADD CONSTRAINT worlds_ruleset_id_fkey FOREIGN KEY (ruleset_id) REFERENCES public.rulesets(id) ON DELETE SET NULL;
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can create worlds" ON public.worlds FOR INSERT TO authenticated WITH CHECK ((creator_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can delete their world profiles" ON public.world_profiles FOR DELETE USING ((owner_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can delete their worlds" ON public.worlds FOR DELETE TO authenticated USING ((creator_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can insert their world profiles" ON public.world_profiles FOR INSERT WITH CHECK ((owner_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can update their world profiles" ON public.world_profiles FOR UPDATE USING ((owner_user_id = auth.uid())) WITH CHECK ((owner_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  schema "auth" does not exist
+Command was: CREATE POLICY "Users can update their worlds" ON public.worlds FOR UPDATE TO authenticated USING ((creator_user_id = auth.uid()));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_read_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY "Users can view readable world profiles" ON public.world_profiles FOR SELECT USING (public.current_user_can_read_world_profile(id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_atlas_maps_delete ON public.world_atlas_maps FOR DELETE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_atlas_maps_insert ON public.world_atlas_maps FOR INSERT TO authenticated WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_read_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_atlas_maps_select ON public.world_atlas_maps FOR SELECT TO authenticated USING (public.current_user_can_read_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_atlas_maps_update ON public.world_atlas_maps FOR UPDATE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id)) WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_maps_delete ON public.world_maps FOR DELETE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_maps_insert ON public.world_maps FOR INSERT TO authenticated WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_read_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_maps_select ON public.world_maps FOR SELECT TO authenticated USING (public.current_user_can_read_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_maps_update ON public.world_maps FOR UPDATE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id)) WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_place_map_links_delete ON public.world_place_map_links FOR DELETE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_place_map_links_insert ON public.world_place_map_links FOR INSERT TO authenticated WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_read_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_place_map_links_select ON public.world_place_map_links FOR SELECT TO authenticated USING (public.current_user_can_read_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_place_map_links_update ON public.world_place_map_links FOR UPDATE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id)) WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_places_delete ON public.world_places FOR DELETE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_places_insert ON public.world_places FOR INSERT TO authenticated WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_read_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_places_select ON public.world_places FOR SELECT TO authenticated USING (public.current_user_can_read_world_profile(world_profile_id));
+
+
+pg_restore: error: could not execute query: ERROR:  function public.current_user_can_edit_world_profile(uuid) does not exist
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+Command was: CREATE POLICY world_places_update ON public.world_places FOR UPDATE TO authenticated USING (public.current_user_can_edit_world_profile(world_profile_id)) WITH CHECK (public.current_user_can_edit_world_profile(world_profile_id));
+
+
+pg_restore: warning: errors ignored on restore: 30

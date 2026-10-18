@@ -1,0 +1,6 @@
+kind,title,has_parent,map_uuid,has_uc,revision
+world,Dornhain Übersicht (Unified),f,76ca488e-76a4-4753-8dae-43f8b6ce6c43,t,1
+legacy_tiles,Kachelkarte (Legacy),f,14682172-14a6-47ca-8da3-ee0123de5bfc,f,0
+settlement,Dornhain (Stadt),t,5523d90b-0615-402d-ae08-00541ac28f8e,t,0
+scene,Taverne Zum Flüstern (Innenraum),t,961e2b36-07f2-4a77-8b9d-16ceaec31e01,f,0
+scene,Krypta unter dem Hügel (Dungeon),t,dec3e11b-9afc-4ac8-8cc9-2218a898f687,f,0

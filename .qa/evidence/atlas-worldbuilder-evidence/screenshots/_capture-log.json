@@ -1,0 +1,61 @@
+{
+  "base": "http://localhost:3004",
+  "capturedAt": "2026-10-18T21:37:13.564Z",
+  "results": [
+    {
+      "name": "01-atlas-desktop-1440",
+      "path": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/evidence/atlas-worldbuilder-evidence/screenshots/01-atlas-desktop-1440.png",
+      "url": "http://localhost:3004/sagas/SA-E979J/world/map",
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "snippet": "SagaTree Dashboard Bibliothek Marktplatz Abmelden Admin SAGA SA-E979J Das Flüstern unter Dornhain Gamemaster Zurück Übersicht Welt Einstellungen Karte NSCs / Kreaturen Gegenstände Quests Lore / Verlauf Ebenen ▾ DIE WESTMARK DAS NORDREICH ASTERIA Dornhain X 0 · Z 0 − 100% + ▦ 0°",
+      "ok": true
+    },
+    {
+      "name": "02-atlas-tablet-768",
+      "path": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/evidence/atlas-worldbuilder-evidence/screenshots/02-atlas-tablet-768.png",
+      "url": "http://localhost:3004/sagas/SA-E979J/world/map",
+      "viewport": {
+        "w": 768,
+        "h": 1024
+      },
+      "snippet": "SAGA SA-E979J Das Flüstern unter Dornhain Gamemaster Zurück Übersicht Welt Einstellungen Karte NSCs / Kreaturen Gegenstände Quests Lore / Verlauf Ebenen ▾ DIE WESTMARK DAS NORDREICH ASTERIA Dornhain X 0 · Z 0 − 100% + ▦ 0° Werkzeuge ▾",
+      "ok": true
+    },
+    {
+      "name": "03-atlas-phone-390",
+      "path": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/evidence/atlas-worldbuilder-evidence/screenshots/03-atlas-phone-390.png",
+      "url": "http://localhost:3004/sagas/SA-E979J/world/map",
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "snippet": "SagaTree SAGA SA-E979J Das Flüstern unter Dornhain Gamemaster Zurück Übersicht Welt Einstellungen Karte NSCs / Kreaturen Gegenstände Quests Lore / Verlauf Ebenen ▾ DIE WESTMARK DAS NORDREICH ASTERIA Dornhain X 0 · Z 0 − 100% + ▦ 0° Werkzeuge ▾ Home Bibliothek Markt Profil",
+      "ok": true
+    },
+    {
+      "name": "04-atlas-focus-or-tools",
+      "path": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/evidence/atlas-worldbuilder-evidence/screenshots/04-atlas-focus-or-tools.png",
+      "url": "http://localhost:3004/sagas/SA-E979J/world/map",
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "snippet": "SagaTree Dashboard Bibliothek Marktplatz Abmelden Admin SAGA SA-E979J Das Flüstern unter Dornhain Gamemaster Zurück Übersicht Welt Einstellungen Karte NSCs / Kreaturen Gegenstände Quests Lore / Verlauf Ebenen ▾ DIE WESTMARK DAS NORDREICH ASTERIA Dornhain X 0 · Z 0 − 100% + ▦ 0°",
+      "ok": true
+    },
+    {
+      "name": "05-library-world-map-1440",
+      "path": "/Users/halteverbotsocialmacpro/Desktop/arsvivai/2-DEV-PROJEKTE/sagatree/.qa/evidence/atlas-worldbuilder-evidence/screenshots/05-library-world-map-1440.png",
+      "url": "http://localhost:3004/library/worlds/WO-9FFK6/map",
+      "viewport": {
+        "w": 1440,
+        "h": 900
+      },
+      "snippet": "SagaTree Dashboard Bibliothek Marktplatz Abmelden Admin Zurück Ebenen ▾ DIE WESTMARK DAS NORDREICH ASTERIA Dornhain X 0 · Z 0 − 100% + ▦ 0° Werkzeuge ▾",
+      "ok": true
+    }
+  ]
+}
