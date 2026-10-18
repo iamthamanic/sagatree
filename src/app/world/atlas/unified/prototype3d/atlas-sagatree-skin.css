@@ -598,7 +598,7 @@
   line-height: 1.2 !important;
 }
 
-/* Content-sized closed dashed box (must follow .node-text strong). */
+/* Content-sized solid border box (must follow .node-text strong). */
 [data-atlas-native-3d] .node-text > strong.nav-edit {
   display: inline-flex !important;
   flex: 0 0 auto !important;
@@ -608,7 +608,7 @@
   margin: 0 !important;
   padding: 0.05rem 0.25rem !important;
   cursor: text !important;
-  border: 1px dashed color-mix(in srgb, var(--primary) 45%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent) !important;
   border-radius: 0.25rem !important;
   overflow: visible !important;
   text-overflow: clip !important;
@@ -648,7 +648,7 @@
   min-height: 1.25rem !important;
   margin: 0 !important;
   padding: 0.05rem 0.25rem !important;
-  border: 1px dashed var(--primary) !important;
+  border: 1px solid var(--primary) !important;
   border-radius: 0.25rem !important;
   background: var(--background) !important;
   color: var(--foreground) !important;
