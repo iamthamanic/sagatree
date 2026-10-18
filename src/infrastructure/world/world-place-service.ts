@@ -15,7 +15,7 @@ import {
   type WorldPlaceMapUsage,
   type WorldPlaceVm,
 } from '../../domains/world/places';
-
+import type { WorldNodeKind, WorldNodeSubtype } from '../../domains/world/hierarchy';
 export type ListWorldPlacesOptions = {
   readonly playerView?: boolean;
   readonly sagaPublicId?: string | null;
@@ -80,6 +80,36 @@ class WorldPlaceService {
     const parsed = parseWorldPlaceVm(data);
     if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
     return parsed;
+  }
+
+  /**
+   * Atomic create: missing placeholder ancestors + target + primary maps (#715).
+   * Client must pass a stable idempotency key for retries.
+   */
+  async createNodeWithMaps(input: {
+    readonly worldProfileId: string;
+    readonly kind: WorldNodeKind;
+    readonly name: string;
+    readonly idempotencyKey: string;
+    readonly subtype?: WorldNodeSubtype | null;
+    readonly parentPlaceId?: string | null;
+    readonly description?: string | null;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('create_world_node_with_maps', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_kind: input.kind,
+      p_name: input.name,
+      p_idempotency_key: input.idempotencyKey.trim(),
+      p_subtype: input.subtype ?? null,
+      p_parent_place_id: input.parentPlaceId ?? null,
+      p_description: input.description ?? null,
+    });
+    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') {
+      throw new Error('Weltknoten anlegen: ungültige Antwort');
+    }
+    return data as Readonly<Record<string, unknown>>;
   }
 
   async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {

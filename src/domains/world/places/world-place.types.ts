@@ -14,11 +14,20 @@ export const WORLD_PLACE_KINDS = [
   'interior',
   'dungeon',
   'area',
+  // Canonical WorldNodeKind values (#712 / #715) — expand-only; legacy remains valid
+  'country',
+  'place',
+  'room',
 ] as const;
 
 export type WorldPlaceKind = (typeof WORLD_PLACE_KINDS)[number];
 
-export const WORLD_PLACE_STATUSES = ['draft', 'canonical', 'archived'] as const;
+export const WORLD_PLACE_STATUSES = [
+  'placeholder',
+  'draft',
+  'canonical',
+  'archived',
+] as const;
 export type WorldPlaceStatus = (typeof WORLD_PLACE_STATUSES)[number];
 
 export const WORLD_PLACE_MAP_USAGES = [
@@ -28,6 +37,7 @@ export const WORLD_PLACE_MAP_USAGES = [
   'interior',
   'dungeon',
   'battlemap',
+  'primary',
 ] as const;
 
 export type WorldPlaceMapUsage = (typeof WORLD_PLACE_MAP_USAGES)[number];
