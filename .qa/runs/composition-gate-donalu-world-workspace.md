@@ -1,8 +1,8 @@
 # Composition Gate — donalu-world-workspace
 
-- HEAD_SHA: 403087ad4a873c74d1cde169bde68b1a631478aa
+- HEAD_SHA: d8f1ea3e2b4f95b35ba612b64d80b110aeab58ab
 - BASE_SHA: 8485f6d7f2d98af0a817b2f112281531197f3966
-- Date (UTC): 2026-10-18T00:04:54Z
+- Date (UTC): 2026-10-18T07:03:43Z
 - Verdict: CLEAR
 
 ## Event
@@ -41,6 +41,7 @@ projection with generatorMeta redaction.
   non-editors use `list_*` SECURITY DEFINER RPCs (party projection). Closes PostgREST bypass of `gm_only`.
 - Migration `102`: `get_world_atlas_map` forces `v_party_only` redaction for non-editors;
   `world_atlas_maps` SELECT editor-only (RPC path for players).
+- Overview refresh soft-fails when cached; Karte falls back to project `world_profile_id`.
 - Residual Low: `list_world_atlas_maps` may still expose GM-prep map titles to non-editors.
 - Demo Eldoria LOD remains non-canonical (`Demo-*` labels).
 - Nested DB map LOD still partly discrete map list + demo rects.
