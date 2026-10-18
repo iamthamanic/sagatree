@@ -1,0 +1,105 @@
+branch=chore/atlas-worldbuilder-evidence-713
+head=2ef4e3d540517e3f0fd6d32d32a292337066af56
+origin_main=162b79778e3fcd90110f5a77c10b764385759e43
+behind_ahead=0	4
+--- status-sb ---
+## chore/atlas-worldbuilder-evidence-713
+ M .qa/evidence/liveact-perfect-fidelity-benchmark/v1-baseline-report.json
+ M .qa/evidence/toonlab-compatibility-spike/asset-inventory.json
+ M .qa/runs/424-retarget-baseline.json
+ M .qa/runs/avatar-vrm-pack-minimal.pack.json
+ M .qa/runs/dornhain-pregen-full-sheets-check.md
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/aggregation.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence-manifest.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/eyes_brows_closeup.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/frontal.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/mouth_nose_closeup.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/pitch_down.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/pitch_up.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/yaw_left_35.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/yaw_right_35.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/passes/pass-1.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-det-fail/agent-review/aggregation.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-det-fail/agent-review/evidence-manifest.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-missing-shots/agent-review/aggregation.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-missing-shots/agent-review/evidence-manifest.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/aggregation.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence-manifest.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/eyes_brows_closeup.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/frontal.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/mouth_nose_closeup.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/pitch_down.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/pitch_up.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/yaw_left_35.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/yaw_right_35.png
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-1.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-2.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-3.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-4.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-5.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/provenance.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-stale/agent-review/aggregation.json
+ M .qa/runs/face-anchor-agent-review-v1-orch/tmp-stale/agent-review/evidence-manifest.json
+ M .qa/runs/liveact-face-mapping-auto-capture-visibility-check.md
+ M .qa/runs/liveact-face-mapping-gt-mark-copy-check.md
+ M .qa/runs/media-opt-server-proof-metrics.json
+?? .qa/evidence/atlas-worldbuilder-evidence/
+?? .qa/handoff/
+?? .qa/runs/pr-merge-safe-2026-10-17.md
+?? .qa/runs/pr-merge-safe-2026-10-18-711.md
+?? .qa/runs/pr-merge-safe-2026-10-18.md
+?? .qa/tmp/
+--- porcelain (paths only) ---
+M .qa/evidence/liveact-perfect-fidelity-benchmark/v1-baseline-report.json
+M .qa/evidence/toonlab-compatibility-spike/asset-inventory.json
+M .qa/runs/424-retarget-baseline.json
+M .qa/runs/avatar-vrm-pack-minimal.pack.json
+M .qa/runs/dornhain-pregen-full-sheets-check.md
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/aggregation.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence-manifest.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/eyes_brows_closeup.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/frontal.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/mouth_nose_closeup.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/pitch_down.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/pitch_up.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/yaw_left_35.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/evidence/shots/yaw_right_35.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-copied-pass/agent-review/passes/pass-1.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-det-fail/agent-review/aggregation.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-det-fail/agent-review/evidence-manifest.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-missing-shots/agent-review/aggregation.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-missing-shots/agent-review/evidence-manifest.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/aggregation.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence-manifest.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/eyes_brows_closeup.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/frontal.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/mouth_nose_closeup.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/pitch_down.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/pitch_up.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/yaw_left_35.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/evidence/shots/yaw_right_35.png
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-1.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-2.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-3.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-4.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/passes/pass-5.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-run/agent-review/provenance.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-stale/agent-review/aggregation.json
+M .qa/runs/face-anchor-agent-review-v1-orch/tmp-stale/agent-review/evidence-manifest.json
+M .qa/runs/liveact-face-mapping-auto-capture-visibility-check.md
+M .qa/runs/liveact-face-mapping-gt-mark-copy-check.md
+M .qa/runs/media-opt-server-proof-metrics.json
+?? .qa/evidence/atlas-worldbuilder-evidence/
+?? .qa/handoff/
+?? .qa/runs/pr-merge-safe-2026-10-17.md
+?? .qa/runs/pr-merge-safe-2026-10-18-711.md
+?? .qa/runs/pr-merge-safe-2026-10-18.md
+?? .qa/tmp/
+--- untracked top ---
+.qa/evidence/atlas-worldbuilder-evidence
+.qa/handoff/
+.qa/runs/pr-merge-safe-2026-10-17.md
+.qa/runs/pr-merge-safe-2026-10-18-711.md
+.qa/runs/pr-merge-safe-2026-10-18.md
+.qa/tmp/
+--- src/supabase dirty? ---

@@ -1,0 +1,6 @@
+asset_id,label,reveal,place_seed
+loc.bandit-camp,Banditenlager (falsche Spur),gm_only,loc.bandit-camp
+loc.crypt,Krypta unter dem Hügel,gm_only,loc.crypt
+loc.market,Marktplatz Dornhain,party,loc.market
+loc.tavern,Taverne Zum Flüstern,party,loc.tavern
+loc.woods,Schattenwald,party,loc.woods

@@ -1,0 +1,7 @@
+seed_key,kind,name,status,parent_seed,place_uuid
+place.dornhain,settlement,Dornhain,canonical,,d4cd0cd9-806e-49da-bb90-83cbaf281a7d
+loc.tavern,building,Taverne Zum Flüstern,canonical,place.dornhain,e8c5971a-f32e-4e23-9a48-a034797c4d75
+loc.market,site,Marktplatz Dornhain,canonical,place.dornhain,6f270016-a7b1-4536-a0b0-68df58ef0d8b
+loc.woods,area,Schattenwald,canonical,place.dornhain,b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac
+loc.crypt,dungeon,Krypta unter dem Hügel,canonical,place.dornhain,d45dba1f-660e-42c5-8042-aaff832ebbcd
+loc.bandit-camp,site,Banditenlager (falsche Spur),canonical,place.dornhain,73a7b41e-57ac-47ec-8489-4c932505539b
