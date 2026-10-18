@@ -6,6 +6,7 @@
  * saga tab (AdaptivePage header). Karte uses viewport min-height so the
  * canvas sits flush under chrome; body stays scrollable.
  */
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Button } from '../../shared/ui/button';
 import { AdaptivePage } from '../../shared/ui/adaptive';
@@ -196,6 +197,11 @@ function SagaWorldShell({
 }) {
   const sub = resolveSagaWorldSub(section) ?? 'map';
   const isMap = sub === 'map' || sub === 'places';
+  // Keep WebGL atlas mounted across NSC/Items/… so Karte returns map-first (no remount flash).
+  const [mapWarm, setMapWarm] = useState(isMap);
+  useEffect(() => {
+    if (isMap) setMapWarm(true);
+  }, [isMap]);
 
   return (
     <SagaWorkspaceChrome
@@ -216,16 +222,29 @@ function SagaWorldShell({
         className={isMap ? 'flex min-h-0 min-w-0 flex-1 flex-col' : 'min-w-0'}
         data-saga-world-shell
         data-au-content-width="saga-world"
+        data-atlas-keepalive={mapWarm ? (isMap ? 'active' : 'parked') : undefined}
       >
-        {isMap ? (
-          <SagaWorldMapPanel sagaPublicId={sagaPublicId} onNavigate={onNavigate} />
-        ) : (
+        {mapWarm ? (
+          <div
+            className={
+              isMap
+                ? 'flex min-h-0 min-w-0 flex-1 flex-col'
+                : // Keep real viewport size while parked — display:none shrinks WebGL to 260×240 and flashes UI on resume.
+                  'pointer-events-none fixed inset-0 -z-10 opacity-0'
+            }
+            aria-hidden={!isMap}
+            data-atlas-keepalive-host={isMap ? 'active' : 'parked'}
+          >
+            <SagaWorldMapPanel sagaPublicId={sagaPublicId} onNavigate={onNavigate} />
+          </div>
+        ) : null}
+        {!isMap ? (
           <SagaWorkspaceCatalogSection
             sagaPublicId={sagaPublicId}
             section={sub}
             onNavigate={onNavigate}
           />
-        )}
+        ) : null}
       </div>
     </SagaWorkspaceChrome>
   );

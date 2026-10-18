@@ -300,6 +300,7 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
+- **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
 - **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)
 - **2026-10-17** — Donalu-Weltworkspace: Places + Map-Links (`WO-9FFK6`), Orte-Panel, Dungeon Confirm/`manualDirty`, Player-Reveal-RPC; Hybrid 2D/3D Atlas
 - **2026-10-17** — Local Admin: Timeout-Fallback übernimmt späten GoTrue-JWT (PostgREST/RLS); Logout bleibt anti-Resurrection

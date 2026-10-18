@@ -7,7 +7,6 @@
  * fall back to the project row so Karte is not blanked by a hub refresh failure.
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { Button } from '../../shared/ui/button';
 import { projectService } from '../../infrastructure/project/project-service';
 import { useSagaOverview } from './hooks/useSagaOverview';
@@ -66,12 +65,13 @@ export function SagaWorldMapPanel({ sagaPublicId, onNavigate }: SagaWorldMapPane
   if ((isLoading && !model && !worldProfileId) || resolvingFallback) {
     return (
       <div
-        className="flex min-h-[20rem] items-center justify-center gap-2 text-sm text-muted-foreground"
+        className="h-full min-h-0 w-full flex-1"
+        style={{ background: '#123e4a' }}
         data-saga-world-map-loading
-      >
-        <Loader2 className="size-4 animate-spin" aria-hidden />
-        Weltkarte wird geladen…
-      </div>
+        role="status"
+        aria-busy="true"
+        aria-label="Weltkarte wird geladen"
+      />
     );
   }
 

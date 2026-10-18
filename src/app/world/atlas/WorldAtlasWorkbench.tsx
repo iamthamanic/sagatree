@@ -84,6 +84,17 @@ export function WorldAtlasWorkbench({
   const showUnified = Boolean(editor.map && !showLegacyTiles);
   /** Exact HTML 3D prototype mount (not flat Canvas2D). */
   const protoExact = showUnified && editor.canvasDoc.demoSeed === false;
+  /**
+   * Boot: map not ready yet — ocean placeholder, no prototype title/rail chrome.
+   * loading starts true when worldProfileId is set (see useWorldAtlasEditor) so the first
+   * React commit never paints non-protoExact chrome before useEffect runs.
+   */
+  const atlasBooting =
+    !editor.map &&
+    !editor.error &&
+    Boolean(worldProfileId.trim()) &&
+    (editor.loading || editor.summaries.length > 0);
+  const layoutExact = protoExact || atlasBooting;
 
   const reloadPlaceNav = useCallback(async () => {
     const id = worldProfileId.trim();
@@ -300,11 +311,13 @@ export function WorldAtlasWorkbench({
   return (
     <div
       className={`@container/main flex h-full min-h-0 w-full min-w-0 flex-col ${
-        protoExact ? 'gap-0' : 'gap-3'
+        layoutExact ? 'gap-0' : 'gap-3'
       }`}
       data-world-atlas-workbench
+      data-atlas-booting={atlasBooting ? 'true' : undefined}
     >
-      {!protoExact || onBack ? (
+      {/* Skip title/rail chrome while booting — avoids <1s menu flash before 3D map. */}
+      {(!protoExact && !atlasBooting) || onBack ? (
         <header
           className={`flex flex-wrap items-center gap-2 ${
             protoExact ? 'pb-2' : 'border-b border-border pb-3'
@@ -316,7 +329,7 @@ export function WorldAtlasWorkbench({
               Zurück
             </Button>
           ) : null}
-          {!protoExact ? (
+          {!protoExact && !atlasBooting ? (
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-xl font-bold leading-tight text-foreground">
                 {editor.map?.title?.trim() || title}
@@ -326,7 +339,7 @@ export function WorldAtlasWorkbench({
               </p>
             </div>
           ) : null}
-          {!showUnified ? (
+          {!showUnified && !atlasBooting ? (
             <Sheet open={hierarchyOpen} onOpenChange={setHierarchyOpen}>
               <SheetTrigger asChild>
                 <Button type="button" variant="outline" className="min-h-11 @[48rem]:hidden">
@@ -426,14 +439,14 @@ export function WorldAtlasWorkbench({
 
       <div
         className={
-          protoExact
+          layoutExact
             ? 'grid min-h-0 flex-1 grid-cols-1'
             : showUnified
               ? 'grid min-h-0 flex-1 gap-3 @[64rem]:grid-cols-[minmax(0,1fr)_14rem]'
               : 'grid min-h-0 flex-1 gap-3 @[48rem]:grid-cols-[14rem_minmax(0,1fr)_16rem]'
         }
       >
-        {!showUnified ? (
+        {!showUnified && !atlasBooting ? (
           <aside className="hidden min-h-0 overflow-auto rounded-lg border border-border p-2 @[48rem]:block">
             <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Hierarchie
@@ -444,15 +457,19 @@ export function WorldAtlasWorkbench({
 
         <section
           className={`relative min-w-0 overflow-hidden ${
-            protoExact ? 'min-h-0 h-full flex-1' : 'min-h-[24rem]'
+            layoutExact ? 'min-h-0 h-full flex-1' : 'min-h-[24rem]'
           }`}
           data-atlas-proto-exact={protoExact ? 'true' : undefined}
         >
-          {editor.loading && !editor.map ? (
-            <div className="flex h-full min-h-[24rem] items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              Atlas wird geladen…
-            </div>
+          {atlasBooting ? (
+            <div
+              className="h-full min-h-0 w-full flex-1"
+              style={{ background: '#123e4a' }}
+              data-atlas-boot-placeholder
+              role="status"
+              aria-busy="true"
+              aria-label="Atlas wird geladen"
+            />
           ) : showLegacyTiles && editor.map ? (
             <div className="flex h-full min-h-0 flex-col gap-2" data-world-atlas-legacy-tiles>
               <p className="text-sm text-muted-foreground">

@@ -33,7 +33,7 @@ export const ATLAS_PROTOTYPE_LEVELS: readonly AtlasPrototypeLevel[] = [
   {
     id: 'world',
     label: 'Welt',
-    sub: 'Weltkarte',
+    sub: 'Welt',
     tag: 'WELT',
     glyph: '◎',
     x: 500,
@@ -53,7 +53,7 @@ export const ATLAS_PROTOTYPE_LEVELS: readonly AtlasPrototypeLevel[] = [
   {
     id: 'city',
     label: 'Dornhain',
-    sub: 'Stadt & Gebäude',
+    sub: 'Ort',
     tag: 'STADT',
     glyph: '⌂',
     x: DORNHAIN_WORLD_ANCHOR.x,

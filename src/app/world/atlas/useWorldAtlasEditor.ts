@@ -48,7 +48,8 @@ export function useWorldAtlasEditor({
   const [summaries, setSummaries] = useState<WorldAtlasMapSummary[]>([]);
   const [activeMapId, setActiveMapId] = useState<string | null>(null);
   const [map, setMap] = useState<WorldAtlasMapVm | null>(null);
-  const [loading, setLoading] = useState(false);
+  // True on first paint when a world id is present — avoids one commit of non-protoExact chrome.
+  const [loading, setLoading] = useState(() => Boolean(worldProfileId?.trim()));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dirtyLayers, setDirtyLayers] = useState<WorldAtlasFeatureCollection | null>(null);
