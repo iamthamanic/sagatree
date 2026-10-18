@@ -507,30 +507,6 @@
   color: var(--muted-foreground) !important;
 }
 
-[data-atlas-native-3d] .nav-edit {
-  cursor: text !important;
-  border-radius: 0.25rem !important;
-}
-
-[data-atlas-native-3d] .nav-edit:hover {
-  outline: 1px dashed color-mix(in srgb, var(--primary) 55%, transparent) !important;
-  outline-offset: 1px !important;
-}
-
-[data-atlas-native-3d] .nav-edit-input {
-  display: block !important;
-  width: 100% !important;
-  min-height: 1.25rem !important;
-  margin: 0 !important;
-  padding: 0.125rem 0.25rem !important;
-  border: 1px solid var(--primary) !important;
-  border-radius: 0.25rem !important;
-  background: var(--background) !important;
-  color: var(--foreground) !important;
-  font: inherit !important;
-  font-size: 0.75rem !important;
-}
-
 [data-atlas-native-3d] .nav-focus {
   display: flex !important;
   flex-direction: row !important;
@@ -622,6 +598,30 @@
   line-height: 1.2 !important;
 }
 
+/* Content-sized closed dashed box (must follow .node-text strong). */
+[data-atlas-native-3d] .node-text > strong.nav-edit {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0.05rem 0.25rem !important;
+  cursor: text !important;
+  border: 1px dashed color-mix(in srgb, var(--primary) 45%, transparent) !important;
+  border-radius: 0.25rem !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  align-items: center !important;
+}
+
+[data-atlas-native-3d] .node-text > strong.nav-edit:hover,
+[data-atlas-native-3d] .node-text > strong.nav-edit:focus-visible {
+  border-color: color-mix(in srgb, var(--primary) 85%, transparent) !important;
+  outline: none !important;
+}
+
 [data-atlas-native-3d] .node-text small {
   display: block !important;
   width: 100% !important;
@@ -630,6 +630,31 @@
   white-space: nowrap !important;
   color: var(--muted-foreground) !important;
   font-size: 0.625rem !important;
+  line-height: 1.2 !important;
+}
+
+[data-atlas-native-3d] .node-text > small.nav-sub {
+  cursor: default !important;
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+[data-atlas-native-3d] .node-text > .nav-edit-input {
+  display: inline-flex !important;
+  width: max-content !important;
+  min-width: 3ch !important;
+  max-width: 100% !important;
+  field-sizing: content !important;
+  min-height: 1.25rem !important;
+  margin: 0 !important;
+  padding: 0.05rem 0.25rem !important;
+  border: 1px dashed var(--primary) !important;
+  border-radius: 0.25rem !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font: inherit !important;
+  font-size: inherit !important;
+  font-weight: 650 !important;
   line-height: 1.2 !important;
 }
 
