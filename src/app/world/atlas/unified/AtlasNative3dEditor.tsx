@@ -3,8 +3,9 @@
  * Location: src/app/world/atlas/unified/AtlasNative3dEditor.tsx
  *
  * Mounts the in-repo WebGL runtime and applies SagaTree skin (no iframe).
+ * Map-first reveal: land surface must be sized+painted before Ebenen/Werkzeuge chrome.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
 import './prototype3d/atlas-sagatree-skin.css';
 
@@ -48,10 +49,101 @@ const PANEL_FOLD_ICONS: Record<PanelFoldKey, string> = {
     '<svg class="atlas-panel-fold-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>',
 };
 
+/** True when the WebGL buffer is large enough to show land (not the parked 260×240 stub). */
+function isSurfaceSized(atlasRoot: Element): boolean {
+  const canvas = atlasRoot.querySelector<HTMLCanvasElement>('canvas:not(.hidden)');
+  if (!canvas) return false;
+  const clientW = canvas.clientWidth;
+  const clientH = canvas.clientHeight;
+  if (clientW < 200 || clientH < 160) return false;
+  // Buffer must track the visible stage — keep-alive park used to leave 260×240.
+  return canvas.width >= Math.min(400, clientW * 0.5) && canvas.height >= Math.min(300, clientH * 0.5);
+}
+
+/**
+ * Hide chrome until the map surface is actually presentable, then fade chips in.
+ * Re-arms on keep-alive resume (IntersectionObserver) so UI never leads a tiny/blank canvas.
+ */
+function installMapFirstReveal(atlasRoot: HTMLElement): () => void {
+  let settleTimer = 0;
+  let raf = 0;
+  let armed = false;
+
+  const clearChrome = () => {
+    armed = false;
+    window.clearTimeout(settleTimer);
+    window.cancelAnimationFrame(raf);
+    atlasRoot.removeAttribute('data-atlas-chrome-ready');
+    atlasRoot.removeAttribute('data-atlas-surface-ready');
+  };
+
+  const finishReveal = () => {
+    atlasRoot.removeAttribute('data-atlas-boot');
+    atlasRoot.setAttribute('data-atlas-surface-ready', 'true');
+    settleTimer = window.setTimeout(() => {
+      atlasRoot.setAttribute('data-atlas-chrome-ready', 'true');
+    }, 60);
+  };
+
+  const armReveal = () => {
+    if (armed) return;
+    armed = true;
+    window.clearTimeout(settleTimer);
+    window.cancelAnimationFrame(raf);
+    atlasRoot.removeAttribute('data-atlas-chrome-ready');
+    atlasRoot.removeAttribute('data-atlas-surface-ready');
+    // Nudge layout/resize observers after keep-alive resume.
+    window.dispatchEvent(new Event('resize'));
+    const poll = () => {
+      if (!atlasRoot.isConnected) return;
+      if (atlasRoot.hasAttribute('data-atlas-ready') && isSurfaceSized(atlasRoot)) {
+        // Two paints after sized buffer so land presents before chrome.
+        raf = window.requestAnimationFrame(() => {
+          raf = window.requestAnimationFrame(finishReveal);
+        });
+        return;
+      }
+      raf = window.requestAnimationFrame(poll);
+    };
+    raf = window.requestAnimationFrame(poll);
+  };
+
+  // Initial mount.
+  armReveal();
+
+  // Keep-alive park/resume is driven by data-atlas-keepalive-host on an ancestor
+  // (opacity:0 park still "intersects", so IntersectionObserver is the wrong signal).
+  const parkHost = atlasRoot.closest('[data-atlas-keepalive-host]');
+  const onParkAttr = () => {
+    const state = parkHost?.getAttribute('data-atlas-keepalive-host');
+    if (state === 'parked') {
+      clearChrome();
+      return;
+    }
+    if (state === 'active') {
+      armed = false;
+      armReveal();
+    }
+  };
+  const mo =
+    parkHost && typeof MutationObserver !== 'undefined'
+      ? new MutationObserver(onParkAttr)
+      : null;
+  mo?.observe(parkHost, { attributes: true, attributeFilter: ['data-atlas-keepalive-host'] });
+
+  return () => {
+    mo?.disconnect();
+    window.clearTimeout(settleTimer);
+    window.cancelAnimationFrame(raf);
+  };
+}
+
 /** Layers / Tools fold controls — collapse each aside upward to a slim toggle. */
 function installCollapsiblePanels(host: HTMLElement): () => void {
   const atlasRoot = host.querySelector('#atlas3d');
   const cleanups: Array<() => void> = [];
+  // Boot: collapsed before first paint — no open→close transition flash.
+  atlasRoot?.setAttribute('data-atlas-boot', 'true');
 
   const wire = (
     panel: HTMLElement | null,
@@ -59,6 +151,10 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
     key: PanelFoldKey,
   ): void => {
     if (!panel || panel.querySelector(`[data-atlas-panel-fold="${key}"]`)) return;
+
+    // Collapse before children re-enter the tree so first paint is map-only.
+    panel.setAttribute('data-collapsed', 'true');
+    atlasRoot?.setAttribute(`data-${key}-collapsed`, 'true');
 
     const body = document.createElement('div');
     body.className = 'atlas-panel-body';
@@ -75,17 +171,13 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
     btn.type = 'button';
     btn.className = 'atlas-panel-fold';
     btn.dataset.atlasPanelFold = key;
-    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-controls', `atlas-panel-body-${key}`);
     btn.setAttribute('aria-label', label);
     btn.innerHTML = `<span class="atlas-panel-fold-main">${PANEL_FOLD_ICONS[key]}<span class="atlas-panel-fold-label">${label}</span></span><span class="atlas-panel-fold-chevron" aria-hidden="true">▾</span>`;
 
     panel.appendChild(btn);
     panel.appendChild(body);
-    // Start collapsed so the map fills the stage; open via Layers / Tools.
-    panel.setAttribute('data-collapsed', 'true');
-    btn.setAttribute('aria-expanded', 'false');
-    atlasRoot?.setAttribute(`data-${key}-collapsed`, 'true');
 
     const onToggle = () => {
       const next = panel.getAttribute('data-collapsed') !== 'true';
@@ -100,7 +192,7 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
   wire(host.querySelector('#side'), 'Ebenen', 'layers');
   wire(host.querySelector('#inspector'), 'Werkzeuge', 'tools');
 
-  // Place mode tools under „Kartenwerkzeuge“ in the Tools panel (inside slide inner).
+  // Move tools into Werkzeuge BEFORE revealing panels (never flash stage tool rail).
   const actionTools = host.querySelector('#tools');
   const toolsInner = host.querySelector<HTMLElement>(
     '[data-atlas-panel-body="tools"] .atlas-panel-body-inner',
@@ -118,6 +210,12 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
     actionTools.classList.remove('atlas-tools-on-canvas');
   }
 
+  atlasRoot?.setAttribute('data-panels-ready', 'true');
+
+  if (atlasRoot instanceof HTMLElement) {
+    cleanups.push(installMapFirstReveal(atlasRoot));
+  }
+
   return () => {
     for (const fn of cleanups) fn();
   };
@@ -127,10 +225,12 @@ export function AtlasNative3dEditor({ className }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Layout effect: mount + collapse panels before the browser paints (no open→close flash).
+  useLayoutEffect(() => {
     const host = hostRef.current;
     if (!host) return;
     host.replaceChildren();
+    host.setAttribute('data-atlas-boot', 'true');
     let mount: { dispose: () => void } | null = null;
     let disposePanels: (() => void) | null = null;
     let copyTimer = 0;
@@ -157,14 +257,16 @@ export function AtlasNative3dEditor({ className }: AtlasNative3dEditorProps) {
         /* ignore */
       }
       host.replaceChildren();
+      host.removeAttribute('data-atlas-boot');
     };
   }, []);
 
   return (
     <div
-      className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-background ${className ?? ''}`}
+      className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden ${className ?? ''}`}
       data-atlas-native-3d
       data-atlas-proto-exact="true"
+      style={{ background: '#123e4a' }}
     >
       {error ? (
         <p
