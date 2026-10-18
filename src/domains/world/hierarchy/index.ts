@@ -48,3 +48,10 @@ export {
   type KindMappingRow,
   type KindMappingStatus,
 } from './legacy-kind-map';
+
+export {
+  planWorldNodeCreate,
+  type WorldNodeCreatePlan,
+  type WorldNodeCreatePlanInput,
+  type WorldNodeCreatePlanStep,
+} from './create-plan';

@@ -232,6 +232,14 @@ function checkAtlasWorldbuilderDomain() {
   });
 }
 
+function checkAtlasWorldbuilderTransaction() {
+  console.log('Atlas worldbuilder transaction (#715): create-with-maps plan + migration...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-transaction-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2323,6 +2331,7 @@ checkDonaluP0AuthGate();
 checkDonaluWorldPlaces();
 checkAtlasWorldbuilderEvidence();
 checkAtlasWorldbuilderDomain();
+checkAtlasWorldbuilderTransaction();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
