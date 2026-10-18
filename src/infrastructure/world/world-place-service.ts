@@ -112,6 +112,104 @@ class WorldPlaceService {
     return data as Readonly<Record<string, unknown>>;
   }
 
+  /** #716 — mutation RPCs (JWT session only). */
+  async previewNodeConsequences(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('preview_world_node_consequences', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+    });
+    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');
+    return data as Readonly<Record<string, unknown>>;
+  }
+
+  async renameNode(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+    readonly name: string;
+  }): Promise<WorldPlaceVm> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('rename_world_node', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+      p_name: input.name,
+    });
+    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);
+    const parsed = parseWorldPlaceVm(data);
+    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');
+    return parsed;
+  }
+
+  async reparentNode(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+    readonly newParentPlaceId: string | null;
+    readonly confirmRelocate: boolean;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('reparent_world_node', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+      p_new_parent_place_id: input.newParentPlaceId,
+      p_confirm_relocate: input.confirmRelocate,
+    });
+    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');
+    return data as Readonly<Record<string, unknown>>;
+  }
+
+  async duplicateNode(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+    readonly deep?: boolean;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('duplicate_world_node', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+      p_deep: input.deep === true,
+    });
+    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');
+    return data as Readonly<Record<string, unknown>>;
+  }
+
+  async archiveNodeSubtree(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+    readonly confirm: boolean;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('archive_world_node_subtree', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+      p_confirm: input.confirm,
+    });
+    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');
+    return data as Readonly<Record<string, unknown>>;
+  }
+
+  async deleteNode(input: {
+    readonly worldProfileId: string;
+    readonly placeId: string;
+    readonly confirm: boolean;
+  }): Promise<Readonly<Record<string, unknown>>> {
+    await assertSupabaseJwtSession();
+    const { data, error } = await supabase.rpc('delete_world_node', {
+      p_world_profile_id: input.worldProfileId.trim(),
+      p_place_id: input.placeId.trim(),
+      p_confirm: input.confirm,
+    });
+    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);
+    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');
+    return data as Readonly<Record<string, unknown>>;
+  }
+
   async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
     await assertSupabaseJwtSession();
     if (!isWorldPlaceMapUsage(input.usage)) {

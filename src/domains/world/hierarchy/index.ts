@@ -55,3 +55,13 @@ export {
   type WorldNodeCreatePlanInput,
   type WorldNodeCreatePlanStep,
 } from './create-plan';
+
+export {
+  buildMutationConsequences,
+  planRenameStatus,
+  planReparent,
+  wouldCreateReparentCycle,
+  type MutationConsequences,
+  type ReparentPlan,
+  type ReparentPlanInput,
+} from './mutations';

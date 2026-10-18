@@ -240,6 +240,14 @@ function checkAtlasWorldbuilderTransaction() {
   });
 }
 
+function checkAtlasWorldbuilderMutations() {
+  console.log('Atlas worldbuilder mutations (#716): rename/reparent/duplicate/archive...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-mutations-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2332,6 +2340,7 @@ checkDonaluWorldPlaces();
 checkAtlasWorldbuilderEvidence();
 checkAtlasWorldbuilderDomain();
 checkAtlasWorldbuilderTransaction();
+checkAtlasWorldbuilderMutations();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
