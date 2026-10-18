@@ -248,11 +248,21 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Ensure full height on mobile */
+/* Ensure full height on mobile (app shell). Login must still scroll —
+   centered forms taller than short viewports otherwise clip the submit button. */
 @media (max-width: 768px) {
   html, body, #root {
     height: 100%;
     overflow: hidden;
+  }
+
+  html:has([data-au-surface="login"]),
+  html:has([data-au-surface="login"]) body,
+  html:has([data-au-surface="login"]) #root {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
@@ -549,4 +559,37 @@ h1, h2, h3, h4, h5, h6 {
       max-width: 1536px;
     }
   }
+}
+
+/*
+ * Tabs active label — unlayered + !important so prototype/button resets
+ * (e.g. atlas embed) cannot leave selected tabs as light-on-cyan.
+ * THEME_GUIDE: active = bg-primary + primary-foreground.
+ */
+button[data-slot='tabs-trigger'][data-state='active'],
+[data-slot='tabs-trigger'][data-state='active'],
+button[data-slot='tabs-trigger'][data-state='active'] span,
+[data-slot='tabs-trigger'][data-state='active'] span {
+  color: var(--primary-foreground) !important;
+  -webkit-text-fill-color: var(--primary-foreground) !important;
+}
+
+button[data-slot='tabs-trigger'][data-state='active'] svg,
+[data-slot='tabs-trigger'][data-state='active'] svg {
+  color: var(--primary-foreground) !important;
+  stroke: var(--primary-foreground) !important;
+}
+
+button[data-slot='tabs-trigger'][data-state='active']:hover,
+[data-slot='tabs-trigger'][data-state='active']:hover,
+button[data-slot='tabs-trigger'][data-state='active']:hover span,
+[data-slot='tabs-trigger'][data-state='active']:hover span {
+  color: var(--accent-foreground) !important;
+  -webkit-text-fill-color: var(--accent-foreground) !important;
+}
+
+button[data-slot='tabs-trigger'][data-state='active']:hover svg,
+[data-slot='tabs-trigger'][data-state='active']:hover svg {
+  color: var(--accent-foreground) !important;
+  stroke: var(--accent-foreground) !important;
 }

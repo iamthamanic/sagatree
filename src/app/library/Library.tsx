@@ -247,6 +247,7 @@ export function Library({
     worlds,
     isLoading: worldsLoading,
     error: worldsError,
+    reconnectApi,
     createWorld,
     updateWorld,
     duplicateWorld,
@@ -1053,8 +1054,19 @@ export function Library({
 
           <TabsContent value="worlds" className="min-w-0 space-y-4">
             {worldsError && (
-              <div className="min-w-0 overflow-hidden rounded-lg border border-destructive bg-destructive/10 p-3">
+              <div className="min-w-0 space-y-2 overflow-hidden rounded-lg border border-destructive bg-destructive/10 p-3">
                 <p className="break-words text-sm text-destructive">{worldsError}</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-h-11"
+                  data-worlds-api-reconnect
+                  onClick={() => {
+                    void reconnectApi();
+                  }}
+                >
+                  API verbinden
+                </Button>
               </div>
             )}
 

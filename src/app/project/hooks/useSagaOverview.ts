@@ -61,14 +61,21 @@ export function useSagaOverview(options: UseSagaOverviewOptions): UseSagaOvervie
       const gen = ++loadGenRef.current;
       try {
         setIsLoading(!existing || force);
-        setError(null);
+        // Keep a prior successful model visible while a background refresh runs.
+        if (!existing) setError(null);
         const next = await sagaOverviewService.getOverviewByPublicId(sagaPublicId);
         if (gen !== loadGenRef.current) return;
         entityCache.set(cacheKey, next);
         setModel(next);
+        setError(null);
       } catch (err) {
         if (gen !== loadGenRef.current) return;
-        setError(err instanceof Error ? err.message : 'Saga-Übersicht konnte nicht geladen werden.');
+        // Soft-fail refresh: do not blank hub/map panels that already have a model.
+        if (!existing && !entityCache.get<SagaOverviewVm>(cacheKey)) {
+          setError(
+            err instanceof Error ? err.message : 'Saga-Übersicht konnte nicht geladen werden.',
+          );
+        }
       } finally {
         if (gen === loadGenRef.current) setIsLoading(false);
       }

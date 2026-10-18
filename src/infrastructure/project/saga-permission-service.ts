@@ -41,6 +41,8 @@ export type SagaAssetBindingVm = {
   readonly assetId: string;
   readonly reveal: SagaRevealStatus;
   readonly label: string;
+  /** Linked world_places.id when location is mapped to Donalu place model. */
+  readonly worldPlaceId?: string | null;
 };
 
 function asString(value: unknown, fallback = ''): string {
@@ -105,12 +107,14 @@ function parseBindings(raw: unknown): SagaAssetBindingVm[] {
     const assetId = asString(row.assetId);
     const reveal = parseSagaRevealStatus(row.reveal);
     if (!id || !assetId || !reveal) continue;
+    const worldPlaceRaw = row.worldPlaceId;
     out.push({
       id,
       assetKind,
       assetId,
       reveal,
       label: asString(row.label),
+      worldPlaceId: typeof worldPlaceRaw === 'string' && worldPlaceRaw ? worldPlaceRaw : null,
     });
   }
   return out;

@@ -24,6 +24,8 @@ Local Admin login must not hang Browser E2E when remote GoTrue is slow/unreachab
 - [x] Timeout → logout → late success does not resurrect Admin / persist admin session
 - [x] Timeout → different user → late admin does not replace newer user
 - [x] Overlapping Local Admin attempts: newest wins; superseded JWT may upgrade live Local Admin fallback
+- [x] HMR / Strict remount race: storage flag still set → adopt JWT (never scrub); `decideLocalAdminJwt` + `mayDiscardLocalAdminJwt` + case 1b persist check
+- [x] `discardStaleLocalAdminSession` is a no-op while Local Admin storage flag is set (anti-hang harden)
 
 ## Regression
 - [x] No Face Anchor / #423 / Agent Review changes

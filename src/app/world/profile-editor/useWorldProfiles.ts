@@ -1,9 +1,13 @@
 /**
  * useWorldProfiles — App hook for world profile list/CRUD.
  * Location: src/app/world/profile-editor/useWorldProfiles.ts
+ *
+ * Waits for a GoTrue JWT (`hasJwtSession`) before listing — offline Local Admin
+ * UI alone cannot pass world_profiles RLS.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../lib/auth-context';
+import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
 import { ENTITY_CACHE_KEYS, entityCache } from '../../../lib/entityCache';
 import { useCachedEntityList } from '../../../lib/useCachedEntityList';
 import { worldProfileService } from '../../../infrastructure/world/world-profile-service';
@@ -21,6 +25,8 @@ interface UseWorldProfilesReturn {
   worlds: WorldProfileVm[];
   isLoading: boolean;
   error: string | null;
+  apiAuthPending: boolean;
+  reconnectApi: () => Promise<void>;
   createWorld: (payload: CreateWorldProfileDto) => Promise<WorldProfileVm | null>;
   updateWorld: (id: string, payload: UpdateWorldProfileDto) => Promise<WorldProfileVm | null>;
   duplicateWorld: (id: string) => Promise<WorldProfileVm | null>;
@@ -30,7 +36,22 @@ interface UseWorldProfilesReturn {
 
 export function useWorldProfiles(options: UseWorldProfilesOptions = {}): UseWorldProfilesReturn {
   const { enabled = true } = options;
-  const { user } = useAuth();
+  const { user, hasJwtSession, ensureJwtSession, isLoading: authLoading } = useAuth();
+  const [apiAuthError, setApiAuthError] = useState<string | null>(null);
+  const [reconnecting, setReconnecting] = useState(false);
+
+  useEffect(() => {
+    if (!enabled || !user || hasJwtSession || authLoading) return;
+    let cancelled = false;
+    void (async () => {
+      const ok = await ensureJwtSession();
+      if (cancelled) return;
+      setApiAuthError(ok ? null : API_AUTH_REQUIRED_DE);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, user, hasJwtSession, authLoading, ensureJwtSession]);
 
   const fetcher = useCallback(async () => {
     if (!user) return [] as WorldProfileVm[];
@@ -41,7 +62,7 @@ export function useWorldProfiles(options: UseWorldProfilesOptions = {}): UseWorl
     ENTITY_CACHE_KEYS.worldSummaries,
     fetcher,
     [],
-    { enabled: enabled && Boolean(user) },
+    { enabled: enabled && Boolean(user) && hasJwtSession },
   );
 
   useEffect(() => {
@@ -49,6 +70,29 @@ export function useWorldProfiles(options: UseWorldProfilesOptions = {}): UseWorl
       entityCache.invalidate(ENTITY_CACHE_KEYS.worldSummaries);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (hasJwtSession) {
+      setApiAuthError(null);
+      void refresh();
+    }
+  }, [hasJwtSession, refresh]);
+
+  const reconnectApi = useCallback(async () => {
+    setReconnecting(true);
+    setApiAuthError(null);
+    try {
+      const ok = await ensureJwtSession();
+      if (!ok) {
+        setApiAuthError(API_AUTH_REQUIRED_DE);
+        return;
+      }
+      entityCache.invalidate(ENTITY_CACHE_KEYS.worldSummaries);
+      await refresh();
+    } finally {
+      setReconnecting(false);
+    }
+  }, [ensureJwtSession, refresh]);
 
   const createWorld = useCallback(async (payload: CreateWorldProfileDto): Promise<WorldProfileVm | null> => {
     if (!user) {
@@ -117,10 +161,15 @@ export function useWorldProfiles(options: UseWorldProfilesOptions = {}): UseWorl
     }
   }, [refresh, user]);
 
+  const combinedError = apiAuthError ?? error;
+  const apiAuthPending = Boolean(user && !hasJwtSession && !authLoading);
+
   return {
     worlds: items,
-    isLoading,
-    error,
+    isLoading: isLoading || authLoading || reconnecting || (apiAuthPending && !apiAuthError),
+    error: combinedError,
+    apiAuthPending,
+    reconnectApi,
     createWorld,
     updateWorld,
     duplicateWorld,

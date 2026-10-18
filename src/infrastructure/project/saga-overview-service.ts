@@ -13,6 +13,9 @@ import {
   type SagaOverviewVm,
 } from '../../domains/project/contracts/saga-overview';
 
+/** Hub RPC aggregates membership + episodes + world — allow headroom over REST default. */
+const SAGA_OVERVIEW_TIMEOUT_MS = Math.max(SUPABASE_QUERY_TIMEOUT_MS, 12_000);
+
 class SagaOverviewService {
   async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {
     const publicId = sagaPublicId.trim().toUpperCase();
@@ -22,7 +25,7 @@ class SagaOverviewService {
 
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_saga_overview', { p_public_id: publicId }),
-      SUPABASE_QUERY_TIMEOUT_MS,
+      SAGA_OVERVIEW_TIMEOUT_MS,
       'Saga-Übersicht Zeitüberschreitung',
     );
 

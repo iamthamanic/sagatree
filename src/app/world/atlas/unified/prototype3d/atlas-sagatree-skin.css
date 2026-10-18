@@ -1,0 +1,1239 @@
+/**
+ * atlas-sagatree-skin — Overlay SagaTree design tokens on the Atlas 3D shell.
+ * Location: src/app/world/atlas/unified/prototype3d/atlas-sagatree-skin.css
+ */
+
+[data-atlas-native-3d] {
+  font-family: inherit;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+[data-atlas-native-3d] #atlas3d {
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font: inherit !important;
+}
+
+/* Hide prototype brand / context chrome — SagaTree shell already owns identity */
+[data-atlas-native-3d] .brand,
+[data-atlas-native-3d] .view-tabs,
+[data-atlas-native-3d] .divider {
+  display: none !important;
+}
+
+/* Hide prototype top bar (status / Import / PNG / JSON) — SagaTree owns chrome */
+[data-atlas-native-3d] .bar {
+  display: none !important;
+}
+
+[data-atlas-native-3d] .save-state {
+  font-size: 0.75rem !important;
+  color: var(--muted-foreground) !important;
+  margin-right: auto;
+}
+
+[data-atlas-native-3d] .pill {
+  min-height: 2.75rem !important;
+  padding: 0 0.875rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--border) !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+}
+
+[data-atlas-native-3d] .pill:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] .pill.primary {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+[data-atlas-native-3d] .pill.primary:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--primary-foreground) !important;
+}
+
+/*
+ * Full-bleed map: .core is the stage; Layers/Tools float as overlays.
+ * Prototype 3-column grid must not shrink the canvas.
+ */
+[data-atlas-native-3d] .core {
+  position: relative !important;
+  display: block !important;
+  grid-template-columns: none !important;
+  gap: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: var(--background) !important;
+}
+
+[data-atlas-native-3d] .center {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background: var(--background) !important;
+}
+
+[data-atlas-native-3d] #side,
+[data-atlas-native-3d] #inspector {
+  position: absolute !important;
+  top: 0.5rem !important;
+  z-index: 6 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  width: min(15rem, calc(100% - 1rem)) !important;
+  max-height: calc(100% - 1rem) !important;
+  padding: 0.5rem !important;
+  color: var(--foreground) !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  background: color-mix(in srgb, var(--card) 94%, transparent) !important;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--foreground) 16%, transparent) !important;
+  backdrop-filter: blur(8px);
+  transition:
+    padding 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    width 220ms ease !important;
+}
+
+[data-atlas-native-3d] #side,
+[data-atlas-native-3d] #side[data-collapsed='true'] {
+  left: 0.5rem !important;
+  right: unset !important;
+  inset-inline-start: 0.5rem !important;
+  inset-inline-end: unset !important;
+  /* stretch when open so nav/layers fill panel width */
+  align-items: stretch !important;
+}
+
+[data-atlas-native-3d] #side[data-collapsed='true'] {
+  align-items: flex-start !important;
+}
+
+/*
+ * Werkzeuge — pin to top-right.
+ * Avoid left:auto (computes to 0 with right set → full-bleed width).
+ */
+[data-atlas-native-3d] #inspector,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] {
+  left: unset !important;
+  right: 0.5rem !important;
+  inset-inline-start: unset !important;
+  inset-inline-end: 0.5rem !important;
+  width: min(15rem, calc(100% - 1rem)) !important;
+  align-items: stretch !important;
+}
+
+[data-atlas-native-3d] #inspector[data-collapsed='true'] {
+  width: max-content !important;
+  align-items: flex-end !important;
+}
+
+[data-atlas-native-3d] #inspector .atlas-panel-fold {
+  align-self: flex-end !important;
+}
+
+[data-atlas-native-3d] #side .atlas-panel-body,
+[data-atlas-native-3d] #side .atlas-panel-body-inner,
+[data-atlas-native-3d] #side .nav,
+[data-atlas-native-3d] #inspector .atlas-panel-body,
+[data-atlas-native-3d] #inspector .atlas-panel-body-inner {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Layers / Tools fold — icon+label on top, chevron below; slides open downward */
+[data-atlas-native-3d] .atlas-panel-fold {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  gap: 0.125rem !important;
+  align-self: flex-start !important;
+  min-height: 2.75rem !important;
+  min-width: 6.5rem !important;
+  width: 100% !important;
+  padding: 0.375rem 0.75rem 0.25rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid var(--border) !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-fold-main {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  min-width: 0 !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-fold-icon {
+  flex-shrink: 0 !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  color: var(--muted-foreground) !important;
+  transition: color 120ms ease !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-fold-label {
+  flex: 1 1 auto !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
+}
+
+/* Chevron under the label — ▾ closed, flips up when open */
+[data-atlas-native-3d] .atlas-panel-fold-chevron {
+  display: block !important;
+  margin: 0 auto !important;
+  line-height: 1 !important;
+  font-size: 0.625rem !important;
+  transform: rotate(0deg) !important;
+  transform-origin: center !important;
+  transition: transform 200ms ease, color 120ms ease !important;
+  color: var(--muted-foreground) !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-fold[aria-expanded='true'] .atlas-panel-fold-chevron {
+  transform: rotate(180deg) !important;
+}
+
+/*
+ * Styleguide: secondary chrome → Gold hover.
+ * Must beat #side[data-collapsed] .atlas-panel-fold background !important.
+ */
+[data-atlas-native-3d] #side .atlas-panel-fold:hover,
+[data-atlas-native-3d] #inspector .atlas-panel-fold:hover,
+[data-atlas-native-3d] #side[data-collapsed='true'] .atlas-panel-fold:hover,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] .atlas-panel-fold:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] #side .atlas-panel-fold:hover .atlas-panel-fold-icon,
+[data-atlas-native-3d] #inspector .atlas-panel-fold:hover .atlas-panel-fold-icon,
+[data-atlas-native-3d] #side .atlas-panel-fold:hover .atlas-panel-fold-chevron,
+[data-atlas-native-3d] #inspector .atlas-panel-fold:hover .atlas-panel-fold-chevron,
+[data-atlas-native-3d] #side[data-collapsed='true'] .atlas-panel-fold:hover .atlas-panel-fold-icon,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] .atlas-panel-fold:hover .atlas-panel-fold-icon,
+[data-atlas-native-3d] #side[data-collapsed='true'] .atlas-panel-fold:hover .atlas-panel-fold-chevron,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] .atlas-panel-fold:hover .atlas-panel-fold-chevron {
+  color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-fold:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+/* Slide body open/closed via max-height (works with auto-height parent) */
+[data-atlas-native-3d] .atlas-panel-body {
+  display: block !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  max-height: min(70vh, 36rem) !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition:
+    max-height 240ms ease,
+    opacity 180ms ease,
+    transform 240ms ease !important;
+}
+
+[data-atlas-native-3d] .atlas-panel-body-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  max-height: min(70vh, 36rem) !important;
+  overflow: auto !important;
+}
+
+[data-atlas-native-3d] #side[data-collapsed='true'],
+[data-atlas-native-3d] #inspector[data-collapsed='true'] {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+
+[data-atlas-native-3d] #side[data-collapsed='true'] {
+  width: max-content !important;
+}
+
+[data-atlas-native-3d] #inspector[data-collapsed='true'] {
+  width: max-content !important;
+  left: unset !important;
+  right: 0.5rem !important;
+}
+
+[data-atlas-native-3d] #side[data-collapsed='true'] .atlas-panel-fold,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] .atlas-panel-fold {
+  width: auto !important;
+  background: var(--card) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 12%, transparent) !important;
+}
+
+[data-atlas-native-3d] #side[data-collapsed='true'] .atlas-panel-body,
+[data-atlas-native-3d] #inspector[data-collapsed='true'] .atlas-panel-body {
+  max-height: 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  opacity: 0 !important;
+  transform: translateY(-0.35rem) !important;
+  pointer-events: none !important;
+}
+
+/* Open Werkzeuge panel: drop down from the right edge */
+[data-atlas-native-3d] #inspector:not([data-collapsed='true']) {
+  width: min(15rem, calc(100% - 1rem)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-atlas-native-3d] #side,
+  [data-atlas-native-3d] #inspector,
+  [data-atlas-native-3d] .atlas-panel-fold,
+  [data-atlas-native-3d] .atlas-panel-fold-chevron,
+  [data-atlas-native-3d] .atlas-panel-body {
+    transition: none !important;
+  }
+}
+
+[data-atlas-native-3d] .eyebrow {
+  margin: 0.5rem 0 0.5rem !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--muted-foreground) !important;
+}
+
+[data-atlas-native-3d] .section-line {
+  border-top: 1px solid var(--border) !important;
+  margin: 0.75rem 0 !important;
+}
+
+/* Nav tree — Welt + Länder + Stage-Zoom */
+[data-atlas-native-3d] .nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.375rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+[data-atlas-native-3d] .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+[data-atlas-native-3d] .nav-toolbar {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  margin: 0 0 0.5rem !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+}
+
+[data-atlas-native-3d] .nav-search-wrap {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+[data-atlas-native-3d] .nav-search {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 2.75rem !important;
+  margin: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  box-sizing: border-box !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font: inherit !important;
+  font-size: 0.8125rem !important;
+}
+
+[data-atlas-native-3d] .nav-search::placeholder {
+  color: var(--muted-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-search:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px !important;
+  border-color: var(--primary) !important;
+}
+
+[data-atlas-native-3d] .nav-filter {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.25rem !important;
+  min-width: 0 !important;
+}
+
+[data-atlas-native-3d] .nav-filter-btn {
+  display: inline-flex !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.1rem !important;
+  min-width: 0 !important;
+  min-height: 2.75rem !important;
+  margin: 0 !important;
+  padding: 0.25rem 0.3rem !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.375rem !important;
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  font: inherit !important;
+  font-size: 0.625rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+[data-atlas-native-3d] .nav-filter-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  line-height: 0 !important;
+  color: inherit !important;
+}
+
+[data-atlas-native-3d] .nav-filter-icon svg {
+  display: block !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+[data-atlas-native-3d] .nav-filter-text {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-atlas-native-3d] .nav-filter-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border)) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .nav-filter-btn.is-on {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-filter-btn.is-on:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-filter-btn:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px !important;
+}
+
+[data-atlas-native-3d] .nav-empty {
+  margin: 0.75rem 0.25rem !important;
+  padding: 0 !important;
+  color: var(--muted-foreground) !important;
+  font-size: 0.75rem !important;
+  line-height: 1.4 !important;
+}
+
+[data-atlas-native-3d] .nav-eyebrow {
+  margin: 0.5rem 0 0.15rem !important;
+  padding: 0 0.25rem !important;
+  font-size: 0.625rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--muted-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-edit {
+  cursor: text !important;
+  border-radius: 0.25rem !important;
+}
+
+[data-atlas-native-3d] .nav-edit:hover {
+  outline: 1px dashed color-mix(in srgb, var(--primary) 55%, transparent) !important;
+  outline-offset: 1px !important;
+}
+
+[data-atlas-native-3d] .nav-edit-input {
+  display: block !important;
+  width: 100% !important;
+  min-height: 1.25rem !important;
+  margin: 0 !important;
+  padding: 0.125rem 0.25rem !important;
+  border: 1px solid var(--primary) !important;
+  border-radius: 0.25rem !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font: inherit !important;
+  font-size: 0.75rem !important;
+}
+
+[data-atlas-native-3d] .nav-focus {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  min-height: 2.75rem !important;
+  margin: 0 !important;
+  /* --nav-depth: 0 Welt, 1 Land, 2 Stadt, 3 Dungeon, 4 Raum */
+  padding: 0.5rem 0.625rem !important;
+  padding-left: calc(0.625rem + (var(--nav-depth, 0) * 0.75rem)) !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+  font-size: 0.8125rem !important;
+  text-align: left !important;
+  line-height: 1.25 !important;
+}
+
+[data-atlas-native-3d] .nav-focus:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent) !important;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border)) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .nav-focus.current {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-focus.current:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-focus.current .node-icon {
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--primary-foreground) 25%, transparent) !important;
+  color: var(--primary-foreground) !important;
+}
+
+[data-atlas-native-3d] .nav-focus.current .node-text small {
+  color: color-mix(in srgb, var(--primary-foreground) 70%, transparent) !important;
+}
+
+[data-atlas-native-3d] .node-icon {
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 1.375rem !important;
+  width: 1.375rem !important;
+  height: 1.375rem !important;
+  border: 1px solid var(--border) !important;
+  border-color: var(--border) !important;
+  color: var(--muted-foreground) !important;
+  border-radius: 0.375rem !important;
+  overflow: hidden !important;
+  line-height: 0 !important;
+}
+
+[data-atlas-native-3d] .node-icon svg {
+  display: block !important;
+  width: 0.875rem !important;
+  height: 0.875rem !important;
+}
+
+[data-atlas-native-3d] .node-text {
+  display: flex !important;
+  flex: 1 1 0 !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  gap: 0.125rem !important;
+  min-width: 0 !important;
+}
+
+[data-atlas-native-3d] .node-text strong {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-weight: 650 !important;
+  line-height: 1.2 !important;
+}
+
+[data-atlas-native-3d] .node-text small {
+  display: block !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: var(--muted-foreground) !important;
+  font-size: 0.625rem !important;
+  line-height: 1.2 !important;
+}
+
+[data-atlas-native-3d] .node-chevron {
+  flex: 0 0 auto !important;
+  margin-left: auto !important;
+  opacity: 0.7 !important;
+}
+
+[data-atlas-native-3d] .info {
+  background: var(--muted) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  color: var(--muted-foreground) !important;
+  font-size: 0.75rem !important;
+}
+
+[data-atlas-native-3d] .info strong {
+  color: var(--foreground) !important;
+}
+
+/* Layer switches */
+[data-atlas-native-3d] .switches label {
+  min-height: 2.75rem !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+  font-size: 0.8125rem !important;
+}
+
+[data-atlas-native-3d] .switches input {
+  accent-color: var(--primary);
+}
+
+[data-atlas-native-3d] .switches small {
+  color: var(--muted-foreground) !important;
+}
+
+/* Stage / map — hide prototype crumb subbar (SagaTree owns context) */
+[data-atlas-native-3d] .subbar {
+  display: none !important;
+}
+
+[data-atlas-native-3d] .stage {
+  background: #123e4a !important;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+[data-atlas-native-3d] .stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Prototype status strip (WEBGL / Offline) — removed; coords live in scale-widget */
+[data-atlas-native-3d] .map-info {
+  display: none !important;
+}
+
+/*
+ * Map tool rail (#tools) — square icon grid under „Kartenwerkzeuge“ in Tools.
+ * ID-qualified so prototype #atlas3d rules cannot override.
+ */
+[data-atlas-native-3d] #atlas3d #stage {
+  position: relative !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools,
+[data-atlas-native-3d] #atlas3d #inspector .action-tools {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.375rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0.25rem 0 0.75rem !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  z-index: auto !important;
+  pointer-events: auto !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button,
+[data-atlas-native-3d] #atlas3d .action-tools [data-slot='tabs-trigger'] {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem !important;
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 2.75rem !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0.375rem !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent) !important;
+  background: color-mix(in srgb, var(--muted) 45%, transparent) !important;
+  color: var(--muted-foreground) !important;
+  -webkit-text-fill-color: var(--muted-foreground) !important;
+  font-size: 0.625rem !important;
+  font-weight: 600 !important;
+  font-family: inherit !important;
+  letter-spacing: normal !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms,
+    box-shadow 150ms,
+    transform 150ms !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools .tool-icon {
+  display: grid !important;
+  place-items: center !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  flex-shrink: 0 !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools .tool-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools .tool-label {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button:hover:not(.current):not([data-state='active']),
+[data-atlas-native-3d] #atlas3d .action-tools [data-state='inactive']:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent) !important;
+  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+  color: var(--accent) !important;
+  -webkit-text-fill-color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button.current,
+[data-atlas-native-3d] #atlas3d .action-tools [data-state='active'] {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  -webkit-text-fill-color: var(--primary-foreground) !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15) !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button.current:hover,
+[data-atlas-native-3d] #atlas3d .action-tools [data-state='active']:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+  -webkit-text-fill-color: var(--accent-foreground) !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+[data-atlas-native-3d] #atlas3d .action-tools button:active {
+  transform: scale(0.98) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-atlas-native-3d] #atlas3d .action-tools button {
+    transition: none !important;
+  }
+  [data-atlas-native-3d] #atlas3d .action-tools button:active {
+    transform: none !important;
+  }
+}
+
+/* Help tip removed — map chrome is self-explanatory */
+[data-atlas-native-3d] .viewport-note {
+  display: none !important;
+}
+
+[data-atlas-native-3d] .scale-widget {
+  position: absolute !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0.75rem !important;
+  transform: translateX(-50%) !important;
+  z-index: 6 !important;
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+  width: max-content !important;
+  max-width: calc(100% - 1.5rem) !important;
+  height: auto !important;
+  min-height: 2.5rem !important;
+  padding: 0.25rem 0.375rem !important;
+  overflow: visible !important;
+  background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  color: var(--muted-foreground) !important;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.28) !important;
+}
+
+/* Kill prototype shell rule that forced every button to 30×30 (caused overlap) */
+[data-atlas-native-3d] .scale-widget > * {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  float: none !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-coords,
+[data-atlas-native-3d] .scale-widget #coords {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  min-width: 7.5rem !important;
+  max-width: none !important;
+  min-height: 2rem !important;
+  height: auto !important;
+  padding: 0 0.625rem !important;
+  border: 0 !important;
+  border-right: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  cursor: text !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-coords:hover,
+[data-atlas-native-3d] .scale-widget #zoom:hover {
+  color: var(--foreground) !important;
+  background: transparent !important;
+}
+
+[data-atlas-native-3d] .scale-widget #zoom,
+[data-atlas-native-3d] .scale-widget .scale-zoom {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 3rem !important;
+  max-width: none !important;
+  min-height: 2rem !important;
+  height: auto !important;
+  padding: 0 0.375rem !important;
+  border: 0 !important;
+  border-radius: 0.25rem !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  cursor: text !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-edit-input {
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  width: 5.5rem !important;
+  min-width: 5.5rem !important;
+  max-width: 7.5rem !important;
+  min-height: 2rem !important;
+  height: 2rem !important;
+  margin: 0 0.125rem !important;
+  padding: 0 0.375rem !important;
+  border: 1px solid var(--primary) !important;
+  border-radius: 0.375rem !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 25%, transparent) !important;
+}
+
+/* Only ± / home stay square — never coords/zoom/dial */
+[data-atlas-native-3d] .scale-widget > button[data-action] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--foreground) !important;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0.375rem !important;
+  background: transparent !important;
+  font-size: 0.875rem !important;
+  line-height: 1 !important;
+}
+
+[data-atlas-native-3d] .scale-widget > button[data-action]:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .scale-widget > button.scale-grid {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  flex: 0 0 auto !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: #bee2e6 !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+}
+
+[data-atlas-native-3d] .scale-widget > button.scale-grid:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .scale-widget > button.scale-grid.is-on,
+[data-atlas-native-3d] .scale-widget > button.scale-grid[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--primary) 22%, transparent) !important;
+  color: var(--primary) !important;
+}
+
+/* Rotation dial — same fill as scale-widget; only the ring is lighter */
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial {
+  --yaw-deg: 0;
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  min-width: 2.25rem !important;
+  min-height: 2.25rem !important;
+  margin-left: 0.25rem !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1.5px solid color-mix(in srgb, var(--muted-foreground) 55%, var(--border)) !important;
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  cursor: grab !important;
+  touch-action: none !important;
+  user-select: none !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial:hover {
+  border-color: color-mix(in srgb, var(--foreground) 45%, var(--border)) !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial:active {
+  cursor: grabbing !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-ring {
+  position: absolute !important;
+  inset: 0.2rem !important;
+  border-radius: 999px !important;
+  border: 1px dashed color-mix(in srgb, var(--muted-foreground) 28%, transparent) !important;
+  pointer-events: none !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-needle {
+  position: absolute !important;
+  top: 0.22rem !important;
+  left: 50% !important;
+  width: 0.1rem !important;
+  height: 0.45rem !important;
+  margin-left: -0.05rem !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--muted-foreground) 85%, transparent) !important;
+  transform: rotate(calc(var(--yaw-deg) * 1deg)) !important;
+  transform-origin: 50% 0.9rem !important;
+  pointer-events: none !important;
+  transition: transform 80ms linear !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-atlas-native-3d] .scale-widget .scale-yaw-needle {
+    transition: none !important;
+  }
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-deg {
+  position: relative !important;
+  z-index: 1 !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.04em !important;
+  color: var(--muted-foreground) !important;
+  pointer-events: none !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial:hover .scale-yaw-deg {
+  color: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-yaw-dial:hover .scale-yaw-needle {
+  background: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .scale-widget .scale-edit-input[aria-label="Grad eingeben"] {
+  width: 2.75rem !important;
+  min-width: 2.75rem !important;
+  max-width: 3.25rem !important;
+  border-radius: 999px !important;
+  text-align: center !important;
+  padding: 0 0.25rem !important;
+}
+
+/* Inspector */
+[data-atlas-native-3d] .caption-title {
+  font-family: inherit !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: var(--foreground) !important;
+  margin: 0.25rem 0 0.5rem !important;
+}
+
+[data-atlas-native-3d] .small {
+  color: var(--muted-foreground) !important;
+  font-size: 0.75rem !important;
+}
+
+[data-atlas-native-3d] .lbl {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+}
+
+[data-atlas-native-3d] .field {
+  border: 1px solid var(--border) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  border-radius: 0.5rem !important;
+  min-height: 2.75rem !important;
+}
+
+[data-atlas-native-3d] .slider {
+  accent-color: var(--primary);
+}
+
+[data-atlas-native-3d] .swatch,
+[data-atlas-native-3d] .toolset button {
+  border: 1px solid var(--border) !important;
+  background: var(--muted) !important;
+  color: var(--foreground) !important;
+  border-radius: 0.5rem !important;
+  min-height: 2.75rem !important;
+}
+
+[data-atlas-native-3d] .swatch.active,
+[data-atlas-native-3d] .toolset button.active {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+  color: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .btn-full {
+  min-height: 2.75rem !important;
+  border-radius: 0.5rem !important;
+  background: var(--primary) !important;
+  border: 1px solid var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  font-weight: 700 !important;
+}
+
+[data-atlas-native-3d] .btn-full:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .mode3d {
+  border: 1px solid var(--border) !important;
+  background: var(--muted) !important;
+  border-radius: 0.5rem !important;
+  color: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .mode3d input {
+  accent-color: var(--primary);
+}
+
+[data-atlas-native-3d] .stat-row {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--muted-foreground) !important;
+}
+
+[data-atlas-native-3d] .stat-row b {
+  color: var(--foreground) !important;
+}
+
+[data-atlas-native-3d] .map-labels {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 4 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+[data-atlas-native-3d] .map-label {
+  position: absolute !important;
+  z-index: 5 !important;
+  pointer-events: auto !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  padding: 0.2rem 0.45rem !important;
+  min-height: 1.75rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.375rem !important;
+  background: color-mix(in srgb, var(--card) 72%, transparent) !important;
+  color: #f3e8ca !important;
+  font-family: Georgia, 'Times New Roman', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.15 !important;
+  text-shadow: 0 1px 4px rgba(12, 52, 47, 0.85) !important;
+  cursor: grab !important;
+  user-select: none !important;
+  touch-action: none !important;
+  white-space: nowrap !important;
+}
+
+[data-atlas-native-3d] .map-label:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent) !important;
+  color: var(--accent) !important;
+}
+
+[data-atlas-native-3d] .map-label.is-selected {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 28%, var(--card)) !important;
+  color: var(--primary-foreground) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent) !important;
+}
+
+[data-atlas-native-3d] .map-label.is-dragging {
+  cursor: grabbing !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  z-index: 6 !important;
+}
+
+[data-atlas-native-3d] .map-label.hidden {
+  display: none !important;
+}
+
+[data-atlas-native-3d] .hotspot {
+  border: 1px solid color-mix(in srgb, var(--primary) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--card) 92%, transparent) !important;
+  color: var(--foreground) !important;
+  border-radius: 999px !important;
+  min-height: 2.75rem !important;
+}
+
+[data-atlas-native-3d] .hotspot:before {
+  background: var(--primary) !important;
+}
+
+[data-atlas-native-3d] button:focus-visible,
+[data-atlas-native-3d] input:focus-visible,
+[data-atlas-native-3d] select:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px !important;
+}

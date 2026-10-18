@@ -1,7 +1,7 @@
 import { test, expect, type Page, type Route } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ensureLoggedIn } from './helpers/auth';
+import { ensureLoggedIn, installLocalAdminGoTrueSuccess } from './helpers/auth';
 
 const EVIDENCE_DIR = '.qa/evidence/world-profiles-modules';
 
@@ -80,6 +80,7 @@ test('world profiles are created and configured through the library', async ({ p
   });
 
   await page.setViewportSize({ width: 1440, height: 900 });
+  await installLocalAdminGoTrueSuccess(page);
   await ensureLoggedIn(page);
   await page.getByRole('button', { name: 'Bibliothek' }).first().click();
   await expect(page.getByRole('heading', { name: 'Meine Bibliothek' })).toBeVisible();

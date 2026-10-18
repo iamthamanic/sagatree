@@ -1,0 +1,202 @@
+{
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v22.22.3",
+    "measuredAt": "2026-10-17T09:13:34.620Z"
+  },
+  "logicalNode": {
+    "ok": true,
+    "ms": 0.464,
+    "byteLength": 1015,
+    "steps": [
+      {
+        "step": 1,
+        "ok": true
+      },
+      {
+        "step": 2,
+        "ok": true
+      },
+      {
+        "step": 3,
+        "ok": true
+      },
+      {
+        "step": 4,
+        "ok": true
+      },
+      {
+        "step": 5,
+        "ok": true
+      },
+      {
+        "step": 6,
+        "ok": true
+      },
+      {
+        "step": 7,
+        "ok": true
+      },
+      {
+        "step": 8,
+        "ok": true
+      },
+      {
+        "step": 9,
+        "ok": true
+      },
+      {
+        "step": 10,
+        "ok": true
+      }
+    ]
+  },
+  "variants": {
+    "A-hybrid": {
+      "variant": "A-hybrid",
+      "logicalOk": true,
+      "steps": [
+        {
+          "step": 1,
+          "ok": true
+        },
+        {
+          "step": 2,
+          "ok": true
+        },
+        {
+          "step": 3,
+          "ok": true
+        },
+        {
+          "step": 4,
+          "ok": true
+        },
+        {
+          "step": 5,
+          "ok": true
+        },
+        {
+          "step": 6,
+          "ok": true
+        },
+        {
+          "step": 7,
+          "ok": true
+        },
+        {
+          "step": 8,
+          "ok": true
+        },
+        {
+          "step": 9,
+          "ok": true
+        },
+        {
+          "step": 10,
+          "ok": true
+        }
+      ],
+      "logicalMs": 7.7,
+      "bidirectionalEditOk": true,
+      "frame": {
+        "medianMs": 76.5,
+        "p95Ms": 82.59999996423721,
+        "samples": 45
+      },
+      "byteLength": 1015,
+      "objectCount": 2,
+      "roomCount": 6,
+      "wallCount": 3,
+      "memory": {
+        "usedJSHeapMb": 14.3
+      },
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+      "measuredAt": "2026-10-17T09:13:39.690Z"
+    },
+    "B-unified-three": {
+      "variant": "B-unified-three",
+      "logicalOk": true,
+      "steps": [
+        {
+          "step": 1,
+          "ok": true
+        },
+        {
+          "step": 2,
+          "ok": true
+        },
+        {
+          "step": 3,
+          "ok": true
+        },
+        {
+          "step": 4,
+          "ok": true
+        },
+        {
+          "step": 5,
+          "ok": true
+        },
+        {
+          "step": 6,
+          "ok": true
+        },
+        {
+          "step": 7,
+          "ok": true
+        },
+        {
+          "step": 8,
+          "ok": true
+        },
+        {
+          "step": 9,
+          "ok": true
+        },
+        {
+          "step": 10,
+          "ok": true
+        }
+      ],
+      "logicalMs": 0.2,
+      "bidirectionalEditOk": true,
+      "frame": {
+        "medianMs": 78.19999998807907,
+        "p95Ms": 82.10000002384186,
+        "samples": 45
+      },
+      "brushBatchMs": 7.7,
+      "byteLength": 1015,
+      "objectCount": 2,
+      "roomCount": 6,
+      "wallCount": 3,
+      "memory": {
+        "usedJSHeapMb": 15.2
+      },
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+      "measuredAt": "2026-10-17T09:13:44.651Z"
+    }
+  },
+  "comparison": {
+    "frameMedianMs": {
+      "A": 76.5,
+      "B": 78.19999998807907
+    },
+    "frameP95Ms": {
+      "A": 82.59999996423721,
+      "B": 82.10000002384186
+    },
+    "logicalMs": {
+      "A": 7.7,
+      "B": 0.2
+    },
+    "memoryUsedJSHeapMb": {
+      "A": 14.3,
+      "B": 15.2
+    },
+    "brushBatchMs_B_only": 7.7,
+    "decisionHint": "hybrid-favored-for-brush-reuse"
+  }
+}

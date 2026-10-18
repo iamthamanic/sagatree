@@ -2,6 +2,7 @@
  * world-profile-service — Supabase adapter for world profiles.
  * Location: src/infrastructure/world/world-profile-service.ts
  */
+import { assertSupabaseJwtSession } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
 import { normalizeWorldModuleConfigMap } from '../../domains/world/worldModuleRegistry';
 import type {
@@ -50,10 +51,11 @@ class WorldProfileService {
 
   async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
       .select(WORLD_SELECT)
-      .eq('owner_user_id', ownerUserId)
+      .eq('owner_user_id', jwtUserId)
       .order('created_at', { ascending: false });
 
     if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);
@@ -62,11 +64,12 @@ class WorldProfileService {
 
   async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    const jwtUserId = await assertSupabaseJwtSession();
     const { data, error } = await supabase
       .from(this.tableName)
       .select(WORLD_SELECT)
       .eq('id', id)
-      .eq('owner_user_id', ownerUserId)
+      .eq('owner_user_id', jwtUserId)
       .single();
 
     if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);
@@ -75,6 +78,7 @@ class WorldProfileService {
 
   /** Resolve by public id (WO-…); RLS decides readability (no client-elevated filter). */
   async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {
+    await assertSupabaseJwtSession();
     const publicId = worldPublicId.trim().toUpperCase();
     if (!publicId) return null;
     const { data, error } = await supabase
@@ -89,8 +93,9 @@ class WorldProfileService {
 
   async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    const jwtUserId = await assertSupabaseJwtSession();
     const insertPayload = {
-      owner_user_id: ownerUserId,
+      owner_user_id: jwtUserId,
       name: normalizeName(payload.name),
       description: normalizeDescription(payload.description),
       modules: normalizeWorldModuleConfigMap(payload.modules),
@@ -122,6 +127,7 @@ class WorldProfileService {
     payload: UpdateWorldProfileDto,
   ): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    const jwtUserId = await assertSupabaseJwtSession();
     const updatePayload = {
       ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),
       ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),
@@ -133,7 +139,7 @@ class WorldProfileService {
       .from(this.tableName)
       .update(updatePayload)
       .eq('id', id)
-      .eq('owner_user_id', ownerUserId)
+      .eq('owner_user_id', jwtUserId)
       .select(WORLD_SELECT)
       .single();
 
@@ -143,6 +149,7 @@ class WorldProfileService {
 
   async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
     if (!ownerUserId) throw new Error('User not authenticated');
+    const jwtUserId = await assertSupabaseJwtSession();
 
     // World item definitions reference this profile with ON DELETE RESTRICT so
     // owned instances never become permanently unresolvable. Refuse early with
@@ -177,7 +184,7 @@ class WorldProfileService {
       .from(this.tableName)
       .delete()
       .eq('id', id)
-      .eq('owner_user_id', ownerUserId);
+      .eq('owner_user_id', jwtUserId);
 
     if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);
   }

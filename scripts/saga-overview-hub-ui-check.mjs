@@ -59,14 +59,19 @@ mustInclude(
   [
     'useSagaOverview',
     'resolveSagaPrimaryAction',
-    'SagaHubMetaBar',
+    'SagaWorkspaceChrome',
     'SagaEpisodeList',
     'SagaEnsembleStrip',
     'useSagaEnsembleProfiles',
     'data-saga-hub-overview-panels',
-    "data-saga-section={",
   ],
   'resource screen wiring',
+);
+
+mustInclude(
+  'src/app/project/SagaWorkspaceChrome.tsx',
+  ['SagaHubMetaBar', 'SagaWorkspaceNav', 'data-saga-section={', 'data-saga-workspace-chrome'],
+  'workspace chrome meta + section attrs',
 );
 
 mustNotInclude(

@@ -46,7 +46,8 @@ export function resolveSagaWorkspaceTop(section: SagaNavSectionId): SagaWorkspac
 export function resolveSagaWorldSub(section: SagaNavSectionId): SagaWorldSubId | null {
   switch (section) {
     case 'world':
-      return 'places';
+      // Legacy /world deep link → Karte (Orte tab removed).
+      return 'map';
     case 'map':
       return 'map';
     case 'npc-creatures':
@@ -64,7 +65,8 @@ export function resolveSagaWorldSub(section: SagaNavSectionId): SagaWorldSubId |
 
 /** Section path to open when picking a top-nav item. */
 export function pathSectionForTop(top: SagaWorkspaceTopId): SagaNavSectionId {
-  if (top === 'world') return 'world';
+  // Welt → Karte (Unified Atlas).
+  if (top === 'world') return 'map';
   if (top === 'settings') return 'settings';
   return 'overview';
 }

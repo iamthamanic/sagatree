@@ -66,8 +66,12 @@ export type UnifiedCanvasObject = {
   readonly type: UnifiedCanvasStampType;
   readonly x: number;
   readonly y: number;
+  /** Optional elevation for 3D/2.5D views (world units). */
+  readonly z?: number;
   readonly size: number;
   readonly angle?: number;
+  /** Optional extruded height for 3D building/prop representation. */
+  readonly height?: number;
 };
 
 export type UnifiedCanvasRoom = {
@@ -226,6 +230,8 @@ export function parseUnifiedCanvasDoc(raw: unknown): UnifiedCanvasDoc | null {
       y: row.y,
       size: row.size,
       angle: isFiniteNum(row.angle) ? row.angle : 0,
+      ...(isFiniteNum(row.z) ? { z: row.z } : {}),
+      ...(isFiniteNum(row.height) && row.height > 0 ? { height: row.height } : {}),
     });
   }
 
@@ -289,6 +295,10 @@ export function serializeUnifiedCanvasDoc(doc: UnifiedCanvasDoc): UnifiedCanvasD
       y: o.y,
       size: o.size,
       angle: o.angle ?? 0,
+      ...(typeof o.z === 'number' && Number.isFinite(o.z) ? { z: o.z } : {}),
+      ...(typeof o.height === 'number' && Number.isFinite(o.height) && o.height > 0
+        ? { height: o.height }
+        : {}),
     })),
     rooms: [...doc.rooms],
     walls: [...doc.walls],

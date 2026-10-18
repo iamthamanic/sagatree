@@ -300,6 +300,8 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
+- **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)
+- **2026-10-17** — Donalu-Weltworkspace: Places + Map-Links (`WO-9FFK6`), Orte-Panel, Dungeon Confirm/`manualDirty`, Player-Reveal-RPC; Hybrid 2D/3D Atlas
 - **2026-10-17** — Local Admin: Timeout-Fallback übernimmt späten GoTrue-JWT (PostgREST/RLS); Logout bleibt anti-Resurrection
 - **2026-10-17** — Weltatlas: Unified Canvas (Multi-Scale-Zoom, Pinsel/Stempel, Demo Eldoria); Speichern in `generator_meta.unifiedCanvas` (`#702`)
 - **2026-10-15** — Session-Lobby: Cover-Meta + Meet-Device-Bar; Account-Avatar in Shell/Lobby; Settings-Routen `/settings/*`; Avatar-Upload mit Auto-Downscale
@@ -308,8 +310,6 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 - **2026-10-12** — Saga-Workspace: Lobby direkt nach Create mit großem Join-Code; Bibliothek-Tab Sagas; Spieler-Charaktere + Lore; local `player` Demo-Login (`074`)
 - **2026-10-11** — Backend-Audit: Variant A (Supabase-Stack optimieren); Realtime/`SECRET_KEY_BASE` & Footprint dokumentiert
 - **2026-10-10** — Adaptive Content-Width: Journey/Session Join folgt Main-Pane (`AdaptiveJourneyColumn`, AU-CONTENT-WIDTH)
-- **2026-10-10** — Character-Editor: Human-Vorlage lädt Preview-LOD (~10 MB); Speichern bleibt face3
-- **2026-10-07** — Starttemplates: Icons + Playstyle-Tooltips; Editor-Hinweise bei offenen Lücken
 
 ---
 

@@ -11,12 +11,15 @@ export type AdaptivePageProps = React.ComponentProps<'div'> & {
   header?: React.ReactNode;
   /** Optional footer / action region (prefer AdaptiveActionBar for primary CTAs). */
   footer?: React.ReactNode;
+  /** Extra classes for the body region (e.g. flex column for fill-remaining map). */
+  bodyClassName?: string;
 };
 
 export function AdaptivePage({
   className,
   header,
   footer,
+  bodyClassName,
   children,
   ...props
 }: AdaptivePageProps) {
@@ -40,7 +43,10 @@ export function AdaptivePage({
       ) : null}
       <div
         data-slot="adaptive-page-body"
-        className="min-h-0 min-w-0 w-full flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 @[40rem]/main:px-6"
+        className={cn(
+          'min-h-0 min-w-0 w-full flex-1 overflow-x-hidden px-3 py-4 @[40rem]/main:px-6',
+          bodyClassName ?? 'overflow-y-auto',
+        )}
       >
         {children}
       </div>

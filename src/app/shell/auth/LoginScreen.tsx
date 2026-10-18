@@ -77,11 +77,11 @@ export function LoginScreen() {
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]"
+      className="relative flex min-h-screen justify-center bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] items-start sm:items-center overflow-y-auto"
       data-au-surface="login"
       data-au-pattern="page"
     >
-      <div className="absolute right-4 top-4">
+      <div className="absolute right-4 top-4 z-10">
         <div className="flex min-h-11 items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
           <Sun className="h-4 w-4 text-muted-foreground" />
           <Switch
@@ -92,11 +92,11 @@ export function LoginScreen() {
           <Moon className="h-4 w-4 text-muted-foreground" />
         </div>
       </div>
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-6 py-6 sm:py-0">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center mb-2">
-            <SagaTreeLogo className="h-32 w-32" />
+            <SagaTreeLogo className="h-24 w-24 sm:h-32 sm:w-32" />
           </div>
           <div>
             <h1 className="text-3xl">SagaTree</h1>

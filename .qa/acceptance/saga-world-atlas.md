@@ -13,17 +13,18 @@ Unter `Welt → Orte / Karten` erscheint **nur** die interaktive Weltkarte. Orte
 - Andere Sagas: optionales Weltprofil; ohne Profil Empty-State.
 
 ## Happy Path
-- [ ] Tab `Orte / Karten` zeigt ausschließlich Atlas (`data-saga-world-atlas`) — keine Listen/Look darunter.
-- [ ] Dornhain-Saga: Karte lädt mit Terrain (Gras/Wald/Wasser/…) und benannten Pins (Taverne, Markt, …).
-- [ ] Button `Orte` öffnet Side-Sheet mit Location-/Lore-Bindings + Reveal (GM).
-- [ ] GM: `Karte bearbeiten` → embedded Editor; `Karte erweitern (+4)` vergrößert die Karte; neue Ränder erscheinen als Gras.
+- [ ] Tab `Orte` zeigt Unified Atlas (`data-world-atlas-workbench` in `data-saga-world-atlas`) — kein Legacy-Tile-Editor.
+- [ ] Button `Orte & Lore` öffnet Side-Sheet mit Location-/Lore-Bindings + Reveal (GM).
+- [ ] GM: `canEdit` am Workbench — Pinsel/Undo/Speichern ohne separaten „Karte bearbeiten“-Toggle.
+- [ ] Welt-Topnav landet auf `Karte` (`pathSectionForTop('world')` → `map`); Orte bleibt Subtab.
 - [ ] Look-Preview liegt unter Einstellungen (nicht im Places-Tab).
 - [ ] Ohne Weltprofil: DE Empty-State + Link Bibliothek › Welten.
+- [ ] Local Admin ohne JWT: API-Fehler + „API verbinden“ (reloadList / ensureJwtSession).
 
 ## Edge Cases
 - [ ] Ladezustand zeigt Spinner/Text „Weltkarte wird geladen…“ ohne Layout-Crash.
 - [ ] Fehler beim Overview-Laden: Fehlermeldung auf Deutsch; Katalog/Look darunter können weiter versuchen zu laden.
-- [ ] Nicht-GM: kein Bearbeiten-Toggle sichtbar; Versuch über UI unmöglich (Server speichert ohnehin nur owner-scoped).
+- [ ] Nicht-GM: `canEdit=false` / `playerView` — keine Speichern-/Generator-Mutation-CTAs.
 - [ ] Schmale Main-Pane (`@container/main`): Atlas bleibt `w-full min-w-0`, keine horizontale Overflow-Clip der Primärcontrols (AU-CONTENT-WIDTH).
 
 ## Regression
@@ -52,13 +53,11 @@ Unter `Welt → Orte / Karten` erscheint **nur** die interaktive Weltkarte. Orte
 
 ## Implementation Notes
 - Files touched:
-  - `src/app/project/SagaWorldAtlasPanel.tsx` — map-only + Orte Sheet + edit toggle
-  - `src/app/project/SagaResourceScreen.tsx` — places = atlas only; Look → settings
-  - `src/app/world/map/*` — expand CTA, embedded editor, hideSidebar player, missing-tile=grass
-  - `src/domains/world/map/*` — grass default empty map, Dornhain starter helper, pin `label`→title
-  - `supabase/migrations/090_dornhain_basic_world_map.sql` — backfill Dornhain world+terrain
+  - `src/app/project/SagaWorldAtlasPanel.tsx` — WorldAtlasWorkbench + Orte/Lore Sheet
+  - `src/domains/project/contracts/saga-workspace-nav.ts` — Welt top → map
+  - `src/app/world/atlas/WorldAtlasWorkbench.tsx` — API verbinden on JWT miss
 - Unit tests: none new; `npm run test-gate` after change
-- Known limitations: pin click does not yet auto-open drawer row; party move stays Live GM
+- Known limitations: legacy `world_maps` tiles remain on Library tile path; Unified is default on Saga Orte/Karte
 
 ## Composition Gate
 - HEAD_SHA: WORKTREE (base d0021abd)

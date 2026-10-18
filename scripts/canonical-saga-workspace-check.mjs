@@ -48,13 +48,19 @@ mustInclude(
   [
     'SagaCreateForm',
     'SagaListPanel',
-    'SagaWorkspaceNav',
+    'SagaWorkspaceChrome',
     'AdaptivePage',
     "mode === 'list'",
     "mode === 'new'",
     'pathForSagaSection(publicId, \'overview\')',
   ],
   'Saga resource screen',
+);
+
+mustInclude(
+  'src/app/project/SagaWorkspaceChrome.tsx',
+  ['SagaWorkspaceNav', 'data-saga-workspace-chrome'],
+  'Saga workspace chrome',
 );
 
 mustInclude(

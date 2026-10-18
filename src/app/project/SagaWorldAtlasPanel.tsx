@@ -1,12 +1,12 @@
 /**
- * SagaWorldAtlasPanel — Map-first Welt → Orte / Karten surface.
+ * SagaWorldAtlasPanel — Welt → Orte: shared Unified Atlas + Orte/Lore sheet.
  * Location: src/app/project/SagaWorldAtlasPanel.tsx
  *
- * Shows only the interactive map; Orte/Lore live in a side Sheet. GM can edit
- * and expand the map in place. Dornhain is expected to ship with world+map linked.
+ * Same WorldAtlasWorkbench as Library / Welt→Karte (no legacy tile editor).
+ * Orte/Lore bindings stay in a side Sheet for reveal control.
  */
 import { useEffect, useState } from 'react';
-import { Loader2, Map as MapIcon, MapPin, Pencil, Eye } from 'lucide-react';
+import { Loader2, Map as MapIcon, MapPin } from 'lucide-react';
 import { Button } from '../../shared/ui/button';
 import {
   Sheet,
@@ -15,7 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '../../shared/ui/sheet';
-import { WorldMapEditorScreen, WorldMapPlayerView } from '../world';
+import { WorldAtlasWorkbench } from '../world';
 import { pathForLibraryTab } from '../shell';
 import {
   hasSagaPermission,
@@ -75,7 +75,6 @@ export function SagaWorldAtlasPanel({
   onNavigate,
 }: SagaWorldAtlasPanelProps) {
   const { model, isLoading, error } = useSagaOverview({ sagaPublicId });
-  const [editMode, setEditMode] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [locations, setLocations] = useState<SagaAssetBindingVm[]>([]);
   const [lore, setLore] = useState<SagaAssetBindingVm[]>([]);
@@ -87,8 +86,6 @@ export function SagaWorldAtlasPanel({
   const [resolvingWorld, setResolvingWorld] = useState(false);
 
   const isGm = Boolean(model?.isGm || model?.selfRole === 'gamemaster');
-  const partyLocationRef = model?.worldStateSummary?.partyLocationRef ?? null;
-  const showEditor = isGm && editMode && Boolean(worldProfileId);
 
   useEffect(() => {
     const fromOverview = model?.worldProfileId?.trim() || null;
@@ -97,11 +94,10 @@ export function SagaWorldAtlasPanel({
       setResolvingWorld(false);
       return;
     }
-    if (!model) {
-      setWorldProfileId(null);
+    // Wait for first overview attempt before project fallback (unless it already failed).
+    if (isLoading && !model && !error) {
       return;
     }
-    // Overview returned but worldProfileId missing — resolve via project (fail-closed).
     let cancelled = false;
     setResolvingWorld(true);
     void projectService
@@ -119,7 +115,7 @@ export function SagaWorldAtlasPanel({
     return () => {
       cancelled = true;
     };
-  }, [model, sagaPublicId]);
+  }, [model, sagaPublicId, isLoading, error]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -169,7 +165,8 @@ export function SagaWorldAtlasPanel({
     );
   }
 
-  if (error && !model) {
+  // Soft overview failure: keep resolving via project row when possible.
+  if (error && !model && !worldProfileId && !resolvingWorld) {
     return (
       <p
         className="text-sm text-destructive"
@@ -222,12 +219,12 @@ export function SagaWorldAtlasPanel({
 
   return (
     <section
-      className="flex w-full min-w-0 flex-col gap-3"
+      className="flex h-[max(28rem,calc(100dvh-17rem))] w-full min-w-0 flex-col gap-2"
       data-saga-world-atlas
       data-saga-world-atlas-ready
       data-au-surface="journey"
     >
-      <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <div className="flex shrink-0 min-w-0 flex-wrap items-center gap-2">
         <Button
           type="button"
           variant="outline"
@@ -236,56 +233,26 @@ export function SagaWorldAtlasPanel({
           onClick={() => setDrawerOpen(true)}
         >
           <MapPin className="size-4" aria-hidden />
-          Orte
+          Orte & Lore
         </Button>
         {isGm ? (
-          <Button
-            type="button"
-            variant={showEditor ? 'outline' : 'default'}
-            className="min-h-11 min-w-0"
-            data-saga-world-atlas-edit-toggle
-            aria-pressed={showEditor}
-            onClick={() => setEditMode((v) => !v)}
-          >
-            {showEditor ? (
-              <>
-                <Eye className="size-4" aria-hidden />
-                Ansicht
-              </>
-            ) : (
-              <>
-                <Pencil className="size-4" aria-hidden />
-                Karte bearbeiten
-              </>
-            )}
-          </Button>
-        ) : null}
-        {partyLocationRef && !showEditor ? (
-          <p className="text-xs text-muted-foreground" data-saga-world-atlas-party>
-            Gruppe auf der Karte markiert
-          </p>
-        ) : null}
-        {showEditor ? (
-          <p className="text-xs text-muted-foreground">
-            Pinsel bemalen · „Karte erweitern“ wächst den Rand
+          <p className="text-xs text-muted-foreground" data-saga-world-atlas-gm-hint>
+            Als GM kannst du die Unified-Atlas-Karte direkt bearbeiten und speichern.
           </p>
         ) : null}
       </div>
 
       <div
-        className="min-w-0 w-full rounded-lg border border-border/60 bg-muted/20 p-2 sm:p-3"
+        className="flex min-h-[24rem] min-w-0 w-full flex-1 flex-col rounded-lg border border-border/60 bg-muted/20 p-2 sm:p-3"
         data-saga-world-atlas-canvas
       >
-        {showEditor ? (
-          <WorldMapEditorScreen worldProfileId={worldProfileId} embedded />
-        ) : (
-          <WorldMapPlayerView
-            worldProfileId={worldProfileId}
-            partyLocationRef={partyLocationRef}
-            canMoveParty={false}
-            hideSidebar
-          />
-        )}
+        <WorldAtlasWorkbench
+          worldProfileId={worldProfileId}
+          canEdit={isGm}
+          playerView={!isGm}
+          sagaPublicId={sagaPublicId}
+          title="Welt → Orte"
+        />
       </div>
 
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>

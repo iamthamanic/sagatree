@@ -51,7 +51,17 @@ function BindingGroup(props: {
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {revealLabelDe(b.reveal)}
+                  {b.worldPlaceId ? ' · Welt-Ort verknüpft' : ''}
                 </p>
+                {b.worldPlaceId ? (
+                  <p
+                    className="truncate font-mono text-[10px] text-muted-foreground"
+                    data-saga-binding-world-place={b.worldPlaceId}
+                    title={b.worldPlaceId}
+                  >
+                    Place {b.worldPlaceId.slice(0, 8)}…
+                  </p>
+                ) : null}
               </div>
               {props.canReveal && props.projectId ? (
                 <SagaBindingRevealControl

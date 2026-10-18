@@ -7,9 +7,21 @@
  * Local Admin intent upgrades to a real JWT (needed for PostgREST/RLS). After
  * logout or a newer non-admin user, late admin JWTs are still discarded.
  * signInWithPassword has no AbortSignal — stale results use generation + scrub.
+ *
+ * Durable intent = `isLocalAdminSession()` storage flag (see localAdminAuthPolicy).
+ * Generation refs alone are cleared on HMR / Strict remount and must not scrub a
+ * wanted Local Admin JWT (that race left the UI stuck on the login screen).
  */
 
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { supabase } from './supabase';
 import {
   isLocalAdminEnabled,
@@ -31,12 +43,23 @@ import {
   raceWithTimeout,
   raceWithTimeoutOrSymbol,
 } from './networkTimeout';
+import {
+  decideLocalAdminJwt,
+  mayDiscardLocalAdminJwt,
+} from './localAdminAuthPolicy';
 import type { AuthTokenResponsePassword, User } from '@supabase/supabase-js';
 import { projectService } from '../infrastructure/project/project-service';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
+  /** True when supabase.auth holds an access_token (PostgREST RLS-ready). */
+  hasJwtSession: boolean;
+  /**
+   * Force GoTrue login for Local Admin (or confirm existing JWT).
+   * Used by Welt/Atlas when offline fallback blocked API calls.
+   */
+  ensureJwtSession: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -100,6 +123,7 @@ function isSeededLocalAdminUser(user: User | null | undefined): boolean {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasJwtSession, setHasJwtSession] = useState(false);
   /** Monotonic generation: only the live generation may apply Auth UI state. */
   const authGenerationRef = useRef(0);
   const userRef = useRef<User | null>(null);
@@ -131,10 +155,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * Discard a GoTrue session produced by a timed-out / superseded Local Admin attempt.
+   * No-ops while Local Admin is still wanted (storage flag) — scrubbing then causes
+   * the login hang (JWT written, then deleted ~10ms later on SIGNED_IN race).
    * No-ops when the current session is a different (non-admin) user.
    * Suppresses listener updates so cleanup signOut cannot clear a valid newer UI user.
    */
   const discardStaleLocalAdminSession = async () => {
+    if (!mayDiscardLocalAdminJwt(isLocalAdminSession())) return;
     suppressAuthListenerRef.current = true;
     try {
       const {
@@ -173,6 +200,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  /** Apply seeded Local Admin GoTrue user to UI (JWT path). */
+  const adoptLocalAdminJwt = (
+    generation: number,
+    next: User,
+    accessTokenPresent: boolean,
+  ) => {
+    fallbackGenerationsRef.current.delete(generation);
+    if (expectingGoTrueLocalAdminRef.current === generation) {
+      expectingGoTrueLocalAdminRef.current = null;
+    }
+    applyUser(next, generation);
+    setHasJwtSession(accessTokenPresent);
+    provisionDornhainDefaultForSession();
+  };
+
+  const currentUserIsOtherNonAdmin = (current: User | null | undefined): boolean =>
+    Boolean(current && !isSeededLocalAdminUser(current) && !isLocalAdminFallbackUser(current));
+
   /**
    * Promote offline Local Admin UI to a real GoTrue JWT when the user still wants
    * Local Admin. Returns true when the JWT was adopted (do not discard).
@@ -187,6 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     fallbackGenerationsRef.current.delete(generation);
     applyUser(next, generation);
+    setHasJwtSession(true);
     provisionDornhainDefaultForSession();
     return true;
   };
@@ -204,8 +250,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const liveSuccess =
           isLiveGeneration(generation) && !fallbackGenerationsRef.current.has(generation);
         if (liveSuccess) return;
-        // Newer Local Admin generation may adopt this JWT via SIGNED_IN — do not scrub it.
-        if (isLocalAdminSession() && isSeededLocalAdminUser(next)) return;
+        const decision = decideLocalAdminJwt({
+          localAdminSessionActive: isLocalAdminSession(),
+          sessionUserIsSeededAdmin: isSeededLocalAdminUser(next),
+          currentUserIsOther: currentUserIsOtherNonAdmin(userRef.current),
+        });
+        // Wanted Local Admin (possibly new generation after remount) — leave JWT;
+        // live listener / bootstrap will adopt.
+        if (decision === 'adopt') return;
+        if (decision !== 'discard') return;
         // Logged out / other user — scrub persisted admin JWT (anti-resurrection).
         await discardStaleLocalAdminSession();
         await new Promise((resolve) => setTimeout(resolve, 50));
@@ -221,9 +274,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const bootstrapGeneration = bumpAuthGeneration();
     const SESSION_TIMEOUT_MS = AUTH_SESSION_TIMEOUT_MS;
 
-    const finish = (nextUser: User | null) => {
+    const finish = (nextUser: User | null, withJwt: boolean) => {
       if (cancelled) return;
       applyUser(nextUser, bootstrapGeneration);
+      setHasJwtSession(Boolean(nextUser && withJwt && !isLocalAdminFallbackUser(nextUser)));
       setIsLoading(false);
     };
 
@@ -233,15 +287,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then(async (sessionResult) => {
           if (isTimedOut(sessionResult)) {
             fallbackGenerationsRef.current.add(bootstrapGeneration);
-            finish(getStoredLocalAdminUser());
+            finish(getStoredLocalAdminUser(), false);
             return;
           }
 
           const {
             data: { session },
           } = sessionResult;
-          if (session?.user) {
-            finish(session.user);
+          if (session?.user && session.access_token) {
+            finish(session.user, true);
             return;
           }
 
@@ -265,15 +319,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
             const { data, error } = loginResult;
             if (error || !data.user) throw error ?? new Error('local re-login failed');
-            finish(data.user);
+            finish(data.user, Boolean(data.session?.access_token));
           } catch {
             fallbackGenerationsRef.current.add(bootstrapGeneration);
-            finish(getStoredLocalAdminUser());
+            finish(getStoredLocalAdminUser(), false);
           }
         })
         .catch(() => {
           fallbackGenerationsRef.current.add(bootstrapGeneration);
-          finish(getStoredLocalAdminUser());
+          finish(getStoredLocalAdminUser(), false);
         });
     } else {
       raceWithTimeout(
@@ -282,10 +336,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         SESSION_TIMEOUT_MS,
       )
         .then(({ data: { session } }) => {
-          finish(session?.user ?? null);
+          finish(session?.user ?? null, Boolean(session?.access_token));
         })
         .catch(() => {
-          finish(null);
+          finish(null, false);
         });
     }
 
@@ -298,30 +352,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const current = userRef.current;
       const onFallback =
         isLocalAdminFallbackUser(current) || fallbackGenerationsRef.current.has(generation);
-      const expectingGoTrue =
-        expectingGoTrueLocalAdminRef.current !== null &&
-        expectingGoTrueLocalAdminRef.current === generation;
 
       if (event === 'SIGNED_IN' && session?.user && isSeededLocalAdminUser(session.user)) {
-        // Intentional offline Local Admin UI → upgrade to real JWT (fixes API 401).
-        if (onFallback && tryUpgradeLocalAdminFallback(generation, session.user)) {
-          return;
-        }
-        // Stale Local Admin GoTrue must not resurrect after logout or overwrite others.
-        if (onFallback) {
-          void discardStaleLocalAdminSession();
-          return;
-        }
-        if (current && !isSeededLocalAdminUser(current)) {
-          void discardStaleLocalAdminSession();
-          return;
-        }
-        if (current === null && !expectingGoTrue) {
+        const decision = decideLocalAdminJwt({
+          localAdminSessionActive: isLocalAdminSession(),
+          sessionUserIsSeededAdmin: true,
+          currentUserIsOther: currentUserIsOtherNonAdmin(current),
+        });
+
+        if (decision === 'discard') {
           void (async () => {
             await discardStaleLocalAdminSession();
             await new Promise((resolve) => setTimeout(resolve, 50));
             await discardStaleLocalAdminSession();
           })();
+          return;
+        }
+
+        if (decision === 'adopt') {
+          // Storage flag says Local Admin is wanted — always keep the JWT.
+          // Covers fallback upgrade, first login, and HMR/Strict remount races
+          // where expectingGoTrue was cleared mid-flight.
+          if (onFallback && tryUpgradeLocalAdminFallback(generation, session.user)) {
+            return;
+          }
+          adoptLocalAdminJwt(generation, session.user, Boolean(session.access_token));
           return;
         }
       }
@@ -331,7 +386,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (onFallback) return;
         if (current && !isSeededLocalAdminUser(current)) return;
         if (current === null) return;
+        // Local Admin still wanted (flag set) → never bounce to LoginScreen after
+        // a spurious scrub signOut; keep offline fallback until JWT re-upgrade.
+        if (isLocalAdminSession()) {
+          if (!isLocalAdminFallbackUser(current)) {
+            applyUser(createLocalAdminUser(), generation);
+            setHasJwtSession(false);
+          }
+          return;
+        }
         applyUser(null, generation);
+        setHasJwtSession(false);
         return;
       }
 
@@ -342,10 +407,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         applyUser(null, generation);
+        setHasJwtSession(false);
         return;
       }
 
       applyUser(session.user, generation);
+      setHasJwtSession(Boolean(session.access_token));
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         provisionDornhainDefaultForSession();
       }
@@ -384,12 +451,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (expectingGoTrueLocalAdminRef.current === generation) {
               expectingGoTrueLocalAdminRef.current = null;
             }
-            await discardStaleLocalAdminSession();
+            // Remount superseded this attempt. Keep JWT when Local Admin is still
+            // wanted — the live provider adopts via SIGNED_IN / bootstrap.
+            // Never scrub here (that was the login-screen hang).
             return;
           }
-          expectingGoTrueLocalAdminRef.current = null;
-          applyUser(data.user, generation);
-          provisionDornhainDefaultForSession();
+          adoptLocalAdminJwt(generation, data.user, Boolean(data.session?.access_token));
           return;
         }
       } catch (error) {
@@ -404,6 +471,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         fallbackGenerationsRef.current.add(generation);
         watchStaleLocalAdminPasswordLogin(generation, loginPromise);
         applyUser(createLocalAdminUser(), generation);
+        setHasJwtSession(false);
         return;
       }
       if (expectingGoTrueLocalAdminRef.current === generation) {
@@ -413,6 +481,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       fallbackGenerationsRef.current.add(generation);
       watchStaleLocalAdminPasswordLogin(generation, loginPromise);
       applyUser(createLocalAdminUser(), generation);
+      setHasJwtSession(false);
       return;
     }
 
@@ -433,9 +502,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isLiveGeneration(generation)) return;
     if (data.user) {
       applyUser(data.user, generation);
+      setHasJwtSession(Boolean(data.session?.access_token));
       provisionDornhainDefaultForSession();
     }
   };
+
+  const ensureJwtSession = useCallback(async (): Promise<boolean> => {
+    const existing = await supabase.auth.getSession();
+    if (existing.data.session?.access_token && existing.data.session.user) {
+      if (isLiveGeneration(authGenerationRef.current)) {
+        applyUser(existing.data.session.user, authGenerationRef.current);
+        setHasJwtSession(true);
+      }
+      return true;
+    }
+    if (!isLocalAdminSession()) {
+      setHasJwtSession(false);
+      return false;
+    }
+    const generation = authGenerationRef.current;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: LOCAL_ADMIN_EMAIL,
+      password: LOCAL_ADMIN_PASSWORD,
+    });
+    if (error || !data.user || !data.session?.access_token) {
+      setHasJwtSession(false);
+      return false;
+    }
+    if (!isLiveGeneration(generation)) return Boolean(data.session?.access_token);
+    fallbackGenerationsRef.current.delete(generation);
+    applyUser(data.user, generation);
+    setHasJwtSession(true);
+    provisionDornhainDefaultForSession();
+    return true;
+  }, []);
 
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -454,6 +554,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLocalAdminSession(false);
     userRef.current = null;
     setUser(null);
+    setHasJwtSession(false);
     try {
       await supabase.auth.signOut();
     } catch (error) {
@@ -466,6 +567,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isLoading,
+        hasJwtSession,
+        ensureJwtSession,
         signIn,
         signUp,
         signOut,

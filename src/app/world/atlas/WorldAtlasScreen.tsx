@@ -4,6 +4,9 @@
  */
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '../../../lib/auth-context';
+import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
+import { Button } from '../../../shared/ui/button';
 import { worldProfileService } from '../../../infrastructure/world/world-profile-service';
 import { WorldAtlasWorkbench } from './WorldAtlasWorkbench';
 
@@ -13,13 +16,32 @@ export type WorldAtlasScreenProps = {
 };
 
 export function WorldAtlasScreen({ worldPublicId, onBack }: WorldAtlasScreenProps) {
+  const { hasJwtSession, ensureJwtSession, isLoading: authLoading } = useAuth();
   const [worldProfileId, setWorldProfileId] = useState<string | null>(null);
   const [worldName, setWorldName] = useState<string>('Welt');
   const [canEdit, setCanEdit] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reconnectBusy, setReconnectBusy] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (!hasJwtSession) {
+      let cancelled = false;
+      void (async () => {
+        const ok = await ensureJwtSession();
+        if (cancelled) return;
+        if (!ok) {
+          setLoading(false);
+          setError(API_AUTH_REQUIRED_DE);
+          setWorldProfileId(null);
+        }
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -46,9 +68,9 @@ export function WorldAtlasScreen({ worldPublicId, onBack }: WorldAtlasScreenProp
     return () => {
       cancelled = true;
     };
-  }, [worldPublicId]);
+  }, [worldPublicId, hasJwtSession, authLoading, ensureJwtSession]);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -61,9 +83,27 @@ export function WorldAtlasScreen({ worldPublicId, onBack }: WorldAtlasScreenProp
     return (
       <div className="space-y-3 p-4" role="alert">
         <p className="text-sm text-destructive">{error ?? 'Welt nicht verfügbar.'}</p>
-        <button type="button" className="text-sm text-primary underline" onClick={onBack}>
-          Zurück zur Bibliothek
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            disabled={reconnectBusy}
+            onClick={() => {
+              setReconnectBusy(true);
+              void ensureJwtSession()
+                .then((ok) => {
+                  if (!ok) setError(API_AUTH_REQUIRED_DE);
+                })
+                .finally(() => setReconnectBusy(false));
+            }}
+          >
+            API verbinden
+          </Button>
+          <button type="button" className="min-h-11 text-sm text-primary underline" onClick={onBack}>
+            Zurück zur Bibliothek
+          </button>
+        </div>
       </div>
     );
   }

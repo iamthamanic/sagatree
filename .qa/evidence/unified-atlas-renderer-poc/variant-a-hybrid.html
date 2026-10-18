@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>PoC A — Synchronisierter Hybrid (Canvas2D + Three.js)</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0f172a; color: #e2e8f0; font: 14px/1.4 system-ui, sans-serif; }
+    #wrap { display: grid; grid-template-columns: 1fr 1fr; height: 100%; gap: 4px; }
+    .pane { position: relative; min-height: 0; background: #1e293b; }
+    canvas { width: 100%; height: 100%; display: block; }
+    #hud { position: fixed; left: 12px; top: 12px; z-index: 5; background: #0f172acc; padding: 10px 12px; border-radius: 8px; max-width: 360px; }
+    button { margin-top: 8px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 0; background: #0891b2; color: #fff; cursor: pointer; }
+    .label { position: absolute; left: 8px; bottom: 8px; font-size: 12px; opacity: .8; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <strong>Variante A — Hybrid</strong>
+    <div>Canvas2D (links) + Three.js (rechts), gemeinsames Dokument.</div>
+    <div id="status">Bereit</div>
+    <button id="run" type="button">Testfall ausführen</button>
+    <pre id="out" style="white-space:pre-wrap;font-size:11px;margin-top:8px"></pre>
+  </div>
+  <div id="wrap">
+    <div class="pane"><canvas id="c2d"></canvas><div class="label">2D Canvas</div></div>
+    <div class="pane"><canvas id="c3d"></canvas><div class="label">3D Three.js (editierbar)</div></div>
+  </div>
+  <script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.183.2/build/three.module.js" } }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { emptyDoc, sampleWorld, applyEdit, runLogicalTestCase } from './shared-test-world.mjs';
+
+    const state = { doc: sampleWorld(), selectedId: 'building-1', view: 'both' };
+    const c2d = document.getElementById('c2d');
+    const c3d = document.getElementById('c3d');
+    const ctx = c2d.getContext('2d');
+
+    const renderer = new THREE.WebGLRenderer({ canvas: c3d, antialias: true });
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b1220);
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 500);
+    camera.position.set(30, 28, 36);
+    camera.lookAt(20, 0, 16);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const sun = new THREE.DirectionalLight(0xfff2d6, 1.1);
+    sun.position.set(40, 60, 20);
+    scene.add(sun);
+    const root = new THREE.Group();
+    scene.add(root);
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const meshById = new Map();
+
+    function resize() {
+      const a = c2d.parentElement.getBoundingClientRect();
+      const b = c3d.parentElement.getBoundingClientRect();
+      c2d.width = Math.floor(a.width * devicePixelRatio);
+      c2d.height = Math.floor(a.height * devicePixelRatio);
+      renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+      renderer.setSize(b.width, b.height, false);
+      camera.aspect = b.width / Math.max(1, b.height);
+      camera.updateProjectionMatrix();
+      draw2d();
+      rebuild3d();
+    }
+
+    function draw2d() {
+      const dpr = devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const w = c2d.width / dpr;
+      const h = c2d.height / dpr;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#12343c';
+      ctx.fillRect(0, 0, w, h);
+      const scale = Math.min(w / 44, h / 34);
+      const ox = 20;
+      const oy = 16;
+      ctx.save();
+      ctx.translate(w / 2 - 20 * scale, h / 2 - 16 * scale);
+      ctx.scale(scale, scale);
+      for (const r of state.doc.rooms) {
+        ctx.fillStyle = r.material === 'stein' ? '#5c626e' : r.material === 'pflaster' ? '#8a8070' : '#3d6b4f';
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 0.08;
+        ctx.strokeRect(r.x, r.y, r.w, r.h);
+      }
+      for (const wall of state.doc.walls) {
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = wall.width;
+        ctx.beginPath();
+        ctx.moveTo(wall.x1, wall.y1);
+        ctx.lineTo(wall.x2, wall.y2);
+        ctx.stroke();
+      }
+      for (const o of state.doc.objects) {
+        ctx.fillStyle = o.id === state.selectedId ? '#06b6d4' : '#e8a641';
+        ctx.fillRect(o.x - o.size / 2, o.y - o.size / 2, o.size, o.size);
+      }
+      ctx.restore();
+    }
+
+    function rebuild3d() {
+      while (root.children.length) {
+        const ch = root.children.pop();
+        ch.geometry?.dispose?.();
+        ch.material?.dispose?.();
+      }
+      meshById.clear();
+      for (const r of state.doc.rooms) {
+        const geo = new THREE.BoxGeometry(r.w, 0.15, r.h);
+        const mat = new THREE.MeshStandardMaterial({ color: r.material === 'stein' ? 0x5c626e : 0x3d6b4f });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(r.x + r.w / 2, 0.075, r.y + r.h / 2);
+        m.userData = { id: r.id, kind: 'room' };
+        root.add(m);
+      }
+      for (const wall of state.doc.walls) {
+        const dx = wall.x2 - wall.x1;
+        const dz = wall.y2 - wall.y1;
+        const len = Math.hypot(dx, dz) || 0.01;
+        const geo = new THREE.BoxGeometry(len, 2.2, wall.width);
+        const mat = new THREE.MeshStandardMaterial({ color: 0xb4b6aa });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set((wall.x1 + wall.x2) / 2, 1.1, (wall.y1 + wall.y2) / 2);
+        m.rotation.y = -Math.atan2(dz, dx);
+        m.userData = { id: wall.id, kind: 'wall' };
+        root.add(m);
+        meshById.set(wall.id, m);
+      }
+      for (const o of state.doc.objects) {
+        const h = o.height || o.size;
+        const geo = new THREE.BoxGeometry(o.size, h, o.size);
+        const mat = new THREE.MeshStandardMaterial({
+          color: o.id === state.selectedId ? 0x06b6d4 : 0xe8a641,
+        });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(o.x, h / 2, o.y);
+        m.userData = { id: o.id, kind: 'object' };
+        root.add(m);
+        meshById.set(o.id, m);
+      }
+      renderer.render(scene, camera);
+    }
+
+    function pick3d(clientX, clientY) {
+      const rect = c3d.getBoundingClientRect();
+      pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(root.children, false);
+      return hits[0] || null;
+    }
+
+    let drag = null;
+    c3d.addEventListener('pointerdown', (ev) => {
+      const hit = pick3d(ev.clientX, ev.clientY);
+      if (!hit || hit.object.userData.kind !== 'object') return;
+      state.selectedId = hit.object.userData.id;
+      drag = { id: state.selectedId, y: hit.point.y };
+      rebuild3d();
+      draw2d();
+    });
+    c3d.addEventListener('pointermove', (ev) => {
+      if (!drag) return;
+      const hit = pick3d(ev.clientX, ev.clientY);
+      // project onto y=0 plane
+      const rect = c3d.getBoundingClientRect();
+      pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const pt = new THREE.Vector3();
+      raycaster.ray.intersectPlane(plane, pt);
+      if (!pt) return;
+      state.doc = applyEdit(state.doc, { op: 'move_object', id: drag.id, x: pt.x, y: pt.z, z: 0 });
+      rebuild3d();
+      draw2d();
+    });
+    c3d.addEventListener('pointerup', () => { drag = null; });
+
+    c2d.addEventListener('pointerdown', (ev) => {
+      const rect = c2d.getBoundingClientRect();
+      const dpr = 1;
+      const w = rect.width;
+      const h = rect.height;
+      const scale = Math.min(w / 44, h / 34);
+      const wx = (ev.clientX - rect.left - (w / 2 - 20 * scale)) / scale;
+      const wy = (ev.clientY - rect.top - (h / 2 - 16 * scale)) / scale;
+      for (const o of [...state.doc.objects].reverse()) {
+        if (Math.abs(o.x - wx) <= o.size / 2 && Math.abs(o.y - wy) <= o.size / 2) {
+          state.selectedId = o.id;
+          state.doc = applyEdit(state.doc, { op: 'move_object', id: o.id, x: wx, y: wy });
+          draw2d();
+          rebuild3d();
+          break;
+        }
+      }
+    });
+
+    async function measureFrames(n = 45) {
+      const times = [];
+      for (let i = 0; i < n; i += 1) {
+        const t0 = performance.now();
+        draw2d();
+        rebuild3d();
+        await new Promise((r) => requestAnimationFrame(r));
+        times.push(performance.now() - t0);
+      }
+      times.sort((a, b) => a - b);
+      return {
+        medianMs: times[Math.floor(times.length / 2)],
+        p95Ms: times[Math.floor(times.length * 0.95)],
+        samples: times.length,
+      };
+    }
+
+    document.getElementById('run').onclick = async () => {
+      document.getElementById('status').textContent = 'Läuft…';
+      const logical = runLogicalTestCase(applyEdit);
+      state.doc = logical.doc;
+      draw2d();
+      rebuild3d();
+      // bidirectional edit proof: move in 3D then read in 2D
+      const before = state.doc.objects.find((o) => o.id === 'building-1');
+      state.doc = applyEdit(state.doc, {
+        op: 'move_object',
+        id: 'building-1',
+        x: before.x + 0.75,
+        y: before.y - 0.4,
+      });
+      draw2d();
+      rebuild3d();
+      const after2d = state.doc.objects.find((o) => o.id === 'building-1');
+      const frames = await measureFrames();
+      const mem = performance.memory
+        ? { usedJSHeapMb: +(performance.memory.usedJSHeapSize / 1e6).toFixed(2) }
+        : null;
+      const result = {
+        variant: 'A-hybrid',
+        logicalOk: logical.ok,
+        steps: logical.steps,
+        logicalMs: +logical.ms.toFixed(3),
+        bidirectionalEditOk: after2d.x === before.x + 0.75 && after2d.y === before.y - 0.4,
+        frame: frames,
+        byteLength: logical.byteLength,
+        objectCount: logical.objectCount,
+        roomCount: logical.roomCount,
+        wallCount: logical.wallCount,
+        memory: mem,
+        ua: navigator.userAgent,
+        measuredAt: new Date().toISOString(),
+      };
+      window.__pocResult = result;
+      document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+      document.getElementById('status').textContent = result.logicalOk && result.bidirectionalEditOk
+        ? 'PASS'
+        : 'FAIL';
+    };
+
+    window.__runPoc = () => document.getElementById('run').click();
+    addEventListener('resize', resize);
+    resize();
+    draw2d();
+    rebuild3d();
+  </script>
+</body>
+</html>

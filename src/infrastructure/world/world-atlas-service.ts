@@ -2,7 +2,10 @@
  * world-atlas-service — Supabase adapter for world_atlas_maps (#702).
  * Location: src/infrastructure/world/world-atlas-service.ts
  */
-import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
+import {
+  assertSupabaseJwtSession,
+  getAuthenticatedUserId,
+} from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
 import {
   parseWorldAtlasMapList,
@@ -34,6 +37,7 @@ export type UpsertWorldAtlasMapInput = {
 
 class WorldAtlasService {
   async listMaps(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
+    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
     const { data, error } = await supabase.rpc('list_world_atlas_maps', {
@@ -44,6 +48,7 @@ class WorldAtlasService {
   }
 
   async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
+    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
     const { data, error } = await supabase.rpc('ensure_world_atlas_root', {
@@ -54,6 +59,7 @@ class WorldAtlasService {
   }
 
   async getMap(mapId: string, playerView = false): Promise<WorldAtlasMapVm> {
+    await assertSupabaseJwtSession();
     const id = mapId.trim();
     if (!id) throw new Error('Karten-ID fehlt');
     const { data, error } = await supabase.rpc('get_world_atlas_map', {
@@ -65,6 +71,7 @@ class WorldAtlasService {
   }
 
   async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_atlas_map', {
       p_world_profile_id: input.worldProfileId.trim(),
       p_map_id: input.mapId ?? null,
@@ -92,6 +99,7 @@ class WorldAtlasService {
 
   /** Store native Azgaar `.map` (or zip) — not a full embedded editor. */
   async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
+    await assertSupabaseJwtSession();
     const userId = await getAuthenticatedUserId();
     if (file.size > AZGAAR_MAX_BYTES) {
       throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');

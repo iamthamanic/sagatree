@@ -7,13 +7,20 @@
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ensureLoggedIn } from './helpers/auth';
+import { ensureLoggedIn, isInertSupabaseEnv } from './helpers/auth';
 
 const SAGA = process.env.SAGA_PUBLIC_ID ?? 'SA-E979J';
 const EVIDENCE = '.qa/evidence/saga-workspace-phase-2-3';
 
 test.beforeAll(() => {
   fs.mkdirSync(EVIDENCE, { recursive: true });
+});
+
+test.beforeEach(() => {
+  test.skip(
+    isInertSupabaseEnv(),
+    'Requires live Supabase + Dornhain seed (set VITE_SUPABASE_* repo secrets)',
+  );
 });
 
 async function shot(page: import('@playwright/test').Page, name: string) {

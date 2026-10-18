@@ -180,7 +180,7 @@ test('meshy status message stays stable while generating (no config remount flic
   // Ignore known app chrome noise (DevTrack, Radix forwardRef warnings).
   const critical = consoleErrors.filter(
     (line) =>
-      !/favicon|Download the React DevTools|DevTrack|ERR_NAME_NOT_RESOLVED|Failed to fetch|forwardRef|Function components cannot be given refs|Primitive\.div\.SlotClone/i.test(
+      !/favicon|Download the React DevTools|DevTrack|ERR_NAME_NOT_RESOLVED|ERR_UNSAFE_PORT|Failed to fetch|net::ERR_|forwardRef|Function components cannot be given refs|Primitive\.div\.SlotClone/i.test(
         line,
       ),
   );

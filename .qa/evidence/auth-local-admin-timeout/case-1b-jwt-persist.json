@@ -1,0 +1,7 @@
+{
+  "hasAuthToken": true,
+  "localFlag": "true",
+  "stillOnLogin": false,
+  "tokenPersistedAcross250ms": true,
+  "note": "Browser repro after harden: admin/1234 login adopts JWT and keeps it; no immediate scrub race."
+}

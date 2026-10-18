@@ -12,6 +12,8 @@ Flatten the Saga workspace from nine equal top tabs to three: Übersicht (play h
 
 ## Happy Path
 - [ ] Top nav shows exactly three primary destinations: Übersicht, Welt, Einstellungen (Library-style TabsList/TabsTrigger with icons)
+- [x] Persistent `SagaHubMetaBar` in AdaptivePage header on Übersicht / Welt / Einstellungen (does not disappear on tab switch)
+- [x] Welt → Karte / Orte: viewport min-height (`max(28rem, calc(100dvh-17rem))`) under fixed header — no drop, still scrollable
 - [ ] Übersicht shows story hero, primary session CTA, episode list, ensemble, world-state summary
 - [ ] `/sagas/:id/sessions` and `/sagas/:id/characters` land on Übersicht shell (nav highlights Übersicht); characters catalog remains reachable from overview when on characters URL
 - [ ] Welt shows subtabs: Orte/Karten, NSCs / Kreaturen, Gegenstände, Quests, Lore / Verlauf

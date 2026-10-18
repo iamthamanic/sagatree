@@ -56,6 +56,22 @@
     worker: {
       format: 'es',
     },
+    // Prebundling rewrites Emscripten glue so sibling .wasm resolves under
+    // /.vite/deps/webp_enc*.wasm — Vite SPA-falls back to index.html
+    // (magic 0a 20 20 3c) and WebAssembly.instantiate fails on profile upload.
+    optimizeDeps: {
+      exclude: [
+        '@jsquash/webp',
+        '@jsquash/webp/encode',
+        '@jsquash/webp/decode',
+        '@jsquash/jpeg',
+        '@jsquash/jpeg/encode',
+        '@jsquash/jpeg/decode',
+        '@jsquash/png',
+        '@jsquash/png/encode',
+        '@jsquash/png/decode',
+      ],
+    },
     build: {
       target: 'esnext',
       outDir: 'build',

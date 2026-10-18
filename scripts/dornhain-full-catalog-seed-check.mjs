@@ -58,14 +58,14 @@ mustInclude(
 );
 
 mustInclude(
-  'src/app/project/SagaWorldAtlasPanel.tsx',
-  ['data-saga-world-atlas', 'listBindings', 'location', 'lore', 'data-saga-world-atlas-drawer'],
-  'Welt atlas + Orte drawer',
+  'src/app/project/SagaWorldMapPanel.tsx',
+  ['data-saga-world-map', 'WorldAtlasWorkbench'],
+  'Welt Karte → Unified Atlas',
 );
 
 mustInclude(
   'src/app/project/SagaResourceScreen.tsx',
-  ['SagaWorldAtlasPanel'],
+  ['SagaWorldMapPanel'],
   'world section wiring',
 );
 

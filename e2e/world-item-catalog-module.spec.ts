@@ -5,7 +5,7 @@
 import { test, expect, type Page, type Route } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ensureLoggedIn } from './helpers/auth';
+import { ensureLoggedIn, installLocalAdminGoTrueSuccess } from './helpers/auth';
 
 const EVIDENCE_DIR = '.qa/evidence/item-world-catalog-module';
 
@@ -83,6 +83,7 @@ test('world item-catalog module toggles packs and shows live count', async ({ pa
   });
 
   await page.setViewportSize({ width: 1440, height: 900 });
+  await installLocalAdminGoTrueSuccess(page);
   await ensureLoggedIn(page);
   await page.getByRole('button', { name: 'Bibliothek' }).first().click();
   await page.getByRole('tab', { name: 'Welten' }).click();

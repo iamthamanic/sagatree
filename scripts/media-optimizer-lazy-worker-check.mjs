@@ -55,6 +55,10 @@ check(/terminate\(\)/.test(client), 'abort terminates worker');
 check(/encodeWebpWithWorkerFallback/.test(optimize), 'optimize uses worker fallback');
 check(/assertImageInputByteLimit/.test(optimize) && /assertImagePixelLimit/.test(optimize), 'resource limits');
 check(/jsquash-webp/.test(vite), 'vite manualChunks jsquash');
+check(
+  /optimizeDeps[\s\S]*exclude[\s\S]*@jsquash\/webp/.test(vite),
+  'vite optimizeDeps excludes @jsquash/webp (WASM sibling path)',
+);
 check(!/from ['"]@jsquash\/webp['"]/.test(facade), 'facade no static jsquash');
 check(!/ffmpeg/i.test(client + optimize), 'no ffmpeg');
 

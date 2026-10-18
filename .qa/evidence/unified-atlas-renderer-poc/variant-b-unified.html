@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>PoC B — Unified Three.js Renderer</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #0f172a; color: #e2e8f0; font: 14px/1.4 system-ui, sans-serif; }
+    #stage { position: absolute; inset: 0; }
+    canvas { width: 100%; height: 100%; display: block; }
+    #hud { position: fixed; left: 12px; top: 12px; z-index: 5; background: #0f172acc; padding: 10px 12px; border-radius: 8px; max-width: 360px; }
+    button, select { margin-top: 8px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 0; background: #0891b2; color: #fff; cursor: pointer; }
+    select { background: #334155; display: block; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <strong>Variante B — Unified Three.js</strong>
+    <div>Eine Szene: Ortho-Draufsicht ↔ Perspektivisch; Zeichnen auf Raster-Layer.</div>
+    <label>Ansicht
+      <select id="mode">
+        <option value="ortho">Draufsicht (Ortho)</option>
+        <option value="persp">3D-Ansicht</option>
+      </select>
+    </label>
+    <div id="status">Bereit</div>
+    <button id="run" type="button">Testfall ausführen</button>
+    <pre id="out" style="white-space:pre-wrap;font-size:11px;margin-top:8px"></pre>
+  </div>
+  <div id="stage"><canvas id="c"></canvas></div>
+  <script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.183.2/build/three.module.js" } }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { sampleWorld, applyEdit, runLogicalTestCase } from './shared-test-world.mjs';
+
+    const state = { doc: sampleWorld(), selectedId: 'building-1', mode: 'ortho' };
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b1220);
+    const root = new THREE.Group();
+    scene.add(root);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const sun = new THREE.DirectionalLight(0xfff2d6, 1.05);
+    sun.position.set(40, 60, 20);
+    scene.add(sun);
+
+    const persp = new THREE.PerspectiveCamera(50, 1, 0.1, 500);
+    persp.position.set(30, 28, 36);
+    persp.lookAt(20, 0, 16);
+    const ortho = new THREE.OrthographicCamera(-22, 22, 16, -16, 0.1, 200);
+    ortho.position.set(20, 40, 16);
+    ortho.lookAt(20, 0, 16);
+    let camera = ortho;
+
+    // Texture brush layer (flat map plane) — proves brush complexity in unified path
+    const brushCanvas = document.createElement('canvas');
+    brushCanvas.width = 256;
+    brushCanvas.height = 256;
+    const bctx = brushCanvas.getContext('2d');
+    bctx.fillStyle = '#1f4a42';
+    bctx.fillRect(0, 0, 256, 256);
+    const brushTex = new THREE.CanvasTexture(brushCanvas);
+    const mapPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(44, 34),
+      new THREE.MeshStandardMaterial({ map: brushTex }),
+    );
+    mapPlane.rotation.x = -Math.PI / 2;
+    mapPlane.position.set(20, 0.01, 16);
+    scene.add(mapPlane);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const meshById = new Map();
+
+    function activeCamera() {
+      camera = state.mode === 'ortho' ? ortho : persp;
+      return camera;
+    }
+
+    function resize() {
+      const r = canvas.parentElement.getBoundingClientRect();
+      renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+      renderer.setSize(r.width, r.height, false);
+      const aspect = r.width / Math.max(1, r.height);
+      persp.aspect = aspect;
+      persp.updateProjectionMatrix();
+      const spanX = 22;
+      ortho.left = -spanX * aspect;
+      ortho.right = spanX * aspect;
+      ortho.top = spanX;
+      ortho.bottom = -spanX;
+      ortho.updateProjectionMatrix();
+      rebuild();
+    }
+
+    function rebuild() {
+      while (root.children.length) {
+        const ch = root.children.pop();
+        ch.geometry?.dispose?.();
+        if (Array.isArray(ch.material)) ch.material.forEach((m) => m.dispose?.());
+        else ch.material?.dispose?.();
+      }
+      meshById.clear();
+      for (const r of state.doc.rooms) {
+        const geo = new THREE.BoxGeometry(r.w, 0.12, r.h);
+        const mat = new THREE.MeshStandardMaterial({ color: r.material === 'stein' ? 0x5c626e : 0x3d6b4f });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(r.x + r.w / 2, 0.06, r.y + r.h / 2);
+        m.userData = { id: r.id, kind: 'room' };
+        root.add(m);
+      }
+      for (const wall of state.doc.walls) {
+        const dx = wall.x2 - wall.x1;
+        const dz = wall.y2 - wall.y1;
+        const len = Math.hypot(dx, dz) || 0.01;
+        const geo = new THREE.BoxGeometry(len, state.mode === 'ortho' ? 0.4 : 2.2, wall.width);
+        const mat = new THREE.MeshStandardMaterial({ color: 0xb4b6aa });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set((wall.x1 + wall.x2) / 2, state.mode === 'ortho' ? 0.2 : 1.1, (wall.y1 + wall.y2) / 2);
+        m.rotation.y = -Math.atan2(dz, dx);
+        m.userData = { id: wall.id, kind: 'wall' };
+        root.add(m);
+      }
+      for (const o of state.doc.objects) {
+        const h = state.mode === 'ortho' ? 0.35 : (o.height || o.size);
+        const geo = new THREE.BoxGeometry(o.size, h, o.size);
+        const mat = new THREE.MeshStandardMaterial({
+          color: o.id === state.selectedId ? 0x06b6d4 : 0xe8a641,
+        });
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(o.x, h / 2, o.y);
+        m.userData = { id: o.id, kind: 'object' };
+        root.add(m);
+        meshById.set(o.id, m);
+      }
+      renderer.render(scene, activeCamera());
+    }
+
+    function worldFromPointer(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, activeCamera());
+      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const pt = new THREE.Vector3();
+      if (!raycaster.ray.intersectPlane(plane, pt)) return null;
+      return pt;
+    }
+
+    let drag = null;
+    canvas.addEventListener('pointerdown', (ev) => {
+      const pt = worldFromPointer(ev.clientX, ev.clientY);
+      if (!pt) return;
+      // paint stroke on texture when shift (brush complexity sample)
+      if (ev.shiftKey) {
+        const u = ((pt.x - (-2)) / 44) * 256;
+        const v = ((pt.z - (-1)) / 34) * 256;
+        bctx.fillStyle = '#0891b2';
+        bctx.beginPath();
+        bctx.arc(u, v, 6, 0, Math.PI * 2);
+        bctx.fill();
+        brushTex.needsUpdate = true;
+        rebuild();
+        return;
+      }
+      raycaster.setFromCamera(pointer, activeCamera());
+      const hits = raycaster.intersectObjects(root.children, false);
+      const hit = hits.find((h) => h.object.userData.kind === 'object');
+      if (!hit) return;
+      state.selectedId = hit.object.userData.id;
+      drag = { id: state.selectedId };
+      rebuild();
+    });
+    canvas.addEventListener('pointermove', (ev) => {
+      if (!drag) return;
+      const pt = worldFromPointer(ev.clientX, ev.clientY);
+      if (!pt) return;
+      state.doc = applyEdit(state.doc, { op: 'move_object', id: drag.id, x: pt.x, y: pt.z, z: 0 });
+      rebuild();
+    });
+    canvas.addEventListener('pointerup', () => { drag = null; });
+
+    document.getElementById('mode').onchange = (e) => {
+      state.mode = e.target.value;
+      rebuild();
+    };
+
+    async function measureFrames(n = 45) {
+      const times = [];
+      for (let i = 0; i < n; i += 1) {
+        const t0 = performance.now();
+        rebuild();
+        await new Promise((r) => requestAnimationFrame(r));
+        times.push(performance.now() - t0);
+      }
+      times.sort((a, b) => a - b);
+      return {
+        medianMs: times[Math.floor(times.length / 2)],
+        p95Ms: times[Math.floor(times.length * 0.95)],
+        samples: times.length,
+      };
+    }
+
+    document.getElementById('run').onclick = async () => {
+      document.getElementById('status').textContent = 'Läuft…';
+      const logical = runLogicalTestCase(applyEdit);
+      state.doc = logical.doc;
+      // switch modes without camera jump of world center
+      state.mode = 'persp';
+      rebuild();
+      const before = state.doc.objects.find((o) => o.id === 'building-1');
+      state.doc = applyEdit(state.doc, {
+        op: 'move_object',
+        id: 'building-1',
+        x: before.x + 0.75,
+        y: before.y - 0.4,
+      });
+      state.mode = 'ortho';
+      rebuild();
+      const after = state.doc.objects.find((o) => o.id === 'building-1');
+      // brush cost sample
+      const brushT0 = performance.now();
+      for (let i = 0; i < 80; i += 1) {
+        bctx.fillStyle = `hsl(${i * 4},60%,40%)`;
+        bctx.beginPath();
+        bctx.arc(40 + (i % 20) * 8, 40 + Math.floor(i / 20) * 8, 5, 0, Math.PI * 2);
+        bctx.fill();
+      }
+      brushTex.needsUpdate = true;
+      rebuild();
+      const brushMs = performance.now() - brushT0;
+      const frames = await measureFrames();
+      const mem = performance.memory
+        ? { usedJSHeapMb: +(performance.memory.usedJSHeapSize / 1e6).toFixed(2) }
+        : null;
+      const result = {
+        variant: 'B-unified-three',
+        logicalOk: logical.ok,
+        steps: logical.steps,
+        logicalMs: +logical.ms.toFixed(3),
+        bidirectionalEditOk: after.x === before.x + 0.75 && after.y === before.y - 0.4,
+        frame: frames,
+        brushBatchMs: +brushMs.toFixed(3),
+        byteLength: logical.byteLength,
+        objectCount: logical.objectCount,
+        roomCount: logical.roomCount,
+        wallCount: logical.wallCount,
+        memory: mem,
+        ua: navigator.userAgent,
+        measuredAt: new Date().toISOString(),
+      };
+      window.__pocResult = result;
+      document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+      document.getElementById('status').textContent = result.logicalOk && result.bidirectionalEditOk
+        ? 'PASS'
+        : 'FAIL';
+    };
+
+    window.__runPoc = () => document.getElementById('run').click();
+    addEventListener('resize', resize);
+    resize();
+  </script>
+</body>
+</html>
