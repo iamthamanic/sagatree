@@ -1,6 +1,7 @@
 # Composition Gate — atlas-map-first-kontinent
 
-- HEAD_SHA: 0d74112123cf214d32a36014e3542818f552077b
+- HEAD_SHA: e5ab25f7d280d9b1e9a185b0ea0dc6474d0b6768
+- CODE_SHA: 0d74112123cf214d32a36014e3542818f552077b
 - Date: 2026-10-18
 - Verdict: CLEAR
 
