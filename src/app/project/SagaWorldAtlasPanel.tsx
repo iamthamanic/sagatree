@@ -94,8 +94,8 @@ export function SagaWorldAtlasPanel({
       setResolvingWorld(false);
       return;
     }
-    if (!model) {
-      setWorldProfileId(null);
+    // Wait for first overview attempt before project fallback (unless it already failed).
+    if (isLoading && !model && !error) {
       return;
     }
     let cancelled = false;
@@ -115,7 +115,7 @@ export function SagaWorldAtlasPanel({
     return () => {
       cancelled = true;
     };
-  }, [model, sagaPublicId]);
+  }, [model, sagaPublicId, isLoading, error]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -165,7 +165,8 @@ export function SagaWorldAtlasPanel({
     );
   }
 
-  if (error && !model) {
+  // Soft overview failure: keep resolving via project row when possible.
+  if (error && !model && !worldProfileId && !resolvingWorld) {
     return (
       <p
         className="text-sm text-destructive"

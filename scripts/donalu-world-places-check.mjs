@@ -109,8 +109,8 @@ mustInclude(
 
 mustInclude(
   'src/app/project/SagaWorldMapPanel.tsx',
-  ['sagaPublicId={sagaPublicId}'],
-  'saga map passes sagaPublicId',
+  ['sagaPublicId={sagaPublicId}', 'projectService', 'getProjectByPublicId'],
+  'saga map passes sagaPublicId + project world fallback',
 );
 
 mustInclude(
