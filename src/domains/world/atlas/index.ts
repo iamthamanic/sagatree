@@ -144,3 +144,11 @@ export {
   type MapSketchStatus,
   type ParentSpatialAnchor,
 } from './map-frame';
+
+export {
+  atlasPersistStatusLabelDe,
+  isAtlasRevisionConflictMessage,
+  reduceAtlasPersistStatus,
+  type AtlasPersistEvent,
+  type AtlasPersistStatus,
+} from './atlas-persist-state';

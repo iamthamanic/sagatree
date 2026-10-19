@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "issue": 751,
+  "transitions": [
+    "clean→dirty→saving→saved",
+    "dirty→saving→conflict→saving",
+    "conflict→reload→clean"
+  ],
+  "noFakeSaved": true
+}

@@ -42,6 +42,7 @@ import {
 } from '../../../domains/world/hierarchy';
 import {
   UNLOCATED_MAP_HINT_DE,
+  atlasPersistStatusLabelDe,
   extractMapFrameFromGeneratorMeta,
 } from '../../../domains/world/atlas';
 import { WorldMapEditorScreen } from '../map';
@@ -210,9 +211,10 @@ export function WorldAtlasWorkbench({
     }
   }, [editor.activeMapId, worldPlaces, worldLinks, worldPrimaryMapId]);
 
-  // Debounced autosave for controlled WebGL / canvas dirty (#721).
+  // Debounced autosave for controlled WebGL / canvas dirty (#721 / #751).
   useEffect(() => {
     if (!canEdit || !editor.map || !editor.dirtyCanvas || editor.saving) return;
+    if (editor.persistStatus === 'conflict') return;
     const timer = window.setTimeout(() => {
       void editor.saveCanvas().catch(() => {
         /* error surfaced on editor.error */
@@ -224,10 +226,22 @@ export function WorldAtlasWorkbench({
     editor.map,
     editor.dirtyCanvas,
     editor.saving,
+    editor.persistStatus,
     editor.webglRuntime,
     editor.canvasDoc,
     editor.saveCanvas,
   ]);
+
+  // Warn before discarding a dirty draft (browser close / refresh).
+  useEffect(() => {
+    if (!canEdit || !editor.dirtyCanvas) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [canEdit, editor.dirtyCanvas]);
 
   const handleCreateDetailMap = async (place: WorldPlaceVm) => {
     if (!canEdit) return;
@@ -445,8 +459,11 @@ export function WorldAtlasWorkbench({
               <h1 className="truncate text-xl font-bold leading-tight text-foreground">
                 {editor.map?.title?.trim() || title}
               </h1>
-              <p className="truncate text-xs text-muted-foreground">
-                {editor.dirtyCanvas ? 'Ungespeicherte Änderungen' : 'Weltkarte · zoomen für Orte'}
+              <p
+                className="truncate text-xs text-muted-foreground"
+                data-atlas-persist-status={editor.persistStatus}
+              >
+                {atlasPersistStatusLabelDe(editor.persistStatus)}
               </p>
             </div>
           ) : null}
@@ -498,7 +515,12 @@ export function WorldAtlasWorkbench({
               Speichern
             </Button>
           ) : null}
-          {canEdit && editor.map && showUnified && protoExact && editor.dirtyCanvas ? (
+          {canEdit &&
+          editor.map &&
+          showUnified &&
+          protoExact &&
+          editor.dirtyCanvas &&
+          editor.persistStatus !== 'conflict' ? (
             <Button
               type="button"
               className="min-h-11"
@@ -524,6 +546,7 @@ export function WorldAtlasWorkbench({
       showUnified &&
       protoExact &&
       editor.dirtyCanvas &&
+      editor.persistStatus !== 'conflict' &&
       !onBack &&
       !atlasBooting ? (
         <div className="pointer-events-none absolute bottom-4 left-4 z-[4]">
@@ -543,6 +566,53 @@ export function WorldAtlasWorkbench({
             )}
             Speichern
           </Button>
+        </div>
+      ) : null}
+
+      {canEdit && editor.persistStatus === 'conflict' && !atlasBooting ? (
+        <div
+          className="absolute bottom-4 left-4 z-[5] max-w-md rounded-lg border border-amber-500/50 bg-card/95 p-3 shadow-lg"
+          role="alert"
+          data-atlas-revision-conflict
+        >
+          <p className="text-sm font-medium text-foreground">
+            Revisionskonflikt — die Karte wurde inzwischen geändert.
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {editor.error ??
+              'Lokal speichern würde fremde Änderungen überschreiben. Neu laden oder erneut versuchen.'}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11"
+              data-atlas-conflict-reload
+              disabled={editor.loading || editor.saving}
+              onClick={() => {
+                void editor.reloadActiveMap();
+              }}
+            >
+              Neu laden
+            </Button>
+            <Button
+              type="button"
+              className="min-h-11"
+              data-atlas-conflict-retry
+              disabled={editor.saving}
+              onClick={() => {
+                void editor.saveCanvas().catch(() => {
+                  /* error stays on editor.error */
+                });
+              }}
+            >
+              {editor.saving ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                'Erneut speichern'
+              )}
+            </Button>
+          </div>
         </div>
       ) : null}
 
