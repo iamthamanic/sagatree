@@ -288,6 +288,14 @@ function checkAtlasWorldbuilderSharedEditor() {
   });
 }
 
+function checkAtlasWorldbuilderGeometry() {
+  console.log('Atlas worldbuilder geometry (#722): independent frames + LOD anchors...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-geometry-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2386,6 +2394,7 @@ checkAtlasWorldbuilderStructureBind();
 checkAtlasWorldbuilderCreateDialog();
 checkAtlasWorldbuilderToolRegistry();
 checkAtlasWorldbuilderSharedEditor();
+checkAtlasWorldbuilderGeometry();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

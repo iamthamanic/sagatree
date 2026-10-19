@@ -13,10 +13,12 @@ import {
   type WebglRuntimeState,
   extractDungeonMetaFromGeneratorMeta,
   extractUnifiedCanvasFromGeneratorMeta,
+  independentPrimaryBounds,
   mergeDungeonMetaIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
   shouldUpgradeDornhainUnifiedToWorld,
+  unlocatedChildMapGeneratorMeta,
   type DungeonGeneratorMeta,
   type UnifiedCanvasDoc,
   type WorldAtlasFeatureCollection,
@@ -284,18 +286,18 @@ export function useWorldAtlasEditor({
       setError(null);
       try {
         const kind = options?.kind && options.kind !== 'legacy_tiles' ? options.kind : 'region';
+        // #722: own local frame — never clone parent bounds.
         const next = await worldAtlasService.upsertMap({
           worldProfileId,
           mapId: null,
           parentMapId: map.id,
           kind,
           title: title.trim() || 'Detailkarte',
-          bounds: map.bounds,
+          bounds: independentPrimaryBounds(),
           layers: { type: 'FeatureCollection', features: [] },
-          generatorMeta: {
-            engine: 'unified_canvas',
+          generatorMeta: unlocatedChildMapGeneratorMeta({
             ...(options?.generatorMeta ?? {}),
-          },
+          }),
         });
         await reloadList();
         setActiveMapId(next.id);

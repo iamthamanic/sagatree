@@ -121,3 +121,23 @@ export {
   syncWebglPropsIntoCanvasDoc,
   type WebglRuntimeState,
 } from './webgl-runtime-bridge';
+
+export {
+  ATLAS_FEATURE_OWNERS,
+  MAP_FRAME_META_KEY,
+  MAP_STATUS_META_KEY,
+  UNLOCATED_MAP_HINT_DE,
+  atlasZoomCaption,
+  canLodEnterChildMap,
+  extractMapFrameFromGeneratorMeta,
+  independentPrimaryBounds,
+  isGroundedLinkAnchor,
+  mergeMapFrameIntoGeneratorMeta,
+  parseMapSketchStatus,
+  parseParentSpatialAnchor,
+  unlocatedChildMapGeneratorMeta,
+  type AtlasFeatureOwner,
+  type MapFrameMeta,
+  type MapSketchStatus,
+  type ParentSpatialAnchor,
+} from './map-frame';
