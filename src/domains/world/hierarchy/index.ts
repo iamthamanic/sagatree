@@ -68,3 +68,12 @@ export {
   type ReparentPlan,
   type ReparentPlanInput,
 } from './mutations';
+export {
+  DONALU_WORLD_PUBLIC_ID,
+  buildMigrationDryRun,
+  type MigrationAction,
+  type MigrationDryRunReport,
+  type MigrationMapRow,
+  type MigrationPlaceRow,
+  type MigrationPlanItem,
+} from './migration-plan';

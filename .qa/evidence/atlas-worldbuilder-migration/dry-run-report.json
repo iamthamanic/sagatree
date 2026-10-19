@@ -1,0 +1,596 @@
+{
+  "worldPublicId": "WO-9FFK6",
+  "generatedAt": "2026-10-19T07:52:10.095Z",
+  "items": [
+    {
+      "subject": "place",
+      "id": "WO-3VR54",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-4D8D8",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-4U6NB",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-4YT4C",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-578UV",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-5NTXC",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-5W7NV",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-6CTKV",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-6PUNP",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-7BM5J",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-7Z79D",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-82N3G",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-8W7BA",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-9FFK6",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-9QH79",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-9XBZK",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-A2F29",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-AUG5T",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-CET2M",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-CU42W",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-D5FWL",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-EJ7Y4",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-FAR3X",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-HEWN9",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-HVB2D",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-J3D7D",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-K3G8Z",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-KW2Y4",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-L4KJY",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-MVE38",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-NMME3",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-Q6G36",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-R5VUJ",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-RL4WS",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-TJL6R",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-TN6NF",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-W5GB4",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "WO-X354C",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "sample:dungeon",
+      "legacyKind": "dungeon",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Usually building.dungeon subtype, not a hierarchy level",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "sample:site",
+      "legacyKind": "site",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "map-0-legacy_tiles",
+      "legacyKind": "legacy_tiles",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Tile editor path; keep readable",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "map-1-scene",
+      "legacyKind": "scene",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Legacy interior/battlemap kind",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "map-2-settlement",
+      "legacyKind": "settlement",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Legacy detail map kind",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "map-3-world",
+      "legacyKind": "world",
+      "mappingStatus": "world-root",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Primary map of WorldProfile root",
+      "missingAncestors": []
+    }
+  ],
+  "reviewQueue": [
+    {
+      "subject": "place",
+      "id": "sample:dungeon",
+      "legacyKind": "dungeon",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Usually building.dungeon subtype, not a hierarchy level",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "sample:site",
+      "legacyKind": "site",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "missingAncestors": []
+    }
+  ],
+  "summary": {
+    "keep": 4,
+    "compatRead": 0,
+    "addPlaceholders": 38,
+    "ensurePrimaryMap": 0,
+    "reviewQueue": 2,
+    "skip": 0
+  },
+  "restorePlan": [
+    "1. Stop writers / disable atlas_wb_migration_gates.enabled for the world.",
+    "2. Restore Postgres from `.qa/evidence/atlas-worldbuilder-evidence/backups/` dump (see #713 restore log).",
+    "3. Re-run dry-run; compare place/map UUIDs, saga bindings, and storage paths.",
+    "4. Do not delete world_places / world_atlas_maps / public_ids during rollback."
+  ]
+}
