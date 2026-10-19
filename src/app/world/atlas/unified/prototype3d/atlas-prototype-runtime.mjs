@@ -179,9 +179,14 @@ function prefixSelectorsWithAtlasRoot(css) {
 
 /**
  * @param {HTMLElement} host
+ * @param {{ controlled?: boolean, seedState?: object|null, onPersist?: (state: object) => void }=} options
+ *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  * @returns {{ dispose: () => void }}
  */
-export function mountAtlasPrototype3d(host) {
+export function mountAtlasPrototype3d(host, options = {}) {
+  const controlled = options && options.controlled === true;
+  const onExternalPersist = typeof options.onPersist === 'function' ? options.onPersist : null;
+  const seedState = options && options.seedState && typeof options.seedState === 'object' ? options.seedState : null;
   const styleEl = document.createElement('style');
   styleEl.setAttribute('data-atlas-prototype-style', 'true');
   styleEl.textContent = scopeShellCssForEmbed(SHELL_CSS);
@@ -278,7 +283,17 @@ export function mountAtlasPrototype3d(host) {
     const WORLD_SUB_DEFAULT='Welt';
     const SEED_WORLD_ID='world';
     const defaultState=()=>({context:'welt',worldLabel:'Welt',worldSub:WORLD_SUB_DEFAULT,activeWorldId:SEED_WORLD_ID,worlds:[{id:SEED_WORLD_ID,label:'Welt',empty:false}],placeHidden:{},placeNames:JSON.parse(JSON.stringify(PLACE_NAME_DEFAULTS)),mapLabelPos:{},layers:{world:true,region:true,city:true,dungeon:true,stamps:true,grid:false},seed:42817,roomCount:22,theme:'ancient',props:[],strokes:[],walls:[],rooms:[]});
-    let state=defaultState();try{const s=JSON.parse(localStorage.getItem('sagatree-atlas-webgl-v3')||'null');if(s&&Array.isArray(s.props)&&Array.isArray(s.strokes)&&Array.isArray(s.walls)&&s.layers){state={...defaultState(),...s,placeNames:{...PLACE_NAME_DEFAULTS,...(s.placeNames||{})},mapLabelPos:{...(s.mapLabelPos&&typeof s.mapLabelPos==='object'?s.mapLabelPos:{})},layers:{...defaultState().layers,...s.layers}};state.worldSub=WORLD_SUB_DEFAULT;for(const id of Object.keys(PLACE_NAME_DEFAULTS)){const saved=state.placeNames[id]||{};state.placeNames[id]={...PLACE_NAME_DEFAULTS[id],...saved,sub:PLACE_NAME_DEFAULTS[id].sub};}}}catch{}
+    let state=defaultState();
+    if(controlled&&seedState){
+      const s=seedState;
+      if(s&&Array.isArray(s.props)&&Array.isArray(s.strokes)&&Array.isArray(s.walls)&&s.layers){
+        state={...defaultState(),...s,placeNames:{...PLACE_NAME_DEFAULTS,...(s.placeNames||{})},mapLabelPos:{...(s.mapLabelPos&&typeof s.mapLabelPos==='object'?s.mapLabelPos:{})},layers:{...defaultState().layers,...s.layers}};
+        state.worldSub=WORLD_SUB_DEFAULT;
+        for(const id of Object.keys(PLACE_NAME_DEFAULTS)){const saved=state.placeNames[id]||{};state.placeNames[id]={...PLACE_NAME_DEFAULTS[id],...saved,sub:PLACE_NAME_DEFAULTS[id].sub};}
+      }
+    }else if(!controlled){
+      try{const s=JSON.parse(localStorage.getItem('sagatree-atlas-webgl-v3')||'null');if(s&&Array.isArray(s.props)&&Array.isArray(s.strokes)&&Array.isArray(s.walls)&&s.layers){state={...defaultState(),...s,placeNames:{...PLACE_NAME_DEFAULTS,...(s.placeNames||{})},mapLabelPos:{...(s.mapLabelPos&&typeof s.mapLabelPos==='object'?s.mapLabelPos:{})},layers:{...defaultState().layers,...s.layers}};state.worldSub=WORLD_SUB_DEFAULT;for(const id of Object.keys(PLACE_NAME_DEFAULTS)){const saved=state.placeNames[id]||{};state.placeNames[id]={...PLACE_NAME_DEFAULTS[id],...saved,sub:PLACE_NAME_DEFAULTS[id].sub};}}}catch{}
+    }
     function ensureWorlds(){if(!Array.isArray(state.worlds)||!state.worlds.length){state.worlds=[{id:SEED_WORLD_ID,label:state.worldLabel||'Welt',empty:false}];}const seed=state.worlds.find(w=>w.id===SEED_WORLD_ID);if(!seed)state.worlds.unshift({id:SEED_WORLD_ID,label:state.worldLabel||'Welt',empty:false});if(!state.worlds.some(w=>w.id===state.activeWorldId))state.activeWorldId=SEED_WORLD_ID;return state.worlds;}
     function getActiveWorld(){const worlds=ensureWorlds();return worlds.find(w=>w.id===state.activeWorldId)||worlds[0];}
     function isWorldId(id){return ensureWorlds().some(w=>w.id===id);}
@@ -298,7 +313,24 @@ export function mountAtlasPrototype3d(host) {
     const randi=(r,a,b)=>Math.floor(rnd(r,a,b+1));
     const inside=(x,z,cx,cz,w,h)=>Math.abs(x-cx)<=w/2&&Math.abs(z-cz)<=h/2;
     function snapshot(){history.push(JSON.stringify(state));if(history.length>45)history.shift();redoStack.length=0;}
-    function persist(){try{localStorage.setItem('sagatree-atlas-webgl-v3',JSON.stringify(state));$('saveState').textContent='Lokal gespeichert';}catch{$('saveState').textContent='Speicher voll · Export nutzen';}updateStats();}
+    function persist(opts){
+      const bootstrap=!!(opts&&opts.bootstrap);
+      if(controlled){
+        try{
+          if(!bootstrap){
+            onExternalPersist?.(JSON.parse(JSON.stringify(state)));
+            const el=$('saveState');
+            if(el)el.textContent='Änderungen ausstehend';
+          }else{
+            const el=$('saveState');
+            if(el)el.textContent='Atlas bereit';
+          }
+        }catch{ /* ignore */ }
+        updateStats();
+        return;
+      }
+      try{localStorage.setItem('sagatree-atlas-webgl-v3',JSON.stringify(state));$('saveState').textContent='Lokal gespeichert';}catch{$('saveState').textContent='Speicher voll · Export nutzen';}updateStats();
+    }
     function toast(message){$('notice').textContent=message;$('notice').classList.remove('hidden');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.add('hidden'),3100);}
     function undo(){if(!history.length)return;redoStack.push(JSON.stringify(state));state=JSON.parse(history.pop());syncControls();rebuildAll();persist();}
     function redo(){if(!redoStack.length)return;history.push(JSON.stringify(state));state=JSON.parse(redoStack.pop());syncControls();rebuildAll();persist();}
@@ -622,7 +654,7 @@ export function mountAtlasPrototype3d(host) {
     stage.addEventListener('contextmenu',e=>e.preventDefault());
     let __resizeTimer=null;const __onStageResize=()=>{if(__resizeTimer)clearTimeout(__resizeTimer);__resizeTimer=setTimeout(()=>{__resizeTimer=null;syncRendererSize();},50);};if('ResizeObserver' in window)new ResizeObserver(__onStageResize).observe(stage);else window.addEventListener('resize',__onStageResize);
     renderNavigation();renderLayers();renderTools();renderPalette();syncControls();
-    persist();
+    persist({bootstrap:true});
     $('engineState').textContent='WEBGL wird gestartet';
     window.__sagatreeAtlas={getState:()=>({level:activeLevel,span:cameraState.span,mode:engine?'webgl':'failed',rooms:dungeon.rooms.length,props:state.props.length,strokes:state.strokes.length,shapes:(state.rooms||[]).length,geometry:engine?[...engine.meshes.entries()].map(([name,m])=>({name,triangles:m.count/3})): [],yawDeg:yawDegrees()}),focus:id=>goTo(id,0),generate,zoomAt,orbit:(yaw,pitch)=>{yawAngle=yaw;if(Number.isFinite(pitch)){tiltEnabled=true;tiltAngle=pitch;}syncYawDialUi();drawFrame();},setYaw:deg=>applyYawDegrees(deg)};
     activate3D();

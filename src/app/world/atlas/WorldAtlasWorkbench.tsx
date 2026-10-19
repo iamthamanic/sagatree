@@ -120,6 +120,25 @@ export function WorldAtlasWorkbench({
     void reloadPlaceNav();
   }, [reloadPlaceNav, placeNavTick, editor.map?.id]);
 
+  // Debounced autosave for controlled WebGL / canvas dirty (#721).
+  useEffect(() => {
+    if (!canEdit || !editor.map || !editor.dirtyCanvas || editor.saving) return;
+    const timer = window.setTimeout(() => {
+      void editor.saveCanvas().catch(() => {
+        /* error surfaced on editor.error */
+      });
+    }, 1400);
+    return () => window.clearTimeout(timer);
+  }, [
+    canEdit,
+    editor.map,
+    editor.dirtyCanvas,
+    editor.saving,
+    editor.webglRuntime,
+    editor.canvasDoc,
+    editor.saveCanvas,
+  ]);
+
   const handleCreateDetailMap = async (place: WorldPlaceVm) => {
     if (!canEdit) return;
     const created = await editor.createChildMap(`${place.name} (Detail)`, {
@@ -311,11 +330,12 @@ export function WorldAtlasWorkbench({
 
   return (
     <div
-      className={`@container/main flex h-full min-h-0 w-full min-w-0 flex-col ${
+      className={`@container/main relative flex h-full min-h-0 w-full min-w-0 flex-col ${
         layoutExact ? 'gap-0' : 'gap-3'
       }`}
       data-world-atlas-workbench
       data-atlas-booting={atlasBooting ? 'true' : undefined}
+      data-atlas-controlled-store={protoExact ? 'true' : undefined}
     >
       {/* Skip title/rail chrome while booting — avoids <1s menu flash before 3D map. */}
       {(!protoExact && !atlasBooting) || onBack ? (
@@ -388,7 +408,52 @@ export function WorldAtlasWorkbench({
               Speichern
             </Button>
           ) : null}
+          {canEdit && editor.map && showUnified && protoExact && editor.dirtyCanvas ? (
+            <Button
+              type="button"
+              className="min-h-11"
+              data-atlas-explicit-save
+              disabled={editor.saving}
+              onClick={() => {
+                void editor.saveCanvas();
+              }}
+            >
+              {editor.saving ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Save className="size-4" aria-hidden />
+              )}
+              Speichern
+            </Button>
+          ) : null}
         </header>
+      ) : null}
+
+      {canEdit &&
+      editor.map &&
+      showUnified &&
+      protoExact &&
+      editor.dirtyCanvas &&
+      !onBack &&
+      !atlasBooting ? (
+        <div className="pointer-events-none absolute bottom-4 left-4 z-[4]">
+          <Button
+            type="button"
+            className="pointer-events-auto min-h-11 shadow-lg"
+            data-atlas-explicit-save
+            disabled={editor.saving}
+            onClick={() => {
+              void editor.saveCanvas();
+            }}
+          >
+            {editor.saving ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <Save className="size-4" aria-hidden />
+            )}
+            Speichern
+          </Button>
+        </div>
       ) : null}
 
       {editor.error ? (
@@ -490,9 +555,12 @@ export function WorldAtlasWorkbench({
           ) : showUnified && editor.map ? (
             <UnifiedAtlasEditor
               key={`${editor.map.id}:${editor.map.revision}`}
+              mapKey={`${editor.map.id}:${editor.map.revision}`}
               doc={editor.canvasDoc}
               canEdit={canEdit}
               onDocChange={editor.updateCanvasDoc}
+              webglRuntime={editor.webglRuntime}
+              onWebglRuntimeChange={editor.updateWebglRuntime}
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
               placeNav={placeNav}

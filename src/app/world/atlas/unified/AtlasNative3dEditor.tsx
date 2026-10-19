@@ -4,13 +4,21 @@
  *
  * Mounts the in-repo WebGL runtime and applies SagaTree skin (no iframe).
  * Map-first reveal: land surface must be sized+painted before Ebenen/Werkzeuge chrome.
+ * Product path (#721): controlled mount — seed/persist via generator_meta, not localStorage SoT.
  */
 import { useLayoutEffect, useRef, useState } from 'react';
+import type { WebglRuntimeState } from '../../../../domains/world/atlas';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
 import './prototype3d/atlas-sagatree-skin.css';
 
 export type AtlasNative3dEditorProps = {
   readonly className?: string;
+  /** Remount key (active map id + revision). */
+  readonly mapKey?: string;
+  /** When true, runtime never uses localStorage as world SoT. */
+  readonly controlled?: boolean;
+  readonly seedState?: WebglRuntimeState | null;
+  readonly onPersist?: (state: WebglRuntimeState) => void;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -221,8 +229,22 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
   };
 }
 
-export function AtlasNative3dEditor({ className }: AtlasNative3dEditorProps) {
+export function AtlasNative3dEditor({
+  className,
+  mapKey = 'default',
+  controlled = false,
+  seedState = null,
+  onPersist,
+}: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const persistRef = useRef(onPersist);
+  persistRef.current = onPersist;
+  const mapKeyRef = useRef(mapKey);
+  const seedRef = useRef(seedState);
+  if (mapKeyRef.current !== mapKey) {
+    mapKeyRef.current = mapKey;
+    seedRef.current = seedState;
+  }
   const [error, setError] = useState<string | null>(null);
 
   // Layout effect: mount + collapse panels before the browser paints (no open→close flash).
@@ -231,11 +253,25 @@ export function AtlasNative3dEditor({ className }: AtlasNative3dEditorProps) {
     if (!host) return;
     host.replaceChildren();
     host.setAttribute('data-atlas-boot', 'true');
+    if (controlled) {
+      host.setAttribute('data-atlas-controlled', 'true');
+    } else {
+      host.removeAttribute('data-atlas-controlled');
+    }
     let mount: { dispose: () => void } | null = null;
     let disposePanels: (() => void) | null = null;
     let copyTimer = 0;
     try {
-      mount = mountAtlasPrototype3d(host);
+      mount = mountAtlasPrototype3d(host, {
+        controlled,
+        seedState: seedRef.current ?? null,
+        onPersist: controlled
+          ? (state) => {
+              const next = state as WebglRuntimeState;
+              persistRef.current?.(next);
+            }
+          : undefined,
+      });
       disposePanels = installCollapsiblePanels(host);
       applySagaTreeCopy(host);
       // Nav is rendered async after mount — rebrand once levels paint.
@@ -258,14 +294,16 @@ export function AtlasNative3dEditor({ className }: AtlasNative3dEditorProps) {
       }
       host.replaceChildren();
       host.removeAttribute('data-atlas-boot');
+      host.removeAttribute('data-atlas-controlled');
     };
-  }, []);
+  }, [mapKey, controlled]);
 
   return (
     <div
       className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden ${className ?? ''}`}
       data-atlas-native-3d
       data-atlas-proto-exact="true"
+      data-atlas-controlled={controlled ? 'true' : undefined}
       style={{ background: '#123e4a' }}
     >
       {error ? (
