@@ -113,11 +113,14 @@ export {
 export {
   WEBGL_RUNTIME_META_KEY,
   LEGACY_WEBGL_LOCAL_STORAGE_KEY,
+  STAMP_TO_PROP,
+  emptyWebglRuntime,
   extractWebglRuntimeFromGeneratorMeta,
   mergeWebglRuntimeIntoGeneratorMeta,
   parseWebglRuntimeState,
   readLegacyWebglLocalStorage,
   resolveProductCanvasDoc,
+  syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type WebglRuntimeState,
 } from './webgl-runtime-bridge';

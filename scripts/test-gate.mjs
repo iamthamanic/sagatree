@@ -288,6 +288,14 @@ function checkAtlasWorldbuilderSharedEditor() {
   });
 }
 
+function checkAtlasWorldbuilderCanonical2d3d() {
+  console.log('Atlas worldbuilder canonical 2D↔3D (#749): bidirectional bridge...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-canonical-2d3d-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAtlasWorldbuilderGeometry() {
   console.log('Atlas worldbuilder geometry (#722): independent frames + LOD anchors...');
   execFileSync(process.execPath, ['scripts/atlas-worldbuilder-geometry-check.mjs'], {
@@ -2418,6 +2426,7 @@ checkAtlasWorldbuilderStructureBind();
 checkAtlasWorldbuilderCreateDialog();
 checkAtlasWorldbuilderToolRegistry();
 checkAtlasWorldbuilderSharedEditor();
+checkAtlasWorldbuilderCanonical2d3d();
 checkAtlasWorldbuilderGeometry();
 checkAtlasWorldbuilderMigration();
 checkAtlasWorldbuilderQa();
