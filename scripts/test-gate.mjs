@@ -312,6 +312,14 @@ function checkAtlasWorldbuilderMigration() {
   });
 }
 
+function checkAtlasWorldbuilderRealDonaluInventory() {
+  console.log('Atlas worldbuilder real Donalu inventory (#753): world-scoped dry-run...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-real-donalu-inventory-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAtlasWorldbuilderQa() {
   console.log('Atlas worldbuilder QA (#724): epic closer evidence matrix...');
   execFileSync(process.execPath, ['scripts/atlas-worldbuilder-qa-check.mjs'], {
@@ -2429,6 +2437,7 @@ checkAtlasWorldbuilderSharedEditor();
 checkAtlasWorldbuilderCanonical2d3d();
 checkAtlasWorldbuilderGeometry();
 checkAtlasWorldbuilderMigration();
+checkAtlasWorldbuilderRealDonaluInventory();
 checkAtlasWorldbuilderQa();
 checkAtlasWorldbuilderWebglDbTree();
 checkSagaStateColumnPrivileges();

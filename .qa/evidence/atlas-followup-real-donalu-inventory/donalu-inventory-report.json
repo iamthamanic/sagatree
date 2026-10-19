@@ -1,0 +1,440 @@
+{
+  "worldPublicId": "WO-9FFK6",
+  "worldProfileId": null,
+  "generatedAt": "2026-10-19T20:14:10.279Z",
+  "readOnly": true,
+  "scopeFilter": {
+    "worldPublicId": "WO-9FFK6"
+  },
+  "summary": {
+    "placeCount": 6,
+    "mapCount": 5,
+    "linkCount": 9,
+    "sagaCount": 1,
+    "orphanSettlementCount": 1,
+    "ambiguousReviewCount": 3,
+    "placesMissingPrimaryMap": 0
+  },
+  "places": [
+    {
+      "id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "kind": "settlement",
+      "name": "Dornhain",
+      "seedKey": "place.dornhain",
+      "parentPlaceId": null,
+      "parentChain": [],
+      "primaryMapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "mapLinks": [
+        {
+          "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+          "usage": "overview"
+        },
+        {
+          "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+          "usage": "footprint"
+        }
+      ],
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "id": "e8c5971a-f32e-4e23-9a48-a034797c4d75",
+      "kind": "building",
+      "name": "Taverne Zum Flüstern",
+      "seedKey": "loc.tavern",
+      "parentPlaceId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parentChain": [
+        "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+      ],
+      "primaryMapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "mapLinks": [
+        {
+          "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+          "usage": "footprint"
+        },
+        {
+          "mapId": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+          "usage": "interior"
+        }
+      ],
+      "missingAncestors": []
+    },
+    {
+      "id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b",
+      "kind": "site",
+      "name": "Marktplatz Dornhain",
+      "seedKey": "loc.market",
+      "parentPlaceId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parentChain": [
+        "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+      ],
+      "primaryMapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "mapLinks": [
+        {
+          "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+          "usage": "footprint"
+        }
+      ],
+      "missingAncestors": []
+    },
+    {
+      "id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac",
+      "kind": "area",
+      "name": "Schattenwald",
+      "seedKey": "loc.woods",
+      "parentPlaceId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parentChain": [
+        "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+      ],
+      "primaryMapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "mapLinks": [
+        {
+          "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+          "usage": "overview"
+        }
+      ],
+      "missingAncestors": []
+    },
+    {
+      "id": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "kind": "dungeon",
+      "name": "Krypta unter dem Hügel",
+      "seedKey": "loc.crypt",
+      "parentPlaceId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parentChain": [
+        "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+      ],
+      "primaryMapId": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "mapLinks": [
+        {
+          "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+          "usage": "entrance"
+        },
+        {
+          "mapId": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+          "usage": "dungeon"
+        }
+      ],
+      "missingAncestors": []
+    },
+    {
+      "id": "73a7b41e-57ac-47ec-8489-4c932505539b",
+      "kind": "site",
+      "name": "Banditenlager (falsche Spur)",
+      "seedKey": "loc.bandit-camp",
+      "parentPlaceId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parentChain": [
+        "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+      ],
+      "primaryMapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "mapLinks": [
+        {
+          "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+          "usage": "overview"
+        }
+      ],
+      "missingAncestors": []
+    }
+  ],
+  "maps": [
+    {
+      "id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "kind": "world",
+      "title": "Dornhain Übersicht (Unified)",
+      "parentMapId": null,
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "id": "14682172-14a6-47ca-8da3-ee0123de5bfc",
+      "kind": "legacy_tiles",
+      "title": "Kachelkarte (Legacy)",
+      "parentMapId": null,
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "kind": "settlement",
+      "title": "Dornhain (Stadt)",
+      "parentMapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "id": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+      "kind": "scene",
+      "title": "Taverne Zum Flüstern (Innenraum)",
+      "parentMapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "id": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "kind": "scene",
+      "title": "Krypta unter dem Hügel (Dungeon)",
+      "parentMapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "worldPublicId": "WO-9FFK6"
+    }
+  ],
+  "links": [
+    {
+      "placeId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "usage": "overview",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "usage": "footprint",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "e8c5971a-f32e-4e23-9a48-a034797c4d75",
+      "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "usage": "footprint",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "e8c5971a-f32e-4e23-9a48-a034797c4d75",
+      "mapId": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+      "usage": "interior",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "6f270016-a7b1-4536-a0b0-68df58ef0d8b",
+      "mapId": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "usage": "footprint",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac",
+      "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "usage": "overview",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "usage": "entrance",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "mapId": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "usage": "dungeon",
+      "worldPublicId": "WO-9FFK6"
+    },
+    {
+      "placeId": "73a7b41e-57ac-47ec-8489-4c932505539b",
+      "mapId": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "usage": "overview",
+      "worldPublicId": "WO-9FFK6"
+    }
+  ],
+  "sagas": [
+    {
+      "sagaPublicId": "SA-E979J",
+      "sagaName": "Das Flüstern unter Dornhain",
+      "worldPublicId": "WO-9FFK6",
+      "bindingCount": 25,
+      "locationBindings": [
+        {
+          "assetId": "loc.bandit-camp",
+          "label": "Banditenlager (falsche Spur)",
+          "reveal": "gm_only",
+          "placeSeed": "loc.bandit-camp",
+          "placeId": "73a7b41e-57ac-47ec-8489-4c932505539b"
+        },
+        {
+          "assetId": "loc.crypt",
+          "label": "Krypta unter dem Hügel",
+          "reveal": "gm_only",
+          "placeSeed": "loc.crypt",
+          "placeId": "d45dba1f-660e-42c5-8042-aaff832ebbcd"
+        },
+        {
+          "assetId": "loc.market",
+          "label": "Marktplatz Dornhain",
+          "reveal": "party",
+          "placeSeed": "loc.market",
+          "placeId": "6f270016-a7b1-4536-a0b0-68df58ef0d8b"
+        },
+        {
+          "assetId": "loc.tavern",
+          "label": "Taverne Zum Flüstern",
+          "reveal": "party",
+          "placeSeed": "loc.tavern",
+          "placeId": "e8c5971a-f32e-4e23-9a48-a034797c4d75"
+        },
+        {
+          "assetId": "loc.woods",
+          "label": "Schattenwald",
+          "reveal": "party",
+          "placeSeed": "loc.woods",
+          "placeId": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac"
+        }
+      ]
+    }
+  ],
+  "reviewQueue": [
+    {
+      "placeId": "6f270016-a7b1-4536-a0b0-68df58ef0d8b",
+      "name": "Marktplatz Dornhain",
+      "originalKind": "site",
+      "proposedKind": null,
+      "proposedSubtype": null,
+      "proposedParentId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "mappingStatus": "needs-review"
+    },
+    {
+      "placeId": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "name": "Krypta unter dem Hügel",
+      "originalKind": "dungeon",
+      "proposedKind": null,
+      "proposedSubtype": null,
+      "proposedParentId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "notes": "Usually building.dungeon subtype, not a hierarchy level",
+      "mappingStatus": "needs-review"
+    },
+    {
+      "placeId": "73a7b41e-57ac-47ec-8489-4c932505539b",
+      "name": "Banditenlager (falsche Spur)",
+      "originalKind": "site",
+      "proposedKind": null,
+      "proposedSubtype": null,
+      "proposedParentId": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "mappingStatus": "needs-review"
+    }
+  ],
+  "migrationSummary": {
+    "keep": 6,
+    "compatRead": 1,
+    "addPlaceholders": 1,
+    "ensurePrimaryMap": 0,
+    "reviewQueue": 3,
+    "skip": 0
+  },
+  "migrationItems": [
+    {
+      "subject": "place",
+      "id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "legacyKind": "settlement",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "add-placeholder-ancestors",
+      "notes": "Orphan place; placeholders: continent→country",
+      "missingAncestors": [
+        "continent",
+        "country"
+      ]
+    },
+    {
+      "subject": "place",
+      "id": "e8c5971a-f32e-4e23-9a48-a034797c4d75",
+      "legacyKind": "building",
+      "mappingStatus": "canonical",
+      "nodeKind": "building",
+      "action": "keep",
+      "notes": "Direct match",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b",
+      "legacyKind": "site",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac",
+      "legacyKind": "area",
+      "mappingStatus": "compat-alias",
+      "nodeKind": "place",
+      "action": "compat-read",
+      "notes": "Natural/wilderness-like place; subtype when known",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "legacyKind": "dungeon",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Usually building.dungeon subtype, not a hierarchy level",
+      "missingAncestors": []
+    },
+    {
+      "subject": "place",
+      "id": "73a7b41e-57ac-47ec-8489-4c932505539b",
+      "legacyKind": "site",
+      "mappingStatus": "needs-review",
+      "nodeKind": null,
+      "action": "review-queue",
+      "notes": "Outdoor site vs building entrance — review queue",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "legacyKind": "world",
+      "mappingStatus": "world-root",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Primary map of WorldProfile root",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "14682172-14a6-47ca-8da3-ee0123de5bfc",
+      "legacyKind": "legacy_tiles",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Tile editor path; keep readable",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "legacyKind": "settlement",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Legacy detail map kind",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+      "legacyKind": "scene",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Legacy interior/battlemap kind",
+      "missingAncestors": []
+    },
+    {
+      "subject": "map",
+      "id": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "legacyKind": "scene",
+      "mappingStatus": "map-only",
+      "nodeKind": null,
+      "action": "keep",
+      "notes": "Legacy interior/battlemap kind",
+      "missingAncestors": []
+    }
+  ],
+  "restorePlan": [
+    "1. Stop writers / disable atlas_wb_migration_gates.enabled for the world.",
+    "2. Restore Postgres from `.qa/evidence/atlas-worldbuilder-evidence/backups/` dump (see #713 restore log).",
+    "3. Re-run dry-run; compare place/map UUIDs, saga bindings, and storage paths.",
+    "4. Do not delete world_places / world_atlas_maps / public_ids during rollback."
+  ]
+}
