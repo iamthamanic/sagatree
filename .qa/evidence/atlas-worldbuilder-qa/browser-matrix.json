@@ -1,0 +1,17 @@
+{
+  "desktop": {
+    "atlas": true,
+    "controlled": true,
+    "unlocated": true
+  },
+  "tablet": {
+    "atlas": true,
+    "controlled": true,
+    "unlocated": true
+  },
+  "phone": {
+    "atlas": true,
+    "controlled": true,
+    "unlocated": true
+  }
+}

@@ -304,6 +304,14 @@ function checkAtlasWorldbuilderMigration() {
   });
 }
 
+function checkAtlasWorldbuilderQa() {
+  console.log('Atlas worldbuilder QA (#724): epic closer evidence matrix...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-qa-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2404,6 +2412,7 @@ checkAtlasWorldbuilderToolRegistry();
 checkAtlasWorldbuilderSharedEditor();
 checkAtlasWorldbuilderGeometry();
 checkAtlasWorldbuilderMigration();
+checkAtlasWorldbuilderQa();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
