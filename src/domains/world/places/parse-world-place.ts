@@ -93,13 +93,21 @@ export function parseWorldPlaceMapLinkList(raw: unknown): WorldPlaceMapLinkVm[] 
   return out;
 }
 
-/** Prefer interior/dungeon/footprint map for a place. */
+/** Prefer canonical primary map, then detail/overview usages. */
 export function pickPrimaryMapIdForPlace(
   placeId: string,
   links: readonly WorldPlaceMapLinkVm[],
 ): string | null {
   const forPlace = links.filter((l) => l.placeId === placeId);
-  const order = ['interior', 'dungeon', 'footprint', 'entrance', 'battlemap', 'overview'] as const;
+  const order = [
+    'primary',
+    'interior',
+    'dungeon',
+    'footprint',
+    'entrance',
+    'battlemap',
+    'overview',
+  ] as const;
   for (const usage of order) {
     const hit = forPlace.find((l) => l.usage === usage);
     if (hit) return hit.mapId;
