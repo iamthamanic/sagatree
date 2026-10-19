@@ -17,6 +17,14 @@
     "demoLeak": [],
     "hasProductAttr": true
   },
+  "selectProof": {
+    "ok": true,
+    "selected": {
+      "placeId": "p1",
+      "mapId": "map-p1",
+      "worldRoot": false
+    }
+  },
   "emptyResult": {
     "placeIds": [
       "world:empty"
