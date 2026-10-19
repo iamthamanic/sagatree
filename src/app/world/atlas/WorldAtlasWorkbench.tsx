@@ -5,7 +5,7 @@
  * Default: Unified Canvas multi-scale editor (prototype-style shell).
  * Legacy tiles keep tile editor. Place authoring via world_places RPC.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronDown,
   ChevronRight,
@@ -28,8 +28,11 @@ import {
 } from '../../../shared/ui/sheet';
 import {
   buildAtlasPlaceNav,
+  buildAtlasWebglNavTree,
   type AtlasPlaceNavItem,
+  type AtlasWebglNavTreeStatus,
   type WorldPlaceKind,
+  type WorldPlaceMapLinkVm,
   type WorldPlaceVm,
 } from '../../../domains/world/places';
 import { tryNodeKindFromPlaceKind } from '../../../domains/world/hierarchy';
@@ -83,7 +86,12 @@ export function WorldAtlasWorkbench({
   const [mapsRailExpanded, setMapsRailExpanded] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [placeNav, setPlaceNav] = useState<readonly AtlasPlaceNavItem[]>([]);
+  const [worldPlaces, setWorldPlaces] = useState<readonly WorldPlaceVm[]>([]);
+  const [worldLinks, setWorldLinks] = useState<readonly WorldPlaceMapLinkVm[]>([]);
+  const [placeNavStatus, setPlaceNavStatus] = useState<AtlasWebglNavTreeStatus>('loading');
+  const [placeNavError, setPlaceNavError] = useState<string | undefined>(undefined);
   const [placeNavTick, setPlaceNavTick] = useState(0);
+  const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
 
   const showLegacyTiles = editor.map?.kind === 'legacy_tiles';
   const showUnified = Boolean(editor.map && !showLegacyTiles);
@@ -105,28 +113,88 @@ export function WorldAtlasWorkbench({
     (editor.loading || editor.summaries.length > 0);
   const layoutExact = protoExact || atlasBooting;
 
+  const worldPrimaryMapId = useMemo(() => {
+    const worldSummary = editor.summaries.find((s) => s.kind === 'world');
+    return worldSummary?.id ?? editor.summaries[0]?.id ?? null;
+  }, [editor.summaries]);
+
+  const webglNavTree = useMemo(
+    () =>
+      buildAtlasWebglNavTree({
+        worldProfileId,
+        worldLabel: title,
+        worldPrimaryMapId,
+        places: worldPlaces,
+        links: worldLinks,
+        status: placeNavStatus,
+        errorMessage: placeNavError,
+      }),
+    [
+      worldProfileId,
+      title,
+      worldPrimaryMapId,
+      worldPlaces,
+      worldLinks,
+      placeNavStatus,
+      placeNavError,
+    ],
+  );
+
   const reloadPlaceNav = useCallback(async () => {
     const id = worldProfileId.trim();
     if (!id) {
       setPlaceNav([]);
+      setWorldPlaces([]);
+      setWorldLinks([]);
+      setPlaceNavStatus('empty');
+      setPlaceNavError(undefined);
       return;
     }
+    setPlaceNavStatus('loading');
+    setPlaceNavError(undefined);
     try {
       const listOpts = { playerView, sagaPublicId };
       const [places, links] = await Promise.all([
         worldPlaceService.listPlaces(id, listOpts),
         worldPlaceService.listMapLinks(id, listOpts),
       ]);
+      setWorldPlaces(places);
+      setWorldLinks(links);
       setPlaceNav(buildAtlasPlaceNav(places, links));
+      setPlaceNavStatus(places.some((p) => p.status !== 'archived') ? 'ready' : 'empty');
     } catch (err) {
       console.warn('[atlas] place nav:', err);
       setPlaceNav([]);
+      setWorldPlaces([]);
+      setWorldLinks([]);
+      setPlaceNavStatus('error');
+      setPlaceNavError(
+        err instanceof Error ? err.message : 'Weltstruktur konnte nicht geladen werden.',
+      );
     }
   }, [worldProfileId, playerView, sagaPublicId]);
 
   useEffect(() => {
     void reloadPlaceNav();
   }, [reloadPlaceNav, placeNavTick, editor.map?.id]);
+
+  // Keep WebGL nav highlight in sync with the active primary map.
+  useEffect(() => {
+    const mapId = editor.activeMapId;
+    if (!mapId) return;
+    const match = worldPlaces.find(
+      (p) =>
+        p.status !== 'archived' &&
+        worldLinks.some((l) => l.placeId === p.id && l.mapId === mapId && l.usage === 'primary'),
+    );
+    if (match) {
+      setActivePlaceId(match.id);
+      return;
+    }
+    if (mapId === worldPrimaryMapId) {
+      setActivePlaceId(null);
+    }
+  }, [editor.activeMapId, worldPlaces, worldLinks, worldPrimaryMapId]);
 
   // Debounced autosave for controlled WebGL / canvas dirty (#721).
   useEffect(() => {
@@ -583,9 +651,39 @@ export function WorldAtlasWorkbench({
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
               placeNav={placeNav}
+              webglNavTree={protoExact ? webglNavTree : null}
+              activePlaceId={activePlaceId}
+              onWebglNavSelect={(payload) => {
+                if (payload.worldRoot) {
+                  setActivePlaceId(null);
+                } else {
+                  setActivePlaceId(payload.placeId);
+                }
+                if (payload.mapId) {
+                  editor.setActiveMapId(payload.mapId);
+                }
+              }}
+              onWebglNavRename={
+                canEdit
+                  ? async ({ placeId, label }) => {
+                      try {
+                        await worldPlaceService.renameNode({
+                          worldProfileId,
+                          placeId,
+                          name: label,
+                        });
+                        setPlaceNavTick((t) => t + 1);
+                      } catch (err) {
+                        console.error('[atlas] rename from WebGL nav:', err);
+                      }
+                    }
+                  : undefined
+              }
               activeNodeKind={
                 tryNodeKindFromPlaceKind(
-                  placeNav.find((p) => p.mapId === editor.activeMapId)?.kind ?? '',
+                  placeNav.find((p) => p.mapId === editor.activeMapId)?.kind ??
+                    worldPlaces.find((p) => p.id === activePlaceId)?.kind ??
+                    '',
                 )
               }
               canvasLeftRail={

@@ -5,11 +5,25 @@
  * Mounts the in-repo WebGL runtime and applies SagaTree skin (no iframe).
  * Map-first reveal: land surface must be sized+painted before Ebenen/Werkzeuge chrome.
  * Product path (#721): controlled mount — seed/persist via generator_meta, not localStorage SoT.
+ * Product nav (#747): external WorldNode tree replaces demo NAV_CHILDREN in #nav.
  */
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { WebglRuntimeState } from '../../../../domains/world/atlas';
+import type { AtlasWebglNavTree } from '../../../../domains/world/places';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
 import './prototype3d/atlas-sagatree-skin.css';
+
+export type AtlasNativeNavSelectPayload = {
+  readonly placeId: string | null;
+  readonly mapId: string | null;
+  readonly worldRoot: boolean;
+};
+
+type AtlasNativeMountHandle = {
+  readonly dispose: () => void;
+  readonly updateExternalNav: (tree: AtlasWebglNavTree | null) => void;
+  readonly setActiveNavPlaceId: (placeId: string | null) => void;
+};
 
 export type AtlasNative3dEditorProps = {
   readonly className?: string;
@@ -19,6 +33,11 @@ export type AtlasNative3dEditorProps = {
   readonly controlled?: boolean;
   readonly seedState?: WebglRuntimeState | null;
   readonly onPersist?: (state: WebglRuntimeState) => void;
+  /** Persisted world tree for product #nav (#747). */
+  readonly externalNav?: AtlasWebglNavTree | null;
+  readonly activePlaceId?: string | null;
+  readonly onNavSelect?: (payload: AtlasNativeNavSelectPayload) => void;
+  readonly onNavRename?: (payload: { readonly placeId: string; readonly label: string }) => void;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -235,10 +254,23 @@ export function AtlasNative3dEditor({
   controlled = false,
   seedState = null,
   onPersist,
+  externalNav = null,
+  activePlaceId = null,
+  onNavSelect,
+  onNavRename,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<AtlasNativeMountHandle | null>(null);
   const persistRef = useRef(onPersist);
   persistRef.current = onPersist;
+  const navSelectRef = useRef(onNavSelect);
+  navSelectRef.current = onNavSelect;
+  const navRenameRef = useRef(onNavRename);
+  navRenameRef.current = onNavRename;
+  const externalNavRef = useRef(externalNav);
+  externalNavRef.current = externalNav;
+  const activePlaceIdRef = useRef(activePlaceId);
+  activePlaceIdRef.current = activePlaceId;
   const mapKeyRef = useRef(mapKey);
   const seedRef = useRef(seedState);
   if (mapKeyRef.current !== mapKey) {
@@ -258,7 +290,7 @@ export function AtlasNative3dEditor({
     } else {
       host.removeAttribute('data-atlas-controlled');
     }
-    let mount: { dispose: () => void } | null = null;
+    let mount: AtlasNativeMountHandle | null = null;
     let disposePanels: (() => void) | null = null;
     let copyTimer = 0;
     try {
@@ -271,7 +303,16 @@ export function AtlasNative3dEditor({
               persistRef.current?.(next);
             }
           : undefined,
+        externalNav: externalNavRef.current ?? null,
+        activePlaceId: activePlaceIdRef.current ?? null,
+        onNavSelect: (payload) => {
+          navSelectRef.current?.(payload);
+        },
+        onNavRename: (payload) => {
+          navRenameRef.current?.(payload);
+        },
       });
+      mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
       applySagaTreeCopy(host);
       // Nav is rendered async after mount — rebrand once levels paint.
@@ -282,6 +323,7 @@ export function AtlasNative3dEditor({
     }
     return () => {
       window.clearTimeout(copyTimer);
+      mountRef.current = null;
       try {
         disposePanels?.();
       } catch {
@@ -298,12 +340,26 @@ export function AtlasNative3dEditor({
     };
   }, [mapKey, controlled]);
 
+  // Push tree / selection updates without remounting WebGL.
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.updateExternalNav(externalNav ?? null);
+  }, [externalNav]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setActiveNavPlaceId(activePlaceId ?? null);
+  }, [activePlaceId]);
+
   return (
     <div
       className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden ${className ?? ''}`}
       data-atlas-native-3d
       data-atlas-proto-exact="true"
       data-atlas-controlled={controlled ? 'true' : undefined}
+      data-atlas-product-nav={externalNav ? 'true' : undefined}
       style={{ background: '#123e4a' }}
     >
       {error ? (

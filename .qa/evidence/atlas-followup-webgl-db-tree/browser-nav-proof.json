@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "result": {
+    "source": "db",
+    "placeIds": [
+      "world:w-uuid",
+      "c1",
+      "k1",
+      "p1"
+    ],
+    "labels": [
+      "Donalu",
+      "Nordkontinent",
+      "Nordreich",
+      "Dornhain"
+    ],
+    "demoLeak": [],
+    "hasProductAttr": true
+  },
+  "emptyResult": {
+    "placeIds": [
+      "world:empty"
+    ],
+    "text": "Welt+LeerweltWeltDuplizierenLöschenKontinente+Keine Orte in dieser Welt."
+  }
+}

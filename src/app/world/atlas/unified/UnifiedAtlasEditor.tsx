@@ -80,6 +80,7 @@ import {
   stampSizeForAuthor,
   type AtlasPlaceAuthorKind,
   type AtlasPlaceNavItem,
+  type AtlasWebglNavTree,
   type SettlementPresetId,
 } from '../../../../domains/world/places';
 import {
@@ -127,6 +128,18 @@ export type UnifiedAtlasEditorProps = {
   readonly onCreatePlace?: (input: UnifiedAtlasCreatePlaceInput) => Promise<void>;
   /** DB places with map-link anchors — drives zoom nav + LOD when present. */
   readonly placeNav?: readonly AtlasPlaceNavItem[];
+  /** Product WebGL #nav tree from persisted WorldNodes (#747). */
+  readonly webglNavTree?: AtlasWebglNavTree | null;
+  readonly activePlaceId?: string | null;
+  readonly onWebglNavSelect?: (payload: {
+    readonly placeId: string | null;
+    readonly mapId: string | null;
+    readonly worldRoot: boolean;
+  }) => void;
+  readonly onWebglNavRename?: (payload: {
+    readonly placeId: string;
+    readonly label: string;
+  }) => void;
   /** Active WorldNode tip for contextual tool palette (#720). */
   readonly activeNodeKind?: WorldNodeKind | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
@@ -286,6 +299,10 @@ export function UnifiedAtlasEditor({
   onDungeonMetaChange,
   onCreatePlace,
   placeNav = [],
+  webglNavTree = null,
+  activePlaceId = null,
+  onWebglNavSelect,
+  onWebglNavRename,
   activeNodeKind = null,
   canvasLeftRail = null,
   mapKey = 'map',
@@ -1244,6 +1261,10 @@ export function UnifiedAtlasEditor({
           controlled
           seedState={controlledSeed}
           onPersist={canEdit ? handleWebglPersist : undefined}
+          externalNav={webglNavTree}
+          activePlaceId={activePlaceId}
+          onNavSelect={onWebglNavSelect}
+          onNavRename={canEdit ? onWebglNavRename : undefined}
         />
       </div>
     );
