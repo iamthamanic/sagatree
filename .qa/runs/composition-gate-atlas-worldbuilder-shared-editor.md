@@ -4,7 +4,7 @@
 `atlas-worldbuilder-shared-editor` (#721)
 
 ## HEAD
-`f79aee4a332fca21011fd6c751f09f133f7ba1a3`
+WORKTREE matches `feat/atlas-worldbuilder-721` tip (feature commit `f79aee4a` + composition pins)
 
 ## Producer → consumer
 
@@ -18,4 +18,5 @@ CLEAR
 - Product path does not write authoritative world state to `sagatree-atlas-webgl-v3`.
 - Legacy localStorage is read-once seed only when meta runtime is absent.
 - Migration 106 removes ambiguous 2-arg `get_world_atlas_map` overload.
+- Browser proof: `.qa/evidence/atlas-worldbuilder-shared-editor/`
 
