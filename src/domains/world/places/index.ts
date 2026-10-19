@@ -47,3 +47,14 @@ export {
   type AtlasLodStage,
   type AtlasPlaceNavItem,
 } from './atlas-place-nav';
+
+export {
+  buildAtlasWebglNavTree,
+  isDemoNavPlaceId,
+  webglNavKindFromPlaceKind,
+  type AtlasWebglNavNode,
+  type AtlasWebglNavTree,
+  type AtlasWebglNavTreeStatus,
+  type AtlasWebglNavUiKind,
+  type BuildAtlasWebglNavTreeInput,
+} from './atlas-webgl-nav-tree';

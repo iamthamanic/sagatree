@@ -312,6 +312,14 @@ function checkAtlasWorldbuilderQa() {
   });
 }
 
+function checkAtlasWorldbuilderWebglDbTree() {
+  console.log('Atlas worldbuilder WebGL DB tree (#747): product nav from WorldNodes...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-webgl-db-tree-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2413,6 +2421,7 @@ checkAtlasWorldbuilderSharedEditor();
 checkAtlasWorldbuilderGeometry();
 checkAtlasWorldbuilderMigration();
 checkAtlasWorldbuilderQa();
+checkAtlasWorldbuilderWebglDbTree();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
