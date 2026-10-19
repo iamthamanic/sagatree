@@ -109,3 +109,15 @@ export {
   type DungeonGeneratorMeta,
   type DungeonThemeKey,
 } from './dungeon-generator';
+
+export {
+  WEBGL_RUNTIME_META_KEY,
+  LEGACY_WEBGL_LOCAL_STORAGE_KEY,
+  extractWebglRuntimeFromGeneratorMeta,
+  mergeWebglRuntimeIntoGeneratorMeta,
+  parseWebglRuntimeState,
+  readLegacyWebglLocalStorage,
+  resolveProductCanvasDoc,
+  syncWebglPropsIntoCanvasDoc,
+  type WebglRuntimeState,
+} from './webgl-runtime-bridge';

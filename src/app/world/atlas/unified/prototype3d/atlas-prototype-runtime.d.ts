@@ -6,4 +6,13 @@ export type AtlasPrototypeMount = {
   readonly dispose: () => void;
 };
 
-export function mountAtlasPrototype3d(host: HTMLElement): AtlasPrototypeMount;
+export type AtlasPrototypeMountOptions = {
+  readonly controlled?: boolean;
+  readonly seedState?: Readonly<Record<string, unknown>> | null;
+  readonly onPersist?: (state: Readonly<Record<string, unknown>>) => void;
+};
+
+export function mountAtlasPrototype3d(
+  host: HTMLElement,
+  options?: AtlasPrototypeMountOptions,
+): AtlasPrototypeMount;

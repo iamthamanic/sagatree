@@ -46,7 +46,10 @@ import {
   generateDungeon,
   isAtlasToolAllowed,
   isSettlementLodId,
+  parseWebglRuntimeState,
   pickObjectAt,
+  readLegacyWebglLocalStorage,
+  syncWebglPropsIntoCanvasDoc,
   type AtlasPrototypeLevelId,
   type DungeonGeneratorMeta,
   type UnifiedCanvasDoc,
@@ -54,6 +57,7 @@ import {
   type UnifiedCanvasMaterial,
   type UnifiedCanvasStampType,
   type UnifiedCanvasTool,
+  type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import {
@@ -126,6 +130,11 @@ export type UnifiedAtlasEditorProps = {
   readonly activeNodeKind?: WorldNodeKind | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
   readonly canvasLeftRail?: ReactNode;
+  /** Active map identity for controlled WebGL remount (#721). */
+  readonly mapKey?: string;
+  /** Persisted WebGL runtime (generator_meta.webglRuntimeV3). */
+  readonly webglRuntime?: WebglRuntimeState | null;
+  readonly onWebglRuntimeChange?: (next: WebglRuntimeState) => void;
 };
 
 type DragState =
@@ -278,6 +287,9 @@ export function UnifiedAtlasEditor({
   placeNav = [],
   activeNodeKind = null,
   canvasLeftRail = null,
+  mapKey = 'map',
+  webglRuntime = null,
+  onWebglRuntimeChange,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -293,9 +305,13 @@ export function UnifiedAtlasEditor({
   placeNavRef.current = placeNav;
   const pinArmedRef = useRef(false);
   const marqueeArmedRef = useRef(false);
+  const legacySeedRef = useRef<WebglRuntimeState | null | undefined>(undefined);
+  if (legacySeedRef.current === undefined) {
+    legacySeedRef.current = webglRuntime ? null : readLegacyWebglLocalStorage();
+  }
+  const [surfaceMode, setSurfaceMode] = useState<'3d' | '2d'>('3d');
 
-  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');
-  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
+  const [tool, setTool] = useState<UnifiedCanvasTool>('hand');  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
   const [stamp, setStamp] = useState<UnifiedCanvasStampType>('baum');
   const [brushSize, setBrushSize] = useState(45);
   const [objectSize, setObjectSize] = useState(1);
@@ -1182,19 +1198,52 @@ export function UnifiedAtlasEditor({
   const hasDbPlaces = placeNav.length > 0;
   const isDemo = workingDoc.demoSeed !== false;
   const isWorldStarter = workingDoc.rooms.some((r) => r.id === 'w.ocean');
+  const controlledSeed = webglRuntime ?? legacySeedRef.current ?? null;
 
-  // Product maps: native Unified Atlas 3D (WebGL) — same runtime as the HTML prototype,
-  // mounted in-repo (editable), skinned to SagaTree. Flat Canvas2D remains for demoSeed.
-  if (!isDemo) {
+  const handleWebglPersist = useCallback(
+    (state: WebglRuntimeState) => {
+      const parsed = parseWebglRuntimeState(state);
+      if (!parsed) return;
+      onWebglRuntimeChange?.(parsed);
+      const synced = syncWebglPropsIntoCanvasDoc(docRef.current, parsed);
+      if (synced !== docRef.current) {
+        onDocChange(synced);
+      }
+    },
+    [onDocChange, onWebglRuntimeChange],
+  );
+
+  // Product maps: controlled WebGL (#721) — generator_meta is SoT; Draufsicht (2D) optional.
+  if (!isDemo && surfaceMode === '3d') {
     return (
       <div
-        className="flex h-full min-h-0 w-full min-w-0 flex-col"
+        className="relative flex h-full min-h-0 w-full min-w-0 flex-col"
         data-unified-atlas-editor
         data-atlas-demo="false"
         data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
         data-atlas-proto-exact="true"
+        data-atlas-surface-mode="3d"
       >
-        <AtlasNative3dEditor />
+        {canEdit ? (
+          <div className="pointer-events-none absolute right-3 top-3 z-[3]">
+            <Button
+              type="button"
+              variant="outline"
+              className="pointer-events-auto min-h-11 bg-card/95"
+              data-atlas-surface-toggle
+              aria-label="Zur Draufsicht wechseln"
+              onClick={() => setSurfaceMode('2d')}
+            >
+              Draufsicht
+            </Button>
+          </div>
+        ) : null}
+        <AtlasNative3dEditor
+          mapKey={mapKey}
+          controlled
+          seedState={controlledSeed}
+          onPersist={canEdit ? handleWebglPersist : undefined}
+        />
       </div>
     );
   }
@@ -1205,8 +1254,26 @@ export function UnifiedAtlasEditor({
       data-unified-atlas-editor
       data-atlas-demo={isDemo ? 'true' : 'false'}
       data-atlas-world-starter={isWorldStarter ? 'true' : undefined}
+      data-atlas-surface-mode={!isDemo ? '2d' : undefined}
     >
-      {workingDoc.strokes.length === 0 ? (
+      {!isDemo ? (
+        <div className="flex flex-wrap items-center gap-2" data-atlas-surface-bar>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            data-atlas-surface-toggle
+            aria-label="Zur 3D-Ansicht wechseln"
+            onClick={() => setSurfaceMode('3d')}
+          >
+            3D-Ansicht
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Draufsicht — dieselben Objekt-IDs wie in 3D (gespeicherter Edit-Store).
+          </p>
+        </div>
+      ) : null}
+      {isDemo && workingDoc.strokes.length === 0 ? (
         <div
           className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-foreground"
           data-unified-atlas-demo-badge

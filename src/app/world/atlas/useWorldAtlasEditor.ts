@@ -8,6 +8,9 @@ import {
   DORNHAIN_WORLD_LAYER_TITLE,
   buildDornhainUnifiedGeneratorMeta,
   emptyUnifiedCanvasDoc,
+  extractWebglRuntimeFromGeneratorMeta,
+  mergeWebglRuntimeIntoGeneratorMeta,
+  type WebglRuntimeState,
   extractDungeonMetaFromGeneratorMeta,
   extractUnifiedCanvasFromGeneratorMeta,
   mergeDungeonMetaIntoGeneratorMeta,
@@ -54,6 +57,7 @@ export function useWorldAtlasEditor({
   const [error, setError] = useState<string | null>(null);
   const [dirtyLayers, setDirtyLayers] = useState<WorldAtlasFeatureCollection | null>(null);
   const [canvasDoc, setCanvasDoc] = useState<UnifiedCanvasDoc>(emptyUnifiedCanvasDoc(true));
+  const [webglRuntime, setWebglRuntime] = useState<WebglRuntimeState | null>(null);
   const [dirtyCanvas, setDirtyCanvas] = useState(false);
   const [dungeonMeta, setDungeonMeta] = useState<DungeonGeneratorMeta | null>(null);
 
@@ -125,6 +129,7 @@ export function useWorldAtlasEditor({
       setMap(null);
       setDirtyLayers(null);
       setCanvasDoc(emptyUnifiedCanvasDoc(true));
+      setWebglRuntime(null);
       setDirtyCanvas(false);
       setDungeonMeta(null);
       return;
@@ -161,6 +166,7 @@ export function useWorldAtlasEditor({
           );
         }
         setDirtyLayers(null);
+        setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(vm.generatorMeta));
         setDungeonMeta(extractDungeonMetaFromGeneratorMeta(vm.generatorMeta));
       })
       .catch((err: unknown) => {
@@ -186,12 +192,20 @@ export function useWorldAtlasEditor({
     setDirtyCanvas(true);
   }, []);
 
+  const updateWebglRuntime = useCallback((next: WebglRuntimeState | null) => {
+    setWebglRuntime(next);
+    setDirtyCanvas(true);
+  }, []);
+
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;
     setSaving(true);
     setError(null);
     try {
       let generatorMeta = mergeUnifiedCanvasIntoGeneratorMeta(map.generatorMeta, canvasDoc);
+      if (webglRuntime) {
+        generatorMeta = mergeWebglRuntimeIntoGeneratorMeta(generatorMeta, webglRuntime);
+      }
       if (dungeonMeta) {
         generatorMeta = mergeDungeonMetaIntoGeneratorMeta(generatorMeta, dungeonMeta);
       }
@@ -212,6 +226,7 @@ export function useWorldAtlasEditor({
       setMap(next);
       const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
       setCanvasDoc(parsed ?? canvasDoc);
+      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
       setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
       setDirtyCanvas(false);
       await reloadList();
@@ -221,7 +236,7 @@ export function useWorldAtlasEditor({
     } finally {
       setSaving(false);
     }
-  }, [map, canEdit, canvasDoc, dirtyLayers, dungeonMeta, reloadList]);
+  }, [map, canEdit, canvasDoc, dirtyLayers, dungeonMeta, webglRuntime, reloadList]);
 
   const saveLayers = useCallback(
     async (layers: WorldAtlasFeatureCollection) => {
@@ -358,6 +373,8 @@ export function useWorldAtlasEditor({
     setDirtyLayers,
     canvasDoc,
     updateCanvasDoc,
+    webglRuntime,
+    updateWebglRuntime,
     dirtyCanvas,
     dungeonMeta,
     updateDungeonMeta,

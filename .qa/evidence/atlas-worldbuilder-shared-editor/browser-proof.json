@@ -1,0 +1,23 @@
+{
+  "before": {
+    "controlled": true,
+    "saveState": "Atlas bereit",
+    "ls": 0,
+    "alert": null,
+    "dirtySave": false
+  },
+  "mid": {
+    "saveState": "Änderungen ausstehend",
+    "props": 1,
+    "ls": 0,
+    "dirtySave": true
+  },
+  "after": {
+    "alert": null,
+    "saveState": "Atlas bereit",
+    "ls": 0,
+    "dirtySave": false,
+    "props": 1
+  },
+  "pass": true
+}
