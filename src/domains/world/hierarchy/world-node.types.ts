@@ -26,6 +26,11 @@ export const WORLD_NODE_STATUSES = [
 
 export type WorldNodeStatus = (typeof WORLD_NODE_STATUSES)[number];
 
+/** Country subtypes (hierarchy level stays `country`). */
+export const COUNTRY_SUBTYPES = ['kingdom', 'republic', 'empire'] as const;
+
+export type CountrySubtype = (typeof COUNTRY_SUBTYPES)[number];
+
 /** Place subtypes (hierarchy level stays `place`). */
 export const PLACE_SUBTYPES = [
   'city',
@@ -53,7 +58,11 @@ export const ROOM_SUBTYPES = ['chamber', 'hall', 'corridor'] as const;
 
 export type RoomSubtype = (typeof ROOM_SUBTYPES)[number];
 
-export type WorldNodeSubtype = PlaceSubtype | BuildingSubtype | RoomSubtype;
+export type WorldNodeSubtype =
+  | CountrySubtype
+  | PlaceSubtype
+  | BuildingSubtype
+  | RoomSubtype;
 
 export type WorldNodeKindLabelsDe = {
   readonly kind: WorldNodeKind;
@@ -78,6 +87,10 @@ export function isWorldNodeStatus(value: unknown): value is WorldNodeStatus {
   return typeof value === 'string' && (WORLD_NODE_STATUSES as readonly string[]).includes(value);
 }
 
+export function isCountrySubtype(value: unknown): value is CountrySubtype {
+  return typeof value === 'string' && (COUNTRY_SUBTYPES as readonly string[]).includes(value);
+}
+
 export function isPlaceSubtype(value: unknown): value is PlaceSubtype {
   return typeof value === 'string' && (PLACE_SUBTYPES as readonly string[]).includes(value);
 }
@@ -94,6 +107,7 @@ export function isSubtypeForKind(
   kind: WorldNodeKind,
   subtype: unknown,
 ): subtype is WorldNodeSubtype {
+  if (kind === 'country') return isCountrySubtype(subtype);
   if (kind === 'place') return isPlaceSubtype(subtype);
   if (kind === 'building') return isBuildingSubtype(subtype);
   if (kind === 'room') return isRoomSubtype(subtype);

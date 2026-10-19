@@ -264,6 +264,14 @@ function checkAtlasWorldbuilderStructureBind() {
   });
 }
 
+function checkAtlasWorldbuilderCreateDialog() {
+  console.log('Atlas worldbuilder create dialog (#719): + preview + createNodeWithMaps...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-create-dialog-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2359,6 +2367,7 @@ checkAtlasWorldbuilderTransaction();
 checkAtlasWorldbuilderMutations();
 checkAtlasWorldbuilderPlayerProjection();
 checkAtlasWorldbuilderStructureBind();
+checkAtlasWorldbuilderCreateDialog();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

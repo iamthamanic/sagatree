@@ -3,15 +3,17 @@
  * Location: src/app/world/places/WorldPlacesPanel.tsx
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Loader2, MapPin } from 'lucide-react';
+import { Loader2, MapPin, Plus } from 'lucide-react';
 import {
   pickPrimaryMapIdForPlace,
   placeHasDetailMap,
   type WorldPlaceMapLinkVm,
   type WorldPlaceVm,
 } from '../../../domains/world/places';
+import { tryNodeKindFromPlaceKind, type WorldNodeKind } from '../../../domains/world/hierarchy';
 import { worldPlaceService } from '../../../infrastructure/world/world-place-service';
 import { Button } from '../../../shared/ui/button';
+import { CreateWorldNodeDialog } from './CreateWorldNodeDialog';
 
 export type WorldPlacesPanelProps = {
   readonly worldProfileId: string;
@@ -23,6 +25,11 @@ export type WorldPlacesPanelProps = {
   readonly onSelectPlace?: (place: WorldPlaceVm) => void;
   /** Create + link a detail child map when the place has none (IV placeholder CTA). */
   readonly onCreateDetailMap?: (place: WorldPlaceVm) => void | Promise<void>;
+  /** After create_world_node_with_maps — open primary map. */
+  readonly onCreatedNode?: (info: {
+    readonly targetPlaceId: string;
+    readonly targetMapId: string | null;
+  }) => void;
 };
 
 function indentFor(place: WorldPlaceVm, byId: Map<string, WorldPlaceVm>): number {
@@ -47,10 +54,12 @@ export function WorldPlacesPanel({
   onOpenMap,
   onSelectPlace,
   onCreateDetailMap,
+  onCreatedNode,
 }: WorldPlacesPanelProps) {
   const [creating, setCreating] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
   const [places, setPlaces] = useState<WorldPlaceVm[]>([]);
   const [links, setLinks] = useState<WorldPlaceMapLinkVm[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,6 +100,9 @@ export function WorldPlacesPanel({
 
   const selected = selectedId ? byId.get(selectedId) ?? null : null;
   const selectedHasDetail = selected ? placeHasDetailMap(selected.id, links) : false;
+  const parentKind: WorldNodeKind | null = selected
+    ? tryNodeKindFromPlaceKind(selected.kind)
+    : null;
 
   return (
     <div className="flex min-h-0 flex-col gap-2" data-world-places-panel>
@@ -98,18 +110,52 @@ export function WorldPlacesPanel({
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Weltstruktur
         </p>
-        {canEdit ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="min-h-9 text-xs"
-            onClick={() => void reload()}
-          >
-            Aktualisieren
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-1">
+          {canEdit ? (
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              className="min-h-11 min-w-11"
+              aria-label="Element anlegen"
+              data-weltstruktur-add
+              onClick={() => setShowCreate((v) => !v)}
+            >
+              <Plus className="size-4" aria-hidden />
+            </Button>
+          ) : null}
+          {canEdit ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="min-h-11 text-xs"
+              onClick={() => void reload()}
+            >
+              Aktualisieren
+            </Button>
+          ) : null}
+        </div>
       </div>
+
+      {showCreate && canEdit ? (
+        <CreateWorldNodeDialog
+          worldProfileId={worldProfileId}
+          canEdit={canEdit}
+          parentPlaceId={selected?.id ?? null}
+          parentKind={parentKind}
+          defaultChildKind={parentKind === 'continent' ? 'country' : parentKind === 'country' ? 'place' : parentKind === 'place' ? 'building' : parentKind === 'building' ? 'room' : 'continent'}
+          onClose={() => setShowCreate(false)}
+          onCreated={(info) => {
+            setShowCreate(false);
+            void reload().then(() => {
+              setSelectedId(info.targetPlaceId);
+              onCreatedNode?.(info);
+              if (info.targetMapId) onOpenMap?.(info.targetMapId);
+            });
+          }}
+        />
+      ) : null}
 
       {loading ? (
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
