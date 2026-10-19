@@ -2,7 +2,7 @@
  * CreateWorldNodeDialog — contextual + create with ancestor preview (#719).
  * Location: src/app/world/places/CreateWorldNodeDialog.tsx
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import {
   BUILDING_SUBTYPES,
@@ -55,6 +55,8 @@ export type CreateWorldNodeDialogProps = {
   readonly parentKind?: WorldNodeKind | null;
   /** Suggested child kind for contextual + (defaults to continent). */
   readonly defaultChildKind?: WorldNodeKind;
+  /** When set, Typ select is locked to this kind (WebGL category +). */
+  readonly fixedChildKind?: WorldNodeKind | null;
   readonly onCreated?: (result: {
     readonly targetPlaceId: string;
     readonly targetMapId: string | null;
@@ -68,14 +70,19 @@ export function CreateWorldNodeDialog({
   parentPlaceId = null,
   parentKind = null,
   defaultChildKind = 'continent',
+  fixedChildKind = null,
   onCreated,
   onClose,
 }: CreateWorldNodeDialogProps) {
-  const [kind, setKind] = useState<WorldNodeKind>(defaultChildKind);
+  const [kind, setKind] = useState<WorldNodeKind>(fixedChildKind ?? defaultChildKind);
   const [subtype, setSubtype] = useState<string>('');
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (fixedChildKind) setKind(fixedChildKind);
+  }, [fixedChildKind]);
 
   const plan = useMemo(
     () =>
@@ -154,7 +161,7 @@ export function CreateWorldNodeDialog({
           id="wb-create-kind"
           className="min-h-11 w-full rounded-md border border-border bg-background px-2 text-sm"
           value={kind}
-          disabled={busy}
+          disabled={busy || Boolean(fixedChildKind)}
           onChange={(e) => {
             const next = e.target.value as WorldNodeKind;
             setKind(next);

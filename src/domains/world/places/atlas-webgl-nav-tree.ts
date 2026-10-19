@@ -84,6 +84,21 @@ export function webglNavKindFromPlaceKind(kind: WorldPlaceKind): AtlasWebglNavUi
   return 'ort';
 }
 
+/**
+ * Map WebGL + button UI kind → canonical WorldNodeKind for create dialogs (#748).
+ * Returns null for `world` (created outside Atlas) or unknown labels.
+ */
+export function worldNodeKindFromWebglNavUiKind(
+  uiKind: string,
+): 'continent' | 'country' | 'place' | 'building' | 'room' | null {
+  if (uiKind === 'kontinent') return 'continent';
+  if (uiKind === 'land') return 'country';
+  if (uiKind === 'ort') return 'place';
+  if (uiKind === 'gebaeude') return 'building';
+  if (uiKind === 'raum') return 'room';
+  return null;
+}
+
 function subLabelForPlace(place: WorldPlaceVm, uiKind: AtlasWebglNavUiKind): string {
   if (place.status === 'placeholder') return 'Platzhalter';
   if (place.status === 'draft') return 'Entwurf';

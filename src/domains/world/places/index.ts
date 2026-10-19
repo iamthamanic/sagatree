@@ -52,6 +52,7 @@ export {
   buildAtlasWebglNavTree,
   isDemoNavPlaceId,
   webglNavKindFromPlaceKind,
+  worldNodeKindFromWebglNavUiKind,
   type AtlasWebglNavNode,
   type AtlasWebglNavTree,
   type AtlasWebglNavTreeStatus,

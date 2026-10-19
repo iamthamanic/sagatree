@@ -34,6 +34,15 @@ export type AtlasPrototypeMount = {
   readonly setActiveNavPlaceId: (placeId: string | null) => void;
 };
 
+export type AtlasPrototypeNavAddPayload = {
+  readonly uiKind: string;
+  readonly parentId: string;
+};
+
+export type AtlasPrototypeNavPlacePayload = {
+  readonly placeId: string;
+};
+
 export type AtlasPrototypeMountOptions = {
   readonly controlled?: boolean;
   readonly seedState?: Readonly<Record<string, unknown>> | null;
@@ -46,6 +55,11 @@ export type AtlasPrototypeMountOptions = {
     readonly placeId: string;
     readonly label: string;
   }) => void;
+  /** Product #748 — open server create dialog for category +. */
+  readonly onNavAdd?: (payload: AtlasPrototypeNavAddPayload) => void;
+  readonly onNavDuplicate?: (payload: AtlasPrototypeNavPlacePayload) => void;
+  readonly onNavArchive?: (payload: AtlasPrototypeNavPlacePayload) => void;
+  readonly onNavReparent?: (payload: AtlasPrototypeNavPlacePayload) => void;
 };
 
 export function mountAtlasPrototype3d(
