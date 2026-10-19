@@ -49,6 +49,8 @@ export function WorldPlacesPanel({
   onCreateDetailMap,
 }: WorldPlacesPanelProps) {
   const [creating, setCreating] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
   const [places, setPlaces] = useState<WorldPlaceVm[]>([]);
   const [links, setLinks] = useState<WorldPlaceMapLinkVm[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +95,9 @@ export function WorldPlacesPanel({
   return (
     <div className="flex min-h-0 flex-col gap-2" data-world-places-panel>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Orte</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Weltstruktur
+        </p>
         {canEdit ? (
           <Button
             type="button"
@@ -145,6 +149,11 @@ export function WorldPlacesPanel({
               >
                 <MapPin className="size-3.5 shrink-0 opacity-70" aria-hidden />
                 <span className="min-w-0 flex-1 truncate">{place.name}</span>
+                {place.status === 'placeholder' || place.status === 'draft' ? (
+                  <span className="shrink-0 text-[10px] uppercase opacity-70">
+                    {place.status === 'placeholder' ? 'Platzhalter' : 'Entwurf'}
+                  </span>
+                ) : null}
                 <span className="shrink-0 text-[10px] uppercase opacity-70">{place.kind}</span>
               </button>
             </li>
@@ -161,7 +170,46 @@ export function WorldPlacesPanel({
           <p className="text-xs text-muted-foreground">
             {selected.kind}
             {selected.seedKey ? ` · ${selected.seedKey}` : ''}
+            {selected.status ? ` · ${selected.status}` : ''}
           </p>
+          {canEdit ? (
+            <div className="flex flex-col gap-2" data-world-place-rename>
+              <label className="text-xs text-muted-foreground" htmlFor="world-place-rename">
+                Name
+              </label>
+              <input
+                id="world-place-rename"
+                className="min-h-11 w-full rounded-md border border-border bg-background px-2 text-sm"
+                value={renameValue || selected.name}
+                onChange={(e) => setRenameValue(e.target.value)}
+                onFocus={() => setRenameValue(selected.name)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11 w-full"
+                disabled={renaming || !(renameValue.trim() || selected.name)}
+                onClick={() => {
+                  const next = (renameValue.trim() || selected.name).trim();
+                  if (!next || next === selected.name) return;
+                  setRenaming(true);
+                  void worldPlaceService
+                    .renameNode({
+                      worldProfileId,
+                      placeId: selected.id,
+                      name: next,
+                    })
+                    .then(() => reload())
+                    .catch((err) => {
+                      setError(err instanceof Error ? err.message : 'Umbenennen fehlgeschlagen.');
+                    })
+                    .finally(() => setRenaming(false));
+                }}
+              >
+                {renaming ? 'Speichern…' : 'Umbenennen'}
+              </Button>
+            </div>
+          ) : null}
           {!selectedHasDetail ? (
             <div className="space-y-2" data-iv-missing-detail>
               <p className="text-xs text-muted-foreground">

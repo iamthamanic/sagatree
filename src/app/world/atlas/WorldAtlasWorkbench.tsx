@@ -502,7 +502,7 @@ export function WorldAtlasWorkbench({
                     data-atlas-maps-rail
                     data-atlas-maps-expanded={mapsRailExpanded ? 'true' : 'false'}
                     role="navigation"
-                    aria-label="Karten"
+                    aria-label={placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
                   >
                     <button
                       type="button"
@@ -510,7 +510,7 @@ export function WorldAtlasWorkbench({
                       aria-expanded={mapsRailExpanded}
                       aria-controls="atlas-maps-rail-list"
                       data-atlas-maps-toggle
-                      title={mapsRailExpanded ? 'Karte einklappen' : 'Karte ausklappen'}
+                      title={mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
                       onClick={() => setMapsRailExpanded((v) => !v)}
                     >
                       <MapIcon className="size-4" aria-hidden />
@@ -521,7 +521,7 @@ export function WorldAtlasWorkbench({
                         aria-hidden
                       />
                       <span className="sr-only">
-                        {mapsRailExpanded ? 'Karte einklappen' : 'Karte ausklappen'}
+                        {mapsRailExpanded ? 'Weltstruktur einklappen' : 'Weltstruktur ausklappen'}
                       </span>
                     </button>
                     <div
@@ -538,30 +538,57 @@ export function WorldAtlasWorkbench({
                             mapsRailExpanded ? 'translate-y-0' : '-translate-y-1'
                           }`}
                         >
+                          <p className="px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            {placeNav.length > 0 ? 'Weltstruktur' : 'Karten'}
+                          </p>
                           <ul
                             className="max-h-[min(60%,24rem)] space-y-0.5 overflow-auto"
                             data-world-atlas-hierarchy
+                            data-atlas-weltstruktur={placeNav.length > 0 ? 'true' : 'false'}
                           >
-                            {editor.summaries.map((item) => (
-                              <li key={item.id}>
-                                <button
-                                  type="button"
-                                  tabIndex={mapsRailExpanded ? 0 : -1}
-                                  className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${
-                                    item.id === editor.activeMapId
-                                      ? 'bg-primary text-primary-foreground'
-                                      : 'hover:bg-muted'
-                                  }`}
-                                  onClick={() => {
-                                    editor.setActiveMapId(item.id);
-                                    setMapsRailExpanded(false);
-                                  }}
-                                >
-                                  <span className="truncate">{item.title}</span>
-                                </button>
-                              </li>
-                            ))}
-                            {editor.summaries.length === 0 ? (
+                            {placeNav.length > 0
+                              ? placeNav.map((item) => (
+                                  <li key={item.placeId}>
+                                    <button
+                                      type="button"
+                                      tabIndex={mapsRailExpanded ? 0 : -1}
+                                      className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${
+                                        item.mapId && item.mapId === editor.activeMapId
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'hover:bg-muted'
+                                      }`}
+                                      data-atlas-place-nav={item.placeId}
+                                      onClick={() => {
+                                        if (item.mapId) {
+                                          editor.setActiveMapId(item.mapId);
+                                          setMapsRailExpanded(false);
+                                        }
+                                      }}
+                                    >
+                                      <span className="truncate">{item.name}</span>
+                                    </button>
+                                  </li>
+                                ))
+                              : editor.summaries.map((item) => (
+                                  <li key={item.id}>
+                                    <button
+                                      type="button"
+                                      tabIndex={mapsRailExpanded ? 0 : -1}
+                                      className={`flex min-h-11 w-full items-center rounded-md px-2 text-left text-xs font-semibold ${
+                                        item.id === editor.activeMapId
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'hover:bg-muted'
+                                      }`}
+                                      onClick={() => {
+                                        editor.setActiveMapId(item.id);
+                                        setMapsRailExpanded(false);
+                                      }}
+                                    >
+                                      <span className="truncate">{item.title}</span>
+                                    </button>
+                                  </li>
+                                ))}
+                            {placeNav.length === 0 && editor.summaries.length === 0 ? (
                               <li className="px-2 py-2 text-xs text-muted-foreground">Keine Karte.</li>
                             ) : null}
                           </ul>

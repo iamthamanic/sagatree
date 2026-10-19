@@ -42,8 +42,9 @@ function spanForKind(kind: WorldPlaceKind): number {
 }
 
 /**
- * Build zoom-nav entries from places that have an atlas anchor on any map link.
- * Prefer overview/footprint links; fall back to first anchored link.
+ * Build zoom-nav / structure entries from world_places + map links (#718).
+ * Prefer primary map ownership; include unlocated nodes (no anchor) with a
+ * neutral focus rect so tree select can still open the primary mapId.
  */
 export function buildAtlasPlaceNav(
   places: readonly WorldPlaceVm[],
@@ -58,20 +59,27 @@ export function buildAtlasPlaceNav(
 
   const items: AtlasPlaceNavItem[] = [];
   for (const place of places) {
+    if (place.status === 'archived') continue;
     const placeLinks = byPlace.get(place.id) ?? [];
-    const preferred =
+    const anchored =
+      placeLinks.find((l) => l.usage === 'primary' && anchorPointFromLink(l)) ??
       placeLinks.find((l) => l.usage === 'overview' && anchorPointFromLink(l)) ??
       placeLinks.find((l) => l.usage === 'footprint' && anchorPointFromLink(l)) ??
       placeLinks.find((l) => anchorPointFromLink(l));
-    if (!preferred) continue;
-    const pt = anchorPointFromLink(preferred);
+    const primary =
+      placeLinks.find((l) => l.usage === 'primary') ??
+      anchored ??
+      placeLinks[0] ??
+      null;
+    if (!primary) continue;
+    const pt = anchored ? anchorPointFromLink(anchored) : { x: 500, y: 500 };
     if (!pt) continue;
     const span = spanForKind(place.kind);
     items.push({
       placeId: place.id,
       name: place.name,
       kind: place.kind,
-      mapId: preferred.mapId,
+      mapId: primary.mapId,
       x: pt.x,
       y: pt.y,
       focusRect: {
@@ -85,15 +93,18 @@ export function buildAtlasPlaceNav(
 
   const order: Record<string, number> = {
     continent: 0,
+    country: 1,
     realm: 1,
+    place: 2,
     region: 2,
     area: 3,
-    settlement: 4,
-    district: 5,
-    site: 6,
-    building: 7,
-    interior: 8,
-    dungeon: 9,
+    settlement: 3,
+    district: 4,
+    site: 5,
+    building: 5,
+    room: 6,
+    interior: 6,
+    dungeon: 5,
   };
   items.sort((a, b) => (order[a.kind] ?? 50) - (order[b.kind] ?? 50) || a.name.localeCompare(b.name, 'de'));
   return items;

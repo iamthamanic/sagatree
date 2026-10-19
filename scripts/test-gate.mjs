@@ -256,6 +256,14 @@ function checkAtlasWorldbuilderPlayerProjection() {
   });
 }
 
+function checkAtlasWorldbuilderStructureBind() {
+  console.log('Atlas worldbuilder structure bind (#718): primary-map Weltstruktur...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-structure-bind-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2350,6 +2358,7 @@ checkAtlasWorldbuilderDomain();
 checkAtlasWorldbuilderTransaction();
 checkAtlasWorldbuilderMutations();
 checkAtlasWorldbuilderPlayerProjection();
+checkAtlasWorldbuilderStructureBind();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
