@@ -14,6 +14,11 @@ export type AtlasPlaceNavItem = {
   readonly y: number;
   /** Suggested fit rect around the anchor for goTo. */
   readonly focusRect: AtlasRect;
+  /**
+   * True when a grounded numeric anchor exists on a map link.
+   * Unlocated nodes keep mapId for tree select but must not drive LOD drill (#722).
+   */
+  readonly located: boolean;
 };
 
 function num(v: unknown): number | null {
@@ -42,9 +47,9 @@ function spanForKind(kind: WorldPlaceKind): number {
 }
 
 /**
- * Build zoom-nav / structure entries from world_places + map links (#718).
- * Prefer primary map ownership; include unlocated nodes (no anchor) with a
- * neutral focus rect so tree select can still open the primary mapId.
+ * Build zoom-nav / structure entries from world_places + map links (#718/#722).
+ * Prefer primary map ownership; include unlocated nodes (no anchor) without a
+ * fake focus rect so LOD cannot invent geography.
  */
 export function buildAtlasPlaceNav(
   places: readonly WorldPlaceVm[],
@@ -72,22 +77,25 @@ export function buildAtlasPlaceNav(
       placeLinks[0] ??
       null;
     if (!primary) continue;
-    const pt = anchored ? anchorPointFromLink(anchored) : { x: 500, y: 500 };
-    if (!pt) continue;
-    const span = spanForKind(place.kind);
+    const pt = anchored ? anchorPointFromLink(anchored) : null;
+    const located = pt != null;
+    const span = located ? spanForKind(place.kind) : 0;
     items.push({
       placeId: place.id,
       name: place.name,
       kind: place.kind,
       mapId: primary.mapId,
-      x: pt.x,
-      y: pt.y,
-      focusRect: {
-        x: pt.x - span / 2,
-        y: pt.y - span / 2,
-        width: span,
-        height: span,
-      },
+      x: pt?.x ?? 0,
+      y: pt?.y ?? 0,
+      located,
+      focusRect: located
+        ? {
+            x: pt!.x - span / 2,
+            y: pt!.y - span / 2,
+            width: span,
+            height: span,
+          }
+        : { x: 0, y: 0, width: 0, height: 0 },
     });
   }
 
@@ -125,6 +133,7 @@ function pointInFocus(
 
 /**
  * Finest place under the camera that is zoomed in enough (Google-Maps-style LOD).
+ * Only grounded (`located`) anchors participate — unlocated never causes map switches (#722).
  * Returns null when nav is empty so callers can fall back to demo rects.
  */
 export function resolveAtlasLodFromPlaces(
@@ -133,7 +142,9 @@ export function resolveAtlasLodFromPlaces(
   nav: readonly AtlasPlaceNavItem[],
 ): AtlasLodStage | null {
   if (nav.length === 0) return null;
-  const ranked = [...nav].sort((a, b) => a.focusRect.width - b.focusRect.width);
+  const ranked = [...nav]
+    .filter((item) => item.located && item.focusRect.width > 0 && item.focusRect.height > 0)
+    .sort((a, b) => a.focusRect.width - b.focusRect.width);
   for (const item of ranked) {
     if (!pointInFocus(center, item.focusRect)) continue;
     if (pixelsPerUnit * item.focusRect.width < 260) continue;

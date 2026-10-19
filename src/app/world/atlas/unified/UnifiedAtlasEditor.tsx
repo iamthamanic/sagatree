@@ -46,6 +46,7 @@ import {
   generateDungeon,
   isAtlasToolAllowed,
   isSettlementLodId,
+  atlasZoomCaption,
   parseWebglRuntimeState,
   pickObjectAt,
   readLegacyWebglLocalStorage,
@@ -808,7 +809,7 @@ export function UnifiedAtlasEditor({
         }
         return nextHotspots;
       });
-      setZoomPct(`${Math.round((450 / Math.max(1, span)) * 100)}%`);
+      setZoomPct(atlasZoomCaption(Math.round((450 / Math.max(1, span)) * 100), null));
     } else {
       setHotspotScreen((prev) => (prev.length === 0 ? prev : []));
       const lod = resolveAtlasLodFromPlaces(cam.center, scale, placeNavRef.current);
@@ -821,7 +822,7 @@ export function UnifiedAtlasEditor({
         setLevel(lv);
         setCrumb(cr);
       }
-      setZoomPct(`${Math.round((scale / fitRef.current) * 100)}%`);
+      setZoomPct(atlasZoomCaption(Math.round((scale / fitRef.current) * 100), null));
     }
   });
 
@@ -1454,6 +1455,7 @@ export function UnifiedAtlasEditor({
                   const hits = placeNav
                     .filter(
                       (n) =>
+                        n.located &&
                         p.x >= n.focusRect.x &&
                         p.x <= n.focusRect.x + n.focusRect.width &&
                         p.y >= n.focusRect.y &&
@@ -1472,6 +1474,7 @@ export function UnifiedAtlasEditor({
                 const hits = placeNav
                   .filter(
                     (n) =>
+                      n.located &&
                       p.x >= n.focusRect.x &&
                       p.x <= n.focusRect.x + n.focusRect.width &&
                       p.y >= n.focusRect.y &&

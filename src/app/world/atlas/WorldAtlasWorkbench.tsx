@@ -33,6 +33,10 @@ import {
   type WorldPlaceVm,
 } from '../../../domains/world/places';
 import { tryNodeKindFromPlaceKind } from '../../../domains/world/hierarchy';
+import {
+  UNLOCATED_MAP_HINT_DE,
+  extractMapFrameFromGeneratorMeta,
+} from '../../../domains/world/atlas';
 import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
 import { useWorldAtlasEditor } from './useWorldAtlasEditor';
@@ -85,6 +89,10 @@ export function WorldAtlasWorkbench({
   const showUnified = Boolean(editor.map && !showLegacyTiles);
   /** Exact HTML 3D prototype mount (not flat Canvas2D). */
   const protoExact = showUnified && editor.canvasDoc.demoSeed === false;
+  const activeMapFrame = editor.map
+    ? extractMapFrameFromGeneratorMeta(editor.map.generatorMeta)
+    : null;
+  const mapUnlocated = activeMapFrame?.status === 'unlocated' && !activeMapFrame.parentAnchor;
   /**
    * Boot: map not ready yet — ocean placeholder, no prototype title/rail chrome.
    * loading starts true when worldProfileId is set (see useWorldAtlasEditor) so the first
@@ -456,6 +464,17 @@ export function WorldAtlasWorkbench({
         </div>
       ) : null}
 
+      {mapUnlocated && showUnified && !atlasBooting ? (
+        <div
+          className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
+          data-atlas-unlocated-hint
+          role="status"
+        >
+          {UNLOCATED_MAP_HINT_DE}
+          {canEdit ? ' — Verorte den Ausschnitt auf der Elternkarte, bevor Zoom dorthin wechselt.' : null}
+        </div>
+      ) : null}
+
       {editor.error ? (
         <div
           className="space-y-2 rounded-lg border border-destructive bg-destructive/10 p-3"
@@ -640,6 +659,11 @@ export function WorldAtlasWorkbench({
                                       }}
                                     >
                                       <span className="truncate">{item.name}</span>
+                                      {!item.located ? (
+                                        <span className="ml-1 shrink-0 text-[10px] font-normal opacity-80">
+                                          unverortet
+                                        </span>
+                                      ) : null}
                                     </button>
                                   </li>
                                 ))
