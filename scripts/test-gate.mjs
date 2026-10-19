@@ -344,6 +344,14 @@ function checkAtlasWorldbuilderWebglTreeActions() {
   });
 }
 
+function checkAtlasWorldbuilderEditorDurability() {
+  console.log('Atlas worldbuilder editor durability (#751): persist status + CAS conflict...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-editor-durability-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2449,6 +2457,7 @@ checkAtlasWorldbuilderRealDonaluInventory();
 checkAtlasWorldbuilderQa();
 checkAtlasWorldbuilderWebglDbTree();
 checkAtlasWorldbuilderWebglTreeActions();
+checkAtlasWorldbuilderEditorDurability();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
