@@ -1,7 +1,7 @@
 # Composition Gate — atlas-followup-webgl-db-tree (#747)
 
 **Status:** CLEAR  
-**WORKTREE:** feat/issue-747-atlas-followup-webgl-db-tree  
+**WORKTREE:** feat/issue-747-atlas-followup-webgl-db-tree @ PR tip  
 **Date:** 2026-10-19
 
 ## Producer → consumer path
