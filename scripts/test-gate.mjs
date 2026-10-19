@@ -272,6 +272,14 @@ function checkAtlasWorldbuilderCreateDialog() {
   });
 }
 
+function checkAtlasWorldbuilderToolRegistry() {
+  console.log('Atlas worldbuilder tool registry (#720): contextual AtlasTool allow-list...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-tool-registry-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2368,6 +2376,7 @@ checkAtlasWorldbuilderMutations();
 checkAtlasWorldbuilderPlayerProjection();
 checkAtlasWorldbuilderStructureBind();
 checkAtlasWorldbuilderCreateDialog();
+checkAtlasWorldbuilderToolRegistry();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
