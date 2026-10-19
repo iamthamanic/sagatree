@@ -55,6 +55,14 @@ export {
 } from './map-edit-ops';
 
 export {
+  ATLAS_TOOL_REGISTRY,
+  atlasToolsForKind,
+  isAtlasToolAllowed,
+  type AtlasToolDef,
+  type AtlasToolId,
+} from './atlas-tool-registry';
+
+export {
   DORNHAIN_SETTLEMENT_FOCUS,
   DORNHAIN_STARTER_CANVAS,
   DORNHAIN_STARTER_GRID,

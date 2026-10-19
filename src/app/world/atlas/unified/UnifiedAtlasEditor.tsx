@@ -38,11 +38,13 @@ import {
   atlasPrototypeNextLevel,
   atlasPrototypeStampSize,
   atlasSpanFromScale,
+  atlasToolsForKind,
   buildDungeonGeneratorMeta,
   DEFAULT_ATLAS_BOUNDS,
   dungeonNeedsReforgeConfirm,
   emptyUnifiedCanvasDoc,
   generateDungeon,
+  isAtlasToolAllowed,
   isSettlementLodId,
   pickObjectAt,
   type AtlasPrototypeLevelId,
@@ -53,6 +55,7 @@ import {
   type UnifiedCanvasStampType,
   type UnifiedCanvasTool,
 } from '../../../../domains/world/atlas';
+import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import {
   atlasFitCamera,
   atlasOpacity,
@@ -119,6 +122,8 @@ export type UnifiedAtlasEditorProps = {
   readonly onCreatePlace?: (input: UnifiedAtlasCreatePlaceInput) => Promise<void>;
   /** DB places with map-link anchors — drives zoom nav + LOD when present. */
   readonly placeNav?: readonly AtlasPlaceNavItem[];
+  /** Active WorldNode tip for contextual tool palette (#720). */
+  readonly activeNodeKind?: WorldNodeKind | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
   readonly canvasLeftRail?: ReactNode;
 };
@@ -271,6 +276,7 @@ export function UnifiedAtlasEditor({
   onDungeonMetaChange,
   onCreatePlace,
   placeNav = [],
+  activeNodeKind = null,
   canvasLeftRail = null,
 }: UnifiedAtlasEditorProps) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -1103,20 +1109,27 @@ export function UnifiedAtlasEditor({
     commit({ ...workingDoc, layers: { ...workingDoc.layers, [id]: on } }, false);
   };
 
-  const tools: {
-    readonly id: UnifiedCanvasTool;
-    readonly label: string;
-    readonly Icon: ComponentType<LucideProps>;
-  }[] = [
-    { id: 'hand', label: 'Hand', Icon: Hand },
-    { id: 'select', label: 'Auswahl', Icon: MousePointer2 },
-    { id: 'brush', label: 'Pinsel', Icon: Paintbrush },
-    { id: 'road', label: 'Weg', Icon: Route },
-    { id: 'room', label: 'Raum', Icon: Square },
-    { id: 'wall', label: 'Wand', Icon: BrickWall },
-    { id: 'stamp', label: 'Stempel', Icon: Stamp },
-    { id: 'erase', label: 'Radierer', Icon: Eraser },
-  ];
+  const toolIcons: Record<UnifiedCanvasTool, ComponentType<LucideProps>> = {
+    hand: Hand,
+    select: MousePointer2,
+    brush: Paintbrush,
+    road: Route,
+    room: Square,
+    wall: BrickWall,
+    stamp: Stamp,
+    erase: Eraser,
+  };
+  const tools = atlasToolsForKind(activeNodeKind ?? null).map((t) => ({
+    id: t.id,
+    label: t.labelDe,
+    Icon: toolIcons[t.id],
+  }));
+
+  useEffect(() => {
+    if (!isAtlasToolAllowed(tool, activeNodeKind ?? null)) {
+      setTool('hand');
+    }
+  }, [activeNodeKind, tool]);
 
   const handleDefinePlace = async (req: AtlasDefinePlaceRequest) => {
     if (!onCreatePlace || !canEdit) return;

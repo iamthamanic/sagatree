@@ -32,6 +32,7 @@ import {
   type WorldPlaceKind,
   type WorldPlaceVm,
 } from '../../../domains/world/places';
+import { tryNodeKindFromPlaceKind } from '../../../domains/world/hierarchy';
 import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
 import { useWorldAtlasEditor } from './useWorldAtlasEditor';
@@ -495,6 +496,11 @@ export function WorldAtlasWorkbench({
               dungeonMeta={editor.dungeonMeta}
               onDungeonMetaChange={editor.updateDungeonMeta}
               placeNav={placeNav}
+              activeNodeKind={
+                tryNodeKindFromPlaceKind(
+                  placeNav.find((p) => p.mapId === editor.activeMapId)?.kind ?? '',
+                )
+              }
               canvasLeftRail={
                   <div
                     className="absolute left-3 top-3 z-[2] flex max-h-[min(75%,32rem)] flex-col gap-1 overflow-hidden rounded-lg border border-border bg-card/95 p-1 shadow"
