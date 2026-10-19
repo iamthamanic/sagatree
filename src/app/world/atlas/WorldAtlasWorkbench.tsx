@@ -643,6 +643,10 @@ export function WorldAtlasWorkbench({
             activeMapId={editor.activeMapId}
             onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
             onCreateDetailMap={canEdit ? handleCreateDetailMap : undefined}
+            onCreatedNode={(info) => {
+              setPlaceNavTick((n) => n + 1);
+              if (info.targetMapId) editor.setActiveMapId(info.targetMapId);
+            }}
           />
           {metaPanel}
         </aside>
@@ -666,6 +670,10 @@ export function WorldAtlasWorkbench({
               activeMapId={editor.activeMapId}
               onOpenMap={(mapId) => editor.setActiveMapId(mapId)}
               onCreateDetailMap={canEdit ? handleCreateDetailMap : undefined}
+              onCreatedNode={(info) => {
+                setPlaceNavTick((n) => n + 1);
+                if (info.targetMapId) editor.setActiveMapId(info.targetMapId);
+              }}
             />
           </div>
         </aside>
