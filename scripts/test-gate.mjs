@@ -248,6 +248,14 @@ function checkAtlasWorldbuilderMutations() {
   });
 }
 
+function checkAtlasWorldbuilderPlayerProjection() {
+  console.log('Atlas worldbuilder player projection (#717): saga-aware maps + storage...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-player-projection-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2341,6 +2349,7 @@ checkAtlasWorldbuilderEvidence();
 checkAtlasWorldbuilderDomain();
 checkAtlasWorldbuilderTransaction();
 checkAtlasWorldbuilderMutations();
+checkAtlasWorldbuilderPlayerProjection();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
