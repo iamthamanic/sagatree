@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "map": {
+    "kontinent": "continent",
+    "land": "country",
+    "ort": "place",
+    "gebaeude": "building",
+    "raum": "room",
+    "world": null
+  },
+  "issue": 748
+}

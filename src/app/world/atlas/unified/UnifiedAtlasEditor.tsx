@@ -142,6 +142,13 @@ export type UnifiedAtlasEditorProps = {
     readonly placeId: string;
     readonly label: string;
   }) => void;
+  readonly onWebglNavAdd?: (payload: {
+    readonly uiKind: string;
+    readonly parentId: string;
+  }) => void;
+  readonly onWebglNavDuplicate?: (payload: { readonly placeId: string }) => void;
+  readonly onWebglNavArchive?: (payload: { readonly placeId: string }) => void;
+  readonly onWebglNavReparent?: (payload: { readonly placeId: string }) => void;
   /** Active WorldNode tip for contextual tool palette (#720). */
   readonly activeNodeKind?: WorldNodeKind | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
@@ -305,6 +312,10 @@ export function UnifiedAtlasEditor({
   activePlaceId = null,
   onWebglNavSelect,
   onWebglNavRename,
+  onWebglNavAdd,
+  onWebglNavDuplicate,
+  onWebglNavArchive,
+  onWebglNavReparent,
   activeNodeKind = null,
   canvasLeftRail = null,
   mapKey = 'map',
@@ -1293,6 +1304,10 @@ export function UnifiedAtlasEditor({
           activePlaceId={activePlaceId}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
+          onNavAdd={canEdit ? onWebglNavAdd : undefined}
+          onNavDuplicate={canEdit ? onWebglNavDuplicate : undefined}
+          onNavArchive={canEdit ? onWebglNavArchive : undefined}
+          onNavReparent={canEdit ? onWebglNavReparent : undefined}
         />
       </div>
     );

@@ -38,6 +38,11 @@ export type AtlasNative3dEditorProps = {
   readonly activePlaceId?: string | null;
   readonly onNavSelect?: (payload: AtlasNativeNavSelectPayload) => void;
   readonly onNavRename?: (payload: { readonly placeId: string; readonly label: string }) => void;
+  /** Product #748 — server create / mutation bridge from WebGL #nav. */
+  readonly onNavAdd?: (payload: { readonly uiKind: string; readonly parentId: string }) => void;
+  readonly onNavDuplicate?: (payload: { readonly placeId: string }) => void;
+  readonly onNavArchive?: (payload: { readonly placeId: string }) => void;
+  readonly onNavReparent?: (payload: { readonly placeId: string }) => void;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -258,6 +263,10 @@ export function AtlasNative3dEditor({
   activePlaceId = null,
   onNavSelect,
   onNavRename,
+  onNavAdd,
+  onNavDuplicate,
+  onNavArchive,
+  onNavReparent,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -267,6 +276,14 @@ export function AtlasNative3dEditor({
   navSelectRef.current = onNavSelect;
   const navRenameRef = useRef(onNavRename);
   navRenameRef.current = onNavRename;
+  const navAddRef = useRef(onNavAdd);
+  navAddRef.current = onNavAdd;
+  const navDuplicateRef = useRef(onNavDuplicate);
+  navDuplicateRef.current = onNavDuplicate;
+  const navArchiveRef = useRef(onNavArchive);
+  navArchiveRef.current = onNavArchive;
+  const navReparentRef = useRef(onNavReparent);
+  navReparentRef.current = onNavReparent;
   const externalNavRef = useRef(externalNav);
   externalNavRef.current = externalNav;
   const activePlaceIdRef = useRef(activePlaceId);
@@ -310,6 +327,18 @@ export function AtlasNative3dEditor({
         },
         onNavRename: (payload) => {
           navRenameRef.current?.(payload);
+        },
+        onNavAdd: (payload) => {
+          navAddRef.current?.(payload);
+        },
+        onNavDuplicate: (payload) => {
+          navDuplicateRef.current?.(payload);
+        },
+        onNavArchive: (payload) => {
+          navArchiveRef.current?.(payload);
+        },
+        onNavReparent: (payload) => {
+          navReparentRef.current?.(payload);
         },
       });
       mountRef.current = mount;

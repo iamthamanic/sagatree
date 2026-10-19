@@ -29,13 +29,17 @@ import {
 import {
   buildAtlasPlaceNav,
   buildAtlasWebglNavTree,
+  worldNodeKindFromWebglNavUiKind,
   type AtlasPlaceNavItem,
   type AtlasWebglNavTreeStatus,
   type WorldPlaceKind,
   type WorldPlaceMapLinkVm,
   type WorldPlaceVm,
 } from '../../../domains/world/places';
-import { tryNodeKindFromPlaceKind } from '../../../domains/world/hierarchy';
+import {
+  tryNodeKindFromPlaceKind,
+  type WorldNodeKind,
+} from '../../../domains/world/hierarchy';
 import {
   UNLOCATED_MAP_HINT_DE,
   extractMapFrameFromGeneratorMeta,
@@ -44,6 +48,10 @@ import { WorldMapEditorScreen } from '../map';
 import { WorldPlacesPanel } from '../places/WorldPlacesPanel';
 import { useWorldAtlasEditor } from './useWorldAtlasEditor';
 import { UnifiedAtlasEditor } from './unified';
+import {
+  WebglNavTreeActionHost,
+  type WebglNavCreateRequest,
+} from './WebglNavTreeActionHost';
 import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
 import { worldAtlasService } from '../../../infrastructure/world/world-atlas-service';
 import { worldPlaceService } from '../../../infrastructure/world/world-place-service';
@@ -92,6 +100,12 @@ export function WorldAtlasWorkbench({
   const [placeNavError, setPlaceNavError] = useState<string | undefined>(undefined);
   const [placeNavTick, setPlaceNavTick] = useState(0);
   const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
+  const [webglCreateRequest, setWebglCreateRequest] = useState<WebglNavCreateRequest | null>(
+    null,
+  );
+  const [webglArchivePlaceId, setWebglArchivePlaceId] = useState<string | null>(null);
+  const [webglReparentPlaceId, setWebglReparentPlaceId] = useState<string | null>(null);
+  const [webglActionError, setWebglActionError] = useState<string | null>(null);
 
   const showLegacyTiles = editor.map?.kind === 'legacy_tiles';
   const showUnified = Boolean(editor.map && !showLegacyTiles);
@@ -667,6 +681,7 @@ export function WorldAtlasWorkbench({
                 canEdit
                   ? async ({ placeId, label }) => {
                       try {
+                        setWebglActionError(null);
                         await worldPlaceService.renameNode({
                           worldProfileId,
                           placeId,
@@ -675,7 +690,75 @@ export function WorldAtlasWorkbench({
                         setPlaceNavTick((t) => t + 1);
                       } catch (err) {
                         console.error('[atlas] rename from WebGL nav:', err);
+                        setWebglActionError(
+                          err instanceof Error ? err.message : 'Umbenennen fehlgeschlagen.',
+                        );
                       }
+                    }
+                  : undefined
+              }
+              onWebglNavAdd={
+                canEdit
+                  ? ({ uiKind, parentId }) => {
+                      const childKind = worldNodeKindFromWebglNavUiKind(uiKind);
+                      if (!childKind) {
+                        setWebglActionError('Dieser Typ kann hier nicht angelegt werden.');
+                        return;
+                      }
+                      const worldRootId =
+                        webglNavTree?.worldId ?? `world:${worldProfileId.trim()}`;
+                      let parentPlaceId: string | null = null;
+                      let parentKind: WorldNodeKind | null = null;
+                      if (parentId && parentId !== worldRootId && parentId !== 'atlas') {
+                        parentPlaceId = parentId;
+                        parentKind =
+                          tryNodeKindFromPlaceKind(
+                            worldPlaces.find((p) => p.id === parentId)?.kind ?? '',
+                          ) ?? null;
+                      }
+                      setWebglActionError(null);
+                      setWebglCreateRequest({ childKind, parentPlaceId, parentKind });
+                    }
+                  : undefined
+              }
+              onWebglNavDuplicate={
+                canEdit
+                  ? ({ placeId }) => {
+                      setWebglActionError(null);
+                      void worldPlaceService
+                        .duplicateNode({ worldProfileId, placeId, deep: false })
+                        .then((result) => {
+                          setPlaceNavTick((t) => t + 1);
+                          const newPlaceId = String(result.targetPlaceId ?? result.placeId ?? '');
+                          const newMapId =
+                            result.targetMapId == null && result.primaryMapId == null
+                              ? null
+                              : String(result.targetMapId ?? result.primaryMapId);
+                          if (newPlaceId) setActivePlaceId(newPlaceId);
+                          if (newMapId) editor.setActiveMapId(newMapId);
+                        })
+                        .catch((err) => {
+                          console.error('[atlas] duplicate from WebGL nav:', err);
+                          setWebglActionError(
+                            err instanceof Error ? err.message : 'Duplizieren fehlgeschlagen.',
+                          );
+                        });
+                    }
+                  : undefined
+              }
+              onWebglNavArchive={
+                canEdit
+                  ? ({ placeId }) => {
+                      setWebglActionError(null);
+                      setWebglArchivePlaceId(placeId);
+                    }
+                  : undefined
+              }
+              onWebglNavReparent={
+                canEdit
+                  ? ({ placeId }) => {
+                      setWebglActionError(null);
+                      setWebglReparentPlaceId(placeId);
                     }
                   : undefined
               }
@@ -874,6 +957,39 @@ export function WorldAtlasWorkbench({
           </div>
         </aside>
       ) : null}
+
+      {webglActionError ? (
+        <p
+          className="mx-3 mb-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          role="alert"
+          data-webgl-nav-action-error
+        >
+          {webglActionError}
+        </p>
+      ) : null}
+
+      <WebglNavTreeActionHost
+        worldProfileId={worldProfileId}
+        canEdit={canEdit}
+        places={worldPlaces}
+        createRequest={webglCreateRequest}
+        onCloseCreate={() => setWebglCreateRequest(null)}
+        onCreated={(info) => {
+          setWebglCreateRequest(null);
+          setPlaceNavTick((t) => t + 1);
+          setActivePlaceId(info.targetPlaceId);
+          if (info.targetMapId) editor.setActiveMapId(info.targetMapId);
+        }}
+        archivePlaceId={webglArchivePlaceId}
+        onCloseArchive={() => setWebglArchivePlaceId(null)}
+        onArchived={() => {
+          setPlaceNavTick((t) => t + 1);
+          if (activePlaceId === webglArchivePlaceId) setActivePlaceId(null);
+        }}
+        reparentPlaceId={webglReparentPlaceId}
+        onCloseReparent={() => setWebglReparentPlaceId(null)}
+        onReparented={() => setPlaceNavTick((t) => t + 1)}
+      />
     </div>
   );
 }
