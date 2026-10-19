@@ -47,9 +47,11 @@ import {
   isAtlasToolAllowed,
   isSettlementLodId,
   atlasZoomCaption,
+  emptyWebglRuntime,
   parseWebglRuntimeState,
   pickObjectAt,
   readLegacyWebglLocalStorage,
+  syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type AtlasPrototypeLevelId,
   type DungeonGeneratorMeta,
@@ -294,7 +296,7 @@ function drawStamp(
 export function UnifiedAtlasEditor({
   doc,
   canEdit,
-  onDocChange,
+  onDocChange: onDocChangeProp,
   dungeonMeta = null,
   onDungeonMetaChange,
   onCreatePlace,
@@ -321,12 +323,29 @@ export function UnifiedAtlasEditor({
   dungeonMetaRef.current = dungeonMeta;
   const placeNavRef = useRef(placeNav);
   placeNavRef.current = placeNav;
+  const webglRuntimeRef = useRef(webglRuntime);
+  webglRuntimeRef.current = webglRuntime;
   const pinArmedRef = useRef(false);
   const marqueeArmedRef = useRef(false);
   const legacySeedRef = useRef<WebglRuntimeState | null | undefined>(undefined);
   if (legacySeedRef.current === undefined) {
     legacySeedRef.current = webglRuntime ? null : readLegacyWebglLocalStorage();
   }
+
+  /** 2D doc mutations also refresh webglRuntime so 3D remount / save stay ghost-free (#749). */
+  const onDocChange = useCallback(
+    (next: UnifiedCanvasDoc) => {
+      onDocChangeProp(next);
+      if (!onWebglRuntimeChange || next.demoSeed !== false) return;
+      const nextRuntime = syncCanvasDocIntoWebglRuntime(
+        webglRuntimeRef.current ?? emptyWebglRuntime(),
+        next,
+      );
+      webglRuntimeRef.current = nextRuntime;
+      onWebglRuntimeChange(nextRuntime);
+    },
+    [onDocChangeProp, onWebglRuntimeChange],
+  );
   const [surfaceMode, setSurfaceMode] = useState<'3d' | '2d'>('3d');
 
   const [tool, setTool] = useState<UnifiedCanvasTool>('hand');  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
@@ -1216,19 +1235,28 @@ export function UnifiedAtlasEditor({
   const hasDbPlaces = placeNav.length > 0;
   const isDemo = workingDoc.demoSeed !== false;
   const isWorldStarter = workingDoc.rooms.some((r) => r.id === 'w.ocean');
-  const controlledSeed = webglRuntime ?? legacySeedRef.current ?? null;
+  /** Always re-project from current canvas doc so 2D deletes survive 3D remount (#749). */
+  const controlledSeed = useMemo(
+    () =>
+      syncCanvasDocIntoWebglRuntime(
+        webglRuntime ?? legacySeedRef.current ?? emptyWebglRuntime(),
+        doc,
+      ),
+    [webglRuntime, doc],
+  );
 
   const handleWebglPersist = useCallback(
     (state: WebglRuntimeState) => {
       const parsed = parseWebglRuntimeState(state);
       if (!parsed) return;
+      webglRuntimeRef.current = parsed;
       onWebglRuntimeChange?.(parsed);
       const synced = syncWebglPropsIntoCanvasDoc(docRef.current, parsed);
-      if (synced !== docRef.current) {
-        onDocChange(synced);
-      }
+      docRef.current = synced;
+      // Use raw prop — avoid re-deriving runtime from doc (3D state is already authoritative).
+      onDocChangeProp(synced);
     },
-    [onDocChange, onWebglRuntimeChange],
+    [onDocChangeProp, onWebglRuntimeChange],
   );
 
   // Product maps: controlled WebGL (#721) — generator_meta is SoT; Draufsicht (2D) optional.
