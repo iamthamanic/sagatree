@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * atlas-worldbuilder-migration-check — dry-run + gate (#723).
+ * atlas-worldbuilder-migration-check — dry-run + gate (#723 / #753).
  * Location: scripts/atlas-worldbuilder-migration-check.mjs
  */
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
@@ -31,17 +31,39 @@ mustInclude('src/domains/world/hierarchy/migration-plan.ts', [
   'DONALU_WORLD_PUBLIC_ID',
   'add-placeholder-ancestors',
 ]);
+mustInclude('src/domains/world/hierarchy/world-scoped-inventory.ts', [
+  'buildWorldScopedInventory',
+  'buildScopedMigrationDryRun',
+]);
 mustInclude('supabase/migrations/107_atlas_worldbuilder_migration_gate.sql', [
   'atlas_wb_migration_gates',
   'DEFAULT false',
   'atlas_wb_migration_inventory',
+]);
+mustInclude('scripts/atlas-worldbuilder-migration-dry-run.mjs', [
+  '--world=',
+  'donalu_places.csv',
+  'buildScopedMigrationDryRun',
 ]);
 mustInclude('.qa/evidence/atlas-worldbuilder-migration/dry-run-report.json', [
   'WO-9FFK6',
   'reviewQueue',
   'restorePlan',
 ]);
-mustInclude('.qa/evidence/atlas-worldbuilder-migration/REVIEW_QUEUE.md', ['Needs review', 'Restore plan']);
+mustInclude('.qa/evidence/atlas-worldbuilder-migration/REVIEW_QUEUE.md', [
+  'Needs review',
+  'Restore plan',
+]);
+
+const dryRunReport = JSON.parse(
+  readFileSync(join(root, '.qa/evidence/atlas-worldbuilder-migration/dry-run-report.json'), 'utf8'),
+);
+if (JSON.stringify(dryRunReport).includes('sample:')) {
+  fail('legacy dry-run evidence must not contain sample:* ids after #753');
+}
+if (dryRunReport.items?.some((item) => String(item.id).startsWith('WO-'))) {
+  fail('place/map item ids must be UUIDs, not world public ids WO-*');
+}
 
 const outDir = join(root, '.qa/tmp');
 mkdirSync(outDir, { recursive: true });
