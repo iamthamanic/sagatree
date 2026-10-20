@@ -22,6 +22,7 @@ export type AtlasPrototypeExternalNav = {
     readonly sub: string;
     readonly kind: string;
     readonly primaryMapId: string | null;
+    readonly located?: boolean;
   }>;
   readonly childrenByParentId: Readonly<Record<string, readonly string[]>>;
   readonly status: 'ready' | 'loading' | 'error' | 'empty';
@@ -43,6 +44,7 @@ export type AtlasPrototypeMount = {
   readonly setActiveNavPlaceId: (placeId: string | null) => void;
   readonly setToolChrome: (rows: readonly AtlasPrototypeToolChromeRow[] | null) => void;
   readonly setCanEdit: (canEdit: boolean) => void;
+  readonly setMapSketchStatus: (status: string | null) => void;
 };
 
 export type AtlasPrototypeNavAddPayload = {
@@ -75,6 +77,8 @@ export type AtlasPrototypeMountOptions = {
   readonly toolChrome?: readonly AtlasPrototypeToolChromeRow[] | null;
   /** When false, map mutations are rejected client-side (RPC/RLS remain authority). */
   readonly canEdit?: boolean;
+  /** Active map sketch status — unlocated suppresses demo geography (#752). */
+  readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
 };
 
 export function mountAtlasPrototype3d(

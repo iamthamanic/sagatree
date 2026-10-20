@@ -1,0 +1,11 @@
+{
+  "cityLocated": true,
+  "caveLocated": false,
+  "assertZeroExtentRejected": true,
+  "assertValidOk": true,
+  "featureOwners": [
+    "political",
+    "terrain",
+    "room_geometry"
+  ]
+}

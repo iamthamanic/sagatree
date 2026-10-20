@@ -4,6 +4,7 @@
  *
  * Product 3D must not use prototype NAV_CHILDREN demo ids as hierarchy SoT.
  */
+import { isGroundedLinkAnchor } from '../atlas/map-frame';
 import { pickPrimaryMapIdForPlace } from './parse-world-place';
 import type { WorldPlaceKind, WorldPlaceMapLinkVm, WorldPlaceVm } from './world-place.types';
 
@@ -26,6 +27,11 @@ export type AtlasWebglNavNode = {
   readonly primaryMapId: string | null;
   readonly placeKind: WorldPlaceKind;
   readonly status: string;
+  /**
+   * Grounded numeric link anchor on a parent map (#752).
+   * False ⇒ tree may open primary map; LOD/zoom must not invent geography.
+   */
+  readonly located: boolean;
 };
 
 export type AtlasWebglNavTreeStatus = 'ready' | 'loading' | 'error' | 'empty';
@@ -141,6 +147,8 @@ export function buildAtlasWebglNavTree(input: BuildAtlasWebglNavTreeInput): Atla
   const active = input.places.filter((p) => p.status !== 'archived');
   const nodes: AtlasWebglNavNode[] = active.map((place) => {
     const kind = webglNavKindFromPlaceKind(place.kind);
+    const placeLinks = input.links.filter((l) => l.placeId === place.id);
+    const located = placeLinks.some((l) => isGroundedLinkAnchor(l.anchor));
     return {
       id: place.id,
       parentId: place.parentPlaceId,
@@ -150,6 +158,7 @@ export function buildAtlasWebglNavTree(input: BuildAtlasWebglNavTreeInput): Atla
       primaryMapId: pickPrimaryMapIdForPlace(place.id, input.links),
       placeKind: place.kind,
       status: place.status,
+      located,
     };
   });
 

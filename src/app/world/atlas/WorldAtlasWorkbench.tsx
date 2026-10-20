@@ -737,12 +737,14 @@ export function WorldAtlasWorkbench({
               placeNav={placeNav}
               webglNavTree={protoExact ? webglNavTree : null}
               activePlaceId={activePlaceId}
+              mapSketchStatus={activeMapFrame?.status ?? null}
               onWebglNavSelect={(payload) => {
                 if (payload.worldRoot) {
                   setActivePlaceId(null);
                 } else {
                   setActivePlaceId(payload.placeId);
                 }
+                // Open primary map for authoring even when unlocated; LOD/hotspots stay gated (#752).
                 if (payload.mapId) {
                   editor.setActiveMapId(payload.mapId);
                 }

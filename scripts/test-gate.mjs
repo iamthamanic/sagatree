@@ -368,6 +368,14 @@ function checkAtlasWorldbuilderWebglToolRegistry() {
   });
 }
 
+function checkAtlasWorldbuilderGroundedDrilldown() {
+  console.log('Atlas worldbuilder grounded drilldown (#752): anchors + unlocated empty...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-grounded-drilldown-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2476,6 +2484,7 @@ checkAtlasWorldbuilderWebglTreeActions();
 checkAtlasWorldbuilderEditorDurability();
 checkAtlasWorldbuilderDonaluBackfill();
 checkAtlasWorldbuilderWebglToolRegistry();
+checkAtlasWorldbuilderGroundedDrilldown();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

@@ -137,6 +137,8 @@ export type UnifiedAtlasEditorProps = {
     readonly placeId: string | null;
     readonly mapId: string | null;
     readonly worldRoot: boolean;
+    readonly located?: boolean;
+    readonly drillAllowed?: boolean;
   }) => void;
   readonly onWebglNavRename?: (payload: {
     readonly placeId: string;
@@ -151,6 +153,8 @@ export type UnifiedAtlasEditorProps = {
   readonly onWebglNavReparent?: (payload: { readonly placeId: string }) => void;
   /** Active WorldNode tip for contextual tool palette (#720). */
   readonly activeNodeKind?: WorldNodeKind | null;
+  /** Active map sketch status for WebGL empty/drill gates (#752). */
+  readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
   readonly canvasLeftRail?: ReactNode;
   /** Active map identity for controlled WebGL remount (#721). */
@@ -317,6 +321,7 @@ export function UnifiedAtlasEditor({
   onWebglNavArchive,
   onWebglNavReparent,
   activeNodeKind = null,
+  mapSketchStatus = null,
   canvasLeftRail = null,
   mapKey = 'map',
   webglRuntime = null,
@@ -1304,6 +1309,7 @@ export function UnifiedAtlasEditor({
           activePlaceId={activePlaceId}
           activeNodeKind={activeNodeKind ?? null}
           canEdit={canEdit}
+          mapSketchStatus={mapSketchStatus ?? null}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
           onNavAdd={canEdit ? onWebglNavAdd : undefined}
