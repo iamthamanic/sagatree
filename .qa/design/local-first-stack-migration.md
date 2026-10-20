@@ -65,14 +65,23 @@ Until GATE issues are human-APPROVED, dependent issues remain `needs-design` / `
 
 Details: `.qa/intake/local-first-stack-migration-issues.json`.
 
-## 5. Atlas acceptance gap (blocking prep honesty)
+## 5. Atlas acceptance gap (blocking cutover)
 
-Epic #746/#755 closed with optional live E2E. That is **insufficient**. Tracking: GitHub **#770** / local `ATLAS-LIVE-E2E`.
+Epic #746/#755 closed with optional live E2E. That is **insufficient** for migration cutover.
 
-## 6. Non-goals of this prep PR
+| Item | Value |
+| --- | --- |
+| GitHub | **#770** (single issue — do not duplicate) |
+| Local draft id | `ATLAS-LIVE-E2E` |
+| Spec | [`.qa/design/atlas-live-e2e-cutover-gate.md`](atlas-live-e2e-cutover-gate.md) |
+| Prep wiring | PREP-02 **#775** |
+| Cutover lock | `MIG-700` / `MIG-702` `dependsOn` includes `ATLAS-LIVE-E2E` |
 
-- Starting stack migration implementation  
-- Publishing the 72 draft issues to GitHub  
-- Production DB writes  
-- Merging red dependency PRs  
-- Selecting libraries without GATE results  
+Contract mocks / skipped live tests are **not** release proof. CI enablement waits on ATLAS-CI-* freigabe in the atlas gate doc.
+
+## 6. Non-goals of prep workstreams
+
+- Starting stack migration host implementation  
+- Enabling Atlas live CI with production credentials  
+- Selecting libraries without GATE PoC results + human APPROVED  
+- Removing Supabase before #770 CLOSED green  

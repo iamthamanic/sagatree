@@ -27,6 +27,7 @@ const required = [
   '.qa/evidence/stack-migration-prep/phase0-status.md',
   '.qa/evidence/stack-migration-prep/EXECUTION_CONTRACT.md',
   '.qa/evidence/stack-migration-prep/PR771_REVIEW.md',
+  '.qa/design/atlas-live-e2e-cutover-gate.md',
   'docs/architektur-sqlite-based.md',
 ];
 
@@ -104,6 +105,22 @@ for (const need of ['ATLAS-LIVE-E2E', 'GATE-01', 'GATE-02', 'GATE-03', 'GATE-04'
   if (!d700.has(need)) fail(`MIG-700 missing required dep ${need}`);
 }
 if (mig700.dependsOn.length < 20) fail('MIG-700 dependsOn too small for cutover safety');
+
+const mig702 = issues.find((i) => i.localId === 'MIG-702');
+if (!mig702 || !mig702.dependsOn.includes('ATLAS-LIVE-E2E')) {
+  fail('MIG-702 must depend on ATLAS-LIVE-E2E (#770)');
+}
+
+const atlas = issues.find((i) => i.localId === 'ATLAS-LIVE-E2E');
+if (!atlas || atlas.githubIssue !== 770) fail('ATLAS-LIVE-E2E must reference githubIssue 770');
+
+const atlasDesign = readFileSync(join(root, '.qa/design/atlas-live-e2e-cutover-gate.md'), 'utf8');
+for (const needle of ['#770', 'MIG-700', 'BLOCKED / NEEDS DECISION', 'E2E_ATLAS_PRODUCT', 'isolated']) {
+  if (!atlasDesign.includes(needle)) fail(`atlas gate design missing ${needle}`);
+}
+if (!atlasDesign.includes('test.skip') && !atlasDesign.includes('optional')) {
+  fail('atlas gate design must reject optional/skippable live tests');
+}
 
 console.log(
   `stack-migration-prep-check: OK (${issues.length} issues, topo=${seen.length}, published=${doc.meta.githubIssuesPublished})`,
