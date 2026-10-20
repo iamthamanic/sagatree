@@ -195,7 +195,8 @@ function prefixSelectorsWithAtlasRoot(css) {
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
  *   onNavAdd/Duplicate/Archive/Reparent: product #748 server mutation bridge (no localStorage SoT).
- * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void }}
+ *   toolChrome: ATLAS_TOOL_REGISTRY-derived rows (#750); canEdit gates map mutations.
+ * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void }}
  */
 export function mountAtlasPrototype3d(host, options = {}) {
   const controlled = options && options.controlled === true;
@@ -209,6 +210,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
   const onNavReparent = typeof options.onNavReparent === 'function' ? options.onNavReparent : null;
   let externalNav = options && options.externalNav && typeof options.externalNav === 'object' ? options.externalNav : null;
   let selectedExternalId = typeof options.activePlaceId === 'string' ? options.activePlaceId : null;
+  /** @type {Array<{runtimeId:string,labelDe:string,enabled?:boolean,disabledReason?:string|null,atlasId?:string,role?:string}>|null} */
+  let toolChrome = Array.isArray(options.toolChrome) ? options.toolChrome.slice() : null;
+  let canEditMaps = options.canEdit !== false;
   const styleEl = document.createElement('style');
   styleEl.setAttribute('data-atlas-prototype-style', 'true');
   styleEl.textContent = scopeShellCssForEmbed(SHELL_CSS);
@@ -228,6 +232,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
   let updateExternalNavImpl = () => {};
   /** @type {(id: string|null) => void} */
   let setActiveNavPlaceIdImpl = () => {};
+  /** @type {(rows: object[]|null) => void} */
+  let setToolChromeImpl = () => {};
+  /** @type {(ok: boolean) => void} */
+  let setCanEditImpl = () => {};
 
   {
 
@@ -334,7 +342,33 @@ export function mountAtlasPrototype3d(host, options = {}) {
     let labelDrag=null;
     const palettes={grass:['Gras','#5d8360'],earth:['Erde','#94795b'],sand:['Sand','#c3ae81'],water:['Wasser','#366f80'],stone:['Stein','#a7a396'],wood:['Holz','#926444']};
     const propDefs={tree:['Baum','♠'],pine:['Tanne','♣'],house:['Haus','⌂'],rock:['Fels','◆'],crate:['Kiste','▣'],table:['Tisch','▤'],torch:['Fackel','✧'],crystal:['Kristall','◈'],pillar:['Säule','♜']};
-    const tools=[['hand','Verschieben'],['paint','Pinsel'],['stamp','Stempel'],['wall','Wand'],['room','Raum'],['erase','Radierer']];
+    // Demo fallback only — product path passes ATLAS_TOOL_REGISTRY chrome (#750).
+    const DEMO_TOOL_CHROME=[
+      {runtimeId:'hand',labelDe:'Verschieben',enabled:true,atlasId:'hand',role:'navigate'},
+      {runtimeId:'paint',labelDe:'Gelände',enabled:true,atlasId:'brush',role:'terrain'},
+      {runtimeId:'stamp',labelDe:'Footprint / Stempel',enabled:true,atlasId:'stamp',role:'structure'},
+      {runtimeId:'wall',labelDe:'Wand',enabled:true,atlasId:'wall',role:'structure'},
+      {runtimeId:'room',labelDe:'Raumumriss',enabled:true,atlasId:'room',role:'structure'},
+      {runtimeId:'erase',labelDe:'Radierer',enabled:true,atlasId:'erase',role:'erase'},
+    ];
+    function activeToolChrome(){return toolChrome&&toolChrome.length?toolChrome:DEMO_TOOL_CHROME;}
+    function toolRow(runtimeId){return activeToolChrome().find(t=>t.runtimeId===runtimeId)||null;}
+    function trySetTool(runtimeId){
+      const row=toolRow(runtimeId);
+      if(!row){toast('Werkzeug nicht verfügbar');return false;}
+      if(row.enabled===false){toast(row.disabledReason||'In 3D noch nicht verfügbar');return false;}
+      tool=runtimeId;renderTools();return true;
+    }
+    function allowMutation(runtimeToolId){
+      if(!canEditMaps){toast('Keine Bearbeitungsrechte');return false;}
+      const row=toolRow(runtimeToolId);
+      if(!row||row.enabled===false){toast('Werkzeug für diese Ebene nicht erlaubt');return false;}
+      return true;
+    }
+    function syncToolToChrome(){
+      const row=toolRow(tool);
+      if(!row||row.enabled===false){tool='hand';}
+    }
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=t=>t*t*(3-2*t),lerp=(a,b,t)=>a+(b-a)*t;
     const WORLD_SUB_DEFAULT='Welt';
     const SEED_WORLD_ID='world';
@@ -635,7 +669,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function zoomAt(factor,x=stageWidth/2,y=stageHeight/2){if(animID)cancelAnimationFrame(animID);const before=screenToWorld(x,y);cameraState.span=clamp(cameraState.span*factor,SPAN_MIN,SPAN_MAX);const now=screenToWorld(x,y);cameraState.x+=before.x-now.x;cameraState.z+=before.z-now.z;drawFrame();}
     function dabAt(p,stroke){if(!mapConfigs[stroke.level])return;const id=stroke.level,conf=mapConfigs[id],c=mapCanvases[id].getContext('2d'),canvas=mapCanvases[id],x=(p.x-(conf.x-conf.w/2))*canvas.width/conf.w,y=(p.z-(conf.z-conf.h/2))*canvas.height/conf.h,size=stroke.size*canvas.width/conf.w;c.save();c.globalAlpha=.4;c.fillStyle=palettes[stroke.material]?.[1]||'#c4b08f';c.beginPath();c.arc(x,y,Math.max(1,size/2),0,Math.PI*2);c.fill();c.restore();if(engine)engine.uploadTexture(id,canvas);}
     function stampAt(p){snapshot();state.props.push({id:'o'+Date.now()+'-'+Math.floor(Math.random()*99999),level:activeLevel==='room'?'dungeon':activeLevel,x:p.x,z:p.z,type:propType,size:1,rotation:0});if(engine)buildManualGeometry();persist();drawFrame();}
-    function pointerDown(e){if(e.button!==0||e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label,.map-labels,.stage-message'))return;if(animID)cancelAnimationFrame(animID);const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;pointer={mode:tool,point:p,screen:m,last:p,pointerId:e.pointerId};if(tool==='stamp'){stampAt(p);pointer=null;return;}if(tool==='erase'){const radius=Math.max(.09,cameraState.span/stageHeight*30);let near=-1,best=radius;state.props.forEach((o,i)=>{const d=Math.hypot(o.x-p.x,o.z-p.z);if(d<best){best=d;near=i;}});if(near!==-1){snapshot();state.props.splice(near,1);buildManualGeometry();persist();toast('Objekt entfernt');}pointer=null;return;}if(tool==='paint'){snapshot();const level=choosePaintLevel();state.strokes.push({id:'p'+Date.now(),level,material,size:brushSizeWorld(level),points:[[p.x,p.z]]});dabAt(p,state.strokes.at(-1));}if(tool==='wall'||tool==='room')snapshot();stage.setPointerCapture?.(e.pointerId);stage.classList.add('drag');drawFrame();}
+    function pointerDown(e){if(e.button!==0||e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label,.map-labels,.stage-message'))return;if(animID)cancelAnimationFrame(animID);const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(tool!=='hand'&&!allowMutation(tool)){pointer=null;return;}pointer={mode:tool,point:p,screen:m,last:p,pointerId:e.pointerId};if(tool==='stamp'){stampAt(p);pointer=null;return;}if(tool==='erase'){const radius=Math.max(.09,cameraState.span/stageHeight*30);let near=-1,best=radius;state.props.forEach((o,i)=>{const d=Math.hypot(o.x-p.x,o.z-p.z);if(d<best){best=d;near=i;}});if(near!==-1){snapshot();state.props.splice(near,1);buildManualGeometry();persist();toast('Objekt entfernt');}pointer=null;return;}if(tool==='paint'){snapshot();const level=choosePaintLevel();state.strokes.push({id:'p'+Date.now(),level,material,size:brushSizeWorld(level),points:[[p.x,p.z]]});dabAt(p,state.strokes.at(-1));}if(tool==='wall'||tool==='room')snapshot();stage.setPointerCapture?.(e.pointerId);stage.classList.add('drag');drawFrame();}
     function pointerMove(e){if(labelDrag){moveLabelDrag(e);return;}if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(!scaleEdit){const c=$('coords');if(c)c.textContent=`X ${p.x.toFixed(1)} · Z ${p.z.toFixed(1)}`;};if(!pointer)return;if(pointer.mode==='hand'){cameraState.x+=pointer.last.x-p.x;cameraState.z+=pointer.last.z-p.z;pointer.last=screenToWorld(m.x,m.y);drawFrame();}else if(pointer.mode==='paint'){const stroke=state.strokes.at(-1);if(Math.hypot(p.x-pointer.last.x,p.z-pointer.last.z)>Math.max(.03,stroke.size*.12)){stroke.points.push([p.x,p.z]);dabAt(p,stroke);pointer.last=p;}}}
     function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z]});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else history.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
     function generate(){const seed=clamp(Math.floor(Number($('dungeonSeed').value)||42817),1,999999999),rooms=clamp(Math.floor(Number($('roomCount').value)||22),10,48);snapshot();state.seed=seed;state.roomCount=rooms;state.theme=$('dungeonTheme').value;dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();buildDungeonGeometry();buildManualGeometry();persist();toast(`Dungeon erstellt · ${dungeon.rooms.length} Räume · Seed ${state.seed}`);goTo('dungeon');}
@@ -683,17 +717,27 @@ export function mountAtlasPrototype3d(host, options = {}) {
       wall:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 9v6"/><path d="M15 15v6"/><path d="M15 3v6"/><path d="M9 15v6"/></svg>',
       room:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>',
       erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>',
+      select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>',
+      road:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 12 5l8 14"/><path d="M9 14h6"/></svg>',
     };
     function renderTools(){
       const el=$('tools');
       if(!el)return;
+      syncToolToChrome();
       el.setAttribute('role','tablist');
       el.setAttribute('aria-label','Kartenwerkzeuge');
-      el.innerHTML=tools.map(([id,label])=>`<button type="button" role="tab" data-tool="${id}" data-slot="tabs-trigger" data-state="${id===tool?'active':'inactive'}" class="${id===tool?'current':''}" aria-selected="${id===tool}" aria-pressed="${id===tool}" aria-label="${label}" title="${label}"><span class="tool-icon" aria-hidden="true">${toolIcons[id]||''}</span><span class="tool-label">${label}</span></button>`).join('');
+      el.setAttribute('data-atlas-tool-source',toolChrome&&toolChrome.length?'registry':'demo');
+      el.innerHTML=activeToolChrome().map(row=>{
+        const id=row.runtimeId;
+        const label=row.labelDe||id;
+        const disabled=row.enabled===false;
+        const title=disabled?(row.disabledReason||label):label;
+        return `<button type="button" role="tab" data-tool="${id}" data-atlas-tool="${row.atlasId||''}" data-atlas-role="${row.role||''}" data-slot="tabs-trigger" data-state="${id===tool?'active':'inactive'}" class="${id===tool?'current':''}${disabled?' is-disabled':''}" aria-selected="${id===tool}" aria-pressed="${id===tool}" aria-disabled="${disabled?'true':'false'}" ${disabled?'disabled':''} aria-label="${label}" title="${title}"><span class="tool-icon" aria-hidden="true">${toolIcons[id]||''}</span><span class="tool-label">${label}</span></button>`;
+      }).join('');
       stage.classList.toggle('tool-paint',tool==='paint');
       stage.classList.toggle('tool-stamp',tool==='stamp');
       stage.classList.toggle('tool-wall',tool==='wall');
-      $('help').textContent=({hand:'Mausrad: nahtlos zoomen · Ziehen: Karte bewegen',paint:'Mit gedrückter Maustaste Gelände malen',stamp:'Objekt wählen und auf die Karte klicken',wall:'Ziehen, um eine echte 3D-Wand zu setzen',room:'Rechteck ziehen, um einen 3D-Raum zu erstellen',erase:'Manuelles Objekt anklicken und löschen'})[tool]||'';
+      $('help').textContent=({hand:'Mausrad: nahtlos zoomen · Ziehen: Karte bewegen',paint:'Mit gedrückter Maustaste Gelände malen',stamp:'Objekt wählen und auf die Karte klicken',wall:'Ziehen, um eine echte 3D-Wand zu setzen',room:'Rechteck ziehen, um einen 3D-Raum zu erstellen',erase:'Manuelles Objekt anklicken und löschen',select:'Auswahl (2D-Parität)',road:'Wege / politische Grenzen'})[tool]||'';
     }
     function renderPalette(){$('palette').innerHTML=Object.entries(palettes).map(([id,[title,color]])=>`<button type="button" data-material="${id}" class="swatch ${id===material?'active':''}"><i style="--c:${color}"></i>${title}</button>`).join('');$('stamps').innerHTML=Object.entries(propDefs).map(([id,[label,glyph]])=>`<button type="button" data-prop="${id}" class="${id===propType?'active':''}"><b>${glyph}</b>${label}</button>`).join('');}
     function updateInspector(){const text={world:['Welt gestalten','Kontinente und Ozeane gestalten – eine texturierte Fläche innerhalb der 3D-Szene.'],region:['Region gestalten','Regionalkarte bearbeiten und zusätzliche Wälder, Gelände oder Ruinen anlegen.'],city:['Stadt gestalten','Häuser in 3D und Straßen am Boden. Vergrößern führt unter die alte Festung.'],dungeon:['Dungeon gestalten','Automatisch generierte Räume und Gänge. 3D-Objekte und Wände ergänzen.'],room:['Raum bearbeiten','Der Dungeon bleibt 3D und wird bis auf einzelne Gegenstände vergrößert.']}[activeLevel];$('sectionTitle').textContent=text[0];$('sectionInfo').textContent=text[1];}
@@ -709,7 +753,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     root.addEventListener('click',e=>{const pedit=e.target.closest('[data-edit-place][data-edit-field="label"]');if(pedit&&!scaleEdit){e.preventDefault();e.stopPropagation();closeNavMenu();beginPlaceFieldEdit(pedit.dataset.editPlace,'label',pedit);return;}const tbtn=e.target.closest('[data-nav-toggle]');if(tbtn){e.preventDefault();e.stopPropagation();if(navMenuOpenId)closeNavMenu();toggleNavBranch(tbtn.dataset.navToggle);return;}const mbtn=e.target.closest('[data-nav-menu]');if(mbtn){e.preventDefault();e.stopPropagation();setNavMenu(mbtn.dataset.navMenu);return;}const dupid=e.target.closest('[data-nav-dup]');if(dupid){e.preventDefault();e.stopPropagation();duplicatePlace(dupid.dataset.navDup);return;}const reparentBtn=e.target.closest('[data-nav-reparent]');if(reparentBtn){e.preventDefault();e.stopPropagation();closeNavMenu();const pid=reparentBtn.dataset.navReparent;if(productNavActive()&&pid&&!isWorldId(pid)&&onNavReparent){onNavReparent({placeId:pid});}else{toast('Verschieben nicht verfügbar');}renderNavigation();return;}const delid=e.target.closest('[data-nav-del]');if(delid){e.preventDefault();e.stopPropagation();deletePlace(delid.dataset.navDel);return;}if(navMenuOpenId&&!e.target.closest('.nav-place-actions, .nav-place-menu-pop, #atlasNavMenuPortal')){closeNavMenu();}const abtn=e.target.closest('[data-nav-add]');if(abtn){e.preventDefault();e.stopPropagation();const kind=abtn.dataset.navAdd;const parentId=abtn.dataset.navAddParent;if(!NAV_ADD_KINDS.includes(kind)||!parentId)return;if(productNavActive()){if(kind==='world'){toast('Neue Welten werden außerhalb des Atlas angelegt');return;}if(onNavAdd){onNavAdd({uiKind:kind,parentId});}else{toast(`${NAV_FILTER_LABELS[kind]||kind} hinzufügen — Server-Dialog fehlt`);}return;}if(kind==='world'){addWorldDimension();return;}const catKey=parentId?navCatKey(kind,parentId):null;if(catKey){navPlaceOpen[catKey]=true;persistNavPlaces();renderNavigation();}toast(`${NAV_FILTER_LABELS[kind]||kind} hinzufügen — Markierung auf der Karte folgt`);return;}const fbtn=e.target.closest('[data-nav-filter]');if(fbtn){e.preventDefault();e.stopPropagation();const next=fbtn.dataset.navFilter;if(!NAV_FILTERS.includes(next))return;navFilter=navFilter===next?null:next;renderNavigation();return;}const edit=e.target.closest('.scale-edit-trigger');if(!edit||scaleEdit)return;e.preventDefault();e.stopPropagation();if(edit.id==='coords'){const cur=lastMouse||{x:cameraState.x,z:cameraState.z};beginScaleEdit('coords',edit,`${cur.x.toFixed(1)} ${cur.z.toFixed(1)}`);}else if(edit.id==='zoom'){beginScaleEdit('zoom',edit,String(zoomPercent()));}},true);
     root.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='navSearch'){navQuery=String(t.value||'');renderNavigation();}});
     root.addEventListener('keydown',e=>{const t=e.target;if(t&&t.id==='navSearch'&&e.key==='Escape'){if(navQuery){e.preventDefault();navQuery='';t.value='';renderNavigation();}}});
-    root.addEventListener('click',e=>{const node=e.target.closest('[data-action],[data-tool],[data-material],[data-prop],[data-focus],[data-context],[data-layer-toggle]');if(!node)return;if(node.dataset.layerToggle){const id=node.dataset.layerToggle;if(!Object.prototype.hasOwnProperty.call(state.layers,id))return;state.layers[id]=!state.layers[id];renderNavigation();renderLayers();persist();drawFrame();return;}if(node.dataset.focus){goTo(node.dataset.focus);return;}if(node.dataset.tool){tool=node.dataset.tool;renderTools();return;}if(node.dataset.material){material=node.dataset.material;tool='paint';renderPalette();renderTools();return;}if(node.dataset.prop){propType=node.dataset.prop;tool='stamp';renderPalette();renderTools();return;}if(node.dataset.context){state.context=node.dataset.context;root.querySelectorAll('[data-context]').forEach(b=>b.classList.toggle('active',b===node));persist();toast(state.context==='saga'?'Saga-Ebene ausgewählt (Demo)':'Welt-Ebene ausgewählt');return;}switch(node.dataset.action){case'side':$('side').classList.toggle('open');break;case'inspect':$('inspector').classList.toggle('open');break;case'home':tiltEnabled=false;tiltAngle=Math.PI/2;applyYawDegrees(0,{draw:false});goTo('world');break;case'plus':zoomAt(.65);break;case'minus':zoomAt(1.55);break;case'undo':undo();break;case'redo':redo();break;case'export':exportJson();break;case'generate':generate();break;}});
+    root.addEventListener('click',e=>{const node=e.target.closest('[data-action],[data-tool],[data-material],[data-prop],[data-focus],[data-context],[data-layer-toggle]');if(!node)return;if(node.dataset.layerToggle){const id=node.dataset.layerToggle;if(!Object.prototype.hasOwnProperty.call(state.layers,id))return;state.layers[id]=!state.layers[id];renderNavigation();renderLayers();persist();drawFrame();return;}if(node.dataset.focus){goTo(node.dataset.focus);return;}if(node.dataset.tool){trySetTool(node.dataset.tool);return;}if(node.dataset.material){if(!allowMutation('paint'))return;material=node.dataset.material;trySetTool('paint');renderPalette();return;}if(node.dataset.prop){if(!allowMutation('stamp'))return;propType=node.dataset.prop;trySetTool('stamp');renderPalette();return;}if(node.dataset.context){state.context=node.dataset.context;root.querySelectorAll('[data-context]').forEach(b=>b.classList.toggle('active',b===node));persist();toast(state.context==='saga'?'Saga-Ebene ausgewählt (Demo)':'Welt-Ebene ausgewählt');return;}switch(node.dataset.action){case'side':$('side').classList.toggle('open');break;case'inspect':$('inspector').classList.toggle('open');break;case'home':tiltEnabled=false;tiltAngle=Math.PI/2;applyYawDegrees(0,{draw:false});goTo('world');break;case'plus':zoomAt(.65);break;case'minus':zoomAt(1.55);break;case'undo':undo();break;case'redo':redo();break;case'export':exportJson();break;case'generate':generate();break;}});
     root.addEventListener('change',e=>{const t=e.target;if(t.dataset.layer){state.layers[t.dataset.layer]=t.checked;renderLayers();renderNavigation();persist();drawFrame();}if(t.id==='dungeonTheme'){snapshot();state.theme=t.value;if(engine)buildDungeonGeometry();persist();drawFrame();}if(t.id==='tiltToggle'){tiltEnabled=!!t.checked;if(tiltEnabled&&tiltAngle>1.4)tiltAngle=1.05;if(!tiltEnabled)tiltAngle=Math.PI/2;syncYawDialUi();drawFrame();}});
     // Yaw dial — drag around the button to rotate the map in-plane (degrees visible).
     root.addEventListener('pointerdown',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;if(scaleEdit)return;e.preventDefault();e.stopPropagation();const rect=dial.getBoundingClientRect();const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;yawDrag={cx,cy,pointerId:e.pointerId,x0:e.clientX,y0:e.clientY,moved:0};try{dial.setPointerCapture(e.pointerId);}catch{};},{capture:true});
@@ -720,7 +764,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     root.addEventListener('keydown',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;let step=0;if(e.key==='ArrowLeft'||e.key==='ArrowDown')step=-5;else if(e.key==='ArrowRight'||e.key==='ArrowUp')step=5;else if(e.key==='Home'){applyYawDegrees(0);e.preventDefault();return;}else return;e.preventDefault();applyYawDegrees(yawDegrees()+step);});
     $('roomCount').addEventListener('input',e=>{$('roomText').textContent=e.target.value;});$('brushSize').addEventListener('input',e=>{$('brushText').textContent=e.target.value;});
     stage.addEventListener('pointerdown',e=>{const lbl=e.target.closest('.map-label');if(lbl&&e.button===0){beginLabelDrag(lbl.dataset.mapLabel,e,lbl);return;}pointerDown(e);});stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerUp);stage.addEventListener('lostpointercapture',e=>{if(labelDrag)endLabelDrag(e);else pointerUp(e);});window.addEventListener('blur',()=>{pointer=null;labelDrag=null;orbit=null;stage.classList.remove('drag');});stage.addEventListener('wheel',e=>{if(e.target.closest('.action-tools,.scale-widget,.map-label'))return;if(Math.abs(e.deltaY)<1.5)return;e.preventDefault();e.stopPropagation();const p=atStageEvent(e);zoomAt(Math.exp(e.deltaY*.00165),p.x,p.y);},{passive:false});stage.addEventListener('dblclick',e=>{if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const ladder=['world','city','dungeon','room'];const cur=ladder.indexOf(levelFromView()==='region'?'world':levelFromView());goTo(ladder[Math.min(ladder.length-1,Math.max(0,cur)+1)]);});
-    root.tabIndex=0;root.addEventListener('keydown',e=>{const t=e.target;if(t.matches('input,select,textarea')||t.closest('input,select,textarea'))return;const k=e.key.toLowerCase();if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(k==='escape'||k==='v')tool='hand';if(k==='b')tool='paint';if(k==='s')tool='stamp';if(k==='w')tool='wall';if(k==='+'||k==='=')zoomAt(.7);if(k==='-')zoomAt(1.4);renderTools();});
+    root.tabIndex=0;root.addEventListener('keydown',e=>{const t=e.target;if(t.matches('input,select,textarea')||t.closest('input,select,textarea'))return;const k=e.key.toLowerCase();if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(k==='escape'||k==='v'){trySetTool('hand');return;}if(k==='b'){trySetTool('paint');return;}if(k==='s'){trySetTool('stamp');return;}if(k==='w'){trySetTool('wall');return;}if(k==='+'||k==='=')zoomAt(.7);if(k==='-')zoomAt(1.4);renderTools();});
 
 
     let orbit=null;
@@ -759,6 +803,21 @@ export function mountAtlasPrototype3d(host, options = {}) {
       selectedExternalId = typeof id === 'string' && id ? id : null;
       renderNavigation();
     };
+    setToolChromeImpl = function setToolChrome(rows) {
+      if (disposed) return;
+      toolChrome = Array.isArray(rows) ? rows.slice() : null;
+      syncToolToChrome();
+      renderTools();
+      renderPalette();
+    };
+    setCanEditImpl = function setCanEdit(ok) {
+      if (disposed) return;
+      canEditMaps = ok !== false;
+      if (!canEditMaps && tool !== 'hand') {
+        tool = 'hand';
+        renderTools();
+      }
+    };
     disposeRuntime = function __disposeAtlasPrototype() {
       try { if (typeof renderLoop !== 'undefined' && renderLoop) cancelAnimationFrame(renderLoop); } catch (e) {}
       try { if (typeof animID !== 'undefined' && animID) cancelAnimationFrame(animID); } catch (e) {}
@@ -779,6 +838,12 @@ export function mountAtlasPrototype3d(host, options = {}) {
     },
     setActiveNavPlaceId(id) {
       setActiveNavPlaceIdImpl(id);
+    },
+    setToolChrome(rows) {
+      setToolChromeImpl(rows);
+    },
+    setCanEdit(ok) {
+      setCanEditImpl(ok);
     },
   };
 }

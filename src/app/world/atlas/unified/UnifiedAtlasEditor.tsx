@@ -1302,6 +1302,8 @@ export function UnifiedAtlasEditor({
           onPersist={canEdit ? handleWebglPersist : undefined}
           externalNav={webglNavTree}
           activePlaceId={activePlaceId}
+          activeNodeKind={activeNodeKind ?? null}
+          canEdit={canEdit}
           onNavSelect={onWebglNavSelect}
           onNavRename={canEdit ? onWebglNavRename : undefined}
           onNavAdd={canEdit ? onWebglNavAdd : undefined}
