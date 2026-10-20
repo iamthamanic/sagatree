@@ -18,6 +18,12 @@
         "780": "Shutdown dependency enforcement automation",
         "781": "Parity harness implementation"
       }
+    },
+    "atlasLiveE2e": {
+      "githubIssue": 770,
+      "design": ".qa/design/atlas-live-e2e-cutover-gate.md",
+      "prepIssue": 775,
+      "ciEnabled": false
     }
   },
   "coverage": {
@@ -4047,7 +4053,11 @@
       "behavior": {
         "unchanged": "User data continuity; no silent Supabase dual-write",
         "secrets": "No prod migration without explicit freigabe",
-        "blockedReason": "BLOCKED until prior waves + human freigabe"
+        "blockedReason": "BLOCKED until prior waves + human freigabe",
+        "cutoverRequires": [
+          "ATLAS-LIVE-E2E",
+          "#770 CLOSED + green required live CI"
+        ]
       },
       "scope": {
         "mayChange": [
@@ -4157,7 +4167,11 @@
       "behavior": {
         "unchanged": "User data continuity",
         "secrets": "No prod migration without explicit freigabe",
-        "blockedReason": "BLOCKED until prior waves + human freigabe"
+        "blockedReason": "BLOCKED until prior waves + human freigabe",
+        "cutoverRequires": [
+          "ATLAS-LIVE-E2E",
+          "#770 CLOSED + green required live CI"
+        ]
       },
       "scope": {
         "mayChange": [
@@ -4258,14 +4272,15 @@
       "after": {
         "paths": [
           "e2e/atlas-followup-product-e2e-gate.spec.ts",
-          ".github/workflows/verify.yml"
+          ".github/workflows/verify.yml",
+          ".qa/design/atlas-live-e2e-cutover-gate.md"
         ],
         "tech": "Required CI job + isolated DB + DB-state assertions"
       },
       "behavior": {
         "unchanged": "Production migration remains gated",
         "secrets": "No prod credentials in CI",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 isolated CI DB + workflow freigabe"
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 ATLAS-CI-01..03 in .qa/design/atlas-live-e2e-cutover-gate.md; live CI job not enabled; cutover must stay blocked while #770 OPEN"
       },
       "scope": {
         "mayChange": [
@@ -4281,11 +4296,11 @@
         ]
       },
       "acceptance": [
-        "Live test not skipped in required gate",
-        "DB-state assertions for persist/reload/player view",
-        "Owner/GM/player/cross-owner negatives",
-        "Intentional regression proves red then reverted",
-        "Isolated fixtures only"
+        "Required CI job runs live GM\u2192player path without test.skip when secrets present",
+        "Isolated test DB only; DB-state assertions for persist/reload/player/cross-owner",
+        "Intentional regression proves required job red then reverted",
+        "MIG-700/MIG-702 depend on ATLAS-LIVE-E2E (#770); cutover blocked while #770 OPEN",
+        "Production Donalu remains NOT migrated"
       ]
     }
   ]
