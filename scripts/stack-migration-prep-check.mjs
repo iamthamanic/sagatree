@@ -41,6 +41,8 @@ const required = [
   '.qa/intake/edge-infra-contracts/README.md',
   '.qa/intake/edge-infra-contracts/inventory.json',
   '.qa/intake/edge-infra-contracts/SPLIT_TICKETS.md',
+  '.qa/evidence/stack-migration-prep/issue-contract-quality-audit.md',
+  '.qa/evidence/stack-migration-prep/github-issue-map.json',
 ];
 
 for (const rel of required) {
@@ -196,6 +198,45 @@ for (const a of edgeInv.infrastructure) {
 const edgeReadme = readFileSync(join(root, '.qa/intake/edge-infra-contracts/README.md'), 'utf8');
 for (const needle of ['session-media-token', 'ai-gm', 'LiveKit', 'SPEC only']) {
   if (!edgeReadme.includes(needle)) fail(`edge README missing ${needle}`);
+}
+
+
+// PREP-06 (#779): reject generic / incomplete implementation contracts
+const PATH_RE = /`[^`]+`|\.ts\b|\.sql\b|\.yml\b|\.github\b|src\/|supabase\/|server\/|docs\/|\.qa\//;
+const SECURITY_RE = /auth|rls|owner|gm|secret|deny|forbidden|membership|privilege/i;
+const TEST_RE = /test|negative|parity|reload|revision|idempot|unauthorized|403|401/i;
+const GENERIC_ACC_RE = /escape hatch|production migration remains not approved|touched files:\s*zero/i;
+
+for (const issue of issues) {
+  const before = typeof issue.before === 'string' ? issue.before : JSON.stringify(issue.before ?? '');
+  const after = typeof issue.after === 'string' ? issue.after : JSON.stringify(issue.after ?? '');
+  const blob = JSON.stringify(issue);
+  if (!PATH_RE.test(before + after)) {
+    fail(`${issue.localId} before/after must cite repository paths`);
+  }
+  if (!SECURITY_RE.test(blob)) {
+    fail(`${issue.localId} missing security/authz signal`);
+  }
+  if (!TEST_RE.test(blob)) {
+    fail(`${issue.localId} missing test/negative/parity signal`);
+  }
+  const acc = (issue.acceptance || []).join(' ');
+  const genericHits = (acc.match(GENERIC_ACC_RE) || []).length;
+  if (genericHits >= 2 && !PATH_RE.test(acc)) {
+    fail(`${issue.localId} acceptance is generic boilerplate without path-specific checks`);
+  }
+  if (!issue.contractSections?.vorher || !issue.contractSections?.nachher || !issue.contractSections?.tests) {
+    fail(`${issue.localId} missing contractSections (vorher/nachher/tests)`);
+  }
+  const gateDeps = (issue.dependsOn || []).filter((d) => /^GATE-0\d$/.test(d));
+  if (gateDeps.length && (issue.status === 'ready' || (issue.labels || []).includes('agent-ready'))) {
+    fail(`${issue.localId} cannot be ready/agent-ready while depending on unresolved ${gateDeps.join(',')}`);
+  }
+}
+
+const mapped = issues.filter((i) => typeof i.githubIssue === 'number').length;
+if (mapped < 60) {
+  fail(`expected ≥60 issues mapped to githubIssue (got ${mapped})`);
 }
 
 console.log(

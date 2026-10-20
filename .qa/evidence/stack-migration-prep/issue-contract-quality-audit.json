@@ -1,0 +1,11 @@
+{
+  "total": 72,
+  "weakCount": 0,
+  "weak": [],
+  "statusCounts": {
+    "ready": 2,
+    "needs-design": 5,
+    "blocked": 65
+  },
+  "mapped": 72
+}
