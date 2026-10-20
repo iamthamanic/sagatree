@@ -1,11 +1,9 @@
 # Composition Gate — stack-prep-01 (#774)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: f7040ad77283fb55ac98a92ee106e9e47c5e4756
 - BASE_SHA: 4bc40a3142811f23f528b17698abc6d674d2ee75
 - Date: 2026-10-20
 - Verdict: CLEAR
-- WORKTREE: chore/stack-migration-prep @ CLEAN (prep docs only)
-- proofOnlyChangesSince: BASE_SHA (.qa/** stack-migration-prep + intake + design; scripts/stack-migration-prep-check.mjs; scripts/test-gate.mjs wire)
 
 ## Event
 
