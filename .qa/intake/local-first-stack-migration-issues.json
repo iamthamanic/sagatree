@@ -4,7 +4,7 @@
     "baselineSha": "4bc40a3142811f23f528b17698abc6d674d2ee75",
     "sourceDoc": "docs/architektur-sqlite-based.md",
     "githubIssuesPublished": false,
-    "note": "Draft specs only \u2014 do not publish to GitHub without freigabe",
+    "note": "Draft specs only — do not publish to GitHub without freigabe",
     "reviewRemediation": {
       "pr771CodexP1_cutoverDeps": "MIG-700 dependsOn expanded to all wave MIG-* + GATEs + ATLAS-LIVE-E2E",
       "pr771CodexP2_storageDistinctACs": true,
@@ -25,10 +25,8 @@
       "prepIssue": 775,
       "ciEnabled": false
     },
-    "gateCriteriaPrep": {
-      "issue": 776,
-      "dir": ".qa/design/gates/"
-    }
+    "githubIssueMapPartial": true,
+    "githubIssueMappedCount": 72
   },
   "coverage": {
     "legacyMigrations": 106,
@@ -187,7 +185,23 @@
         "Production migration remains NOT approved in evidence",
         "No TypeScript escape hatches introduced",
         "Composition/docs CLEAR for this prep slug"
-      ]
+      ],
+      "githubIssue": 782,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\", \"AGENTS.md\", \".qa/project.yaml\"], \"tech\": \"Supabase Postgres live stack\", \"tests\": [\"npm run test-gate\"], \"notes\": \"Current HEAD at prep time is baseline candidate 4bc40a31\"}",
+        "nachher": "{\"paths\": [\".qa/evidence/stack-migration-prep/baseline.md\", \".qa/design/local-first-stack-migration.md\"], \"tech\": \"documentation + fixture manifests only\", \"types\": \"FixtureManifest JSON schema\"}",
+        "verhalten": "{\"unchanged\": \"No runtime behavior changes\", \"secrets\": \"No prod writes; fixtures synthetic/cloned under freigabe\", \"negatives\": [\"Document production migration still gated\"]}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Baseline SHA recorded and test-gate green on that SHA",
+          "Golden fixture list covers Dornhain/Donalu, GM+2 players, secrets, session, combat, concurrent commands, reload, cross-owner",
+          "Production migration remains NOT approved in evidence",
+          "No TypeScript escape hatches introduced",
+          "Composition/docs CLEAR for this prep slug"
+        ],
+        "abhaengigkeiten": [],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-002",
@@ -223,7 +237,7 @@
         "paths": [
           ".qa/evidence/stack-migration-prep/legacy-target-matrix.md"
         ],
-        "tech": "mapping rows ALTES\u2192NEUES"
+        "tech": "mapping rows ALTES→NEUES"
       },
       "behavior": {
         "unchanged": "Inventory only; no behavior change",
@@ -247,7 +261,25 @@
         "RLS/Storage/Realtime/Auth have mapping categories",
         "Unmapped productive call sites count = 0 or listed as NEEDS DECISION",
         "Coverage report numbers match scan JSON"
-      ]
+      ],
+      "githubIssue": 783,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\", \"supabase/functions/**\", \"src/infrastructure/**\"], \"tech\": \"Postgres + Deno Edge + Supabase client adapters\", \"counts\": {\"migrations\": 106, \"rpcFrontend\": 55, \"edge\": 24, \"rlsApprox\": 227}}",
+        "nachher": "{\"paths\": [\".qa/evidence/stack-migration-prep/legacy-target-matrix.md\"], \"tech\": \"mapping rows ALTES→NEUES\"}",
+        "verhalten": "{\"unchanged\": \"Inventory only; no behavior change\", \"secrets\": \"No SECURITY DEFINER semantics dropped without mapped Policy Service row\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Every edge function dir has a matrix row",
+          "Every frontend .rpc() name has a matrix row",
+          "RLS/Storage/Realtime/Auth have mapping categories",
+          "Unmapped productive call sites count = 0 or listed as NEEDS DECISION",
+          "Coverage report numbers match scan JSON"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "GATE-01",
@@ -266,33 +298,12 @@
         "needs-design",
         "gate-issue"
       ],
-      "before": {
-        "paths": [
-          "docs/architektur-sqlite-based.md"
-        ],
-        "tech": "Supabase stack",
-        "tests": []
-      },
-      "after": {
-        "paths": [
-          ".qa/design/gates/GATE-01-drizzle-vs-zenstack.md"
-        ],
-        "tech": "PoC report only",
-        "candidates": [
-          "Drizzle + SagaTree Policy Service",
-          "ZenStack 3"
-        ],
-        "decisionCriteria": [
-          "All PASS table rows in gate design green on PoC",
-          "All Negative tests in gate design green",
-          "Human ADR APPROVED recorded before dependents lose needs-design",
-          "Recommendation documented with measured trade-offs (not agent self-approve)"
-        ]
-      },
+      "before": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md` (SPEC only, not APPROVED).",
+      "after": "{\"paths\": [\".qa/design/gates/gate-01.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Drizzle + SagaTree Policy Service\", \"ZenStack 3\"], \"decisionCriteria\": [\"Deny-by-default owner/GM/player negatives pass identical suite\", \"expectedRevision + idempotencyKey supported in transactions\", \"No domain imports of ORM\", \"Linux/macOS/Windows host smoke\", \"Migration tooling for 50+ tables feasible\"]} Human-approved ADR recorded; `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
       "behavior": {
         "unchanged": "No production cutover",
         "secrets": "PoC uses isolated fixtures only",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 choose ORM/policy stack using measurable criteria before schema issues"
+        "blockedReason": "BLOCKED / NEEDS DECISION — choose ORM/policy stack using measurable criteria before schema issues"
       },
       "scope": {
         "mayChange": [
@@ -314,11 +325,24 @@
         "No silent library choice in dependent issues while status=needs-design"
       ],
       "githubIssue": 784,
-      "blocksIssues": [
-        "MIG-011",
-        "MIG-012",
-        "MIG-013"
-      ]
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md` (SPEC only, not APPROVED).",
+        "nachher": "{\"paths\": [\".qa/design/gates/gate-01.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Drizzle + SagaTree Policy Service\", \"ZenStack 3\"], \"decisionCriteria\": [\"Deny-by-default owner/GM/player negatives pass identical suite\", \"expectedRevision + idempotencyKey supported in transactions\", \"No domain imports of ORM\", \"Linux/macOS/Windows host smoke\", \"Migration tooling for 50+ tables feasible\"]} Human-approved ADR recorded; `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
+        "verhalten": "{\"unchanged\": \"No production cutover\", \"secrets\": \"PoC uses isolated fixtures only\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — choose ORM/policy stack using measurable criteria before schema issues\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Candidates listed with reproducible tests",
+          "Pros/cons documented from measured results",
+          "Recommended outcome recorded",
+          "Explicit human APPROVED before dependent implementation issues become agent-ready",
+          "No silent library choice in dependent issues while status=needs-design"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "GATE-02",
@@ -337,33 +361,12 @@
         "needs-design",
         "gate-issue"
       ],
-      "before": {
-        "paths": [
-          "docs/architektur-sqlite-based.md"
-        ],
-        "tech": "Supabase stack",
-        "tests": []
-      },
-      "after": {
-        "paths": [
-          ".qa/design/gates/GATE-02-better-auth-colyseus.md"
-        ],
-        "tech": "PoC report only",
-        "candidates": [
-          "Better Auth cookies + Colyseus onAuth",
-          "Better Auth bearer + Colyseus token validation"
-        ],
-        "decisionCriteria": [
-          "All PASS table rows in gate design green on PoC",
-          "All Negative tests in gate design green",
-          "Human ADR APPROVED recorded before dependents lose needs-design",
-          "Recommendation documented with measured trade-offs (not agent self-approve)"
-        ]
-      },
+      "before": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-02-better-auth-colyseus.md` (SPEC only, not APPROVED).",
+      "after": "{\"paths\": [\".qa/design/gates/gate-02.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Better Auth cookies + Colyseus onAuth\", \"Better Auth bearer + Colyseus token validation\"], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-02-better-auth-colyseus.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
       "behavior": {
         "unchanged": "No production cutover",
         "secrets": "PoC uses isolated fixtures only",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 auth cookie/token + realtime auth must be proven before API/realtime waves"
+        "blockedReason": "BLOCKED / NEEDS DECISION — auth cookie/token + realtime auth must be proven before API/realtime waves"
       },
       "scope": {
         "mayChange": [
@@ -385,12 +388,24 @@
         "No silent library choice in dependent issues while status=needs-design"
       ],
       "githubIssue": 785,
-      "blocksIssues": [
-        "MIG-014",
-        "MIG-015",
-        "MIG-021",
-        "MIG-023"
-      ]
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-02-better-auth-colyseus.md` (SPEC only, not APPROVED).",
+        "nachher": "{\"paths\": [\".qa/design/gates/gate-02.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Better Auth cookies + Colyseus onAuth\", \"Better Auth bearer + Colyseus token validation\"], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-02-better-auth-colyseus.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
+        "verhalten": "{\"unchanged\": \"No production cutover\", \"secrets\": \"PoC uses isolated fixtures only\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — auth cookie/token + realtime auth must be proven before API/realtime waves\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Candidates listed with reproducible tests",
+          "Pros/cons documented from measured results",
+          "Recommended outcome recorded",
+          "Explicit human APPROVED before dependent implementation issues become agent-ready",
+          "No silent library choice in dependent issues while status=needs-design"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "GATE-03",
@@ -409,33 +424,12 @@
         "needs-design",
         "gate-issue"
       ],
-      "before": {
-        "paths": [
-          "docs/architektur-sqlite-based.md"
-        ],
-        "tech": "Supabase stack",
-        "tests": []
-      },
-      "after": {
-        "paths": [
-          ".qa/design/gates/GATE-03-colyseus-http-vs-hono.md"
-        ],
-        "tech": "PoC report only",
-        "candidates": [
-          "Colyseus rooms + minimal HTTP in same process",
-          "Hono HTTP API + Colyseus realtime only"
-        ],
-        "decisionCriteria": [
-          "All PASS table rows in gate design green on PoC",
-          "All Negative tests in gate design green",
-          "Human ADR APPROVED recorded before dependents lose needs-design",
-          "Recommendation documented with measured trade-offs (not agent self-approve)"
-        ]
-      },
+      "before": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-03-colyseus-http-vs-hono.md` (SPEC only, not APPROVED).",
+      "after": "{\"paths\": [\".qa/design/gates/gate-03.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Colyseus rooms + minimal HTTP in same process\", \"Hono HTTP API + Colyseus realtime only\"], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-03-colyseus-http-vs-hono.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
       "behavior": {
         "unchanged": "No production cutover",
         "secrets": "PoC uses isolated fixtures only",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 transport boundary for REST vs realtime commands"
+        "blockedReason": "BLOCKED / NEEDS DECISION — transport boundary for REST vs realtime commands"
       },
       "scope": {
         "mayChange": [
@@ -457,10 +451,24 @@
         "No silent library choice in dependent issues while status=needs-design"
       ],
       "githubIssue": 786,
-      "blocksIssues": [
-        "MIG-020",
-        "MIG-021"
-      ]
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-03-colyseus-http-vs-hono.md` (SPEC only, not APPROVED).",
+        "nachher": "{\"paths\": [\".qa/design/gates/gate-03.md\"], \"tech\": \"PoC report only\", \"candidates\": [\"Colyseus rooms + minimal HTTP in same process\", \"Hono HTTP API + Colyseus realtime only\"], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-03-colyseus-http-vs-hono.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
+        "verhalten": "{\"unchanged\": \"No production cutover\", \"secrets\": \"PoC uses isolated fixtures only\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — transport boundary for REST vs realtime commands\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Candidates listed with reproducible tests",
+          "Pros/cons documented from measured results",
+          "Recommended outcome recorded",
+          "Explicit human APPROVED before dependent implementation issues become agent-ready",
+          "No silent library choice in dependent issues while status=needs-design"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "GATE-04",
@@ -479,30 +487,12 @@
         "needs-design",
         "gate-issue"
       ],
-      "before": {
-        "paths": [
-          "docs/architektur-sqlite-based.md"
-        ],
-        "tech": "Supabase stack",
-        "tests": []
-      },
-      "after": {
-        "paths": [
-          ".qa/design/gates/GATE-04-sqlite-revision-idempotency.md"
-        ],
-        "tech": "PoC report only",
-        "candidates": [],
-        "decisionCriteria": [
-          "All PASS table rows in gate design green on PoC",
-          "All Negative tests in gate design green",
-          "Human ADR APPROVED recorded before dependents lose needs-design",
-          "Recommendation documented with measured trade-offs (not agent self-approve)"
-        ]
-      },
+      "before": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-04-sqlite-revision-idempotency.md` (SPEC only, not APPROVED).",
+      "after": "{\"paths\": [\".qa/design/gates/gate-04.md\"], \"tech\": \"PoC report only\", \"candidates\": [], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-04-sqlite-revision-idempotency.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
       "behavior": {
         "unchanged": "No production cutover",
         "secrets": "PoC uses isolated fixtures only",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 prove concurrent command semantics before session runtime port"
+        "blockedReason": "BLOCKED / NEEDS DECISION — prove concurrent command semantics before session runtime port"
       },
       "scope": {
         "mayChange": [
@@ -524,13 +514,28 @@
         "No silent library choice in dependent issues while status=needs-design"
       ],
       "githubIssue": 787,
-      "blocksIssues": [
-        "MIG-022"
-      ]
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-04-sqlite-revision-idempotency.md` (SPEC only, not APPROVED).",
+        "nachher": "{\"paths\": [\".qa/design/gates/gate-04.md\"], \"tech\": \"PoC report only\", \"candidates\": [], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-04-sqlite-revision-idempotency.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
+        "verhalten": "{\"unchanged\": \"No production cutover\", \"secrets\": \"PoC uses isolated fixtures only\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — prove concurrent command semantics before session runtime port\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Candidates listed with reproducible tests",
+          "Pros/cons documented from measured results",
+          "Recommended outcome recorded",
+          "Explicit human APPROVED before dependent implementation issues become agent-ready",
+          "No silent library choice in dependent issues while status=needs-design"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "GATE-05",
-      "title": "Desktop packaging PoC (Tauri+sidecar vs Electron) \u2014 deferred until browser host parity",
+      "title": "Desktop packaging PoC (Tauri+sidecar vs Electron) — deferred until browser host parity",
       "priority": "P2",
       "wave": "migration-wave-8-tauri-cutover",
       "order": 14,
@@ -545,30 +550,12 @@
         "needs-design",
         "gate-issue"
       ],
-      "before": {
-        "paths": [
-          "docs/architektur-sqlite-based.md"
-        ],
-        "tech": "Supabase stack",
-        "tests": []
-      },
-      "after": {
-        "paths": [
-          ".qa/design/gates/GATE-05-tauri-packaging.md"
-        ],
-        "tech": "PoC report only",
-        "candidates": [],
-        "decisionCriteria": [
-          "All PASS table rows in gate design green on PoC",
-          "All Negative tests in gate design green",
-          "Human ADR APPROVED recorded before dependents lose needs-design",
-          "Recommendation documented with measured trade-offs (not agent self-approve)"
-        ]
-      },
+      "before": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-05-tauri-packaging.md` (SPEC only, not APPROVED).",
+      "after": "{\"paths\": [\".qa/design/gates/gate-05.md\"], \"tech\": \"PoC report only\", \"candidates\": [], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-05-tauri-packaging.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
       "behavior": {
         "unchanged": "No production cutover",
         "secrets": "PoC uses isolated fixtures only",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 not during browser development; only before external desktop test phase"
+        "blockedReason": "BLOCKED / NEEDS DECISION — not during browser development; only before external desktop test phase"
       },
       "scope": {
         "mayChange": [
@@ -590,9 +577,24 @@
         "No silent library choice in dependent issues while status=needs-design"
       ],
       "githubIssue": 788,
-      "blocksIssues": [
-        "MIG-703"
-      ]
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md\"], \"tech\": \"Supabase stack\", \"tests\": []} PoC criteria: `.qa/design/gates/GATE-05-tauri-packaging.md` (SPEC only, not APPROVED).",
+        "nachher": "{\"paths\": [\".qa/design/gates/gate-05.md\"], \"tech\": \"PoC report only\", \"candidates\": [], \"decisionCriteria\": []} Human-approved ADR recorded; `.qa/design/gates/GATE-05-tauri-packaging.md` marked APPROVED with evidence under `.qa/evidence/stack-migration-prep/`.",
+        "verhalten": "{\"unchanged\": \"No production cutover\", \"secrets\": \"PoC uses isolated fixtures only\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — not during browser development; only before external desktop test phase\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Candidates listed with reproducible tests",
+          "Pros/cons documented from measured results",
+          "Recommended outcome recorded",
+          "Explicit human APPROVED before dependent implementation issues become agent-ready",
+          "No silent library choice in dependent issues while status=needs-design"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-010",
@@ -655,7 +657,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 789,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"server/src/bootstrap/**\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-01 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-01"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-011",
@@ -718,7 +740,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 790,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"server/src/persistence/**\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-01 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-01"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-012",
@@ -749,7 +791,7 @@
       },
       "after": {
         "paths": [
-          "src/infrastructure/world/** \u2192 host adapter"
+          "src/infrastructure/world/** → host adapter"
         ],
         "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
         "authz": "Central Policy Service (RLS functional replacement)"
@@ -781,7 +823,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 791,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/world/** → host adapter\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-01 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-01"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-013",
@@ -844,7 +906,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 792,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"server/src/permissions/**\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-01 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-01"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-014",
@@ -907,7 +989,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 793,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"server/src/auth/**\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-02 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-02"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-015",
@@ -970,7 +1072,27 @@
         "Restart persistence proven for touched data",
         "No new TypeScript escape hatches",
         "Integration test beyond unit stubs"
-      ]
+      ],
+      "githubIssue": 794,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/lib/supabase.ts\", \"src/lib/auth-context.tsx\", \"supabase/migrations/**\"], \"tech\": \"Supabase client + GoTrue + Postgres\", \"authz\": \"Postgres RLS + SECURITY DEFINER RPCs\"}",
+        "nachher": "{\"paths\": [\"server/src/auth/solo/**\"], \"tech\": \"Node TypeScript host; concrete ORM/auth pending GATE approval\", \"authz\": \"Central Policy Service (RLS functional replacement)\"}",
+        "verhalten": "{\"unchanged\": \"Domain rules in src/domains/** unchanged\", \"secrets\": \"GM secrets never returned without policy allow\", \"blockedReason\": \"BLOCKED / NEEDS DECISION until GATE-02 APPROVED\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Host starts without cloud dependency in solo mode",
+          "Policy deny-by-default negatives exist for owner/GM/player",
+          "Restart persistence proven for touched data",
+          "No new TypeScript escape hatches",
+          "Integration test beyond unit stubs"
+        ],
+        "abhaengigkeiten": [
+          "MIG-001",
+          "MIG-002",
+          "GATE-02"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-020",
@@ -1030,7 +1152,28 @@
         "Cross-owner join/command negatives fail closed",
         "Persist + host restart keeps session authority",
         "Typed IO without any casts of command payloads"
-      ]
+      ],
+      "githubIssue": 795,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/session-runtime-service.ts\", \"src/infrastructure/session/session-runtime-channel.ts\", \"supabase/functions/sessions/**\"], \"tech\": \"Supabase Realtime + RPC apply_session_runtime_command\", \"io\": \"expectedRevision + idempotencyKey contracts in existing design docs\"}",
+        "nachher": "{\"paths\": [\"server/src/application/session/**\", \"server/src/api/**\"], \"tech\": \"Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03\"}",
+        "verhalten": "{\"unchanged\": \"Revision mismatch and idempotent retry semantics\", \"secrets\": \"Hidden lore/maps filtered before WS/HTTP\", \"blockedReason\": \"BLOCKED until GATE-03 + wave-1 host ready\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "GM + 2 players concurrent commands parity test",
+          "Reconnect resync without event loss for allowed data",
+          "Cross-owner join/command negatives fail closed",
+          "Persist + host restart keeps session authority",
+          "Typed IO without any casts of command payloads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-010",
+          "MIG-013",
+          "MIG-014",
+          "GATE-03"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-021",
@@ -1090,7 +1233,28 @@
         "Cross-owner join/command negatives fail closed",
         "Persist + host restart keeps session authority",
         "Typed IO without any casts of command payloads"
-      ]
+      ],
+      "githubIssue": 796,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/session-runtime-service.ts\", \"src/infrastructure/session/session-runtime-channel.ts\", \"supabase/functions/sessions/**\"], \"tech\": \"Supabase Realtime + RPC apply_session_runtime_command\", \"io\": \"expectedRevision + idempotencyKey contracts in existing design docs\"}",
+        "nachher": "{\"paths\": [\"server/src/application/session/**\", \"server/src/api/**\"], \"tech\": \"Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03\"}",
+        "verhalten": "{\"unchanged\": \"Revision mismatch and idempotent retry semantics\", \"secrets\": \"Hidden lore/maps filtered before WS/HTTP\", \"blockedReason\": \"BLOCKED until GATE-03 + wave-1 host ready\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "GM + 2 players concurrent commands parity test",
+          "Reconnect resync without event loss for allowed data",
+          "Cross-owner join/command negatives fail closed",
+          "Persist + host restart keeps session authority",
+          "Typed IO without any casts of command payloads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-010",
+          "MIG-013",
+          "MIG-014",
+          "GATE-03"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-022",
@@ -1150,7 +1314,28 @@
         "Cross-owner join/command negatives fail closed",
         "Persist + host restart keeps session authority",
         "Typed IO without any casts of command payloads"
-      ]
+      ],
+      "githubIssue": 797,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/session-runtime-service.ts\", \"src/infrastructure/session/session-runtime-channel.ts\", \"supabase/functions/sessions/**\"], \"tech\": \"Supabase Realtime + RPC apply_session_runtime_command\", \"io\": \"expectedRevision + idempotencyKey contracts in existing design docs\"}",
+        "nachher": "{\"paths\": [\"server/src/application/session/**\", \"server/src/api/**\"], \"tech\": \"Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03\"}",
+        "verhalten": "{\"unchanged\": \"Revision mismatch and idempotent retry semantics\", \"secrets\": \"Hidden lore/maps filtered before WS/HTTP\", \"blockedReason\": \"BLOCKED until GATE-04 + wave-1 host ready\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "GM + 2 players concurrent commands parity test",
+          "Reconnect resync without event loss for allowed data",
+          "Cross-owner join/command negatives fail closed",
+          "Persist + host restart keeps session authority",
+          "Typed IO without any casts of command payloads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-010",
+          "MIG-013",
+          "MIG-014",
+          "GATE-04"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-023",
@@ -1210,7 +1395,28 @@
         "Cross-owner join/command negatives fail closed",
         "Persist + host restart keeps session authority",
         "Typed IO without any casts of command payloads"
-      ]
+      ],
+      "githubIssue": 798,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/session-runtime-service.ts\", \"src/infrastructure/session/session-runtime-channel.ts\", \"supabase/functions/sessions/**\"], \"tech\": \"Supabase Realtime + RPC apply_session_runtime_command\", \"io\": \"expectedRevision + idempotencyKey contracts in existing design docs\"}",
+        "nachher": "{\"paths\": [\"server/src/application/session/**\", \"server/src/api/**\"], \"tech\": \"Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03\"}",
+        "verhalten": "{\"unchanged\": \"Revision mismatch and idempotent retry semantics\", \"secrets\": \"Hidden lore/maps filtered before WS/HTTP\", \"blockedReason\": \"BLOCKED until GATE-02 + wave-1 host ready\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "GM + 2 players concurrent commands parity test",
+          "Reconnect resync without event loss for allowed data",
+          "Cross-owner join/command negatives fail closed",
+          "Persist + host restart keeps session authority",
+          "Typed IO without any casts of command payloads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-010",
+          "MIG-013",
+          "MIG-014",
+          "GATE-02"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-024",
@@ -1270,7 +1476,28 @@
         "Cross-owner join/command negatives fail closed",
         "Persist + host restart keeps session authority",
         "Typed IO without any casts of command payloads"
-      ]
+      ],
+      "githubIssue": 799,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/session-runtime-service.ts\", \"src/infrastructure/session/session-runtime-channel.ts\", \"supabase/functions/sessions/**\"], \"tech\": \"Supabase Realtime + RPC apply_session_runtime_command\", \"io\": \"expectedRevision + idempotencyKey contracts in existing design docs\"}",
+        "nachher": "{\"paths\": [\"server/src/application/session/**\", \"server/src/api/**\"], \"tech\": \"Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03\"}",
+        "verhalten": "{\"unchanged\": \"Revision mismatch and idempotent retry semantics\", \"secrets\": \"Hidden lore/maps filtered before WS/HTTP\", \"blockedReason\": \"BLOCKED until GATE-01 + wave-1 host ready\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "GM + 2 players concurrent commands parity test",
+          "Reconnect resync without event loss for allowed data",
+          "Cross-owner join/command negatives fail closed",
+          "Persist + host restart keeps session authority",
+          "Typed IO without any casts of command payloads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-010",
+          "MIG-013",
+          "MIG-014",
+          "GATE-01"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-301",
@@ -1325,7 +1552,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 800,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/ai/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/ai\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/ai/**\", \"server/src/application/ai/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-302",
@@ -1380,7 +1627,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 801,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/character/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/character\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/character/**\", \"server/src/application/character/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-303",
@@ -1435,7 +1702,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 802,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/inventory/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/inventory\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/inventory/**\", \"server/src/application/inventory/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-304",
@@ -1490,7 +1777,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 803,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/look/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/look\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/look/**\", \"server/src/application/look/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-305",
@@ -1545,7 +1852,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 804,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/marketplace/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/marketplace\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/marketplace/**\", \"server/src/application/marketplace/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-306",
@@ -1600,7 +1927,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 805,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/media/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/media\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/media/**\", \"server/src/application/media/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-307",
@@ -1655,7 +2002,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 806,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/npc-creature/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/npc-creature\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/npc-creature/**\", \"server/src/application/npc-creature/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-308",
@@ -1710,7 +2077,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 807,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/project/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/project\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/project/**\", \"server/src/application/project/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-309",
@@ -1765,7 +2152,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 808,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/rulesets/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/rulesets\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/rulesets/**\", \"server/src/application/rulesets/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-310",
@@ -1820,7 +2227,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 809,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/saga/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/saga\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/saga/**\", \"server/src/application/saga/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-311",
@@ -1875,7 +2302,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 810,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/session/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/session\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/session/**\", \"server/src/application/session/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-312",
@@ -1930,7 +2377,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 811,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/user-profile/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/user-profile\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/user-profile/**\", \"server/src/application/user-profile/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-313",
@@ -1985,7 +2452,27 @@
         "Persistence/reload covered",
         "No feature silently deleted",
         "Typecheck clean without new escape hatches"
-      ]
+      ],
+      "githubIssue": 812,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"src/infrastructure/world/**\"], \"tech\": \"Supabase JS + RPC/PostgREST\", \"callers\": \"src/app/** consumers of infrastructure/world\"}",
+        "nachher": "{\"paths\": [\"src/infrastructure/world/**\", \"server/src/application/world/**\"], \"tech\": \"Host HTTP/WS adapters; same public facade methods where possible\"}",
+        "verhalten": "{\"unchanged\": \"Domain types and app UX contracts\", \"secrets\": \"Owner-scoped data remains owner-scoped\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Existing app journeys for this area work against host",
+          "Security negatives for this area ported",
+          "Persistence/reload covered",
+          "No feature silently deleted",
+          "Typecheck clean without new escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-012",
+          "MIG-013",
+          "MIG-020"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-350",
@@ -2057,7 +2544,26 @@
         "Idempotency/revision where previously present",
         "No production data migration in this issue",
         "Typed strict"
-      ]
+      ],
+      "githubIssue": 813,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\"], \"tech\": \"SECURITY DEFINER SQL RPCs\", \"rpcNames\": [\"archive_world_node_subtree\", \"create_world_node_with_maps\", \"delete_world_node\", \"duplicate_world_node\", \"ensure_world_atlas_root\", \"get_world_atlas_map\", \"get_world_map\", \"increment_marketplace_downloads\", \"list_world_atlas_maps\", \"list_world_place_map_links\", \"list_world_places\", \"preview_world_node_consequences\", \"rename_world_node\", \"reparent_world_node\", \"save_world_map\", \"upsert_world_atlas_map\", \"upsert_world_place\", \"upsert_world_place_map_link\"]}",
+        "nachher": "{\"paths\": [\"server/src/application/commands/**\"], \"tech\": \"TypeScript domain commands + transactions\"}",
+        "verhalten": "{\"unchanged\": \"Input validation, error codes, revision semantics per RPC\", \"secrets\": \"Each command re-checks policy; no client-elevated origins\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "All listed RPCs (18) have command successors or approved retirement",
+          "Parity tests for happy + negative paths",
+          "Idempotency/revision where previously present",
+          "No production data migration in this issue",
+          "Typed strict"
+        ],
+        "abhaengigkeiten": [
+          "MIG-022",
+          "MIG-013"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-351",
@@ -2126,7 +2632,26 @@
         "Idempotency/revision where previously present",
         "No production data migration in this issue",
         "Typed strict"
-      ]
+      ],
+      "githubIssue": 814,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\"], \"tech\": \"SECURITY DEFINER SQL RPCs\", \"rpcNames\": [\"apply_session_runtime_command\", \"clear_npc_creature_instance_temp_controllers_for_session\", \"create_play_session\", \"create_project_session\", \"create_session_invite\", \"get_session_recap\", \"get_session_runtime_snapshot\", \"join_session_by_code\", \"leave_play_session\", \"resolve_session_invite\", \"revoke_session_invite\", \"save_session_recap_summary\", \"set_session_player_presence\", \"set_session_status\", \"update_npc_creature_instance_runtime\"]}",
+        "nachher": "{\"paths\": [\"server/src/application/commands/**\"], \"tech\": \"TypeScript domain commands + transactions\"}",
+        "verhalten": "{\"unchanged\": \"Input validation, error codes, revision semantics per RPC\", \"secrets\": \"Each command re-checks policy; no client-elevated origins\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "All listed RPCs (15) have command successors or approved retirement",
+          "Parity tests for happy + negative paths",
+          "Idempotency/revision where previously present",
+          "No production data migration in this issue",
+          "Typed strict"
+        ],
+        "abhaengigkeiten": [
+          "MIG-022",
+          "MIG-013"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-352",
@@ -2203,7 +2728,26 @@
         "Idempotency/revision where previously present",
         "No production data migration in this issue",
         "Typed strict"
-      ]
+      ],
+      "githubIssue": 815,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\"], \"tech\": \"SECURITY DEFINER SQL RPCs\", \"rpcNames\": [\"copy_native_saga_definition\", \"create_play_session\", \"create_project_from_saga_version\", \"create_project_session\", \"create_user_saga_definition\", \"duplicate_saga_playthrough\", \"ensure_native_starter_project\", \"get_my_saga_permissions\", \"get_native_saga_definition_by_slug\", \"get_saga_definition_editor\", \"get_saga_definition_version\", \"get_saga_lore_timeline\", \"get_saga_overview\", \"join_project_by_code\", \"leave_play_session\", \"list_saga_bindings\", \"list_saga_member_permission_state\", \"publish_saga_definition_version\", \"save_saga_definition_draft\", \"set_my_project_character\", \"set_saga_binding_reveal\", \"set_saga_member_bundle\", \"set_session_player_presence\"]}",
+        "nachher": "{\"paths\": [\"server/src/application/commands/**\"], \"tech\": \"TypeScript domain commands + transactions\"}",
+        "verhalten": "{\"unchanged\": \"Input validation, error codes, revision semantics per RPC\", \"secrets\": \"Each command re-checks policy; no client-elevated origins\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "All listed RPCs (23) have command successors or approved retirement",
+          "Parity tests for happy + negative paths",
+          "Idempotency/revision where previously present",
+          "No production data migration in this issue",
+          "Typed strict"
+        ],
+        "abhaengigkeiten": [
+          "MIG-022",
+          "MIG-013"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-353",
@@ -2260,7 +2804,26 @@
         "Idempotency/revision where previously present",
         "No production data migration in this issue",
         "Typed strict"
-      ]
+      ],
+      "githubIssue": 816,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\"], \"tech\": \"SECURITY DEFINER SQL RPCs\", \"rpcNames\": [\"assign_npc_creature_controller\", \"remove_npc_creature_instance\", \"spawn_npc_creature_instance\"]}",
+        "nachher": "{\"paths\": [\"server/src/application/commands/**\"], \"tech\": \"TypeScript domain commands + transactions\"}",
+        "verhalten": "{\"unchanged\": \"Input validation, error codes, revision semantics per RPC\", \"secrets\": \"Each command re-checks policy; no client-elevated origins\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "All listed RPCs (3) have command successors or approved retirement",
+          "Parity tests for happy + negative paths",
+          "Idempotency/revision where previously present",
+          "No production data migration in this issue",
+          "Typed strict"
+        ],
+        "abhaengigkeiten": [
+          "MIG-022",
+          "MIG-013"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-401",
@@ -2314,7 +2877,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 817,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/ai-gm/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/ai-gm/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-402",
@@ -2368,7 +2951,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 818,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/ai-provider-credentials/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/ai-provider-credentials/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-403",
@@ -2422,7 +3025,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 819,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/bestiary/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/bestiary/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-404",
@@ -2476,7 +3099,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 820,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/character-avatar-meshy/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/character-avatar-meshy/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-405",
@@ -2530,7 +3173,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 821,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/character-lore/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/character-lore/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-406",
@@ -2584,7 +3247,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 822,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/characters/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/characters/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-407",
@@ -2638,7 +3321,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 823,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/dm-tools/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/dm-tools/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-408",
@@ -2692,7 +3395,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 824,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/export/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/export/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-409",
@@ -2746,7 +3469,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 825,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/item-model3d/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/item-model3d/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-410",
@@ -2800,7 +3543,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 826,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/item-thumbnail/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/item-thumbnail/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-411",
@@ -2854,7 +3617,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 827,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/items/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/items/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-412",
@@ -2908,7 +3691,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 828,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/look-reference-analysis/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/look-reference-analysis/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-413",
@@ -2962,7 +3765,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 829,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/lorekeeper/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/lorekeeper/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-414",
@@ -3016,7 +3839,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 830,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/main/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/main/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-415",
@@ -3070,7 +3913,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 831,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/marketplace/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/marketplace/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-416",
@@ -3124,7 +3987,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 832,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/media/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/media/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-417",
@@ -3178,7 +4061,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 833,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/npcs/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/npcs/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-418",
@@ -3232,7 +4135,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 834,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/quests/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/quests/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-419",
@@ -3286,7 +4209,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 835,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/rulesets/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/rulesets/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-420",
@@ -3340,7 +4283,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 836,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/session-media-token/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/session-media-token/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-421",
@@ -3394,7 +4357,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 837,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/session-recap/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/session-recap/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-422",
@@ -3448,7 +4431,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 838,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/sessions/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/sessions/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-423",
@@ -3502,7 +4505,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 839,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/spellbook/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/spellbook/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-424",
@@ -3556,7 +4579,27 @@
         "Degraded state without optional providers defined",
         "No secret leakage in logs",
         "Integration test path exists"
-      ]
+      ],
+      "githubIssue": 840,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/functions/world/**\", \"supabase/functions/_shared/**\"], \"tech\": \"Deno Edge + shared cors/auth helpers\"}",
+        "nachher": "{\"paths\": [\"server/src/services/world/**\"], \"tech\": \"Node TypeScript service; provider adapters for AI/media\"}",
+        "verhalten": "{\"unchanged\": \"Auth, rate limits, CORS semantics, error shapes\", \"secrets\": \"Provider secrets stay server-side; no browser elevation\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Feature parity checklist for this function documented and tested",
+          "Security negatives for auth/rate-limit preserved",
+          "Degraded state without optional providers defined",
+          "No secret leakage in logs",
+          "Integration test path exists"
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-500",
@@ -3606,11 +4649,30 @@
       },
       "acceptance": [
         "Unauthorized asset fetch fails closed (HTTP 401/403)",
-        "Upload validate\u2192publish\u2192metadata commit lifecycle works",
+        "Upload validate→publish→metadata commit lifecycle works",
         "Path/URL never grants access without policy allow",
         "DB metadata + FS bytes jointly consistent after restart",
         "Typed strict; no escape hatches"
-      ]
+      ],
+      "githubIssue": 841,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\", \"supabase/functions/media/**\", \"supabase/functions/export/**\"], \"tech\": \"Supabase Storage + signed URLs\"}",
+        "nachher": "{\"paths\": [\"server/src/assets/**\", \"server/src/migration/**\"], \"tech\": \"Local FS + authz download routes; tus optional\"}",
+        "verhalten": "{\"unchanged\": \"Asset metadata ownership/visibility\", \"secrets\": \"URL/path never grants access\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Unauthorized asset fetch fails closed (HTTP 401/403)",
+          "Upload validate→publish→metadata commit lifecycle works",
+          "Path/URL never grants access without policy allow",
+          "DB metadata + FS bytes jointly consistent after restart",
+          "Typed strict; no escape hatches"
+        ],
+        "abhaengigkeiten": [
+          "MIG-013",
+          "MIG-011"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-501",
@@ -3660,11 +4722,29 @@
       },
       "acceptance": [
         "tus (or documented equivalent) resumes large interrupted uploads",
-        "Completed tus upload enters same validate\u2192publish path as MIG-500",
+        "Completed tus upload enters same validate→publish path as MIG-500",
         "Size/MIME limits enforced server-side",
         "Failure leaves no authoritative published asset",
         "Optional: host runs without tus for small uploads"
-      ]
+      ],
+      "githubIssue": 842,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\", \"supabase/functions/media/**\", \"supabase/functions/export/**\"], \"tech\": \"Supabase Storage + signed URLs\"}",
+        "nachher": "{\"paths\": [\"server/src/assets/**\", \"server/src/migration/**\"], \"tech\": \"Local FS + authz download routes; tus optional\"}",
+        "verhalten": "{\"unchanged\": \"Asset metadata ownership/visibility\", \"secrets\": \"URL/path never grants access\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "tus (or documented equivalent) resumes large interrupted uploads",
+          "Completed tus upload enters same validate→publish path as MIG-500",
+          "Size/MIME limits enforced server-side",
+          "Failure leaves no authoritative published asset",
+          "Optional: host runs without tus for small uploads"
+        ],
+        "abhaengigkeiten": [
+          "MIG-500"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-502",
@@ -3716,14 +4796,33 @@
       "acceptance": [
         "Versioned export bundle schema documented and round-tripped",
         "Import rejects unknown critical versions fail-closed",
-        "IDs/public IDs/asset refs preserved across export\u2192import",
+        "IDs/public IDs/asset refs preserved across export→import",
         "Restore drill evidence for DB+assets exists",
         "No invented atlas geometry during import"
-      ]
+      ],
+      "githubIssue": 843,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\", \"supabase/functions/media/**\", \"supabase/functions/export/**\"], \"tech\": \"Supabase Storage + signed URLs\"}",
+        "nachher": "{\"paths\": [\"server/src/assets/**\", \"server/src/migration/**\"], \"tech\": \"Local FS + authz download routes; tus optional\"}",
+        "verhalten": "{\"unchanged\": \"Asset metadata ownership/visibility\", \"secrets\": \"URL/path never grants access\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Versioned export bundle schema documented and round-tripped",
+          "Import rejects unknown critical versions fail-closed",
+          "IDs/public IDs/asset refs preserved across export→import",
+          "Restore drill evidence for DB+assets exists",
+          "No invented atlas geometry during import"
+        ],
+        "abhaengigkeiten": [
+          "MIG-500",
+          "MIG-013"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-503",
-      "title": "Postgres\u2192SQLite data migration dry-run tooling",
+      "title": "Postgres→SQLite data migration dry-run tooling",
       "priority": "P1",
       "wave": "migration-wave-5-storage-export",
       "order": 503,
@@ -3774,7 +4873,26 @@
         "Mapping covers all matrix table categories or lists NEEDS DECISION",
         "No production connection strings in tooling defaults",
         "Re-run idempotent on same fixture snapshot"
-      ]
+      ],
+      "githubIssue": 844,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"supabase/migrations/**\", \"supabase/functions/media/**\", \"supabase/functions/export/**\"], \"tech\": \"Supabase Storage + signed URLs\"}",
+        "nachher": "{\"paths\": [\"server/src/assets/**\", \"server/src/migration/**\"], \"tech\": \"Local FS + authz download routes; tus optional\"}",
+        "verhalten": "{\"unchanged\": \"Asset metadata ownership/visibility\", \"secrets\": \"URL/path never grants access\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Dry-run reports row counts, hashes, FK violations for fixture DB",
+          "Abort mid-run leaves target clean or rolled back",
+          "Mapping covers all matrix table categories or lists NEEDS DECISION",
+          "No production connection strings in tooling defaults",
+          "Re-run idempotent on same fixture snapshot"
+        ],
+        "abhaengigkeiten": [
+          "MIG-011",
+          "MIG-002"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-600",
@@ -3792,22 +4910,8 @@
         "migration-wave-6-security-ops",
         "migration-order-600"
       ],
-      "before": {
-        "paths": [
-          "docs/ops/negative-authz-suite.md",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Supabase docker stack"
-      },
-      "after": {
-        "paths": [
-          "docs/ops/**",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Host-centric compose profiles"
-      },
+      "before": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+      "after": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-600`.",
       "behavior": {
         "unchanged": "Security non-negotiables in AGENTS.md",
         "secrets": "All severities including Low/Info still reported"
@@ -3831,7 +4935,26 @@
         "Suite is CI-required or documented equivalent gate",
         "No test weakening vs Supabase-era suite",
         "Findings include Low/Info"
-      ]
+      ],
+      "githubIssue": 845,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+        "nachher": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-600`.",
+        "verhalten": "{\"unchanged\": \"Security non-negotiables in AGENTS.md\", \"secrets\": \"All severities including Low/Info still reported\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "docs/ops/negative-authz-suite scenarios pass against host",
+          "Cross-owner and GM-secret negatives included",
+          "Suite is CI-required or documented equivalent gate",
+          "No test weakening vs Supabase-era suite",
+          "Findings include Low/Info"
+        ],
+        "abhaengigkeiten": [
+          "MIG-024",
+          "MIG-500"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-601",
@@ -3849,22 +4972,8 @@
         "migration-wave-6-security-ops",
         "migration-order-601"
       ],
-      "before": {
-        "paths": [
-          "docs/ops/negative-authz-suite.md",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Supabase docker stack"
-      },
-      "after": {
-        "paths": [
-          "docs/ops/**",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Host-centric compose profiles"
-      },
+      "before": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+      "after": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-601`.",
       "behavior": {
         "unchanged": "Security non-negotiables in AGENTS.md",
         "secrets": "All severities including Low/Info still reported"
@@ -3888,7 +4997,26 @@
         "Documented env vars; no committed secrets",
         "Healthcheck proves host process ready",
         "Parity with local non-Docker host entrypoint"
-      ]
+      ],
+      "githubIssue": 846,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+        "nachher": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-601`.",
+        "verhalten": "{\"unchanged\": \"Security non-negotiables in AGENTS.md\", \"secrets\": \"All severities including Low/Info still reported\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Compose profiles: host-only, host+optional AI, host+optional media",
+          "Dev up without cloud credentials for solo host profile",
+          "Documented env vars; no committed secrets",
+          "Healthcheck proves host process ready",
+          "Parity with local non-Docker host entrypoint"
+        ],
+        "abhaengigkeiten": [
+          "MIG-024",
+          "MIG-500"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-602",
@@ -3906,22 +5034,8 @@
         "migration-wave-6-security-ops",
         "migration-order-602"
       ],
-      "before": {
-        "paths": [
-          "docs/ops/negative-authz-suite.md",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Supabase docker stack"
-      },
-      "after": {
-        "paths": [
-          "docs/ops/**",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Host-centric compose profiles"
-      },
+      "before": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+      "after": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-602`.",
       "behavior": {
         "unchanged": "Security non-negotiables in AGENTS.md",
         "secrets": "All severities including Low/Info still reported"
@@ -3945,7 +5059,26 @@
         "stack-migration-prep-check remains green",
         "No --no-verify / skipped gates in workflows",
         "Failure logs actionable"
-      ]
+      ],
+      "githubIssue": 847,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+        "nachher": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-602`.",
+        "verhalten": "{\"unchanged\": \"Security non-negotiables in AGENTS.md\", \"secrets\": \"All severities including Low/Info still reported\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "CI required checks cover host unit/integration",
+          "Browser E2E still required where product UI touched",
+          "stack-migration-prep-check remains green",
+          "No --no-verify / skipped gates in workflows",
+          "Failure logs actionable"
+        ],
+        "abhaengigkeiten": [
+          "MIG-024",
+          "MIG-500"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-603",
@@ -3963,22 +5096,8 @@
         "migration-wave-6-security-ops",
         "migration-order-603"
       ],
-      "before": {
-        "paths": [
-          "docs/ops/negative-authz-suite.md",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Supabase docker stack"
-      },
-      "after": {
-        "paths": [
-          "docs/ops/**",
-          ".github/workflows/**",
-          "deployment/**"
-        ],
-        "tech": "Host-centric compose profiles"
-      },
+      "before": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+      "after": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-603`.",
       "behavior": {
         "unchanged": "Security non-negotiables in AGENTS.md",
         "secrets": "All severities including Low/Info still reported"
@@ -4002,7 +5121,26 @@
         "Update/rollback procedure documented and dry-run",
         "Failure modes (disk full, partial copy) covered",
         "No prod instance mutation in this issue"
-      ]
+      ],
+      "githubIssue": 848,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/ops/negative-authz-suite.md\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Supabase docker stack\"} Legacy refs: `.github/workflows/verify.yml`, existing authz suites under `src/` / `e2e/`.",
+        "nachher": "{\"paths\": [\"docs/ops/**\", \".github/workflows/**\", \"deployment/**\"], \"tech\": \"Host-centric compose profiles\"} Host/CI proof paths recorded in `.qa/evidence/stack-migration-prep/` for `MIG-603`.",
+        "verhalten": "{\"unchanged\": \"Security non-negotiables in AGENTS.md\", \"secrets\": \"All severities including Low/Info still reported\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Backup runbook for SQLite+WAL+assets documented",
+          "Restore drill evidence with checksums",
+          "Update/rollback procedure documented and dry-run",
+          "Failure modes (disk full, partial copy) covered",
+          "No prod instance mutation in this issue"
+        ],
+        "abhaengigkeiten": [
+          "MIG-024",
+          "MIG-500"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-700",
@@ -4088,7 +5226,7 @@
       ],
       "before": {
         "paths": [
-          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+          "docs/architektur-sqlite-based.md §P5/P6"
         ],
         "tech": "Supabase production/self-host"
       },
@@ -4127,7 +5265,91 @@
         "Rollback plan executed successfully on fixture host",
         "Parity checklist signed for world/saga under test",
         "Explicit human freigabe recorded before any prod-touching step"
-      ]
+      ],
+      "githubIssue": 849,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md §P5/P6\"], \"tech\": \"Supabase production/self-host\"}",
+        "nachher": "{\"paths\": [\"server/**\", \"docs/ops/cutover/**\"], \"tech\": \"SQLite host authoritative\"}",
+        "verhalten": "{\"unchanged\": \"User data continuity; no silent Supabase dual-write\", \"secrets\": \"No prod migration without explicit freigabe\", \"blockedReason\": \"BLOCKED until prior waves + human freigabe\", \"cutoverRequires\": [\"ATLAS-LIVE-E2E\", \"#770 CLOSED + green required live CI\"]}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "All wave-0..6 MIG-* and GATE-01..04 and ATLAS-LIVE-E2E (#770) are CLOSED with evidence",
+          "Freeze+delta cutover dry-run on fixtures only (no prod writes)",
+          "Rollback plan executed successfully on fixture host",
+          "Parity checklist signed for world/saga under test",
+          "Explicit human freigabe recorded before any prod-touching step"
+        ],
+        "abhaengigkeiten": [
+          "ATLAS-LIVE-E2E",
+          "GATE-01",
+          "GATE-02",
+          "GATE-03",
+          "GATE-04",
+          "MIG-001",
+          "MIG-002",
+          "MIG-010",
+          "MIG-011",
+          "MIG-012",
+          "MIG-013",
+          "MIG-014",
+          "MIG-015",
+          "MIG-020",
+          "MIG-021",
+          "MIG-022",
+          "MIG-023",
+          "MIG-024",
+          "MIG-301",
+          "MIG-302",
+          "MIG-303",
+          "MIG-304",
+          "MIG-305",
+          "MIG-306",
+          "MIG-307",
+          "MIG-308",
+          "MIG-309",
+          "MIG-310",
+          "MIG-311",
+          "MIG-312",
+          "MIG-313",
+          "MIG-350",
+          "MIG-351",
+          "MIG-352",
+          "MIG-353",
+          "MIG-401",
+          "MIG-402",
+          "MIG-403",
+          "MIG-404",
+          "MIG-405",
+          "MIG-406",
+          "MIG-407",
+          "MIG-408",
+          "MIG-409",
+          "MIG-410",
+          "MIG-411",
+          "MIG-412",
+          "MIG-413",
+          "MIG-414",
+          "MIG-415",
+          "MIG-416",
+          "MIG-417",
+          "MIG-418",
+          "MIG-419",
+          "MIG-420",
+          "MIG-421",
+          "MIG-422",
+          "MIG-423",
+          "MIG-424",
+          "MIG-500",
+          "MIG-501",
+          "MIG-502",
+          "MIG-503",
+          "MIG-600",
+          "MIG-601",
+          "MIG-602",
+          "MIG-603"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-701",
@@ -4147,7 +5369,7 @@
       ],
       "before": {
         "paths": [
-          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+          "docs/architektur-sqlite-based.md §P5/P6"
         ],
         "tech": "Supabase production/self-host"
       },
@@ -4181,7 +5403,25 @@
         "Restore after simulated failure proven",
         "Explicit freigabe recorded for prod steps",
         "Tauri not introduced during browser-only phases"
-      ]
+      ],
+      "githubIssue": 850,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md §P5/P6\"], \"tech\": \"Supabase production/self-host\"}",
+        "nachher": "{\"paths\": [\"server/**\", \"docs/ops/cutover/**\"], \"tech\": \"SQLite host authoritative\"}",
+        "verhalten": "{\"unchanged\": \"User data continuity\", \"secrets\": \"No prod migration without explicit freigabe\", \"blockedReason\": \"BLOCKED until prior waves + human freigabe\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Rollback plan tested",
+          "Parity checklist signed",
+          "Restore after simulated failure proven",
+          "Explicit freigabe recorded for prod steps",
+          "Tauri not introduced during browser-only phases"
+        ],
+        "abhaengigkeiten": [
+          "MIG-700"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-702",
@@ -4202,7 +5442,7 @@
       ],
       "before": {
         "paths": [
-          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+          "docs/architektur-sqlite-based.md §P5/P6"
         ],
         "tech": "Supabase production/self-host"
       },
@@ -4240,7 +5480,26 @@
         "Backup+restore of SQLite+assets proven on host and Docker",
         "Negative authz suite green on host; no GM secret leakage",
         "Human freigabe for Supabase removal recorded; no prod data deletion in this issue alone"
-      ]
+      ],
+      "githubIssue": 851,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md §P5/P6\"], \"tech\": \"Supabase production/self-host\"}",
+        "nachher": "{\"paths\": [\"server/**\", \"docs/ops/cutover/**\"], \"tech\": \"SQLite host authoritative\"}",
+        "verhalten": "{\"unchanged\": \"User data continuity\", \"secrets\": \"No prod migration without explicit freigabe\", \"blockedReason\": \"BLOCKED until prior waves + human freigabe\", \"cutoverRequires\": [\"ATLAS-LIVE-E2E\", \"#770 CLOSED + green required live CI\"]}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "MIG-700 and MIG-701 CLOSED; ATLAS-LIVE-E2E (#770) CLOSED green",
+          "Every Edge/RPC/infra matrix row has successor or approved retirement",
+          "Backup+restore of SQLite+assets proven on host and Docker",
+          "Negative authz suite green on host; no GM secret leakage",
+          "Human freigabe for Supabase removal recorded; no prod data deletion in this issue alone"
+        ],
+        "abhaengigkeiten": [
+          "MIG-701",
+          "ATLAS-LIVE-E2E"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "MIG-703",
@@ -4261,7 +5520,7 @@
       ],
       "before": {
         "paths": [
-          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+          "docs/architektur-sqlite-based.md §P5/P6"
         ],
         "tech": "Supabase production/self-host"
       },
@@ -4295,7 +5554,26 @@
         "Restore after simulated failure proven",
         "Explicit freigabe recorded for prod steps",
         "Tauri not introduced during browser-only phases"
-      ]
+      ],
+      "githubIssue": 852,
+      "contractSections": {
+        "vorher": "{\"paths\": [\"docs/architektur-sqlite-based.md §P5/P6\"], \"tech\": \"Supabase production/self-host\"}",
+        "nachher": "{\"paths\": [\"server/**\", \"docs/ops/cutover/**\"], \"tech\": \"SQLite host authoritative\"}",
+        "verhalten": "{\"unchanged\": \"User data continuity\", \"secrets\": \"No prod migration without explicit freigabe\", \"blockedReason\": \"BLOCKED until prior waves + human freigabe\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Rollback plan tested",
+          "Parity checklist signed",
+          "Restore after simulated failure proven",
+          "Explicit freigabe recorded for prod steps",
+          "Tauri not introduced during browser-only phases"
+        ],
+        "abhaengigkeiten": [
+          "GATE-05",
+          "MIG-602"
+        ],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     },
     {
       "localId": "ATLAS-LIVE-E2E",
@@ -4329,7 +5607,7 @@
       "behavior": {
         "unchanged": "Production migration remains gated",
         "secrets": "No prod credentials in CI",
-        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 ATLAS-CI-01..03 in .qa/design/atlas-live-e2e-cutover-gate.md; live CI job not enabled; cutover must stay blocked while #770 OPEN"
+        "blockedReason": "BLOCKED / NEEDS DECISION — ATLAS-CI-01..03 in .qa/design/atlas-live-e2e-cutover-gate.md; live CI job not enabled; cutover must stay blocked while #770 OPEN"
       },
       "scope": {
         "mayChange": [
@@ -4345,12 +5623,27 @@
         ]
       },
       "acceptance": [
-        "Required CI job runs live GM\u2192player path without test.skip when secrets present",
+        "Required CI job runs live GM→player path without test.skip when secrets present",
         "Isolated test DB only; DB-state assertions for persist/reload/player/cross-owner",
         "Intentional regression proves required job red then reverted",
         "MIG-700/MIG-702 depend on ATLAS-LIVE-E2E (#770); cutover blocked while #770 OPEN",
         "Production Donalu remains NOT migrated"
-      ]
+      ],
+      "contractSections": {
+        "vorher": "{\"paths\": [\"e2e/atlas-followup-product-e2e-gate.spec.ts\", \"scripts/atlas-followup-real-product-e2e-check.mjs\"], \"tech\": \"Playwright contract mocks; optional live skip\"}",
+        "nachher": "{\"paths\": [\"e2e/atlas-followup-product-e2e-gate.spec.ts\", \".github/workflows/verify.yml\", \".qa/design/atlas-live-e2e-cutover-gate.md\"], \"tech\": \"Required CI job + isolated DB + DB-state assertions\"}",
+        "verhalten": "{\"unchanged\": \"Production migration remains gated\", \"secrets\": \"No prod credentials in CI\", \"blockedReason\": \"BLOCKED / NEEDS DECISION — ATLAS-CI-01..03 in .qa/design/atlas-live-e2e-cutover-gate.md; live CI job not enabled; cutover must stay blocked while #770 OPEN\"}",
+        "sicherheit": "Preserve deny-by-default owner/GM/player isolation; no client-elevated origins; no secret leakage in errors/logs.",
+        "tests": [
+          "Required CI job runs live GM→player path without test.skip when secrets present",
+          "Isolated test DB only; DB-state assertions for persist/reload/player/cross-owner",
+          "Intentional regression proves required job red then reverted",
+          "MIG-700/MIG-702 depend on ATLAS-LIVE-E2E (#770); cutover blocked while #770 OPEN",
+          "Production Donalu remains NOT migrated"
+        ],
+        "abhaengigkeiten": [],
+        "grenzen": "No unsupervised ORM/auth/realtime/API framework choice; no schema redesign without ADR; no GATE APPROVED by agent."
+      }
     }
   ]
 }

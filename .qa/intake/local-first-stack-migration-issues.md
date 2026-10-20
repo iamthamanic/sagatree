@@ -115,3 +115,7 @@ GitHub Epic #773 already lists child issues #774–#852; this JSON remains the m
 | MIG-702 | Supabase shutdown only after parity+restore proof | P2 | migration-wave-7-cutover-tauri | blocked | 2 |
 | MIG-703 | Tauri integration before external desktop test phase | P2 | migration-wave-7-cutover-tauri | blocked | 2 |
 | ATLAS-LIVE-E2E | Mandatory Atlas live E2E on isolated test DB (GitHub #770) | P0 | migration-wave-0-evidence | blocked | 0 |
+
+## GitHub mapping (PREP-06)
+
+All 72 localIds mapped to GitHub issues (see `.qa/evidence/stack-migration-prep/github-issue-map.json`). Contract quality enforced by `scripts/stack-migration-prep-check.mjs`.
