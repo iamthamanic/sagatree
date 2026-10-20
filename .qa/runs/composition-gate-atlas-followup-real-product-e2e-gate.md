@@ -4,6 +4,7 @@
 - BASE_SHA: 603457d4b816e222216f752e954b45b700bc17c8
 - Date: 2026-10-20
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince `.qa/runs/composition-gate-atlas-followup-real-product-e2e-gate.md`)
 
 ## Event
 
