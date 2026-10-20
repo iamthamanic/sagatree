@@ -24,6 +24,10 @@
       "design": ".qa/design/atlas-live-e2e-cutover-gate.md",
       "prepIssue": 775,
       "ciEnabled": false
+    },
+    "gateCriteriaPrep": {
+      "issue": 776,
+      "dir": ".qa/design/gates/"
     }
   },
   "coverage": {
@@ -271,7 +275,7 @@
       },
       "after": {
         "paths": [
-          ".qa/design/gates/gate-01.md"
+          ".qa/design/gates/GATE-01-drizzle-vs-zenstack.md"
         ],
         "tech": "PoC report only",
         "candidates": [
@@ -279,11 +283,10 @@
           "ZenStack 3"
         ],
         "decisionCriteria": [
-          "Deny-by-default owner/GM/player negatives pass identical suite",
-          "expectedRevision + idempotencyKey supported in transactions",
-          "No domain imports of ORM",
-          "Linux/macOS/Windows host smoke",
-          "Migration tooling for 50+ tables feasible"
+          "All PASS table rows in gate design green on PoC",
+          "All Negative tests in gate design green",
+          "Human ADR APPROVED recorded before dependents lose needs-design",
+          "Recommendation documented with measured trade-offs (not agent self-approve)"
         ]
       },
       "behavior": {
@@ -309,6 +312,12 @@
         "Recommended outcome recorded",
         "Explicit human APPROVED before dependent implementation issues become agent-ready",
         "No silent library choice in dependent issues while status=needs-design"
+      ],
+      "githubIssue": 784,
+      "blocksIssues": [
+        "MIG-011",
+        "MIG-012",
+        "MIG-013"
       ]
     },
     {
@@ -337,14 +346,19 @@
       },
       "after": {
         "paths": [
-          ".qa/design/gates/gate-02.md"
+          ".qa/design/gates/GATE-02-better-auth-colyseus.md"
         ],
         "tech": "PoC report only",
         "candidates": [
           "Better Auth cookies + Colyseus onAuth",
           "Better Auth bearer + Colyseus token validation"
         ],
-        "decisionCriteria": []
+        "decisionCriteria": [
+          "All PASS table rows in gate design green on PoC",
+          "All Negative tests in gate design green",
+          "Human ADR APPROVED recorded before dependents lose needs-design",
+          "Recommendation documented with measured trade-offs (not agent self-approve)"
+        ]
       },
       "behavior": {
         "unchanged": "No production cutover",
@@ -369,6 +383,13 @@
         "Recommended outcome recorded",
         "Explicit human APPROVED before dependent implementation issues become agent-ready",
         "No silent library choice in dependent issues while status=needs-design"
+      ],
+      "githubIssue": 785,
+      "blocksIssues": [
+        "MIG-014",
+        "MIG-015",
+        "MIG-021",
+        "MIG-023"
       ]
     },
     {
@@ -397,14 +418,19 @@
       },
       "after": {
         "paths": [
-          ".qa/design/gates/gate-03.md"
+          ".qa/design/gates/GATE-03-colyseus-http-vs-hono.md"
         ],
         "tech": "PoC report only",
         "candidates": [
           "Colyseus rooms + minimal HTTP in same process",
           "Hono HTTP API + Colyseus realtime only"
         ],
-        "decisionCriteria": []
+        "decisionCriteria": [
+          "All PASS table rows in gate design green on PoC",
+          "All Negative tests in gate design green",
+          "Human ADR APPROVED recorded before dependents lose needs-design",
+          "Recommendation documented with measured trade-offs (not agent self-approve)"
+        ]
       },
       "behavior": {
         "unchanged": "No production cutover",
@@ -429,6 +455,11 @@
         "Recommended outcome recorded",
         "Explicit human APPROVED before dependent implementation issues become agent-ready",
         "No silent library choice in dependent issues while status=needs-design"
+      ],
+      "githubIssue": 786,
+      "blocksIssues": [
+        "MIG-020",
+        "MIG-021"
       ]
     },
     {
@@ -457,11 +488,16 @@
       },
       "after": {
         "paths": [
-          ".qa/design/gates/gate-04.md"
+          ".qa/design/gates/GATE-04-sqlite-revision-idempotency.md"
         ],
         "tech": "PoC report only",
         "candidates": [],
-        "decisionCriteria": []
+        "decisionCriteria": [
+          "All PASS table rows in gate design green on PoC",
+          "All Negative tests in gate design green",
+          "Human ADR APPROVED recorded before dependents lose needs-design",
+          "Recommendation documented with measured trade-offs (not agent self-approve)"
+        ]
       },
       "behavior": {
         "unchanged": "No production cutover",
@@ -486,6 +522,10 @@
         "Recommended outcome recorded",
         "Explicit human APPROVED before dependent implementation issues become agent-ready",
         "No silent library choice in dependent issues while status=needs-design"
+      ],
+      "githubIssue": 787,
+      "blocksIssues": [
+        "MIG-022"
       ]
     },
     {
@@ -514,11 +554,16 @@
       },
       "after": {
         "paths": [
-          ".qa/design/gates/gate-05.md"
+          ".qa/design/gates/GATE-05-tauri-packaging.md"
         ],
         "tech": "PoC report only",
         "candidates": [],
-        "decisionCriteria": []
+        "decisionCriteria": [
+          "All PASS table rows in gate design green on PoC",
+          "All Negative tests in gate design green",
+          "Human ADR APPROVED recorded before dependents lose needs-design",
+          "Recommendation documented with measured trade-offs (not agent self-approve)"
+        ]
       },
       "behavior": {
         "unchanged": "No production cutover",
@@ -543,6 +588,10 @@
         "Recommended outcome recorded",
         "Explicit human APPROVED before dependent implementation issues become agent-ready",
         "No silent library choice in dependent issues while status=needs-design"
+      ],
+      "githubIssue": 788,
+      "blocksIssues": [
+        "MIG-703"
       ]
     },
     {

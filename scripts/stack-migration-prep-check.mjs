@@ -28,6 +28,12 @@ const required = [
   '.qa/evidence/stack-migration-prep/EXECUTION_CONTRACT.md',
   '.qa/evidence/stack-migration-prep/PR771_REVIEW.md',
   '.qa/design/atlas-live-e2e-cutover-gate.md',
+  '.qa/design/gates/README.md',
+  '.qa/design/gates/GATE-01-drizzle-vs-zenstack.md',
+  '.qa/design/gates/GATE-02-better-auth-colyseus.md',
+  '.qa/design/gates/GATE-03-colyseus-http-vs-hono.md',
+  '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md',
+  '.qa/design/gates/GATE-05-tauri-packaging.md',
   'docs/architektur-sqlite-based.md',
 ];
 
@@ -120,6 +126,27 @@ for (const needle of ['#770', 'MIG-700', 'BLOCKED / NEEDS DECISION', 'E2E_ATLAS_
 }
 if (!atlasDesign.includes('test.skip') && !atlasDesign.includes('optional')) {
   fail('atlas gate design must reject optional/skippable live tests');
+}
+
+for (const gateRel of [
+  '.qa/design/gates/GATE-01-drizzle-vs-zenstack.md',
+  '.qa/design/gates/GATE-02-better-auth-colyseus.md',
+  '.qa/design/gates/GATE-03-colyseus-http-vs-hono.md',
+  '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md',
+  '.qa/design/gates/GATE-05-tauri-packaging.md',
+]) {
+  const g = readFileSync(join(root, gateRel), 'utf8');
+  for (const needle of ['PASS', 'Negative', 'Decision criteria', 'not APPROVED', 'On APPROVED']) {
+    if (!g.includes(needle)) fail(`${gateRel} missing ${needle}`);
+  }
+}
+const g04 = readFileSync(join(root, '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md'), 'utf8');
+if (!/expectedRevision|idempotency/i.test(g04) || !/concurrent/i.test(g04)) {
+  fail('GATE-04 must cover revision, idempotency, concurrency');
+}
+const g02 = readFileSync(join(root, '.qa/design/gates/GATE-02-better-auth-colyseus.md'), 'utf8');
+if (!/revoke/i.test(g02) || !/reconnect/i.test(g02) || !/GM/i.test(g02)) {
+  fail('GATE-02 must cover revoke/reconnect and role-specific join');
 }
 
 console.log(
