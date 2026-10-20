@@ -34,6 +34,9 @@ const required = [
   '.qa/design/gates/GATE-03-colyseus-http-vs-hono.md',
   '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md',
   '.qa/design/gates/GATE-05-tauri-packaging.md',
+  '.qa/intake/rpc-contracts/README.md',
+  '.qa/intake/rpc-contracts/inventory.json',
+  '.qa/intake/rpc-contracts/SPLIT_TICKETS.md',
   'docs/architektur-sqlite-based.md',
 ];
 
@@ -147,6 +150,18 @@ if (!/expectedRevision|idempotency/i.test(g04) || !/concurrent/i.test(g04)) {
 const g02 = readFileSync(join(root, '.qa/design/gates/GATE-02-better-auth-colyseus.md'), 'utf8');
 if (!/revoke/i.test(g02) || !/reconnect/i.test(g02) || !/GM/i.test(g02)) {
   fail('GATE-02 must cover revoke/reconnect and role-specific join');
+}
+
+const rpcInv = JSON.parse(
+  readFileSync(join(root, '.qa/intake/rpc-contracts/inventory.json'), 'utf8'),
+);
+if (!Array.isArray(rpcInv.rpcs) || rpcInv.rpcs.length < 55) {
+  fail(`rpc inventory must cover ≥55 rpcs (got ${rpcInv.rpcs?.length ?? 0})`);
+}
+for (const e of rpcInv.rpcs) {
+  if (!e.rpc || !e.proposedSuccessor?.commandModule) fail(`rpc entry incomplete: ${e.rpc}`);
+  if (!e.sqlDefinitions?.length) fail(`rpc ${e.rpc} missing sqlDefinitions`);
+  if (!e.requiredTests?.length) fail(`rpc ${e.rpc} missing requiredTests`);
 }
 
 console.log(
