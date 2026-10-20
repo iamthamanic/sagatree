@@ -191,6 +191,8 @@ function prefixSelectorsWithAtlasRoot(css) {
  *   onNavDuplicate?: (payload: object) => void,
  *   onNavArchive?: (payload: object) => void,
  *   onNavReparent?: (payload: object) => void,
+ *   toolChrome?: object[]|null,
+ *   canEdit?: boolean,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.

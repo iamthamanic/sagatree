@@ -358,7 +358,7 @@ export function AtlasNative3dEditor({
         onNavReparent: (payload) => {
           navReparentRef.current?.(payload);
         },
-        toolChrome: webglToolChromeForKind(activeNodeKindRef.current ?? null),
+        toolChrome: [...webglToolChromeForKind(activeNodeKindRef.current ?? null)],
         canEdit: canEditRef.current !== false,
       });
       mountRef.current = mount;
@@ -405,7 +405,7 @@ export function AtlasNative3dEditor({
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
-    mount.setToolChrome(webglToolChromeForKind(activeNodeKind ?? null));
+    mount.setToolChrome([...webglToolChromeForKind(activeNodeKind ?? null)]);
   }, [activeNodeKind]);
 
   useEffect(() => {
