@@ -1,0 +1,2322 @@
+{
+  "generatedFromBaseline": "b7aa0d46+",
+  "rpcCount": 55,
+  "missingSqlDefinitions": [],
+  "note": "parametersGuess/tablesGuess are inventory aids \u2014 implementers must verify against SQL before coding",
+  "rpcs": [
+    {
+      "rpc": "apply_session_runtime_command",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/051_session_director_runtime.sql",
+          "offset": 8202,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "offset": 11217,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/044_session_combat_encounter.sql",
+          "offset": 23426,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/048_session_knowledge_reveals.sql",
+          "offset": 5065,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/049_session_death_lifecycle.sql",
+          "offset": 16564,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/043_session_shared_scene_presentation.sql",
+          "offset": 4919,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/042_session_shared_rolls.sql",
+          "offset": 10619,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 6051,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        },
+        {
+          "path": "supabase/migrations/047_session_program_presentation.sql",
+          "offset": 3085,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.apply_session_runtime_command("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-runtime-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID",
+        "p_expected_revision BIGINT",
+        "p_kind TEXT",
+        "p_payload JSONB DEFAULT '{}'::jsonb",
+        "p_idempotency_key TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "p_expected_revision",
+        "public",
+        "v_existing",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/apply_session_runtime_command.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict",
+        "idempotencyKey replay"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-apply_session_runtime_command"
+    },
+    {
+      "rpc": "archive_world_node_subtree",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 11636,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.archive_world_node_subtree("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_confirm BOOLEAN DEFAULT FALSE"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_maps"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/archive_world_node_subtree.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-archive_world_node_subtree"
+    },
+    {
+      "rpc": "assign_npc_creature_controller",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/022_npc_creature_controller_assignments.sql",
+          "offset": 2930,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.assign_npc_creature_controller("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/npc-creature/npc-creature-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_definition_id TEXT",
+        "p_controller_user_id UUID DEFAULT NULL"
+      ],
+      "returnsGuess": "public.npc_creature_controller_assignments",
+      "tablesGuess": [
+        "OF",
+        "PUBLIC",
+        "SET",
+        "anon",
+        "public",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/assign_npc_creature_controller.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-assign_npc_creature_controller"
+    },
+    {
+      "rpc": "clear_npc_creature_instance_temp_controllers_for_session",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "offset": 12374,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.clear_npc_creature_instance_temp_controllers_for_session("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/npc-creature/npc-creature-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID"
+      ],
+      "returnsGuess": "INTEGER",
+      "tablesGuess": [
+        "OF",
+        "PUBLIC",
+        "anon",
+        "public",
+        "v_project_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/clear_npc_creature_instance_temp_controllers_for_session.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-clear_npc_creature_instance_temp_controllers_for_session"
+    },
+    {
+      "rpc": "copy_native_saga_definition",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "offset": 7584,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.copy_native_saga_definition(p_source_saga_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_source_saga_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_pub",
+        "v_src"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/copy_native_saga_definition.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-copy_native_saga_definition"
+    },
+    {
+      "rpc": "create_play_session",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "offset": 3593,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_play_session(p_project_id UUID, p_name TEXT DEFAULT NULL)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_name TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "public.sessions LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "created",
+        "is_member",
+        "public",
+        "v_session",
+        "v_sheet_status"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_play_session.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_play_session"
+    },
+    {
+      "rpc": "create_project_from_saga_version",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "offset": 7519,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_project_from_saga_version("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_saga_id UUID",
+        "p_version_id UUID",
+        "p_name TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "public.projects",
+      "tablesGuess": [
+        "PUBLIC",
+        "actor",
+        "created",
+        "public",
+        "v_def",
+        "v_ver"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_project_from_saga_version.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_project_from_saga_version"
+    },
+    {
+      "rpc": "create_project_session",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "offset": 9560,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_project_session("
+        },
+        {
+          "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
+          "offset": 10164,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_project_session("
+        },
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "offset": 4618,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_project_session("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/project-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_name TEXT DEFAULT NULL",
+        "p_notes TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "public.sessions",
+      "tablesGuess": [
+        "PUBLIC",
+        "created",
+        "is_member",
+        "most",
+        "persisted",
+        "public",
+        "v_adv",
+        "v_knowledge",
+        "v_project",
+        "v_role"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_project_session.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_project_session"
+    },
+    {
+      "rpc": "create_session_invite",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/055_session_invites.sql",
+          "offset": 1726,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_session_invite(p_session_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_id",
+        "v_invite",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_session_invite.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_session_invite"
+    },
+    {
+      "rpc": "create_user_saga_definition",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "offset": 9583,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_user_saga_definition("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_title TEXT",
+        "p_blurb TEXT DEFAULT ''"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_user_saga_definition.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_user_saga_definition"
+    },
+    {
+      "rpc": "create_world_node_with_maps",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
+          "offset": 7911,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.create_world_node_with_maps("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_kind TEXT",
+        "p_name TEXT",
+        "p_idempotency_key TEXT",
+        "p_subtype TEXT DEFAULT NULL",
+        "p_parent_place_id UUID DEFAULT NULL",
+        "p_description TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_cached",
+        "v_parent_kind",
+        "v_parent_map",
+        "v_place"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/create_world_node_with_maps.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "idempotencyKey replay"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-create_world_node_with_maps"
+    },
+    {
+      "rpc": "delete_world_node",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 13111,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.delete_world_node("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_confirm BOOLEAN DEFAULT FALSE"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_maps"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/delete_world_node.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-delete_world_node"
+    },
+    {
+      "rpc": "duplicate_saga_playthrough",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/082_duplicate_saga_playthrough.sql",
+          "offset": 327,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.duplicate_saga_playthrough("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_mode TEXT DEFAULT 'fresh'"
+      ],
+      "returnsGuess": "TABLE (id UUID, public_id TEXT)",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "actor",
+        "created",
+        "public",
+        "src",
+        "v_ver"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/duplicate_saga_playthrough.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-duplicate_saga_playthrough"
+    },
+    {
+      "rpc": "duplicate_world_node",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 7764,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.duplicate_world_node("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_deep BOOLEAN DEFAULT FALSE"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "atlas_wb_dup_map",
+        "public",
+        "tree",
+        "v_new",
+        "v_new_child",
+        "v_new_parent"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/duplicate_world_node.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-duplicate_world_node"
+    },
+    {
+      "rpc": "ensure_native_starter_project",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/076_dornhain_full_catalog_seed.sql",
+          "offset": 8726,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.ensure_native_starter_project("
+        },
+        {
+          "path": "supabase/migrations/077_dornhain_default_all_accounts.sql",
+          "offset": 18571,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.ensure_native_starter_project("
+        },
+        {
+          "path": "supabase/migrations/067_ensure_native_starter_project.sql",
+          "offset": 274,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.ensure_native_starter_project("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/project-service.ts"
+      ],
+      "parametersGuess": [
+        "p_slug TEXT DEFAULT 'dornhain.whisper'"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "existing",
+        "public",
+        "v_def",
+        "v_ver"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/ensure_native_starter_project.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-ensure_native_starter_project"
+    },
+    {
+      "rpc": "ensure_world_atlas_root",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "offset": 11474,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.ensure_world_atlas_root(p_world_profile_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "offset": 4561,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.ensure_world_atlas_root(p_world_profile_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-atlas-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/ensure_world_atlas_root.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-ensure_world_atlas_root"
+    },
+    {
+      "rpc": "get_my_saga_permissions",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 19993,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_my_saga_permissions(p_public_id TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_public_id TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_bundle",
+        "v_keys",
+        "v_project",
+        "v_project_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_my_saga_permissions.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_my_saga_permissions"
+    },
+    {
+      "rpc": "get_native_saga_definition_by_slug",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "offset": 6652,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_native_saga_definition_by_slug(p_slug TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_slug TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "actor",
+        "created",
+        "public",
+        "v_def",
+        "v_ver",
+        "v_ver_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_native_saga_definition_by_slug.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_native_saga_definition_by_slug"
+    },
+    {
+      "rpc": "get_saga_definition_editor",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "offset": 1368,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_definition_editor(p_saga_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_saga_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "COALESCE",
+        "PUBLIC",
+        "public",
+        "v_def",
+        "v_user",
+        "v_ver"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_saga_definition_editor.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_saga_definition_editor"
+    },
+    {
+      "rpc": "get_saga_definition_version",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "offset": 4270,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_definition_version("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_version_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_def",
+        "v_is_gm",
+        "v_member",
+        "v_ver",
+        "v_ver_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_saga_definition_version.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_saga_definition_version"
+    },
+    {
+      "rpc": "get_saga_lore_timeline",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 23139,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_lore_timeline(p_public_id TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_public_id TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "jsonb_array_elements",
+        "public",
+        "v_payload",
+        "v_project"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_saga_lore_timeline.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_saga_lore_timeline"
+    },
+    {
+      "rpc": "get_saga_overview",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "offset": 11868,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
+          "offset": 157,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/069_party_location_overview.sql",
+          "offset": 68,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "offset": 6749,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/091_saga_overview_world_profile_id.sql",
+          "offset": 267,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "offset": 13963,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/060_saga_overview.sql",
+          "offset": 545,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        },
+        {
+          "path": "supabase/migrations/066_saga_between_sessions_bote.sql",
+          "offset": 2850,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_saga_overview(p_public_id TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-overview-service.ts"
+      ],
+      "parametersGuess": [
+        "p_public_id TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "jsonb_array_elements",
+        "jsonb_each",
+        "public",
+        "v_consequences",
+        "v_episodes",
+        "v_open_sessions",
+        "v_project",
+        "v_role"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_saga_overview.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_saga_overview"
+    },
+    {
+      "rpc": "get_session_recap",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "offset": 4476,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_session_recap(p_session_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "offset": 2910,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_session_recap(p_session_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-recap-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "public",
+        "v_recap",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_session_recap.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_session_recap"
+    },
+    {
+      "rpc": "get_session_runtime_snapshot",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "offset": 18412,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_session_runtime_snapshot(p_session_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/048_session_knowledge_reveals.sql",
+          "offset": 15039,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_session_runtime_snapshot(p_session_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 4130,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_session_runtime_snapshot(p_session_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-runtime-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_character_id",
+        "v_roster",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_session_runtime_snapshot.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_session_runtime_snapshot"
+    },
+    {
+      "rpc": "get_world_atlas_map",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/102_world_atlas_player_redaction_force.sql",
+          "offset": 468,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map("
+        },
+        {
+          "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+          "offset": 5848,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map("
+        },
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "offset": 5958,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map("
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "offset": 6350,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map("
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "offset": 11625,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-atlas-service.ts"
+      ],
+      "parametersGuess": [
+        "p_map_id UUID",
+        "p_player_view BOOLEAN DEFAULT false"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "jsonb_array_elements",
+        "public",
+        "v_layers",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_world_atlas_map.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_world_atlas_map"
+    },
+    {
+      "rpc": "get_world_map",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/068_world_maps.sql",
+          "offset": 3012,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.get_world_map("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-map-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_player_view BOOLEAN DEFAULT false"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "jsonb_array_elements",
+        "public",
+        "v_pins",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/get_world_map.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-get_world_map"
+    },
+    {
+      "rpc": "increment_marketplace_downloads",
+      "sqlDefinitions": [
+        {
+          "path": "src/supabase/deploy_marketplace.sql",
+          "securityDefiner": false,
+          "note": "legacy sql outside migrations/"
+        },
+        {
+          "path": "src/supabase/add_marketplace_rpc.sql",
+          "securityDefiner": false
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/marketplace/marketplace-service.ts"
+      ],
+      "parametersGuess": [],
+      "returnsGuess": null,
+      "tablesGuess": [],
+      "securityDefiner": false,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/increment_marketplace_downloads.ts",
+        "status": "BLOCKED \u2014 confirm whether function is deployed via migrations or only legacy sql; may need migration backfill issue"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-increment_marketplace_downloads"
+    },
+    {
+      "rpc": "join_project_by_code",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/004_project_membership_security.sql",
+          "offset": 8985,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.join_project_by_code("
+        },
+        {
+          "path": "supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
+          "offset": 249,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.join_project_by_code("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/project-member-service.ts"
+      ],
+      "parametersGuess": [
+        "p_code TEXT",
+        "p_character_id UUID DEFAULT NULL"
+      ],
+      "returnsGuess": "UUID",
+      "tablesGuess": [
+        "PUBLIC",
+        "anon",
+        "public",
+        "v_existing_status",
+        "v_member_id",
+        "v_project_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/join_project_by_code.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-join_project_by_code"
+    },
+    {
+      "rpc": "join_session_by_code",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "offset": 5686,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.join_session_by_code(p_code TEXT, p_character_id UUID DEFAULT NULL)"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 13929,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.join_session_by_code(p_code TEXT, p_character_id UUID DEFAULT NULL)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_code TEXT",
+        "p_character_id UUID DEFAULT NULL"
+      ],
+      "returnsGuess": "public.sessions LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "public",
+        "v_session",
+        "v_sheet_status"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/join_session_by_code.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-join_session_by_code"
+    },
+    {
+      "rpc": "leave_play_session",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "offset": 9466,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.leave_play_session(p_session_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 16114,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.leave_play_session(p_session_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID"
+      ],
+      "returnsGuess": "VOID LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$",
+      "tablesGuess": [
+        "PUBLIC",
+        "public"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/leave_play_session.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-leave_play_session"
+    },
+    {
+      "rpc": "list_saga_bindings",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/096_donalu_place_map_link_rpc.sql",
+          "offset": 2414,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_saga_bindings("
+        },
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 18556,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_saga_bindings("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_public_id TEXT",
+        "p_asset_kind TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_project_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/list_saga_bindings.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-list_saga_bindings"
+    },
+    {
+      "rpc": "list_saga_member_permission_state",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 21601,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_saga_member_permission_state(p_public_id TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_public_id TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_payload",
+        "v_project",
+        "v_project_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/list_saga_member_permission_state.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-list_saga_member_permission_state"
+    },
+    {
+      "rpc": "list_world_atlas_maps",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "offset": 4752,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_atlas_maps(p_world_profile_id UUID)"
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "offset": 1609,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_atlas_maps("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-atlas-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "jsonb_array_elements",
+        "public",
+        "v_layers",
+        "v_row",
+        "v_rows"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/list_world_atlas_maps.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-list_world_atlas_maps"
+    },
+    {
+      "rpc": "list_world_place_map_links",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+          "offset": 2984,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_place_map_links("
+        },
+        {
+          "path": "supabase/migrations/095_donalu_world_places.sql",
+          "offset": 19578,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_place_map_links(p_world_profile_id UUID)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_player_view BOOLEAN DEFAULT false",
+        "p_saga_public_id TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "generator_meta",
+        "jsonb",
+        "public",
+        "v_layers",
+        "v_project",
+        "v_row",
+        "v_rows"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/list_world_place_map_links.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-list_world_place_map_links"
+    },
+    {
+      "rpc": "list_world_places",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+          "offset": 92,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_places("
+        },
+        {
+          "path": "supabase/migrations/095_donalu_world_places.sql",
+          "offset": 17057,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.list_world_places("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_player_view BOOLEAN DEFAULT false",
+        "p_saga_public_id TEXT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_project",
+        "v_rows"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/list_world_places.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-list_world_places"
+    },
+    {
+      "rpc": "preview_world_node_consequences",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 2041,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.preview_world_node_consequences("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_bind",
+        "v_parent",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/preview_world_node_consequences.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-preview_world_node_consequences"
+    },
+    {
+      "rpc": "publish_saga_definition_version",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "offset": 5249,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.publish_saga_definition_version("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_saga_id UUID",
+        "p_expected_revision INTEGER"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "COALESCE",
+        "PUBLIC",
+        "public",
+        "v_def",
+        "v_new",
+        "v_next_num",
+        "v_pub",
+        "v_src",
+        "v_user"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/publish_saga_definition_version.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-publish_saga_definition_version"
+    },
+    {
+      "rpc": "remove_npc_creature_instance",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "offset": 11268,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.remove_npc_creature_instance("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/npc-creature/npc-creature-service.ts"
+      ],
+      "parametersGuess": [
+        "p_instance_id UUID"
+      ],
+      "returnsGuess": "UUID",
+      "tablesGuess": [
+        "OF",
+        "PUBLIC",
+        "anon",
+        "public",
+        "v_project_id",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/remove_npc_creature_instance.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-remove_npc_creature_instance"
+    },
+    {
+      "rpc": "rename_world_node",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 3275,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.rename_world_node("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_name TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_parent",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/rename_world_node.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-rename_world_node"
+    },
+    {
+      "rpc": "reparent_world_node",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "offset": 4529,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.reparent_world_node("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_new_parent_place_id UUID",
+        "p_confirm_relocate BOOLEAN DEFAULT FALSE"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_parent",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/reparent_world_node.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-reparent_world_node"
+    },
+    {
+      "rpc": "resolve_session_invite",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/055_session_invites.sql",
+          "offset": 4732,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.resolve_session_invite(p_token TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_token TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_already_member",
+        "v_character_public_id",
+        "v_invite",
+        "v_saga_public_id",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/resolve_session_invite.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-resolve_session_invite"
+    },
+    {
+      "rpc": "revoke_session_invite",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/055_session_invites.sql",
+          "offset": 3389,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.revoke_session_invite(p_token TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_token TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_already_member",
+        "v_character_public_id",
+        "v_invite",
+        "v_saga_public_id",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/revoke_session_invite.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-revoke_session_invite"
+    },
+    {
+      "rpc": "save_saga_definition_draft",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "offset": 3086,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.save_saga_definition_draft("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/saga/saga-definition-service.ts"
+      ],
+      "parametersGuess": [
+        "p_saga_id UUID",
+        "p_payload JSONB",
+        "p_expected_revision INTEGER"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "COALESCE",
+        "PUBLIC",
+        "public",
+        "v_def",
+        "v_next_num",
+        "v_user",
+        "v_ver"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/save_saga_definition_draft.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-save_saga_definition_draft"
+    },
+    {
+      "rpc": "save_session_recap_summary",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "offset": 5946,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary("
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "offset": 4612,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary("
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "offset": 6205,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-recap-ai-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID",
+        "p_summary_text TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "latest",
+        "public",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/save_session_recap_summary.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-save_session_recap_summary"
+    },
+    {
+      "rpc": "save_world_map",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/068_world_maps.sql",
+          "offset": 4777,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.save_world_map("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-map-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_expected_revision BIGINT",
+        "p_map_data JSONB"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "jsonb_array_elements",
+        "public",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/save_world_map.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-save_world_map"
+    },
+    {
+      "rpc": "set_my_project_character",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/004_project_membership_security.sql",
+          "offset": 10855,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_my_project_character("
+        },
+        {
+          "path": "supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
+          "offset": 2104,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_my_project_character("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/project-member-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_character_id UUID DEFAULT NULL"
+      ],
+      "returnsGuess": "UUID",
+      "tablesGuess": [
+        "PUBLIC",
+        "anon",
+        "public",
+        "v_member_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/set_my_project_character.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-set_my_project_character"
+    },
+    {
+      "rpc": "set_saga_binding_reveal",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 17277,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_saga_binding_reveal("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_binding_id UUID",
+        "p_reveal TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_bundle",
+        "v_keys",
+        "v_project_id",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/set_saga_binding_reveal.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-set_saga_binding_reveal"
+    },
+    {
+      "rpc": "set_saga_member_bundle",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "offset": 14421,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_saga_member_bundle("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_member_id UUID",
+        "p_bundle_id TEXT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "GM",
+        "PUBLIC",
+        "SET",
+        "public",
+        "v_governance_left",
+        "v_member",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/set_saga_member_bundle.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-set_saga_member_bundle"
+    },
+    {
+      "rpc": "set_session_player_presence",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 10040,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_session_player_presence("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-runtime-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID",
+        "p_is_online BOOLEAN",
+        "p_expected_revision BIGINT DEFAULT NULL"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "audits",
+        "p_expected_revision",
+        "public",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/set_session_player_presence.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-set_session_player_presence"
+    },
+    {
+      "rpc": "set_session_status",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "offset": 7201,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_session_status(p_session_id UUID, p_status TEXT)"
+        },
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "offset": 7623,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_session_status(p_session_id UUID, p_status TEXT)"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "offset": 11882,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.set_session_status(p_session_id UUID, p_status TEXT)"
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "parametersGuess": [
+        "p_session_id UUID",
+        "p_status TEXT"
+      ],
+      "returnsGuess": "public.sessions",
+      "tablesGuess": [
+        "PUBLIC",
+        "is_member",
+        "latest",
+        "most",
+        "public",
+        "v_adv",
+        "v_knowledge",
+        "v_session"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/set_session_status.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-set_session_status"
+    },
+    {
+      "rpc": "spawn_npc_creature_instance",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "offset": 5037,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.spawn_npc_creature_instance("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/npc-creature/npc-creature-service.ts"
+      ],
+      "parametersGuess": [
+        "p_project_id UUID",
+        "p_definition_id TEXT",
+        "p_instance_kind TEXT",
+        "p_snapshot JSONB",
+        "p_runtime JSONB",
+        "p_display_name TEXT",
+        "p_sequence_number INTEGER",
+        "p_session_id UUID DEFAULT NULL"
+      ],
+      "returnsGuess": "public.npc_creature_instances",
+      "tablesGuess": [
+        "PUBLIC",
+        "anon",
+        "p_project_id",
+        "public",
+        "v_row",
+        "v_session_project"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/spawn_npc_creature_instance.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-spawn_npc_creature_instance"
+    },
+    {
+      "rpc": "update_npc_creature_instance_runtime",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "offset": 9339,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.update_npc_creature_instance_runtime("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/npc-creature/npc-creature-service.ts"
+      ],
+      "parametersGuess": [
+        "p_instance_id UUID",
+        "p_runtime JSONB"
+      ],
+      "returnsGuess": "public.npc_creature_instances",
+      "tablesGuess": [
+        "PUBLIC",
+        "anon",
+        "public",
+        "v_project_id",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/update_npc_creature_instance_runtime.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-update_npc_creature_instance_runtime"
+    },
+    {
+      "rpc": "upsert_world_atlas_map",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "offset": 8043,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.upsert_world_atlas_map("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-atlas-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_map_id UUID",
+        "p_parent_map_id UUID",
+        "p_kind TEXT",
+        "p_title TEXT",
+        "p_sort_order INT",
+        "p_bounds JSONB",
+        "p_layers JSONB",
+        "p_basemap_storage_path TEXT",
+        "p_azgaar_map_storage_path TEXT",
+        "p_generator_meta JSONB",
+        "p_expected_revision BIGINT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "public",
+        "v_id"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/upsert_world_atlas_map.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure",
+        "expectedRevision conflict"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-upsert_world_atlas_map"
+    },
+    {
+      "rpc": "upsert_world_place",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/095_donalu_world_places.sql",
+          "offset": 20538,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.upsert_world_place("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_parent_place_id UUID",
+        "p_kind TEXT",
+        "p_name TEXT",
+        "p_description TEXT",
+        "p_status TEXT",
+        "p_seed_key TEXT",
+        "p_sort_order INT"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "public",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/upsert_world_place.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-upsert_world_place"
+    },
+    {
+      "rpc": "upsert_world_place_map_link",
+      "sqlDefinitions": [
+        {
+          "path": "supabase/migrations/096_donalu_place_map_link_rpc.sql",
+          "offset": 94,
+          "securityDefiner": true,
+          "snippetHead": "CREATE OR REPLACE FUNCTION public.upsert_world_place_map_link("
+        }
+      ],
+      "callSites": [
+        "src/infrastructure/world/world-place-service.ts"
+      ],
+      "parametersGuess": [
+        "p_world_profile_id UUID",
+        "p_place_id UUID",
+        "p_map_id UUID",
+        "p_usage TEXT",
+        "p_feature_id TEXT DEFAULT NULL",
+        "p_anchor JSONB DEFAULT '{}'::jsonb"
+      ],
+      "returnsGuess": "JSONB",
+      "tablesGuess": [
+        "PUBLIC",
+        "SET",
+        "public",
+        "v_project_id",
+        "v_row"
+      ],
+      "securityDefiner": true,
+      "proposedSuccessor": {
+        "commandModule": "server/src/application/commands/upsert_world_place_map_link.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review"
+      },
+      "requiredTests": [
+        "Happy path parity vs current RPC on fixture DB",
+        "Authz negative: wrong owner/GM/player",
+        "Transaction rollback on mid-failure"
+      ],
+      "splitTicketSuggestion": "ST-MIG RPC-upsert_world_place_map_link"
+    }
+  ],
+  "notesExtra": "increment_marketplace_downloads found under src/supabase/*.sql not supabase/migrations"
+}
