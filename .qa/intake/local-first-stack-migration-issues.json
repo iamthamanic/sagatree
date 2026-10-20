@@ -1,0 +1,4213 @@
+{
+  "meta": {
+    "generatedAt": "2026-10-20",
+    "baselineSha": "4bc40a3142811f23f528b17698abc6d674d2ee75",
+    "sourceDoc": "docs/architektur-sqlite-based.md",
+    "githubIssuesPublished": false,
+    "note": "Draft specs only \u2014 do not publish to GitHub without freigabe"
+  },
+  "coverage": {
+    "legacyMigrations": 106,
+    "legacyEdgeFunctions": 24,
+    "legacyFrontendRpcs": 55,
+    "infraAreas": 13,
+    "issuesTotal": 72,
+    "issuesReady": 2,
+    "issuesBlockedOrNeedsDesign": 70,
+    "gateIssues": 5,
+    "openArchitectureDecisions": 5
+  },
+  "waves": [
+    "migration-wave-0-evidence",
+    "migration-wave-1-host-auth",
+    "migration-wave-2-api-realtime",
+    "migration-wave-3-domain-ports",
+    "migration-wave-4-edge-ai-media",
+    "migration-wave-5-storage-export",
+    "migration-wave-6-security-ops",
+    "migration-wave-7-cutover-tauri"
+  ],
+  "topoOrder": [
+    "MIG-001",
+    "ATLAS-LIVE-E2E",
+    "MIG-002",
+    "GATE-01",
+    "GATE-02",
+    "GATE-03",
+    "GATE-04",
+    "GATE-05",
+    "MIG-010",
+    "MIG-011",
+    "MIG-012",
+    "MIG-013",
+    "MIG-014",
+    "MIG-015",
+    "MIG-500",
+    "MIG-501",
+    "MIG-502",
+    "MIG-503",
+    "MIG-020",
+    "MIG-021",
+    "MIG-022",
+    "MIG-023",
+    "MIG-024",
+    "MIG-301",
+    "MIG-302",
+    "MIG-303",
+    "MIG-304",
+    "MIG-305",
+    "MIG-306",
+    "MIG-307",
+    "MIG-308",
+    "MIG-309",
+    "MIG-310",
+    "MIG-311",
+    "MIG-312",
+    "MIG-313",
+    "MIG-401",
+    "MIG-402",
+    "MIG-403",
+    "MIG-404",
+    "MIG-405",
+    "MIG-406",
+    "MIG-407",
+    "MIG-408",
+    "MIG-409",
+    "MIG-410",
+    "MIG-411",
+    "MIG-412",
+    "MIG-413",
+    "MIG-414",
+    "MIG-415",
+    "MIG-416",
+    "MIG-417",
+    "MIG-418",
+    "MIG-419",
+    "MIG-420",
+    "MIG-421",
+    "MIG-422",
+    "MIG-423",
+    "MIG-424",
+    "MIG-350",
+    "MIG-351",
+    "MIG-352",
+    "MIG-353",
+    "MIG-600",
+    "MIG-601",
+    "MIG-602",
+    "MIG-603",
+    "MIG-700",
+    "MIG-703",
+    "MIG-701",
+    "MIG-702"
+  ],
+  "issues": [
+    {
+      "localId": "MIG-001",
+      "title": "Evidence lock: freeze main baseline + golden fixture contract",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 1,
+      "status": "ready",
+      "dependsOn": [],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "migration-order-001",
+        "agent-ready"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md",
+          "AGENTS.md",
+          ".qa/project.yaml"
+        ],
+        "tech": "Supabase Postgres live stack",
+        "tests": [
+          "npm run test-gate"
+        ],
+        "notes": "Current HEAD at prep time is baseline candidate 4bc40a31"
+      },
+      "after": {
+        "paths": [
+          ".qa/evidence/stack-migration-prep/baseline.md",
+          ".qa/design/local-first-stack-migration.md"
+        ],
+        "tech": "documentation + fixture manifests only",
+        "types": "FixtureManifest JSON schema"
+      },
+      "behavior": {
+        "unchanged": "No runtime behavior changes",
+        "secrets": "No prod writes; fixtures synthetic/cloned under freigabe",
+        "negatives": [
+          "Document production migration still gated"
+        ]
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/evidence/stack-migration-prep/**",
+          ".qa/design/local-first-stack-migration.md"
+        ],
+        "mustNotChange": [
+          "supabase/migrations/**",
+          "src/**"
+        ],
+        "nonGoals": [
+          "Implementing host server",
+          "Publishing GitHub issues without freigabe"
+        ]
+      },
+      "acceptance": [
+        "Baseline SHA recorded and test-gate green on that SHA",
+        "Golden fixture list covers Dornhain/Donalu, GM+2 players, secrets, session, combat, concurrent commands, reload, cross-owner",
+        "Production migration remains NOT approved in evidence",
+        "No TypeScript escape hatches introduced",
+        "Composition/docs CLEAR for this prep slug"
+      ]
+    },
+    {
+      "localId": "MIG-002",
+      "title": "Complete legacy inventory matrix (SQL/RLS/RPC/Edge/Storage/Realtime/Infra)",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 2,
+      "status": "ready",
+      "dependsOn": [
+        "MIG-001"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "migration-order-002",
+        "agent-ready"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**",
+          "supabase/functions/**",
+          "src/infrastructure/**"
+        ],
+        "tech": "Postgres + Deno Edge + Supabase client adapters",
+        "counts": {
+          "migrations": 106,
+          "rpcFrontend": 55,
+          "edge": 24,
+          "rlsApprox": 227
+        }
+      },
+      "after": {
+        "paths": [
+          ".qa/evidence/stack-migration-prep/legacy-target-matrix.md"
+        ],
+        "tech": "mapping rows ALTES\u2192NEUES"
+      },
+      "behavior": {
+        "unchanged": "Inventory only; no behavior change",
+        "secrets": "No SECURITY DEFINER semantics dropped without mapped Policy Service row"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/evidence/stack-migration-prep/**"
+        ],
+        "mustNotChange": [
+          "src/**",
+          "supabase/**"
+        ],
+        "nonGoals": [
+          "Deleting unused functions without freigabe"
+        ]
+      },
+      "acceptance": [
+        "Every edge function dir has a matrix row",
+        "Every frontend .rpc() name has a matrix row",
+        "RLS/Storage/Realtime/Auth have mapping categories",
+        "Unmapped productive call sites count = 0 or listed as NEEDS DECISION",
+        "Coverage report numbers match scan JSON"
+      ]
+    },
+    {
+      "localId": "GATE-01",
+      "title": "PoC: Drizzle+PolicyService vs ZenStack 3 for SQLite authz",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 10,
+      "status": "needs-design",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "needs-design",
+        "gate-issue"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md"
+        ],
+        "tech": "Supabase stack",
+        "tests": []
+      },
+      "after": {
+        "paths": [
+          ".qa/design/gates/gate-01.md"
+        ],
+        "tech": "PoC report only",
+        "candidates": [
+          "Drizzle + SagaTree Policy Service",
+          "ZenStack 3"
+        ],
+        "decisionCriteria": [
+          "Deny-by-default owner/GM/player negatives pass identical suite",
+          "expectedRevision + idempotencyKey supported in transactions",
+          "No domain imports of ORM",
+          "Linux/macOS/Windows host smoke",
+          "Migration tooling for 50+ tables feasible"
+        ]
+      },
+      "behavior": {
+        "unchanged": "No production cutover",
+        "secrets": "PoC uses isolated fixtures only",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 choose ORM/policy stack using measurable criteria before schema issues"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/design/gates/**",
+          ".qa/evidence/stack-migration-prep/pocs/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Selecting final library without recorded criteria results"
+        ]
+      },
+      "acceptance": [
+        "Candidates listed with reproducible tests",
+        "Pros/cons documented from measured results",
+        "Recommended outcome recorded",
+        "Explicit human APPROVED before dependent implementation issues become agent-ready",
+        "No silent library choice in dependent issues while status=needs-design"
+      ]
+    },
+    {
+      "localId": "GATE-02",
+      "title": "PoC: Better Auth session model + Colyseus auth handshake",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 11,
+      "status": "needs-design",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "needs-design",
+        "gate-issue"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md"
+        ],
+        "tech": "Supabase stack",
+        "tests": []
+      },
+      "after": {
+        "paths": [
+          ".qa/design/gates/gate-02.md"
+        ],
+        "tech": "PoC report only",
+        "candidates": [
+          "Better Auth cookies + Colyseus onAuth",
+          "Better Auth bearer + Colyseus token validation"
+        ],
+        "decisionCriteria": []
+      },
+      "behavior": {
+        "unchanged": "No production cutover",
+        "secrets": "PoC uses isolated fixtures only",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 auth cookie/token + realtime auth must be proven before API/realtime waves"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/design/gates/**",
+          ".qa/evidence/stack-migration-prep/pocs/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Selecting final library without recorded criteria results"
+        ]
+      },
+      "acceptance": [
+        "Candidates listed with reproducible tests",
+        "Pros/cons documented from measured results",
+        "Recommended outcome recorded",
+        "Explicit human APPROVED before dependent implementation issues become agent-ready",
+        "No silent library choice in dependent issues while status=needs-design"
+      ]
+    },
+    {
+      "localId": "GATE-03",
+      "title": "PoC: Colyseus HTTP routes vs separate Hono API layer",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 12,
+      "status": "needs-design",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "needs-design",
+        "gate-issue"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md"
+        ],
+        "tech": "Supabase stack",
+        "tests": []
+      },
+      "after": {
+        "paths": [
+          ".qa/design/gates/gate-03.md"
+        ],
+        "tech": "PoC report only",
+        "candidates": [
+          "Colyseus rooms + minimal HTTP in same process",
+          "Hono HTTP API + Colyseus realtime only"
+        ],
+        "decisionCriteria": []
+      },
+      "behavior": {
+        "unchanged": "No production cutover",
+        "secrets": "PoC uses isolated fixtures only",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 transport boundary for REST vs realtime commands"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/design/gates/**",
+          ".qa/evidence/stack-migration-prep/pocs/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Selecting final library without recorded criteria results"
+        ]
+      },
+      "acceptance": [
+        "Candidates listed with reproducible tests",
+        "Pros/cons documented from measured results",
+        "Recommended outcome recorded",
+        "Explicit human APPROVED before dependent implementation issues become agent-ready",
+        "No silent library choice in dependent issues while status=needs-design"
+      ]
+    },
+    {
+      "localId": "GATE-04",
+      "title": "PoC: Preserve revision/transaction/idempotency guarantees under SQLite writer model",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 13,
+      "status": "needs-design",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-0-evidence",
+        "needs-design",
+        "gate-issue"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md"
+        ],
+        "tech": "Supabase stack",
+        "tests": []
+      },
+      "after": {
+        "paths": [
+          ".qa/design/gates/gate-04.md"
+        ],
+        "tech": "PoC report only",
+        "candidates": [],
+        "decisionCriteria": []
+      },
+      "behavior": {
+        "unchanged": "No production cutover",
+        "secrets": "PoC uses isolated fixtures only",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 prove concurrent command semantics before session runtime port"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/design/gates/**",
+          ".qa/evidence/stack-migration-prep/pocs/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Selecting final library without recorded criteria results"
+        ]
+      },
+      "acceptance": [
+        "Candidates listed with reproducible tests",
+        "Pros/cons documented from measured results",
+        "Recommended outcome recorded",
+        "Explicit human APPROVED before dependent implementation issues become agent-ready",
+        "No silent library choice in dependent issues while status=needs-design"
+      ]
+    },
+    {
+      "localId": "GATE-05",
+      "title": "Desktop packaging PoC (Tauri+sidecar vs Electron) \u2014 deferred until browser host parity",
+      "priority": "P2",
+      "wave": "migration-wave-8-tauri-cutover",
+      "order": 14,
+      "status": "needs-design",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "labels": [
+        "P2",
+        "migration-wave-8-tauri-cutover",
+        "needs-design",
+        "gate-issue"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md"
+        ],
+        "tech": "Supabase stack",
+        "tests": []
+      },
+      "after": {
+        "paths": [
+          ".qa/design/gates/gate-05.md"
+        ],
+        "tech": "PoC report only",
+        "candidates": [],
+        "decisionCriteria": []
+      },
+      "behavior": {
+        "unchanged": "No production cutover",
+        "secrets": "PoC uses isolated fixtures only",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 not during browser development; only before external desktop test phase"
+      },
+      "scope": {
+        "mayChange": [
+          ".qa/design/gates/**",
+          ".qa/evidence/stack-migration-prep/pocs/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Selecting final library without recorded criteria results"
+        ]
+      },
+      "acceptance": [
+        "Candidates listed with reproducible tests",
+        "Pros/cons documented from measured results",
+        "Recommended outcome recorded",
+        "Explicit human APPROVED before dependent implementation issues become agent-ready",
+        "No silent library choice in dependent issues while status=needs-design"
+      ]
+    },
+    {
+      "localId": "MIG-010",
+      "title": "Node host skeleton (health, config, data dir)",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 101,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-101",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "server/src/bootstrap/**"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-01 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-011",
+      "title": "SQLite schema bootstrap + migration runner",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 102,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-102",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "server/src/persistence/**"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-01 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-012",
+      "title": "Repository port pattern + first world read adapter",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 103,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-103",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/world/** \u2192 host adapter"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-01 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-013",
+      "title": "SagaTree Policy Service core (deny-by-default)",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 104,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-104",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "server/src/permissions/**"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-01 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-014",
+      "title": "Better Auth host accounts (remote-reachable mode)",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 105,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-02"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-105",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "server/src/auth/**"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-02 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-015",
+      "title": "Solo local identity without privilege transfer",
+      "priority": "P0",
+      "wave": "migration-wave-1-host-auth",
+      "order": 106,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-02"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-1-host-auth",
+        "migration-order-106",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/lib/supabase.ts",
+          "src/lib/auth-context.tsx",
+          "supabase/migrations/**"
+        ],
+        "tech": "Supabase client + GoTrue + Postgres",
+        "authz": "Postgres RLS + SECURITY DEFINER RPCs"
+      },
+      "after": {
+        "paths": [
+          "server/src/auth/solo/**"
+        ],
+        "tech": "Node TypeScript host; concrete ORM/auth pending GATE approval",
+        "authz": "Central Policy Service (RLS functional replacement)"
+      },
+      "behavior": {
+        "unchanged": "Domain rules in src/domains/** unchanged",
+        "secrets": "GM secrets never returned without policy allow",
+        "blockedReason": "BLOCKED / NEEDS DECISION until GATE-02 APPROVED"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/**",
+          "AGENTS.md (server/ allowlist)"
+        ],
+        "mustNotChange": [
+          "src/domains/**",
+          "src/modules/**"
+        ],
+        "nonGoals": [
+          "Tauri",
+          "Supabase shutdown",
+          "Microservices"
+        ]
+      },
+      "acceptance": [
+        "Host starts without cloud dependency in solo mode",
+        "Policy deny-by-default negatives exist for owner/GM/player",
+        "Restart persistence proven for touched data",
+        "No new TypeScript escape hatches",
+        "Integration test beyond unit stubs"
+      ]
+    },
+    {
+      "localId": "MIG-020",
+      "title": "HTTP command/query transport layer",
+      "priority": "P0",
+      "wave": "migration-wave-2-api-realtime",
+      "order": 201,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-03"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-2-api-realtime",
+        "migration-order-201",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/session-runtime-service.ts",
+          "src/infrastructure/session/session-runtime-channel.ts",
+          "supabase/functions/sessions/**"
+        ],
+        "tech": "Supabase Realtime + RPC apply_session_runtime_command",
+        "io": "expectedRevision + idempotencyKey contracts in existing design docs"
+      },
+      "after": {
+        "paths": [
+          "server/src/application/session/**",
+          "server/src/api/**"
+        ],
+        "tech": "Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03"
+      },
+      "behavior": {
+        "unchanged": "Revision mismatch and idempotent retry semantics",
+        "secrets": "Hidden lore/maps filtered before WS/HTTP",
+        "blockedReason": "BLOCKED until GATE-03 + wave-1 host ready"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/session/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Replacing LiveKit with Colyseus"
+        ]
+      },
+      "acceptance": [
+        "GM + 2 players concurrent commands parity test",
+        "Reconnect resync without event loss for allowed data",
+        "Cross-owner join/command negatives fail closed",
+        "Persist + host restart keeps session authority",
+        "Typed IO without any casts of command payloads"
+      ]
+    },
+    {
+      "localId": "MIG-021",
+      "title": "Realtime session rooms + snapshot/resync",
+      "priority": "P0",
+      "wave": "migration-wave-2-api-realtime",
+      "order": 202,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-03"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-2-api-realtime",
+        "migration-order-202",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/session-runtime-service.ts",
+          "src/infrastructure/session/session-runtime-channel.ts",
+          "supabase/functions/sessions/**"
+        ],
+        "tech": "Supabase Realtime + RPC apply_session_runtime_command",
+        "io": "expectedRevision + idempotencyKey contracts in existing design docs"
+      },
+      "after": {
+        "paths": [
+          "server/src/application/session/**",
+          "server/src/api/**"
+        ],
+        "tech": "Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03"
+      },
+      "behavior": {
+        "unchanged": "Revision mismatch and idempotent retry semantics",
+        "secrets": "Hidden lore/maps filtered before WS/HTTP",
+        "blockedReason": "BLOCKED until GATE-03 + wave-1 host ready"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/session/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Replacing LiveKit with Colyseus"
+        ]
+      },
+      "acceptance": [
+        "GM + 2 players concurrent commands parity test",
+        "Reconnect resync without event loss for allowed data",
+        "Cross-owner join/command negatives fail closed",
+        "Persist + host restart keeps session authority",
+        "Typed IO without any casts of command payloads"
+      ]
+    },
+    {
+      "localId": "MIG-022",
+      "title": "SessionRuntimeState port (revision+idempotency)",
+      "priority": "P0",
+      "wave": "migration-wave-2-api-realtime",
+      "order": 203,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-04"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-2-api-realtime",
+        "migration-order-203",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/session-runtime-service.ts",
+          "src/infrastructure/session/session-runtime-channel.ts",
+          "supabase/functions/sessions/**"
+        ],
+        "tech": "Supabase Realtime + RPC apply_session_runtime_command",
+        "io": "expectedRevision + idempotencyKey contracts in existing design docs"
+      },
+      "after": {
+        "paths": [
+          "server/src/application/session/**",
+          "server/src/api/**"
+        ],
+        "tech": "Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03"
+      },
+      "behavior": {
+        "unchanged": "Revision mismatch and idempotent retry semantics",
+        "secrets": "Hidden lore/maps filtered before WS/HTTP",
+        "blockedReason": "BLOCKED until GATE-04 + wave-1 host ready"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/session/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Replacing LiveKit with Colyseus"
+        ]
+      },
+      "acceptance": [
+        "GM + 2 players concurrent commands parity test",
+        "Reconnect resync without event loss for allowed data",
+        "Cross-owner join/command negatives fail closed",
+        "Persist + host restart keeps session authority",
+        "Typed IO without any casts of command payloads"
+      ]
+    },
+    {
+      "localId": "MIG-023",
+      "title": "Invite/join codes without privilege escalation",
+      "priority": "P0",
+      "wave": "migration-wave-2-api-realtime",
+      "order": 204,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-02"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-2-api-realtime",
+        "migration-order-204",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/session-runtime-service.ts",
+          "src/infrastructure/session/session-runtime-channel.ts",
+          "supabase/functions/sessions/**"
+        ],
+        "tech": "Supabase Realtime + RPC apply_session_runtime_command",
+        "io": "expectedRevision + idempotencyKey contracts in existing design docs"
+      },
+      "after": {
+        "paths": [
+          "server/src/application/session/**",
+          "server/src/api/**"
+        ],
+        "tech": "Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03"
+      },
+      "behavior": {
+        "unchanged": "Revision mismatch and idempotent retry semantics",
+        "secrets": "Hidden lore/maps filtered before WS/HTTP",
+        "blockedReason": "BLOCKED until GATE-02 + wave-1 host ready"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/session/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Replacing LiveKit with Colyseus"
+        ]
+      },
+      "acceptance": [
+        "GM + 2 players concurrent commands parity test",
+        "Reconnect resync without event loss for allowed data",
+        "Cross-owner join/command negatives fail closed",
+        "Persist + host restart keeps session authority",
+        "Typed IO without any casts of command payloads"
+      ]
+    },
+    {
+      "localId": "MIG-024",
+      "title": "Player/GM/spectator projections filter",
+      "priority": "P0",
+      "wave": "migration-wave-2-api-realtime",
+      "order": 205,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-01"
+      ],
+      "labels": [
+        "P0",
+        "migration-wave-2-api-realtime",
+        "migration-order-205",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/session-runtime-service.ts",
+          "src/infrastructure/session/session-runtime-channel.ts",
+          "supabase/functions/sessions/**"
+        ],
+        "tech": "Supabase Realtime + RPC apply_session_runtime_command",
+        "io": "expectedRevision + idempotencyKey contracts in existing design docs"
+      },
+      "after": {
+        "paths": [
+          "server/src/application/session/**",
+          "server/src/api/**"
+        ],
+        "tech": "Colyseus preferred candidate pending GATE-03; HTTP layer pending GATE-03"
+      },
+      "behavior": {
+        "unchanged": "Revision mismatch and idempotent retry semantics",
+        "secrets": "Hidden lore/maps filtered before WS/HTTP",
+        "blockedReason": "BLOCKED until GATE-01 + wave-1 host ready"
+      },
+      "scope": {
+        "mayChange": [
+          "server/**",
+          "src/infrastructure/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/session/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Replacing LiveKit with Colyseus"
+        ]
+      },
+      "acceptance": [
+        "GM + 2 players concurrent commands parity test",
+        "Reconnect resync without event loss for allowed data",
+        "Cross-owner join/command negatives fail closed",
+        "Persist + host restart keeps session authority",
+        "Typed IO without any casts of command payloads"
+      ]
+    },
+    {
+      "localId": "MIG-301",
+      "title": "Port infrastructure/ai adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 301,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-301"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/ai/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/ai"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/ai/**",
+          "server/src/application/ai/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/ai/**",
+          "server/src/**/ai/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-302",
+      "title": "Port infrastructure/character adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 302,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-302"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/character/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/character"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/character/**",
+          "server/src/application/character/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/character/**",
+          "server/src/**/character/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-303",
+      "title": "Port infrastructure/inventory adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 303,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-303"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/inventory/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/inventory"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/inventory/**",
+          "server/src/application/inventory/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/inventory/**",
+          "server/src/**/inventory/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-304",
+      "title": "Port infrastructure/look adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 304,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-304"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/look/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/look"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/look/**",
+          "server/src/application/look/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/look/**",
+          "server/src/**/look/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-305",
+      "title": "Port infrastructure/marketplace adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 305,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-305"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/marketplace/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/marketplace"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/marketplace/**",
+          "server/src/application/marketplace/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/marketplace/**",
+          "server/src/**/marketplace/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-306",
+      "title": "Port infrastructure/media adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 306,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-306"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/media/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/media"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/media/**",
+          "server/src/application/media/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/media/**",
+          "server/src/**/media/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-307",
+      "title": "Port infrastructure/npc-creature adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 307,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-307"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/npc-creature/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/npc-creature"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/npc-creature/**",
+          "server/src/application/npc-creature/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/npc-creature/**",
+          "server/src/**/npc-creature/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-308",
+      "title": "Port infrastructure/project adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 308,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-308"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/project/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/project"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/project/**",
+          "server/src/application/project/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/project/**",
+          "server/src/**/project/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-309",
+      "title": "Port infrastructure/rulesets adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 309,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-309"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/rulesets/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/rulesets"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/rulesets/**",
+          "server/src/application/rulesets/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/rulesets/**",
+          "server/src/**/rulesets/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-310",
+      "title": "Port infrastructure/saga adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 310,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-310"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/saga/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/saga"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/saga/**",
+          "server/src/application/saga/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/saga/**",
+          "server/src/**/saga/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-311",
+      "title": "Port infrastructure/session adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 311,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-311"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/session/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/session"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/session/**",
+          "server/src/application/session/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/session/**",
+          "server/src/**/session/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-312",
+      "title": "Port infrastructure/user-profile adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 312,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-312"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/user-profile/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/user-profile"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/user-profile/**",
+          "server/src/application/user-profile/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/user-profile/**",
+          "server/src/**/user-profile/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-313",
+      "title": "Port infrastructure/world adapters from Supabase to host repositories",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 313,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-313"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/world/**"
+        ],
+        "tech": "Supabase JS + RPC/PostgREST",
+        "callers": "src/app/** consumers of infrastructure/world"
+      },
+      "after": {
+        "paths": [
+          "src/infrastructure/world/**",
+          "server/src/application/world/**"
+        ],
+        "tech": "Host HTTP/WS adapters; same public facade methods where possible"
+      },
+      "behavior": {
+        "unchanged": "Domain types and app UX contracts",
+        "secrets": "Owner-scoped data remains owner-scoped"
+      },
+      "scope": {
+        "mayChange": [
+          "src/infrastructure/world/**",
+          "server/src/**/world/**"
+        ],
+        "mustNotChange": [
+          "src/domains/** except explicit ADR"
+        ],
+        "nonGoals": [
+          "UI redesign"
+        ]
+      },
+      "acceptance": [
+        "Existing app journeys for this area work against host",
+        "Security negatives for this area ported",
+        "Persistence/reload covered",
+        "No feature silently deleted",
+        "Typecheck clean without new escape hatches"
+      ]
+    },
+    {
+      "localId": "MIG-350",
+      "title": "Replace Postgres RPC cluster: world/atlas RPCs",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 350,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-022",
+        "MIG-013"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-350"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**"
+        ],
+        "tech": "SECURITY DEFINER SQL RPCs",
+        "rpcNames": [
+          "archive_world_node_subtree",
+          "create_world_node_with_maps",
+          "delete_world_node",
+          "duplicate_world_node",
+          "ensure_world_atlas_root",
+          "get_world_atlas_map",
+          "get_world_map",
+          "increment_marketplace_downloads",
+          "list_world_atlas_maps",
+          "list_world_place_map_links",
+          "list_world_places",
+          "preview_world_node_consequences",
+          "rename_world_node",
+          "reparent_world_node",
+          "save_world_map",
+          "upsert_world_atlas_map",
+          "upsert_world_place",
+          "upsert_world_place_map_link"
+        ]
+      },
+      "after": {
+        "paths": [
+          "server/src/application/commands/**"
+        ],
+        "tech": "TypeScript domain commands + transactions"
+      },
+      "behavior": {
+        "unchanged": "Input validation, error codes, revision semantics per RPC",
+        "secrets": "Each command re-checks policy; no client-elevated origins"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/application/**",
+          "supabase/migrations/** (compat shims only with freigabe)"
+        ],
+        "mustNotChange": [
+          "src/domains/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Dropping RPCs without mapped successor"
+        ]
+      },
+      "acceptance": [
+        "All listed RPCs (18) have command successors or approved retirement",
+        "Parity tests for happy + negative paths",
+        "Idempotency/revision where previously present",
+        "No production data migration in this issue",
+        "Typed strict"
+      ]
+    },
+    {
+      "localId": "MIG-351",
+      "title": "Replace Postgres RPC cluster: session/runtime RPCs",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 351,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-022",
+        "MIG-013"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-351"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**"
+        ],
+        "tech": "SECURITY DEFINER SQL RPCs",
+        "rpcNames": [
+          "apply_session_runtime_command",
+          "clear_npc_creature_instance_temp_controllers_for_session",
+          "create_play_session",
+          "create_project_session",
+          "create_session_invite",
+          "get_session_recap",
+          "get_session_runtime_snapshot",
+          "join_session_by_code",
+          "leave_play_session",
+          "resolve_session_invite",
+          "revoke_session_invite",
+          "save_session_recap_summary",
+          "set_session_player_presence",
+          "set_session_status",
+          "update_npc_creature_instance_runtime"
+        ]
+      },
+      "after": {
+        "paths": [
+          "server/src/application/commands/**"
+        ],
+        "tech": "TypeScript domain commands + transactions"
+      },
+      "behavior": {
+        "unchanged": "Input validation, error codes, revision semantics per RPC",
+        "secrets": "Each command re-checks policy; no client-elevated origins"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/application/**",
+          "supabase/migrations/** (compat shims only with freigabe)"
+        ],
+        "mustNotChange": [
+          "src/domains/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Dropping RPCs without mapped successor"
+        ]
+      },
+      "acceptance": [
+        "All listed RPCs (15) have command successors or approved retirement",
+        "Parity tests for happy + negative paths",
+        "Idempotency/revision where previously present",
+        "No production data migration in this issue",
+        "Typed strict"
+      ]
+    },
+    {
+      "localId": "MIG-352",
+      "title": "Replace Postgres RPC cluster: saga/project RPCs",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 352,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-022",
+        "MIG-013"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-352"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**"
+        ],
+        "tech": "SECURITY DEFINER SQL RPCs",
+        "rpcNames": [
+          "copy_native_saga_definition",
+          "create_play_session",
+          "create_project_from_saga_version",
+          "create_project_session",
+          "create_user_saga_definition",
+          "duplicate_saga_playthrough",
+          "ensure_native_starter_project",
+          "get_my_saga_permissions",
+          "get_native_saga_definition_by_slug",
+          "get_saga_definition_editor",
+          "get_saga_definition_version",
+          "get_saga_lore_timeline",
+          "get_saga_overview",
+          "join_project_by_code",
+          "leave_play_session",
+          "list_saga_bindings",
+          "list_saga_member_permission_state",
+          "publish_saga_definition_version",
+          "save_saga_definition_draft",
+          "set_my_project_character",
+          "set_saga_binding_reveal",
+          "set_saga_member_bundle",
+          "set_session_player_presence"
+        ]
+      },
+      "after": {
+        "paths": [
+          "server/src/application/commands/**"
+        ],
+        "tech": "TypeScript domain commands + transactions"
+      },
+      "behavior": {
+        "unchanged": "Input validation, error codes, revision semantics per RPC",
+        "secrets": "Each command re-checks policy; no client-elevated origins"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/application/**",
+          "supabase/migrations/** (compat shims only with freigabe)"
+        ],
+        "mustNotChange": [
+          "src/domains/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Dropping RPCs without mapped successor"
+        ]
+      },
+      "acceptance": [
+        "All listed RPCs (23) have command successors or approved retirement",
+        "Parity tests for happy + negative paths",
+        "Idempotency/revision where previously present",
+        "No production data migration in this issue",
+        "Typed strict"
+      ]
+    },
+    {
+      "localId": "MIG-353",
+      "title": "Replace Postgres RPC cluster: remaining RPCs",
+      "priority": "P1",
+      "wave": "migration-wave-3-domain-ports",
+      "order": 353,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-022",
+        "MIG-013"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-3-domain-ports",
+        "migration-order-353"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**"
+        ],
+        "tech": "SECURITY DEFINER SQL RPCs",
+        "rpcNames": [
+          "assign_npc_creature_controller",
+          "remove_npc_creature_instance",
+          "spawn_npc_creature_instance"
+        ]
+      },
+      "after": {
+        "paths": [
+          "server/src/application/commands/**"
+        ],
+        "tech": "TypeScript domain commands + transactions"
+      },
+      "behavior": {
+        "unchanged": "Input validation, error codes, revision semantics per RPC",
+        "secrets": "Each command re-checks policy; no client-elevated origins"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/application/**",
+          "supabase/migrations/** (compat shims only with freigabe)"
+        ],
+        "mustNotChange": [
+          "src/domains/** contracts without ADR"
+        ],
+        "nonGoals": [
+          "Dropping RPCs without mapped successor"
+        ]
+      },
+      "acceptance": [
+        "All listed RPCs (3) have command successors or approved retirement",
+        "Parity tests for happy + negative paths",
+        "Idempotency/revision where previously present",
+        "No production data migration in this issue",
+        "Typed strict"
+      ]
+    },
+    {
+      "localId": "MIG-401",
+      "title": "Port Edge Function `ai-gm` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 401,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-401"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/ai-gm/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/ai-gm/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/ai-gm/**",
+          "server/src/services/ai-gm/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-402",
+      "title": "Port Edge Function `ai-provider-credentials` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 402,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-402"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/ai-provider-credentials/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/ai-provider-credentials/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/ai-provider-credentials/**",
+          "server/src/services/ai-provider-credentials/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-403",
+      "title": "Port Edge Function `bestiary` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 403,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-403"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/bestiary/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/bestiary/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/bestiary/**",
+          "server/src/services/bestiary/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-404",
+      "title": "Port Edge Function `character-avatar-meshy` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 404,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-404"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/character-avatar-meshy/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/character-avatar-meshy/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/character-avatar-meshy/**",
+          "server/src/services/character-avatar-meshy/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-405",
+      "title": "Port Edge Function `character-lore` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 405,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-405"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/character-lore/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/character-lore/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/character-lore/**",
+          "server/src/services/character-lore/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-406",
+      "title": "Port Edge Function `characters` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 406,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-406"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/characters/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/characters/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/characters/**",
+          "server/src/services/characters/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-407",
+      "title": "Port Edge Function `dm-tools` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 407,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-407"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/dm-tools/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/dm-tools/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/dm-tools/**",
+          "server/src/services/dm-tools/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-408",
+      "title": "Port Edge Function `export` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 408,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-408"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/export/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/export/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/export/**",
+          "server/src/services/export/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-409",
+      "title": "Port Edge Function `item-model3d` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 409,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-409"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/item-model3d/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/item-model3d/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/item-model3d/**",
+          "server/src/services/item-model3d/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-410",
+      "title": "Port Edge Function `item-thumbnail` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 410,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-410"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/item-thumbnail/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/item-thumbnail/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/item-thumbnail/**",
+          "server/src/services/item-thumbnail/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-411",
+      "title": "Port Edge Function `items` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 411,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-411"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/items/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/items/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/items/**",
+          "server/src/services/items/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-412",
+      "title": "Port Edge Function `look-reference-analysis` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 412,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-412"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/look-reference-analysis/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/look-reference-analysis/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/look-reference-analysis/**",
+          "server/src/services/look-reference-analysis/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-413",
+      "title": "Port Edge Function `lorekeeper` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 413,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-413"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/lorekeeper/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/lorekeeper/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/lorekeeper/**",
+          "server/src/services/lorekeeper/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-414",
+      "title": "Port Edge Function `main` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 414,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-414"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/main/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/main/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/main/**",
+          "server/src/services/main/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-415",
+      "title": "Port Edge Function `marketplace` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 415,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-415"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/marketplace/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/marketplace/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/marketplace/**",
+          "server/src/services/marketplace/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-416",
+      "title": "Port Edge Function `media` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 416,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-416"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/media/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/media/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/media/**",
+          "server/src/services/media/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-417",
+      "title": "Port Edge Function `npcs` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 417,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-417"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/npcs/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/npcs/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/npcs/**",
+          "server/src/services/npcs/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-418",
+      "title": "Port Edge Function `quests` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 418,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-418"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/quests/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/quests/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/quests/**",
+          "server/src/services/quests/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-419",
+      "title": "Port Edge Function `rulesets` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 419,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-419"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/rulesets/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/rulesets/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/rulesets/**",
+          "server/src/services/rulesets/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-420",
+      "title": "Port Edge Function `session-media-token` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 420,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-420"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/session-media-token/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/session-media-token/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/session-media-token/**",
+          "server/src/services/session-media-token/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-421",
+      "title": "Port Edge Function `session-recap` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 421,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-421"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/session-recap/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/session-recap/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/session-recap/**",
+          "server/src/services/session-recap/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-422",
+      "title": "Port Edge Function `sessions` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 422,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-422"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/sessions/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/sessions/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/sessions/**",
+          "server/src/services/sessions/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-423",
+      "title": "Port Edge Function `spellbook` to Node host service/adapter",
+      "priority": "P2",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 423,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-423"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/spellbook/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/spellbook/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/spellbook/**",
+          "server/src/services/spellbook/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-424",
+      "title": "Port Edge Function `world` to Node host service/adapter",
+      "priority": "P1",
+      "wave": "migration-wave-4-edge-ai-media",
+      "order": 424,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "labels": [
+        "migration-wave-4-edge-ai-media",
+        "migration-order-424"
+      ],
+      "before": {
+        "paths": [
+          "supabase/functions/world/**",
+          "supabase/functions/_shared/**"
+        ],
+        "tech": "Deno Edge + shared cors/auth helpers"
+      },
+      "after": {
+        "paths": [
+          "server/src/services/world/**"
+        ],
+        "tech": "Node TypeScript service; provider adapters for AI/media"
+      },
+      "behavior": {
+        "unchanged": "Auth, rate limits, CORS semantics, error shapes",
+        "secrets": "Provider secrets stay server-side; no browser elevation"
+      },
+      "scope": {
+        "mayChange": [
+          "supabase/functions/world/**",
+          "server/src/services/world/**"
+        ],
+        "mustNotChange": [
+          "LiveKit replacement",
+          "Domain rules relocation into edge"
+        ],
+        "nonGoals": [
+          "Deleting function without parity"
+        ]
+      },
+      "acceptance": [
+        "Feature parity checklist for this function documented and tested",
+        "Security negatives for auth/rate-limit preserved",
+        "Degraded state without optional providers defined",
+        "No secret leakage in logs",
+        "Integration test path exists"
+      ]
+    },
+    {
+      "localId": "MIG-500",
+      "title": "Local protected asset service (replace Storage buckets)",
+      "priority": "P1",
+      "wave": "migration-wave-5-storage-export",
+      "order": 500,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-013",
+        "MIG-011"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-5-storage-export",
+        "migration-order-500"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**",
+          "supabase/functions/media/**",
+          "supabase/functions/export/**"
+        ],
+        "tech": "Supabase Storage + signed URLs"
+      },
+      "after": {
+        "paths": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "tech": "Local FS + authz download routes; tus optional"
+      },
+      "behavior": {
+        "unchanged": "Asset metadata ownership/visibility",
+        "secrets": "URL/path never grants access"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Prod cutover"
+        ]
+      },
+      "acceptance": [
+        "Unauthorized asset fetch fails closed",
+        "Upload validate\u2192publish lifecycle",
+        "Backup/restore of DB+assets jointly tested",
+        "Migration dry-run reports counts/hashes",
+        "No invented atlas geometry during world data move"
+      ]
+    },
+    {
+      "localId": "MIG-501",
+      "title": "Optional tus for large uploads",
+      "priority": "P1",
+      "wave": "migration-wave-5-storage-export",
+      "order": 501,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-013",
+        "MIG-011"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-5-storage-export",
+        "migration-order-501"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**",
+          "supabase/functions/media/**",
+          "supabase/functions/export/**"
+        ],
+        "tech": "Supabase Storage + signed URLs"
+      },
+      "after": {
+        "paths": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "tech": "Local FS + authz download routes; tus optional"
+      },
+      "behavior": {
+        "unchanged": "Asset metadata ownership/visibility",
+        "secrets": "URL/path never grants access"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Prod cutover"
+        ]
+      },
+      "acceptance": [
+        "Unauthorized asset fetch fails closed",
+        "Upload validate\u2192publish lifecycle",
+        "Backup/restore of DB+assets jointly tested",
+        "Migration dry-run reports counts/hashes",
+        "No invented atlas geometry during world data move"
+      ]
+    },
+    {
+      "localId": "MIG-502",
+      "title": "Export/import versioned bundles + restore drills",
+      "priority": "P1",
+      "wave": "migration-wave-5-storage-export",
+      "order": 502,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-013",
+        "MIG-011"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-5-storage-export",
+        "migration-order-502"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**",
+          "supabase/functions/media/**",
+          "supabase/functions/export/**"
+        ],
+        "tech": "Supabase Storage + signed URLs"
+      },
+      "after": {
+        "paths": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "tech": "Local FS + authz download routes; tus optional"
+      },
+      "behavior": {
+        "unchanged": "Asset metadata ownership/visibility",
+        "secrets": "URL/path never grants access"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Prod cutover"
+        ]
+      },
+      "acceptance": [
+        "Unauthorized asset fetch fails closed",
+        "Upload validate\u2192publish lifecycle",
+        "Backup/restore of DB+assets jointly tested",
+        "Migration dry-run reports counts/hashes",
+        "No invented atlas geometry during world data move"
+      ]
+    },
+    {
+      "localId": "MIG-503",
+      "title": "Postgres\u2192SQLite data migration dry-run tooling",
+      "priority": "P1",
+      "wave": "migration-wave-5-storage-export",
+      "order": 503,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-013",
+        "MIG-011"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-5-storage-export",
+        "migration-order-503"
+      ],
+      "before": {
+        "paths": [
+          "supabase/migrations/**",
+          "supabase/functions/media/**",
+          "supabase/functions/export/**"
+        ],
+        "tech": "Supabase Storage + signed URLs"
+      },
+      "after": {
+        "paths": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "tech": "Local FS + authz download routes; tus optional"
+      },
+      "behavior": {
+        "unchanged": "Asset metadata ownership/visibility",
+        "secrets": "URL/path never grants access"
+      },
+      "scope": {
+        "mayChange": [
+          "server/src/assets/**",
+          "server/src/migration/**"
+        ],
+        "mustNotChange": [
+          "src/domains/**"
+        ],
+        "nonGoals": [
+          "Prod cutover"
+        ]
+      },
+      "acceptance": [
+        "Unauthorized asset fetch fails closed",
+        "Upload validate\u2192publish lifecycle",
+        "Backup/restore of DB+assets jointly tested",
+        "Migration dry-run reports counts/hashes",
+        "No invented atlas geometry during world data move"
+      ]
+    },
+    {
+      "localId": "MIG-600",
+      "title": "Negative authz suite parity on host",
+      "priority": "P1",
+      "wave": "migration-wave-6-security-ops",
+      "order": 600,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-024",
+        "MIG-500"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-6-security-ops",
+        "migration-order-600"
+      ],
+      "before": {
+        "paths": [
+          "docs/ops/negative-authz-suite.md",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Supabase docker stack"
+      },
+      "after": {
+        "paths": [
+          "docs/ops/**",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Host-centric compose profiles"
+      },
+      "behavior": {
+        "unchanged": "Security non-negotiables in AGENTS.md",
+        "secrets": "All severities including Low/Info still reported"
+      },
+      "scope": {
+        "mayChange": [
+          ".github/workflows/**",
+          "deployment/**",
+          "docs/ops/**"
+        ],
+        "mustNotChange": [
+          "Disabling tests to go green"
+        ],
+        "nonGoals": [
+          "Force-push workflows"
+        ]
+      },
+      "acceptance": [
+        "Negative authz suite green on host",
+        "CI required checks cover host",
+        "Compose profiles documented",
+        "Restore drill evidence exists",
+        "No test weakening"
+      ]
+    },
+    {
+      "localId": "MIG-601",
+      "title": "Docker Compose simplification for host+optional AI/media",
+      "priority": "P1",
+      "wave": "migration-wave-6-security-ops",
+      "order": 601,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-024",
+        "MIG-500"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-6-security-ops",
+        "migration-order-601"
+      ],
+      "before": {
+        "paths": [
+          "docs/ops/negative-authz-suite.md",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Supabase docker stack"
+      },
+      "after": {
+        "paths": [
+          "docs/ops/**",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Host-centric compose profiles"
+      },
+      "behavior": {
+        "unchanged": "Security non-negotiables in AGENTS.md",
+        "secrets": "All severities including Low/Info still reported"
+      },
+      "scope": {
+        "mayChange": [
+          ".github/workflows/**",
+          "deployment/**",
+          "docs/ops/**"
+        ],
+        "mustNotChange": [
+          "Disabling tests to go green"
+        ],
+        "nonGoals": [
+          "Force-push workflows"
+        ]
+      },
+      "acceptance": [
+        "Negative authz suite green on host",
+        "CI required checks cover host",
+        "Compose profiles documented",
+        "Restore drill evidence exists",
+        "No test weakening"
+      ]
+    },
+    {
+      "localId": "MIG-602",
+      "title": "CI Quality Gates for host unit/integration/e2e",
+      "priority": "P1",
+      "wave": "migration-wave-6-security-ops",
+      "order": 602,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-024",
+        "MIG-500"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-6-security-ops",
+        "migration-order-602"
+      ],
+      "before": {
+        "paths": [
+          "docs/ops/negative-authz-suite.md",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Supabase docker stack"
+      },
+      "after": {
+        "paths": [
+          "docs/ops/**",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Host-centric compose profiles"
+      },
+      "behavior": {
+        "unchanged": "Security non-negotiables in AGENTS.md",
+        "secrets": "All severities including Low/Info still reported"
+      },
+      "scope": {
+        "mayChange": [
+          ".github/workflows/**",
+          "deployment/**",
+          "docs/ops/**"
+        ],
+        "mustNotChange": [
+          "Disabling tests to go green"
+        ],
+        "nonGoals": [
+          "Force-push workflows"
+        ]
+      },
+      "acceptance": [
+        "Negative authz suite green on host",
+        "CI required checks cover host",
+        "Compose profiles documented",
+        "Restore drill evidence exists",
+        "No test weakening"
+      ]
+    },
+    {
+      "localId": "MIG-603",
+      "title": "Ops: backup/restore/update/rollback runbooks",
+      "priority": "P1",
+      "wave": "migration-wave-6-security-ops",
+      "order": 603,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-024",
+        "MIG-500"
+      ],
+      "labels": [
+        "P1",
+        "migration-wave-6-security-ops",
+        "migration-order-603"
+      ],
+      "before": {
+        "paths": [
+          "docs/ops/negative-authz-suite.md",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Supabase docker stack"
+      },
+      "after": {
+        "paths": [
+          "docs/ops/**",
+          ".github/workflows/**",
+          "deployment/**"
+        ],
+        "tech": "Host-centric compose profiles"
+      },
+      "behavior": {
+        "unchanged": "Security non-negotiables in AGENTS.md",
+        "secrets": "All severities including Low/Info still reported"
+      },
+      "scope": {
+        "mayChange": [
+          ".github/workflows/**",
+          "deployment/**",
+          "docs/ops/**"
+        ],
+        "mustNotChange": [
+          "Disabling tests to go green"
+        ],
+        "nonGoals": [
+          "Force-push workflows"
+        ]
+      },
+      "acceptance": [
+        "Negative authz suite green on host",
+        "CI required checks cover host",
+        "Compose profiles documented",
+        "Restore drill evidence exists",
+        "No test weakening"
+      ]
+    },
+    {
+      "localId": "MIG-700",
+      "title": "Controlled cutover per world/saga with freeze+delta",
+      "priority": "P2",
+      "wave": "migration-wave-7-cutover-tauri",
+      "order": 700,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-503",
+        "MIG-600"
+      ],
+      "labels": [
+        "P2",
+        "migration-wave-7-cutover-tauri",
+        "migration-order-700",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+        ],
+        "tech": "Supabase production/self-host"
+      },
+      "after": {
+        "paths": [
+          "server/**",
+          "docs/ops/cutover/**"
+        ],
+        "tech": "SQLite host authoritative"
+      },
+      "behavior": {
+        "unchanged": "User data continuity",
+        "secrets": "No prod migration without explicit freigabe",
+        "blockedReason": "BLOCKED until prior waves + human freigabe"
+      },
+      "scope": {
+        "mayChange": [
+          "docs/ops/cutover/**",
+          "deployment/**"
+        ],
+        "mustNotChange": [
+          "Silent Supabase removal"
+        ],
+        "nonGoals": [
+          "Big-bang untested cutover"
+        ]
+      },
+      "acceptance": [
+        "Rollback plan tested",
+        "Parity checklist signed",
+        "Restore after simulated failure proven",
+        "Explicit freigabe recorded for prod steps",
+        "Tauri not introduced during browser-only phases"
+      ]
+    },
+    {
+      "localId": "MIG-701",
+      "title": "Supabase dual-run parity window",
+      "priority": "P2",
+      "wave": "migration-wave-7-cutover-tauri",
+      "order": 701,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-700"
+      ],
+      "labels": [
+        "P2",
+        "migration-wave-7-cutover-tauri",
+        "migration-order-701",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+        ],
+        "tech": "Supabase production/self-host"
+      },
+      "after": {
+        "paths": [
+          "server/**",
+          "docs/ops/cutover/**"
+        ],
+        "tech": "SQLite host authoritative"
+      },
+      "behavior": {
+        "unchanged": "User data continuity",
+        "secrets": "No prod migration without explicit freigabe",
+        "blockedReason": "BLOCKED until prior waves + human freigabe"
+      },
+      "scope": {
+        "mayChange": [
+          "docs/ops/cutover/**",
+          "deployment/**"
+        ],
+        "mustNotChange": [
+          "Silent Supabase removal"
+        ],
+        "nonGoals": [
+          "Big-bang untested cutover"
+        ]
+      },
+      "acceptance": [
+        "Rollback plan tested",
+        "Parity checklist signed",
+        "Restore after simulated failure proven",
+        "Explicit freigabe recorded for prod steps",
+        "Tauri not introduced during browser-only phases"
+      ]
+    },
+    {
+      "localId": "MIG-702",
+      "title": "Supabase shutdown only after parity+restore proof",
+      "priority": "P2",
+      "wave": "migration-wave-7-cutover-tauri",
+      "order": 702,
+      "status": "blocked",
+      "dependsOn": [
+        "MIG-701"
+      ],
+      "labels": [
+        "P2",
+        "migration-wave-7-cutover-tauri",
+        "migration-order-702",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+        ],
+        "tech": "Supabase production/self-host"
+      },
+      "after": {
+        "paths": [
+          "server/**",
+          "docs/ops/cutover/**"
+        ],
+        "tech": "SQLite host authoritative"
+      },
+      "behavior": {
+        "unchanged": "User data continuity",
+        "secrets": "No prod migration without explicit freigabe",
+        "blockedReason": "BLOCKED until prior waves + human freigabe"
+      },
+      "scope": {
+        "mayChange": [
+          "docs/ops/cutover/**",
+          "deployment/**"
+        ],
+        "mustNotChange": [
+          "Silent Supabase removal"
+        ],
+        "nonGoals": [
+          "Big-bang untested cutover"
+        ]
+      },
+      "acceptance": [
+        "Rollback plan tested",
+        "Parity checklist signed",
+        "Restore after simulated failure proven",
+        "Explicit freigabe recorded for prod steps",
+        "Tauri not introduced during browser-only phases"
+      ]
+    },
+    {
+      "localId": "MIG-703",
+      "title": "Tauri integration before external desktop test phase",
+      "priority": "P2",
+      "wave": "migration-wave-7-cutover-tauri",
+      "order": 703,
+      "status": "blocked",
+      "dependsOn": [
+        "GATE-05",
+        "MIG-602"
+      ],
+      "labels": [
+        "P2",
+        "migration-wave-7-cutover-tauri",
+        "migration-order-703",
+        "needs-design"
+      ],
+      "before": {
+        "paths": [
+          "docs/architektur-sqlite-based.md \u00a7P5/P6"
+        ],
+        "tech": "Supabase production/self-host"
+      },
+      "after": {
+        "paths": [
+          "server/**",
+          "docs/ops/cutover/**"
+        ],
+        "tech": "SQLite host authoritative"
+      },
+      "behavior": {
+        "unchanged": "User data continuity",
+        "secrets": "No prod migration without explicit freigabe",
+        "blockedReason": "BLOCKED until prior waves + human freigabe"
+      },
+      "scope": {
+        "mayChange": [
+          "docs/ops/cutover/**",
+          "deployment/**"
+        ],
+        "mustNotChange": [
+          "Silent Supabase removal"
+        ],
+        "nonGoals": [
+          "Big-bang untested cutover"
+        ]
+      },
+      "acceptance": [
+        "Rollback plan tested",
+        "Parity checklist signed",
+        "Restore after simulated failure proven",
+        "Explicit freigabe recorded for prod steps",
+        "Tauri not introduced during browser-only phases"
+      ]
+    },
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "title": "Mandatory Atlas live E2E on isolated test DB (GitHub #770)",
+      "priority": "P0",
+      "wave": "migration-wave-0-evidence",
+      "order": 3,
+      "status": "blocked",
+      "dependsOn": [],
+      "labels": [
+        "P0",
+        "atlas",
+        "needs-design"
+      ],
+      "githubIssue": 770,
+      "before": {
+        "paths": [
+          "e2e/atlas-followup-product-e2e-gate.spec.ts",
+          "scripts/atlas-followup-real-product-e2e-check.mjs"
+        ],
+        "tech": "Playwright contract mocks; optional live skip"
+      },
+      "after": {
+        "paths": [
+          "e2e/atlas-followup-product-e2e-gate.spec.ts",
+          ".github/workflows/verify.yml"
+        ],
+        "tech": "Required CI job + isolated DB + DB-state assertions"
+      },
+      "behavior": {
+        "unchanged": "Production migration remains gated",
+        "secrets": "No prod credentials in CI",
+        "blockedReason": "BLOCKED / NEEDS DECISION \u2014 isolated CI DB + workflow freigabe"
+      },
+      "scope": {
+        "mayChange": [
+          "e2e/**",
+          ".github/workflows/**",
+          ".qa/evidence/atlas-followup-real-product-e2e/**"
+        ],
+        "mustNotChange": [
+          "Production Donalu data"
+        ],
+        "nonGoals": [
+          "Closing via optional env flag"
+        ]
+      },
+      "acceptance": [
+        "Live test not skipped in required gate",
+        "DB-state assertions for persist/reload/player view",
+        "Owner/GM/player/cross-owner negatives",
+        "Intentional regression proves red then reverted",
+        "Isolated fixtures only"
+      ]
+    }
+  ]
+}

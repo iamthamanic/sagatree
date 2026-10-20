@@ -384,6 +384,14 @@ function checkAtlasFollowupRealProductE2e() {
   });
 }
 
+function checkStackMigrationPrep() {
+  console.log('Stack migration prep drafts: inventory/issue graph integrity...');
+  execFileSync(process.execPath, ['scripts/stack-migration-prep-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2494,6 +2502,7 @@ checkAtlasWorldbuilderDonaluBackfill();
 checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
+checkStackMigrationPrep();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
