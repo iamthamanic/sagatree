@@ -22,13 +22,15 @@
     "selected": {
       "placeId": "p1",
       "mapId": "map-p1",
-      "worldRoot": false
+      "worldRoot": false,
+      "located": false,
+      "drillAllowed": false
     }
   },
   "emptyResult": {
     "placeIds": [
       "world:empty"
     ],
-    "text": "Welt+LeerweltWeltDuplizierenLöschenKontinente+Keine Orte in dieser Welt."
+    "text": "Welt+LeerweltWeltDuplizierenArchivierenKontinente+Keine Orte in dieser Welt."
   }
 }

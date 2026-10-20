@@ -133,6 +133,37 @@ export function canLodEnterChildMap(frame: MapFrameMeta): boolean {
   return a.extentX > 0 && a.extentY > 0 && Number.isFinite(a.centerX) && Number.isFinite(a.centerY);
 }
 
+/**
+ * Validate a parent spatial transform before mutation (#752).
+ * Zero/NaN extents and missing parentMapId fail closed.
+ */
+export function assertParentSpatialAnchor(
+  raw: unknown,
+): { readonly ok: true; readonly anchor: ParentSpatialAnchor } | { readonly ok: false; readonly reason: string } {
+  const anchor = parseParentSpatialAnchor(raw);
+  if (!anchor) {
+    return { ok: false, reason: 'Ungültiger oder unvollständiger Raumanker' };
+  }
+  if (anchor.extentX <= 0 || anchor.extentY <= 0) {
+    return { ok: false, reason: 'Anker-Ausdehnung muss positiv sein' };
+  }
+  return { ok: true, anchor };
+}
+
+/**
+ * Product WebGL drill: world root always allowed; child requires grounded link
+ * and must not invent LOD into unlocated maps.
+ */
+export function canWebglDrillSelect(input: {
+  readonly worldRoot: boolean;
+  readonly located: boolean;
+  readonly mapId: string | null;
+}): boolean {
+  if (input.worldRoot) return true;
+  if (!input.mapId) return false;
+  return input.located === true;
+}
+
 /** True when place-map link has a numeric anchor usable for drill. */
 export function isGroundedLinkAnchor(anchor: Readonly<Record<string, unknown>> | null | undefined): boolean {
   if (!anchor) return false;

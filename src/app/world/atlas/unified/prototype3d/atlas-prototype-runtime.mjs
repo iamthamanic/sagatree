@@ -193,12 +193,14 @@ function prefixSelectorsWithAtlasRoot(css) {
  *   onNavReparent?: (payload: object) => void,
  *   toolChrome?: object[]|null,
  *   canEdit?: boolean,
+ *   mapSketchStatus?: string|null,
  * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
  *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
  *   onNavAdd/Duplicate/Archive/Reparent: product #748 server mutation bridge (no localStorage SoT).
  *   toolChrome: ATLAS_TOOL_REGISTRY-derived rows (#750); canEdit gates map mutations.
- * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void }}
+ *   mapSketchStatus: unlocated ⇒ honest empty ocean, no demo continents (#752).
+ * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void, setMapSketchStatus: (status: string|null) => void }}
  */
 export function mountAtlasPrototype3d(host, options = {}) {
   const controlled = options && options.controlled === true;
@@ -215,6 +217,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
   /** @type {Array<{runtimeId:string,labelDe:string,enabled?:boolean,disabledReason?:string|null,atlasId?:string,role?:string}>|null} */
   let toolChrome = Array.isArray(options.toolChrome) ? options.toolChrome.slice() : null;
   let canEditMaps = options.canEdit !== false;
+  let mapSketchStatus =
+    typeof options.mapSketchStatus === 'string' ? options.mapSketchStatus : null;
   const styleEl = document.createElement('style');
   styleEl.setAttribute('data-atlas-prototype-style', 'true');
   styleEl.textContent = scopeShellCssForEmbed(SHELL_CSS);
@@ -224,6 +228,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
   wrap.id = 'atlas3d';
   wrap.setAttribute('data-atlas-native-runtime', 'true');
   if (externalNav) wrap.setAttribute('data-atlas-product-nav', 'true');
+  if (mapSketchStatus) wrap.setAttribute('data-atlas-map-status', mapSketchStatus);
   wrap.innerHTML = SHELL_HTML;
   host.appendChild(wrap);
 
@@ -238,6 +243,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
   let setToolChromeImpl = () => {};
   /** @type {(ok: boolean) => void} */
   let setCanEditImpl = () => {};
+  /** @type {(status: string|null) => void} */
+  let setMapSketchStatusImpl = () => {};
 
   {
 
@@ -390,7 +397,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function getActiveWorld(){const worlds=ensureWorlds();return worlds.find(w=>w.id===state.activeWorldId)||worlds[0];}
     function isWorldId(id){if(productNavActive()&&externalNav&&id===externalNav.worldId)return true;return ensureWorlds().some(w=>w.id===id);}
     function worldById(id){if(productNavActive()&&externalNav&&id===externalNav.worldId)return{id:externalNav.worldId,label:externalNav.worldLabel||'Welt',empty:false};return ensureWorlds().find(w=>w.id===id)||null;}
-    function isEmptyWorldActive(){return !!getActiveWorld()?.empty;}
+    function isUnlocatedProductMap(){return productNavActive()&&mapSketchStatus==='unlocated';}
+    function isEmptyWorldActive(){return !!getActiveWorld()?.empty||isUnlocatedProductMap();}
     function applyPlaceNames(){const pn=state.placeNames||PLACE_NAME_DEFAULTS;for(const cont of continentDefs){const def=PLACE_NAME_DEFAULTS[cont.id];const p=pn[cont.id]||def;if(p?.label)cont.label=p.label;cont.sub=(def&&def.sub)||cont.sub;}for(const land of landDefs){const def=PLACE_NAME_DEFAULTS[land.id];const p=pn[land.id]||def;if(p?.label){land.label=p.label;land.mapLabel=String(p.label).toLocaleUpperCase('de-DE');}land.sub=(def&&def.sub)||land.sub;}const active=getActiveWorld();for(const lv of levels){if(lv.id==='world'){lv.label=(active&&active.label)||state.worldLabel||'Welt';lv.sub=state.worldSub||WORLD_SUB_DEFAULT;continue;}const def=PLACE_NAME_DEFAULTS[lv.id];const p=pn[lv.id]||def;if(p?.label)lv.label=p.label;lv.sub=(def&&def.sub)||lv.sub;}}
     ensureWorlds();
     applyPlaceNames();
@@ -621,7 +629,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function applyLod(){const s=cameraState.span;const empty=isEmptyWorldActive();return{ocean:true,map_world:!empty&&state.layers.world&&s>=18,world3d:!empty&&state.layers.world&&s>90,map_region:!empty&&state.layers.region&&s<300&&s>=18,map_city:!empty&&state.layers.city&&s<100&&s>=18,map_dungeon:!empty&&state.layers.dungeon&&s<19,region3d:!empty&&state.layers.region&&s<200&&s>35,city3d:!empty&&state.layers.city&&s<80&&s>16,dungeon3d:!empty&&state.layers.dungeon&&s<19,grid:!empty&&state.layers.grid&&s<14,manual_world:!empty&&state.layers.stamps&&s>80,manual_region:!empty&&state.layers.stamps&&s<300&&s>32,manual_city:!empty&&state.layers.stamps&&s<95&&s>14,manual_dungeon:!empty&&state.layers.stamps&&s<24,manual_room:!empty&&state.layers.stamps&&s<10};}
     function updateLevel(){const now=levelFromView();if(now!==activeLevel){activeLevel=now;renderNavigation();updateInspector();}const land=!isEmptyWorldActive()&&selectedLandId?landDefs.find(l=>l.id===selectedLandId):null;const cont=!isEmptyWorldActive()&&!land&&selectedContinentId?continentDefs.find(c=>c.id===selectedContinentId):null;const current=levels.find(l=>l.id===now);$('level').textContent=land?.tag||cont?.tag||(isEmptyWorldActive()?'OZEAN':(current?.tag||'WELT'));const worldName=(getActiveWorld()?.label)||state.worldLabel||'Welt';$('crumb').textContent=land?`${worldName} › ${land.label}`:cont?`${worldName} › ${cont.label}`:(now==='world'?worldName:[worldName,...levels.filter(l=>l.kind==='stage').slice(0,Math.max(0,['city','dungeon','room'].indexOf(now)+1)).map(x=>x.label)].join(' › '));if(!scaleEdit||scaleEdit.kind!=='zoom'){const z=$('zoom');if(z)z.textContent=zoomPercent()+'%';}updateHotspots();}
     function drawFrame(){if(engine){syncOceanMesh();engine.render(cameraMatrix(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
-    function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;if(isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
+    function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;/* Product path: demo hotspots invent geography — hide (#752). */if(productNavActive()||isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
     function layerTexSize(layer){if(layer==='world')return{w:WORLD_TEX_W,h:WORLD_TEX_H};const cv=baseMapCanvases[layer]||mapCanvases[layer];if(cv)return{w:cv.width,h:cv.height};if(layer==='city')return{w:1000,h:690};if(layer==='region')return{w:1000,h:740};if(layer==='dungeon')return{w:1200,h:800};return{w:1000,h:700};}
     function resolveMapLabelPos(id){const def=MAP_LABEL_DEFAULTS[id];if(!def)return null;const saved=state.mapLabelPos?.[id];if(def.layer==='level'){const lv=levels.find(l=>l.id===(def.id||id));const x=Number.isFinite(saved?.x)?saved.x:(lv?.x??0);const z=Number.isFinite(saved?.z)?saved.z:(lv?.z??0);if(lv&&Number.isFinite(saved?.x)&&Number.isFinite(saved?.z)){lv.x=x;lv.z=z;}return{layer:'level',x,z,size:Number.isFinite(saved?.size)?saved.size:def.size};}return{layer:def.layer,x:Number.isFinite(saved?.x)?saved.x:def.x,y:Number.isFinite(saved?.y)?saved.y:def.y,size:Number.isFinite(saved?.size)?saved.size:def.size};}
     function mapLabelWorld(id){const pos=resolveMapLabelPos(id);if(!pos)return null;if(pos.layer==='level')return{x:pos.x,z:pos.z,size:pos.size};const conf=mapConfigs[pos.layer];if(!conf)return null;const tex=layerTexSize(pos.layer);return{x:conf.x-conf.w/2+(pos.x/tex.w)*conf.w,z:conf.z-conf.h/2+(pos.y/tex.h)*conf.h,size:pos.size,layer:pos.layer,texX:pos.x,texY:pos.y};}
@@ -660,9 +668,12 @@ export function mountAtlasPrototype3d(host, options = {}) {
         selectedExternalId=id;
         const worldRoot=isWorldId(id);
         const mapId=worldRoot?(externalNav.worldPrimaryMapId||null):(node.primaryMapId??null);
+        const located=worldRoot?true:node.located===true;
+        const drillOk=worldRoot||(!!mapId&&located);
         renderNavigation();
-        if(onNavSelect)onNavSelect({placeId:worldRoot?null:id,mapId,worldRoot});
+        if(onNavSelect)onNavSelect({placeId:worldRoot?null:id,mapId,worldRoot,located:drillOk,drillAllowed:drillOk});
         if(!mapId)toast(worldRoot?'Keine Welt-Primärkarte':'Keine Primärkarte für diesen Ort');
+        else if(!worldRoot&&!located)toast('Ausschnitt noch nicht festgelegt — zuerst auf der Elternkarte verorten');
         // Keep camera on current view — map swap is owned by React/editor.
         return;
       }
@@ -765,7 +776,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     root.addEventListener('wheel',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;e.preventDefault();e.stopPropagation();applyYawDegrees(yawDegrees()+Math.sign(e.deltaY||1)*5);},{passive:false,capture:true});
     root.addEventListener('keydown',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;let step=0;if(e.key==='ArrowLeft'||e.key==='ArrowDown')step=-5;else if(e.key==='ArrowRight'||e.key==='ArrowUp')step=5;else if(e.key==='Home'){applyYawDegrees(0);e.preventDefault();return;}else return;e.preventDefault();applyYawDegrees(yawDegrees()+step);});
     $('roomCount').addEventListener('input',e=>{$('roomText').textContent=e.target.value;});$('brushSize').addEventListener('input',e=>{$('brushText').textContent=e.target.value;});
-    stage.addEventListener('pointerdown',e=>{const lbl=e.target.closest('.map-label');if(lbl&&e.button===0){beginLabelDrag(lbl.dataset.mapLabel,e,lbl);return;}pointerDown(e);});stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerUp);stage.addEventListener('lostpointercapture',e=>{if(labelDrag)endLabelDrag(e);else pointerUp(e);});window.addEventListener('blur',()=>{pointer=null;labelDrag=null;orbit=null;stage.classList.remove('drag');});stage.addEventListener('wheel',e=>{if(e.target.closest('.action-tools,.scale-widget,.map-label'))return;if(Math.abs(e.deltaY)<1.5)return;e.preventDefault();e.stopPropagation();const p=atStageEvent(e);zoomAt(Math.exp(e.deltaY*.00165),p.x,p.y);},{passive:false});stage.addEventListener('dblclick',e=>{if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const ladder=['world','city','dungeon','room'];const cur=ladder.indexOf(levelFromView()==='region'?'world':levelFromView());goTo(ladder[Math.min(ladder.length-1,Math.max(0,cur)+1)]);});
+    stage.addEventListener('pointerdown',e=>{const lbl=e.target.closest('.map-label');if(lbl&&e.button===0){beginLabelDrag(lbl.dataset.mapLabel,e,lbl);return;}pointerDown(e);});stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerUp);stage.addEventListener('lostpointercapture',e=>{if(labelDrag)endLabelDrag(e);else pointerUp(e);});window.addEventListener('blur',()=>{pointer=null;labelDrag=null;orbit=null;stage.classList.remove('drag');});stage.addEventListener('wheel',e=>{if(e.target.closest('.action-tools,.scale-widget,.map-label'))return;if(Math.abs(e.deltaY)<1.5)return;e.preventDefault();e.stopPropagation();const p=atStageEvent(e);zoomAt(Math.exp(e.deltaY*.00165),p.x,p.y);},{passive:false});stage.addEventListener('dblclick',e=>{if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;if(productNavActive()){toast('Zoom-Einstieg nur über verortete Primärkarten');return;}const ladder=['world','city','dungeon','room'];const cur=ladder.indexOf(levelFromView()==='region'?'world':levelFromView());goTo(ladder[Math.min(ladder.length-1,Math.max(0,cur)+1)]);});
     root.tabIndex=0;root.addEventListener('keydown',e=>{const t=e.target;if(t.matches('input,select,textarea')||t.closest('input,select,textarea'))return;const k=e.key.toLowerCase();if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(k==='escape'||k==='v'){trySetTool('hand');return;}if(k==='b'){trySetTool('paint');return;}if(k==='s'){trySetTool('stamp');return;}if(k==='w'){trySetTool('wall');return;}if(k==='+'||k==='=')zoomAt(.7);if(k==='-')zoomAt(1.4);renderTools();});
 
 
@@ -820,6 +831,15 @@ export function mountAtlasPrototype3d(host, options = {}) {
         renderTools();
       }
     };
+    setMapSketchStatusImpl = function setMapSketchStatus(status) {
+      if (disposed) return;
+      mapSketchStatus = typeof status === 'string' ? status : null;
+      wrap.setAttribute('data-atlas-map-status', mapSketchStatus || 'unknown');
+      try { rebuildMapBases(); } catch { /* boot order */ }
+      renderNavigation();
+      updateLevel();
+      drawFrame();
+    };
     disposeRuntime = function __disposeAtlasPrototype() {
       try { if (typeof renderLoop !== 'undefined' && renderLoop) cancelAnimationFrame(renderLoop); } catch (e) {}
       try { if (typeof animID !== 'undefined' && animID) cancelAnimationFrame(animID); } catch (e) {}
@@ -846,6 +866,9 @@ export function mountAtlasPrototype3d(host, options = {}) {
     },
     setCanEdit(ok) {
       setCanEditImpl(ok);
+    },
+    setMapSketchStatus(status) {
+      setMapSketchStatusImpl(status);
     },
   };
 }

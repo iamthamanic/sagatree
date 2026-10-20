@@ -31,6 +31,7 @@ type AtlasNativeMountHandle = {
     rows: ReturnType<typeof webglToolChromeForKind> | null,
   ) => void;
   readonly setCanEdit: (canEdit: boolean) => void;
+  readonly setMapSketchStatus: (status: string | null) => void;
 };
 
 export type AtlasNative3dEditorProps = {
@@ -55,6 +56,8 @@ export type AtlasNative3dEditorProps = {
   readonly activeNodeKind?: WorldNodeKind | null;
   /** Client-side mutation gate; RPC/RLS remain authority. */
   readonly canEdit?: boolean;
+  /** Active map sketch status for honest empty / drill gates (#752). */
+  readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -281,6 +284,7 @@ export function AtlasNative3dEditor({
   onNavReparent,
   activeNodeKind = null,
   canEdit = true,
+  mapSketchStatus = null,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -306,6 +310,8 @@ export function AtlasNative3dEditor({
   activeNodeKindRef.current = activeNodeKind;
   const canEditRef = useRef(canEdit);
   canEditRef.current = canEdit;
+  const mapSketchStatusRef = useRef(mapSketchStatus);
+  mapSketchStatusRef.current = mapSketchStatus;
   const mapKeyRef = useRef(mapKey);
   const seedRef = useRef(seedState);
   if (mapKeyRef.current !== mapKey) {
@@ -360,6 +366,7 @@ export function AtlasNative3dEditor({
         },
         toolChrome: [...webglToolChromeForKind(activeNodeKindRef.current ?? null)],
         canEdit: canEditRef.current !== false,
+        mapSketchStatus: mapSketchStatusRef.current ?? null,
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -413,6 +420,12 @@ export function AtlasNative3dEditor({
     if (!mount) return;
     mount.setCanEdit(canEdit !== false);
   }, [canEdit]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setMapSketchStatus(mapSketchStatus ?? null);
+  }, [mapSketchStatus]);
 
   return (
     <div
