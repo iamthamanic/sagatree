@@ -1,10 +1,9 @@
 # Composition Gate — stack-prep-03 (#776)
 
-- HEAD_SHA: WORKTREE
-- BASE_SHA: b7aa0d46
+- HEAD_SHA: a9f0d083256366c1f9751f1693e3e1977c119ca7
+- BASE_SHA: b7aa0d46da52000a8727ede1ae7ae74165fd3381
 - Date: 2026-10-20
 - Verdict: CLEAR
-- WORKTREE: feat/issue-776-gate-poc-criteria @ CLEAN (gate specs only)
 
 ## Event
 
