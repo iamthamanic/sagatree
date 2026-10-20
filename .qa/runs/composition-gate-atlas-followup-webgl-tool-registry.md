@@ -1,6 +1,6 @@
 # Composition Gate — atlas-followup-webgl-tool-registry (#750)
 
-- HEAD_SHA: f8b712c63f52419a7f97f1926c537cdf25beb0b1
+- HEAD_SHA: b9f134858904a6b6f7fa23001cad28ed8a30bdae
 - BASE_SHA: 03f91cde9abd8d6faff9a3ef33350393f2fba165
 - Date: 2026-10-20
 - Verdict: CLEAR
