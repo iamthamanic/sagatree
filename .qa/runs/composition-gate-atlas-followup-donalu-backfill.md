@@ -1,6 +1,6 @@
 # Composition Gate — atlas-followup-donalu-backfill (#754)
 
-- HEAD_SHA: d8d098b35c78fd6171fab55f166435e342497c07
+- HEAD_SHA: b0cf37e7db92f6e930d5b9fa3368f207e045fec5
 - BASE_SHA: cbf17375b56a9c98796cb695fb148c98f93ed7f6
 - Date: 2026-10-20
 - Verdict: CLEAR
