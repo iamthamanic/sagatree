@@ -79,6 +79,16 @@ Epic #746/#755 closed with optional live E2E. That is **insufficient** for migra
 
 Contract mocks / skipped live tests are **not** release proof. CI enablement waits on ATLAS-CI-* freigabe in the atlas gate doc.
 
+## 5b. Prep contract packs (specification only)
+
+| Pack | Issue | Artifact |
+| --- | --- | --- |
+| GATE PoC criteria | PREP-03 **#776** | [`.qa/design/gates/`](gates/) |
+| Per-RPC contracts | PREP-04 **#777** | [`.qa/intake/rpc-contracts/`](../intake/rpc-contracts/) |
+| Edge + infra contracts | PREP-05 **#778** | [`.qa/intake/edge-infra-contracts/`](../intake/edge-infra-contracts/) |
+
+These packs do **not** APPROVE technology choices. Implementation successors stay blocked until human GATE APPROVED + issue-contract completeness (#779).
+
 ## 6. Non-goals of prep workstreams
 
 - Starting stack migration host implementation  

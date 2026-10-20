@@ -38,6 +38,9 @@ const required = [
   '.qa/intake/rpc-contracts/inventory.json',
   '.qa/intake/rpc-contracts/SPLIT_TICKETS.md',
   'docs/architektur-sqlite-based.md',
+  '.qa/intake/edge-infra-contracts/README.md',
+  '.qa/intake/edge-infra-contracts/inventory.json',
+  '.qa/intake/edge-infra-contracts/SPLIT_TICKETS.md',
 ];
 
 for (const rel of required) {
@@ -160,6 +163,39 @@ for (const e of rpcInv.rpcs) {
   if (!e.rpc || !e.proposedSuccessor?.commandModule) fail(`rpc entry incomplete: ${e.rpc}`);
   if (!e.sqlDefinitions?.length) fail(`rpc ${e.rpc} missing sqlDefinitions`);
   if (!e.requiredTests?.length) fail(`rpc ${e.rpc} missing requiredTests`);
+}
+
+const edgeInv = JSON.parse(
+  readFileSync(join(root, '.qa/intake/edge-infra-contracts/inventory.json'), 'utf8'),
+);
+if (!Array.isArray(edgeInv.edges) || edgeInv.edges.length < 24) {
+  fail(`edge inventory must cover ≥24 functions (got ${edgeInv.edges?.length ?? 0})`);
+}
+if (!Array.isArray(edgeInv.infrastructure) || edgeInv.infrastructure.length < 13) {
+  fail(`infra inventory must cover ≥13 areas (got ${edgeInv.infrastructure?.length ?? 0})`);
+}
+for (const e of edgeInv.edges) {
+  if (!e.function || !e.proposedService || !e.requiredTests?.length) {
+    fail(`edge entry incomplete: ${e.function}`);
+  }
+}
+const media = edgeInv.edges.find((e) => e.function === 'session-media-token');
+if (!media || !media.requiredTests?.some((t) => /LiveKit|LIVEKIT|membership/i.test(t))) {
+  fail('session-media-token must have LiveKit/membership-specific tests');
+}
+const aiGm = edgeInv.edges.find((e) => e.function === 'ai-gm');
+if (!aiGm || !aiGm.requiredTests?.some((t) => /rate|429|membership/i.test(t))) {
+  fail('ai-gm must have rate-limit/membership-specific tests');
+}
+for (const a of edgeInv.infrastructure) {
+  if (!a.area || !a.proposedFacade || !a.requiredTests?.length) {
+    fail(`infra entry incomplete: ${a.area}`);
+  }
+}
+
+const edgeReadme = readFileSync(join(root, '.qa/intake/edge-infra-contracts/README.md'), 'utf8');
+for (const needle of ['session-media-token', 'ai-gm', 'LiveKit', 'SPEC only']) {
+  if (!edgeReadme.includes(needle)) fail(`edge README missing ${needle}`);
 }
 
 console.log(
