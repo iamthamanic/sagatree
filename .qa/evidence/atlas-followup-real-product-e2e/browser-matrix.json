@@ -1,0 +1,21 @@
+{
+  "mode": "contract",
+  "generatedAt": "2026-10-20T10:00:00.000Z",
+  "worldPublicId": "WO-9FFK6",
+  "assertions": {
+    "productNavSourceDb": true,
+    "toolChromeFromRegistry": true,
+    "controlledMount": true,
+    "unlocatedEmptyOcean": true,
+    "productionNotMigrated": true,
+    "followupCompositionClear": true,
+    "crossOwnerNegativeDocumented": true
+  },
+  "bands": {
+    "phone": { "contract": true },
+    "tablet": { "contract": true },
+    "desktop": { "contract": true }
+  },
+  "e2eSpec": "e2e/atlas-followup-product-e2e-gate.spec.ts",
+  "liveEnv": "E2E_ATLAS_PRODUCT=1"
+}

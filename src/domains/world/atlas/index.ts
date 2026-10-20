@@ -57,9 +57,16 @@ export {
 export {
   ATLAS_TOOL_REGISTRY,
   atlasToolsForKind,
+  atlasToolToWebglRuntimeId,
+  assertWebglToolCommit,
   isAtlasToolAllowed,
+  resolveWebglToolAfterKindChange,
+  webglRuntimeIdToAtlasTool,
+  webglToolChromeForKind,
   type AtlasToolDef,
   type AtlasToolId,
+  type WebglRuntimeToolId,
+  type WebglToolChromeItem,
 } from './atlas-tool-registry';
 
 export {
@@ -113,11 +120,14 @@ export {
 export {
   WEBGL_RUNTIME_META_KEY,
   LEGACY_WEBGL_LOCAL_STORAGE_KEY,
+  STAMP_TO_PROP,
+  emptyWebglRuntime,
   extractWebglRuntimeFromGeneratorMeta,
   mergeWebglRuntimeIntoGeneratorMeta,
   parseWebglRuntimeState,
   readLegacyWebglLocalStorage,
   resolveProductCanvasDoc,
+  syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type WebglRuntimeState,
 } from './webgl-runtime-bridge';
@@ -127,8 +137,10 @@ export {
   MAP_FRAME_META_KEY,
   MAP_STATUS_META_KEY,
   UNLOCATED_MAP_HINT_DE,
+  assertParentSpatialAnchor,
   atlasZoomCaption,
   canLodEnterChildMap,
+  canWebglDrillSelect,
   extractMapFrameFromGeneratorMeta,
   independentPrimaryBounds,
   isGroundedLinkAnchor,
@@ -141,3 +153,11 @@ export {
   type MapSketchStatus,
   type ParentSpatialAnchor,
 } from './map-frame';
+
+export {
+  atlasPersistStatusLabelDe,
+  isAtlasRevisionConflictMessage,
+  reduceAtlasPersistStatus,
+  type AtlasPersistEvent,
+  type AtlasPersistStatus,
+} from './atlas-persist-state';

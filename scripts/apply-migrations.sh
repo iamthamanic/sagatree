@@ -118,6 +118,16 @@ migrations=(
   095_donalu_world_places.sql
   096_donalu_place_map_link_rpc.sql
   097_donalu_player_place_projection.sql
+  098_dornhain_unified_atlas_starter.sql
+  099_dornhain_unified_world_map_v2.sql
+  100_dornhain_unified_ocean_blank_v3.sql
+  101_world_places_select_editor_only.sql
+  102_world_atlas_player_redaction_force.sql
+  103_atlas_worldbuilder_create_with_maps.sql
+  104_atlas_worldbuilder_mutations.sql
+  105_atlas_worldbuilder_player_projection.sql
+  106_atlas_get_map_overload_fix.sql
+  107_atlas_worldbuilder_migration_gate.sql
 )
 
 only="${1:-}"

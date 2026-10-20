@@ -1,0 +1,277 @@
+{
+  "maps": [
+    {
+      "id": "14682172-14a6-47ca-8da3-ee0123de5bfc",
+      "kind": "legacy_tiles",
+      "title": "Kachelkarte (Legacy)",
+      "revision": 0,
+      "parent_map_id": null
+    },
+    {
+      "id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "kind": "settlement",
+      "title": "Dornhain (Stadt)",
+      "revision": 0,
+      "parent_map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43"
+    },
+    {
+      "id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "kind": "world",
+      "title": "Welt",
+      "revision": 3,
+      "parent_map_id": null
+    },
+    {
+      "id": "78424bfb-8707-48b7-bc4e-a55c31499327",
+      "kind": "region",
+      "title": "Unbenanntes Land 1 (Karte)",
+      "revision": 0,
+      "parent_map_id": "edc0887b-75c3-4866-ac41-d60bf5f8d2b6"
+    },
+    {
+      "id": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+      "kind": "scene",
+      "title": "Taverne Zum Flüstern (Innenraum)",
+      "revision": 0,
+      "parent_map_id": "5523d90b-0615-402d-ae08-00541ac28f8e"
+    },
+    {
+      "id": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "kind": "scene",
+      "title": "Krypta unter dem Hügel (Dungeon)",
+      "revision": 0,
+      "parent_map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43"
+    },
+    {
+      "id": "edc0887b-75c3-4866-ac41-d60bf5f8d2b6",
+      "kind": "region",
+      "title": "Unbenannter Kontinent 1 (Karte)",
+      "revision": 0,
+      "parent_map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43"
+    }
+  ],
+  "links": [
+    {
+      "id": "10a77a90-1989-4520-8718-8d43d0164f4b",
+      "usage": "primary",
+      "map_id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "place_id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b"
+    },
+    {
+      "id": "1295e0ed-e449-43cb-9b64-0694e3d641bf",
+      "usage": "primary",
+      "map_id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "place_id": "e8c5971a-f32e-4e23-9a48-a034797c4d75"
+    },
+    {
+      "id": "163bd169-221b-4b9f-8547-1dd2f57e61e6",
+      "usage": "primary",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "d45dba1f-660e-42c5-8042-aaff832ebbcd"
+    },
+    {
+      "id": "20a5a16a-413f-493f-b9aa-725b8fd6fde3",
+      "usage": "primary",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "73a7b41e-57ac-47ec-8489-4c932505539b"
+    },
+    {
+      "id": "2958b357-fe8d-4bd7-8c2c-5ee9ece59bec",
+      "usage": "overview",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "357564db-e7f1-4c62-976e-2000f4e71fa1",
+      "usage": "primary",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac"
+    },
+    {
+      "id": "3728ca34-adcf-456d-a4e3-1d01cc4c657b",
+      "usage": "primary",
+      "map_id": "78424bfb-8707-48b7-bc4e-a55c31499327",
+      "place_id": "106b9640-eccc-4d9a-b915-eb804cbdf41e"
+    },
+    {
+      "id": "5a7cbc88-8aaf-4c7b-8b02-a8bb8b58c8e8",
+      "usage": "overview",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac"
+    },
+    {
+      "id": "5bca42a2-0dd0-488a-ae86-a8946d22ee3e",
+      "usage": "dungeon",
+      "map_id": "dec3e11b-9afc-4ac8-8cc9-2218a898f687",
+      "place_id": "d45dba1f-660e-42c5-8042-aaff832ebbcd"
+    },
+    {
+      "id": "62a6d54b-48bf-4164-95b4-977a17a5cf4d",
+      "usage": "footprint",
+      "map_id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "place_id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b"
+    },
+    {
+      "id": "62e5db40-b577-4072-945e-1e5402e3af36",
+      "usage": "primary",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "838b2d27-0e60-4c82-9996-50e22cccc607",
+      "usage": "footprint",
+      "map_id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "96a6966a-1991-4791-bd43-27dd0f5407c4",
+      "usage": "entrance",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "d45dba1f-660e-42c5-8042-aaff832ebbcd"
+    },
+    {
+      "id": "bb44262d-a452-4a7f-b86d-5f8af8c025c9",
+      "usage": "interior",
+      "map_id": "961e2b36-07f2-4a77-8b9d-16ceaec31e01",
+      "place_id": "e8c5971a-f32e-4e23-9a48-a034797c4d75"
+    },
+    {
+      "id": "ccf14125-e4d7-4d06-92f9-0d39314d4296",
+      "usage": "footprint",
+      "map_id": "5523d90b-0615-402d-ae08-00541ac28f8e",
+      "place_id": "e8c5971a-f32e-4e23-9a48-a034797c4d75"
+    },
+    {
+      "id": "f2100160-f531-4a57-a575-c6097ccf5d25",
+      "usage": "primary",
+      "map_id": "edc0887b-75c3-4866-ac41-d60bf5f8d2b6",
+      "place_id": "13b65340-9564-4126-b37e-757334b1f098"
+    },
+    {
+      "id": "f6f2a769-f96c-4bad-b2b4-5b960cba640b",
+      "usage": "overview",
+      "map_id": "76ca488e-76a4-4753-8dae-43f8b6ce6c43",
+      "place_id": "73a7b41e-57ac-47ec-8489-4c932505539b"
+    }
+  ],
+  "places": [
+    {
+      "id": "106b9640-eccc-4d9a-b915-eb804cbdf41e",
+      "kind": "country",
+      "name": "Unbenanntes Land 1",
+      "status": "placeholder",
+      "revision": 0,
+      "seed_key": "mig.ph.country.d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parent_place_id": "13b65340-9564-4126-b37e-757334b1f098"
+    },
+    {
+      "id": "13b65340-9564-4126-b37e-757334b1f098",
+      "kind": "continent",
+      "name": "Unbenannter Kontinent 1",
+      "status": "placeholder",
+      "revision": 0,
+      "seed_key": "mig.ph.continent.d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "parent_place_id": null
+    },
+    {
+      "id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b",
+      "kind": "site",
+      "name": "Marktplatz Dornhain",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "loc.market",
+      "parent_place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "73a7b41e-57ac-47ec-8489-4c932505539b",
+      "kind": "site",
+      "name": "Banditenlager (falsche Spur)",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "loc.bandit-camp",
+      "parent_place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac",
+      "kind": "area",
+      "name": "Schattenwald",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "loc.woods",
+      "parent_place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "d45dba1f-660e-42c5-8042-aaff832ebbcd",
+      "kind": "dungeon",
+      "name": "Krypta unter dem Hügel",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "loc.crypt",
+      "parent_place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    },
+    {
+      "id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "kind": "settlement",
+      "name": "Dornhain",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "place.dornhain",
+      "parent_place_id": "106b9640-eccc-4d9a-b915-eb804cbdf41e"
+    },
+    {
+      "id": "e8c5971a-f32e-4e23-9a48-a034797c4d75",
+      "kind": "building",
+      "name": "Taverne Zum Flüstern",
+      "status": "canonical",
+      "revision": 0,
+      "seed_key": "loc.tavern",
+      "parent_place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d"
+    }
+  ],
+  "gate_enabled": true,
+  "saga_bindings": [
+    {
+      "id": "090b619f-a0f2-4c1f-ba0f-81cd9d1ae907",
+      "reveal": "gm_only",
+      "asset_id": "loc.bandit-camp",
+      "asset_kind": "location",
+      "project_id": "dfb6b54c-4c4e-47d1-963f-885f26bbd996",
+      "world_place_id": "73a7b41e-57ac-47ec-8489-4c932505539b"
+    },
+    {
+      "id": "15d79ccb-b5f5-42b8-836d-73ea54717eb0",
+      "reveal": "party",
+      "asset_id": "loc.woods",
+      "asset_kind": "location",
+      "project_id": "dfb6b54c-4c4e-47d1-963f-885f26bbd996",
+      "world_place_id": "b2e9c3b3-a298-4d93-a0e4-aee9e8a89eac"
+    },
+    {
+      "id": "33fc17ea-4ae5-4243-a2d0-71a3222ee655",
+      "reveal": "gm_only",
+      "asset_id": "loc.crypt",
+      "asset_kind": "location",
+      "project_id": "dfb6b54c-4c4e-47d1-963f-885f26bbd996",
+      "world_place_id": "d45dba1f-660e-42c5-8042-aaff832ebbcd"
+    },
+    {
+      "id": "a12f613c-543d-446c-bed2-18e0028a7573",
+      "reveal": "party",
+      "asset_id": "loc.tavern",
+      "asset_kind": "location",
+      "project_id": "dfb6b54c-4c4e-47d1-963f-885f26bbd996",
+      "world_place_id": "e8c5971a-f32e-4e23-9a48-a034797c4d75"
+    },
+    {
+      "id": "ff3343fe-fc93-41c4-97c7-051cb220dd76",
+      "reveal": "party",
+      "asset_id": "loc.market",
+      "asset_kind": "location",
+      "project_id": "dfb6b54c-4c4e-47d1-963f-885f26bbd996",
+      "world_place_id": "6f270016-a7b1-4536-a0b0-68df58ef0d8b"
+    }
+  ],
+  "world_profile_id": "8f52b273-60fe-4823-ae7d-d9e70469b730",
+  "invalid_parent_edges": [],
+  "duplicate_primary_maps": []
+}

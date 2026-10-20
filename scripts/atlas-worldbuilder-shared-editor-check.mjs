@@ -136,6 +136,24 @@ if (!synced.objects.some((o) => o.id === 'o1' && o.type === 'haus')) {
   fail('syncWebglPropsIntoCanvasDoc did not map house→haus with stable id');
 }
 
+// #749: empty props must REPLACE (clear) stamp objects — no ghost merge
+const withGhost = {
+  ...emptyDoc,
+  objects: [
+    { id: 'ghost', type: 'haus', x: 1, y: 2, size: 1 },
+    { id: 'o1', type: 'haus', x: 10, y: 20, size: 1 },
+  ],
+};
+const cleared = mod.syncWebglPropsIntoCanvasDoc(withGhost, {
+  props: [],
+  strokes: [],
+  walls: [],
+  layers: { world: true },
+});
+if (cleared.objects.length !== 0) {
+  fail(`empty props must clear objects (got ${cleared.objects.length})`);
+}
+
 const fakeStorage = {
   getItem: (k) => (k === mod.LEGACY_WEBGL_LOCAL_STORAGE_KEY ? JSON.stringify(sample) : null),
 };

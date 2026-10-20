@@ -288,6 +288,14 @@ function checkAtlasWorldbuilderSharedEditor() {
   });
 }
 
+function checkAtlasWorldbuilderCanonical2d3d() {
+  console.log('Atlas worldbuilder canonical 2D↔3D (#749): bidirectional bridge...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-canonical-2d3d-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAtlasWorldbuilderGeometry() {
   console.log('Atlas worldbuilder geometry (#722): independent frames + LOD anchors...');
   execFileSync(process.execPath, ['scripts/atlas-worldbuilder-geometry-check.mjs'], {
@@ -304,9 +312,73 @@ function checkAtlasWorldbuilderMigration() {
   });
 }
 
+function checkAtlasWorldbuilderRealDonaluInventory() {
+  console.log('Atlas worldbuilder real Donalu inventory (#753): world-scoped dry-run...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-real-donalu-inventory-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkAtlasWorldbuilderQa() {
   console.log('Atlas worldbuilder QA (#724): epic closer evidence matrix...');
   execFileSync(process.execPath, ['scripts/atlas-worldbuilder-qa-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderWebglDbTree() {
+  console.log('Atlas worldbuilder WebGL DB tree (#747): product nav from WorldNodes...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-webgl-db-tree-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderWebglTreeActions() {
+  console.log('Atlas worldbuilder WebGL tree actions (#748): product nav → RPC mutations...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-webgl-tree-actions-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderEditorDurability() {
+  console.log('Atlas worldbuilder editor durability (#751): persist status + CAS conflict...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-editor-durability-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderDonaluBackfill() {
+  console.log('Atlas worldbuilder Donalu backfill (#754): staging apply + rollback evidence...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-donalu-backfill-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderWebglToolRegistry() {
+  console.log('Atlas worldbuilder WebGL tool registry (#750): registry chrome + commit gates...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-webgl-tool-registry-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasWorldbuilderGroundedDrilldown() {
+  console.log('Atlas worldbuilder grounded drilldown (#752): anchors + unlocated empty...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-grounded-drilldown-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
+function checkAtlasFollowupRealProductE2e() {
+  console.log('Atlas follow-up real product E2E (#755): epic #746 closer gate...');
+  execFileSync(process.execPath, ['scripts/atlas-followup-real-product-e2e-check.mjs'], {
     cwd: root,
     stdio: 'inherit',
   });
@@ -2410,9 +2482,18 @@ checkAtlasWorldbuilderStructureBind();
 checkAtlasWorldbuilderCreateDialog();
 checkAtlasWorldbuilderToolRegistry();
 checkAtlasWorldbuilderSharedEditor();
+checkAtlasWorldbuilderCanonical2d3d();
 checkAtlasWorldbuilderGeometry();
 checkAtlasWorldbuilderMigration();
+checkAtlasWorldbuilderRealDonaluInventory();
 checkAtlasWorldbuilderQa();
+checkAtlasWorldbuilderWebglDbTree();
+checkAtlasWorldbuilderWebglTreeActions();
+checkAtlasWorldbuilderEditorDurability();
+checkAtlasWorldbuilderDonaluBackfill();
+checkAtlasWorldbuilderWebglToolRegistry();
+checkAtlasWorldbuilderGroundedDrilldown();
+checkAtlasFollowupRealProductE2e();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

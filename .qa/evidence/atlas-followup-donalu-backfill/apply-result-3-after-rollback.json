@@ -1,0 +1,32 @@
+{
+  "target": "staging",
+  "batch_id": "0e08b1e4-a3a2-40e2-9131-0bd5d698381e",
+  "created_map_ids": [
+    "054b5bb6-3963-4bb7-8653-cb6e0e0d780c",
+    "9ddda623-f6ff-401d-8d7b-44e55829e794"
+  ],
+  "parent_rewrites": [
+    {
+      "place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "new_parent_place_id": "6f8e5756-a496-4af0-9960-157eebf6e2f7",
+      "old_parent_place_id": null
+    }
+  ],
+  "created_link_ids": [
+    "ad4b5b1c-ddb9-4514-9bc1-87e986a8f586",
+    "7b5a8eeb-aa8a-4cae-a07d-2d2b177cfdf1",
+    "b891d1e0-bcbe-4969-8a80-5d0e670a4492",
+    "9bae14c3-0f4b-4b97-9763-64df454d3972",
+    "ff0cd5b9-ecf5-4e38-ac99-2f764c56ee52",
+    "2133111b-188a-4378-a82f-05675226f6b5",
+    "c6ebd2ed-e38f-45d7-87d5-1280de927d2e",
+    "06b2d13b-ac38-4f0b-a5b5-10590154a152"
+  ],
+  "world_profile_id": "8f52b273-60fe-4823-ae7d-d9e70469b730",
+  "created_place_ids": [
+    "240a29c9-61ec-43e7-becf-834cbf7aa634",
+    "6f8e5756-a496-4af0-9960-157eebf6e2f7"
+  ],
+  "place_count_after": 8,
+  "place_count_before": 6
+}

@@ -1,8 +1,8 @@
 /**
- * useWorldAtlasEditor — load/list/save hierarchical atlas maps (#702).
+ * useWorldAtlasEditor — load/list/save hierarchical atlas maps (#702 / #751).
  * Location: src/app/world/atlas/useWorldAtlasEditor.ts
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DEFAULT_ATLAS_BOUNDS,
   DORNHAIN_WORLD_LAYER_TITLE,
@@ -14,11 +14,14 @@ import {
   extractDungeonMetaFromGeneratorMeta,
   extractUnifiedCanvasFromGeneratorMeta,
   independentPrimaryBounds,
+  isAtlasRevisionConflictMessage,
   mergeDungeonMetaIntoGeneratorMeta,
   mergeUnifiedCanvasIntoGeneratorMeta,
   normalizeDornhainWorldLayerTitle,
+  reduceAtlasPersistStatus,
   shouldUpgradeDornhainUnifiedToWorld,
   unlocatedChildMapGeneratorMeta,
+  type AtlasPersistStatus,
   type DungeonGeneratorMeta,
   type UnifiedCanvasDoc,
   type WorldAtlasFeatureCollection,
@@ -57,11 +60,19 @@ export function useWorldAtlasEditor({
   const [loading, setLoading] = useState(() => Boolean(worldProfileId?.trim()));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [persistStatus, setPersistStatus] = useState<AtlasPersistStatus>('clean');
   const [dirtyLayers, setDirtyLayers] = useState<WorldAtlasFeatureCollection | null>(null);
   const [canvasDoc, setCanvasDoc] = useState<UnifiedCanvasDoc>(emptyUnifiedCanvasDoc(true));
   const [webglRuntime, setWebglRuntime] = useState<WebglRuntimeState | null>(null);
   const [dirtyCanvas, setDirtyCanvas] = useState(false);
   const [dungeonMeta, setDungeonMeta] = useState<DungeonGeneratorMeta | null>(null);
+  const saveInFlightRef = useRef(false);
+  const persistStatusRef = useRef<AtlasPersistStatus>('clean');
+  persistStatusRef.current = persistStatus;
+
+  const bumpPersist = useCallback((event: Parameters<typeof reduceAtlasPersistStatus>[1]) => {
+    setPersistStatus((prev) => reduceAtlasPersistStatus(prev, event));
+  }, []);
 
   const reloadList = useCallback(async () => {
     const id = worldProfileId?.trim() ?? '';
@@ -153,14 +164,17 @@ export function useWorldAtlasEditor({
           setMap({ ...vm, title: nextTitle, generatorMeta: { ...vm.generatorMeta, ...worldMeta } });
           setCanvasDoc(worldDoc);
           setDirtyCanvas(true);
+          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
         } else if (titleChanged) {
           setMap({ ...vm, title: nextTitle });
           setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(true));
           setDirtyCanvas(true);
+          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'edit' }));
         } else {
           setMap(vm);
           setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(true));
           setDirtyCanvas(false);
+          setPersistStatus((prev) => reduceAtlasPersistStatus(prev, { type: 'reload' }));
         }
         if (upgrade || titleChanged) {
           setSummaries((prev) =>
@@ -184,25 +198,62 @@ export function useWorldAtlasEditor({
     };
   }, [activeMapId, playerView]);
 
-  const updateCanvasDoc = useCallback((next: UnifiedCanvasDoc) => {
-    setCanvasDoc(next);
-    setDirtyCanvas(true);
-  }, []);
+  const updateCanvasDoc = useCallback(
+    (next: UnifiedCanvasDoc) => {
+      setCanvasDoc(next);
+      setDirtyCanvas(true);
+      bumpPersist({ type: 'edit' });
+    },
+    [bumpPersist],
+  );
 
-  const updateDungeonMeta = useCallback((next: DungeonGeneratorMeta | null) => {
-    setDungeonMeta(next);
-    setDirtyCanvas(true);
-  }, []);
+  const updateDungeonMeta = useCallback(
+    (next: DungeonGeneratorMeta | null) => {
+      setDungeonMeta(next);
+      setDirtyCanvas(true);
+      bumpPersist({ type: 'edit' });
+    },
+    [bumpPersist],
+  );
 
-  const updateWebglRuntime = useCallback((next: WebglRuntimeState | null) => {
-    setWebglRuntime(next);
-    setDirtyCanvas(true);
-  }, []);
+  const updateWebglRuntime = useCallback(
+    (next: WebglRuntimeState | null) => {
+      setWebglRuntime(next);
+      setDirtyCanvas(true);
+      bumpPersist({ type: 'edit' });
+    },
+    [bumpPersist],
+  );
+
+  const reloadActiveMap = useCallback(async () => {
+    const id = activeMapId?.trim();
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const next = await worldAtlasService.getMap(id, playerView);
+      setMap(next);
+      const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
+      setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(false));
+      setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
+      setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
+      setDirtyCanvas(false);
+      setDirtyLayers(null);
+      bumpPersist({ type: 'reload' });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Karte konnte nicht neu geladen werden.');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeMapId, playerView, bumpPersist]);
 
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;
+    if (saveInFlightRef.current) return;
+    saveInFlightRef.current = true;
     setSaving(true);
     setError(null);
+    bumpPersist({ type: 'save_start' });
     try {
       let generatorMeta = mergeUnifiedCanvasIntoGeneratorMeta(map.generatorMeta, canvasDoc);
       if (webglRuntime) {
@@ -231,14 +282,19 @@ export function useWorldAtlasEditor({
       setWebglRuntime(extractWebglRuntimeFromGeneratorMeta(next.generatorMeta));
       setDungeonMeta(extractDungeonMetaFromGeneratorMeta(next.generatorMeta));
       setDirtyCanvas(false);
+      bumpPersist({ type: 'save_ok' });
       await reloadList();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Speichern fehlgeschlagen.');
+      const message = err instanceof Error ? err.message : 'Speichern fehlgeschlagen.';
+      const conflict = isAtlasRevisionConflictMessage(message);
+      setError(message);
+      bumpPersist({ type: 'save_fail', conflict });
       throw err;
     } finally {
+      saveInFlightRef.current = false;
       setSaving(false);
     }
-  }, [map, canEdit, canvasDoc, dirtyLayers, dungeonMeta, webglRuntime, reloadList]);
+  }, [map, canEdit, canvasDoc, dirtyLayers, dungeonMeta, webglRuntime, reloadList, bumpPersist]);
 
   const saveLayers = useCallback(
     async (layers: WorldAtlasFeatureCollection) => {
@@ -363,14 +419,40 @@ export function useWorldAtlasEditor({
     return chain;
   })();
 
+  const setActiveMapIdGuarded = useCallback(
+    (nextId: string | null) => {
+      if (
+        dirtyCanvas &&
+        persistStatusRef.current !== 'clean' &&
+        persistStatusRef.current !== 'saved' &&
+        nextId !== activeMapId
+      ) {
+        const ok =
+          typeof window === 'undefined'
+            ? true
+            : window.confirm(
+                'Ungespeicherte Änderungen verwerfen und die Karte wechseln?',
+              );
+        if (!ok) return;
+      }
+      setActiveMapId(nextId);
+      if (nextId !== activeMapId) {
+        setDirtyCanvas(false);
+        bumpPersist({ type: 'reload' });
+      }
+    },
+    [activeMapId, dirtyCanvas, bumpPersist],
+  );
+
   return {
     summaries,
     activeMapId,
-    setActiveMapId,
+    setActiveMapId: setActiveMapIdGuarded,
     map,
     loading,
     saving,
     error,
+    persistStatus,
     dirtyLayers,
     setDirtyLayers,
     canvasDoc,
@@ -384,6 +466,7 @@ export function useWorldAtlasEditor({
     saveLayers,
     createChildMap,
     importAzgaarMap,
+    reloadActiveMap,
     breadcrumb,
     reloadList,
   };

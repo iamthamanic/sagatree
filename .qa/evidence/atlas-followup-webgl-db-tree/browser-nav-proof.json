@@ -1,0 +1,36 @@
+{
+  "ok": true,
+  "result": {
+    "source": "db",
+    "placeIds": [
+      "world:w-uuid",
+      "c1",
+      "k1",
+      "p1"
+    ],
+    "labels": [
+      "Donalu",
+      "Nordkontinent",
+      "Nordreich",
+      "Dornhain"
+    ],
+    "demoLeak": [],
+    "hasProductAttr": true
+  },
+  "selectProof": {
+    "ok": true,
+    "selected": {
+      "placeId": "p1",
+      "mapId": "map-p1",
+      "worldRoot": false,
+      "located": false,
+      "drillAllowed": false
+    }
+  },
+  "emptyResult": {
+    "placeIds": [
+      "world:empty"
+    ],
+    "text": "Welt+LeerweltWeltDuplizierenArchivierenKontinente+Keine Orte in dieser Welt."
+  }
+}

@@ -179,14 +179,46 @@ function prefixSelectorsWithAtlasRoot(css) {
 
 /**
  * @param {HTMLElement} host
- * @param {{ controlled?: boolean, seedState?: object|null, onPersist?: (state: object) => void }=} options
+ * @param {{
+ *   controlled?: boolean,
+ *   seedState?: object|null,
+ *   onPersist?: (state: object) => void,
+ *   externalNav?: object|null,
+ *   activePlaceId?: string|null,
+ *   onNavSelect?: (payload: object) => void,
+ *   onNavRename?: (payload: object) => void,
+ *   onNavAdd?: (payload: object) => void,
+ *   onNavDuplicate?: (payload: object) => void,
+ *   onNavArchive?: (payload: object) => void,
+ *   onNavReparent?: (payload: object) => void,
+ *   toolChrome?: object[]|null,
+ *   canEdit?: boolean,
+ *   mapSketchStatus?: string|null,
+ * }=} options
  *   controlled=true: do not use localStorage as world SoT (#721); persist via onPersist.
- * @returns {{ dispose: () => void }}
+ *   externalNav: product WorldNode tree for #nav (#747) — disables demo NAV_CHILDREN as SoT.
+ *   onNavAdd/Duplicate/Archive/Reparent: product #748 server mutation bridge (no localStorage SoT).
+ *   toolChrome: ATLAS_TOOL_REGISTRY-derived rows (#750); canEdit gates map mutations.
+ *   mapSketchStatus: unlocated ⇒ honest empty ocean, no demo continents (#752).
+ * @returns {{ dispose: () => void, updateExternalNav: (tree: object|null) => void, setActiveNavPlaceId: (id: string|null) => void, setToolChrome: (rows: object[]|null) => void, setCanEdit: (ok: boolean) => void, setMapSketchStatus: (status: string|null) => void }}
  */
 export function mountAtlasPrototype3d(host, options = {}) {
   const controlled = options && options.controlled === true;
   const onExternalPersist = typeof options.onPersist === 'function' ? options.onPersist : null;
   const seedState = options && options.seedState && typeof options.seedState === 'object' ? options.seedState : null;
+  const onNavSelect = typeof options.onNavSelect === 'function' ? options.onNavSelect : null;
+  const onNavRename = typeof options.onNavRename === 'function' ? options.onNavRename : null;
+  const onNavAdd = typeof options.onNavAdd === 'function' ? options.onNavAdd : null;
+  const onNavDuplicate = typeof options.onNavDuplicate === 'function' ? options.onNavDuplicate : null;
+  const onNavArchive = typeof options.onNavArchive === 'function' ? options.onNavArchive : null;
+  const onNavReparent = typeof options.onNavReparent === 'function' ? options.onNavReparent : null;
+  let externalNav = options && options.externalNav && typeof options.externalNav === 'object' ? options.externalNav : null;
+  let selectedExternalId = typeof options.activePlaceId === 'string' ? options.activePlaceId : null;
+  /** @type {Array<{runtimeId:string,labelDe:string,enabled?:boolean,disabledReason?:string|null,atlasId?:string,role?:string}>|null} */
+  let toolChrome = Array.isArray(options.toolChrome) ? options.toolChrome.slice() : null;
+  let canEditMaps = options.canEdit !== false;
+  let mapSketchStatus =
+    typeof options.mapSketchStatus === 'string' ? options.mapSketchStatus : null;
   const styleEl = document.createElement('style');
   styleEl.setAttribute('data-atlas-prototype-style', 'true');
   styleEl.textContent = scopeShellCssForEmbed(SHELL_CSS);
@@ -195,12 +227,24 @@ export function mountAtlasPrototype3d(host, options = {}) {
   const wrap = document.createElement('div');
   wrap.id = 'atlas3d';
   wrap.setAttribute('data-atlas-native-runtime', 'true');
+  if (externalNav) wrap.setAttribute('data-atlas-product-nav', 'true');
+  if (mapSketchStatus) wrap.setAttribute('data-atlas-map-status', mapSketchStatus);
   wrap.innerHTML = SHELL_HTML;
   host.appendChild(wrap);
 
   let disposed = false;
   const hostRoot = wrap;
   let disposeRuntime = () => {};
+  /** @type {(tree: object|null) => void} */
+  let updateExternalNavImpl = () => {};
+  /** @type {(id: string|null) => void} */
+  let setActiveNavPlaceIdImpl = () => {};
+  /** @type {(rows: object[]|null) => void} */
+  let setToolChromeImpl = () => {};
+  /** @type {(ok: boolean) => void} */
+  let setCanEditImpl = () => {};
+  /** @type {(status: string|null) => void} */
+  let setMapSketchStatusImpl = () => {};
 
   {
 
@@ -239,11 +283,40 @@ export function mountAtlasPrototype3d(host, options = {}) {
     const NAV_ADD_KINDS=['world','kontinent','land','ort','gebaeude','raum'];
     /** Parent place kind → child asset category (shown as group folder with +). */
     const NAV_CHILD_KIND={world:'kontinent',kontinent:'land',land:'ort',ort:'gebaeude',gebaeude:'raum'};
-    /** Demo hierarchy: lands hang under Kontinent; stages under lands. */
+    /** Demo hierarchy: lands hang under Kontinent; stages under lands. Product path ignores this (#747). */
     const NAV_CHILDREN={[SEED_CONTINENT_ID]:['westmark','nordreich','asteria'],westmark:[],nordreich:['city'],asteria:[],city:['dungeon'],dungeon:['room']};
     const NAV_KIND_RANK={world:0,kontinent:1,land:2,ort:3,gebaeude:4,raum:5};
     /** Virtual atlas root — owns the Welt/Dimension category group. */
     const NAV_ROOT='atlas';
+    const DEMO_NAV_IDS=new Set(['westmark','nordreich','asteria','city','dungeon','room',SEED_CONTINENT_ID]);
+    function productNavActive(){return !!externalNav;}
+    function syncProductNavChrome(){
+      if(productNavActive()){
+        NAV_CAT_PLURAL.world='Welt';
+        wrap.setAttribute('data-atlas-product-nav','true');
+      }else{
+        NAV_CAT_PLURAL.world='Welt/Dimension';
+        wrap.removeAttribute('data-atlas-product-nav');
+      }
+    }
+    syncProductNavChrome();
+    function extNodeById(id){
+      if(!externalNav||!id)return null;
+      if(id===externalNav.worldId){
+        return{id:externalNav.worldId,label:externalNav.worldLabel||'Welt',sub:externalNav.worldSub||'Welt',tag:'WELT',glyph:'◎',kind:'world',primaryMapId:externalNav.worldPrimaryMapId||null,x:0,z:0,span:440,empty:false};
+      }
+      const nodes=Array.isArray(externalNav.nodes)?externalNav.nodes:[];
+      const n=nodes.find(x=>x&&x.id===id);
+      if(!n)return null;
+      const tag=n.kind==='kontinent'?'KONTINENT':n.kind==='land'?'LAND':n.kind==='ort'?'ORT':n.kind==='gebaeude'?'GEBÄUDE':n.kind==='raum'?'RAUM':'ORT';
+      return{id:n.id,label:n.label||'—',sub:n.sub||'',tag,glyph:'◇',kind:n.kind||'ort',primaryMapId:n.primaryMapId??null,x:0,z:0,span:120,empty:false};
+    }
+    function extChildIds(parentId){
+      if(!externalNav)return[];
+      const map=externalNav.childrenByParentId&&typeof externalNav.childrenByParentId==='object'?externalNav.childrenByParentId:{};
+      const list=map[parentId];
+      return Array.isArray(list)?list.filter(Boolean):[];
+    }
     function navCatKey(kind,parentId){return `cat:${kind}:${parentId}`;}
     const navSvg=(inner,filled=false)=>`<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="${filled?0:2}" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
     const NAV_CHEVRON_SVG=navSvg('<path d="m6 9 6 6 6-6"/>');
@@ -278,7 +351,33 @@ export function mountAtlasPrototype3d(host, options = {}) {
     let labelDrag=null;
     const palettes={grass:['Gras','#5d8360'],earth:['Erde','#94795b'],sand:['Sand','#c3ae81'],water:['Wasser','#366f80'],stone:['Stein','#a7a396'],wood:['Holz','#926444']};
     const propDefs={tree:['Baum','♠'],pine:['Tanne','♣'],house:['Haus','⌂'],rock:['Fels','◆'],crate:['Kiste','▣'],table:['Tisch','▤'],torch:['Fackel','✧'],crystal:['Kristall','◈'],pillar:['Säule','♜']};
-    const tools=[['hand','Verschieben'],['paint','Pinsel'],['stamp','Stempel'],['wall','Wand'],['room','Raum'],['erase','Radierer']];
+    // Demo fallback only — product path passes ATLAS_TOOL_REGISTRY chrome (#750).
+    const DEMO_TOOL_CHROME=[
+      {runtimeId:'hand',labelDe:'Verschieben',enabled:true,atlasId:'hand',role:'navigate'},
+      {runtimeId:'paint',labelDe:'Gelände',enabled:true,atlasId:'brush',role:'terrain'},
+      {runtimeId:'stamp',labelDe:'Footprint / Stempel',enabled:true,atlasId:'stamp',role:'structure'},
+      {runtimeId:'wall',labelDe:'Wand',enabled:true,atlasId:'wall',role:'structure'},
+      {runtimeId:'room',labelDe:'Raumumriss',enabled:true,atlasId:'room',role:'structure'},
+      {runtimeId:'erase',labelDe:'Radierer',enabled:true,atlasId:'erase',role:'erase'},
+    ];
+    function activeToolChrome(){return toolChrome&&toolChrome.length?toolChrome:DEMO_TOOL_CHROME;}
+    function toolRow(runtimeId){return activeToolChrome().find(t=>t.runtimeId===runtimeId)||null;}
+    function trySetTool(runtimeId){
+      const row=toolRow(runtimeId);
+      if(!row){toast('Werkzeug nicht verfügbar');return false;}
+      if(row.enabled===false){toast(row.disabledReason||'In 3D noch nicht verfügbar');return false;}
+      tool=runtimeId;renderTools();return true;
+    }
+    function allowMutation(runtimeToolId){
+      if(!canEditMaps){toast('Keine Bearbeitungsrechte');return false;}
+      const row=toolRow(runtimeToolId);
+      if(!row||row.enabled===false){toast('Werkzeug für diese Ebene nicht erlaubt');return false;}
+      return true;
+    }
+    function syncToolToChrome(){
+      const row=toolRow(tool);
+      if(!row||row.enabled===false){tool='hand';}
+    }
     const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),smooth=t=>t*t*(3-2*t),lerp=(a,b,t)=>a+(b-a)*t;
     const WORLD_SUB_DEFAULT='Welt';
     const SEED_WORLD_ID='world';
@@ -296,9 +395,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
     }
     function ensureWorlds(){if(!Array.isArray(state.worlds)||!state.worlds.length){state.worlds=[{id:SEED_WORLD_ID,label:state.worldLabel||'Welt',empty:false}];}const seed=state.worlds.find(w=>w.id===SEED_WORLD_ID);if(!seed)state.worlds.unshift({id:SEED_WORLD_ID,label:state.worldLabel||'Welt',empty:false});if(!state.worlds.some(w=>w.id===state.activeWorldId))state.activeWorldId=SEED_WORLD_ID;return state.worlds;}
     function getActiveWorld(){const worlds=ensureWorlds();return worlds.find(w=>w.id===state.activeWorldId)||worlds[0];}
-    function isWorldId(id){return ensureWorlds().some(w=>w.id===id);}
-    function worldById(id){return ensureWorlds().find(w=>w.id===id)||null;}
-    function isEmptyWorldActive(){return !!getActiveWorld()?.empty;}
+    function isWorldId(id){if(productNavActive()&&externalNav&&id===externalNav.worldId)return true;return ensureWorlds().some(w=>w.id===id);}
+    function worldById(id){if(productNavActive()&&externalNav&&id===externalNav.worldId)return{id:externalNav.worldId,label:externalNav.worldLabel||'Welt',empty:false};return ensureWorlds().find(w=>w.id===id)||null;}
+    function isUnlocatedProductMap(){return productNavActive()&&mapSketchStatus==='unlocated';}
+    function isEmptyWorldActive(){return !!getActiveWorld()?.empty||isUnlocatedProductMap();}
     function applyPlaceNames(){const pn=state.placeNames||PLACE_NAME_DEFAULTS;for(const cont of continentDefs){const def=PLACE_NAME_DEFAULTS[cont.id];const p=pn[cont.id]||def;if(p?.label)cont.label=p.label;cont.sub=(def&&def.sub)||cont.sub;}for(const land of landDefs){const def=PLACE_NAME_DEFAULTS[land.id];const p=pn[land.id]||def;if(p?.label){land.label=p.label;land.mapLabel=String(p.label).toLocaleUpperCase('de-DE');}land.sub=(def&&def.sub)||land.sub;}const active=getActiveWorld();for(const lv of levels){if(lv.id==='world'){lv.label=(active&&active.label)||state.worldLabel||'Welt';lv.sub=state.worldSub||WORLD_SUB_DEFAULT;continue;}const def=PLACE_NAME_DEFAULTS[lv.id];const p=pn[lv.id]||def;if(p?.label)lv.label=p.label;lv.sub=(def&&def.sub)||lv.sub;}}
     ensureWorlds();
     applyPlaceNames();
@@ -529,7 +629,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function applyLod(){const s=cameraState.span;const empty=isEmptyWorldActive();return{ocean:true,map_world:!empty&&state.layers.world&&s>=18,world3d:!empty&&state.layers.world&&s>90,map_region:!empty&&state.layers.region&&s<300&&s>=18,map_city:!empty&&state.layers.city&&s<100&&s>=18,map_dungeon:!empty&&state.layers.dungeon&&s<19,region3d:!empty&&state.layers.region&&s<200&&s>35,city3d:!empty&&state.layers.city&&s<80&&s>16,dungeon3d:!empty&&state.layers.dungeon&&s<19,grid:!empty&&state.layers.grid&&s<14,manual_world:!empty&&state.layers.stamps&&s>80,manual_region:!empty&&state.layers.stamps&&s<300&&s>32,manual_city:!empty&&state.layers.stamps&&s<95&&s>14,manual_dungeon:!empty&&state.layers.stamps&&s<24,manual_room:!empty&&state.layers.stamps&&s<10};}
     function updateLevel(){const now=levelFromView();if(now!==activeLevel){activeLevel=now;renderNavigation();updateInspector();}const land=!isEmptyWorldActive()&&selectedLandId?landDefs.find(l=>l.id===selectedLandId):null;const cont=!isEmptyWorldActive()&&!land&&selectedContinentId?continentDefs.find(c=>c.id===selectedContinentId):null;const current=levels.find(l=>l.id===now);$('level').textContent=land?.tag||cont?.tag||(isEmptyWorldActive()?'OZEAN':(current?.tag||'WELT'));const worldName=(getActiveWorld()?.label)||state.worldLabel||'Welt';$('crumb').textContent=land?`${worldName} › ${land.label}`:cont?`${worldName} › ${cont.label}`:(now==='world'?worldName:[worldName,...levels.filter(l=>l.kind==='stage').slice(0,Math.max(0,['city','dungeon','room'].indexOf(now)+1)).map(x=>x.label)].join(' › '));if(!scaleEdit||scaleEdit.kind!=='zoom'){const z=$('zoom');if(z)z.textContent=zoomPercent()+'%';}updateHotspots();}
     function drawFrame(){if(engine){syncOceanMesh();engine.render(cameraMatrix(),applyLod());const label=$('engineState');if(label&&label.textContent==='WEBGL wird gestartet')label.textContent=engine.software3D?'3D · SOFTWARE-RENDERER · OFFLINE':'WEBGL · ECHTES 3D · OFFLINE';}updateLevel();}
-    function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;if(isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
+    function updateHotspots(){const opts=[['worldHotspot',145,-54,340,85],['cityHotspot',183,-66,120,24],['dungeonHotspot',188,-64,44,9]];for(const[id,x,z,max,min]of opts){const el=$(id);if(!el)continue;/* Product path: demo hotspots invent geography — hide (#752). */if(productNavActive()||isEmptyWorldActive()){el.classList.add('hidden');continue;}const ok=cameraState.span<max&&cameraState.span>min;const p=point3dToScreen(x,z,.5);if(ok&&p.x>-10&&p.y>-20&&p.x<stageWidth+10&&p.y<stageHeight+10){el.classList.remove('hidden');el.style.left=p.x+'px';el.style.top=p.y+'px';}else el.classList.add('hidden');}updateMapLabels();}
     function layerTexSize(layer){if(layer==='world')return{w:WORLD_TEX_W,h:WORLD_TEX_H};const cv=baseMapCanvases[layer]||mapCanvases[layer];if(cv)return{w:cv.width,h:cv.height};if(layer==='city')return{w:1000,h:690};if(layer==='region')return{w:1000,h:740};if(layer==='dungeon')return{w:1200,h:800};return{w:1000,h:700};}
     function resolveMapLabelPos(id){const def=MAP_LABEL_DEFAULTS[id];if(!def)return null;const saved=state.mapLabelPos?.[id];if(def.layer==='level'){const lv=levels.find(l=>l.id===(def.id||id));const x=Number.isFinite(saved?.x)?saved.x:(lv?.x??0);const z=Number.isFinite(saved?.z)?saved.z:(lv?.z??0);if(lv&&Number.isFinite(saved?.x)&&Number.isFinite(saved?.z)){lv.x=x;lv.z=z;}return{layer:'level',x,z,size:Number.isFinite(saved?.size)?saved.size:def.size};}return{layer:def.layer,x:Number.isFinite(saved?.x)?saved.x:def.x,y:Number.isFinite(saved?.y)?saved.y:def.y,size:Number.isFinite(saved?.size)?saved.size:def.size};}
     function mapLabelWorld(id){const pos=resolveMapLabelPos(id);if(!pos)return null;if(pos.layer==='level')return{x:pos.x,z:pos.z,size:pos.size};const conf=mapConfigs[pos.layer];if(!conf)return null;const tex=layerTexSize(pos.layer);return{x:conf.x-conf.w/2+(pos.x/tex.w)*conf.w,z:conf.z-conf.h/2+(pos.y/tex.h)*conf.h,size:pos.size,layer:pos.layer,texX:pos.x,texY:pos.y};}
@@ -546,7 +646,7 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function applyContinentSelection(id){const next=continentDefs.some(c=>c.id===id)?id:null;selectedContinentId=next;if(next)selectedLandId=null;renderNavigation();}
     function switchActiveWorld(nextId,{animate=true,after=null}={}){ensureWorlds();if(!isWorldId(nextId))return;const worlds=state.worlds;const fromIdx=worlds.findIndex(w=>w.id===state.activeWorldId);const toIdx=worlds.findIndex(w=>w.id===nextId);if(toIdx<0)return;const same=state.activeWorldId===nextId;const dir=toIdx>=fromIdx?'down':'up';const applyContent=()=>{state.activeWorldId=nextId;const w=worldById(nextId);if(w&&w.id===SEED_WORLD_ID&&w.label)state.worldLabel=w.label;selectedLandId=null;selectedContinentId=null;applyPlaceNames();rebuildMapBases();persist();renderNavigation();};const finish=()=>{if(typeof after==='function')after();};if(same){goToCamera('world',animate?420:0);finish();return;}if(!animate){applyContent();goToCamera('world',0);finish();return;}runWorldLayerTransition(dir,applyContent,finish);}
     function runWorldLayerTransition(dir,midFn,doneFn){const stageEl=$('stage');const worldLv=levels.find(l=>l.id==='world');if(!worldLv){midFn();doneFn?.();return;}if(animID)cancelAnimationFrame(animID);if(stageEl){stageEl.classList.remove('is-world-layer-up','is-world-layer-down');void stageEl.offsetWidth;stageEl.classList.add(dir==='down'?'is-world-layer-down':'is-world-layer-up');}const start={...cameraState};const midSpan=Math.min(SPAN_MAX,Math.max(start.span*2.6,620));const end={x:worldLv.x,z:worldLv.z,span:worldLv.span};const t0=performance.now(),dur=720;let swapped=false,finished=false;const doSwap=()=>{if(swapped)return;swapped=true;try{midFn();}catch(err){console.error(err);}};const doFinish=()=>{if(finished)return;finished=true;if(stageEl)stageEl.classList.remove('is-world-layer-up','is-world-layer-down');cameraState={x:end.x,z:end.z,span:end.span};drawFrame();doneFn?.();};const tSwap=setTimeout(doSwap,Math.floor(dur*0.46));const tDone=setTimeout(()=>{doSwap();doFinish();},dur+40);const step=t=>{if(finished)return;const u=clamp((t-t0)/dur,0,1);if(u>=0.46)doSwap();if(u<0.46){const p=smooth(u/0.46);cameraState={x:start.x,z:start.z,span:Math.exp(lerp(Math.log(Math.max(.5,start.span)),Math.log(midSpan),p))};}else{const p=smooth((u-0.46)/0.54);cameraState={x:lerp(start.x,end.x,p),z:lerp(start.z,end.z,p),span:Math.exp(lerp(Math.log(midSpan),Math.log(Math.max(.5,end.span)),p))};}drawFrame();if(u<1)animID=requestAnimationFrame(step);else{clearTimeout(tSwap);clearTimeout(tDone);doFinish();}};animID=requestAnimationFrame(step);}
-    function addWorldDimension(){ensureWorlds();const n=state.worlds.filter(w=>w.empty).length+1;const id='dim-'+Date.now().toString(36);state.worlds.push({id,label:`Dimension ${n}`,empty:true});const catKey=navCatKey('world',NAV_ROOT);navPlaceOpen[catKey]=true;persistNavPlaces();persist();toast('Neue Welt/Dimension — leerer Ozean');switchActiveWorld(id,{animate:true});}
+    function addWorldDimension(){if(productNavActive()){toast('Dimensionen sind im Produktpfad nicht verfügbar');return;}ensureWorlds();const n=state.worlds.filter(w=>w.empty).length+1;const id='dim-'+Date.now().toString(36);state.worlds.push({id,label:`Dimension ${n}`,empty:true});const catKey=navCatKey('world',NAV_ROOT);navPlaceOpen[catKey]=true;persistNavPlaces();persist();toast('Neue Welt/Dimension — leerer Ozean');switchActiveWorld(id,{animate:true});}
     function syncNavBranchDom(id){const open=navPlaceOpen[id]!==false;const toggleBtn=root.querySelector(`[data-nav-toggle="${CSS.escape(id)}"]`);if(!toggleBtn){renderNavigation();return;}const host=toggleBtn.closest('.nav-place, .nav-cat');if(!host){renderNavigation();return;}host.classList.toggle('is-open',open);host.classList.toggle('is-collapsed',!open);host.setAttribute('data-nav-open',open?'true':'false');toggleBtn.classList.toggle('is-collapsed',!open);toggleBtn.setAttribute('aria-expanded',open?'true':'false');toggleBtn.title=open?'Zuklappen':'Aufklappen';const tab=host.querySelector(':scope > .nav-place-row > .nav-place-tab');if(tab)tab.classList.toggle('is-open',open);}
     function navMenuPortal(){let el=root.querySelector('#atlasNavMenuPortal');if(!el){el=document.createElement('div');el.id='atlasNavMenuPortal';el.className='atlas-nav-menu-portal';el.setAttribute('aria-hidden','true');root.appendChild(el);}return el;}
     function clearNavMenuPopPos(pop){if(!pop)return;pop.style.top='';pop.style.left='';pop.style.right='';pop.style.minWidth='';}
@@ -558,14 +658,31 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function closeNavMenu(){if(!navMenuOpenId)return;const id=navMenuOpenId;navMenuOpenId=null;syncNavMenuDom(id);}
     function setNavMenu(placeId){if(!placeId)return;const prev=navMenuOpenId;if(prev===placeId){navMenuOpenId=null;syncNavMenuDom(placeId);return;}if(prev){navMenuOpenId=null;syncNavMenuDom(prev);}navMenuOpenId=placeId;syncNavMenuDom(placeId);}
     function toggleNavBranch(id){if(!id)return;navPlaceOpen[id]=navPlaceOpen[id]===false;persistNavPlaces();if(navQuery||navFilter){renderNavigation();return;}syncNavBranchDom(id);}
-    function duplicatePlace(placeId){closeNavMenu();if(isWorldId(placeId)){const src=worldById(placeId);if(!src)return;const id='dim-'+Date.now().toString(36);const base=(src.label||'Welt').replace(/\s+Kopie$/,'');state.worlds.push({id,label:`${base} Kopie`,empty:true});persist();toast(src.empty?'Dimension dupliziert':'Kopie als leere Dimension');switchActiveWorld(id,{animate:true});return;}toast('Duplizieren für diesen Typ folgt');renderNavigation();}
-    function deletePlace(placeId){closeNavMenu();if(isWorldId(placeId)){if(placeId===SEED_WORLD_ID){toast('Startwelt kann nicht gelöscht werden');renderNavigation();return;}ensureWorlds();if(state.worlds.length<=1){toast('Mindestens eine Welt behalten');renderNavigation();return;}state.worlds=state.worlds.filter(w=>w.id!==placeId);persist();toast('Welt gelöscht');if(state.activeWorldId===placeId)switchActiveWorld(SEED_WORLD_ID,{animate:true});else renderNavigation();return;}if(placeId===SEED_CONTINENT_ID){toast('Startkontinent kann nicht gelöscht werden');renderNavigation();return;}if(!state.placeHidden)state.placeHidden={};state.placeHidden[placeId]=true;for(const pid of Object.keys(NAV_CHILDREN)){NAV_CHILDREN[pid]=NAV_CHILDREN[pid].filter(id=>id!==placeId);}if(selectedLandId===placeId)selectedLandId=null;if(selectedContinentId===placeId)selectedContinentId=null;persist();rebuildMapBases();renderNavigation();toast('Entfernt');}
+    function duplicatePlace(placeId){closeNavMenu();if(productNavActive()){if(isWorldId(placeId)){toast('Welten werden außerhalb des Atlas dupliziert');renderNavigation();return;}if(onNavDuplicate){onNavDuplicate({placeId});}else{toast('Duplizieren nicht verfügbar');}renderNavigation();return;}if(isWorldId(placeId)){const src=worldById(placeId);if(!src)return;const id='dim-'+Date.now().toString(36);const base=(src.label||'Welt').replace(/\s+Kopie$/,'');state.worlds.push({id,label:`${base} Kopie`,empty:true});persist();toast(src.empty?'Dimension dupliziert':'Kopie als leere Dimension');switchActiveWorld(id,{animate:true});return;}toast('Duplizieren für diesen Typ folgt');renderNavigation();}
+    function deletePlace(placeId){closeNavMenu();if(productNavActive()){if(isWorldId(placeId)){toast('Welten werden außerhalb des Atlas archiviert');renderNavigation();return;}if(onNavArchive){onNavArchive({placeId});}else{toast('Archivieren nicht verfügbar');}renderNavigation();return;}if(isWorldId(placeId)){if(placeId===SEED_WORLD_ID){toast('Startwelt kann nicht gelöscht werden');renderNavigation();return;}ensureWorlds();if(state.worlds.length<=1){toast('Mindestens eine Welt behalten');renderNavigation();return;}state.worlds=state.worlds.filter(w=>w.id!==placeId);persist();toast('Welt gelöscht');if(state.activeWorldId===placeId)switchActiveWorld(SEED_WORLD_ID,{animate:true});else renderNavigation();return;}if(placeId===SEED_CONTINENT_ID){toast('Startkontinent kann nicht gelöscht werden');renderNavigation();return;}if(!state.placeHidden)state.placeHidden={};state.placeHidden[placeId]=true;for(const pid of Object.keys(NAV_CHILDREN)){NAV_CHILDREN[pid]=NAV_CHILDREN[pid].filter(id=>id!==placeId);}if(selectedLandId===placeId)selectedLandId=null;if(selectedContinentId===placeId)selectedContinentId=null;persist();rebuildMapBases();renderNavigation();toast('Entfernt');}
     function goToCamera(id,duration=730){const level=resolveFocusTarget(id==='world'||isWorldId(id)?'world':id);if(!level)return;if(animID)cancelAnimationFrame(animID);if(duration<=0){cameraState={x:level.x,z:level.z,span:level.span};drawFrame();return;}const start={...cameraState},t0=performance.now(),end={x:level.x,z:level.z,span:level.span};const step=t=>{const u=smooth(clamp((t-t0)/duration,0,1));cameraState={x:lerp(start.x,end.x,u),z:lerp(start.z,end.z,u),span:Math.exp(lerp(Math.log(Math.max(.5,start.span)),Math.log(Math.max(.5,end.span)),u))};drawFrame();if(u<1)animID=requestAnimationFrame(step);};animID=requestAnimationFrame(step);if(innerWidth<790){$('side').classList.remove('open');$('inspector').classList.remove('open');}}
-    function goTo(id,duration=730){if(isWorldId(id)){if(state.activeWorldId!==id)switchActiveWorld(id,{animate:true});else{applyContinentSelection(null);applyLandSelection(null);goToCamera('world',duration);}return;}if(isEmptyWorldActive()&&(continentDefs.some(c=>c.id===id)||landDefs.some(l=>l.id===id)||id==='city'||id==='dungeon'||id==='room')){switchActiveWorld(SEED_WORLD_ID,{animate:true,after:()=>goTo(id,duration)});return;}const level=resolveFocusTarget(id);if(!level)return;if(continentDefs.some(c=>c.id===id)){applyContinentSelection(id);applyLandSelection(null,{redraw:false});}else if(landDefs.some(l=>l.id===id)){applyContinentSelection(null);applyLandSelection(id);}else if(id==='world'||id==='city'||id==='dungeon'||id==='room'){applyContinentSelection(null);applyLandSelection(null);}goToCamera(id,duration);}
+    function goTo(id,duration=730){
+      if(productNavActive()){
+        const node=extNodeById(id);
+        if(!node){toast('Ort nicht gefunden');return;}
+        selectedExternalId=id;
+        const worldRoot=isWorldId(id);
+        const mapId=worldRoot?(externalNav.worldPrimaryMapId||null):(node.primaryMapId??null);
+        const located=worldRoot?true:node.located===true;
+        const drillOk=worldRoot||(!!mapId&&located);
+        renderNavigation();
+        if(onNavSelect)onNavSelect({placeId:worldRoot?null:id,mapId,worldRoot,located:drillOk,drillAllowed:drillOk});
+        if(!mapId)toast(worldRoot?'Keine Welt-Primärkarte':'Keine Primärkarte für diesen Ort');
+        else if(!worldRoot&&!located)toast('Ausschnitt noch nicht festgelegt — zuerst auf der Elternkarte verorten');
+        // Keep camera on current view — map swap is owned by React/editor.
+        return;
+      }
+      if(isWorldId(id)){if(state.activeWorldId!==id)switchActiveWorld(id,{animate:true});else{applyContinentSelection(null);applyLandSelection(null);goToCamera('world',duration);}return;}if(isEmptyWorldActive()&&(continentDefs.some(c=>c.id===id)||landDefs.some(l=>l.id===id)||id==='city'||id==='dungeon'||id==='room')){switchActiveWorld(SEED_WORLD_ID,{animate:true,after:()=>goTo(id,duration)});return;}const level=resolveFocusTarget(id);if(!level)return;if(continentDefs.some(c=>c.id===id)){applyContinentSelection(id);applyLandSelection(null,{redraw:false});}else if(landDefs.some(l=>l.id===id)){applyContinentSelection(null);applyLandSelection(id);}else if(id==='world'||id==='city'||id==='dungeon'||id==='room'){applyContinentSelection(null);applyLandSelection(null);}goToCamera(id,duration);
+    }
     function zoomAt(factor,x=stageWidth/2,y=stageHeight/2){if(animID)cancelAnimationFrame(animID);const before=screenToWorld(x,y);cameraState.span=clamp(cameraState.span*factor,SPAN_MIN,SPAN_MAX);const now=screenToWorld(x,y);cameraState.x+=before.x-now.x;cameraState.z+=before.z-now.z;drawFrame();}
     function dabAt(p,stroke){if(!mapConfigs[stroke.level])return;const id=stroke.level,conf=mapConfigs[id],c=mapCanvases[id].getContext('2d'),canvas=mapCanvases[id],x=(p.x-(conf.x-conf.w/2))*canvas.width/conf.w,y=(p.z-(conf.z-conf.h/2))*canvas.height/conf.h,size=stroke.size*canvas.width/conf.w;c.save();c.globalAlpha=.4;c.fillStyle=palettes[stroke.material]?.[1]||'#c4b08f';c.beginPath();c.arc(x,y,Math.max(1,size/2),0,Math.PI*2);c.fill();c.restore();if(engine)engine.uploadTexture(id,canvas);}
     function stampAt(p){snapshot();state.props.push({id:'o'+Date.now()+'-'+Math.floor(Math.random()*99999),level:activeLevel==='room'?'dungeon':activeLevel,x:p.x,z:p.z,type:propType,size:1,rotation:0});if(engine)buildManualGeometry();persist();drawFrame();}
-    function pointerDown(e){if(e.button!==0||e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label,.map-labels,.stage-message'))return;if(animID)cancelAnimationFrame(animID);const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;pointer={mode:tool,point:p,screen:m,last:p,pointerId:e.pointerId};if(tool==='stamp'){stampAt(p);pointer=null;return;}if(tool==='erase'){const radius=Math.max(.09,cameraState.span/stageHeight*30);let near=-1,best=radius;state.props.forEach((o,i)=>{const d=Math.hypot(o.x-p.x,o.z-p.z);if(d<best){best=d;near=i;}});if(near!==-1){snapshot();state.props.splice(near,1);buildManualGeometry();persist();toast('Objekt entfernt');}pointer=null;return;}if(tool==='paint'){snapshot();const level=choosePaintLevel();state.strokes.push({id:'p'+Date.now(),level,material,size:brushSizeWorld(level),points:[[p.x,p.z]]});dabAt(p,state.strokes.at(-1));}if(tool==='wall'||tool==='room')snapshot();stage.setPointerCapture?.(e.pointerId);stage.classList.add('drag');drawFrame();}
+    function pointerDown(e){if(e.button!==0||e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label,.map-labels,.stage-message'))return;if(animID)cancelAnimationFrame(animID);const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(tool!=='hand'&&!allowMutation(tool)){pointer=null;return;}pointer={mode:tool,point:p,screen:m,last:p,pointerId:e.pointerId};if(tool==='stamp'){stampAt(p);pointer=null;return;}if(tool==='erase'){const radius=Math.max(.09,cameraState.span/stageHeight*30);let near=-1,best=radius;state.props.forEach((o,i)=>{const d=Math.hypot(o.x-p.x,o.z-p.z);if(d<best){best=d;near=i;}});if(near!==-1){snapshot();state.props.splice(near,1);buildManualGeometry();persist();toast('Objekt entfernt');}pointer=null;return;}if(tool==='paint'){snapshot();const level=choosePaintLevel();state.strokes.push({id:'p'+Date.now(),level,material,size:brushSizeWorld(level),points:[[p.x,p.z]]});dabAt(p,state.strokes.at(-1));}if(tool==='wall'||tool==='room')snapshot();stage.setPointerCapture?.(e.pointerId);stage.classList.add('drag');drawFrame();}
     function pointerMove(e){if(labelDrag){moveLabelDrag(e);return;}if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const m=atStageEvent(e),p=screenToWorld(m.x,m.y);lastMouse=p;if(!scaleEdit){const c=$('coords');if(c)c.textContent=`X ${p.x.toFixed(1)} · Z ${p.z.toFixed(1)}`;};if(!pointer)return;if(pointer.mode==='hand'){cameraState.x+=pointer.last.x-p.x;cameraState.z+=pointer.last.z-p.z;pointer.last=screenToWorld(m.x,m.y);drawFrame();}else if(pointer.mode==='paint'){const stroke=state.strokes.at(-1);if(Math.hypot(p.x-pointer.last.x,p.z-pointer.last.z)>Math.max(.03,stroke.size*.12)){stroke.points.push([p.x,p.z]);dabAt(p,stroke);pointer.last=p;}}}
     function pointerUp(e){if(labelDrag){endLabelDrag(e);return;}if(!pointer)return;if(pointer.mode==='wall'||pointer.mode==='room'){const m=atStageEvent(e),p=screenToWorld(m.x,m.y),dist=Math.hypot(p.x-pointer.point.x,p.z-pointer.point.z);if(dist>cameraState.span*.015){if(pointer.mode==='wall')state.walls.push({id:'w'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z]});else{state.rooms=state.rooms||[];state.rooms.push({id:'r'+Date.now(),level:activeLevel==='room'?'dungeon':activeLevel,start:[pointer.point.x,pointer.point.z],end:[p.x,p.z],material});}buildManualGeometry();persist();toast(pointer.mode==='wall'?'3D-Wand gezeichnet':'3D-Raum erstellt');}else history.pop();}else if(pointer.mode==='paint'){drawStrokes();for(const k of Object.keys(mapConfigs))engine?.uploadTexture(k,mapCanvases[k]);buildManualGeometry();persist();}pointer=null;stage.classList.remove('drag');try{stage.releasePointerCapture(e.pointerId);}catch{}drawFrame();}
     function generate(){const seed=clamp(Math.floor(Number($('dungeonSeed').value)||42817),1,999999999),rooms=clamp(Math.floor(Number($('roomCount').value)||22),10,48);snapshot();state.seed=seed;state.roomCount=rooms;state.theme=$('dungeonTheme').value;dungeon=dungeonGenerate(state.seed,state.roomCount);updateRoomAnchor();buildDungeonGeometry();buildManualGeometry();persist();toast(`Dungeon erstellt · ${dungeon.rooms.length} Räume · Seed ${state.seed}`);goTo('dungeon');}
@@ -579,25 +696,31 @@ export function mountAtlasPrototype3d(host, options = {}) {
     function dungeonTexture(){const cv=document.createElement('canvas');cv.width=1200;cv.height=800;const ctx=cv.getContext('2d'),r=hashseed(565);ctx.fillStyle='#202a2d';ctx.fillRect(0,0,cv.width,cv.height);for(let i=0;i<34000;i++){const x=r()*1200,y=r()*800,a=r()*.10;ctx.fillStyle=r()>.5?`rgba(165,170,153,${a})`:`rgba(8,17,21,${a})`;ctx.fillRect(x,y,r()*5+1,r()*5+1);}for(let i=0;i<150;i++){const x=r()*1200,y=r()*800;ctx.strokeStyle='rgba(8,16,19,.15)';ctx.lineWidth=r()*1.5+.4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+r()*38-19,y+r()*32-16);ctx.stroke();}const grad=ctx.createRadialGradient(600,400,180,600,400,850);grad.addColorStop(0,'#00000000');grad.addColorStop(1,'#00000099');ctx.fillStyle=grad;ctx.fillRect(0,0,1200,800);return cv;}
     mapConfigs.dungeon={x:188,z:-64,w:42,h:28};mapCanvases.dungeon=dungeonTexture();
 
-    function navKind(id){if(isWorldId(id))return'world';if(continentDefs.some(c=>c.id===id))return'kontinent';if(landDefs.some(l=>l.id===id))return'land';if(id==='city')return'ort';if(id==='dungeon')return'gebaeude';if(id==='room')return'raum';return'other';}
-    function navNodeById(id){if(!id)return null;const w=worldById(id);if(w)return{id:w.id,label:w.label||'Welt',sub:WORLD_SUB_DEFAULT,tag:'WELT',glyph:'◎',kind:'world',x:0,z:0,span:440,empty:!!w.empty};const cont=continentDefs.find(c=>c.id===id);if(cont)return cont;const land=landDefs.find(l=>l.id===id);if(land)return land;return levels.find(l=>l.id===id)||null;}
-    function isPlaceHidden(id){return !!(state.placeHidden&&state.placeHidden[id]);}
-    function navChildIds(parentId){if(parentId===NAV_ROOT)return ensureWorlds().map(w=>w.id);if(isWorldId(parentId)){const w=worldById(parentId);return w&&!w.empty?continentDefs.map(c=>c.id).filter(id=>!isPlaceHidden(id)):[];}return(NAV_CHILDREN[parentId]||[]).filter(id=>!isPlaceHidden(id));}
+    function navKind(id){if(productNavActive()){const n=extNodeById(id);return n?n.kind:'other';}if(isWorldId(id))return'world';if(continentDefs.some(c=>c.id===id))return'kontinent';if(landDefs.some(l=>l.id===id))return'land';if(id==='city')return'ort';if(id==='dungeon')return'gebaeude';if(id==='room')return'raum';return'other';}
+    function navNodeById(id){if(!id)return null;if(productNavActive())return extNodeById(id);const w=worldById(id);if(w)return{id:w.id,label:w.label||'Welt',sub:WORLD_SUB_DEFAULT,tag:'WELT',glyph:'◎',kind:'world',x:0,z:0,span:440,empty:!!w.empty};const cont=continentDefs.find(c=>c.id===id);if(cont)return cont;const land=landDefs.find(l=>l.id===id);if(land)return land;return levels.find(l=>l.id===id)||null;}
+    function isPlaceHidden(id){if(productNavActive())return false;return !!(state.placeHidden&&state.placeHidden[id]);}
+    function navChildIds(parentId){
+      if(productNavActive()){
+        if(parentId===NAV_ROOT)return externalNav.worldId?[externalNav.worldId]:[];
+        return extChildIds(parentId);
+      }
+      if(parentId===NAV_ROOT)return ensureWorlds().map(w=>w.id);if(isWorldId(parentId)){const w=worldById(parentId);return w&&!w.empty?continentDefs.map(c=>c.id).filter(id=>!isPlaceHidden(id)):[];}return(NAV_CHILDREN[parentId]||[]).filter(id=>!isPlaceHidden(id));
+    }
     function navNorm(s){return String(s||'').toLocaleLowerCase('de-DE').normalize('NFD').replace(/\p{M}/gu,'').trim();}
     function navHaystack(n){const label=isWorldId(n.id)?(worldById(n.id)?.label||n.label):n.label;const sub=isWorldId(n.id)?(state.worldSub||n.sub):n.sub;return navNorm(`${label} ${sub} ${n.tag||''} ${n.id}`);}
     function navMatchesQuery(n){const q=navNorm(navQuery);if(!q)return true;return navHaystack(n).includes(q);}
     function navMatchesFilter(n){if(!navFilter)return true;return navKind(n.id)===navFilter;}
     function navSubtreeMatches(id){const n=navNodeById(id);if(!n)return false;if(navMatchesFilter(n)&&navMatchesQuery(n))return true;return navChildIds(id).some(cid=>navSubtreeMatches(cid));}
     function navIconHtml(kind){return NAV_KIND_ICONS[kind]||NAV_KIND_ICONS.other;}
-    function ensureNavFilter(){const bar=$('navFilter');if(!bar)return bar;const keys=NAV_FILTERS.join(',');if(navFilterMounted&&bar.dataset.filterKeys===keys)return bar;bar.innerHTML=NAV_FILTERS.map(id=>{const label=NAV_FILTER_LABELS[id]||id;const title=id==='world'?'Welt/Dimension':id==='kontinent'?'Kontinent':label;return`<button type="button" data-nav-filter="${id}" class="nav-filter-btn" aria-pressed="false" title="${title}"><span class="nav-filter-icon">${navIconHtml(id)}</span><span class="nav-filter-text">${label}</span></button>`;}).join('');bar.dataset.filterKeys=keys;navFilterMounted=true;return bar;}
+    function ensureNavFilter(){const bar=$('navFilter');if(!bar)return bar;const keys=NAV_FILTERS.join(',')+(productNavActive()?':product':'');if(navFilterMounted&&bar.dataset.filterKeys===keys)return bar;bar.innerHTML=NAV_FILTERS.map(id=>{const label=NAV_FILTER_LABELS[id]||id;const title=id==='world'?(productNavActive()?'Welt':'Welt/Dimension'):id==='kontinent'?'Kontinent':label;return`<button type="button" data-nav-filter="${id}" class="nav-filter-btn" aria-pressed="false" title="${title}"><span class="nav-filter-icon">${navIconHtml(id)}</span><span class="nav-filter-text">${label}</span></button>`;}).join('');bar.dataset.filterKeys=keys;navFilterMounted=true;return bar;}
     function syncNavFilterUi(){const bar=ensureNavFilter();if(!bar)return;bar.querySelectorAll('[data-nav-filter]').forEach(btn=>{const on=btn.dataset.navFilter===navFilter;btn.classList.toggle('is-on',on);btn.setAttribute('aria-pressed',on?'true':'false');});const search=$('navSearch');if(search&&search.value!==navQuery)search.value=navQuery;}
-    function navIsCurrent(id){if(isWorldId(id))return state.activeWorldId===id&&!selectedLandId&&!selectedContinentId&&(activeLevel==='world'||activeLevel==='region');if(continentDefs.some(c=>c.id===id))return!isEmptyWorldActive()&&selectedContinentId===id&&!selectedLandId;if(landDefs.some(l=>l.id===id))return!isEmptyWorldActive()&&selectedLandId===id;if(id==='city')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='city';if(id==='dungeon')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='dungeon';if(id==='room')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='room';return false;}
-    function renderCategoryGroup(kind,parentId,depth){if(navFilter&&NAV_KIND_RANK[kind]>NAV_KIND_RANK[navFilter])return'';const catKey=navCatKey(kind,parentId);const open=navPlaceIsOpen(catKey,kind);const label=NAV_CAT_PLURAL[kind]||kind;const addTitle=`${kind==='world'?'Welt/Dimension':(NAV_FILTER_LABELS[kind]||kind)} hinzufügen`;let body='';for(const cid of navChildIds(parentId)){const chunk=renderPlaceNode(cid,depth+1);if(chunk)body+=chunk;}if((navQuery||navFilter)&&!body&&navFilter!==kind)return'';let html=`<div class="nav-cat ${open?'is-open':'is-collapsed'}" data-nav-cat="${kind}" data-nav-cat-parent="${parentId}" data-nav-open="${open?'true':'false'}" style="--nav-depth:${depth}">`;html+=`<div class="nav-place-row nav-cat-row">`;html+=`<div class="nav-place-tab nav-cat-tab ${open?'is-open':''}">`;html+=`<button type="button" class="nav-place-toggle nav-cat-toggle ${open?'':'is-collapsed'}" data-nav-toggle="${catKey}" aria-expanded="${open?'true':'false'}" title="${open?'Zuklappen':'Aufklappen'}"><span class="nav-place-chevron" aria-hidden="true">${NAV_CHEVRON_SVG}</span><span class="node-icon nav-cat-icon" aria-hidden="true">${navIconHtml(kind)}</span><span class="nav-cat-label">${label}</span></button>`;html+=`<button type="button" class="nav-place-add" data-nav-add="${kind}" data-nav-add-parent="${parentId}" title="${addTitle}" aria-label="${addTitle}"><span aria-hidden="true">+</span></button>`;html+=`</div>`;html+=`</div>`;html+=`<div class="nav-branch"><div class="nav-branch-clip"><div class="nav-nest">${body}</div></div></div>`;html+='</div>';return html;}
-    function renderPlaceNode(placeId,depth){const n=navNodeById(placeId);if(!n)return'';const kind=navKind(placeId);if(navFilter&&NAV_KIND_RANK[kind]>NAV_KIND_RANK[navFilter])return'';if((navQuery||navFilter)&&!navSubtreeMatches(placeId)&&!(navMatchesFilter(n)&&navMatchesQuery(n)))return'';const childKind=NAV_CHILD_KIND[kind]||null;const expandable=!!childKind&&(!navFilter||NAV_KIND_RANK[childKind]<=NAV_KIND_RANK[navFilter]);const open=expandable&&navPlaceIsOpen(placeId,childKind);const label=isWorldId(placeId)?(worldById(placeId)?.label||n.label):n.label;const sub=isWorldId(placeId)?(state.worldSub||WORLD_SUB_DEFAULT):n.sub;const current=navIsCurrent(placeId);const menuOpen=navMenuOpenId===placeId;let html=`<div class="nav-place ${open?'is-open':'is-collapsed'} ${expandable?'':'is-leaf'}" data-nav-place="${placeId}" data-nav-kind="${kind}" data-nav-open="${open?'true':'false'}" style="--nav-depth:${depth}">`;html+=`<div class="nav-place-row">`;html+=`<div class="nav-place-tab ${current?'is-current':''} ${open?'is-open':''}">`;if(expandable)html+=`<button type="button" class="nav-place-toggle ${open?'':'is-collapsed'}" data-nav-toggle="${placeId}" aria-expanded="${open?'true':'false'}" title="${open?'Zuklappen':'Aufklappen'}"><span class="nav-place-chevron" aria-hidden="true">${NAV_CHEVRON_SVG}</span></button>`;html+=`<button type="button" data-focus="${placeId}" data-nav-kind="${kind}" class="nav-focus ${current?'current':''}" aria-current="${current?'true':'false'}"><span class="node-icon" aria-hidden="true">${navIconHtml(kind)}</span><span class="node-text"><strong class="nav-edit" data-edit-place="${placeId}" data-edit-field="label" title="Name tippen">${label}</strong><small class="nav-sub">${sub}</small></span></button>`;html+=`<div class="nav-place-actions">`;html+=`<button type="button" class="nav-place-menu ${menuOpen?'is-open':''}" data-nav-menu="${placeId}" aria-haspopup="menu" aria-expanded="${menuOpen?'true':'false'}" title="Aktionen" aria-label="Aktionen für ${label}"><span class="nav-place-menu-icon" aria-hidden="true">${NAV_MENU_SVG}</span></button>`;html+=`<div class="nav-place-menu-pop ${menuOpen?'is-open':''}" data-nav-menu-pop="${placeId}" role="menu" aria-hidden="${menuOpen?'false':'true'}">`;html+=`<button type="button" role="menuitem" class="nav-place-menu-item" data-nav-dup="${placeId}">Duplizieren</button>`;html+=`<button type="button" role="menuitem" class="nav-place-menu-item is-danger" data-nav-del="${placeId}">Löschen</button>`;html+=`</div>`;html+=`</div>`;html+=`</div>`;html+=`</div>`;if(expandable){const cat=renderCategoryGroup(childKind,placeId,depth+1);if(cat)html+=`<div class="nav-branch"><div class="nav-branch-clip">${cat}</div></div>`;}html+='</div>';return html;}
-    function renderNavigation(){if(navMenuOpenId)closeNavMenu();const portal=root.querySelector('#atlasNavMenuPortal');if(portal)portal.replaceChildren();let html='<div class="nav-tree">';const rootCat=renderCategoryGroup('world',NAV_ROOT,0);const any=!!rootCat;if(rootCat)html+=rootCat;html+='</div>';if(!any)html=`<p class="nav-empty" role="status">Keine Treffer</p>`;$('nav').innerHTML=html;syncNavFilterUi();syncGridToggleUi();}
-    function readPlaceField(placeId,field){if(isWorldId(placeId)){const w=worldById(placeId);if(field==='label')return(w&&w.label)||state.worldLabel||'Welt';return state.worldSub||WORLD_SUB_DEFAULT;}const def=PLACE_NAME_DEFAULTS[placeId];const cur=state.placeNames?.[placeId];return (cur&&cur[field])||(def&&def[field])||'';}
+    function navIsCurrent(id){if(productNavActive()){if(!id)return false;if(selectedExternalId)return selectedExternalId===id;return isWorldId(id);}if(isWorldId(id))return state.activeWorldId===id&&!selectedLandId&&!selectedContinentId&&(activeLevel==='world'||activeLevel==='region');if(continentDefs.some(c=>c.id===id))return!isEmptyWorldActive()&&selectedContinentId===id&&!selectedLandId;if(landDefs.some(l=>l.id===id))return!isEmptyWorldActive()&&selectedLandId===id;if(id==='city')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='city';if(id==='dungeon')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='dungeon';if(id==='room')return!isEmptyWorldActive()&&!selectedLandId&&activeLevel==='room';return false;}
+    function renderCategoryGroup(kind,parentId,depth){if(navFilter&&NAV_KIND_RANK[kind]>NAV_KIND_RANK[navFilter])return'';const catKey=navCatKey(kind,parentId);const open=navPlaceIsOpen(catKey,kind);const label=NAV_CAT_PLURAL[kind]||kind;const addTitle=`${kind==='world'?(productNavActive()?'Welt': 'Welt/Dimension'):(NAV_FILTER_LABELS[kind]||kind)} hinzufügen`;let body='';for(const cid of navChildIds(parentId)){if(productNavActive()&&navKind(cid)!==kind&&!(kind==='world'&&isWorldId(cid)))continue;const chunk=renderPlaceNode(cid,depth+1);if(chunk)body+=chunk;}if((navQuery||navFilter)&&!body&&navFilter!==kind)return'';let html=`<div class="nav-cat ${open?'is-open':'is-collapsed'}" data-nav-cat="${kind}" data-nav-cat-parent="${parentId}" data-nav-open="${open?'true':'false'}" style="--nav-depth:${depth}">`;html+=`<div class="nav-place-row nav-cat-row">`;html+=`<div class="nav-place-tab nav-cat-tab ${open?'is-open':''}">`;html+=`<button type="button" class="nav-place-toggle nav-cat-toggle ${open?'':'is-collapsed'}" data-nav-toggle="${catKey}" aria-expanded="${open?'true':'false'}" title="${open?'Zuklappen':'Aufklappen'}"><span class="nav-place-chevron" aria-hidden="true">${NAV_CHEVRON_SVG}</span><span class="node-icon nav-cat-icon" aria-hidden="true">${navIconHtml(kind)}</span><span class="nav-cat-label">${label}</span></button>`;html+=`<button type="button" class="nav-place-add" data-nav-add="${kind}" data-nav-add-parent="${parentId}" title="${addTitle}" aria-label="${addTitle}"><span aria-hidden="true">+</span></button>`;html+=`</div>`;html+=`</div>`;html+=`<div class="nav-branch"><div class="nav-branch-clip"><div class="nav-nest">${body}</div></div></div>`;html+='</div>';return html;}
+    function renderPlaceNode(placeId,depth){const n=navNodeById(placeId);if(!n)return'';const kind=navKind(placeId);if(navFilter&&NAV_KIND_RANK[kind]>NAV_KIND_RANK[navFilter])return'';if((navQuery||navFilter)&&!navSubtreeMatches(placeId)&&!(navMatchesFilter(n)&&navMatchesQuery(n)))return'';const childKind=NAV_CHILD_KIND[kind]||null;const expandable=!!childKind&&(!navFilter||NAV_KIND_RANK[childKind]<=NAV_KIND_RANK[navFilter]);const open=expandable&&navPlaceIsOpen(placeId,childKind);const label=isWorldId(placeId)?(worldById(placeId)?.label||n.label):n.label;const sub=isWorldId(placeId)?(state.worldSub||WORLD_SUB_DEFAULT):n.sub;const current=navIsCurrent(placeId);const menuOpen=navMenuOpenId===placeId;let html=`<div class="nav-place ${open?'is-open':'is-collapsed'} ${expandable?'':'is-leaf'}" data-nav-place="${placeId}" data-nav-kind="${kind}" data-nav-open="${open?'true':'false'}" style="--nav-depth:${depth}">`;html+=`<div class="nav-place-row">`;html+=`<div class="nav-place-tab ${current?'is-current':''} ${open?'is-open':''}">`;if(expandable)html+=`<button type="button" class="nav-place-toggle ${open?'':'is-collapsed'}" data-nav-toggle="${placeId}" aria-expanded="${open?'true':'false'}" title="${open?'Zuklappen':'Aufklappen'}"><span class="nav-place-chevron" aria-hidden="true">${NAV_CHEVRON_SVG}</span></button>`;html+=`<button type="button" data-focus="${placeId}" data-nav-kind="${kind}" class="nav-focus ${current?'current':''}" aria-current="${current?'true':'false'}"><span class="node-icon" aria-hidden="true">${navIconHtml(kind)}</span><span class="node-text"><strong class="nav-edit" data-edit-place="${placeId}" data-edit-field="label" title="Name tippen">${label}</strong><small class="nav-sub">${sub}</small></span></button>`;html+=`<div class="nav-place-actions">`;html+=`<button type="button" class="nav-place-menu ${menuOpen?'is-open':''}" data-nav-menu="${placeId}" aria-haspopup="menu" aria-expanded="${menuOpen?'true':'false'}" title="Aktionen" aria-label="Aktionen für ${label}"><span class="nav-place-menu-icon" aria-hidden="true">${NAV_MENU_SVG}</span></button>`;html+=`<div class="nav-place-menu-pop ${menuOpen?'is-open':''}" data-nav-menu-pop="${placeId}" role="menu" aria-hidden="${menuOpen?'false':'true'}">`;html+=`<button type="button" role="menuitem" class="nav-place-menu-item" data-nav-dup="${placeId}">Duplizieren</button>`;if(productNavActive()&&!isWorldId(placeId))html+=`<button type="button" role="menuitem" class="nav-place-menu-item" data-nav-reparent="${placeId}">Verschieben…</button>`;html+=`<button type="button" role="menuitem" class="nav-place-menu-item is-danger" data-nav-del="${placeId}">${productNavActive()?'Archivieren':'Löschen'}</button>`;html+=`</div>`;html+=`</div>`;html+=`</div>`;html+=`</div>`;if(expandable){const cat=renderCategoryGroup(childKind,placeId,depth+1);if(cat)html+=`<div class="nav-branch"><div class="nav-branch-clip">${cat}</div></div>`;}html+='</div>';return html;}
+    function renderNavigation(){if(navMenuOpenId)closeNavMenu();const portal=root.querySelector('#atlasNavMenuPortal');if(portal)portal.replaceChildren();if(productNavActive()&&externalNav&&externalNav.status==='loading'){$('nav').innerHTML=`<p class="nav-empty" role="status" data-atlas-nav-state="loading">Weltstruktur wird geladen…</p>`;syncNavFilterUi();syncGridToggleUi();return;}if(productNavActive()&&externalNav&&externalNav.status==='error'){$('nav').innerHTML=`<p class="nav-empty" role="alert" data-atlas-nav-state="error">${externalNav.errorMessage||'Weltstruktur konnte nicht geladen werden.'}</p>`;syncNavFilterUi();syncGridToggleUi();return;}let html='<div class="nav-tree" data-atlas-nav-source="'+(productNavActive()?'db':'demo')+'">';const rootCat=renderCategoryGroup('world',NAV_ROOT,0);const any=!!rootCat;if(rootCat)html+=rootCat;html+='</div>';if(!any)html=`<p class="nav-empty" role="status">Keine Treffer</p>`;else if(productNavActive()&&externalNav&&externalNav.status==='empty'){html+=`<p class="nav-empty" role="status" data-atlas-nav-state="empty">Keine Orte in dieser Welt.</p>`;}$('nav').innerHTML=html;syncNavFilterUi();syncGridToggleUi();if(productNavActive()){const demoHits=[...$('nav').querySelectorAll('[data-nav-place]')].filter(el=>DEMO_NAV_IDS.has(el.getAttribute('data-nav-place')||''));if(demoHits.length){console.error('[atlas] product nav leaked demo ids',demoHits.map(el=>el.getAttribute('data-nav-place')));}}}
+    function readPlaceField(placeId,field){if(productNavActive()){const n=extNodeById(placeId);if(!n)return'';if(field==='label')return n.label||'';return n.sub||'';}if(isWorldId(placeId)){const w=worldById(placeId);if(field==='label')return(w&&w.label)||state.worldLabel||'Welt';return state.worldSub||WORLD_SUB_DEFAULT;}const def=PLACE_NAME_DEFAULTS[placeId];const cur=state.placeNames?.[placeId];return (cur&&cur[field])||(def&&def[field])||'';}
     function beginPlaceFieldEdit(placeId,field,host){if(field!=='label')return;if(scaleEdit){if(scaleEdit.kind==='placeField')endPlaceFieldEdit(false);else endScaleEdit(false);}const input=document.createElement('input');input.type='text';input.className='nav-edit-input';input.setAttribute('aria-label','Name');const initial=String(readPlaceField(placeId,'label')||'');input.value=initial;input.size=Math.max(3,Math.min(48,initial.length||3));input.addEventListener('input',()=>{input.size=Math.max(3,Math.min(48,String(input.value||'').length||3));});host.replaceWith(input);scaleEdit={kind:'placeField',placeId,field:'label',input,host};input.focus();input.select();const finish=ev=>{if(ev.type==='keydown'){if(ev.key==='Enter'){ev.preventDefault();endPlaceFieldEdit(true);}else if(ev.key==='Escape'){ev.preventDefault();endPlaceFieldEdit(false);}return;}endPlaceFieldEdit(true);};input.addEventListener('keydown',finish);input.addEventListener('blur',()=>endPlaceFieldEdit(true));}
-    function endPlaceFieldEdit(commit){if(!scaleEdit||scaleEdit.kind!=='placeField')return;const{placeId,field,input,host}=scaleEdit;const raw=String(input.value||'').trim();scaleEdit=null;input.replaceWith(host);if(commit&&raw){const next=raw.slice(0,48);if(isWorldId(placeId)){if(field==='label'){const w=worldById(placeId);if(w)w.label=next;if(placeId===SEED_WORLD_ID||state.activeWorldId===placeId)state.worldLabel=next;}else state.worldSub=next;}else{if(!state.placeNames)state.placeNames=JSON.parse(JSON.stringify(PLACE_NAME_DEFAULTS));if(!state.placeNames[placeId])state.placeNames[placeId]={...PLACE_NAME_DEFAULTS[placeId]};state.placeNames[placeId][field]=next;}persist();if(field==='label')rebuildMapBases();else applyPlaceNames();}host.textContent=readPlaceField(placeId,field);renderNavigation();updateLevel();}
+    function endPlaceFieldEdit(commit){if(!scaleEdit||scaleEdit.kind!=='placeField')return;const{placeId,field,input,host}=scaleEdit;const raw=String(input.value||'').trim();scaleEdit=null;input.replaceWith(host);if(commit&&raw){const next=raw.slice(0,48);if(productNavActive()){if(field==='label'&&!isWorldId(placeId)&&onNavRename){onNavRename({placeId,label:next});host.textContent=next;renderNavigation();updateLevel();return;}if(isWorldId(placeId)){toast('Weltname wird in den Welteinstellungen gepflegt');}else{toast('Umbenennen nicht verfügbar');}host.textContent=readPlaceField(placeId,field);renderNavigation();updateLevel();return;}if(isWorldId(placeId)){if(field==='label'){const w=worldById(placeId);if(w)w.label=next;if(placeId===SEED_WORLD_ID||state.activeWorldId===placeId)state.worldLabel=next;}else state.worldSub=next;}else{if(!state.placeNames)state.placeNames=JSON.parse(JSON.stringify(PLACE_NAME_DEFAULTS));if(!state.placeNames[placeId])state.placeNames[placeId]={...PLACE_NAME_DEFAULTS[placeId]};state.placeNames[placeId][field]=next;}persist();if(field==='label')rebuildMapBases();else applyPlaceNames();}host.textContent=readPlaceField(placeId,field);renderNavigation();updateLevel();}
     function syncGridToggleUi(){const b=$('gridToggle');if(!b)return;const on=!!state.layers.grid;b.setAttribute('aria-pressed',on?'true':'false');b.classList.toggle('is-on',on);b.title=on?'Kampfgrid ausblenden':'Kampfgrid einblenden';b.setAttribute('aria-label',b.title);}
     function renderLayers(){/* Layer visibility lives on nav AN/AUS toggles. */}
     const toolIcons={
@@ -607,17 +730,27 @@ export function mountAtlasPrototype3d(host, options = {}) {
       wall:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 9v6"/><path d="M15 15v6"/><path d="M15 3v6"/><path d="M9 15v6"/></svg>',
       room:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>',
       erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>',
+      select:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>',
+      road:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 12 5l8 14"/><path d="M9 14h6"/></svg>',
     };
     function renderTools(){
       const el=$('tools');
       if(!el)return;
+      syncToolToChrome();
       el.setAttribute('role','tablist');
       el.setAttribute('aria-label','Kartenwerkzeuge');
-      el.innerHTML=tools.map(([id,label])=>`<button type="button" role="tab" data-tool="${id}" data-slot="tabs-trigger" data-state="${id===tool?'active':'inactive'}" class="${id===tool?'current':''}" aria-selected="${id===tool}" aria-pressed="${id===tool}" aria-label="${label}" title="${label}"><span class="tool-icon" aria-hidden="true">${toolIcons[id]||''}</span><span class="tool-label">${label}</span></button>`).join('');
+      el.setAttribute('data-atlas-tool-source',toolChrome&&toolChrome.length?'registry':'demo');
+      el.innerHTML=activeToolChrome().map(row=>{
+        const id=row.runtimeId;
+        const label=row.labelDe||id;
+        const disabled=row.enabled===false;
+        const title=disabled?(row.disabledReason||label):label;
+        return `<button type="button" role="tab" data-tool="${id}" data-atlas-tool="${row.atlasId||''}" data-atlas-role="${row.role||''}" data-slot="tabs-trigger" data-state="${id===tool?'active':'inactive'}" class="${id===tool?'current':''}${disabled?' is-disabled':''}" aria-selected="${id===tool}" aria-pressed="${id===tool}" aria-disabled="${disabled?'true':'false'}" ${disabled?'disabled':''} aria-label="${label}" title="${title}"><span class="tool-icon" aria-hidden="true">${toolIcons[id]||''}</span><span class="tool-label">${label}</span></button>`;
+      }).join('');
       stage.classList.toggle('tool-paint',tool==='paint');
       stage.classList.toggle('tool-stamp',tool==='stamp');
       stage.classList.toggle('tool-wall',tool==='wall');
-      $('help').textContent=({hand:'Mausrad: nahtlos zoomen · Ziehen: Karte bewegen',paint:'Mit gedrückter Maustaste Gelände malen',stamp:'Objekt wählen und auf die Karte klicken',wall:'Ziehen, um eine echte 3D-Wand zu setzen',room:'Rechteck ziehen, um einen 3D-Raum zu erstellen',erase:'Manuelles Objekt anklicken und löschen'})[tool]||'';
+      $('help').textContent=({hand:'Mausrad: nahtlos zoomen · Ziehen: Karte bewegen',paint:'Mit gedrückter Maustaste Gelände malen',stamp:'Objekt wählen und auf die Karte klicken',wall:'Ziehen, um eine echte 3D-Wand zu setzen',room:'Rechteck ziehen, um einen 3D-Raum zu erstellen',erase:'Manuelles Objekt anklicken und löschen',select:'Auswahl (2D-Parität)',road:'Wege / politische Grenzen'})[tool]||'';
     }
     function renderPalette(){$('palette').innerHTML=Object.entries(palettes).map(([id,[title,color]])=>`<button type="button" data-material="${id}" class="swatch ${id===material?'active':''}"><i style="--c:${color}"></i>${title}</button>`).join('');$('stamps').innerHTML=Object.entries(propDefs).map(([id,[label,glyph]])=>`<button type="button" data-prop="${id}" class="${id===propType?'active':''}"><b>${glyph}</b>${label}</button>`).join('');}
     function updateInspector(){const text={world:['Welt gestalten','Kontinente und Ozeane gestalten – eine texturierte Fläche innerhalb der 3D-Szene.'],region:['Region gestalten','Regionalkarte bearbeiten und zusätzliche Wälder, Gelände oder Ruinen anlegen.'],city:['Stadt gestalten','Häuser in 3D und Straßen am Boden. Vergrößern führt unter die alte Festung.'],dungeon:['Dungeon gestalten','Automatisch generierte Räume und Gänge. 3D-Objekte und Wände ergänzen.'],room:['Raum bearbeiten','Der Dungeon bleibt 3D und wird bis auf einzelne Gegenstände vergrößert.']}[activeLevel];$('sectionTitle').textContent=text[0];$('sectionInfo').textContent=text[1];}
@@ -630,10 +763,10 @@ export function mountAtlasPrototype3d(host, options = {}) {
 
     function exportJson(){const b=new Blob([JSON.stringify({format:'sagatree-unified-3d-spike-v1',created:new Date().toISOString(),world:state.worldLabel||'Welt',state,procedural:{seed:state.seed,rooms:dungeon.rooms,edges:dungeon.edges}},null,2)],{type:'application/json'});const a=document.createElement('a'),url=URL.createObjectURL(b);a.href=url;a.download='sagatree-unified-3d-atlas.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1800);toast('Kartenprojekt als JSON exportiert');}
 
-    root.addEventListener('click',e=>{const pedit=e.target.closest('[data-edit-place][data-edit-field="label"]');if(pedit&&!scaleEdit){e.preventDefault();e.stopPropagation();closeNavMenu();beginPlaceFieldEdit(pedit.dataset.editPlace,'label',pedit);return;}const tbtn=e.target.closest('[data-nav-toggle]');if(tbtn){e.preventDefault();e.stopPropagation();if(navMenuOpenId)closeNavMenu();toggleNavBranch(tbtn.dataset.navToggle);return;}const mbtn=e.target.closest('[data-nav-menu]');if(mbtn){e.preventDefault();e.stopPropagation();setNavMenu(mbtn.dataset.navMenu);return;}const dupid=e.target.closest('[data-nav-dup]');if(dupid){e.preventDefault();e.stopPropagation();duplicatePlace(dupid.dataset.navDup);return;}const delid=e.target.closest('[data-nav-del]');if(delid){e.preventDefault();e.stopPropagation();deletePlace(delid.dataset.navDel);return;}if(navMenuOpenId&&!e.target.closest('.nav-place-actions, .nav-place-menu-pop, #atlasNavMenuPortal')){closeNavMenu();}const abtn=e.target.closest('[data-nav-add]');if(abtn){e.preventDefault();e.stopPropagation();const kind=abtn.dataset.navAdd;const parentId=abtn.dataset.navAddParent;if(!NAV_ADD_KINDS.includes(kind)||!parentId)return;if(kind==='world'){addWorldDimension();return;}const catKey=parentId?navCatKey(kind,parentId):null;if(catKey){navPlaceOpen[catKey]=true;persistNavPlaces();renderNavigation();}toast(`${NAV_FILTER_LABELS[kind]||kind} hinzufügen — Markierung auf der Karte folgt`);return;}const fbtn=e.target.closest('[data-nav-filter]');if(fbtn){e.preventDefault();e.stopPropagation();const next=fbtn.dataset.navFilter;if(!NAV_FILTERS.includes(next))return;navFilter=navFilter===next?null:next;renderNavigation();return;}const edit=e.target.closest('.scale-edit-trigger');if(!edit||scaleEdit)return;e.preventDefault();e.stopPropagation();if(edit.id==='coords'){const cur=lastMouse||{x:cameraState.x,z:cameraState.z};beginScaleEdit('coords',edit,`${cur.x.toFixed(1)} ${cur.z.toFixed(1)}`);}else if(edit.id==='zoom'){beginScaleEdit('zoom',edit,String(zoomPercent()));}},true);
+    root.addEventListener('click',e=>{const pedit=e.target.closest('[data-edit-place][data-edit-field="label"]');if(pedit&&!scaleEdit){e.preventDefault();e.stopPropagation();closeNavMenu();beginPlaceFieldEdit(pedit.dataset.editPlace,'label',pedit);return;}const tbtn=e.target.closest('[data-nav-toggle]');if(tbtn){e.preventDefault();e.stopPropagation();if(navMenuOpenId)closeNavMenu();toggleNavBranch(tbtn.dataset.navToggle);return;}const mbtn=e.target.closest('[data-nav-menu]');if(mbtn){e.preventDefault();e.stopPropagation();setNavMenu(mbtn.dataset.navMenu);return;}const dupid=e.target.closest('[data-nav-dup]');if(dupid){e.preventDefault();e.stopPropagation();duplicatePlace(dupid.dataset.navDup);return;}const reparentBtn=e.target.closest('[data-nav-reparent]');if(reparentBtn){e.preventDefault();e.stopPropagation();closeNavMenu();const pid=reparentBtn.dataset.navReparent;if(productNavActive()&&pid&&!isWorldId(pid)&&onNavReparent){onNavReparent({placeId:pid});}else{toast('Verschieben nicht verfügbar');}renderNavigation();return;}const delid=e.target.closest('[data-nav-del]');if(delid){e.preventDefault();e.stopPropagation();deletePlace(delid.dataset.navDel);return;}if(navMenuOpenId&&!e.target.closest('.nav-place-actions, .nav-place-menu-pop, #atlasNavMenuPortal')){closeNavMenu();}const abtn=e.target.closest('[data-nav-add]');if(abtn){e.preventDefault();e.stopPropagation();const kind=abtn.dataset.navAdd;const parentId=abtn.dataset.navAddParent;if(!NAV_ADD_KINDS.includes(kind)||!parentId)return;if(productNavActive()){if(kind==='world'){toast('Neue Welten werden außerhalb des Atlas angelegt');return;}if(onNavAdd){onNavAdd({uiKind:kind,parentId});}else{toast(`${NAV_FILTER_LABELS[kind]||kind} hinzufügen — Server-Dialog fehlt`);}return;}if(kind==='world'){addWorldDimension();return;}const catKey=parentId?navCatKey(kind,parentId):null;if(catKey){navPlaceOpen[catKey]=true;persistNavPlaces();renderNavigation();}toast(`${NAV_FILTER_LABELS[kind]||kind} hinzufügen — Markierung auf der Karte folgt`);return;}const fbtn=e.target.closest('[data-nav-filter]');if(fbtn){e.preventDefault();e.stopPropagation();const next=fbtn.dataset.navFilter;if(!NAV_FILTERS.includes(next))return;navFilter=navFilter===next?null:next;renderNavigation();return;}const edit=e.target.closest('.scale-edit-trigger');if(!edit||scaleEdit)return;e.preventDefault();e.stopPropagation();if(edit.id==='coords'){const cur=lastMouse||{x:cameraState.x,z:cameraState.z};beginScaleEdit('coords',edit,`${cur.x.toFixed(1)} ${cur.z.toFixed(1)}`);}else if(edit.id==='zoom'){beginScaleEdit('zoom',edit,String(zoomPercent()));}},true);
     root.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='navSearch'){navQuery=String(t.value||'');renderNavigation();}});
     root.addEventListener('keydown',e=>{const t=e.target;if(t&&t.id==='navSearch'&&e.key==='Escape'){if(navQuery){e.preventDefault();navQuery='';t.value='';renderNavigation();}}});
-    root.addEventListener('click',e=>{const node=e.target.closest('[data-action],[data-tool],[data-material],[data-prop],[data-focus],[data-context],[data-layer-toggle]');if(!node)return;if(node.dataset.layerToggle){const id=node.dataset.layerToggle;if(!Object.prototype.hasOwnProperty.call(state.layers,id))return;state.layers[id]=!state.layers[id];renderNavigation();renderLayers();persist();drawFrame();return;}if(node.dataset.focus){goTo(node.dataset.focus);return;}if(node.dataset.tool){tool=node.dataset.tool;renderTools();return;}if(node.dataset.material){material=node.dataset.material;tool='paint';renderPalette();renderTools();return;}if(node.dataset.prop){propType=node.dataset.prop;tool='stamp';renderPalette();renderTools();return;}if(node.dataset.context){state.context=node.dataset.context;root.querySelectorAll('[data-context]').forEach(b=>b.classList.toggle('active',b===node));persist();toast(state.context==='saga'?'Saga-Ebene ausgewählt (Demo)':'Welt-Ebene ausgewählt');return;}switch(node.dataset.action){case'side':$('side').classList.toggle('open');break;case'inspect':$('inspector').classList.toggle('open');break;case'home':tiltEnabled=false;tiltAngle=Math.PI/2;applyYawDegrees(0,{draw:false});goTo('world');break;case'plus':zoomAt(.65);break;case'minus':zoomAt(1.55);break;case'undo':undo();break;case'redo':redo();break;case'export':exportJson();break;case'generate':generate();break;}});
+    root.addEventListener('click',e=>{const node=e.target.closest('[data-action],[data-tool],[data-material],[data-prop],[data-focus],[data-context],[data-layer-toggle]');if(!node)return;if(node.dataset.layerToggle){const id=node.dataset.layerToggle;if(!Object.prototype.hasOwnProperty.call(state.layers,id))return;state.layers[id]=!state.layers[id];renderNavigation();renderLayers();persist();drawFrame();return;}if(node.dataset.focus){goTo(node.dataset.focus);return;}if(node.dataset.tool){trySetTool(node.dataset.tool);return;}if(node.dataset.material){if(!allowMutation('paint'))return;material=node.dataset.material;trySetTool('paint');renderPalette();return;}if(node.dataset.prop){if(!allowMutation('stamp'))return;propType=node.dataset.prop;trySetTool('stamp');renderPalette();return;}if(node.dataset.context){state.context=node.dataset.context;root.querySelectorAll('[data-context]').forEach(b=>b.classList.toggle('active',b===node));persist();toast(state.context==='saga'?'Saga-Ebene ausgewählt (Demo)':'Welt-Ebene ausgewählt');return;}switch(node.dataset.action){case'side':$('side').classList.toggle('open');break;case'inspect':$('inspector').classList.toggle('open');break;case'home':tiltEnabled=false;tiltAngle=Math.PI/2;applyYawDegrees(0,{draw:false});goTo('world');break;case'plus':zoomAt(.65);break;case'minus':zoomAt(1.55);break;case'undo':undo();break;case'redo':redo();break;case'export':exportJson();break;case'generate':generate();break;}});
     root.addEventListener('change',e=>{const t=e.target;if(t.dataset.layer){state.layers[t.dataset.layer]=t.checked;renderLayers();renderNavigation();persist();drawFrame();}if(t.id==='dungeonTheme'){snapshot();state.theme=t.value;if(engine)buildDungeonGeometry();persist();drawFrame();}if(t.id==='tiltToggle'){tiltEnabled=!!t.checked;if(tiltEnabled&&tiltAngle>1.4)tiltAngle=1.05;if(!tiltEnabled)tiltAngle=Math.PI/2;syncYawDialUi();drawFrame();}});
     // Yaw dial — drag around the button to rotate the map in-plane (degrees visible).
     root.addEventListener('pointerdown',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;if(scaleEdit)return;e.preventDefault();e.stopPropagation();const rect=dial.getBoundingClientRect();const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;yawDrag={cx,cy,pointerId:e.pointerId,x0:e.clientX,y0:e.clientY,moved:0};try{dial.setPointerCapture(e.pointerId);}catch{};},{capture:true});
@@ -643,8 +776,8 @@ export function mountAtlasPrototype3d(host, options = {}) {
     root.addEventListener('wheel',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;e.preventDefault();e.stopPropagation();applyYawDegrees(yawDegrees()+Math.sign(e.deltaY||1)*5);},{passive:false,capture:true});
     root.addEventListener('keydown',e=>{const dial=e.target.closest('#yawDial');if(!dial)return;let step=0;if(e.key==='ArrowLeft'||e.key==='ArrowDown')step=-5;else if(e.key==='ArrowRight'||e.key==='ArrowUp')step=5;else if(e.key==='Home'){applyYawDegrees(0);e.preventDefault();return;}else return;e.preventDefault();applyYawDegrees(yawDegrees()+step);});
     $('roomCount').addEventListener('input',e=>{$('roomText').textContent=e.target.value;});$('brushSize').addEventListener('input',e=>{$('brushText').textContent=e.target.value;});
-    stage.addEventListener('pointerdown',e=>{const lbl=e.target.closest('.map-label');if(lbl&&e.button===0){beginLabelDrag(lbl.dataset.mapLabel,e,lbl);return;}pointerDown(e);});stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerUp);stage.addEventListener('lostpointercapture',e=>{if(labelDrag)endLabelDrag(e);else pointerUp(e);});window.addEventListener('blur',()=>{pointer=null;labelDrag=null;orbit=null;stage.classList.remove('drag');});stage.addEventListener('wheel',e=>{if(e.target.closest('.action-tools,.scale-widget,.map-label'))return;if(Math.abs(e.deltaY)<1.5)return;e.preventDefault();e.stopPropagation();const p=atStageEvent(e);zoomAt(Math.exp(e.deltaY*.00165),p.x,p.y);},{passive:false});stage.addEventListener('dblclick',e=>{if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;const ladder=['world','city','dungeon','room'];const cur=ladder.indexOf(levelFromView()==='region'?'world':levelFromView());goTo(ladder[Math.min(ladder.length-1,Math.max(0,cur)+1)]);});
-    root.tabIndex=0;root.addEventListener('keydown',e=>{const t=e.target;if(t.matches('input,select,textarea')||t.closest('input,select,textarea'))return;const k=e.key.toLowerCase();if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(k==='escape'||k==='v')tool='hand';if(k==='b')tool='paint';if(k==='s')tool='stamp';if(k==='w')tool='wall';if(k==='+'||k==='=')zoomAt(.7);if(k==='-')zoomAt(1.4);renderTools();});
+    stage.addEventListener('pointerdown',e=>{const lbl=e.target.closest('.map-label');if(lbl&&e.button===0){beginLabelDrag(lbl.dataset.mapLabel,e,lbl);return;}pointerDown(e);});stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',pointerUp);stage.addEventListener('pointercancel',pointerUp);stage.addEventListener('lostpointercapture',e=>{if(labelDrag)endLabelDrag(e);else pointerUp(e);});window.addEventListener('blur',()=>{pointer=null;labelDrag=null;orbit=null;stage.classList.remove('drag');});stage.addEventListener('wheel',e=>{if(e.target.closest('.action-tools,.scale-widget,.map-label'))return;if(Math.abs(e.deltaY)<1.5)return;e.preventDefault();e.stopPropagation();const p=atStageEvent(e);zoomAt(Math.exp(e.deltaY*.00165),p.x,p.y);},{passive:false});stage.addEventListener('dblclick',e=>{if(e.target.closest('.action-tools,.scale-widget,.hotspot,.map-label'))return;if(productNavActive()){toast('Zoom-Einstieg nur über verortete Primärkarten');return;}const ladder=['world','city','dungeon','room'];const cur=ladder.indexOf(levelFromView()==='region'?'world':levelFromView());goTo(ladder[Math.min(ladder.length-1,Math.max(0,cur)+1)]);});
+    root.tabIndex=0;root.addEventListener('keydown',e=>{const t=e.target;if(t.matches('input,select,textarea')||t.closest('input,select,textarea'))return;const k=e.key.toLowerCase();if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();e.shiftKey?redo():undo();return;}if(k==='escape'||k==='v'){trySetTool('hand');return;}if(k==='b'){trySetTool('paint');return;}if(k==='s'){trySetTool('stamp');return;}if(k==='w'){trySetTool('wall');return;}if(k==='+'||k==='=')zoomAt(.7);if(k==='-')zoomAt(1.4);renderTools();});
 
 
     let orbit=null;
@@ -670,6 +803,43 @@ export function mountAtlasPrototype3d(host, options = {}) {
     root.querySelector('#importFile').addEventListener('change',e=>{importProject(e.target.files?.[0]);e.target.value='';});
 
     root.addEventListener('click',e=>{const n=e.target.closest('[data-action]');if(!n)return;if(n.dataset.action==='import')$('importFile').click();if(n.dataset.action==='png')exportPNG();});
+    updateExternalNavImpl = function updateExternalNav(tree) {
+      if (disposed) return;
+      externalNav = tree && typeof tree === 'object' ? tree : null;
+      syncProductNavChrome();
+      navFilterMounted = false;
+      renderNavigation();
+      updateLevel();
+    };
+    setActiveNavPlaceIdImpl = function setActiveNavPlaceId(id) {
+      if (disposed) return;
+      selectedExternalId = typeof id === 'string' && id ? id : null;
+      renderNavigation();
+    };
+    setToolChromeImpl = function setToolChrome(rows) {
+      if (disposed) return;
+      toolChrome = Array.isArray(rows) ? rows.slice() : null;
+      syncToolToChrome();
+      renderTools();
+      renderPalette();
+    };
+    setCanEditImpl = function setCanEdit(ok) {
+      if (disposed) return;
+      canEditMaps = ok !== false;
+      if (!canEditMaps && tool !== 'hand') {
+        tool = 'hand';
+        renderTools();
+      }
+    };
+    setMapSketchStatusImpl = function setMapSketchStatus(status) {
+      if (disposed) return;
+      mapSketchStatus = typeof status === 'string' ? status : null;
+      wrap.setAttribute('data-atlas-map-status', mapSketchStatus || 'unknown');
+      try { rebuildMapBases(); } catch { /* boot order */ }
+      renderNavigation();
+      updateLevel();
+      drawFrame();
+    };
     disposeRuntime = function __disposeAtlasPrototype() {
       try { if (typeof renderLoop !== 'undefined' && renderLoop) cancelAnimationFrame(renderLoop); } catch (e) {}
       try { if (typeof animID !== 'undefined' && animID) cancelAnimationFrame(animID); } catch (e) {}
@@ -684,6 +854,21 @@ export function mountAtlasPrototype3d(host, options = {}) {
       try { disposeRuntime(); } catch (e) {}
       styleEl.remove();
       wrap.remove();
+    },
+    updateExternalNav(tree) {
+      updateExternalNavImpl(tree);
+    },
+    setActiveNavPlaceId(id) {
+      setActiveNavPlaceIdImpl(id);
+    },
+    setToolChrome(rows) {
+      setToolChromeImpl(rows);
+    },
+    setCanEdit(ok) {
+      setCanEditImpl(ok);
+    },
+    setMapSketchStatus(status) {
+      setMapSketchStatusImpl(status);
     },
   };
 }

@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "result": {
+    "ok": true,
+    "events": [
+      {
+        "type": "add",
+        "uiKind": "land",
+        "parentId": "c1"
+      },
+      {
+        "type": "dup",
+        "placeId": "k1"
+      },
+      {
+        "type": "reparent",
+        "placeId": "k1"
+      },
+      {
+        "type": "archive",
+        "placeId": "k1"
+      }
+    ],
+    "archiveLabel": "Archivieren"
+  }
+}

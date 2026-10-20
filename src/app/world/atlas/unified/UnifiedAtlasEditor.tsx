@@ -47,9 +47,11 @@ import {
   isAtlasToolAllowed,
   isSettlementLodId,
   atlasZoomCaption,
+  emptyWebglRuntime,
   parseWebglRuntimeState,
   pickObjectAt,
   readLegacyWebglLocalStorage,
+  syncCanvasDocIntoWebglRuntime,
   syncWebglPropsIntoCanvasDoc,
   type AtlasPrototypeLevelId,
   type DungeonGeneratorMeta,
@@ -80,6 +82,7 @@ import {
   stampSizeForAuthor,
   type AtlasPlaceAuthorKind,
   type AtlasPlaceNavItem,
+  type AtlasWebglNavTree,
   type SettlementPresetId,
 } from '../../../../domains/world/places';
 import {
@@ -127,8 +130,31 @@ export type UnifiedAtlasEditorProps = {
   readonly onCreatePlace?: (input: UnifiedAtlasCreatePlaceInput) => Promise<void>;
   /** DB places with map-link anchors — drives zoom nav + LOD when present. */
   readonly placeNav?: readonly AtlasPlaceNavItem[];
+  /** Product WebGL #nav tree from persisted WorldNodes (#747). */
+  readonly webglNavTree?: AtlasWebglNavTree | null;
+  readonly activePlaceId?: string | null;
+  readonly onWebglNavSelect?: (payload: {
+    readonly placeId: string | null;
+    readonly mapId: string | null;
+    readonly worldRoot: boolean;
+    readonly located?: boolean;
+    readonly drillAllowed?: boolean;
+  }) => void;
+  readonly onWebglNavRename?: (payload: {
+    readonly placeId: string;
+    readonly label: string;
+  }) => void;
+  readonly onWebglNavAdd?: (payload: {
+    readonly uiKind: string;
+    readonly parentId: string;
+  }) => void;
+  readonly onWebglNavDuplicate?: (payload: { readonly placeId: string }) => void;
+  readonly onWebglNavArchive?: (payload: { readonly placeId: string }) => void;
+  readonly onWebglNavReparent?: (payload: { readonly placeId: string }) => void;
   /** Active WorldNode tip for contextual tool palette (#720). */
   readonly activeNodeKind?: WorldNodeKind | null;
+  /** Active map sketch status for WebGL empty/drill gates (#752). */
+  readonly mapSketchStatus?: 'unlocated' | 'unsketched' | 'ready' | null;
   /** Optional floating chrome on the canvas (e.g. Karten hierarchy rail). */
   readonly canvasLeftRail?: ReactNode;
   /** Active map identity for controlled WebGL remount (#721). */
@@ -281,12 +307,21 @@ function drawStamp(
 export function UnifiedAtlasEditor({
   doc,
   canEdit,
-  onDocChange,
+  onDocChange: onDocChangeProp,
   dungeonMeta = null,
   onDungeonMetaChange,
   onCreatePlace,
   placeNav = [],
+  webglNavTree = null,
+  activePlaceId = null,
+  onWebglNavSelect,
+  onWebglNavRename,
+  onWebglNavAdd,
+  onWebglNavDuplicate,
+  onWebglNavArchive,
+  onWebglNavReparent,
   activeNodeKind = null,
+  mapSketchStatus = null,
   canvasLeftRail = null,
   mapKey = 'map',
   webglRuntime = null,
@@ -304,12 +339,29 @@ export function UnifiedAtlasEditor({
   dungeonMetaRef.current = dungeonMeta;
   const placeNavRef = useRef(placeNav);
   placeNavRef.current = placeNav;
+  const webglRuntimeRef = useRef(webglRuntime);
+  webglRuntimeRef.current = webglRuntime;
   const pinArmedRef = useRef(false);
   const marqueeArmedRef = useRef(false);
   const legacySeedRef = useRef<WebglRuntimeState | null | undefined>(undefined);
   if (legacySeedRef.current === undefined) {
     legacySeedRef.current = webglRuntime ? null : readLegacyWebglLocalStorage();
   }
+
+  /** 2D doc mutations also refresh webglRuntime so 3D remount / save stay ghost-free (#749). */
+  const onDocChange = useCallback(
+    (next: UnifiedCanvasDoc) => {
+      onDocChangeProp(next);
+      if (!onWebglRuntimeChange || next.demoSeed !== false) return;
+      const nextRuntime = syncCanvasDocIntoWebglRuntime(
+        webglRuntimeRef.current ?? emptyWebglRuntime(),
+        next,
+      );
+      webglRuntimeRef.current = nextRuntime;
+      onWebglRuntimeChange(nextRuntime);
+    },
+    [onDocChangeProp, onWebglRuntimeChange],
+  );
   const [surfaceMode, setSurfaceMode] = useState<'3d' | '2d'>('3d');
 
   const [tool, setTool] = useState<UnifiedCanvasTool>('hand');  const [material, setMaterial] = useState<UnifiedCanvasMaterial>('gras');
@@ -1199,19 +1251,28 @@ export function UnifiedAtlasEditor({
   const hasDbPlaces = placeNav.length > 0;
   const isDemo = workingDoc.demoSeed !== false;
   const isWorldStarter = workingDoc.rooms.some((r) => r.id === 'w.ocean');
-  const controlledSeed = webglRuntime ?? legacySeedRef.current ?? null;
+  /** Always re-project from current canvas doc so 2D deletes survive 3D remount (#749). */
+  const controlledSeed = useMemo(
+    () =>
+      syncCanvasDocIntoWebglRuntime(
+        webglRuntime ?? legacySeedRef.current ?? emptyWebglRuntime(),
+        doc,
+      ),
+    [webglRuntime, doc],
+  );
 
   const handleWebglPersist = useCallback(
     (state: WebglRuntimeState) => {
       const parsed = parseWebglRuntimeState(state);
       if (!parsed) return;
+      webglRuntimeRef.current = parsed;
       onWebglRuntimeChange?.(parsed);
       const synced = syncWebglPropsIntoCanvasDoc(docRef.current, parsed);
-      if (synced !== docRef.current) {
-        onDocChange(synced);
-      }
+      docRef.current = synced;
+      // Use raw prop — avoid re-deriving runtime from doc (3D state is already authoritative).
+      onDocChangeProp(synced);
     },
-    [onDocChange, onWebglRuntimeChange],
+    [onDocChangeProp, onWebglRuntimeChange],
   );
 
   // Product maps: controlled WebGL (#721) — generator_meta is SoT; Draufsicht (2D) optional.
@@ -1244,6 +1305,17 @@ export function UnifiedAtlasEditor({
           controlled
           seedState={controlledSeed}
           onPersist={canEdit ? handleWebglPersist : undefined}
+          externalNav={webglNavTree}
+          activePlaceId={activePlaceId}
+          activeNodeKind={activeNodeKind ?? null}
+          canEdit={canEdit}
+          mapSketchStatus={mapSketchStatus ?? null}
+          onNavSelect={onWebglNavSelect}
+          onNavRename={canEdit ? onWebglNavRename : undefined}
+          onNavAdd={canEdit ? onWebglNavAdd : undefined}
+          onNavDuplicate={canEdit ? onWebglNavDuplicate : undefined}
+          onNavArchive={canEdit ? onWebglNavArchive : undefined}
+          onNavReparent={canEdit ? onWebglNavReparent : undefined}
         />
       </div>
     );
