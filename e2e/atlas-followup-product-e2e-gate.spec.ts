@@ -2,7 +2,7 @@
  * atlas-followup-product-e2e-gate — Epic #746 closer (#755).
  * Location: e2e/atlas-followup-product-e2e-gate.spec.ts
  *
- * Contract mode (default CI): Local Admin + mocked world atlas payload must mount
+ * Contract mode (default CI): Local Admin + mocked world atlas RPCs must mount
  * product WebGL with DB nav + registry tools. Live mode: set E2E_ATLAS_PRODUCT=1.
  */
 import { test, expect, type Page, type Route } from '@playwright/test';
@@ -13,13 +13,13 @@ import {
   installLocalAdminGoTrueSuccess,
   E2E_LOCAL_ADMIN_USER_ID,
 } from './helpers/auth';
-import { isInertSupabaseEnv } from './helpers/supabase-env';
 
 const EVIDENCE = '.qa/evidence/atlas-followup-real-product-e2e';
 const LIVE = process.env.E2E_ATLAS_PRODUCT === '1';
 const WORLD_PUBLIC = 'WO-9FFK6';
 const WORLD_UUID = '8f52b273-60fe-4823-ae7d-d9e70469b730';
 const MAP_WORLD = '76ca488e-76a4-4753-8dae-43f8b6ce6c43';
+const PLACE_ID = 'd4cd0cd9-806e-49da-bb90-83cbaf281a7d';
 
 function json(route: Route, value: unknown, status = 200) {
   return route.fulfill({
@@ -29,103 +29,119 @@ function json(route: Route, value: unknown, status = 200) {
   });
 }
 
+function wantsSingleObject(route: Route): boolean {
+  const accept = route.request().headers()['accept'] ?? '';
+  return accept.includes('vnd.pgrst.object');
+}
+
+const WORLD_ROW = {
+  id: WORLD_UUID,
+  public_id: WORLD_PUBLIC,
+  owner_user_id: E2E_LOCAL_ADMIN_USER_ID,
+  name: 'Donalu',
+  description: null,
+  modules: {},
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+};
+
+const MAP_SUMMARY = {
+  id: MAP_WORLD,
+  worldProfileId: WORLD_UUID,
+  parentMapId: null,
+  kind: 'world',
+  title: 'Welt',
+  sortOrder: 0,
+  revision: 1,
+  updatedAt: '2026-01-01T00:00:00.000Z',
+  hasAzgaarMap: false,
+  hasBasemap: false,
+};
+
+const MAP_VM = {
+  ...MAP_SUMMARY,
+  bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+  layers: { type: 'FeatureCollection', features: [] },
+  basemapStoragePath: null,
+  azgaarMapStoragePath: null,
+  generatorMeta: {
+    engine: 'unified_canvas',
+    mapStatus: 'ready',
+    demoSeed: false,
+    unifiedCanvas: {
+      format: 'sagatree-unified-atlas-v1',
+      revision: 1,
+      objects: [],
+      strokes: [],
+      walls: [],
+      rooms: [],
+    },
+  },
+};
+
 async function installAtlasMocks(page: Page) {
   await page.route('**/rest/v1/world_profiles*', async (route) => {
     if (route.request().method() !== 'GET') {
       await route.fallback();
       return;
     }
-    await json(route, [
-      {
-        id: WORLD_UUID,
-        public_id: WORLD_PUBLIC,
-        owner_user_id: E2E_LOCAL_ADMIN_USER_ID,
-        name: 'Donalu',
-        description: null,
-      },
-    ]);
-  });
-
-  await page.route('**/rest/v1/world_atlas_maps*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
+    if (wantsSingleObject(route) || route.request().url().includes('public_id=eq.')) {
+      await json(route, WORLD_ROW);
       return;
     }
-    await json(route, [
-      {
-        id: MAP_WORLD,
-        world_profile_id: WORLD_UUID,
-        parent_map_id: null,
-        kind: 'world',
-        title: 'Welt',
-        sort_order: 0,
-        bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
-        layers: { type: 'FeatureCollection', features: [] },
-        generator_meta: {
-          engine: 'unified_canvas',
-          mapStatus: 'ready',
-          demoSeed: false,
-          unifiedCanvas: {
-            format: 'sagatree-unified-atlas-v1',
-            revision: 1,
-            objects: [],
-            strokes: [],
-            walls: [],
-            rooms: [],
-          },
+    await json(route, [WORLD_ROW]);
+  });
+
+  await page.route('**/rest/v1/rpc/ensure_world_atlas_root*', async (route) => {
+    await json(route, { maps: [MAP_SUMMARY] });
+  });
+  await page.route('**/rest/v1/rpc/list_world_atlas_maps*', async (route) => {
+    await json(route, { maps: [MAP_SUMMARY] });
+  });
+  await page.route('**/rest/v1/rpc/get_world_atlas_map*', async (route) => {
+    await json(route, MAP_VM);
+  });
+  await page.route('**/rest/v1/rpc/list_world_places*', async (route) => {
+    await json(route, {
+      places: [
+        {
+          id: PLACE_ID,
+          worldProfileId: WORLD_UUID,
+          parentPlaceId: null,
+          kind: 'settlement',
+          name: 'Dornhain',
+          description: null,
+          status: 'canonical',
+          seedKey: null,
+          sortOrder: 0,
+          revision: 1,
         },
-        revision: 1,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ]);
+      ],
+    });
   });
-
-  await page.route('**/rest/v1/world_places*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, [
-      {
-        id: 'd4cd0cd9-806e-49da-bb90-83cbaf281a7d',
-        world_profile_id: WORLD_UUID,
-        parent_place_id: null,
-        kind: 'settlement',
-        name: 'Dornhain',
-        status: 'canonical',
-        sort_order: 0,
-      },
-    ]);
-  });
-
-  await page.route('**/rest/v1/world_place_map_links*', async (route) => {
-    if (route.request().method() !== 'GET') {
-      await route.fallback();
-      return;
-    }
-    await json(route, [
-      {
-        id: 'link-1',
-        world_profile_id: WORLD_UUID,
-        place_id: 'd4cd0cd9-806e-49da-bb90-83cbaf281a7d',
-        map_id: MAP_WORLD,
-        usage: 'overview',
-        anchor: { x: 500, y: 500 },
-      },
-    ]);
+  await page.route('**/rest/v1/rpc/list_world_place_map_links*', async (route) => {
+    await json(route, {
+      links: [
+        {
+          id: 'link-1',
+          worldProfileId: WORLD_UUID,
+          placeId: PLACE_ID,
+          mapId: MAP_WORLD,
+          usage: 'overview',
+          featureId: null,
+          anchor: { x: 500, y: 500 },
+        },
+      ],
+    });
   });
 }
 
-test.beforeAll(() => {
-  fs.mkdirSync(EVIDENCE, { recursive: true });
-});
-
 test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ page }) => {
   test.setTimeout(90_000);
-  if (isInertSupabaseEnv()) {
-    await installLocalAdminGoTrueSuccess(page);
-  }
+  fs.mkdirSync(EVIDENCE, { recursive: true });
+  // Contract path always stubs GoTrue so JWT + RPC mocks stay deterministic
+  // whether CI uses inert placeholders or live secret URLs.
+  await installLocalAdminGoTrueSuccess(page);
   await installAtlasMocks(page);
   await ensureLoggedIn(page);
 
@@ -161,13 +177,11 @@ test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ p
   );
 });
 
-test('cross-owner atlas REST remains denied without ownership (negative)', async ({ page }) => {
+test('cross-owner atlas RPC remains denied without ownership (negative)', async ({ page }) => {
   test.setTimeout(60_000);
-  if (isInertSupabaseEnv()) {
-    await installLocalAdminGoTrueSuccess(page);
-  }
+  await installLocalAdminGoTrueSuccess(page);
   let denied = false;
-  await page.route('**/rest/v1/world_atlas_maps*', async (route) => {
+  await page.route('**/rest/v1/world_profiles*', async (route) => {
     if (route.request().method() === 'GET') {
       denied = true;
       await json(route, { message: 'JWT denied cross-owner', code: '42501' }, 401);
@@ -175,9 +189,17 @@ test('cross-owner atlas REST remains denied without ownership (negative)', async
     }
     await route.fallback();
   });
+  await page.route('**/rest/v1/rpc/list_world_atlas_maps*', async (route) => {
+    denied = true;
+    await json(route, { message: 'JWT denied cross-owner', code: '42501' }, 401);
+  });
+  await page.route('**/rest/v1/rpc/ensure_world_atlas_root*', async (route) => {
+    denied = true;
+    await json(route, { message: 'JWT denied cross-owner', code: '42501' }, 401);
+  });
   await ensureLoggedIn(page);
   await page.goto(`/library/worlds/${WORLD_PUBLIC}/map`);
-  await page.waitForTimeout(1500);
+  await expect(page.getByRole('alert')).toBeVisible({ timeout: 20_000 });
   expect(denied).toBe(true);
 });
 
