@@ -1,0 +1,1963 @@
+{
+  "prepIssue": 778,
+  "edgeCount": 24,
+  "infraCount": 13,
+  "sharedModules": [
+    "ai-gm-rate-limit.ts",
+    "ai-gm-rate-limit_test.ts",
+    "ai-provider-credentials_test.ts",
+    "ai-provider-crypto.ts",
+    "ai-provider-meshy.ts",
+    "ai-provider-registry.ts",
+    "ai-provider-resolve-meshy.ts",
+    "avatar-3d-generation.ts",
+    "avatar-3d-generation_test.ts",
+    "avatar-meshy-rate-limit.ts",
+    "avatar-meshy-remesh.ts",
+    "avatar-meshy-remesh_test.ts",
+    "avatar-meshy-rigging.ts",
+    "avatar-meshy-rigging_test.ts",
+    "avatar-meshy-text-to-3d.ts",
+    "character-lore-access.ts",
+    "character-lore-access_test.ts",
+    "character-lore-prompt.ts",
+    "character-lore-prompt_test.ts",
+    "character-lore-provider.ts",
+    "character-lore-rate-limit.ts",
+    "character-lore-rate-limit_test.ts",
+    "cors.ts",
+    "edge-dispatcher-allowlist.ts",
+    "edge-dispatcher-allowlist_test.ts",
+    "edge-jwt-gate.ts",
+    "edge-jwt-gate_test.ts",
+    "item-model3d-glb.ts",
+    "item-model3d-meshy.ts",
+    "item-model3d-rate-limit.ts",
+    "item-model3d_test.ts",
+    "item-thumbnail-image.ts",
+    "item-thumbnail-meshy.ts",
+    "item-thumbnail-prompt.ts",
+    "item-thumbnail-rate-limit.ts",
+    "item-thumbnail_test.ts",
+    "look-reference-analysis-image.ts",
+    "look-reference-analysis-provider.ts",
+    "look-reference-analysis-rate-limit.ts",
+    "media-server-optimize-proof.proof.ts",
+    "media-server-optimize-proof.ts",
+    "media-server-raster-optimize.proof.ts",
+    "media-server-raster-optimize.ts",
+    "media-server-raster-optimize_test.ts",
+    "session-media-token.ts",
+    "session-membership-gate.ts",
+    "session-recap-prompt.ts",
+    "session-recap-provider.ts",
+    "session-recap-rate-limit.ts"
+  ],
+  "edges": [
+    {
+      "function": "ai-gm",
+      "files": [
+        "supabase/functions/ai-gm/index.ts"
+      ],
+      "methods": [
+        "GET /health",
+        "POST",
+        "OPTIONS"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_ANON_KEY",
+        "CHARACTER_AI_PROVIDER",
+        "CHARACTER_AI_MODEL",
+        "CHARACTER_AI_BASE_URL",
+        "CHARACTER_AI_API_KEY",
+        "OLLAMA_HOST",
+        "OLLAMA_MODEL",
+        "AI_GM_RATE_LIMIT",
+        "LOREKEEPER_URL",
+        "SESSIONS_URL"
+      ],
+      "sharedModules": [
+        "cors.ts",
+        "ai-gm-rate-limit.ts",
+        "session-membership-gate.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "sessionId": "string",
+        "action": "string \u22645000",
+        "context": "Partial SessionContext",
+        "stream": "bool default true",
+        "ruleset": "dnd5e|pathfinder2e|custom",
+        "tone": "serious|lighthearted|dark|heroic"
+      },
+      "successContract": {
+        "stream": "NDJSON narrative chunks then complete with worldStateUpdate/diceRollsRequired/combatInitiated",
+        "nonStream": "GMResponse JSON"
+      },
+      "errorContract": [
+        {
+          "status": "400",
+          "reason": "validation",
+          "when": "missing sessionId/action or action too long"
+        },
+        {
+          "status": "401",
+          "reason": "Authentication required",
+          "when": "rate-limit path without user"
+        },
+        {
+          "status": "403",
+          "reason": "membership gate",
+          "when": "assertSessionMemberAccess deny"
+        },
+        {
+          "status": "429",
+          "reason": "rate limit",
+          "when": "persistent AI_GM quota window"
+        },
+        {
+          "status": "503",
+          "reason": "service unavailable",
+          "when": "missing service-role config or rate-limit store failure"
+        }
+      ],
+      "authz": "assertSessionMemberAccess(sessionId) before any LLM/lorekeeper; persistent per-user rate limit (#670)",
+      "sideEffects": "May call lorekeeper NPC context; may updateSessionWorldState; consumes persistent rate-limit counter; must not leak gm_only lore to non-GM (verify/filter parity)",
+      "proposedService": "server/src/services/ai-gm/generate-gm-narrative.ts",
+      "requiredTests": [
+        "Non-member POST \u2192 403 before provider call (mock provider must not be hit)",
+        "Missing JWT on rate-limit path \u2192 401",
+        "Exceed AI_GM_RATE_LIMIT in window \u2192 429 German error; no narrative",
+        "Happy path stream emits narrative then complete metadata",
+        "action length >5000 \u2192 400",
+        "Provider/API key never present in error JSON",
+        "GM-only NPC memories not included for player-role callers (document filter; mark BLOCKED parity gap if current edge lacks filter)",
+        "Health GET returns provider+model without secrets"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "BLOCKED on GATE-02/03 + provider credential store design (ai-provider-credentials parity)",
+      "rateLimits": "AI_GM persistent quota"
+    },
+    {
+      "function": "ai-provider-credentials",
+      "files": [
+        "supabase/functions/ai-provider-credentials/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE",
+        "CREDENTIALS_ENCRYPTION_KEY",
+        "MESHY_API_BASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "ai-provider-crypto.ts",
+        "ai-provider-meshy.ts",
+        "ai-provider-registry.ts",
+        "cors.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/ai/ai-provider-credentials-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/ai-provider-credentials/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "bestiary",
+      "files": [
+        "supabase/functions/bestiary/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/bestiary/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "character-avatar-meshy",
+      "files": [
+        "supabase/functions/character-avatar-meshy/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "MESHY_API_BASE_URL",
+        "MESHY_AVATAR_USE_MOCK",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "ai-provider-resolve-meshy.ts",
+        "avatar-3d-generation.ts",
+        "avatar-meshy-rate-limit.ts",
+        "avatar-meshy-remesh.ts",
+        "avatar-meshy-rigging.ts",
+        "avatar-meshy-text-to-3d.ts",
+        "cors.ts",
+        "item-model3d-glb.ts",
+        "item-model3d-meshy.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/character/avatar/character-avatar-meshy-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/character-avatar-meshy/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "character-lore",
+      "files": [
+        "supabase/functions/character-lore/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "CHARACTER_AI_RATE_LIMIT_PER_MINUTE",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "character-lore-access.ts",
+        "character-lore-prompt.ts",
+        "character-lore-provider.ts",
+        "character-lore-rate-limit.ts",
+        "cors.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/character/character-lore-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/character-lore/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "characters",
+      "files": [
+        "supabase/functions/characters/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/characters/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "dm-tools",
+      "files": [
+        "supabase/functions/dm-tools/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "REDIS_URL"
+      ],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/dm-tools/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "none documented \u2014 preserve any existing"
+    },
+    {
+      "function": "export",
+      "files": [
+        "supabase/functions/export/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/export/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "none documented \u2014 preserve any existing"
+    },
+    {
+      "function": "item-model3d",
+      "files": [
+        "supabase/functions/item-model3d/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "ITEM_MODEL3D_MESHY_MOCK",
+        "ITEM_MODEL3D_RATE_LIMIT_PER_MINUTE",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "ai-provider-resolve-meshy.ts",
+        "cors.ts",
+        "item-model3d-glb.ts",
+        "item-model3d-meshy.ts",
+        "item-model3d-rate-limit.ts",
+        "item-thumbnail-image.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/inventory/item-model3d-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/item-model3d/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "item-thumbnail",
+      "files": [
+        "supabase/functions/item-thumbnail/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "ITEM_THUMBNAIL_MESHY_MOCK",
+        "ITEM_THUMBNAIL_RATE_LIMIT_PER_MINUTE",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "ai-provider-resolve-meshy.ts",
+        "cors.ts",
+        "item-thumbnail-image.ts",
+        "item-thumbnail-meshy.ts",
+        "item-thumbnail-prompt.ts",
+        "item-thumbnail-rate-limit.ts",
+        "media-server-raster-optimize.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/inventory/item-thumbnail-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/item-thumbnail/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "items",
+      "files": [
+        "supabase/functions/items/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/items/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "look-reference-analysis",
+      "files": [
+        "supabase/functions/look-reference-analysis/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "LOOK_AI_RATE_LIMIT_PER_MINUTE",
+        "LOOK_REFERENCE_STORAGE_BUCKET",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "cors.ts",
+        "look-reference-analysis-image.ts",
+        "look-reference-analysis-provider.ts",
+        "look-reference-analysis-rate-limit.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/look/look-reference-analysis-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/look-reference-analysis/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "lorekeeper",
+      "files": [
+        "supabase/functions/lorekeeper/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/lorekeeper/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "main",
+      "files": [
+        "supabase/functions/main/index.ts"
+      ],
+      "methods": [
+        "POST?"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": false,
+      "envSecrets": [],
+      "sharedModules": [
+        "edge-dispatcher-allowlist.ts",
+        "edge-jwt-gate.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/main/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "none documented \u2014 preserve any existing"
+    },
+    {
+      "function": "marketplace",
+      "files": [
+        "supabase/functions/marketplace/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/marketplace/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "media",
+      "files": [
+        "supabase/functions/media/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/media/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "npcs",
+      "files": [
+        "supabase/functions/npcs/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/npcs/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "quests",
+      "files": [
+        "supabase/functions/quests/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/quests/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "rulesets",
+      "files": [
+        "supabase/functions/rulesets/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/rulesets/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "none documented \u2014 preserve any existing"
+    },
+    {
+      "function": "session-media-token",
+      "files": [
+        "supabase/functions/session-media-token/index.ts"
+      ],
+      "methods": [
+        "POST",
+        "OPTIONS"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "SUPABASE_URL",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "LIVEKIT_API_KEY",
+        "LIVEKIT_API_SECRET",
+        "LIVEKIT_URL"
+      ],
+      "sharedModules": [
+        "cors.ts",
+        "session-media-token.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/session/media/media-token-client.ts"
+      ],
+      "payloadContract": {
+        "sessionId": "string (required)",
+        "ttlSeconds": "number optional 30..300 (default 120)"
+      },
+      "successContract": {
+        "ok": true,
+        "token": "jwt",
+        "url": "LIVEKIT_URL",
+        "roomId": "sagatree-session-{sessionId}",
+        "expiresAt": "ISO",
+        "ttlSeconds": "number",
+        "grant": {
+          "canPublish": "bool",
+          "canSubscribe": "bool",
+          "receiveOnly": "bool"
+        }
+      },
+      "errorContract": [
+        {
+          "status": "401",
+          "reason": "unauthorized",
+          "when": "missing/invalid JWT"
+        },
+        {
+          "status": "403",
+          "reason": "forbidden",
+          "when": "no active project_members OR role cannot subscribe"
+        },
+        {
+          "status": "400",
+          "reason": "bad_request",
+          "when": "invalid JSON / missing sessionId"
+        },
+        {
+          "status": "405",
+          "reason": "method_not_allowed",
+          "when": "non-POST"
+        },
+        {
+          "status": "503",
+          "reason": "media_service_unavailable",
+          "when": "missing SUPABASE_* or LIVEKIT_* \u2014 gameplay continues degraded"
+        }
+      ],
+      "authz": "Bearer JWT \u2192 auth/v1/user; membership via service-role REST on sessions + project_members (status=active)",
+      "sideEffects": "None persistent. Mints short-lived LiveKit JWT; room name derived server-side; API secret never returned.",
+      "proposedService": "server/src/services/session-media/mint-session-media-token.ts",
+      "requiredTests": [
+        "No Authorization \u2192 401 unauthorized degraded; no token field",
+        "Valid JWT but non-member \u2192 403 forbidden; no LiveKit call",
+        "Viewer without director \u2192 canSubscribe true, canPublish false, receiveOnly true",
+        "Player/GM \u2192 canPublish+canSubscribe; roomId === sagatree-session-{id}",
+        "Response body never contains LIVEKIT_API_SECRET or service role key",
+        "ttlSeconds 999 clamped to 300; ttlSeconds 1 raised to 30",
+        "Missing LIVEKIT_* \u2192 503 media_service_unavailable; client treats as degraded not hard crash",
+        "Cross-sessionId for other project \u2192 403"
+      ],
+      "dependsOnGates": [
+        "GATE-02"
+      ],
+      "status": "BLOCKED until GATE-02 auth successor + LiveKit secret injection design (no prod secrets in CI)",
+      "rateLimits": "none documented \u2014 preserve any existing"
+    },
+    {
+      "function": "session-recap",
+      "files": [
+        "supabase/functions/session-recap/index.ts"
+      ],
+      "methods": [
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": true,
+      "usesSharedCors": true,
+      "envSecrets": [
+        "CHARACTER_AI_RATE_LIMIT_PER_MINUTE",
+        "SESSION_RECAP_AI_RATE_LIMIT_PER_MINUTE",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "sharedModules": [
+        "cors.ts",
+        "session-recap-prompt.ts",
+        "session-recap-provider.ts",
+        "session-recap-rate-limit.ts"
+      ],
+      "callSites": [
+        "src/infrastructure/session/session-recap-ai-service.ts"
+      ],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "JWT/membership required",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/session-recap/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "sessions",
+      "files": [
+        "supabase/functions/sessions/index.ts"
+      ],
+      "methods": [
+        "DELETE",
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/sessions/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "spellbook",
+      "files": [
+        "supabase/functions/spellbook/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/spellbook/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    },
+    {
+      "function": "world",
+      "files": [
+        "supabase/functions/world/index.ts"
+      ],
+      "methods": [
+        "GET",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "hasAuthSignals": false,
+      "usesSharedCors": true,
+      "envSecrets": [],
+      "sharedModules": [
+        "cors.ts"
+      ],
+      "callSites": [],
+      "payloadContract": {
+        "note": "Parse index.ts before implement; document exact body fields in successor PR"
+      },
+      "successContract": {
+        "note": "Match current response shape field-for-field"
+      },
+      "errorContract": [
+        {
+          "status": "401/403",
+          "reason": "authz",
+          "when": "fail closed"
+        },
+        {
+          "status": "4xx/5xx",
+          "reason": "errors",
+          "when": "no secret leakage"
+        }
+      ],
+      "authz": "Document if public/dispatcher-only",
+      "sideEffects": "Document DB/storage/provider writes from source before coding",
+      "proposedService": "server/src/services/world/",
+      "requiredTests": [
+        "Auth reject without valid session (if auth function)",
+        "Happy-path parity vs current Edge response shape",
+        "Error bodies contain no env secrets",
+        "CORS OPTIONS via shared cors equivalent"
+      ],
+      "dependsOnGates": [
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "SPEC \u2014 implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice",
+      "rateLimits": "rate-limit logic present in source \u2014 extract exact limits before port"
+    }
+  ],
+  "infrastructure": [
+    {
+      "area": "ai",
+      "files": [
+        "src/infrastructure/ai/ai-provider-credentials-service.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [],
+      "edgeInvokes": [
+        "ai-provider-credentials"
+      ],
+      "proposedFacade": "src/infrastructure/ai/** \u2192 HTTP/client to server/src/application/ai/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "Edge invoke parity for: ai-provider-credentials"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "EDGE:ai-provider-credentials"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "character",
+      "files": [
+        "src/infrastructure/character/avatar/avatar-animation-runtime.ts",
+        "src/infrastructure/character/avatar/avatar-asset-manifests.ts",
+        "src/infrastructure/character/avatar/avatar-face-tracking-runtime.ts",
+        "src/infrastructure/character/avatar/avatar-facial-runtime.ts",
+        "src/infrastructure/character/avatar/avatar-rigid-equipment-runtime.ts",
+        "src/infrastructure/character/avatar/avatar-skinned-wearable-runtime.ts",
+        "src/infrastructure/character/avatar/avatar-structure-scanner.ts",
+        "src/infrastructure/character/avatar/base-body-catalog.ts",
+        "src/infrastructure/character/avatar/body-profile-metrics.ts",
+        "src/infrastructure/character/avatar/character-avatar-artifact-service.ts",
+        "src/infrastructure/character/avatar/character-avatar-export-service.ts",
+        "src/infrastructure/character/avatar/character-avatar-import-service.ts",
+        "src/infrastructure/character/avatar/character-avatar-meshy-service.ts",
+        "src/infrastructure/character/avatar/character-studio-manifest.ts",
+        "src/infrastructure/character/avatar/character-studio-runtime.ts",
+        "src/infrastructure/character/avatar/face-anchor-runtime.ts",
+        "src/infrastructure/character/avatar/face-mapping-auto-pipeline.ts",
+        "src/infrastructure/character/avatar/face-mapping-base-face-capture-visibility.ts",
+        "src/infrastructure/character/avatar/face-mapping-raycast.ts",
+        "src/infrastructure/character/avatar/mtoon-style-applier.ts",
+        "src/infrastructure/character/avatar/rig-analyzer.ts",
+        "src/infrastructure/character/avatar/rig-bone-aliases.ts",
+        "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+        "src/infrastructure/character/avatar/trait-asset-allowlist.ts",
+        "src/infrastructure/character/avatar/trait-lifecycle-three-adapter.ts",
+        "src/infrastructure/character/character-adventure-arc-service.ts",
+        "src/infrastructure/character/character-lore-service.ts",
+        "src/infrastructure/character/character-preset-service.ts",
+        "src/infrastructure/character/character-service.ts",
+        "src/infrastructure/character/character.persistence.ts",
+        "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
+        "src/infrastructure/character/liveact/gltf-liveact-avatar-output.ts",
+        "src/infrastructure/character/liveact/index.ts",
+        "src/infrastructure/character/liveact/liveact-avatar-output.ts",
+        "src/infrastructure/character/liveact/liveact-camera-claim.ts",
+        "src/infrastructure/character/liveact/liveact-character-face-debug.ts",
+        "src/infrastructure/character/liveact/liveact-engine.ts",
+        "src/infrastructure/character/liveact/liveact-eye-bone-aliases.ts",
+        "src/infrastructure/character/liveact/liveact-face-diagnostics.ts",
+        "src/infrastructure/character/liveact/liveact-morph-target-index.ts",
+        "src/infrastructure/character/liveact/liveact-pose-drive.ts",
+        "src/infrastructure/character/liveact/liveact-retarget-profile-registry.ts",
+        "src/infrastructure/character/liveact/liveact-rig-debug.ts",
+        "src/infrastructure/character/liveact/liveact-session-transport.ts",
+        "src/infrastructure/character/liveact/mediapipe-dense-semantic-points-v1.ts",
+        "src/infrastructure/character/liveact/mediapipe-face-image-landmarker.ts",
+        "src/infrastructure/character/liveact/mediapipe-face-source.ts",
+        "src/infrastructure/character/liveact/mediapipe-iris-geometry-v1.ts",
+        "src/infrastructure/character/liveact/mediapipe-sagatree-face-anchor-map-v1.ts",
+        "src/infrastructure/character/liveact/vrm-liveact-avatar-output.ts",
+        "src/infrastructure/character/supabase-character.repository.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [
+        "character_avatar_artifacts",
+        "character_avatar_export_assets",
+        "character_avatar_import_assets",
+        "characters",
+        "project_members",
+        "projects",
+        "sessions"
+      ],
+      "edgeInvokes": [
+        "character-avatar-meshy",
+        "character-lore"
+      ],
+      "proposedFacade": "src/infrastructure/character/** \u2192 HTTP/client to server/src/application/character/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "Edge invoke parity for: character-avatar-meshy, character-lore"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "EDGE:character-avatar-meshy",
+        "EDGE:character-lore"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "inventory",
+      "files": [
+        "src/infrastructure/inventory/inventory-persistence.ts",
+        "src/infrastructure/inventory/item-catalog-service.ts",
+        "src/infrastructure/inventory/item-catalog.persistence.ts",
+        "src/infrastructure/inventory/item-model3d-service.ts",
+        "src/infrastructure/inventory/item-thumbnail-service.ts",
+        "src/infrastructure/inventory/supabase-item-catalog.repository.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [
+        "characters",
+        "inventory_item_definitions",
+        "project_members",
+        "world_profiles"
+      ],
+      "edgeInvokes": [
+        "item-model3d",
+        "item-thumbnail"
+      ],
+      "proposedFacade": "src/infrastructure/inventory/** \u2192 HTTP/client to server/src/application/inventory/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "Edge invoke parity for: item-model3d, item-thumbnail"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "EDGE:item-model3d",
+        "EDGE:item-thumbnail"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "look",
+      "files": [
+        "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+        "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+        "src/infrastructure/look/index.ts",
+        "src/infrastructure/look/look-material-roles.ts",
+        "src/infrastructure/look/look-reference-analysis-service.ts",
+        "src/infrastructure/look/look-runtime-types.ts",
+        "src/infrastructure/look/look-runtime.ts",
+        "src/infrastructure/look/look-service.ts",
+        "src/infrastructure/look/look.persistence.ts",
+        "src/infrastructure/look/supabase-look.repository.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [],
+      "edgeInvokes": [
+        "look-reference-analysis"
+      ],
+      "proposedFacade": "src/infrastructure/look/** \u2192 HTTP/client to server/src/application/look/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "Edge invoke parity for: look-reference-analysis"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "EDGE:look-reference-analysis"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "marketplace",
+      "files": [
+        "src/infrastructure/marketplace/marketplace-service.ts"
+      ],
+      "rpcUsed": [
+        "increment_marketplace_downloads"
+      ],
+      "tablesFrom": [
+        "marketplace_items"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/marketplace/** \u2192 HTTP/client to server/src/application/marketplace/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: increment_marketplace_downloads"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:increment_marketplace_downloads"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "media",
+      "files": [
+        "src/infrastructure/media/optimizer/engines/audio/index.ts",
+        "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+        "src/infrastructure/media/optimizer/engines/image/index.ts",
+        "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+        "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+        "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+        "src/infrastructure/media/optimizer/engines/image/types.ts",
+        "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+        "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+        "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+        "src/infrastructure/media/optimizer/engines/video/index.ts",
+        "src/infrastructure/media/optimizer/index.ts",
+        "src/infrastructure/media/optimizer/media-optimizer.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/media/** \u2192 HTTP/client to server/src/application/media/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover"
+      ],
+      "dependsOn": [
+        "GATE-01"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "npc-creature",
+      "files": [
+        "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
+        "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
+        "src/infrastructure/npc-creature/npc-creature-service.ts",
+        "src/infrastructure/npc-creature/npc-creature.persistence.ts",
+        "src/infrastructure/npc-creature/supabase-npc-creature.repository.ts"
+      ],
+      "rpcUsed": [
+        "assign_npc_creature_controller",
+        "clear_npc_creature_instance_temp_controllers_for_session",
+        "remove_npc_creature_instance",
+        "spawn_npc_creature_instance",
+        "update_npc_creature_instance_runtime"
+      ],
+      "tablesFrom": [
+        "world_profiles"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/npc-creature/** \u2192 HTTP/client to server/src/application/npc-creature/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: assign_npc_creature_controller, clear_npc_creature_instance_temp_controllers_for_session, remove_npc_creature_instance, spawn_npc_creature_instance, update_npc_creature_instance_runtime"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:assign_npc_creature_controller",
+        "RPC:clear_npc_creature_instance_temp_controllers_for_session",
+        "RPC:remove_npc_creature_instance",
+        "RPC:spawn_npc_creature_instance",
+        "RPC:update_npc_creature_instance_runtime"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "project",
+      "files": [
+        "src/infrastructure/project/project-member-service.ts",
+        "src/infrastructure/project/project-service.ts",
+        "src/infrastructure/project/saga-overview-service.ts",
+        "src/infrastructure/project/saga-permission-service.ts"
+      ],
+      "rpcUsed": [
+        "create_project_session",
+        "ensure_native_starter_project",
+        "get_my_saga_permissions",
+        "get_saga_lore_timeline",
+        "get_saga_overview",
+        "join_project_by_code",
+        "list_saga_bindings",
+        "list_saga_member_permission_state",
+        "set_my_project_character",
+        "set_saga_binding_reveal",
+        "set_saga_member_bundle"
+      ],
+      "tablesFrom": [
+        "project_members"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/project/** \u2192 HTTP/client to server/src/application/project/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: create_project_session, ensure_native_starter_project, get_my_saga_permissions, get_saga_lore_timeline, get_saga_overview, join_project_by_code, list_saga_bindings, list_saga_member_permission_state\u2026"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:create_project_session",
+        "RPC:ensure_native_starter_project",
+        "RPC:get_my_saga_permissions",
+        "RPC:get_saga_lore_timeline",
+        "RPC:get_saga_overview"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "rulesets",
+      "files": [
+        "src/infrastructure/rulesets/ruleset-service.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [
+        "rulesets"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/rulesets/** \u2192 HTTP/client to server/src/application/rulesets/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover"
+      ],
+      "dependsOn": [
+        "GATE-01"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "saga",
+      "files": [
+        "src/infrastructure/saga/saga-definition-service.ts",
+        "src/infrastructure/saga/session-outcome-promotion-service.ts"
+      ],
+      "rpcUsed": [
+        "copy_native_saga_definition",
+        "create_project_from_saga_version",
+        "create_user_saga_definition",
+        "duplicate_saga_playthrough",
+        "get_native_saga_definition_by_slug",
+        "get_saga_definition_editor",
+        "get_saga_definition_version",
+        "publish_saga_definition_version",
+        "save_saga_definition_draft"
+      ],
+      "tablesFrom": [],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/saga/** \u2192 HTTP/client to server/src/application/saga/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: copy_native_saga_definition, create_project_from_saga_version, create_user_saga_definition, duplicate_saga_playthrough, get_native_saga_definition_by_slug, get_saga_definition_editor, get_saga_definition_version, publish_saga_definition_version\u2026"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:copy_native_saga_definition",
+        "RPC:create_project_from_saga_version",
+        "RPC:create_user_saga_definition",
+        "RPC:duplicate_saga_playthrough",
+        "RPC:get_native_saga_definition_by_slug"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "session",
+      "files": [
+        "src/infrastructure/session/live-session-access.resolver.ts",
+        "src/infrastructure/session/media/index.ts",
+        "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "src/infrastructure/session/media/media-plane-adapter.ts",
+        "src/infrastructure/session/media/media-token-client.ts",
+        "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+        "src/infrastructure/session/media/memory-media-plane-bus.ts",
+        "src/infrastructure/session/media/session-media-plane.ts",
+        "src/infrastructure/session/session-lobby-channel.ts",
+        "src/infrastructure/session/session-recap-ai-service.ts",
+        "src/infrastructure/session/session-recap-service.ts",
+        "src/infrastructure/session/session-runtime-channel.ts",
+        "src/infrastructure/session/session-runtime-service.ts",
+        "src/infrastructure/session/session-service.ts"
+      ],
+      "rpcUsed": [
+        "apply_session_runtime_command",
+        "create_play_session",
+        "create_session_invite",
+        "get_session_recap",
+        "get_session_runtime_snapshot",
+        "join_session_by_code",
+        "leave_play_session",
+        "resolve_session_invite",
+        "revoke_session_invite",
+        "save_session_recap_summary",
+        "set_session_player_presence",
+        "set_session_status"
+      ],
+      "tablesFrom": [
+        "projects"
+      ],
+      "edgeInvokes": [
+        "session-media-token",
+        "session-recap"
+      ],
+      "proposedFacade": "src/infrastructure/session/** \u2192 HTTP/client to server/src/application/session/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: apply_session_runtime_command, create_play_session, create_session_invite, get_session_recap, get_session_runtime_snapshot, join_session_by_code, leave_play_session, resolve_session_invite\u2026",
+        "Edge invoke parity for: session-media-token, session-recap"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:apply_session_runtime_command",
+        "RPC:create_play_session",
+        "RPC:create_session_invite",
+        "RPC:get_session_recap",
+        "RPC:get_session_runtime_snapshot",
+        "EDGE:session-media-token",
+        "EDGE:session-recap"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "user-profile",
+      "files": [
+        "src/infrastructure/user-profile/account-avatar-changed.ts",
+        "src/infrastructure/user-profile/account-avatar-store.ts",
+        "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "src/infrastructure/user-profile/user-profile-service.ts"
+      ],
+      "rpcUsed": [],
+      "tablesFrom": [
+        "user_profiles"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/user-profile/** \u2192 HTTP/client to server/src/application/user-profile/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover"
+      ],
+      "dependsOn": [
+        "GATE-01"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    },
+    {
+      "area": "world",
+      "files": [
+        "src/infrastructure/world/world-atlas-service.ts",
+        "src/infrastructure/world/world-map-service.ts",
+        "src/infrastructure/world/world-place-service.ts",
+        "src/infrastructure/world/world-profile-service.ts"
+      ],
+      "rpcUsed": [
+        "archive_world_node_subtree",
+        "create_world_node_with_maps",
+        "delete_world_node",
+        "duplicate_world_node",
+        "ensure_world_atlas_root",
+        "get_world_atlas_map",
+        "get_world_map",
+        "list_world_atlas_maps",
+        "list_world_place_map_links",
+        "list_world_places",
+        "preview_world_node_consequences",
+        "rename_world_node",
+        "reparent_world_node",
+        "save_world_map",
+        "upsert_world_atlas_map",
+        "upsert_world_place",
+        "upsert_world_place_map_link"
+      ],
+      "tablesFrom": [
+        "inventory_item_definitions",
+        "npc_creature_definitions",
+        "world-map-pins"
+      ],
+      "edgeInvokes": [],
+      "proposedFacade": "src/infrastructure/world/** \u2192 HTTP/client to server/src/application/world/",
+      "requiredTests": [
+        "Owner-scoped read/write negative for foreign user",
+        "Happy path journey touching this area still works after adapter swap",
+        "No direct supabase import outside infrastructure after cutover",
+        "RPC parity for: archive_world_node_subtree, create_world_node_with_maps, delete_world_node, duplicate_world_node, ensure_world_atlas_root, get_world_atlas_map, get_world_map, list_world_atlas_maps\u2026"
+      ],
+      "dependsOn": [
+        "GATE-01",
+        "RPC:archive_world_node_subtree",
+        "RPC:create_world_node_with_maps",
+        "RPC:delete_world_node",
+        "RPC:duplicate_world_node",
+        "RPC:ensure_world_atlas_root"
+      ],
+      "status": "SPEC \u2014 blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins"
+    }
+  ],
+  "notes": [
+    "session-media-token and ai-gm have expanded non-copy-paste contracts",
+    "main dispatcher CORS exemption remains in edge-cors-shared-check",
+    "No technology APPROVED here \u2014 successors blocked on GATE-02/03",
+    "dm-tools, sessions, lorekeeper, ai-provider-credentials, main, media have function-specific sections"
+  ]
+}
