@@ -1,0 +1,52 @@
+# GATE-04 — SQLite transactions, revision, concurrency, idempotency
+
+> **Status:** SPEC only — not APPROVED  
+> **GitHub:** #787 · Prep criteria: #776  
+> **Blocks:** MIG-022 and all session command ports
+
+## Variant
+
+Single required PoC (not A/B libraries): prove SagaTree session semantics on SQLite single-writer model.
+
+Reference contracts:
+- `.qa/design/player-test-realtime-runtime-state.md`
+- Existing RPC `apply_session_runtime_command` behavior (inventory in #777)
+
+## Reproducible setup
+
+1. `server/poc/gate-04/` with table `session_runtime(session_id PK, revision INT, state_json, updated_at)`.  
+2. Table `command_idempotency(session_id, idempotency_key PK, result_json)`.  
+3. API: `applyCommand({ sessionId, expectedRevision, idempotencyKey, op })` in a single SQLite transaction.  
+4. Actors: 1 writer queue + 5 concurrent clients (Promise.all / worker threads).
+
+## Metrics / PASS criteria
+
+| # | Test | PASS |
+| --- | --- | --- |
+| 1 | Happy path increments revision by 1 | Exact |
+| 2 | Stale `expectedRevision` | Abort; no state change; conflict error |
+| 3 | Duplicate `idempotencyKey` | Same result returned; revision not double-bumped |
+| 4 | Concurrent conflicting ops | Exactly one winner; others conflict; no torn state |
+| 5 | Crash mid-transaction (kill -9 after BEGIN) | Recovered DB consistent (no half apply) |
+| 6 | WAL checkpoint + restart | State+revision identical |
+| 7 | 20 clients × 50 cmds | Zero lost commits; throughput logged |
+
+## Negative tests
+
+- Missing idempotencyKey rejected if contract requires it  
+- Empty auth → deny before write  
+- Oversized state_json rejected  
+
+## Decision criteria
+
+1. Rows 1–6 PASS mandatory.  
+2. Document busy_timeout / retry policy.  
+3. Confirm single-writer sufficiency for target concurrency or escalate needs-human.
+
+## On APPROVED
+
+ADR-ST-08; unblock MIG-022.
+
+## Explicit non-decision
+
+No agent APPROVED stamp. Does not authorize Postgres removal.
