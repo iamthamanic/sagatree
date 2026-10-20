@@ -42,7 +42,11 @@ const required = [
   '.qa/intake/edge-infra-contracts/inventory.json',
   '.qa/intake/edge-infra-contracts/SPLIT_TICKETS.md',
   '.qa/evidence/stack-migration-prep/issue-contract-quality-audit.md',
-  '.qa/evidence/stack-migration-prep/github-issue-map.json',
+  '.qa/evidence/stack-migration-prep/github-issue-map.json',  '.qa/evidence/stack-migration-prep/dependency-enforcement-plan.json',
+  '.qa/evidence/stack-migration-prep/dependency-enforcement-plan.md',
+  '.qa/design/parity-harness/README.md',
+  '.qa/evidence/stack-migration-prep/parity-fixtures/MANIFEST.md',
+  '.qa/evidence/stack-migration-prep/parity-fixtures/canary-permission-flip.md',
 ];
 
 for (const rel of required) {
@@ -238,6 +242,31 @@ const mapped = issues.filter((i) => typeof i.githubIssue === 'number').length;
 if (mapped < 60) {
   fail(`expected ≥60 issues mapped to githubIssue (got ${mapped})`);
 }
+
+
+const depPlan = JSON.parse(
+  readFileSync(join(root, '.qa/evidence/stack-migration-prep/dependency-enforcement-plan.json'), 'utf8'),
+);
+if (!Array.isArray(depPlan.plan) || depPlan.plan.length < 60) {
+  fail('dependency-enforcement-plan must cover ≥60 issues');
+}
+const p700 = depPlan.plan.find((p) => p.localId === 'MIG-700');
+const p702 = depPlan.plan.find((p) => p.localId === 'MIG-702');
+if (!p700?.dependsOnGithub?.includes(770) || !p702?.dependsOnGithub?.includes(770)) {
+  fail('enforcement plan MIG-700/702 must depend on GitHub #770');
+}
+const blocked = depPlan.plan.filter((p) => p.runnerBlock).length;
+if (blocked < 50) fail(`expected many runnerBlock entries (got ${blocked})`);
+
+const parity = readFileSync(join(root, '.qa/design/parity-harness/README.md'), 'utf8');
+for (const needle of ['PAR-01', 'PAR-10', 'gm_only', 'expectedRevision', 'idempotency', 'Forbidden evidence']) {
+  if (!parity.includes(needle)) fail(`parity harness missing ${needle}`);
+}
+const canary = readFileSync(
+  join(root, '.qa/evidence/stack-migration-prep/parity-fixtures/canary-permission-flip.md'),
+  'utf8',
+);
+if (!/must.*fail/i.test(canary)) fail('parity canary must require CI failure on permission flip');
 
 console.log(
   `stack-migration-prep-check: OK (${issues.length} issues, topo=${seen.length}, published=${doc.meta.githubIssuesPublished})`,

@@ -1,0 +1,1058 @@
+{
+  "topo": [
+    "MIG-001",
+    "ATLAS-LIVE-E2E",
+    "MIG-002",
+    "GATE-01",
+    "GATE-02",
+    "GATE-03",
+    "GATE-04",
+    "GATE-05",
+    "MIG-010",
+    "MIG-011",
+    "MIG-012",
+    "MIG-013",
+    "MIG-014",
+    "MIG-015",
+    "MIG-503",
+    "MIG-500",
+    "MIG-020",
+    "MIG-021",
+    "MIG-022",
+    "MIG-023",
+    "MIG-024",
+    "MIG-501",
+    "MIG-502",
+    "MIG-301",
+    "MIG-302",
+    "MIG-303",
+    "MIG-304",
+    "MIG-305",
+    "MIG-306",
+    "MIG-307",
+    "MIG-308",
+    "MIG-309",
+    "MIG-310",
+    "MIG-311",
+    "MIG-312",
+    "MIG-313",
+    "MIG-401",
+    "MIG-402",
+    "MIG-403",
+    "MIG-404",
+    "MIG-405",
+    "MIG-406",
+    "MIG-407",
+    "MIG-408",
+    "MIG-409",
+    "MIG-410",
+    "MIG-411",
+    "MIG-412",
+    "MIG-413",
+    "MIG-414",
+    "MIG-415",
+    "MIG-416",
+    "MIG-417",
+    "MIG-418",
+    "MIG-419",
+    "MIG-420",
+    "MIG-421",
+    "MIG-422",
+    "MIG-423",
+    "MIG-424",
+    "MIG-350",
+    "MIG-351",
+    "MIG-352",
+    "MIG-353",
+    "MIG-600",
+    "MIG-601",
+    "MIG-602",
+    "MIG-603",
+    "MIG-703",
+    "MIG-700",
+    "MIG-701",
+    "MIG-702"
+  ],
+  "plan": [
+    {
+      "localId": "MIG-001",
+      "githubIssue": 782,
+      "wave": 0,
+      "order": 1,
+      "dependsOnGithub": [],
+      "runnerBlock": false,
+      "status": "ready"
+    },
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "githubIssue": 770,
+      "wave": 0,
+      "order": 2,
+      "dependsOnGithub": [],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-002",
+      "githubIssue": 783,
+      "wave": 0,
+      "order": 3,
+      "dependsOnGithub": [
+        782
+      ],
+      "runnerBlock": false,
+      "status": "ready"
+    },
+    {
+      "localId": "GATE-01",
+      "githubIssue": 784,
+      "wave": 0,
+      "order": 4,
+      "dependsOnGithub": [
+        782,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "needs-design"
+    },
+    {
+      "localId": "GATE-02",
+      "githubIssue": 785,
+      "wave": 0,
+      "order": 5,
+      "dependsOnGithub": [
+        782,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "needs-design"
+    },
+    {
+      "localId": "GATE-03",
+      "githubIssue": 786,
+      "wave": 0,
+      "order": 6,
+      "dependsOnGithub": [
+        782,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "needs-design"
+    },
+    {
+      "localId": "GATE-04",
+      "githubIssue": 787,
+      "wave": 0,
+      "order": 7,
+      "dependsOnGithub": [
+        782,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "needs-design"
+    },
+    {
+      "localId": "GATE-05",
+      "githubIssue": 788,
+      "wave": 0,
+      "order": 8,
+      "dependsOnGithub": [
+        782,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "needs-design"
+    },
+    {
+      "localId": "MIG-010",
+      "githubIssue": 789,
+      "wave": 1,
+      "order": 9,
+      "dependsOnGithub": [
+        782,
+        783,
+        784
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-011",
+      "githubIssue": 790,
+      "wave": 1,
+      "order": 10,
+      "dependsOnGithub": [
+        782,
+        783,
+        784
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-012",
+      "githubIssue": 791,
+      "wave": 1,
+      "order": 11,
+      "dependsOnGithub": [
+        782,
+        783,
+        784
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-013",
+      "githubIssue": 792,
+      "wave": 1,
+      "order": 12,
+      "dependsOnGithub": [
+        782,
+        783,
+        784
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-014",
+      "githubIssue": 793,
+      "wave": 1,
+      "order": 13,
+      "dependsOnGithub": [
+        782,
+        783,
+        785
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-015",
+      "githubIssue": 794,
+      "wave": 1,
+      "order": 14,
+      "dependsOnGithub": [
+        782,
+        783,
+        785
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-503",
+      "githubIssue": 844,
+      "wave": 5,
+      "order": 15,
+      "dependsOnGithub": [
+        790,
+        783
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-500",
+      "githubIssue": 841,
+      "wave": 5,
+      "order": 16,
+      "dependsOnGithub": [
+        792,
+        790
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-020",
+      "githubIssue": 795,
+      "wave": 2,
+      "order": 17,
+      "dependsOnGithub": [
+        789,
+        792,
+        793,
+        786
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-021",
+      "githubIssue": 796,
+      "wave": 2,
+      "order": 18,
+      "dependsOnGithub": [
+        789,
+        792,
+        793,
+        786
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-022",
+      "githubIssue": 797,
+      "wave": 2,
+      "order": 19,
+      "dependsOnGithub": [
+        789,
+        792,
+        793,
+        787
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-023",
+      "githubIssue": 798,
+      "wave": 2,
+      "order": 20,
+      "dependsOnGithub": [
+        789,
+        792,
+        793,
+        785
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-024",
+      "githubIssue": 799,
+      "wave": 2,
+      "order": 21,
+      "dependsOnGithub": [
+        789,
+        792,
+        793,
+        784
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-501",
+      "githubIssue": 842,
+      "wave": 5,
+      "order": 22,
+      "dependsOnGithub": [
+        841
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-502",
+      "githubIssue": 843,
+      "wave": 5,
+      "order": 23,
+      "dependsOnGithub": [
+        841,
+        792
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-301",
+      "githubIssue": 800,
+      "wave": 3,
+      "order": 24,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-302",
+      "githubIssue": 801,
+      "wave": 3,
+      "order": 25,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-303",
+      "githubIssue": 802,
+      "wave": 3,
+      "order": 26,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-304",
+      "githubIssue": 803,
+      "wave": 3,
+      "order": 27,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-305",
+      "githubIssue": 804,
+      "wave": 3,
+      "order": 28,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-306",
+      "githubIssue": 805,
+      "wave": 3,
+      "order": 29,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-307",
+      "githubIssue": 806,
+      "wave": 3,
+      "order": 30,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-308",
+      "githubIssue": 807,
+      "wave": 3,
+      "order": 31,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-309",
+      "githubIssue": 808,
+      "wave": 3,
+      "order": 32,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-310",
+      "githubIssue": 809,
+      "wave": 3,
+      "order": 33,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-311",
+      "githubIssue": 810,
+      "wave": 3,
+      "order": 34,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-312",
+      "githubIssue": 811,
+      "wave": 3,
+      "order": 35,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-313",
+      "githubIssue": 812,
+      "wave": 3,
+      "order": 36,
+      "dependsOnGithub": [
+        791,
+        792,
+        795
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-401",
+      "githubIssue": 817,
+      "wave": 4,
+      "order": 37,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-402",
+      "githubIssue": 818,
+      "wave": 4,
+      "order": 38,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-403",
+      "githubIssue": 819,
+      "wave": 4,
+      "order": 39,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-404",
+      "githubIssue": 820,
+      "wave": 4,
+      "order": 40,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-405",
+      "githubIssue": 821,
+      "wave": 4,
+      "order": 41,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-406",
+      "githubIssue": 822,
+      "wave": 4,
+      "order": 42,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-407",
+      "githubIssue": 823,
+      "wave": 4,
+      "order": 43,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-408",
+      "githubIssue": 824,
+      "wave": 4,
+      "order": 44,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-409",
+      "githubIssue": 825,
+      "wave": 4,
+      "order": 45,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-410",
+      "githubIssue": 826,
+      "wave": 4,
+      "order": 46,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-411",
+      "githubIssue": 827,
+      "wave": 4,
+      "order": 47,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-412",
+      "githubIssue": 828,
+      "wave": 4,
+      "order": 48,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-413",
+      "githubIssue": 829,
+      "wave": 4,
+      "order": 49,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-414",
+      "githubIssue": 830,
+      "wave": 4,
+      "order": 50,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-415",
+      "githubIssue": 831,
+      "wave": 4,
+      "order": 51,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-416",
+      "githubIssue": 832,
+      "wave": 4,
+      "order": 52,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-417",
+      "githubIssue": 833,
+      "wave": 4,
+      "order": 53,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-418",
+      "githubIssue": 834,
+      "wave": 4,
+      "order": 54,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-419",
+      "githubIssue": 835,
+      "wave": 4,
+      "order": 55,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-420",
+      "githubIssue": 836,
+      "wave": 4,
+      "order": 56,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-421",
+      "githubIssue": 837,
+      "wave": 4,
+      "order": 57,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-422",
+      "githubIssue": 838,
+      "wave": 4,
+      "order": 58,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-423",
+      "githubIssue": 839,
+      "wave": 4,
+      "order": 59,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-424",
+      "githubIssue": 840,
+      "wave": 4,
+      "order": 60,
+      "dependsOnGithub": [
+        795,
+        792,
+        793
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-350",
+      "githubIssue": 813,
+      "wave": 3,
+      "order": 61,
+      "dependsOnGithub": [
+        797,
+        792
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-351",
+      "githubIssue": 814,
+      "wave": 3,
+      "order": 62,
+      "dependsOnGithub": [
+        797,
+        792
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-352",
+      "githubIssue": 815,
+      "wave": 3,
+      "order": 63,
+      "dependsOnGithub": [
+        797,
+        792
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-353",
+      "githubIssue": 816,
+      "wave": 3,
+      "order": 64,
+      "dependsOnGithub": [
+        797,
+        792
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-600",
+      "githubIssue": 845,
+      "wave": 6,
+      "order": 65,
+      "dependsOnGithub": [
+        799,
+        841
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-601",
+      "githubIssue": 846,
+      "wave": 6,
+      "order": 66,
+      "dependsOnGithub": [
+        799,
+        841
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-602",
+      "githubIssue": 847,
+      "wave": 6,
+      "order": 67,
+      "dependsOnGithub": [
+        799,
+        841
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-603",
+      "githubIssue": 848,
+      "wave": 6,
+      "order": 68,
+      "dependsOnGithub": [
+        799,
+        841
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-703",
+      "githubIssue": 852,
+      "wave": 7,
+      "order": 69,
+      "dependsOnGithub": [
+        788,
+        847
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-700",
+      "githubIssue": 849,
+      "wave": 7,
+      "order": 70,
+      "dependsOnGithub": [
+        770,
+        784,
+        785,
+        786,
+        787,
+        782,
+        783,
+        789,
+        790,
+        791,
+        792,
+        793,
+        794,
+        795,
+        796,
+        797,
+        798,
+        799,
+        800,
+        801,
+        802,
+        803,
+        804,
+        805,
+        806,
+        807,
+        808,
+        809,
+        810,
+        811,
+        812,
+        813,
+        814,
+        815,
+        816,
+        817,
+        818,
+        819,
+        820,
+        821,
+        822,
+        823,
+        824,
+        825,
+        826,
+        827,
+        828,
+        829,
+        830,
+        831,
+        832,
+        833,
+        834,
+        835,
+        836,
+        837,
+        838,
+        839,
+        840,
+        841,
+        842,
+        843,
+        844,
+        845,
+        846,
+        847,
+        848
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-701",
+      "githubIssue": 850,
+      "wave": 7,
+      "order": 71,
+      "dependsOnGithub": [
+        849
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    },
+    {
+      "localId": "MIG-702",
+      "githubIssue": 851,
+      "wave": 7,
+      "order": 72,
+      "dependsOnGithub": [
+        850,
+        770
+      ],
+      "runnerBlock": true,
+      "status": "blocked"
+    }
+  ],
+  "rules": [
+    "migration-wave-* + migration-order-* on every ST-MIG issue",
+    "Depends on #N lines synced in issue body",
+    "agent-blocked on GATE-dependent / needs-design / blocked implementation issues",
+    "needs-design alone is NOT a runner execution lock",
+    "MIG-700/702 must keep ATLAS-LIVE-E2E + GATE deps"
+  ]
+}
