@@ -1,0 +1,30 @@
+{
+  "worldPublicId": "WO-9FFK6",
+  "worldProfileId": "8f52b273-60fe-4823-ae7d-d9e70469b730",
+  "target": "staging",
+  "generatedAt": "2026-10-20T08:19:27.708Z",
+  "productionMigrated": false,
+  "approval": {
+    "staging": "granted-in-session",
+    "production": "not-approved — do not mark prod migrated"
+  },
+  "summary": {
+    "retainedPlaceCount": 6,
+    "retainedMapCount": 5,
+    "addedPlaceIds": [
+      "106b9640-eccc-4d9a-b915-eb804cbdf41e",
+      "13b65340-9564-4126-b37e-757334b1f098"
+    ],
+    "addedMapIds": [
+      "78424bfb-8707-48b7-bc4e-a55c31499327",
+      "edc0887b-75c3-4866-ac41-d60bf5f8d2b6"
+    ],
+    "sagaBindingsUnchanged": true,
+    "invalidParentEdges": [],
+    "duplicatePrimaryMaps": [],
+    "hierarchyChainSample": "continent>country>settlement",
+    "idempotentSecondApplyCreatedPlaces": 0,
+    "rollbackProven": true
+  },
+  "batchId": "dd994f00-0581-4afd-800b-8fc00a5742ce"
+}

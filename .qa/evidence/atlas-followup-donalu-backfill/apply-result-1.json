@@ -1,0 +1,32 @@
+{
+  "target": "staging",
+  "batch_id": "dd994f00-0581-4afd-800b-8fc00a5742ce",
+  "created_map_ids": [
+    "edc0887b-75c3-4866-ac41-d60bf5f8d2b6",
+    "78424bfb-8707-48b7-bc4e-a55c31499327"
+  ],
+  "parent_rewrites": [
+    {
+      "place_id": "d4cd0cd9-806e-49da-bb90-83cbaf281a7d",
+      "new_parent_place_id": "106b9640-eccc-4d9a-b915-eb804cbdf41e",
+      "old_parent_place_id": null
+    }
+  ],
+  "created_link_ids": [
+    "f2100160-f531-4a57-a575-c6097ccf5d25",
+    "3728ca34-adcf-456d-a4e3-1d01cc4c657b",
+    "62e5db40-b577-4072-945e-1e5402e3af36",
+    "1295e0ed-e449-43cb-9b64-0694e3d641bf",
+    "10a77a90-1989-4520-8718-8d43d0164f4b",
+    "357564db-e7f1-4c62-976e-2000f4e71fa1",
+    "163bd169-221b-4b9f-8547-1dd2f57e61e6",
+    "20a5a16a-413f-493f-b9aa-725b8fd6fde3"
+  ],
+  "world_profile_id": "8f52b273-60fe-4823-ae7d-d9e70469b730",
+  "created_place_ids": [
+    "13b65340-9564-4126-b37e-757334b1f098",
+    "106b9640-eccc-4d9a-b915-eb804cbdf41e"
+  ],
+  "place_count_after": 8,
+  "place_count_before": 6
+}
