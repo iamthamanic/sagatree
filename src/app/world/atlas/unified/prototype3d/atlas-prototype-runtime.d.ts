@@ -28,10 +28,21 @@ export type AtlasPrototypeExternalNav = {
   readonly errorMessage?: string;
 };
 
+export type AtlasPrototypeToolChromeRow = {
+  readonly runtimeId: string;
+  readonly labelDe: string;
+  readonly enabled?: boolean;
+  readonly disabledReason?: string | null;
+  readonly atlasId?: string;
+  readonly role?: string;
+};
+
 export type AtlasPrototypeMount = {
   readonly dispose: () => void;
   readonly updateExternalNav: (tree: AtlasPrototypeExternalNav | null) => void;
   readonly setActiveNavPlaceId: (placeId: string | null) => void;
+  readonly setToolChrome: (rows: readonly AtlasPrototypeToolChromeRow[] | null) => void;
+  readonly setCanEdit: (canEdit: boolean) => void;
 };
 
 export type AtlasPrototypeNavAddPayload = {
@@ -60,6 +71,10 @@ export type AtlasPrototypeMountOptions = {
   readonly onNavDuplicate?: (payload: AtlasPrototypeNavPlacePayload) => void;
   readonly onNavArchive?: (payload: AtlasPrototypeNavPlacePayload) => void;
   readonly onNavReparent?: (payload: AtlasPrototypeNavPlacePayload) => void;
+  /** ATLAS_TOOL_REGISTRY-derived WebGL chrome (#750). */
+  readonly toolChrome?: readonly AtlasPrototypeToolChromeRow[] | null;
+  /** When false, map mutations are rejected client-side (RPC/RLS remain authority). */
+  readonly canEdit?: boolean;
 };
 
 export function mountAtlasPrototype3d(

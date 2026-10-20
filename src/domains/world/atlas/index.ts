@@ -57,9 +57,16 @@ export {
 export {
   ATLAS_TOOL_REGISTRY,
   atlasToolsForKind,
+  atlasToolToWebglRuntimeId,
+  assertWebglToolCommit,
   isAtlasToolAllowed,
+  resolveWebglToolAfterKindChange,
+  webglRuntimeIdToAtlasTool,
+  webglToolChromeForKind,
   type AtlasToolDef,
   type AtlasToolId,
+  type WebglRuntimeToolId,
+  type WebglToolChromeItem,
 } from './atlas-tool-registry';
 
 export {

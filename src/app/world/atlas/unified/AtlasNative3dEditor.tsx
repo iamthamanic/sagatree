@@ -8,7 +8,11 @@
  * Product nav (#747): external WorldNode tree replaces demo NAV_CHILDREN in #nav.
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { WebglRuntimeState } from '../../../../domains/world/atlas';
+import {
+  webglToolChromeForKind,
+  type WebglRuntimeState,
+} from '../../../../domains/world/atlas';
+import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import type { AtlasWebglNavTree } from '../../../../domains/world/places';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
 import './prototype3d/atlas-sagatree-skin.css';
@@ -23,6 +27,10 @@ type AtlasNativeMountHandle = {
   readonly dispose: () => void;
   readonly updateExternalNav: (tree: AtlasWebglNavTree | null) => void;
   readonly setActiveNavPlaceId: (placeId: string | null) => void;
+  readonly setToolChrome: (
+    rows: ReturnType<typeof webglToolChromeForKind> | null,
+  ) => void;
+  readonly setCanEdit: (canEdit: boolean) => void;
 };
 
 export type AtlasNative3dEditorProps = {
@@ -43,6 +51,10 @@ export type AtlasNative3dEditorProps = {
   readonly onNavDuplicate?: (payload: { readonly placeId: string }) => void;
   readonly onNavArchive?: (payload: { readonly placeId: string }) => void;
   readonly onNavReparent?: (payload: { readonly placeId: string }) => void;
+  /** Hierarchy tip for ATLAS_TOOL_REGISTRY chrome (#750). */
+  readonly activeNodeKind?: WorldNodeKind | null;
+  /** Client-side mutation gate; RPC/RLS remain authority. */
+  readonly canEdit?: boolean;
 };
 
 /** Rebrand leftover prototype copy to SagaTree product wording. */
@@ -267,6 +279,8 @@ export function AtlasNative3dEditor({
   onNavDuplicate,
   onNavArchive,
   onNavReparent,
+  activeNodeKind = null,
+  canEdit = true,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -288,6 +302,10 @@ export function AtlasNative3dEditor({
   externalNavRef.current = externalNav;
   const activePlaceIdRef = useRef(activePlaceId);
   activePlaceIdRef.current = activePlaceId;
+  const activeNodeKindRef = useRef(activeNodeKind);
+  activeNodeKindRef.current = activeNodeKind;
+  const canEditRef = useRef(canEdit);
+  canEditRef.current = canEdit;
   const mapKeyRef = useRef(mapKey);
   const seedRef = useRef(seedState);
   if (mapKeyRef.current !== mapKey) {
@@ -340,6 +358,8 @@ export function AtlasNative3dEditor({
         onNavReparent: (payload) => {
           navReparentRef.current?.(payload);
         },
+        toolChrome: [...webglToolChromeForKind(activeNodeKindRef.current ?? null)],
+        canEdit: canEditRef.current !== false,
       });
       mountRef.current = mount;
       disposePanels = installCollapsiblePanels(host);
@@ -381,6 +401,18 @@ export function AtlasNative3dEditor({
     if (!mount) return;
     mount.setActiveNavPlaceId(activePlaceId ?? null);
   }, [activePlaceId]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setToolChrome([...webglToolChromeForKind(activeNodeKind ?? null)]);
+  }, [activeNodeKind]);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+    mount.setCanEdit(canEdit !== false);
+  }, [canEdit]);
 
   return (
     <div

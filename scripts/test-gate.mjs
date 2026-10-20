@@ -360,6 +360,14 @@ function checkAtlasWorldbuilderDonaluBackfill() {
   });
 }
 
+function checkAtlasWorldbuilderWebglToolRegistry() {
+  console.log('Atlas worldbuilder WebGL tool registry (#750): registry chrome + commit gates...');
+  execFileSync(process.execPath, ['scripts/atlas-worldbuilder-webgl-tool-registry-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2467,6 +2475,7 @@ checkAtlasWorldbuilderWebglDbTree();
 checkAtlasWorldbuilderWebglTreeActions();
 checkAtlasWorldbuilderEditorDurability();
 checkAtlasWorldbuilderDonaluBackfill();
+checkAtlasWorldbuilderWebglToolRegistry();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

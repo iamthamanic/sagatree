@@ -1,0 +1,78 @@
+{
+  "country": [
+    {
+      "atlasId": "hand",
+      "runtimeId": "hand",
+      "enabled": true,
+      "role": "navigate"
+    },
+    {
+      "atlasId": "select",
+      "runtimeId": "select",
+      "enabled": false,
+      "role": "navigate"
+    },
+    {
+      "atlasId": "brush",
+      "runtimeId": "paint",
+      "enabled": true,
+      "role": "terrain"
+    },
+    {
+      "atlasId": "road",
+      "runtimeId": "road",
+      "enabled": false,
+      "role": "border"
+    },
+    {
+      "atlasId": "erase",
+      "runtimeId": "erase",
+      "enabled": true,
+      "role": "erase"
+    }
+  ],
+  "building": [
+    {
+      "atlasId": "hand",
+      "runtimeId": "hand",
+      "enabled": true,
+      "role": "navigate"
+    },
+    {
+      "atlasId": "select",
+      "runtimeId": "select",
+      "enabled": false,
+      "role": "navigate"
+    },
+    {
+      "atlasId": "wall",
+      "runtimeId": "wall",
+      "enabled": true,
+      "role": "structure"
+    },
+    {
+      "atlasId": "room",
+      "runtimeId": "room",
+      "enabled": true,
+      "role": "structure"
+    },
+    {
+      "atlasId": "stamp",
+      "runtimeId": "stamp",
+      "enabled": true,
+      "role": "structure"
+    },
+    {
+      "atlasId": "erase",
+      "runtimeId": "erase",
+      "enabled": true,
+      "role": "erase"
+    }
+  ],
+  "asserts": {
+    "paintCountryOk": true,
+    "wallCountryRejected": true,
+    "noEditRejected": true,
+    "resetToHand": "hand"
+  }
+}
