@@ -1,11 +1,9 @@
 # Composition Gate — atlas-followup-real-product-e2e-gate (#755)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: 6b4c2247fdf626e3a752406dce7bffc8f5d27b90
 - BASE_SHA: 603457d4b816e222216f752e954b45b700bc17c8
 - Date: 2026-10-20
 - Verdict: CLEAR
-- WORKTREE: feat/issue-755-epic-e2e-closure @ CLEAN (issue files only)
-- proofOnlyChangesSince: BASE_SHA (.qa/acceptance|runs|evidence for this slug; e2e/atlas-followup-product-e2e-gate.spec.ts; scripts/atlas-followup-real-product-e2e-check.mjs; scripts/test-gate.mjs wire)
 
 ## Event
 
