@@ -4,7 +4,21 @@
     "baselineSha": "4bc40a3142811f23f528b17698abc6d674d2ee75",
     "sourceDoc": "docs/architektur-sqlite-based.md",
     "githubIssuesPublished": false,
-    "note": "Draft specs only \u2014 do not publish to GitHub without freigabe"
+    "note": "Draft specs only \u2014 do not publish to GitHub without freigabe",
+    "reviewRemediation": {
+      "pr771CodexP1_cutoverDeps": "MIG-700 dependsOn expanded to all wave MIG-* + GATEs + ATLAS-LIVE-E2E",
+      "pr771CodexP2_storageDistinctACs": true,
+      "pr771CodexP2_opsDistinctACs": true,
+      "deferredToGithub": {
+        "775": "Atlas #770 prerequisite wiring",
+        "776": "GATE-02..05 measurable criteria docs",
+        "777": "Per-RPC individual contracts",
+        "778": "Per-Edge/infra individual contracts",
+        "779": "Canonical GitHub contract quality enforcement",
+        "780": "Shutdown dependency enforcement automation",
+        "781": "Parity harness implementation"
+      }
+    }
   },
   "coverage": {
     "legacyMigrations": 106,
@@ -42,15 +56,15 @@
     "MIG-013",
     "MIG-014",
     "MIG-015",
-    "MIG-500",
-    "MIG-501",
-    "MIG-502",
     "MIG-503",
+    "MIG-500",
     "MIG-020",
     "MIG-021",
     "MIG-022",
     "MIG-023",
     "MIG-024",
+    "MIG-501",
+    "MIG-502",
     "MIG-301",
     "MIG-302",
     "MIG-303",
@@ -96,8 +110,8 @@
     "MIG-601",
     "MIG-602",
     "MIG-603",
-    "MIG-700",
     "MIG-703",
+    "MIG-700",
     "MIG-701",
     "MIG-702"
   ],
@@ -3526,8 +3540,7 @@
       },
       "scope": {
         "mayChange": [
-          "server/src/assets/**",
-          "server/src/migration/**"
+          "server/src/assets/**"
         ],
         "mustNotChange": [
           "src/domains/**"
@@ -3537,11 +3550,11 @@
         ]
       },
       "acceptance": [
-        "Unauthorized asset fetch fails closed",
-        "Upload validate\u2192publish lifecycle",
-        "Backup/restore of DB+assets jointly tested",
-        "Migration dry-run reports counts/hashes",
-        "No invented atlas geometry during world data move"
+        "Unauthorized asset fetch fails closed (HTTP 401/403)",
+        "Upload validate\u2192publish\u2192metadata commit lifecycle works",
+        "Path/URL never grants access without policy allow",
+        "DB metadata + FS bytes jointly consistent after restart",
+        "Typed strict; no escape hatches"
       ]
     },
     {
@@ -3552,8 +3565,7 @@
       "order": 501,
       "status": "blocked",
       "dependsOn": [
-        "MIG-013",
-        "MIG-011"
+        "MIG-500"
       ],
       "labels": [
         "P1",
@@ -3592,11 +3604,11 @@
         ]
       },
       "acceptance": [
-        "Unauthorized asset fetch fails closed",
-        "Upload validate\u2192publish lifecycle",
-        "Backup/restore of DB+assets jointly tested",
-        "Migration dry-run reports counts/hashes",
-        "No invented atlas geometry during world data move"
+        "tus (or documented equivalent) resumes large interrupted uploads",
+        "Completed tus upload enters same validate\u2192publish path as MIG-500",
+        "Size/MIME limits enforced server-side",
+        "Failure leaves no authoritative published asset",
+        "Optional: host runs without tus for small uploads"
       ]
     },
     {
@@ -3607,8 +3619,8 @@
       "order": 502,
       "status": "blocked",
       "dependsOn": [
-        "MIG-013",
-        "MIG-011"
+        "MIG-500",
+        "MIG-013"
       ],
       "labels": [
         "P1",
@@ -3647,11 +3659,11 @@
         ]
       },
       "acceptance": [
-        "Unauthorized asset fetch fails closed",
-        "Upload validate\u2192publish lifecycle",
-        "Backup/restore of DB+assets jointly tested",
-        "Migration dry-run reports counts/hashes",
-        "No invented atlas geometry during world data move"
+        "Versioned export bundle schema documented and round-tripped",
+        "Import rejects unknown critical versions fail-closed",
+        "IDs/public IDs/asset refs preserved across export\u2192import",
+        "Restore drill evidence for DB+assets exists",
+        "No invented atlas geometry during import"
       ]
     },
     {
@@ -3662,8 +3674,8 @@
       "order": 503,
       "status": "blocked",
       "dependsOn": [
-        "MIG-013",
-        "MIG-011"
+        "MIG-011",
+        "MIG-002"
       ],
       "labels": [
         "P1",
@@ -3702,11 +3714,11 @@
         ]
       },
       "acceptance": [
-        "Unauthorized asset fetch fails closed",
-        "Upload validate\u2192publish lifecycle",
-        "Backup/restore of DB+assets jointly tested",
-        "Migration dry-run reports counts/hashes",
-        "No invented atlas geometry during world data move"
+        "Dry-run reports row counts, hashes, FK violations for fixture DB",
+        "Abort mid-run leaves target clean or rolled back",
+        "Mapping covers all matrix table categories or lists NEEDS DECISION",
+        "No production connection strings in tooling defaults",
+        "Re-run idempotent on same fixture snapshot"
       ]
     },
     {
@@ -3759,11 +3771,11 @@
         ]
       },
       "acceptance": [
-        "Negative authz suite green on host",
-        "CI required checks cover host",
-        "Compose profiles documented",
-        "Restore drill evidence exists",
-        "No test weakening"
+        "docs/ops/negative-authz-suite scenarios pass against host",
+        "Cross-owner and GM-secret negatives included",
+        "Suite is CI-required or documented equivalent gate",
+        "No test weakening vs Supabase-era suite",
+        "Findings include Low/Info"
       ]
     },
     {
@@ -3816,11 +3828,11 @@
         ]
       },
       "acceptance": [
-        "Negative authz suite green on host",
-        "CI required checks cover host",
-        "Compose profiles documented",
-        "Restore drill evidence exists",
-        "No test weakening"
+        "Compose profiles: host-only, host+optional AI, host+optional media",
+        "Dev up without cloud credentials for solo host profile",
+        "Documented env vars; no committed secrets",
+        "Healthcheck proves host process ready",
+        "Parity with local non-Docker host entrypoint"
       ]
     },
     {
@@ -3873,11 +3885,11 @@
         ]
       },
       "acceptance": [
-        "Negative authz suite green on host",
-        "CI required checks cover host",
-        "Compose profiles documented",
-        "Restore drill evidence exists",
-        "No test weakening"
+        "CI required checks cover host unit/integration",
+        "Browser E2E still required where product UI touched",
+        "stack-migration-prep-check remains green",
+        "No --no-verify / skipped gates in workflows",
+        "Failure logs actionable"
       ]
     },
     {
@@ -3930,11 +3942,11 @@
         ]
       },
       "acceptance": [
-        "Negative authz suite green on host",
-        "CI required checks cover host",
-        "Compose profiles documented",
-        "Restore drill evidence exists",
-        "No test weakening"
+        "Backup runbook for SQLite+WAL+assets documented",
+        "Restore drill evidence with checksums",
+        "Update/rollback procedure documented and dry-run",
+        "Failure modes (disk full, partial copy) covered",
+        "No prod instance mutation in this issue"
       ]
     },
     {
@@ -3945,8 +3957,73 @@
       "order": 700,
       "status": "blocked",
       "dependsOn": [
+        "ATLAS-LIVE-E2E",
+        "GATE-01",
+        "GATE-02",
+        "GATE-03",
+        "GATE-04",
+        "MIG-001",
+        "MIG-002",
+        "MIG-010",
+        "MIG-011",
+        "MIG-012",
+        "MIG-013",
+        "MIG-014",
+        "MIG-015",
+        "MIG-020",
+        "MIG-021",
+        "MIG-022",
+        "MIG-023",
+        "MIG-024",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "MIG-350",
+        "MIG-351",
+        "MIG-352",
+        "MIG-353",
+        "MIG-401",
+        "MIG-402",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-414",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-500",
+        "MIG-501",
+        "MIG-502",
         "MIG-503",
-        "MIG-600"
+        "MIG-600",
+        "MIG-601",
+        "MIG-602",
+        "MIG-603"
       ],
       "labels": [
         "P2",
@@ -3968,7 +4045,7 @@
         "tech": "SQLite host authoritative"
       },
       "behavior": {
-        "unchanged": "User data continuity",
+        "unchanged": "User data continuity; no silent Supabase dual-write",
         "secrets": "No prod migration without explicit freigabe",
         "blockedReason": "BLOCKED until prior waves + human freigabe"
       },
@@ -3981,15 +4058,16 @@
           "Silent Supabase removal"
         ],
         "nonGoals": [
-          "Big-bang untested cutover"
+          "Production cutover without freigabe",
+          "Closing with only MIG-503/MIG-600 done"
         ]
       },
       "acceptance": [
-        "Rollback plan tested",
-        "Parity checklist signed",
-        "Restore after simulated failure proven",
-        "Explicit freigabe recorded for prod steps",
-        "Tauri not introduced during browser-only phases"
+        "All wave-0..6 MIG-* and GATE-01..04 and ATLAS-LIVE-E2E (#770) are CLOSED with evidence",
+        "Freeze+delta cutover dry-run on fixtures only (no prod writes)",
+        "Rollback plan executed successfully on fixture host",
+        "Parity checklist signed for world/saga under test",
+        "Explicit human freigabe recorded before any prod-touching step"
       ]
     },
     {
@@ -4054,7 +4132,8 @@
       "order": 702,
       "status": "blocked",
       "dependsOn": [
-        "MIG-701"
+        "MIG-701",
+        "ATLAS-LIVE-E2E"
       ],
       "labels": [
         "P2",
@@ -4093,11 +4172,11 @@
         ]
       },
       "acceptance": [
-        "Rollback plan tested",
-        "Parity checklist signed",
-        "Restore after simulated failure proven",
-        "Explicit freigabe recorded for prod steps",
-        "Tauri not introduced during browser-only phases"
+        "MIG-700 and MIG-701 CLOSED; ATLAS-LIVE-E2E (#770) CLOSED green",
+        "Every Edge/RPC/infra matrix row has successor or approved retirement",
+        "Backup+restore of SQLite+assets proven on host and Docker",
+        "Negative authz suite green on host; no GM secret leakage",
+        "Human freigabe for Supabase removal recorded; no prod data deletion in this issue alone"
       ]
     },
     {

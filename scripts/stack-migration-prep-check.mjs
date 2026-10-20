@@ -26,6 +26,7 @@ const required = [
   '.qa/evidence/stack-migration-prep/coverage-report.md',
   '.qa/evidence/stack-migration-prep/phase0-status.md',
   '.qa/evidence/stack-migration-prep/EXECUTION_CONTRACT.md',
+  '.qa/evidence/stack-migration-prep/PR771_REVIEW.md',
   'docs/architektur-sqlite-based.md',
 ];
 
@@ -94,6 +95,15 @@ const design = readFileSync(join(root, '.qa/design/local-first-stack-migration.m
 for (const needle of ['GATE-01', 'BLOCKED', 'Better Auth', 'Colyseus', 'SQLite']) {
   if (!design.includes(needle)) fail(`design missing ${needle}`);
 }
+
+// Cutover safety: MIG-700 must not depend only on a tiny subset.
+const mig700 = issues.find((i) => i.localId === 'MIG-700');
+if (!mig700) fail('missing MIG-700');
+const d700 = new Set(mig700.dependsOn);
+for (const need of ['ATLAS-LIVE-E2E', 'GATE-01', 'GATE-02', 'GATE-03', 'GATE-04', 'MIG-013', 'MIG-022']) {
+  if (!d700.has(need)) fail(`MIG-700 missing required dep ${need}`);
+}
+if (mig700.dependsOn.length < 20) fail('MIG-700 dependsOn too small for cutover safety');
 
 console.log(
   `stack-migration-prep-check: OK (${issues.length} issues, topo=${seen.length}, published=${doc.meta.githubIssuesPublished})`,

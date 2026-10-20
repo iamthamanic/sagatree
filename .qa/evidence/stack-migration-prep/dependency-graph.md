@@ -40,9 +40,12 @@ Wave-6:
   MIG-600..603 security / docker / CI / ops
 
 Wave-7:
-  MIG-700 cutover → MIG-701 dual-run → MIG-702 supabase off
+  MIG-700 cutover ← **ALL** wave-0..6 MIG-* + GATE-01..04 + ATLAS-LIVE-E2E (#770)
+    → MIG-701 dual-run → MIG-702 supabase off
   MIG-703 Tauri ← GATE-05
 ```
+
+**Cutover safety (#774 / Codex P1):** `MIG-700` must not become eligible from `MIG-503`+`MIG-600` alone. See `local-first-stack-migration-issues.json` `dependsOn` and PREP-07 (#780) for automated enforcement.
 
 ## Runner rules
 
