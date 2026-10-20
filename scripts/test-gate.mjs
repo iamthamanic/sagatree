@@ -376,6 +376,14 @@ function checkAtlasWorldbuilderGroundedDrilldown() {
   });
 }
 
+function checkAtlasFollowupRealProductE2e() {
+  console.log('Atlas follow-up real product E2E (#755): epic #746 closer gate...');
+  execFileSync(process.execPath, ['scripts/atlas-followup-real-product-e2e-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2485,6 +2493,7 @@ checkAtlasWorldbuilderEditorDurability();
 checkAtlasWorldbuilderDonaluBackfill();
 checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
+checkAtlasFollowupRealProductE2e();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

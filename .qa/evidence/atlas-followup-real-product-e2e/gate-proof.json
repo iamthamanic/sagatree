@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-10-20T10:06:44.841Z",
+  "followups": [
+    {
+      "issue": "747",
+      "slug": "atlas-followup-webgl-db-tree"
+    },
+    {
+      "issue": "748",
+      "slug": "atlas-followup-webgl-tree-actions"
+    },
+    {
+      "issue": "749",
+      "slug": "atlas-followup-canonical-2d3d-edits"
+    },
+    {
+      "issue": "750",
+      "slug": "atlas-followup-webgl-tool-registry"
+    },
+    {
+      "issue": "751",
+      "slug": "atlas-followup-editor-durability"
+    },
+    {
+      "issue": "752",
+      "slug": "atlas-followup-grounded-drilldown"
+    },
+    {
+      "issue": "753",
+      "slug": "atlas-followup-real-donalu-inventory"
+    },
+    {
+      "issue": "754",
+      "slug": "atlas-followup-donalu-backfill"
+    }
+  ],
+  "productionMigrated": false,
+  "e2eSpec": "e2e/atlas-followup-product-e2e-gate.spec.ts"
+}
