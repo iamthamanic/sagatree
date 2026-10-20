@@ -71,6 +71,7 @@ const MAP_VM = {
     unifiedCanvas: {
       format: 'sagatree-unified-atlas-v1',
       revision: 1,
+      demoSeed: false,
       objects: [],
       strokes: [],
       walls: [],
@@ -146,21 +147,15 @@ test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ p
   await ensureLoggedIn(page);
 
   await page.goto(`/library/worlds/${WORLD_PUBLIC}/map`);
-  const atlas = page.locator('[data-atlas-native-3d], [data-unified-atlas-editor]').first();
-  await expect(atlas).toBeVisible({ timeout: 45_000 });
-
   const native = page.locator('[data-atlas-native-3d]');
-  if ((await native.count()) > 0) {
-    await expect(native).toHaveAttribute('data-atlas-controlled', 'true');
-    await expect(native).toHaveAttribute('data-atlas-product-nav', 'true');
-    const nav = page.locator('[data-atlas-nav-source="db"]');
-    await expect(nav).toBeVisible({ timeout: 20_000 });
-    const tools = page.locator('#tools[data-atlas-tool-source="registry"]');
-    await expect(tools).toBeVisible({ timeout: 20_000 });
-  } else {
-    // 2D surface still product path — must not be demoSeed chrome.
-    await expect(page.locator('[data-atlas-demo="true"]')).toHaveCount(0);
-  }
+  await expect(native).toBeVisible({ timeout: 45_000 });
+  await expect(native).toHaveAttribute('data-atlas-controlled', 'true');
+  await expect(native).toHaveAttribute('data-atlas-product-nav', 'true');
+  await expect(page.locator('[data-atlas-demo="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-atlas-nav-source="db"]')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('#tools[data-atlas-tool-source="registry"]')).toBeVisible({
+    timeout: 20_000,
+  });
 
   fs.writeFileSync(
     path.join(EVIDENCE, 'contract-run.json'),
@@ -169,7 +164,7 @@ test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ p
         at: new Date().toISOString(),
         worldPublicId: WORLD_PUBLIC,
         mode: 'contract',
-        hadNative3d: (await native.count()) > 0,
+        hadNative3d: true,
       },
       null,
       2,
