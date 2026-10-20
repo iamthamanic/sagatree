@@ -71,7 +71,6 @@ for (const issue of issues) {
     fail(`${issue.localId} contains placeholder text`);
   }
   if (issue.status === 'ready' && /GATE-0/.test(issue.localId) === false) {
-    // ready issues must not depend on unresolved gates
     for (const d of issue.dependsOn) {
       const dep = issues.find((x) => x.localId === d);
       if (dep && dep.status === 'needs-design') {
@@ -106,7 +105,6 @@ for (const needle of ['GATE-01', 'BLOCKED', 'Better Auth', 'Colyseus', 'SQLite']
   if (!design.includes(needle)) fail(`design missing ${needle}`);
 }
 
-// Cutover safety: MIG-700 must not depend only on a tiny subset.
 const mig700 = issues.find((i) => i.localId === 'MIG-700');
 if (!mig700) fail('missing MIG-700');
 const d700 = new Set(mig700.dependsOn);
