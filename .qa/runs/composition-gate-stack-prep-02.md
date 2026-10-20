@@ -1,10 +1,9 @@
 # Composition Gate — stack-prep-02 (#775)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: da103edf53f3acf6675af61ae8fb63cb86ec16ff
 - BASE_SHA: 0b82bb230107f00a761a37e2515fd575be1cfa5a
 - Date: 2026-10-20
 - Verdict: CLEAR
-- WORKTREE: feat/issue-775-atlas-e2e-prerequisite @ CLEAN (prep docs only)
 
 ## Event
 
