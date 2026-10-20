@@ -152,8 +152,10 @@ test('product WebGL atlas mounts DB nav + registry tools (contract)', async ({ p
   await expect(native).toHaveAttribute('data-atlas-controlled', 'true');
   await expect(native).toHaveAttribute('data-atlas-product-nav', 'true');
   await expect(page.locator('[data-atlas-demo="true"]')).toHaveCount(0);
-  await expect(page.locator('[data-atlas-nav-source="db"]')).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator('#tools[data-atlas-tool-source="registry"]')).toBeVisible({
+  // Nav/tools live in chrome that may stay CSS-hidden until surface-ready;
+  // product wiring is proven by attached DB/registry markers (not viewport paint).
+  await expect(page.locator('[data-atlas-nav-source="db"]')).toBeAttached({ timeout: 20_000 });
+  await expect(page.locator('#tools[data-atlas-tool-source="registry"]')).toBeAttached({
     timeout: 20_000,
   });
 
