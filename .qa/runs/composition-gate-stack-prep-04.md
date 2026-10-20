@@ -1,10 +1,9 @@
 # Composition Gate — stack-prep-04 (#777)
 
-- HEAD_SHA: WORKTREE
-- BASE_SHA: b7aa0d46
+- HEAD_SHA: 6cb59cdc37f5d05bbf6816f9ebf697b6c15f43fc
+- BASE_SHA: b7aa0d46da52000a8727ede1ae7ae74165fd3381
 - Date: 2026-10-20
 - Verdict: CLEAR
-- WORKTREE: feat/issue-777-rpc-contracts @ CLEAN (rpc contracts only)
 
 ## Event
 
