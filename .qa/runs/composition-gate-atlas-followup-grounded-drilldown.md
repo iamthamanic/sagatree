@@ -1,6 +1,6 @@
 # Composition Gate — atlas-followup-grounded-drilldown (#752)
 
-- HEAD_SHA: 044d8f998b9e537b11e4b0bec18d44bb560fa512
+- HEAD_SHA: 27aa93da8e02a7beb462dfe296238f79c6c2b46b
 - BASE_SHA: 044d8f998b9e537b11e4b0bec18d44bb560fa512
 - Date: 2026-10-20
 - Verdict: CLEAR
