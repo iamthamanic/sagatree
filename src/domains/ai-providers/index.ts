@@ -11,3 +11,8 @@ export {
   type AiProviderCredentialStatus,
   type AiProviderCredentialView,
 } from './contracts';
+export {
+  OLLAMA_CLOUD_OPENAI_BASE,
+  type OllamaSettingsUpsertInput,
+  type OllamaSettingsView,
+} from './ollama-settings';

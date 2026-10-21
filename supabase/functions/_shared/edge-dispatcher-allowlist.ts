@@ -14,6 +14,7 @@ export const EDGE_DISPATCHER_ALLOWLIST = [
   'item-model3d',
   'item-thumbnail',
   'look-reference-analysis',
+  'ollama-settings',
   'session-media-token',
   'session-recap',
 ] as const;

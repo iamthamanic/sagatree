@@ -16,6 +16,10 @@ import {
 } from '../_shared/session-recap-provider.ts';
 import { consumePersistentSessionRecapRateLimit } from '../_shared/session-recap-rate-limit.ts';
 import {
+  loadOllamaSettingsForUser,
+  prefsToProviderConfig,
+} from '../_shared/ollama-llm-resolve.ts';
+import {
   corsHeaders,
   handleOptions,
   jsonResponse as sharedJsonResponse,
@@ -241,12 +245,34 @@ serve(async (request: Request) => {
     );
   }
 
-  const providerConfig = resolveSessionRecapProviderConfig();
+  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;
+  try {
+    if (supabaseConfig.serviceRoleKey) {
+      const stored = await loadOllamaSettingsForUser(
+        {
+          url: supabaseConfig.url,
+          serviceRoleKey: supabaseConfig.serviceRoleKey,
+        },
+        userId,
+      );
+      if (stored) {
+        providerConfig = prefsToProviderConfig(stored);
+      }
+    }
+  } catch (error) {
+    console.error(
+      'session-recap ollama prefs:',
+      error instanceof Error ? error.message : 'unknown',
+    );
+  }
+  if (!providerConfig) {
+    providerConfig = resolveSessionRecapProviderConfig();
+  }
   if (!providerConfig) {
     return jsonResponse(request, {
       status: 'not-configured',
       message:
-        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell in der Server-Umgebung.',
+        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',
     });
   }
 

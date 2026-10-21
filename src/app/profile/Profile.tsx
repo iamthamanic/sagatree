@@ -1,5 +1,5 @@
 /**
- * Profile — Account settings under `/settings/:tab` + AI sub-tabs (Bild/3D/Video/Audio).
+ * Profile — Account settings under `/settings/:tab` + AI sub-tabs (Organize/Bild/3D/Video/Audio).
  * Location: src/app/profile/Profile.tsx
  */
 import { useEffect, useState } from 'react';
@@ -25,6 +25,7 @@ import {
   AlertTriangle,
   Check,
   Copy,
+  Folders,
 } from 'lucide-react';
 import { useAuth } from '../../lib/auth-context';
 import { useTheme } from '../../lib/theme-provider';
@@ -36,10 +37,11 @@ import {
   type SettingsTabId,
 } from '../shell';
 import { AiProviderCredentialsPanel } from './AiProviderCredentialsPanel';
+import { OllamaOrganizePanel } from './OllamaOrganizePanel';
 import { AccountAvatarSection } from './AccountAvatarSection';
 import { DEFERRED_SETTING_HINT_DE } from '../../domains/session/contracts/production-ux-integrity';
 
-type AiSubTab = 'bild' | '3d' | 'video' | 'audio';
+type AiSubTab = 'organize' | 'bild' | '3d' | 'video' | 'audio';
 
 function readSettingsTabFromLocation(): SettingsTabId {
   if (typeof window === 'undefined') return 'profile';
@@ -51,7 +53,7 @@ export function Profile() {
   const { theme, setTheme } = useTheme();
   const { pathname, navigateToPath } = useAppLocation();
   const [settingsTab, setSettingsTab] = useState<SettingsTabId>(readSettingsTabFromLocation);
-  const [aiSubTab, setAiSubTab] = useState<AiSubTab>('bild');
+  const [aiSubTab, setAiSubTab] = useState<AiSubTab>('organize');
   const [userIdCopied, setUserIdCopied] = useState(false);
 
   // Keep tab + URL in sync (`/settings/ai`, legacy `/profile`, bare `/settings`).
@@ -398,7 +400,7 @@ export function Profile() {
                   AI
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
-                  Präferenzen für generative Medien (Bild, 3D, Video, Audio)
+                  LLM (Organize) und generative Medien (Bild, 3D, Video, Audio)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -409,6 +411,10 @@ export function Profile() {
                   data-settings-ai-tabs
                 >
                   <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
+                    <TabsTrigger value="organize" className="gap-1.5" data-settings-ai-tab="organize">
+                      <Folders className="size-3.5" aria-hidden="true" />
+                      Organize
+                    </TabsTrigger>
                     <TabsTrigger value="bild" className="gap-1.5" data-settings-ai-tab="bild">
                       <ImageIcon className="size-3.5" aria-hidden="true" />
                       Bild
@@ -426,6 +432,10 @@ export function Profile() {
                       Audio
                     </TabsTrigger>
                   </TabsList>
+
+                  <TabsContent value="organize" className="space-y-4">
+                    <OllamaOrganizePanel />
+                  </TabsContent>
 
                   <TabsContent value="bild" className="space-y-4">
                     <p className="text-sm text-muted-foreground">
