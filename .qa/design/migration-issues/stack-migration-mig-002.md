@@ -52,9 +52,9 @@ SECURITY DEFINER, effektive EXECUTE-Rechte und Dispatcher-Erreichbarkeit getrenn
 
 ### Fall 2
 
-- Gegeben: 24 Edge-Verzeichnisse und 13 Infrastruktur-Bereiche
+- Gegeben: 25 Edge-Verzeichnisse und 13 Infrastruktur-Bereiche (nach #879 inkl. ollama-settings)
 - Wenn: Source-Snapshots und Dispatcher werden ausgewertet
-- Dann: 24 Edge-Verträge und 13 Adapter-Verträge sind vollständig zugeordnet; acht erreichbare Worker, 15 nicht eingebundene Worker und main als Dispatcher werden getrennt gezählt.
+- Dann: 25 Edge-Verträge und 13 Adapter-Verträge sind vollständig zugeordnet; neun erreichbare Worker, 15 nicht eingebundene Worker und main als Dispatcher werden getrennt gezählt; ollama-settings ist vorläufig MIG-402/#818 mitgebunden.
 - Quelle: `src/infrastructure`, `supabase/functions`, `supabase/migrations`, `src/supabase`
 
 ### Fall 3
@@ -67,7 +67,7 @@ SECURITY DEFINER, effektive EXECUTE-Rechte und Dispatcher-Erreichbarkeit getrenn
 ## Acceptance
 
 - [ ] Alle 57 Frontend-RPC-Namen einschließlich promote_session_outcome_to_saga und promote_session_outcome_to_world sind mit Aufrufstelle und genau einem Primärverantwortlichen erfasst.
-- [ ] 24 Edge-Verträge und 13 Adapter-Verträge sind vollständig zugeordnet; acht erreichbare Worker, 15 nicht eingebundene Worker und main als Dispatcher werden getrennt gezählt.
+- [ ] 25 Edge-Verträge und 13 Adapter-Verträge sind vollständig zugeordnet; neun erreichbare Worker, 15 nicht eingebundene Worker und main als Dispatcher werden getrennt gezählt; ollama-settings ist vorläufig MIG-402/#818 mitgebunden.
 - [ ] Die Prüfung meldet den veralteten Vertragsnachweis mit Dateipfad; unaufgelöste Laufzeitaufrufe und nicht im Bootstrap enthaltene SQL-Dateien erscheinen ausdrücklich als offene Abdeckung.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 

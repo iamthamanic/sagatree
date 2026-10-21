@@ -42,8 +42,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-002.md",
-      "sha256": "341215c18e1c1aa4994ebb04cdb03716bd9245490e8421411ab23ea51111efa1",
-      "payloadSha256": "da99dd83e865b53adfa1838b5d6032197eb208f9b557325e9ff0176f1c2d11d3"
+      "sha256": "5462ce71a2362c24c7fd6a35cb2a9b88098dc845984a050054caeed49a2a0acc",
+      "payloadSha256": "54e34a46912be30bb13a4f3795c1c55a4d4e83983d7827a19b1b082a74c09abb"
     },
     {
       "localId": "GATE-01",
