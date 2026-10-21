@@ -1,6 +1,6 @@
 # Verify Ticket — PR #889 / MIG-011 follow-up (MERGE-889 WAIT)
 
-- HEAD: (see tip after push)
+- HEAD: `20b5c25e30ed477b4b81e86b878e1e2dedc4555b` (code tip; docs commit may follow as proof-only descendant)
 - Date: 2026-10-21
 - Verdict: **PASS** (local)
 
@@ -21,13 +21,14 @@
 | Legacy lock present → fail-closed; no auto-delete | self-test legacy section |
 | Old host holds lock + TX; new host refuses | old+new concurrency section |
 | Clear only after `oldHostVerifiedStopped: true` | `clearLegacySchemaUpgradeLockAfterVerifiedStandstill` |
-| Real SIGKILL mid-TX; uncommitted rolled back; v1 intact | SIGKILL crash-recovery section (POSIX) |
+| Real SIGKILL mid-TX; uncommitted rolled back; v1 intact | `scripts/mig-011-sigkill-crash.self-test.mjs` (invoked from main harness) |
 
 ## Commands
 
 ```bash
+node --experimental-strip-types scripts/mig-011-sigkill-crash.self-test.mjs  # PASS
 node --experimental-strip-types scripts/mig-011-sqlite-schema.self-test.mjs  # PASS
 node --experimental-strip-types scripts/mig-010-host-skeleton.self-test.mjs  # PASS
 node scripts/architecture-boundary-check.mjs  # PASS
-COMPOSITION_GATE_PR_BASE_SHA=<main> npm run composition-gate  # CLEAR
+COMPOSITION_GATE_PR_BASE_SHA=19c33a75a961d3c1635e366883db5b809dbe21eb npm run composition-gate  # CLEAR
 ```
