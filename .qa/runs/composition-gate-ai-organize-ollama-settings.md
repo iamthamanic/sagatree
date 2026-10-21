@@ -1,6 +1,6 @@
 # Composition Gate — ai-organize-ollama-settings
 
-- HEAD_SHA: 9beb10c55cb5d456abe1668a238d9022ec0463ba
+- HEAD_SHA: 4148fa2099a648d02b3279c7419da226fb952d32
 - BASE_SHA: 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248
 - Date: 2026-10-21
 - Verdict: CLEAR
@@ -25,9 +25,9 @@ BYOK Bild/3D/Video/Audio: `AiProviderCredentialsPanel` → `AiProviderCredential
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| 1 event, N actors | User A prefs never apply to User B | JWT `user_id` + service_role filter on credentials; consumers pass caller userId | pass |
-| invalid / missing | Bad URL / cloud without key / missing encrypt → fail-closed; no prefs → Env | `assertSafeOllamaBaseUrl`; cloud requires key; 503 `encryption-missing`; resolve falls back to env | pass |
-| 2 consumers / crash | Lore + Recap + ai-gm share one prefs row; crash mid-upsert does not leak key | Same `provider_id=ollama`; client never stores secret; responses omit plaintext; upsert is merge-duplicates | pass |
+| N-actors | User A prefs never apply to User B | JWT `user_id` + service_role filter on credentials; consumers pass caller userId | pass |
+| Invalid/missing | Bad URL / cloud without key / missing encrypt → fail-closed; no prefs → Env | `assertSafeOllamaBaseUrl`; cloud requires key; 503 `encryption-missing`; resolve falls back to env | pass |
+| Two consumers / crash | Lore + Recap + ai-gm share one prefs row; crash mid-upsert does not leak key | Same `provider_id=ollama`; client never stores secret; responses omit plaintext; upsert is merge-duplicates | pass |
 
 ## Live reachability (ops check, not hop meaning)
 
