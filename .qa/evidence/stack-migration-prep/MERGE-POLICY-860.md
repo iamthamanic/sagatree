@@ -3,7 +3,7 @@
 **Human reply recorded:** `MERGE-860: WAIT`  
 **Agent action:** **Do not merge PR #860.** No force-merge, no assertion softening, no invented APPROVED merge policy / GATE freigabe.
 
-**Verified head (this correction package):** bind reviews to the commit pushed with these corrections (see PR #860 / `RUNNER_HANDOFF.md`). Do not treat older SHAs (`95455813`, `f0b9e9d9`, `2ecfaf6f`, …) as the merge bar once a newer head exists.
+**Verified head (this correction package):** `89c82566b299148d4c98ef2c558d4984d498ddf6` (see PR #860 / `RUNNER_HANDOFF.md`). Do not treat older SHAs (`95455813`, `f0b9e9d9`, `2ecfaf6f`, …) as the merge bar.
 
 ---
 
