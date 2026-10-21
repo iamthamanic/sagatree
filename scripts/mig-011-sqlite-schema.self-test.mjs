@@ -206,94 +206,18 @@ try {
   assert(bootAfterClear.schemaVersion === 1, 'schema intact after old+new sequence');
   bootAfterClear.db.close();
 
-  // --- Real process crash (SIGKILL) mid-migration TX ---
-  if (process.platform === 'win32') {
-    console.log('SKIP: SIGKILL crash-recovery (POSIX only)');
-  } else {
-    const dataCrash = join(work, 'data-crash');
-    const migCrash = join(work, 'migrations-crash');
-    mkdirSync(dataCrash);
-    mkdirSync(migCrash);
-    for (const name of readdirSync(catalogMigrations)) {
-      copyFileSync(join(catalogMigrations, name), join(migCrash, name));
-    }
-    // Seed catalog v1 first
-    const seedCrash = bootstrapHostPersistence({ dataDir: dataCrash, migrationsDir: migCrash });
-    assert(seedCrash.ok, 'crash seed');
-    seedCrash.db.close();
-
-    const marker = join(dataCrash, 'in-tx.marker');
-    const crashWorker = join(work, 'crash-worker.mjs');
-    writeFileSync(
-      crashWorker,
-      `
-import { writeFileSync } from 'node:fs';
-import { pathToFileURL } from 'node:url';
-const persistenceUrl = process.env.P_URL;
-const dbPath = process.env.DB_PATH;
-const markerPath = process.env.MARKER;
-const { openHostDatabase } = await import(persistenceUrl);
-const opened = openHostDatabase(dbPath);
-if (!opened.ok) { console.error(opened.error); process.exit(2); }
-const db = opened.db;
-db.exec('BEGIN IMMEDIATE');
-db.exec('CREATE TABLE crash_partial (id TEXT NOT NULL PRIMARY KEY) STRICT');
-db.exec("INSERT INTO crash_partial (id) VALUES ('uncommitted')");
-writeFileSync(markerPath, 'in-tx\\n', 'utf8');
-// Hold forever until SIGKILL — never COMMIT
-await new Promise(() => {});
-`,
-      'utf8',
-    );
-
-    const { spawn } = await import('node:child_process');
-    const child = spawn(
-      process.execPath,
-      ['--experimental-strip-types', crashWorker],
-      {
-        env: {
-          ...process.env,
-          P_URL: persistenceUrl,
-          DB_PATH: join(dataCrash, 'host.sqlite'),
-          MARKER: marker,
-        },
-        stdio: ['ignore', 'pipe', 'pipe'],
-      },
-    );
-    let childErr = '';
-    child.stderr.on('data', (d) => {
-      childErr += d;
-    });
-
-    const deadline = Date.now() + 10_000;
-    while (!existsSync(marker) && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    assert(existsSync(marker), `crash worker never entered TX: ${childErr}`);
-    child.kill('SIGKILL');
-    await new Promise((resolve) => child.on('close', resolve));
-
-    const afterCrash = openHostDatabase(join(dataCrash, 'host.sqlite'));
-    assert(afterCrash.ok, 'reopen after SIGKILL');
-    const partial = afterCrash.db
-      .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
-      .get();
-    assert(!partial, 'uncommitted crash_partial must roll back after SIGKILL');
-    assert(readSchemaVersion(afterCrash.db) === 1, 'committed v1 must survive SIGKILL');
-    const journalAfterCrash = afterCrash.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
-    assert(journalAfterCrash === 1, `no duplicate journal after crash, got ${journalAfterCrash}`);
-    afterCrash.db.close();
-
-    // Restart migrate: still consistent (v1 only); constraint-fail path still works separately
-    const restartCrash = bootstrapHostPersistence({ dataDir: dataCrash, migrationsDir: migCrash });
-    assert(restartCrash.ok, `restart after SIGKILL: ${restartCrash.ok ? '' : restartCrash.error}`);
-    assert(restartCrash.schemaVersion === 1, 'schema version stable after crash recovery');
-    const stillNoPartial = restartCrash.db
-      .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
-      .get();
-    assert(!stillNoPartial, 'partial table must stay absent after restart');
-    restartCrash.db.close();
+  // --- Real process crash (SIGKILL) mid-migration TX (isolated subprocess) ---
+  const sigkill = spawnSync(
+    process.execPath,
+    ['--experimental-strip-types', join(root, 'scripts/mig-011-sigkill-crash.self-test.mjs')],
+    { encoding: 'utf8', timeout: 30_000 },
+  );
+  if (sigkill.status !== 0) {
+    console.error(sigkill.stdout);
+    console.error(sigkill.stderr);
   }
+  assert(sigkill.status === 0, `SIGKILL crash self-test exit ${sigkill.status}`);
+  assert(/PASS: mig-011 SIGKILL|SKIP: SIGKILL/.test(sigkill.stdout), 'SIGKILL self-test output');
 
   // --- duplicate migration version must fail closed (not skip) ---
   const migDup = join(work, 'migrations-dup');
