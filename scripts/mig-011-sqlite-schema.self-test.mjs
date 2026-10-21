@@ -35,12 +35,15 @@ const {
   bootstrapHostPersistence,
   openHostDatabase,
   runMigrations,
+  listMigrationFiles,
   readSchemaVersion,
   readMigrationFailure,
   runIntegrityCheck,
   foreignKeysEnabled,
   TABLE_OWNERSHIP,
   owningModuleForTable,
+  acquireSchemaUpgradeLock,
+  tryRecoverStaleSchemaUpgradeLock,
 } = await import(persistenceUrl);
 
 const catalogMigrations = join(root, 'server/migrations');
@@ -153,6 +156,40 @@ try {
   const goodIntegrity = runIntegrityCheck(bootGood.db);
   assert(goodIntegrity.ok, `good integrity: ${goodIntegrity.ok ? '' : goodIntegrity.errors.join('; ')}`);
   bootGood.db.close();
+
+  // --- stale lock recovery after process death ---
+  const dataLock = join(work, 'data-lock');
+  mkdirSync(dataLock);
+  const lockPath = join(dataLock, 'schema-upgrade.lock');
+  writeFileSync(lockPath, `${JSON.stringify({ pid: 999_999_999, createdAt: Date.now() })}\n`, 'utf8');
+  assert(tryRecoverStaleSchemaUpgradeLock(lockPath) === true, 'dead-pid lock must be recoverable');
+  assert(!existsSync(lockPath), 'stale lock file removed');
+  const liveLock = acquireSchemaUpgradeLock(dataLock);
+  assert(liveLock.ok, 'acquire after stale recovery');
+  const blocked = acquireSchemaUpgradeLock(dataLock);
+  assert(!blocked.ok, 'live holder must still block second acquire');
+  liveLock.release();
+
+  // --- duplicate migration version must fail closed (not skip) ---
+  const migDup = join(work, 'migrations-dup');
+  mkdirSync(migDup);
+  writeFileSync(join(migDup, '0001_a.sql'), 'SELECT 1;\n', 'utf8');
+  writeFileSync(join(migDup, '0001_b.sql'), 'SELECT 2;\n', 'utf8');
+  let dupThrown = false;
+  try {
+    listMigrationFiles(migDup);
+  } catch (err) {
+    dupThrown = /duplicate migration version/.test(err instanceof Error ? err.message : String(err));
+  }
+  assert(dupThrown, 'duplicate version must throw from listMigrationFiles');
+  const dataDup = join(work, 'data-dup');
+  mkdirSync(dataDup);
+  const openDup = openHostDatabase(join(dataDup, 'host.sqlite'));
+  assert(openDup.ok, 'open dup db');
+  const dupRun = runMigrations({ db: openDup.db, dataDir: dataDup, migrationsDir: migDup });
+  assert(!dupRun.ok, 'runMigrations must fail on duplicate versions');
+  assert(/duplicate migration version/.test(dupRun.error), `dup error got ${dupRun.error}`);
+  openDup.db.close();
 
   // --- AC4: ownership registry + boundary private persistence ---
   assert(owningModuleForTable('worlds') === 'world', 'worlds → world');

@@ -68,6 +68,17 @@ export function listMigrationFiles(migrationsDir: string): { version: number; id
     })
     .filter((entry): entry is { version: number; id: string; path: string } => entry !== null)
     .sort((a, b) => a.version - b.version || a.id.localeCompare(b.id));
+
+  const seen = new Map<number, string>();
+  for (const entry of entries) {
+    const prior = seen.get(entry.version);
+    if (prior) {
+      throw new Error(
+        `duplicate migration version ${String(entry.version).padStart(4, '0')}: ${prior} and ${entry.id}`,
+      );
+    }
+    seen.set(entry.version, entry.id);
+  }
   return entries;
 }
 
@@ -111,7 +122,18 @@ export function runMigrations(options: {
       };
     }
 
-    const files = listMigrationFiles(options.migrationsDir);
+    let files: { version: number; id: string; path: string }[];
+    try {
+      files = listMigrationFiles(options.migrationsDir);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return {
+        ok: false,
+        error: message,
+        failedStep: readMigrationFailure(options.dataDir),
+        schemaVersion: readSchemaVersion(options.db),
+      };
+    }
     const applied: string[] = [];
     let schemaVersion = readSchemaVersion(options.db);
 

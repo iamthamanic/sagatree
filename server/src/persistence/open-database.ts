@@ -3,7 +3,15 @@
  * Location: server/src/persistence/open-database.ts
  */
 import { DatabaseSync } from 'node:sqlite';
-import { openSync, closeSync, unlinkSync, constants, existsSync } from 'node:fs';
+import {
+  openSync,
+  closeSync,
+  unlinkSync,
+  writeSync,
+  readFileSync,
+  constants,
+  existsSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
 
@@ -24,38 +32,89 @@ function applyPragmas(db: HostDatabase): void {
   db.exec(`PRAGMA synchronous=${SQLITE_HOST_POLICY.synchronous}`);
 }
 
+function pidAlive(pid: number): boolean {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Remove a leftover lock from a dead process (or unreadable/invalid payload).
+ * Returns true when the file was removed so a retry can proceed.
+ * Never steals a lock while the recorded holder PID is still alive.
+ */
+export function tryRecoverStaleSchemaUpgradeLock(lockPath: string): boolean {
+  if (!existsSync(lockPath)) return false;
+  let payload: { pid?: unknown; createdAt?: unknown } = {};
+  try {
+    payload = JSON.parse(readFileSync(lockPath, 'utf8')) as { pid?: unknown; createdAt?: unknown };
+  } catch {
+    try {
+      unlinkSync(lockPath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  const pid = typeof payload.pid === 'number' ? payload.pid : Number(payload.pid);
+  if (pidAlive(pid)) return false;
+  try {
+    unlinkSync(lockPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Exclusive upgrade lock file prevents concurrent uncoordinated schema upgrades.
+ * Recovers stale locks left after process death / power loss.
  */
 export function acquireSchemaUpgradeLock(dataDir: string): UpgradeLock {
   const lockPath = join(dataDir, 'schema-upgrade.lock');
-  try {
-    const fd = openSync(lockPath, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, 0o600);
-    let released = false;
-    return {
-      ok: true,
-      release: () => {
-        if (released) return;
-        released = true;
-        try {
-          closeSync(fd);
-        } catch {
-          /* ignore */
-        }
-        try {
-          if (existsSync(lockPath)) unlinkSync(lockPath);
-        } catch {
-          /* ignore */
-        }
-      },
-    };
-  } catch (err) {
-    const code = err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : '';
-    if (code === 'EEXIST') {
-      return { ok: false, error: 'schema upgrade already in progress (lock held)', code: 'LOCK' };
+
+  const tryOnce = (): UpgradeLock => {
+    try {
+      const fd = openSync(lockPath, constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY, 0o600);
+      const body = `${JSON.stringify({ pid: process.pid, createdAt: Date.now() })}\n`;
+      writeSync(fd, body);
+      let released = false;
+      return {
+        ok: true,
+        release: () => {
+          if (released) return;
+          released = true;
+          try {
+            closeSync(fd);
+          } catch {
+            /* ignore */
+          }
+          try {
+            if (existsSync(lockPath)) unlinkSync(lockPath);
+          } catch {
+            /* ignore */
+          }
+        },
+      };
+    } catch (err) {
+      const code = err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : '';
+      if (code === 'EEXIST') {
+        return { ok: false, error: 'schema upgrade already in progress (lock held)', code: 'LOCK' };
+      }
+      return { ok: false, error: 'failed to acquire schema upgrade lock', code: 'LOCK' };
     }
-    return { ok: false, error: 'failed to acquire schema upgrade lock', code: 'LOCK' };
+  };
+
+  const first = tryOnce();
+  if (first.ok) return first;
+  if (tryRecoverStaleSchemaUpgradeLock(lockPath)) {
+    return tryOnce();
   }
+  return first;
 }
 
 export function openHostDatabase(dbPath: string): OpenDatabaseResult {
