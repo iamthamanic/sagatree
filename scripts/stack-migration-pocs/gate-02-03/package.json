@@ -1,0 +1,29 @@
+{
+  "name": "sagatree-gate-02-03-isolated-poc",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "check": "node check.mjs --check",
+    "record": "node check.mjs --write"
+  },
+  "dependencies": {
+    "@colyseus/core": "0.18.20",
+    "@colyseus/schema": "5.0.8",
+    "@colyseus/sdk": "0.18.5",
+    "@colyseus/ws-transport": "0.18.4",
+    "@hono/node-server": "2.1.5",
+    "better-auth": "1.7.12",
+    "hono": "4.13.13",
+    "jose": "6.2.13",
+    "ws": "8.22.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "playwright": "1.55.1",
+    "typescript": "5.8.3"
+  }
+}

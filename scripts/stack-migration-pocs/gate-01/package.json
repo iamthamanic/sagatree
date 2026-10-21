@@ -1,0 +1,29 @@
+{
+  "name": "@sagatree/gate-01-poc",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Isolated Linux SQLite comparison for GATE-01; no architecture approval",
+  "scripts": {
+    "generate": "zen generate --schema zenstack/schema.zmodel",
+    "typecheck": "tsc --noEmit",
+    "run": "node --import tsx run.ts",
+    "check": "npm run generate && npm run typecheck && npm run run && npm run render && npm run verify && npm run test:evidence",
+    "render": "node render-report.mjs",
+    "verify": "node verify.mjs",
+    "test:evidence": "node --test verify.test.mjs"
+  },
+  "dependencies": {
+    "@zenstackhq/orm": "3.9.8",
+    "@zenstackhq/plugin-policy": "3.9.8",
+    "better-sqlite3": "12.5.0",
+    "drizzle-orm": "0.45.4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "24.10.0",
+    "@zenstackhq/cli": "3.9.8",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
+  }
+}

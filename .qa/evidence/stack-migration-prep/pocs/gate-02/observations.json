@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-02",
+  "status": "FAIL",
+  "executedStatus": "PASS",
+  "runAt": "2026-10-21T09:14:13.021Z",
+  "runtime": {
+    "node": "v24.19.0",
+    "os": "linux",
+    "architecture": "x64",
+    "kernel": "6.18.55",
+    "sqlite": "3.53.3"
+  },
+  "metrics": {
+    "cookieRevocation": [
+      {
+        "operation": "sign-out",
+        "endToEndMs": 203.437
+      },
+      {
+        "operation": "revoke-session",
+        "endToEndMs": 129.4
+      }
+    ],
+    "jwtRevocation": [
+      {
+        "operation": "sign-out",
+        "endToEndMs": 80.079
+      },
+      {
+        "operation": "revoke-session",
+        "endToEndMs": 148.477
+      }
+    ],
+    "browser": {
+      "browser": "chromium",
+      "version": "140.0.7339.186",
+      "headless": true,
+      "httpOnly": true,
+      "sameSite": "Lax",
+      "secure": false,
+      "reusedUserProfile": false
+    }
+  },
+  "deterministicReportSha256": "8a6e1a8cd6f4db8e89d16a374112e86772fa7e9e1fe080141d85a18cb87c14eb"
+}

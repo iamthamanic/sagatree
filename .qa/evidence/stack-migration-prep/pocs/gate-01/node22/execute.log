@@ -1,0 +1,23 @@
+
+> @sagatree/gate-01-poc@0.0.0 run
+> node --import tsx run.ts
+
+Running real SQLite candidate: drizzle
+Running real SQLite candidate: zenstack
+{
+  "gate": "GATE-01",
+  "status": "EXECUTED_SCOPE_PASS",
+  "candidates": [
+    {
+      "name": "drizzle",
+      "pass": 42,
+      "fail": 0
+    },
+    {
+      "name": "zenstack",
+      "pass": 42,
+      "fail": 0
+    }
+  ],
+  "evidence": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22"
+}

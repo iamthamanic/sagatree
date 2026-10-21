@@ -1,0 +1,2103 @@
+{
+  "schemaVersion": 1,
+  "function": "world",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "sha256": "02fad42841f086b02d8ee553105e34231ce957d882980fc9c73aa8709da7cb45"
+    }
+  ],
+  "operations": [
+    {
+      "id": "world:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/world/index.ts",
+      "line": 389,
+      "endLine": 397,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 390,
+          "endLine": 396,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 390,
+          "endLine": 394,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 392,
+          "endLine": 392,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:2",
+      "condition": "req.method === \"POST\" && path === \"/worlds\"",
+      "path": "supabase/functions/world/index.ts",
+      "line": 400,
+      "endLine": 407,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 404,
+          "endLine": 406,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 401,
+          "endLine": 401,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 402,
+          "endLine": 402,
+          "expression": "createWorld",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 404,
+          "endLine": 404,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const world = await createWorld(body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:3",
+      "condition": "req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 410,
+      "endLine": 424,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 415,
+          "endLine": 418,
+          "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 421,
+          "endLine": 423,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 411,
+          "endLine": 411,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 412,
+          "endLine": 412,
+          "expression": "getWorld",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 415,
+          "endLine": 415,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"World not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 421,
+          "endLine": 421,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const world = await getWorld(worldId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:4",
+      "condition": "req.method === \"GET\" && path.match(/^\\/worlds\\/project\\/[\\w-]+$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 427,
+      "endLine": 441,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 432,
+          "endLine": 435,
+          "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 438,
+          "endLine": 440,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 428,
+          "endLine": 428,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 429,
+          "endLine": 429,
+          "expression": "getWorldByProject",
+          "arguments": [
+            "projectId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 432,
+          "endLine": 432,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"World not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 438,
+          "endLine": 438,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const projectId = path.split(\"/\")[3]\n      const world = await getWorldByProject(projectId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:5",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 444,
+      "endLine": 452,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 449,
+          "endLine": 451,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 445,
+          "endLine": 445,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 446,
+          "endLine": 446,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 447,
+          "endLine": 447,
+          "expression": "updateWorld",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 449,
+          "endLine": 449,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const world = await updateWorld(worldId, body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:6",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 455,
+      "endLine": 463,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 460,
+          "endLine": 462,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 456,
+          "endLine": 456,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 457,
+          "endLine": 457,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 458,
+          "endLine": 458,
+          "expression": "addLocation",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 460,
+          "endLine": 460,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const location = await addLocation(worldId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:7",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 466,
+      "endLine": 475,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 472,
+          "endLine": 474,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 467,
+          "endLine": 467,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 468,
+          "endLine": 468,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 469,
+          "endLine": 469,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 470,
+          "endLine": 470,
+          "expression": "updateLocation",
+          "arguments": [
+            "worldId",
+            "locationId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 472,
+          "endLine": 472,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const body = await req.json()\n      const location = await updateLocation(worldId, locationId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:8",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+\\/discover$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 478,
+      "endLine": 486,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 483,
+          "endLine": 485,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 479,
+          "endLine": 479,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 480,
+          "endLine": 480,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 481,
+          "endLine": 481,
+          "expression": "discoverLocation",
+          "arguments": [
+            "worldId",
+            "locationId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 483,
+          "endLine": 483,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const location = await discoverLocation(worldId, locationId)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:9",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 489,
+      "endLine": 497,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 494,
+          "endLine": 496,
+          "expression": "new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 490,
+          "endLine": 490,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 491,
+          "endLine": 491,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 492,
+          "endLine": 492,
+          "expression": "addEvent",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 494,
+          "endLine": 494,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "event"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const event = await addEvent(worldId, body)\n      \n      return new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:10",
+      "condition": "req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 500,
+      "endLine": 508,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 505,
+          "endLine": 507,
+          "expression": "new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 501,
+          "endLine": 501,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 502,
+          "endLine": 502,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "getEvents",
+          "arguments": [
+            "worldId",
+            "type"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 505,
+          "endLine": 505,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "events"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const type = url.searchParams.get('type') as WorldEvent['type'] | undefined\n      const events = await getEvents(worldId, type)\n      \n      return new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:11",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 511,
+      "endLine": 519,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 516,
+          "endLine": 518,
+          "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 512,
+          "endLine": 512,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 514,
+          "endLine": 514,
+          "expression": "addFaction",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 516,
+          "endLine": 516,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "faction"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const faction = await addFaction(worldId, body)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:12",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions\\/[\\w-]+\\/relationship$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 522,
+      "endLine": 531,
+      "requestReads": [
+        "body.status",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 528,
+          "endLine": 530,
+          "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 525,
+          "endLine": 525,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "updateFactionRelationship",
+          "arguments": [
+            "worldId",
+            "factionId",
+            "body.targetId",
+            "body.status"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 528,
+          "endLine": 528,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "faction"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const factionId = path.split(\"/\")[4]\n      const body = await req.json()\n      const faction = await updateFactionRelationship(worldId, factionId, body.targetId, body.status)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:13",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/time\\/advance$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 534,
+      "endLine": 542,
+      "requestReads": [
+        "body.hours"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 539,
+          "endLine": 541,
+          "expression": "new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 536,
+          "endLine": 536,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "advanceTime",
+          "arguments": [
+            "worldId",
+            "body.hours || 1"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 539,
+          "endLine": 539,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "time"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const time = await advanceTime(worldId, body.hours || 1)\n      \n      return new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:14",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 545,
+      "endLine": 553,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 550,
+          "endLine": 552,
+          "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 546,
+          "endLine": 546,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 547,
+          "endLine": 547,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 548,
+          "endLine": 548,
+          "expression": "setWeather",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 550,
+          "endLine": 550,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "weather"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const weather = await setWeather(worldId, body)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "world:15",
+      "condition": "req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather\\/random$/)",
+      "path": "supabase/functions/world/index.ts",
+      "line": 556,
+      "endLine": 563,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 560,
+          "endLine": 562,
+          "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 557,
+          "endLine": 557,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 558,
+          "endLine": 558,
+          "expression": "randomWeather",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 560,
+          "endLine": 560,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "weather"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const weather = await randomWeather(worldId)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 390,
+      "endLine": 396,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 404,
+      "endLine": 406,
+      "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 415,
+      "endLine": 418,
+      "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 421,
+      "endLine": 423,
+      "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 432,
+      "endLine": 435,
+      "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 438,
+      "endLine": 440,
+      "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 449,
+      "endLine": 451,
+      "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 460,
+      "endLine": 462,
+      "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 472,
+      "endLine": 474,
+      "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 483,
+      "endLine": 485,
+      "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 494,
+      "endLine": 496,
+      "expression": "new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 505,
+      "endLine": 507,
+      "expression": "new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 516,
+      "endLine": 518,
+      "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 528,
+      "endLine": 530,
+      "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 539,
+      "endLine": 541,
+      "expression": "new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 550,
+      "endLine": 552,
+      "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 560,
+      "endLine": 562,
+      "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 566,
+      "endLine": 569,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 572,
+      "endLine": 578,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 165,
+      "endLine": 165,
+      "expression": "worlds.set(id, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 193,
+      "endLine": 193,
+      "expression": "worlds.set(worldId, updated)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 214,
+      "endLine": 214,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 231,
+      "endLine": 231,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 256,
+      "endLine": 256,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 287,
+      "endLine": 287,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 301,
+      "endLine": 301,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 335,
+      "endLine": 335,
+      "expression": "worlds.set(worldId, world)"
+    },
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 354,
+      "endLine": 354,
+      "expression": "worlds.set(worldId, world)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/world/index.ts",
+      "line": 378,
+      "endLine": 580,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/world\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds - Create world\n    if (req.method === \"POST\" && path === \"/worlds\") {\n      const body = await req.json()\n      const world = await createWorld(body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/:id - Get world\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const world = await getWorld(worldId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/project/:projectId - Get world by project\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/project\\/[\\w-]+$/)) {\n      const projectId = path.split(\"/\")[3]\n      const world = await getWorldByProject(projectId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id - Update world\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const world = await updateWorld(worldId, body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/locations - Add location\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const location = await addLocation(worldId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/locations/:locationId - Update location\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const body = await req.json()\n      const location = await updateLocation(worldId, locationId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/locations/:locationId/discover - Discover location\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+\\/discover$/)) {\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const location = await discoverLocation(worldId, locationId)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/events - Add event\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const event = await addEvent(worldId, body)\n      \n      return new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/:id/events - Get events\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)) {\n      const worldId = path.split(\"/\")[2]\n      const type = url.searchParams.get('type') as WorldEvent['type'] | undefined\n      const events = await getEvents(worldId, type)\n      \n      return new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/factions - Add faction\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const faction = await addFaction(worldId, body)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/factions/:factionId/relationship - Update faction relationship\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions\\/[\\w-]+\\/relationship$/)) {\n      const worldId = path.split(\"/\")[2]\n      const factionId = path.split(\"/\")[4]\n      const body = await req.json()\n      const faction = await updateFactionRelationship(worldId, factionId, body.targetId, body.status)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/time/advance - Advance time\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/time\\/advance$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const time = await advanceTime(worldId, body.hours || 1)\n      \n      return new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/weather - Set weather\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const weather = await setWeather(worldId, body)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/weather/random - Random weather\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather\\/random$/)) {\n      const worldId = path.split(\"/\")[2]\n      const weather = await randomWeather(worldId)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [
+        "body.hours",
+        "body.status",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 382,
+          "endLine": 382,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 390,
+          "endLine": 396,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 404,
+          "endLine": 406,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 415,
+          "endLine": 418,
+          "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 421,
+          "endLine": 423,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 432,
+          "endLine": 435,
+          "expression": "new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 438,
+          "endLine": 440,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 449,
+          "endLine": 451,
+          "expression": "new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 460,
+          "endLine": 462,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 472,
+          "endLine": 474,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 483,
+          "endLine": 485,
+          "expression": "new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 494,
+          "endLine": 496,
+          "expression": "new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 505,
+          "endLine": 507,
+          "expression": "new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 516,
+          "endLine": 518,
+          "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 528,
+          "endLine": 530,
+          "expression": "new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 539,
+          "endLine": 541,
+          "expression": "new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 550,
+          "endLine": 552,
+          "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 560,
+          "endLine": 562,
+          "expression": "new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 566,
+          "endLine": 569,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 572,
+          "endLine": 578,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 378,
+          "endLine": 580,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/world\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds - Create world\n    if (req.method === \"POST\" && path === \"/worlds\") {\n      const body = await req.json()\n      const world = await createWorld(body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/:id - Get world\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const world = await getWorld(worldId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/project/:projectId - Get world by project\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/project\\/[\\w-]+$/)) {\n      const projectId = path.split(\"/\")[3]\n      const world = await getWorldByProject(projectId)\n      \n      if (!world) {\n        return new Response(JSON.stringify({ error: \"World not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id - Update world\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const world = await updateWorld(worldId, body)\n      \n      return new Response(JSON.stringify(world), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/locations - Add location\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const location = await addLocation(worldId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/locations/:locationId - Update location\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const body = await req.json()\n      const location = await updateLocation(worldId, locationId, body)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/locations/:locationId/discover - Discover location\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+\\/discover$/)) {\n      const worldId = path.split(\"/\")[2]\n      const locationId = path.split(\"/\")[4]\n      const location = await discoverLocation(worldId, locationId)\n      \n      return new Response(JSON.stringify(location), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/events - Add event\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const event = await addEvent(worldId, body)\n      \n      return new Response(JSON.stringify(event), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /worlds/:id/events - Get events\n    if (req.method === \"GET\" && path.match(/^\\/worlds\\/[\\w-]+\\/events$/)) {\n      const worldId = path.split(\"/\")[2]\n      const type = url.searchParams.get('type') as WorldEvent['type'] | undefined\n      const events = await getEvents(worldId, type)\n      \n      return new Response(JSON.stringify(events), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/factions - Add faction\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const faction = await addFaction(worldId, body)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/factions/:factionId/relationship - Update faction relationship\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/factions\\/[\\w-]+\\/relationship$/)) {\n      const worldId = path.split(\"/\")[2]\n      const factionId = path.split(\"/\")[4]\n      const body = await req.json()\n      const faction = await updateFactionRelationship(worldId, factionId, body.targetId, body.status)\n      \n      return new Response(JSON.stringify(faction), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/time/advance - Advance time\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/time\\/advance$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const time = await advanceTime(worldId, body.hours || 1)\n      \n      return new Response(JSON.stringify(time), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /worlds/:id/weather - Set weather\n    if (req.method === \"PUT\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather$/)) {\n      const worldId = path.split(\"/\")[2]\n      const body = await req.json()\n      const weather = await setWeather(worldId, body)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /worlds/:id/weather/random - Random weather\n    if (req.method === \"POST\" && path.match(/^\\/worlds\\/[\\w-]+\\/weather\\/random$/)) {\n      const worldId = path.split(\"/\")[2]\n      const weather = await randomWeather(worldId)\n      \n      return new Response(JSON.stringify(weather), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 379,
+          "endLine": 379,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 381,
+          "endLine": 381,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 385,
+          "endLine": 385,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/world\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 390,
+          "endLine": 394,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world', 'locations', 'events', 'factions', 'time', 'weather'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 392,
+          "endLine": 392,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 401,
+          "endLine": 401,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 402,
+          "endLine": 402,
+          "expression": "createWorld",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 404,
+          "endLine": 404,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 410,
+          "endLine": 410,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 411,
+          "endLine": 411,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 412,
+          "endLine": 412,
+          "expression": "getWorld",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 415,
+          "endLine": 415,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"World not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 421,
+          "endLine": 421,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 427,
+          "endLine": 427,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/project\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 428,
+          "endLine": 428,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 429,
+          "endLine": 429,
+          "expression": "getWorldByProject",
+          "arguments": [
+            "projectId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 432,
+          "endLine": 432,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"World not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 438,
+          "endLine": 438,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 444,
+          "endLine": 444,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 445,
+          "endLine": 445,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 446,
+          "endLine": 446,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 447,
+          "endLine": 447,
+          "expression": "updateWorld",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 449,
+          "endLine": 449,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "world"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 455,
+          "endLine": 455,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/locations$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 456,
+          "endLine": 456,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 457,
+          "endLine": 457,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 458,
+          "endLine": 458,
+          "expression": "addLocation",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 460,
+          "endLine": 460,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 466,
+          "endLine": 466,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 467,
+          "endLine": 467,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 468,
+          "endLine": 468,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 469,
+          "endLine": 469,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 470,
+          "endLine": 470,
+          "expression": "updateLocation",
+          "arguments": [
+            "worldId",
+            "locationId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 472,
+          "endLine": 472,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 478,
+          "endLine": 478,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/locations\\/[\\w-]+\\/discover$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 479,
+          "endLine": 479,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 480,
+          "endLine": 480,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 481,
+          "endLine": 481,
+          "expression": "discoverLocation",
+          "arguments": [
+            "worldId",
+            "locationId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 483,
+          "endLine": 483,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "location"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 489,
+          "endLine": 489,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/events$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 490,
+          "endLine": 490,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 491,
+          "endLine": 491,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 492,
+          "endLine": 492,
+          "expression": "addEvent",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 494,
+          "endLine": 494,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "event"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 500,
+          "endLine": 500,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/events$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 501,
+          "endLine": 501,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 502,
+          "endLine": 502,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "getEvents",
+          "arguments": [
+            "worldId",
+            "type"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 505,
+          "endLine": 505,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "events"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 511,
+          "endLine": 511,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/factions$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 512,
+          "endLine": 512,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 514,
+          "endLine": 514,
+          "expression": "addFaction",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 516,
+          "endLine": 516,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "faction"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 522,
+          "endLine": 522,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/factions\\/[\\w-]+\\/relationship$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 525,
+          "endLine": 525,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "updateFactionRelationship",
+          "arguments": [
+            "worldId",
+            "factionId",
+            "body.targetId",
+            "body.status"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 528,
+          "endLine": 528,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "faction"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/time\\/advance$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 536,
+          "endLine": 536,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "advanceTime",
+          "arguments": [
+            "worldId",
+            "body.hours || 1"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 539,
+          "endLine": 539,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "time"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 545,
+          "endLine": 545,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/weather$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 546,
+          "endLine": 546,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 547,
+          "endLine": 547,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 548,
+          "endLine": 548,
+          "expression": "setWeather",
+          "arguments": [
+            "worldId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 550,
+          "endLine": 550,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "weather"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 556,
+          "endLine": 556,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/worlds\\/[\\w-]+\\/weather\\/random$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 557,
+          "endLine": 557,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 558,
+          "endLine": 558,
+          "expression": "randomWeather",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 560,
+          "endLine": 560,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "weather"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 566,
+          "endLine": 566,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 572,
+          "endLine": 575,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/world/index.ts",
+          "line": 574,
+          "endLine": 574,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/world/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "World",
+      "path": "supabase/functions/world/index.ts",
+      "line": 21,
+      "endLine": 35,
+      "text": "interface World {\n  id: string\n  projectId: string\n  name: string\n  description?: string\n  settings: WorldSettings\n  locations: Location[]\n  events: WorldEvent[]\n  factions: Faction[]\n  quests: string[]\n  time: WorldTime\n  weather: Weather\n  createdAt: string\n  updatedAt: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "WorldSettings",
+      "path": "supabase/functions/world/index.ts",
+      "line": 37,
+      "endLine": 44,
+      "text": "interface WorldSettings {\n  ruleset: string\n  technology: 'ancient' | 'medieval' | 'renaissance' | 'modern' | 'future' | 'custom'\n  magic: 'none' | 'low' | 'medium' | 'high' | 'ubiquitous'\n  tone: 'serious' | 'lighthearted' | 'dark' | 'heroic'\n  startingLevel: number\n  maxLevel: number\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Location",
+      "path": "supabase/functions/world/index.ts",
+      "line": 46,
+      "endLine": 57,
+      "text": "interface Location {\n  id: string\n  name: string\n  type: 'city' | 'town' | 'village' | 'dungeon' | 'wilderness' | 'building' | 'room'\n  parentId?: string\n  description?: string\n  coordinates?: { x: number; y: number }\n  connections: string[]\n  npcs: string[]\n  items: string[]\n  discovered: boolean\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "WorldEvent",
+      "path": "supabase/functions/world/index.ts",
+      "line": 59,
+      "endLine": 68,
+      "text": "interface WorldEvent {\n  id: string\n  name: string\n  description?: string\n  type: 'plot' | 'random' | 'scheduled'\n  timestamp: string\n  location?: string\n  participants: string[]\n  consequences: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Faction",
+      "path": "supabase/functions/world/index.ts",
+      "line": 70,
+      "endLine": 79,
+      "text": "interface Faction {\n  id: string\n  name: string\n  type: 'kingdom' | 'guild' | 'cult' | 'tribe' | 'organization'\n  description?: string\n  leader?: string\n  members: string[]\n  relationships: Record<string, 'allied' | 'neutral' | 'hostile'>\n  goals: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "WorldTime",
+      "path": "supabase/functions/world/index.ts",
+      "line": 81,
+      "endLine": 90,
+      "text": "interface WorldTime {\n  current: number // Current time in hours from epoch\n  day: number\n  month: number\n  year: number\n  hour: number\n  minute: number\n  epoch: string\n  calendar: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Weather",
+      "path": "supabase/functions/world/index.ts",
+      "line": 92,
+      "endLine": 98,
+      "text": "interface Weather {\n  current: string\n  temperature: number\n  wind: 'calm' | 'light' | 'moderate' | 'strong' | 'storm'\n  precipitation: 'none' | 'light' | 'moderate' | 'heavy'\n  special?: string\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "worlds",
+      "path": "supabase/functions/world/index.ts",
+      "line": 104,
+      "endLine": 104,
+      "text": "worlds = new Map<string, World>()"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/world/index.ts",
+      "line": 110,
+      "endLine": 112,
+      "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createWorld",
+      "path": "supabase/functions/world/index.ts",
+      "line": 118,
+      "endLine": 167,
+      "text": "async function createWorld(data: {\n  projectId: string\n  name: string\n  description?: string\n  settings?: Partial<WorldSettings>\n}): Promise<World> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const world: World = {\n    id,\n    projectId: data.projectId,\n    name: data.name,\n    description: data.description,\n    settings: {\n      ruleset: 'dnd5e',\n      technology: 'medieval',\n      magic: 'medium',\n      tone: 'serious',\n      startingLevel: 1,\n      maxLevel: 20,\n      ...data.settings,\n    },\n    locations: [],\n    events: [],\n    factions: [],\n    quests: [],\n    time: {\n      current: 0,\n      day: 1,\n      month: 1,\n      year: 1,\n      hour: 8,\n      minute: 0,\n      epoch: 'Common Era',\n      calendar: 'Gregorian',\n    },\n    weather: {\n      current: 'clear',\n      temperature: 20,\n      wind: 'calm',\n      precipitation: 'none',\n    },\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  worlds.set(id, world)\n  return world\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getWorld",
+      "path": "supabase/functions/world/index.ts",
+      "line": 169,
+      "endLine": 171,
+      "text": "async function getWorld(worldId: string): Promise<World | null> {\n  return worlds.get(worldId) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getWorldByProject",
+      "path": "supabase/functions/world/index.ts",
+      "line": 173,
+      "endLine": 180,
+      "text": "async function getWorldByProject(projectId: string): Promise<World | null> {\n  for (const [_, world] of worlds) {\n    if (world.projectId === projectId) {\n      return world\n    }\n  }\n  return null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateWorld",
+      "path": "supabase/functions/world/index.ts",
+      "line": 182,
+      "endLine": 195,
+      "text": "async function updateWorld(worldId: string, data: Partial<World>): Promise<World> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const updated: World = {\n    ...world,\n    ...data,\n    id: worldId,\n    updatedAt: new Date().toISOString(),\n  }\n  \n  worlds.set(worldId, updated)\n  return updated\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addLocation",
+      "path": "supabase/functions/world/index.ts",
+      "line": 201,
+      "endLine": 216,
+      "text": "async function addLocation(worldId: string, data: Omit<Location, 'id'> & { discovered?: boolean }): Promise<Location> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const location: Location = {\n    id: generateId(),\n    ...data,\n    discovered: data.discovered ?? false,\n  }\n  \n  world.locations.push(location)\n  world.updatedAt = new Date().toISOString()\n  \n  worlds.set(worldId, world)\n  return location\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateLocation",
+      "path": "supabase/functions/world/index.ts",
+      "line": 218,
+      "endLine": 234,
+      "text": "async function updateLocation(worldId: string, locationId: string, data: Partial<Location>): Promise<Location> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const index = world.locations.findIndex(l => l.id === locationId)\n  if (index === -1) throw new Error(\"Location not found\")\n  \n  world.locations[index] = {\n    ...world.locations[index],\n    ...data,\n  }\n  \n  world.updatedAt = new Date().toISOString()\n  worlds.set(worldId, world)\n  \n  return world.locations[index]\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "discoverLocation",
+      "path": "supabase/functions/world/index.ts",
+      "line": 236,
+      "endLine": 238,
+      "text": "async function discoverLocation(worldId: string, locationId: string): Promise<Location> {\n  return updateLocation(worldId, locationId, { discovered: true })\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addEvent",
+      "path": "supabase/functions/world/index.ts",
+      "line": 244,
+      "endLine": 258,
+      "text": "async function addEvent(worldId: string, data: Omit<WorldEvent, 'id'>): Promise<WorldEvent> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const event: WorldEvent = {\n    id: generateId(),\n    ...data,\n  }\n  \n  world.events.push(event)\n  world.updatedAt = new Date().toISOString()\n  \n  worlds.set(worldId, world)\n  return event\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getEvents",
+      "path": "supabase/functions/world/index.ts",
+      "line": 260,
+      "endLine": 269,
+      "text": "async function getEvents(worldId: string, type?: WorldEvent['type']): Promise<WorldEvent[]> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  if (type) {\n    return world.events.filter(e => e.type === type)\n  }\n  \n  return world.events\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addFaction",
+      "path": "supabase/functions/world/index.ts",
+      "line": 275,
+      "endLine": 289,
+      "text": "async function addFaction(worldId: string, data: Omit<Faction, 'id'>): Promise<Faction> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const faction: Faction = {\n    id: generateId(),\n    ...data,\n  }\n  \n  world.factions.push(faction)\n  world.updatedAt = new Date().toISOString()\n  \n  worlds.set(worldId, world)\n  return faction\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateFactionRelationship",
+      "path": "supabase/functions/world/index.ts",
+      "line": 291,
+      "endLine": 304,
+      "text": "async function updateFactionRelationship(worldId: string, factionId: string, targetId: string, status: 'allied' | 'neutral' | 'hostile'): Promise<Faction> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  const faction = world.factions.find(f => f.id === factionId)\n  if (!faction) throw new Error(\"Faction not found\")\n  \n  faction.relationships[targetId] = status\n  \n  world.updatedAt = new Date().toISOString()\n  worlds.set(worldId, world)\n  \n  return faction\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "advanceTime",
+      "path": "supabase/functions/world/index.ts",
+      "line": 310,
+      "endLine": 338,
+      "text": "async function advanceTime(worldId: string, hours: number): Promise<WorldTime> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  world.time.current += hours\n  world.time.hour += hours\n  \n  // Advance days\n  while (world.time.hour >= 24) {\n    world.time.hour -= 24\n    world.time.day++\n    \n    // Advance months (simplified - 30 days per month)\n    if (world.time.day > 30) {\n      world.time.day = 1\n      world.time.month++\n      \n      if (world.time.month > 12) {\n        world.time.month = 1\n        world.time.year++\n      }\n    }\n  }\n  \n  world.updatedAt = new Date().toISOString()\n  worlds.set(worldId, world)\n  \n  return world.time\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "setWeather",
+      "path": "supabase/functions/world/index.ts",
+      "line": 344,
+      "endLine": 357,
+      "text": "async function setWeather(worldId: string, weather: Partial<Weather>): Promise<Weather> {\n  const world = worlds.get(worldId)\n  if (!world) throw new Error(\"World not found\")\n  \n  world.weather = {\n    ...world.weather,\n    ...weather,\n  }\n  \n  world.updatedAt = new Date().toISOString()\n  worlds.set(worldId, world)\n  \n  return world.weather\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "randomWeather",
+      "path": "supabase/functions/world/index.ts",
+      "line": 359,
+      "endLine": 372,
+      "text": "async function randomWeather(worldId: string): Promise<Weather> {\n  const weathers = ['clear', 'cloudy', 'rain', 'snow', 'fog', 'storm']\n  const winds: Weather['wind'][] = ['calm', 'light', 'moderate', 'strong', 'storm']\n  const precipitations: Weather['precipitation'][] = ['none', 'light', 'moderate', 'heavy']\n  \n  const weather: Weather = {\n    current: weathers[Math.floor(Math.random() * weathers.length)],\n    temperature: Math.floor(Math.random() * 40) - 10, // -10 to 30\n    wind: winds[Math.floor(Math.random() * winds.length)],\n    precipitation: precipitations[Math.floor(Math.random() * precipitations.length)],\n  }\n  \n  return setWeather(worldId, weather)\n}"
+    }
+  ]
+}

@@ -1,0 +1,1775 @@
+{
+  "schemaVersion": 1,
+  "function": "lorekeeper",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "sha256": "cbf6e3b03b9f411d623609117cd7a60a9bd249f8cd11cc9889c70763fa8baf5f"
+    }
+  ],
+  "operations": [
+    {
+      "id": "lorekeeper:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 423,
+      "endLine": 431,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 424,
+          "endLine": 430,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 424,
+          "endLine": 428,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 426,
+          "endLine": 426,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:2",
+      "condition": "req.method === \"POST\" && path === \"/graph\"",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 434,
+      "endLine": 441,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 438,
+          "endLine": 440,
+          "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 435,
+          "endLine": 435,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 436,
+          "endLine": 436,
+          "expression": "createWorldGraph",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 438,
+          "endLine": 438,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "graph"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const graph = await createWorldGraph(body)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:3",
+      "condition": "req.method === \"GET\" && path.match(/^\\/graph\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 444,
+      "endLine": 451,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 448,
+          "endLine": 450,
+          "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 445,
+          "endLine": 445,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 446,
+          "endLine": 446,
+          "expression": "getWorldGraph",
+          "arguments": [
+            "projectId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 448,
+          "endLine": 448,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "graph"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const projectId = path.split(\"/\")[2]\n      const graph = await getWorldGraph(projectId)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:4",
+      "condition": "req.method === \"POST\" && path === \"/node\"",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 454,
+      "endLine": 461,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 458,
+          "endLine": 460,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 455,
+          "endLine": 455,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 456,
+          "endLine": 456,
+          "expression": "createNode",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 458,
+          "endLine": 458,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const node = await createNode(body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:5",
+      "condition": "req.method === \"GET\" && path.match(/^\\/node\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 464,
+      "endLine": 478,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 469,
+          "endLine": 472,
+          "expression": "new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 475,
+          "endLine": 477,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 465,
+          "endLine": 465,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 466,
+          "endLine": 466,
+          "expression": "getNode",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 469,
+          "endLine": 469,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Node not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 475,
+          "endLine": 475,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const nodeId = path.split(\"/\")[2]\n      const node = await getNode(nodeId)\n      \n      if (!node) {\n        return new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:6",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/node\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 481,
+      "endLine": 489,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 486,
+          "endLine": 488,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 482,
+          "endLine": 482,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 483,
+          "endLine": 483,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 484,
+          "endLine": 484,
+          "expression": "updateNode",
+          "arguments": [
+            "nodeId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 486,
+          "endLine": 486,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const nodeId = path.split(\"/\")[2]\n      const body = await req.json()\n      const node = await updateNode(nodeId, body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:7",
+      "condition": "req.method === \"DELETE\" && path.match(/^\\/node\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 492,
+      "endLine": 499,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 496,
+          "endLine": 498,
+          "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 493,
+          "endLine": 493,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 494,
+          "endLine": 494,
+          "expression": "deleteNode",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 496,
+          "endLine": 496,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const nodeId = path.split(\"/\")[2]\n      await deleteNode(nodeId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:8",
+      "condition": "req.method === \"POST\" && path === \"/relationship\"",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 502,
+      "endLine": 509,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 506,
+          "endLine": 508,
+          "expression": "new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 504,
+          "endLine": 504,
+          "expression": "createRelationship",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 506,
+          "endLine": 506,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "edge"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const edge = await createRelationship(body)\n      \n      return new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:9",
+      "condition": "req.method === \"GET\" && path.match(/^\\/relationships\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 512,
+      "endLine": 519,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 516,
+          "endLine": 518,
+          "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 514,
+          "endLine": 514,
+          "expression": "getRelationships",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 516,
+          "endLine": 516,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "relationships"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const nodeId = path.split(\"/\")[2]\n      const relationships = await getRelationships(nodeId)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:10",
+      "condition": "req.method === \"POST\" && path === \"/memory\"",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 522,
+      "endLine": 529,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 526,
+          "endLine": 528,
+          "expression": "new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "addMemory",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memory"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const memory = await addMemory(body)\n      \n      return new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:11",
+      "condition": "req.method === \"GET\" && path.match(/^\\/memories\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 532,
+      "endLine": 540,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 537,
+          "endLine": 539,
+          "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 533,
+          "endLine": 533,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('limit') || '10'"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'limit'"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "getMemories",
+          "arguments": [
+            "npcId",
+            "limit"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memories"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const npcId = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(npcId, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:12",
+      "condition": "req.method === \"GET\" && path.match(/^\\/context\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 543,
+      "endLine": 550,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 547,
+          "endLine": 549,
+          "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 544,
+          "endLine": 544,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 545,
+          "endLine": 545,
+          "expression": "getSessionContext",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 547,
+          "endLine": 547,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "context"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const sessionId = path.split(\"/\")[2]\n      const context = await getSessionContext(sessionId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:13",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npc\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 553,
+      "endLine": 560,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 557,
+          "endLine": 559,
+          "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 554,
+          "endLine": 554,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 555,
+          "endLine": 555,
+          "expression": "getNPCContext",
+          "arguments": [
+            "npcId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 557,
+          "endLine": 557,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "context"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const npcId = path.split(\"/\")[2]\n      const context = await getNPCContext(npcId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "lorekeeper:14",
+      "condition": "req.method === \"POST\" && path.match(/^\\/consistency\\/[\\w-]+$/)",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 563,
+      "endLine": 570,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 567,
+          "endLine": 569,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 564,
+          "endLine": 564,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 565,
+          "endLine": 565,
+          "expression": "checkConsistency",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 567,
+          "endLine": 567,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const worldId = path.split(\"/\")[2]\n      const result = await checkConsistency(worldId)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 424,
+      "endLine": 430,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 438,
+      "endLine": 440,
+      "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 448,
+      "endLine": 450,
+      "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 458,
+      "endLine": 460,
+      "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 469,
+      "endLine": 472,
+      "expression": "new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 475,
+      "endLine": 477,
+      "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 486,
+      "endLine": 488,
+      "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 496,
+      "endLine": 498,
+      "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 506,
+      "endLine": 508,
+      "expression": "new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 516,
+      "endLine": 518,
+      "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 526,
+      "endLine": 528,
+      "expression": "new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 537,
+      "endLine": 539,
+      "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 547,
+      "endLine": 549,
+      "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 557,
+      "endLine": 559,
+      "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 567,
+      "endLine": 569,
+      "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 573,
+      "endLine": 576,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 579,
+      "endLine": 585,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 92,
+      "endLine": 92,
+      "expression": "nodes.set(id, worldNode)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 93,
+      "endLine": 93,
+      "expression": "graphs.set(data.projectId, id)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 162,
+      "endLine": 162,
+      "expression": "nodes.set(id, node)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 174,
+      "endLine": 174,
+      "expression": "edges.set(edge.id, edge)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 194,
+      "endLine": 194,
+      "expression": "nodes.set(nodeId, updated)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 199,
+      "endLine": 199,
+      "expression": "nodes.delete(nodeId)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 204,
+      "endLine": 204,
+      "expression": "edges.delete(edgeId)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 235,
+      "endLine": 235,
+      "expression": "edges.set(edge.id, edge)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 274,
+      "endLine": 274,
+      "expression": "memories.set(id, memory)"
+    },
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 321,
+      "endLine": 321,
+      "expression": "nodeMap.set(node.id, node)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 412,
+      "endLine": 587,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/lorekeeper\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /graph - Create world graph\n    if (req.method === \"POST\" && path === \"/graph\") {\n      const body = await req.json()\n      const graph = await createWorldGraph(body)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /graph/:projectId - Get world graph\n    if (req.method === \"GET\" && path.match(/^\\/graph\\/[\\w-]+$/)) {\n      const projectId = path.split(\"/\")[2]\n      const graph = await getWorldGraph(projectId)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /node - Create node\n    if (req.method === \"POST\" && path === \"/node\") {\n      const body = await req.json()\n      const node = await createNode(body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /node/:id - Get node\n    if (req.method === \"GET\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const node = await getNode(nodeId)\n      \n      if (!node) {\n        return new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /node/:id - Update node\n    if (req.method === \"PUT\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const body = await req.json()\n      const node = await updateNode(nodeId, body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /node/:id - Delete node\n    if (req.method === \"DELETE\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      await deleteNode(nodeId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /relationship - Create relationship\n    if (req.method === \"POST\" && path === \"/relationship\") {\n      const body = await req.json()\n      const edge = await createRelationship(body)\n      \n      return new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /relationships/:nodeId - Get relationships\n    if (req.method === \"GET\" && path.match(/^\\/relationships\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const relationships = await getRelationships(nodeId)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /memory - Add memory\n    if (req.method === \"POST\" && path === \"/memory\") {\n      const body = await req.json()\n      const memory = await addMemory(body)\n      \n      return new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /memories/:npcId - Get memories\n    if (req.method === \"GET\" && path.match(/^\\/memories\\/[\\w-]+$/)) {\n      const npcId = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(npcId, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /context/:sessionId - Get session context\n    if (req.method === \"GET\" && path.match(/^\\/context\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const context = await getSessionContext(sessionId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npc/:npcId - Get NPC context\n    if (req.method === \"GET\" && path.match(/^\\/npc\\/[\\w-]+$/)) {\n      const npcId = path.split(\"/\")[2]\n      const context = await getNPCContext(npcId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /consistency/:worldId - Check consistency\n    if (req.method === \"POST\" && path.match(/^\\/consistency\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const result = await checkConsistency(worldId)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 416,
+          "endLine": 416,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 424,
+          "endLine": 430,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 438,
+          "endLine": 440,
+          "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 448,
+          "endLine": 450,
+          "expression": "new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 458,
+          "endLine": 460,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 469,
+          "endLine": 472,
+          "expression": "new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 475,
+          "endLine": 477,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 486,
+          "endLine": 488,
+          "expression": "new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 496,
+          "endLine": 498,
+          "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 506,
+          "endLine": 508,
+          "expression": "new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 516,
+          "endLine": 518,
+          "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 526,
+          "endLine": 528,
+          "expression": "new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 537,
+          "endLine": 539,
+          "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 547,
+          "endLine": 549,
+          "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 557,
+          "endLine": 559,
+          "expression": "new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 567,
+          "endLine": 569,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 573,
+          "endLine": 576,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 579,
+          "endLine": 585,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 412,
+          "endLine": 587,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/lorekeeper\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /graph - Create world graph\n    if (req.method === \"POST\" && path === \"/graph\") {\n      const body = await req.json()\n      const graph = await createWorldGraph(body)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /graph/:projectId - Get world graph\n    if (req.method === \"GET\" && path.match(/^\\/graph\\/[\\w-]+$/)) {\n      const projectId = path.split(\"/\")[2]\n      const graph = await getWorldGraph(projectId)\n      \n      return new Response(JSON.stringify(graph), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /node - Create node\n    if (req.method === \"POST\" && path === \"/node\") {\n      const body = await req.json()\n      const node = await createNode(body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /node/:id - Get node\n    if (req.method === \"GET\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const node = await getNode(nodeId)\n      \n      if (!node) {\n        return new Response(JSON.stringify({ error: \"Node not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /node/:id - Update node\n    if (req.method === \"PUT\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const body = await req.json()\n      const node = await updateNode(nodeId, body)\n      \n      return new Response(JSON.stringify(node), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /node/:id - Delete node\n    if (req.method === \"DELETE\" && path.match(/^\\/node\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      await deleteNode(nodeId)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /relationship - Create relationship\n    if (req.method === \"POST\" && path === \"/relationship\") {\n      const body = await req.json()\n      const edge = await createRelationship(body)\n      \n      return new Response(JSON.stringify(edge), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /relationships/:nodeId - Get relationships\n    if (req.method === \"GET\" && path.match(/^\\/relationships\\/[\\w-]+$/)) {\n      const nodeId = path.split(\"/\")[2]\n      const relationships = await getRelationships(nodeId)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /memory - Add memory\n    if (req.method === \"POST\" && path === \"/memory\") {\n      const body = await req.json()\n      const memory = await addMemory(body)\n      \n      return new Response(JSON.stringify(memory), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /memories/:npcId - Get memories\n    if (req.method === \"GET\" && path.match(/^\\/memories\\/[\\w-]+$/)) {\n      const npcId = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(npcId, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /context/:sessionId - Get session context\n    if (req.method === \"GET\" && path.match(/^\\/context\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[2]\n      const context = await getSessionContext(sessionId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npc/:npcId - Get NPC context\n    if (req.method === \"GET\" && path.match(/^\\/npc\\/[\\w-]+$/)) {\n      const npcId = path.split(\"/\")[2]\n      const context = await getNPCContext(npcId)\n      \n      return new Response(JSON.stringify(context), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /consistency/:worldId - Check consistency\n    if (req.method === \"POST\" && path.match(/^\\/consistency\\/[\\w-]+$/)) {\n      const worldId = path.split(\"/\")[2]\n      const result = await checkConsistency(worldId)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 413,
+          "endLine": 413,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 415,
+          "endLine": 415,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 419,
+          "endLine": 419,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/lorekeeper\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 424,
+          "endLine": 428,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['world-graph', 'nodes', 'relationships', 'memories', 'consistency-checks'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 426,
+          "endLine": 426,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 435,
+          "endLine": 435,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 436,
+          "endLine": 436,
+          "expression": "createWorldGraph",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 438,
+          "endLine": 438,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "graph"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 444,
+          "endLine": 444,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/graph\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 445,
+          "endLine": 445,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 446,
+          "endLine": 446,
+          "expression": "getWorldGraph",
+          "arguments": [
+            "projectId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 448,
+          "endLine": 448,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "graph"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 455,
+          "endLine": 455,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 456,
+          "endLine": 456,
+          "expression": "createNode",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 458,
+          "endLine": 458,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 464,
+          "endLine": 464,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/node\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 465,
+          "endLine": 465,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 466,
+          "endLine": 466,
+          "expression": "getNode",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 469,
+          "endLine": 469,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Node not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 475,
+          "endLine": 475,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 481,
+          "endLine": 481,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/node\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 482,
+          "endLine": 482,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 483,
+          "endLine": 483,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 484,
+          "endLine": 484,
+          "expression": "updateNode",
+          "arguments": [
+            "nodeId",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 486,
+          "endLine": 486,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "node"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 492,
+          "endLine": 492,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/node\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 493,
+          "endLine": 493,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 494,
+          "endLine": 494,
+          "expression": "deleteNode",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 496,
+          "endLine": 496,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 504,
+          "endLine": 504,
+          "expression": "createRelationship",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 506,
+          "endLine": 506,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "edge"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 512,
+          "endLine": 512,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/relationships\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 514,
+          "endLine": 514,
+          "expression": "getRelationships",
+          "arguments": [
+            "nodeId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 516,
+          "endLine": 516,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "relationships"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "addMemory",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memory"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 532,
+          "endLine": 532,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/memories\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 533,
+          "endLine": 533,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('limit') || '10'"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'limit'"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "getMemories",
+          "arguments": [
+            "npcId",
+            "limit"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memories"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 543,
+          "endLine": 543,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/context\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 544,
+          "endLine": 544,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 545,
+          "endLine": 545,
+          "expression": "getSessionContext",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 547,
+          "endLine": 547,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "context"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 553,
+          "endLine": 553,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npc\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 554,
+          "endLine": 554,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 555,
+          "endLine": 555,
+          "expression": "getNPCContext",
+          "arguments": [
+            "npcId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 557,
+          "endLine": 557,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "context"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/consistency\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 564,
+          "endLine": 564,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 565,
+          "endLine": 565,
+          "expression": "checkConsistency",
+          "arguments": [
+            "worldId"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 567,
+          "endLine": 567,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 573,
+          "endLine": 573,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 579,
+          "endLine": 582,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/lorekeeper/index.ts",
+          "line": 581,
+          "endLine": 581,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "WorldNode",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 21,
+      "endLine": 29,
+      "text": "interface WorldNode {\n  id: string\n  type: 'world' | 'location' | 'npc' | 'item' | 'event' | 'faction' | 'quest'\n  name: string\n  description?: string\n  properties: Record<string, any>\n  createdAt: string\n  updatedAt: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Edge",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 31,
+      "endLine": 38,
+      "text": "interface Edge {\n  id: string\n  from: string\n  to: string\n  type: string\n  properties: Record<string, any>\n  createdAt: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Memory",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 40,
+      "endLine": 48,
+      "text": "interface Memory {\n  id: string\n  npcId: string\n  sessionId: string\n  type: 'event' | 'relationship' | 'location' | 'item' | 'conversation'\n  content: string\n  importance: number\n  timestamp: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ConsistencyCheck",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 50,
+      "endLine": 53,
+      "text": "interface ConsistencyCheck {\n  valid: boolean\n  issues: ConsistencyIssue[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ConsistencyIssue",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 55,
+      "endLine": 61,
+      "text": "interface ConsistencyIssue {\n  type: 'contradiction' | 'missing' | 'timeline' | 'relationship'\n  severity: 'error' | 'warning' | 'info'\n  message: string\n  nodes?: string[]\n  suggestion?: string\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "nodes",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 67,
+      "endLine": 67,
+      "text": "nodes = new Map<string, WorldNode>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "edges",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 68,
+      "endLine": 68,
+      "text": "edges = new Map<string, Edge>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "memories",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 69,
+      "endLine": 69,
+      "text": "memories = new Map<string, Memory>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "graphs",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 70,
+      "endLine": 70,
+      "text": "graphs = new Map<string, string>()"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createWorldGraph",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 76,
+      "endLine": 96,
+      "text": "async function createWorldGraph(data: { projectId: string; name: string; description?: string }): Promise<WorldNode> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const worldNode: WorldNode = {\n    id,\n    type: 'world',\n    name: data.name,\n    description: data.description,\n    properties: {\n      projectId: data.projectId,\n    },\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  nodes.set(id, worldNode)\n  graphs.set(data.projectId, id)\n  \n  return worldNode\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getWorldGraph",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 98,
+      "endLine": 136,
+      "text": "async function getWorldGraph(projectId: string): Promise<{\n  root: WorldNode | null\n  nodes: WorldNode[]\n  edges: Edge[]\n}> {\n  const rootNodeId = graphs.get(projectId)\n  if (!rootNodeId) {\n    return { root: null, nodes: [], edges: [] }\n  }\n  \n  const rootNode = nodes.get(rootNodeId)\n  if (!rootNode) {\n    return { root: null, nodes: [], edges: [] }\n  }\n  \n  // Get all connected nodes (BFS)\n  const connectedNodes: WorldNode[] = [rootNode]\n  const connectedEdges: Edge[] = []\n  const visited = new Set<string>([rootNodeId])\n  const queue = [rootNodeId]\n  \n  while (queue.length > 0) {\n    const currentId = queue.shift()!\n    \n    for (const [_, edge] of edges) {\n      if (edge.from === currentId && !visited.has(edge.to)) {\n        visited.add(edge.to)\n        const targetNode = nodes.get(edge.to)\n        if (targetNode) {\n          connectedNodes.push(targetNode)\n          connectedEdges.push(edge)\n          queue.push(edge.to)\n        }\n      }\n    }\n  }\n  \n  return { root: rootNode, nodes: connectedNodes, edges: connectedEdges }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createNode",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 142,
+      "endLine": 177,
+      "text": "async function createNode(data: {\n  worldId: string\n  type: WorldNode['type']\n  name: string\n  description?: string\n  properties?: Record<string, any>\n}): Promise<WorldNode> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const node: WorldNode = {\n    id,\n    type: data.type,\n    name: data.name,\n    description: data.description,\n    properties: data.properties || {},\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  nodes.set(id, node)\n  \n  // Create edge from world to this node\n  const edge: Edge = {\n    id: generateId(),\n    from: data.worldId,\n    to: id,\n    type: `has_${data.type}`,\n    properties: {},\n    createdAt: now,\n  }\n  \n  edges.set(edge.id, edge)\n  \n  return node\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getNode",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 179,
+      "endLine": 181,
+      "text": "async function getNode(nodeId: string): Promise<WorldNode | null> {\n  return nodes.get(nodeId) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateNode",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 183,
+      "endLine": 196,
+      "text": "async function updateNode(nodeId: string, data: Partial<WorldNode>): Promise<WorldNode> {\n  const node = nodes.get(nodeId)\n  if (!node) throw new Error(\"Node not found\")\n  \n  const updated: WorldNode = {\n    ...node,\n    ...data,\n    id: nodeId,\n    updatedAt: new Date().toISOString(),\n  }\n  \n  nodes.set(nodeId, updated)\n  return updated\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "deleteNode",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 198,
+      "endLine": 207,
+      "text": "async function deleteNode(nodeId: string): Promise<void> {\n  nodes.delete(nodeId)\n  \n  // Delete all edges connected to this node\n  for (const [edgeId, edge] of edges) {\n    if (edge.from === nodeId || edge.to === nodeId) {\n      edges.delete(edgeId)\n    }\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createRelationship",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 213,
+      "endLine": 237,
+      "text": "async function createRelationship(data: {\n  fromId: string\n  toId: string\n  type: string\n  properties?: Record<string, any>\n}): Promise<Edge> {\n  const from = nodes.get(data.fromId)\n  const to = nodes.get(data.toId)\n  \n  if (!from || !to) {\n    throw new Error(\"One or both nodes not found\")\n  }\n  \n  const edge: Edge = {\n    id: generateId(),\n    from: data.fromId,\n    to: data.toId,\n    type: data.type,\n    properties: data.properties || {},\n    createdAt: new Date().toISOString(),\n  }\n  \n  edges.set(edge.id, edge)\n  return edge\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getRelationships",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 239,
+      "endLine": 249,
+      "text": "async function getRelationships(nodeId: string): Promise<Edge[]> {\n  const relationships: Edge[] = []\n  \n  for (const [_, edge] of edges) {\n    if (edge.from === nodeId || edge.to === nodeId) {\n      relationships.push(edge)\n    }\n  }\n  \n  return relationships\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addMemory",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 255,
+      "endLine": 276,
+      "text": "async function addMemory(data: {\n  npcId: string\n  sessionId: string\n  type: Memory['type']\n  content: string\n  importance?: number\n}): Promise<Memory> {\n  const id = generateId()\n  \n  const memory: Memory = {\n    id,\n    npcId: data.npcId,\n    sessionId: data.sessionId,\n    type: data.type,\n    content: data.content,\n    importance: data.importance || 5,\n    timestamp: new Date().toISOString(),\n  }\n  \n  memories.set(id, memory)\n  return memory\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMemories",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 278,
+      "endLine": 296,
+      "text": "async function getMemories(npcId: string, limit?: number): Promise<Memory[]> {\n  const npcMemories: Memory[] = []\n  \n  for (const [_, memory] of memories) {\n    if (memory.npcId === npcId) {\n      npcMemories.push(memory)\n    }\n  }\n  \n  // Sort by importance and timestamp\n  npcMemories.sort((a, b) => {\n    if (a.importance !== b.importance) {\n      return b.importance - a.importance\n    }\n    return b.timestamp.localeCompare(a.timestamp)\n  })\n  \n  return limit ? npcMemories.slice(0, limit) : npcMemories\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getNPCContext",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 298,
+      "endLine": 308,
+      "text": "async function getNPCContext(npcId: string, sessionId?: string): Promise<{\n  npc: WorldNode | null\n  memories: Memory[]\n  relationships: Edge[]\n}> {\n  const npc = nodes.get(npcId) || null\n  const memories = await getMemories(npcId, 10)\n  const relationships = await getRelationships(npcId)\n  \n  return { npc, memories, relationships }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "checkConsistency",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 314,
+      "endLine": 376,
+      "text": "async function checkConsistency(worldId: string): Promise<ConsistencyCheck> {\n  const issues: ConsistencyIssue[] = []\n  const { nodes: worldNodes, edges: worldEdges } = await getWorldGraph(worldId)\n  \n  // Check for contradictions\n  const nodeMap = new Map<string, WorldNode>()\n  for (const node of worldNodes) {\n    nodeMap.set(node.id, node)\n    \n    // Check for duplicate names\n    const duplicates = worldNodes.filter(n => n.name === node.name && n.id !== node.id)\n    if (duplicates.length > 0) {\n      issues.push({\n        type: 'contradiction',\n        severity: 'warning',\n        message: `Multiple nodes with name \"${node.name}\"`,\n        nodes: [node.id, ...duplicates.map(d => d.id)],\n        suggestion: 'Consider renaming to avoid confusion',\n      })\n    }\n  }\n  \n  // Check for missing relationships\n  for (const node of worldNodes) {\n    if (node.type === 'npc') {\n      const relationships = worldEdges.filter(e => e.from === node.id || e.to === node.id)\n      if (relationships.length === 0) {\n        issues.push({\n          type: 'missing',\n          severity: 'info',\n          message: `NPC \"${node.name}\" has no relationships`,\n          nodes: [node.id],\n          suggestion: 'Consider adding relationships to other entities',\n        })\n      }\n    }\n  }\n  \n  // Check for timeline issues\n  const events = worldNodes.filter(n => n.type === 'event')\n  const sortedEvents = events.sort((a, b) => \n    (a.properties.timestamp || a.createdAt).localeCompare(b.properties.timestamp || b.createdAt)\n  )\n  \n  // Check for contradictory relationships\n  for (const edge of worldEdges) {\n    // Check if both nodes exist\n    if (!nodeMap.has(edge.from) || !nodeMap.has(edge.to)) {\n      issues.push({\n        type: 'relationship',\n        severity: 'error',\n        message: `Edge references non-existent node`,\n        nodes: [edge.from, edge.to],\n        suggestion: 'Remove or fix the relationship',\n      })\n    }\n  }\n  \n  return {\n    valid: issues.filter(i => i.severity === 'error').length === 0,\n    issues,\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getSessionContext",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 382,
+      "endLine": 398,
+      "text": "async function getSessionContext(sessionId: string): Promise<{\n  npcs: WorldNode[]\n  locations: WorldNode[]\n  events: WorldNode[]\n  memories: Memory[]\n}> {\n  // Get all nodes\n  const allNodes = Array.from(nodes.values())\n  const allMemories = Array.from(memories.values())\n  \n  return {\n    npcs: allNodes.filter(n => n.type === 'npc'),\n    locations: allNodes.filter(n => n.type === 'location'),\n    events: allNodes.filter(n => n.type === 'event'),\n    memories: allMemories.filter(m => m.sessionId === sessionId),\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/lorekeeper/index.ts",
+      "line": 404,
+      "endLine": 406,
+      "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
+    }
+  ]
+}

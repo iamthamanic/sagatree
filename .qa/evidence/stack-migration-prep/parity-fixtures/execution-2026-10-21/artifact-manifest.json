@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-21",
+  "scope": "Actual synthetic isolated baseline; security and product gates remain failed",
+  "artifacts": [
+    {
+      "path": "README.md",
+      "bytes": 2192,
+      "sha256": "5317a181a6ace29657139586903b8a360e460569057fb8e6bce3ff7547dea380"
+    },
+    {
+      "path": "atlas-product-Both-real-pl-04e95-render-a-positive-GM-reveal-test-failed-1.png",
+      "bytes": 35068,
+      "sha256": "6ebcdc55f9c08f8a7195e119c8e2b165ba10e3240f3b53de0a1b249c881ea93f"
+    },
+    {
+      "path": "atlas-product-Both-real-pl-04e95-render-a-positive-GM-reveal-test-failed-2.png",
+      "bytes": 61652,
+      "sha256": "a58422d5e4ab5a61085237646f1bdf729122da6c69b3852624fb8cdbf77a6a47"
+    },
+    {
+      "path": "atlas-product-Both-real-pl-04e95-render-a-positive-GM-reveal-test-failed-3.png",
+      "bytes": 34627,
+      "sha256": "3b8519d875c418e8ba101d4a0dd5ca46f01308176c1650069620c740d2175386"
+    },
+    {
+      "path": "atlas-product-Owner-uses-t-1889a--persisted-world-navigation-test-failed-1.png",
+      "bytes": 140239,
+      "sha256": "d434ba05fd6fcfb0a575527efd389f1c0adff703c3f016b1f063077e6394a12a"
+    },
+    {
+      "path": "browser-observations.json",
+      "bytes": 16207,
+      "sha256": "71a3e1f65ebf3efa65fe6b6ff4787eb5a601bb5eae354118c3ae43ab61bc12db"
+    },
+    {
+      "path": "canary-clean-report.json",
+      "bytes": 37231,
+      "sha256": "8e41eaba1196016dc601efbcb985ec087fa15747b41c878f76f1fc0caa388900"
+    },
+    {
+      "path": "canary-injected-report.json",
+      "bytes": 37360,
+      "sha256": "f490cc97698169b0357b3f5c7f78d17817037314eff59749429d1c351659c1e2"
+    },
+    {
+      "path": "canary-report.json",
+      "bytes": 833,
+      "sha256": "d6130484ff071f53dc1168162760b33068f3a0897b8fc2b5be05bf53ae1beaca"
+    },
+    {
+      "path": "fixture.json",
+      "bytes": 1771,
+      "sha256": "171406d9a84328b1fef986a31dd902e88833443b595cbb2af38f4213546f574b"
+    },
+    {
+      "path": "pg-catalog.json",
+      "bytes": 782176,
+      "sha256": "496169507eeb11abf72a8e0f1ec5c265f7d29b1df834fd8ef191e49e475bbca3"
+    },
+    {
+      "path": "postgres-report.json",
+      "bytes": 44315,
+      "sha256": "9ef97e0faebab429ae2791ef5e8a07ef54d634af7f4e0d8ec2361653778e906e"
+    },
+    {
+      "path": "product-report.json",
+      "bytes": 38772,
+      "sha256": "e8a8af5f64cf514def07019313e4f3cb111efee2a3513ff4c2b306b6cef15a5b"
+    },
+    {
+      "path": "transport-observations.json",
+      "bytes": 4797,
+      "sha256": "12cafb85433a188d601f1e4231ed32dfffc1da697bb4093867ffc0bdc9a9e03b"
+    }
+  ]
+}

@@ -1,0 +1,1447 @@
+{
+  "schemaVersion": 1,
+  "function": "spellbook",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "sha256": "e2a3937922f24ee8f4d966cd1a80e1270ba0647e728f890ca7e67b1ff4e59d9a"
+    }
+  ],
+  "operations": [
+    {
+      "id": "spellbook:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 57,
+      "endLine": 57,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 57,
+          "endLine": 57,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 57,
+          "endLine": 57,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }"
+          ]
+        }
+      ],
+      "exactBranch": "return new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "id": "spellbook:2",
+      "condition": "req.method === \"GET\" && path === \"/spells\"",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 58,
+      "endLine": 58,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('level')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'school'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'class'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "listSpells",
+          "arguments": [
+            "level",
+            "school",
+            "classFilter"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{ const level = url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined; const school = url.searchParams.get('school') || undefined; const classFilter = url.searchParams.get('class') || undefined; const list = await listSpells(level, school, classFilter); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:3",
+      "condition": "req.method === \"GET\" && path.match(/^\\/spells\\/[\\w-]+$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 59,
+      "endLine": 59,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "getSpell",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Spell not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spell"
+          ]
+        }
+      ],
+      "exactBranch": "{ const id = path.split(\"/\")[2]; const spell = await getSpell(id); if (!spell) return new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:4",
+      "condition": "req.method === \"POST\" && path === \"/spells\"",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 60,
+      "endLine": 60,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "createSpell",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spell"
+          ]
+        }
+      ],
+      "exactBranch": "{ const body = await req.json(); const spell = await createSpell(body); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:5",
+      "condition": "req.method === \"GET\" && path.match(/^\\/spellbook\\/[\\w-]+$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 61,
+      "endLine": 61,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "getSpellbook",
+          "arguments": [
+            "characterId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; const book = await getSpellbook(characterId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:6",
+      "condition": "req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/learn$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 62,
+      "endLine": 62,
+      "requestReads": [
+        "body.spellId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "learnSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await learnSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:7",
+      "condition": "req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/prepare$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 63,
+      "endLine": 63,
+      "requestReads": [
+        "body.spellId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "prepareSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await prepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:8",
+      "condition": "req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/unprepare$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 64,
+      "endLine": 64,
+      "requestReads": [
+        "body.spellId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "unprepareSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await unprepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:9",
+      "condition": "req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/cast$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 65,
+      "endLine": 65,
+      "requestReads": [
+        "body.level",
+        "body.spellId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "castSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId",
+            "body.level"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; const body = await req.json(); const result = await castSpell(characterId, body.spellId, body.level); return new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "spellbook:10",
+      "condition": "req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/restore$/)",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 66,
+      "endLine": 66,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "restoreSpellSlots",
+          "arguments": [
+            "characterId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        }
+      ],
+      "exactBranch": "{ const characterId = path.split(\"/\")[2]; await restoreSpellSlots(characterId); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 57,
+      "endLine": 57,
+      "expression": "new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 58,
+      "endLine": 58,
+      "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 59,
+      "endLine": 59,
+      "expression": "new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 59,
+      "endLine": 59,
+      "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 60,
+      "endLine": 60,
+      "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 61,
+      "endLine": 61,
+      "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 62,
+      "endLine": 62,
+      "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 63,
+      "endLine": 63,
+      "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 64,
+      "endLine": 64,
+      "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 65,
+      "endLine": 65,
+      "expression": "new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 66,
+      "endLine": 66,
+      "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 67,
+      "endLine": 67,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 68,
+      "endLine": 68,
+      "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 36,
+      "endLine": 36,
+      "expression": "spells.set(s.id, s)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 42,
+      "endLine": 42,
+      "expression": "spells.set(id, spell)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 43,
+      "endLine": 43,
+      "expression": "spellbooks.set(characterId, book)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 44,
+      "endLine": 44,
+      "expression": "spellbooks.set(characterId, book)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 45,
+      "endLine": 45,
+      "expression": "spellbooks.set(characterId, book)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 46,
+      "endLine": 46,
+      "expression": "spellbooks.set(characterId, book)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 47,
+      "endLine": 47,
+      "expression": "spellbooks.set(characterId, book)"
+    },
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 48,
+      "endLine": 48,
+      "expression": "spellbooks.set(characterId, book)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 50,
+      "endLine": 69,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/spellbook\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"GET\" && path === \"/spells\") { const level = url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined; const school = url.searchParams.get('school') || undefined; const classFilter = url.searchParams.get('class') || undefined; const list = await listSpells(level, school, classFilter); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/spells\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const spell = await getSpell(id); if (!spell) return new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/spells\") { const body = await req.json(); const spell = await createSpell(body); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/spellbook\\/[\\w-]+$/)) { const characterId = path.split(\"/\")[2]; const book = await getSpellbook(characterId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/learn$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await learnSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/prepare$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await prepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/unprepare$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await unprepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/cast$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const result = await castSpell(characterId, body.spellId, body.level); return new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/restore$/)) { const characterId = path.split(\"/\")[2]; await restoreSpellSlots(characterId); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n})",
+      "requestReads": [
+        "body.level",
+        "body.spellId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 53,
+          "endLine": 53,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 57,
+          "endLine": 57,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 67,
+          "endLine": 67,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 68,
+          "endLine": 68,
+          "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 50,
+          "endLine": 69,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/spellbook\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"GET\" && path === \"/spells\") { const level = url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined; const school = url.searchParams.get('school') || undefined; const classFilter = url.searchParams.get('class') || undefined; const list = await listSpells(level, school, classFilter); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/spells\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const spell = await getSpell(id); if (!spell) return new Response(JSON.stringify({ error: \"Spell not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/spells\") { const body = await req.json(); const spell = await createSpell(body); return new Response(JSON.stringify(spell), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/spellbook\\/[\\w-]+$/)) { const characterId = path.split(\"/\")[2]; const book = await getSpellbook(characterId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/learn$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await learnSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/prepare$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await prepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/unprepare$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const book = await unprepareSpell(characterId, body.spellId); return new Response(JSON.stringify(book), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/cast$/)) { const characterId = path.split(\"/\")[2]; const body = await req.json(); const result = await castSpell(characterId, body.spellId, body.level); return new Response(JSON.stringify(result), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path.match(/^\\/spellbook\\/[\\w-]+\\/restore$/)) { const characterId = path.split(\"/\")[2]; await restoreSpellSlots(characterId); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 51,
+          "endLine": 51,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 52,
+          "endLine": 52,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 55,
+          "endLine": 55,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/spellbook\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 57,
+          "endLine": 57,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['spells', 'spellbooks', 'casting'] }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('level')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'school'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'class'"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "listSpells",
+          "arguments": [
+            "level",
+            "school",
+            "classFilter"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 58,
+          "endLine": 58,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spells\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "getSpell",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Spell not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spell"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "createSpell",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 60,
+          "endLine": 60,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spell"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "getSpellbook",
+          "arguments": [
+            "characterId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 61,
+          "endLine": 61,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+\\/learn$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "learnSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+\\/prepare$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "prepareSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 63,
+          "endLine": 63,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+\\/unprepare$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "unprepareSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 64,
+          "endLine": 64,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "book"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+\\/cast$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "castSpell",
+          "arguments": [
+            "characterId",
+            "body.spellId",
+            "body.level"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 65,
+          "endLine": 65,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/spellbook\\/[\\w-]+\\/restore$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "restoreSpellSlots",
+          "arguments": [
+            "characterId"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 66,
+          "endLine": 66,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 67,
+          "endLine": 67,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 68,
+          "endLine": 68,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }"
+          ]
+        },
+        {
+          "path": "supabase/functions/spellbook/index.ts",
+          "line": 68,
+          "endLine": 68,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Spell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "interface Spell { id: string; name: string; level: number; school: 'abjuration' | 'conjuration' | 'divination' | 'enchantment' | 'evocation' | 'illusion' | 'necromancy' | 'transmutation'; castingTime: string; range: string; components: string[]; duration: string; description: string; higherLevels?: string; classes: string[]; source: string }"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "KnownSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "interface KnownSpell { spellId: string; known: boolean; prepared: boolean }"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CharacterSpellbook",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 17,
+      "endLine": 17,
+      "text": "interface CharacterSpellbook { characterId: string; spells: KnownSpell[]; slotsUsed: Record<string, number> }"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "spells",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "spells = new Map<string, Spell>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "spellbooks",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "spellbooks = new Map<string, CharacterSpellbook>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "srdSpells",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 23,
+      "endLine": 34,
+      "text": "srdSpells: Spell[] = [\n  { id: 'fireball', name: 'Fireball', level: 3, school: 'evocation', castingTime: '1 action', range: '150 feet', components: ['V', 'S', 'M'], duration: 'Instantaneous', description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.', classes: ['sorcerer', 'wizard'], source: 'SRD' },\n  { id: 'magic-missile', name: 'Magic Missile', level: 1, school: 'evocation', castingTime: '1 action', range: '120 feet', components: ['V', 'S'], duration: 'Instantaneous', description: 'You create three glowing darts of magical force. Each dart hits a creature of your choice that you can see within range.', classes: ['sorcerer', 'wizard'], source: 'SRD' },\n  { id: 'healing-word', name: 'Healing Word', level: 1, school: 'evocation', castingTime: '1 bonus action', range: '60 feet', components: ['V'], duration: 'Instantaneous', description: 'A creature of your choice that you can see within range regains hit points equal to 1d4 + your spellcasting ability modifier.', classes: ['bard', 'cleric', 'druid'], source: 'SRD' },\n  { id: 'cure-wounds', name: 'Cure Wounds', level: 1, school: 'evocation', castingTime: '1 action', range: 'Touch', components: ['V', 'S'], duration: 'Instantaneous', description: 'A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier.', classes: ['bard', 'cleric', 'druid', 'paladin', 'ranger'], source: 'SRD' },\n  { id: 'shield', name: 'Shield', level: 1, school: 'abjuration', castingTime: '1 reaction', range: 'Self', components: ['V', 'S'], duration: '1 round', description: 'An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC.', classes: ['sorcerer', 'wizard'], source: 'SRD' },\n  { id: 'detect-magic', name: 'Detect Magic', level: 1, school: 'divination', castingTime: '1 action', range: 'Self', components: ['V', 'S'], duration: 'Concentration, up to 10 minutes', description: 'For the duration, you sense the presence of magic within 30 feet of you.', classes: ['bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'wizard'], source: 'SRD' },\n  { id: 'invisibility', name: 'Invisibility', level: 2, school: 'illusion', castingTime: '1 action', range: 'Touch', components: ['V', 'S', 'M'], duration: 'Concentration, up to 1 hour', description: 'A creature you touch becomes invisible until the spell ends.', classes: ['bard', 'sorcerer', 'warlock', 'wizard'], source: 'SRD' },\n  { id: 'counterspell', name: 'Counterspell', level: 3, school: 'abjuration', castingTime: '1 reaction', range: '60 feet', components: ['S'], duration: 'Instantaneous', description: 'You attempt to interrupt a creature in the process of casting a spell.', classes: ['sorcerer', 'warlock', 'wizard'], source: 'SRD' },\n  { id: 'hold-person', name: 'Hold Person', level: 2, school: 'enchantment', castingTime: '1 action', range: '60 feet', components: ['V', 'S', 'M'], duration: 'Concentration, up to 1 minute', description: 'Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed.', classes: ['bard', 'cleric', 'druid', 'sorcerer', 'warlock', 'wizard'], source: 'SRD' },\n  { id: 'fly', name: 'Fly', level: 3, school: 'transmutation', castingTime: '1 action', range: 'Touch', components: ['V', 'S', 'M'], duration: 'Concentration, up to 10 minutes', description: 'You touch a willing creature. The target gains a flying speed of 60 feet for the duration.', classes: ['sorcerer', 'warlock', 'wizard'], source: 'SRD' }\n]"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 38,
+      "endLine": 38,
+      "text": "function generateId(): string { return crypto.randomUUID() }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listSpells",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 40,
+      "endLine": 40,
+      "text": "async function listSpells(level?: number, school?: string, classFilter?: string): Promise<Spell[]> { let all = Array.from(spells.values()); if (level !== undefined) all = all.filter(s => s.level === level); if (school) all = all.filter(s => s.school === school); if (classFilter) all = all.filter(s => s.classes.includes(classFilter.toLowerCase())); return all }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 41,
+      "endLine": 41,
+      "text": "async function getSpell(id: string): Promise<Spell | null> { return spells.get(id) || null }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 42,
+      "endLine": 42,
+      "text": "async function createSpell(data: Partial<Spell>): Promise<Spell> { const id = generateId(); const spell: Spell = { id, name: data.name || 'Unknown', level: data.level || 0, school: data.school || 'evocation', castingTime: data.castingTime || '1 action', range: data.range || '60 feet', components: data.components || ['V', 'S'], duration: data.duration || 'Instantaneous', description: data.description || '', higherLevels: data.higherLevels, classes: data.classes || [], source: data.source || 'custom' }; spells.set(id, spell); return spell }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getSpellbook",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 43,
+      "endLine": 43,
+      "text": "async function getSpellbook(characterId: string): Promise<CharacterSpellbook> { let book = spellbooks.get(characterId); if (!book) { book = { characterId, spells: [], slotsUsed: {} }; spellbooks.set(characterId, book) } return book }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "learnSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "async function learnSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const existing = book.spells.find(s => s.spellId === spellId); if (!existing) book.spells.push({ spellId, known: true, prepared: false }); spellbooks.set(characterId, book); return book }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "prepareSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 45,
+      "endLine": 45,
+      "text": "async function prepareSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const spell = book.spells.find(s => s.spellId === spellId); if (spell) spell.prepared = true; spellbooks.set(characterId, book); return book }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "unprepareSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 46,
+      "endLine": 46,
+      "text": "async function unprepareSpell(characterId: string, spellId: string): Promise<CharacterSpellbook> { const book = await getSpellbook(characterId); const spell = book.spells.find(s => s.spellId === spellId); if (spell) spell.prepared = false; spellbooks.set(characterId, book); return book }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "castSpell",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 47,
+      "endLine": 47,
+      "text": "async function castSpell(characterId: string, spellId: string, level: number): Promise<{ success: boolean; remaining: number }> { const book = await getSpellbook(characterId); const slotKey = `level${level}`; const maxSlots = { level1: 4, level2: 3, level3: 3, level4: 3, level5: 2, level6: 1, level7: 1, level8: 1, level9: 1 }; const max = maxSlots[slotKey as keyof typeof maxSlots] || 0; const used = book.slotsUsed[slotKey] || 0; if (used >= max) return { success: false, remaining: 0 }; book.slotsUsed[slotKey] = used + 1; spellbooks.set(characterId, book); return { success: true, remaining: max - book.slotsUsed[slotKey] } }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "restoreSpellSlots",
+      "path": "supabase/functions/spellbook/index.ts",
+      "line": 48,
+      "endLine": 48,
+      "text": "async function restoreSpellSlots(characterId: string): Promise<void> { const book = await getSpellbook(characterId); book.slotsUsed = {}; spellbooks.set(characterId, book) }"
+    }
+  ]
+}

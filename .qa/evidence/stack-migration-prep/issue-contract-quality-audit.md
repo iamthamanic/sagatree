@@ -1,14 +1,11 @@
-# Issue contract quality audit (PREP-06 #779)
+# Issue-Vertragsprüfung
 
-Intake issues: **72**. Weak/incomplete after enrichment: **0**. Mapped to GitHub: **72**.
+Stand: 2026-10-21. 90 kanonische Bodies mit Runner, Design, konkreten Given/When/Then-Fällen; Acceptance enthält alle inventorisierten requiredTests (keine Bullet-Cap-Kürzung bei Co-Ownership).
 
-## Prep-check enforcement
+- 0 ready, 85 blocked, 5 needs-design.
+- 57 RPC-, 25 Edge- und 13 Infrastruktur-Verträge.
+- 0 als implementiert abgenommene Migrationstickets; 0 menschlich freigegebene Architekturentscheidungen.
+- Explizite Source-Defekte in 37 Tickets; die konkreten Befunde stehen im jeweiligen Vertrag.
+- Host-Modulvertrag: docs/architecture/host-modular-monolith.md (verankert in MIG-010/#789).
 
-- before/after must cite repository paths
-- security/authz signal required
-- test/negative/parity signal required
-- `contractSections` vorher/nachher/tests required
-- no ready/agent-ready while depending on GATE-*
-- ≥60 githubIssue mappings
-
-All intake issues pass structural contract quality gates.
+Die Strukturprüfung ersetzt die unabhängige fachliche Prüfung nicht. Insbesondere bedeutet das frühere schwache weakCount:0 weder einen korrekten Vertrag noch eine Ausführungsfreigabe.

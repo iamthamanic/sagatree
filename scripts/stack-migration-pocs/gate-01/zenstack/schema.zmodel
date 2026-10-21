@@ -1,0 +1,106 @@
+datasource db {
+  provider = 'sqlite'
+}
+
+plugin policy {
+  provider = '@zenstackhq/plugin-policy'
+}
+
+type Auth {
+  userId String
+  sagaId String?
+  @@auth
+}
+
+model World {
+  id String @id
+  ownerUserId String @map('owner_user_id')
+  maps Map[]
+  projects Project[]
+  @@map('worlds')
+  @@deny('all', auth() == null)
+  @@allow('read', ownerUserId == auth().userId || projects?[id == auth().sagaId && members?[userId == auth().userId && active]])
+}
+
+model Project {
+  id String @id
+  worldId String @map('world_id')
+  gmUserId String @map('gm_user_id')
+  world World @relation(fields: [worldId], references: [id])
+  members ProjectMember[]
+  sessions Session[]
+  reveals MapReveal[]
+  @@map('projects')
+  @@deny('all', auth() == null)
+  @@allow('read', id == auth().sagaId && (world.ownerUserId == auth().userId || members?[userId == auth().userId && active]))
+}
+
+model ProjectMember {
+  projectId String @map('project_id')
+  userId String @map('user_id')
+  role String
+  active Boolean
+  project Project @relation(fields: [projectId], references: [id])
+  @@id([projectId, userId])
+  @@map('project_members')
+  @@deny('all', auth() == null)
+  @@allow('read', userId == auth().userId && projectId == auth().sagaId)
+}
+
+model Map {
+  id String @id @deny('update', true)
+  worldId String @map('world_id') @deny('update', true)
+  title String
+  revision Int @default(0)
+  gmOnly Boolean @default(false) @map('gm_only') @deny('update', true)
+  body String @deny('update', true)
+  layers String @deny('update', true)
+  gmNotes String? @map('gm_notes') @deny('update', true)
+    @allow('read', world.ownerUserId == auth().userId || world.projects?[id == auth().sagaId && gmUserId == auth().userId && members?[userId == auth().userId && role == 'gm' && active]])
+  world World @relation(fields: [worldId], references: [id])
+  reveals MapReveal[]
+  receipts CommandReceipt[]
+  @@map('maps')
+  @@deny('all', auth() == null)
+  @@allow('read', world.ownerUserId == auth().userId)
+  @@allow('read', world.projects?[id == auth().sagaId && gmUserId == auth().userId && members?[userId == auth().userId && role == 'gm' && active]])
+  @@allow('read', world.projects?[id == auth().sagaId && members?[userId == auth().userId && active]] && (!gmOnly || reveals?[projectId == auth().sagaId && playerUserId == auth().userId]))
+  @@allow('update', world.ownerUserId == auth().userId)
+}
+
+model MapReveal {
+  projectId String @map('project_id')
+  mapId String @map('map_id')
+  playerUserId String @map('player_user_id')
+  project Project @relation(fields: [projectId], references: [id])
+  map Map @relation(fields: [mapId], references: [id])
+  @@id([projectId, mapId, playerUserId])
+  @@map('map_reveals')
+  @@deny('all', auth() == null)
+  @@allow('read', projectId == auth().sagaId && playerUserId == auth().userId && project.members?[userId == auth().userId && active])
+}
+
+model Session {
+  id String @id @deny('update', true)
+  projectId String @map('project_id') @deny('update', true)
+  status String
+  revision Int @default(0)
+  project Project @relation(fields: [projectId], references: [id])
+  @@map('sessions')
+  @@deny('all', auth() == null)
+  @@allow('read', projectId == auth().sagaId && (project.world.ownerUserId == auth().userId || project.members?[userId == auth().userId && active]))
+  @@allow('update', projectId == auth().sagaId && project.gmUserId == auth().userId && project.members?[userId == auth().userId && role == 'gm' && active])
+}
+
+model CommandReceipt {
+  id String @id
+  mapId String @map('map_id')
+  actorUserId String @map('actor_user_id')
+  requestDigest String @map('request_digest')
+  resultTitle String @map('result_title')
+  resultRevision Int @map('result_revision')
+  map Map @relation(fields: [mapId], references: [id])
+  @@map('command_receipts')
+  @@deny('all', auth() == null)
+  @@allow('read,create', actorUserId == auth().userId && map.world.ownerUserId == auth().userId)
+}

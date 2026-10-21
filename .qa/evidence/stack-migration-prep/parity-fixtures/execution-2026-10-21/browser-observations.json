@@ -1,0 +1,411 @@
+{
+  "stats": {
+    "startTime": "2026-10-21T08:22:09.853Z",
+    "duration": 66427.566,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "title": "Owner uses the real product WebGL atlas and persisted world navigation",
+      "status": "unexpected",
+      "results": [
+        {
+          "status": "failed",
+          "durationMs": 25717,
+          "errors": [
+            "TimeoutError: locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Werkzeuge', exact: true })\n    - locator resolved to <button type=\"button\" aria-expanded=\"false\" aria-label=\"Werkzeuge\" class=\"atlas-panel-fold\" data-atlas-panel-fold=\"tools\" aria-controls=\"atlas-panel-body-tools\">\u2026</button>\n  - attempting click action\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <button type=\"button\" data-slot=\"button\" data-atlas-surface-toggle=\"true\" aria-label=\"Zur Draufsicht wechseln\" class=\"inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transform-none [&_svg]:pointer-events-none [&_svg:\u2026>Draufsicht</button> from <div class=\"pointer-events-none absolute right-3 top-3 z-[3]\">\u2026</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <button type=\"button\" data-slot=\"button\" data-atlas-surface-toggle=\"true\" aria-label=\"Zur Draufsicht wechseln\" class=\"inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transform-none [&_svg]:pointer-events-none [&_svg:\u2026>Draufsicht</button> from <div class=\"pointer-events-none absolute right-3 top-3 z-[3]\">\u2026</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    28 \u00d7 waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <button type=\"button\" data-slot=\"button\" data-atlas-surface-toggle=\"true\" aria-label=\"Zur Draufsicht wechseln\" class=\"inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 motion-reduce:transform-none [&_svg]:pointer-events-none [&_svg:\u2026>Draufsicht</button> from <div class=\"pointer-events-none absolute right-3 top-3 z-[3]\">\u2026</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n\n\n  56 |   await expect(page.locator('[data-atlas-nav-source=\"db\"]')).toBeVisible();\n  57 |   await expect(page.locator('[data-atlas-nav-source=\"db\"]')).toContainText('Fixture continent saved');\n> 58 |   await page.getByRole('button', { name: 'Werkzeuge', exact: true }).click();\n     |                                                                      ^\n  59 |   await expect(page.locator('#tools[data-atlas-tool-source=\"registry\"]')).toBeVisible();\n  60 | });\n  61 |\n    at /workspace/scratch/feb45e6e10c7/sagatree/scripts/stack-migration-db/atlas-product.spec.ts:58:70"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Foreign owner is denied by real PostgREST and the product screen",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 2505,
+          "errors": []
+        }
+      ]
+    },
+    {
+      "title": "Both real player sessions hide secrets and render a positive GM reveal",
+      "status": "unexpected",
+      "results": [
+        {
+          "status": "failed",
+          "durationMs": 35876,
+          "errors": [
+            "Error: expect(locator).toBeVisible() failed\n\nLocator:  locator('[data-atlas-native-3d][data-atlas-controlled=\"true\"]')\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  30000ms\n\nCall log:\n  - Expect \"toBeVisible\" with timeout 30000ms\n  - waiting for locator('[data-atlas-native-3d][data-atlas-controlled=\"true\"]')\n\n\n  104 |       // response alone cannot prove that the product transports saga context.\n  105 |       await page.goto(`/sagas/${f.sagaPublicId}/world/map`);\n> 106 |       await expect(page.locator('[data-atlas-native-3d][data-atlas-controlled=\"true\"]')).toBeVisible({ timeout: 30_000 });\n      |                                                                                          ^\n  107 |       await expect(page.locator('[data-atlas-nav-source=\"db\"]')).toContainText('Fixture continent');\n  108 |       await expect(page.getByText(f.secretTitle, { exact: true })).toHaveCount(0);\n  109 |     }\n    at /workspace/scratch/feb45e6e10c7/sagatree/scripts/stack-migration-db/atlas-product.spec.ts:106:90"
+          ]
+        }
+      ]
+    }
+  ],
+  "traces": [
+    {
+      "path": "scripts/stack-migration-db/artifacts/review-2026-10-21/browser/atlas-product-Both-real-pl-04e95-render-a-positive-GM-reveal/trace.zip",
+      "sha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "committed": false,
+      "reason": "Raw traces retained in ignored artifacts; they can contain generated local fixture credentials."
+    },
+    {
+      "path": "scripts/stack-migration-db/artifacts/review-2026-10-21/browser/atlas-product-Owner-uses-t-1889a--persisted-world-navigation/trace.zip",
+      "sha256": "775fd7c37f6dcd647892d28e7c3dfb7cea41bf38270690fb3b31de48cc3dceed",
+      "committed": false,
+      "reason": "Raw traces retained in ignored artifacts; they can contain generated local fixture credentials."
+    }
+  ],
+  "networkObservations": [
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "set_saga_binding_reveal",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000701",
+        "label": "Fixture coast",
+        "reveal": "party",
+        "assetId": "fixture-coast",
+        "assetKind": "location"
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "list_world_atlas_maps",
+      "request": null,
+      "status": 200,
+      "response": {
+        "maps": []
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 500,
+      "response": {
+        "code": "P0002",
+        "details": null,
+        "hint": null,
+        "message": "not found"
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000501",
+        "kind": "world",
+        "title": "Fixture coast",
+        "bounds": {
+          "maxX": 1000,
+          "maxY": 1000,
+          "minX": 0,
+          "minY": 0
+        },
+        "layers": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  50,
+                  50
+                ]
+              },
+              "properties": {
+                "name": "Public landmark"
+              }
+            }
+          ]
+        },
+        "revision": 0,
+        "sortOrder": 0,
+        "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+        "parentMapId": null,
+        "generatorMeta": {
+          "engine": "unified_canvas"
+        },
+        "worldProfileId": "a7700000-0000-4000-8000-000000000101",
+        "basemapStoragePath": null,
+        "azgaarMapStoragePath": null
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "list_world_atlas_maps",
+      "request": null,
+      "status": 200,
+      "response": {
+        "maps": []
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 500,
+      "response": {
+        "code": "P0002",
+        "details": null,
+        "hint": null,
+        "message": "not found"
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000501",
+        "kind": "world",
+        "title": "Fixture coast",
+        "bounds": {
+          "maxX": 1000,
+          "maxY": 1000,
+          "minX": 0,
+          "minY": 0
+        },
+        "layers": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  50,
+                  50
+                ]
+              },
+              "properties": {
+                "name": "Public landmark"
+              }
+            }
+          ]
+        },
+        "revision": 0,
+        "sortOrder": 0,
+        "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+        "parentMapId": null,
+        "generatorMeta": {
+          "engine": "unified_canvas"
+        },
+        "worldProfileId": "a7700000-0000-4000-8000-000000000101",
+        "basemapStoragePath": null,
+        "azgaarMapStoragePath": null
+      }
+    },
+    {
+      "traceSha256": "ebfca4ba21d687d45fcf58042724275e0e899f0901c4894269befa16888003ec",
+      "rpc": "list_world_atlas_maps",
+      "request": null,
+      "status": 200,
+      "response": {
+        "maps": []
+      }
+    },
+    {
+      "traceSha256": "775fd7c37f6dcd647892d28e7c3dfb7cea41bf38270690fb3b31de48cc3dceed",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000501",
+        "kind": "world",
+        "title": "Fixture coast",
+        "bounds": {
+          "maxX": 1000,
+          "maxY": 1000,
+          "minX": 0,
+          "minY": 0
+        },
+        "layers": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  50,
+                  50
+                ]
+              },
+              "properties": {
+                "name": "Public landmark"
+              }
+            },
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  80,
+                  80
+                ]
+              },
+              "properties": {
+                "name": "Secret landmark",
+                "secret": true
+              }
+            }
+          ]
+        },
+        "revision": 0,
+        "sortOrder": 0,
+        "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+        "parentMapId": null,
+        "generatorMeta": {
+          "engine": "unified_canvas",
+          "demoSeed": false,
+          "mapStatus": "ready",
+          "unifiedCanvas": {
+            "rooms": [],
+            "walls": [],
+            "format": "sagatree-unified-atlas-v1",
+            "objects": [],
+            "strokes": [],
+            "demoSeed": false,
+            "revision": 1
+          }
+        },
+        "worldProfileId": "a7700000-0000-4000-8000-000000000101",
+        "basemapStoragePath": null,
+        "azgaarMapStoragePath": null
+      }
+    },
+    {
+      "traceSha256": "775fd7c37f6dcd647892d28e7c3dfb7cea41bf38270690fb3b31de48cc3dceed",
+      "rpc": "list_world_atlas_maps",
+      "request": null,
+      "status": 200,
+      "response": {
+        "maps": [
+          {
+            "id": "a7700000-0000-4000-8000-000000000501",
+            "kind": "world",
+            "title": "Fixture coast",
+            "revision": 0,
+            "sortOrder": 0,
+            "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+            "hasBasemap": false,
+            "parentMapId": null,
+            "hasAzgaarMap": false,
+            "worldProfileId": "a7700000-0000-4000-8000-000000000101"
+          },
+          {
+            "id": "a7700000-0000-4000-8000-000000000502",
+            "kind": "world",
+            "title": "Fixture secret vault",
+            "revision": 0,
+            "sortOrder": 0,
+            "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+            "hasBasemap": false,
+            "parentMapId": "a7700000-0000-4000-8000-000000000501",
+            "hasAzgaarMap": false,
+            "worldProfileId": "a7700000-0000-4000-8000-000000000101"
+          }
+        ]
+      }
+    },
+    {
+      "traceSha256": "775fd7c37f6dcd647892d28e7c3dfb7cea41bf38270690fb3b31de48cc3dceed",
+      "rpc": "rename_world_node",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000601",
+        "kind": "continent",
+        "name": "Fixture continent saved",
+        "status": "canonical",
+        "seedKey": null,
+        "revision": 1,
+        "sortOrder": 0,
+        "description": null,
+        "parentPlaceId": null,
+        "worldProfileId": "a7700000-0000-4000-8000-000000000101"
+      }
+    },
+    {
+      "traceSha256": "775fd7c37f6dcd647892d28e7c3dfb7cea41bf38270690fb3b31de48cc3dceed",
+      "rpc": "get_world_atlas_map",
+      "request": null,
+      "status": 200,
+      "response": {
+        "id": "a7700000-0000-4000-8000-000000000501",
+        "kind": "world",
+        "title": "Fixture coast",
+        "bounds": {
+          "maxX": 1000,
+          "maxY": 1000,
+          "minX": 0,
+          "minY": 0
+        },
+        "layers": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  50,
+                  50
+                ]
+              },
+              "properties": {
+                "name": "Public landmark"
+              }
+            },
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  80,
+                  80
+                ]
+              },
+              "properties": {
+                "name": "Secret landmark",
+                "secret": true
+              }
+            }
+          ]
+        },
+        "revision": 0,
+        "sortOrder": 0,
+        "updatedAt": "2026-10-21T11:22:08.656073+03:00",
+        "parentMapId": null,
+        "generatorMeta": {
+          "engine": "unified_canvas",
+          "demoSeed": false,
+          "mapStatus": "ready",
+          "unifiedCanvas": {
+            "rooms": [],
+            "walls": [],
+            "format": "sagatree-unified-atlas-v1",
+            "objects": [],
+            "strokes": [],
+            "demoSeed": false,
+            "revision": 1
+          }
+        },
+        "worldProfileId": "a7700000-0000-4000-8000-000000000101",
+        "basemapStoragePath": null,
+        "azgaarMapStoragePath": null
+      }
+    }
+  ]
+}

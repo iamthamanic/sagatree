@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-03",
+  "status": "PASS",
+  "executedStatus": "PASS",
+  "runAt": "2026-10-21T09:14:13.025Z",
+  "runtime": {
+    "node": "v24.19.0",
+    "os": "linux",
+    "architecture": "x64",
+    "kernel": "6.18.55",
+    "sqlite": "3.53.3"
+  },
+  "metrics": {
+    "minimalCommands": {
+      "samples": 200,
+      "p50Ms": 143.129,
+      "p95Ms": 291.848,
+      "p99Ms": 312.344,
+      "maxMs": 313.353,
+      "elapsedMs": 335.543,
+      "errorRate": 0,
+      "operationsPerSecond": 596.048
+    },
+    "minimalReconnects": {
+      "samples": 200,
+      "p50Ms": 1061.881,
+      "p95Ms": 1069.553,
+      "p99Ms": 1070.021,
+      "maxMs": 1070.206,
+      "elapsedMs": 1092.277,
+      "attempts": 200,
+      "succeeded": 200,
+      "errorRate": 0
+    },
+    "minimalConcurrentHttp": {
+      "samples": 200,
+      "p50Ms": 514.014,
+      "p95Ms": 535.902,
+      "p99Ms": 537.279,
+      "maxMs": 537.614,
+      "attempts": 200,
+      "succeeded": 200,
+      "errorRate": 0,
+      "overlapMs": 547.675,
+      "httpAcksDuringReconnects": 200,
+      "reconnectsDuringHttp": 20
+    },
+    "honoCommands": {
+      "samples": 200,
+      "p50Ms": 197.468,
+      "p95Ms": 374.253,
+      "p99Ms": 386.487,
+      "maxMs": 387.32,
+      "elapsedMs": 397.018,
+      "errorRate": 0,
+      "operationsPerSecond": 503.756
+    },
+    "honoReconnects": {
+      "samples": 200,
+      "p50Ms": 756.607,
+      "p95Ms": 1052.741,
+      "p99Ms": 1068.59,
+      "maxMs": 1070.289,
+      "elapsedMs": 1085.932,
+      "attempts": 200,
+      "succeeded": 200,
+      "errorRate": 0
+    },
+    "honoConcurrentHttp": {
+      "samples": 200,
+      "p50Ms": 243.266,
+      "p95Ms": 259.301,
+      "p99Ms": 260.368,
+      "maxMs": 260.686,
+      "attempts": 200,
+      "succeeded": 200,
+      "errorRate": 0,
+      "overlapMs": 274.788,
+      "httpAcksDuringReconnects": 200,
+      "reconnectsDuringHttp": 6
+    }
+  },
+  "deterministicReportSha256": "26ea64c447c4cf853e97c0fd2121c7cd6342dd3d183ab91ca82c0246c126b794"
+}

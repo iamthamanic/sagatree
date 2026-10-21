@@ -1,0 +1,21 @@
+{
+  "scope": "Official documentation and installed source packages consulted for the isolated PoC. Lockfile integrity values pin package artifacts; runtime observations determine measured behavior.",
+  "references": [
+    { "url": "https://zenstack.dev/docs/orm/cli", "topic": "ZenStack 3 CLI compiles ZModel to TypeScript schema" },
+    { "url": "https://zenstack.dev/docs/orm/client", "topic": "ZenStackClient with SqliteDialect and better-sqlite3" },
+    { "url": "https://zenstack.dev/docs/orm/access-control/write-policies", "topic": "PolicyPlugin, custom auth type, to-many relation predicates and deny-by-default" },
+    { "url": "https://zenstack.dev/docs/orm/access-control/query", "topic": "Actual generated policy enforcement for ORM and Kysely queries, auth context and mutation behavior" },
+    { "url": "https://zenstack.dev/docs/reference/plugins/policy", "topic": "Raw SQL denied by default since 3.5.0; dangerouslyAllowRawSql remains false" },
+    { "url": "https://zenstack.dev/docs/orm/access-control/field-level", "topic": "Preview field policies nullify unreadable values and reject forbidden field updates" },
+    { "url": "https://zenstack.dev/docs/orm/api/transaction", "topic": "Interactive $transaction API" },
+    { "url": "https://zenstack.dev/docs/orm/migration", "topic": "ZenStack migration commands wrap Prisma Migrate; full product migration is NOT RUN" },
+    { "url": "https://orm.drizzle.team/docs/sqlite/get-started-sqlite", "topic": "Official Drizzle better-sqlite3 adapter" },
+    { "url": "https://orm.drizzle.team/docs/transactions", "topic": "Drizzle transaction API; synchronous callback used with better-sqlite3" },
+    { "url": "https://nodejs.org/dist/v22.23.3/SHASUMS256.txt", "topic": "Pinned official Node22 Linux toolchain digest for separate native ABI installation" }
+  ],
+  "packageSourceAnchors": [
+    "node_modules/@zenstackhq/plugin-policy/dist/index.mjs: PolicyHandler.handle rejects non-CRUD raw queries unless dangerouslyAllowRawSql is enabled",
+    "node_modules/@zenstackhq/orm/dist/index.mjs: $executeRaw/$queryRaw and transaction implementation",
+    "node_modules/drizzle-orm/better-sqlite3/session.js: SQLite transaction and raw session execution"
+  ]
+}

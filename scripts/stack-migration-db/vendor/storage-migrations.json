@@ -1,0 +1,87 @@
+{
+  "repository": "https://github.com/supabase/storage",
+  "ref": "v0.40.4",
+  "commit": "7ae3410509f168cd15de5a31e9526a95750011e8",
+  "files": [
+    {
+      "path": "migrations/tenant/0001-initialmigration.sql",
+      "sha256": "822ae07d4783158bc1912bb623e5107cc9002d519e1143a9c200ed6ee18b6d0f",
+      "sql": "select 1"
+    },
+    {
+      "path": "migrations/tenant/0002-pathtoken-column.sql",
+      "sha256": "e548ff09ba423e065d28c09aa405398dbdd76521f72680302d090fa393c00907",
+      "sql": "alter table storage.objects add column path_tokens text[] generated always as (string_to_array(\"name\", '/')) stored;\n\nCREATE OR REPLACE FUNCTION storage.search(prefix text, bucketname text, limits int DEFAULT 100, levels int DEFAULT 1, offsets int DEFAULT 0)\n RETURNS TABLE (\n    name text,\n    id uuid,\n    updated_at TIMESTAMPTZ,\n    created_at TIMESTAMPTZ,\n    last_accessed_at TIMESTAMPTZ,\n    metadata jsonb\n  )\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n\treturn query \n\t\twith files_folders as (\n\t\t\tselect path_tokens[levels] as folder\n\t\t\tfrom storage.objects\n\t\t\twhere objects.name ilike prefix || '%'\n\t\t\tand bucket_id = bucketname\n\t\t\tGROUP by folder\n\t\t\tlimit limits\n\t\t\toffset offsets\n\t\t) \n\t\tselect files_folders.folder as name, objects.id, objects.updated_at, objects.created_at, objects.last_accessed_at, objects.metadata from files_folders \n\t\tleft join storage.objects\n\t\ton prefix || files_folders.folder = objects.name\n        where objects.id is null or objects.bucket_id=bucketname;\nEND\n$function$;\n"
+    },
+    {
+      "path": "migrations/tenant/0003-add-migrations-rls.sql",
+      "sha256": "05b32aad858e4644202e6ac43413cfee30e61d7e9ad51c42b082cfb21235c7bd",
+      "sql": "ALTER TABLE storage.migrations ENABLE ROW LEVEL SECURITY;"
+    },
+    {
+      "path": "migrations/tenant/0004-add-size-functions.sql",
+      "sha256": "38179ee1f8acbab3a5045caf3b7fde793f7204dee348188482c92de8b0d7fbb7",
+      "sql": "CREATE OR REPLACE FUNCTION storage.get_size_by_bucket()\n RETURNS TABLE (\n    size BIGINT,\n    bucket text\n  )\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    return query\n        select sum((metadata->>'size')::int) as size, bucket_id as bucket\n        from \"storage\".objects\n        group by bucket_id;\nEND\n$function$;"
+    },
+    {
+      "path": "migrations/tenant/0005-change-column-name-in-get-size.sql",
+      "sha256": "228d7ec4e3d2fa51e49e951a2c1e991d8f5f633233c81617aaf9dabf55f12756",
+      "sql": "DROP FUNCTION storage.get_size_by_bucket();\nCREATE OR REPLACE FUNCTION storage.get_size_by_bucket()\n RETURNS TABLE (\n    size BIGINT,\n    bucket_id text\n  )\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    return query\n        select sum((metadata->>'size')::int) as size, obj.bucket_id\n        from \"storage\".objects as obj\n        group by obj.bucket_id;\nEND\n$function$;\n"
+    },
+    {
+      "path": "migrations/tenant/0006-add-rls-to-buckets.sql",
+      "sha256": "c87aa8ea3c6509171728880538cc26e7233896a8f927af3bc5b351a1706610e3",
+      "sql": "ALTER TABLE storage.buckets ENABLE ROW LEVEL SECURITY;"
+    },
+    {
+      "path": "migrations/tenant/0007-add-public-to-buckets.sql",
+      "sha256": "6e19c6c3ef041698f54a139e4054704e02ecd2a12a7c6a532a0d8a937c2a30da",
+      "sql": "ALTER TABLE storage.buckets ADD COLUMN \"public\" boolean default false;"
+    },
+    {
+      "path": "migrations/tenant/0008-fix-search-function.sql",
+      "sha256": "841c3ee6ed4885bc59f55db8d6eec293c6188a670d049737552c03a0ba714dc9",
+      "sql": "CREATE OR REPLACE FUNCTION storage.search(prefix text, bucketname text, limits int DEFAULT 100, levels int DEFAULT 1, offsets int DEFAULT 0)\n RETURNS TABLE (\n    name text,\n    id uuid,\n    updated_at TIMESTAMPTZ,\n    created_at TIMESTAMPTZ,\n    last_accessed_at TIMESTAMPTZ,\n    metadata jsonb\n  )\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n\treturn query \n\t\twith files_folders as (\n\t\t\tselect path_tokens[levels] as folder\n\t\t\tfrom storage.objects\n\t\t\twhere objects.name ilike prefix || '%'\n\t\t\tand bucket_id = bucketname\n\t\t\tGROUP by folder\n\t\t\tlimit limits\n\t\t\toffset offsets\n\t\t) \n\t\tselect files_folders.folder as name, objects.id, objects.updated_at, objects.created_at, objects.last_accessed_at, objects.metadata from files_folders \n\t\tleft join storage.objects\n\t\ton prefix || files_folders.folder = objects.name and objects.bucket_id=bucketname;\nEND\n$function$;\n"
+    },
+    {
+      "path": "migrations/tenant/0009-search-files-search-function.sql",
+      "sha256": "e67cbc799bbdbcebd33a60e90e684ac43032db032b9bb34f25438577b259b0ac",
+      "sql": "drop function storage.search;\n\ncreate or replace function storage.search (\n  prefix text,\n  bucketname text,\n  limits int default 100,\n  levels int default 1,\n  offsets int default 0,\n  search text default '',\n  sortcolumn text default 'name',\n  sortorder text default 'asc'\n) returns table (\n    name text,\n    id uuid,\n    updated_at timestamptz,\n    created_at timestamptz,\n    last_accessed_at timestamptz,\n    metadata jsonb\n  )\nas $$\ndeclare\n  v_order_by text;\n  v_sort_order text;\nbegin\n  case\n    when sortcolumn = 'name' then\n      v_order_by = 'name';\n    when sortcolumn = 'updated_at' then\n      v_order_by = 'updated_at';\n    when sortcolumn = 'created_at' then\n      v_order_by = 'created_at';\n    when sortcolumn = 'last_accessed_at' then\n      v_order_by = 'last_accessed_at';\n    else\n      v_order_by = 'name';\n  end case;\n\n  case\n    when sortorder = 'asc' then\n      v_sort_order = 'asc';\n    when sortorder = 'desc' then\n      v_sort_order = 'desc';\n    else\n      v_sort_order = 'asc';\n  end case;\n\n  v_order_by = v_order_by || ' ' || v_sort_order;\n\n  return query execute\n    'with folders as (\n       select path_tokens[$1] as folder\n       from storage.objects\n         where objects.name ilike $2 || $3 || ''%''\n           and bucket_id = $4\n           and array_length(regexp_split_to_array(objects.name, ''/''), 1) <> $1\n       group by folder\n       order by folder ' || v_sort_order || '\n     )\n     (select folder as \"name\",\n            null as id,\n            null as updated_at,\n            null as created_at,\n            null as last_accessed_at,\n            null as metadata from folders)\n     union all\n     (select path_tokens[$1] as \"name\",\n            id,\n            updated_at,\n            created_at,\n            last_accessed_at,\n            metadata\n     from storage.objects\n     where objects.name ilike $2 || $3 || ''%''\n       and bucket_id = $4\n       and array_length(regexp_split_to_array(objects.name, ''/''), 1) = $1\n     order by ' || v_order_by || ')\n     limit $5\n     offset $6' using levels, prefix, search, bucketname, limits, offsets;\nend;\n$$ language plpgsql stable;\n"
+    },
+    {
+      "path": "migrations/tenant/0010-add-trigger-to-auto-update-updated_at-column.sql",
+      "sha256": "fe5e88b5801fd2b62999331bdcc38faac97cece1197ddd517b46c95f3c006318",
+      "sql": "CREATE OR REPLACE FUNCTION update_updated_at_column() \nRETURNS TRIGGER AS $$\nBEGIN\n    NEW.updated_at = now();\n    RETURN NEW; \nEND;\n$$ language plpgsql;\n\nCREATE TRIGGER update_objects_updated_at BEFORE UPDATE ON storage.objects FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();"
+    },
+    {
+      "path": "migrations/tenant/0011-add-automatic-avif-detection-flag.sql",
+      "sha256": "e92fc9d89ccd4b6bea1e5147dd30a9f41d802c2b69746d1c4772fd47297b0dc2",
+      "sql": "alter table storage.buckets add column avif_autodetection bool default false;\n"
+    },
+    {
+      "path": "migrations/tenant/0012-add-bucket-custom-limits.sql",
+      "sha256": "c84e2dfd60a3a08fadf46a5681c3092d375bd22e6d3772a1a04ba26a2b25a790",
+      "sql": "alter table storage.buckets add column max_file_size_kb int default null;\nalter table storage.buckets add column allowed_mime_types text[] default null;"
+    },
+    {
+      "path": "migrations/tenant/0013-use-bytes-for-max-size.sql",
+      "sha256": "252a2b54842b121b28deb3e3a1999eba247fe46416017a71b0670cf5cedf9e06",
+      "sql": "ALTER TABLE storage.buckets RENAME COLUMN max_file_size_kb TO file_size_limit;\nALTER TABLE storage.buckets ALTER COLUMN file_size_limit TYPE bigint;"
+    },
+    {
+      "path": "migrations/tenant/0014-add-can-insert-object-function.sql",
+      "sha256": "572c4c802fce193ed5d63eba166922b5469d863d1eae460dd06cdcb1594bab9a",
+      "sql": "CREATE OR REPLACE FUNCTION storage.can_insert_object(bucketid text, name text, owner uuid, metadata jsonb)\nRETURNS VOID\nLANGUAGE plpgsql\nAS $$\nBEGIN\n  INSERT INTO \"storage\".\"objects\" (\"bucket_id\", \"name\", \"owner\", \"metadata\") VALUES (bucketid, name, owner, metadata);\n  -- hack to rollback the successful insert\n  RAISE sqlstate 'PT200' using\n  message = 'ROLLBACK',\n  detail = 'rollback successful insert';\nEND\n$$;"
+    },
+    {
+      "path": "migrations/tenant/0015-add-version.sql",
+      "sha256": "a4c7a068bb3212a015879859f3c7b8e1ed92998a671fbf3a9bdfd827cf5e0e67",
+      "sql": "alter table storage.objects add column if not exists version text default null;\n"
+    },
+    {
+      "path": "migrations/tenant/0016-drop-owner-foreign-key.sql",
+      "sha256": "00edfd4aefba445959c977fd1a510bd7900dcf9679bbc24615d43ad9768dd0da",
+      "sql": "ALTER TABLE storage.objects\n    DROP CONSTRAINT IF EXISTS objects_owner_fkey;"
+    }
+  ]
+}

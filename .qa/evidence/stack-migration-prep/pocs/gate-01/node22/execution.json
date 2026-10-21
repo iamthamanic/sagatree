@@ -1,0 +1,65 @@
+{
+  "nodeVersion": "v22.23.3",
+  "cleanInstall": true,
+  "sourcePackage": "scripts/stack-migration-pocs/gate-01",
+  "executedCopy": "scripts/stack-migration-pocs/gate-01/work/node22-package",
+  "nodeBinarySha256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+  "steps": [
+    {
+      "step": "install",
+      "exitCode": 0,
+      "elapsedSeconds": 4.337575255999582,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/install.log",
+      "logSha256": "3a923348e0fc584d6db845fe98f10f684ef6f36246af9aba5a7e956439f05231"
+    },
+    {
+      "step": "native-abi",
+      "exitCode": 0,
+      "elapsedSeconds": 0.0319297860005463,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/native-abi.log",
+      "logSha256": "3b747be7379e4f008679de185f3bdfa3de0d27052f0d910388d3623f47049b77"
+    },
+    {
+      "step": "generate",
+      "exitCode": 0,
+      "elapsedSeconds": 5.929496527999618,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/generate.log",
+      "logSha256": "28b56250e7e3760056b26d2cbf79c19604e9fa4cb669f67cc5f62bca0899ec7a"
+    },
+    {
+      "step": "typecheck",
+      "exitCode": 0,
+      "elapsedSeconds": 2.6425772760003383,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/typecheck.log",
+      "logSha256": "6a4be28b09646106f598d14ae19a0acad7c522904f334109b8e327ead3943f40"
+    },
+    {
+      "step": "execute",
+      "exitCode": 0,
+      "elapsedSeconds": 15.536618686999645,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/execute.log",
+      "logSha256": "3c42c3d0f980c80f6d29782062446637940c6bae461ed946098621749a8bd3ef"
+    },
+    {
+      "step": "render",
+      "exitCode": 0,
+      "elapsedSeconds": 0.16549472699989565,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/render.log",
+      "logSha256": "d7324c926387c6617a2519eec99e149635c5468cb8ef68a73c558c2fef1cfc47"
+    },
+    {
+      "step": "verify",
+      "exitCode": 0,
+      "elapsedSeconds": 0.2146628939999573,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/verify.log",
+      "logSha256": "8b74736b73430014eacb39401df529f7686c69a72366e09af9dcc33290cb3e9e"
+    },
+    {
+      "step": "evidence-regressions",
+      "exitCode": 0,
+      "elapsedSeconds": 0.26474820200019167,
+      "log": ".qa/evidence/stack-migration-prep/pocs/gate-01/node22/evidence-regressions.log",
+      "logSha256": "9ff6bf77281f2ba7358c90539afcc65eb33d7f73c336e15c35ae5bd6dc14990f"
+    }
+  ]
+}

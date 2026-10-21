@@ -1,4 +1,4 @@
-# Migration Execution Contract (draft — not activated)
+# Migration Execution Contract (preparation authorized; migration runner not activated)
 
 ## Cursor / ECC runner MAY
 
@@ -26,5 +26,9 @@ This contract activates only after:
 
 1. Prep PR merged  
 2. GATE decisions APPROVED where required  
-3. Explicit freigabe to publish GitHub issues  
-4. Explicit freigabe to start `@ecc-runner-loop` on the migration epic  
+3. Published canonical contracts synchronized with the authoritative issue registry  
+4. Explicit freigabe to start `@ecc-runner-loop` on the migration epic (the current preparation authorization does not activate it)  
+
+## Current preparation scope
+
+Source contract repair, independent review, synthetic PostgreSQL/HTTP/browser tests, SQLite PoCs and synchronization of existing/new split issues are authorized. These tasks do not confer human architecture approval or permission to migrate production data. Source-level legacy defects remain explicit blockers until corrected and proven by negative tests.

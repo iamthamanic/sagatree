@@ -1,6 +1,22 @@
-# PAR-10 canary — intentional permission regression
+# PAR-10: actual RLS permission regression canary
 
-When a coding agent (or future PR) weakens player deny for `gm_only` maps/NPCs,
-`PAR-02` and/or `PAR-03` **must** fail in CI.
+Run `npm run canary --prefix scripts/stack-migration-db`.
 
-Do not delete this canary to go green. Fix the regression instead.
+The clean fixture denies an authenticated foreign owner when selecting the primary
+world under actual PostgreSQL RLS. A second fresh fixture adds this real permissive
+policy:
+
+```sql
+CREATE POLICY baseline_intentional_allow
+  ON public.world_profiles FOR SELECT TO authenticated USING (true);
+```
+
+The same foreign-owner query must now cause `PAR-10` to fail because it returned a
+row. The orchestrator checks the test ID, assertion text, test count, exit status,
+and absence of setup/cleanup failures. Unexpected green, missing test, failed
+bootstrap and unrelated exceptions all make the canary runner fail.
+
+The intentional mutation is restricted to `--canary-only` and lives only in the
+disposable cluster. Canary success is regression-detection evidence, not baseline
+security or successor-parity approval. The complete baseline retains its separate
+red security probes until the actual product defects are corrected.

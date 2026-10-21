@@ -1,0 +1,1129 @@
+{
+  "schemaVersion": 2,
+  "verificationScope": "Repository source freeze 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248 plus later main #879 ollama-settings; no deployed-backend or successor parity claimed.",
+  "edges": {
+    "ollama-settings": {
+      "purpose": "Account-scoped Organize (Ollama LLM) preferences: get/upsert/test/listModels for cloud or local endpoints; secrets never returned.",
+      "authz": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every read/write filters user_id = that userId. No project/session membership is required. Custom base URLs must pass SSRF allowlist checks; plaintext API keys are accepted only on write and stored encrypted.",
+      "payloadContract": {
+        "transport": "POST JSON; OPTIONS 204; other methods 405",
+        "get": "{action:'get'}",
+        "upsert": "{action:'upsert',useCloud:boolean,baseUrl?:string,model?:string,apiKey?:string,clearApiKey?:boolean}",
+        "test": "{action:'test',useCloud:boolean,baseUrl?:string,apiKey?:string}",
+        "listModels": "{action:'listModels',useCloud:boolean,baseUrl?:string,apiKey?:string}"
+      },
+      "successContract": {
+        "getUpsert": "{status:'ok',settings:{useCloud,baseUrl,model,hasApiKey,keyHint,status,updatedAt,source,cloudDefaultUrl,localDefaultUrl}}; never apiKey/ciphertext",
+        "test": "{status:'ok',reachable:boolean,message?:string,models?:string[]}",
+        "listModels": "{status:'ok',models:string[]}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_ai_provider_credential_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 8,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "upsert",
+          "test",
+          "listModels"
+        ],
+        "failure": "non-ok RPC or result != true returns 429"
+      },
+      "sideEffects": [
+        "upsert encrypts optional API key with CREDENTIALS_ENCRYPTION_KEY and persists user_ai_provider_credentials / ollama preference row for the caller only",
+        "test and listModels may call the configured Ollama /api/tags endpoint from the server with AbortSignal timeout",
+        "get decrypts only to derive hasApiKey/keyHint; plaintext is never returned"
+      ],
+      "failureSemantics": [
+        "400 malformed JSON, missing action, invalid URL/model/key shape",
+        "401 missing/invalid user; 405 non-POST; 429 quota; 500 config/persistence/unexpected",
+        "503 missing encryption key on get/upsert paths that require decrypt/encrypt"
+      ],
+      "transportSemantics": "Auth 10s, service 20s, Ollama tags 20s. Shared CORS opts with AI provider origins. No automatic retry.",
+      "requiredTests": [
+        "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
+        "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+        "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
+        "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
+        "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials."
+      ],
+      "knownGaps": [
+        "No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities."
+      ]
+    },
+    "ai-provider-credentials": {
+      "purpose": "Manage the authenticated account's encrypted BYOK keys; no project/session membership is required.",
+      "authz": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted.",
+      "payloadContract": {
+        "transport": "POST JSON at any worker subpath; OPTIONS 204; other methods 405",
+        "list": "{action:'list',modality?:string}; valid image|3d|video|audio filter; missing/unknown modality => null/all. Catalog currently only meshy with image/3d and auth:'api_key'; video/audio => providers:[]",
+        "upsert": "{action:'upsert',providerId:string,apiKey:string}; trimmed, provider meshy, key nonempty then msy_ prefix and20..200 characters; invalid shape400, validation quota charged before provider check",
+        "refresh": "{action:'refresh',providerId:string}; existing encrypted key required",
+        "delete": "{action:'delete',providerId:string}; known provider required, idempotent when no row exists"
+      },
+      "successContract": {
+        "list": "{status:'ok',modality:AiModality|null,providers:ProviderPublicView[]}",
+        "providerView": "{providerId,displayName,modalities,auth,docsUrl:string|null,configured:boolean,keyHint:string|null,status:string|null,addedAt:string|null,lastValidatedAt:string|null,meta:{credits?:number}}; credits rounded, finite and >=0; no ciphertext/plaintext",
+        "upsertRefresh": "{status:'ok',provider:ProviderPublicView}",
+        "delete": "{status:'ok',providerId:string}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_ai_provider_credential_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 8,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "upsert",
+          "refresh"
+        ],
+        "failure": "non-ok RPC or result != true returns 429"
+      },
+      "sideEffects": [
+        "upsert validates Meshy key, encrypts with AES-GCM using CREDENTIALS_ENCRYPTION_KEY, inserts or PATCHes user_ai_provider_credentials; preserves existing added_at",
+        "refresh decrypts owner key, validates credits, PATCHes status/last_validated_at/meta; provider rejection marks invalid",
+        "delete removes owner/provider row; list reads only public projection",
+        "upsert and refresh consume persistent quota before provider calls"
+      ],
+      "failureSemantics": [
+        "400 malformed JSON, missing action/key, unknown provider/action or rejected provider key",
+        "401 missing/invalid user; 405 non-POST; 500 missing server config/persistence/decrypt/unexpected failure",
+        "503 missing encryption key; 404 refresh with no stored secret; 429 quota denied",
+        "listCredentials converts DB error to empty rows; refresh currently ignores PATCH response status. These are source behaviors, not verified success persistence guarantees."
+      ],
+      "transportSemantics": "Auth10s, service20s, Meshy GET /balance15s. No automatic retry. Meshy keys require msy_ prefix and20..200 chars before outbound validation; service role and ciphertext are never returned.",
+      "requiredTests": [
+        "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
+        "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+        "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
+        "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
+        "Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone."
+      ],
+      "knownGaps": [
+        "Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption."
+      ]
+    },
+    "character-lore": {
+      "purpose": "Generate a background draft from bounded character context plus authorized optional world/project lore.",
+      "authz": "Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint.",
+      "payloadContract": {
+        "body": "{action:'generate-background',context:{ruleset:'sagatree-core'|'dnd-5.5e',attributes:object,appearance:object,traits:object,...},currentBackgroundStory?:string}",
+        "strings": "context name/characterClass/raceOrSpecies max120; description max2000; setting/essenceProfile/dndBackground max160; projectId/worldId max64 then UUID v1..v5 check; currentBackgroundStory max8000; strings trimmed",
+        "numbers": "level rounded and clamped1..20 default1; six attributes clamp1..30 default10; appearance bodySize/height clamp0..100 default50",
+        "appearance": "face/hairStyle/clothing/accessory max120, hairColor/skinTone max32",
+        "traits": "personality/ideals/bonds/flaws each <=12 unique nonempty strings <=160",
+        "abilities": "<=30 with nonempty name<=120, description/effect<=600, type combat|magic|skill, cost0..10000 default0",
+        "inventory": "<=30 nonempty names<=120, description<=600, type weapon|armor|consumable|misc, quantity rounded1..999 default1",
+        "bodyLimit": "128000 UTF-8 bytes, both header preflight and decoded-body check"
+      },
+      "successContract": {
+        "generated": "{status:'ok',story:string(1..12000),provider:'ollama'|'openai-compatible',model:string,promptVersion:string}",
+        "unconfigured": "HTTP200 {status:'not-configured',message:string}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_character_lore_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 6,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "CHARACTER_AI_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "every authenticated POST before body validation"
+        ]
+      },
+      "sideEffects": [
+        "Persistent rate-limit counter increments; reads projects/project_members/worlds if references supplied; sends bounded prompt to configured provider",
+        "No character/background persistence: story is returned for client review"
+      ],
+      "failureSemantics": [
+        "405 wrong method; 413 body too large; 401 auth; 503 missing service key/quota failure; 429 quota",
+        "400 malformed JSON or invalid character contract; 500 unauthorized/nonexistent lore reference, provider failure or story outside length bounds",
+        "Provider absent returns not-configured before optional lore lookup"
+      ],
+      "transportSemantics": "Auth and service reads10s; provider60s. OpenAI-compatible POST /chat/completions or Ollama POST /api/chat, no provider retries.",
+      "requiredTests": [
+        "An owner direct-world request and an active member request to their GM-owned project world generate; unrelated private-world and mismatched project/world requests fail before provider context inclusion.",
+        "128001-byte body rejected; parser truncates/clamps each documented field and rejects ruleset/UUID enum violations.",
+        "Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.",
+        "Seventh request inside default window returns429; missing persistent store returns503 before provider use.",
+        "Generated story is nonempty and <=12000, and errors do not return provider/API secrets."
+      ],
+      "knownGaps": [
+        "Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior."
+      ]
+    },
+    "session-recap": {
+      "purpose": "Create a GM-requested player-safe recap draft from server-derived ended-session records.",
+      "authz": "Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled.",
+      "payloadContract": {
+        "body": "{sessionId:string UUID v1..v5}; action is not required",
+        "forbidden": "Non-null prompt, highlights, adventure, worldState or summaryText cause400; unknown other fields are ignored",
+        "bodyLimit": "8000 UTF-8 bytes (header and actual body)"
+      },
+      "successContract": {
+        "generated": "{status:'ok',summaryText:string(1..4000),summaryStatus:'draft',provider,model,promptVersion,eventCount:number}",
+        "unconfigured": "HTTP200 {status:'not-configured',message:string}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_session_recap_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 6,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "SESSION_RECAP_AI_RATE_LIMIT_PER_MINUTE with CHARACTER_AI_RATE_LIMIT_PER_MINUTE fallback",
+        "chargedActions": [
+          "every authenticated POST before body/session/GM validation"
+        ]
+      },
+      "sideEffects": [
+        "Quota write; reads sessions/projects; invokes service-only sagatree_upsert_session_recap then reads session_recaps",
+        "Builds prompt from DB highlight_lines or snapshot.consequences, filters public/shared and excludes gm_only; provider generation then PATCH summary_text/summary_status='draft'/updated_at",
+        "Separate HTTP operations are not one database transaction; no auto-publish"
+      ],
+      "failureSemantics": [
+        "405 method; 413 body; 401 auth; 503 missing persistent quota config/error; 429 quota",
+        "400 malformed request/UUID, client prompt payload, missing project id or non-ended session; 404 missing session/project; 403 wrong GM",
+        "500 recap upsert/read/provider/summary-length/draft-persist failure; provider absent200 not-configured"
+      ],
+      "transportSemantics": "Auth10s, service fetch15s, quota10s, provider60s. SESSION_RECAP_AI_* overrides CHARACTER_AI_* / OLLAMA_*; no automatic retry or publishing.",
+      "requiredTests": [
+        "Distinct owner O and project GM G: only G can generate a recap for an ended session; active member/player/foreign X denied.",
+        "POST with client highlights/prompt/worldState/summaryText rejects400, and GM-only highlight sentinel never reaches provider.",
+        "Successful response coincides with persisted summary_status=draft; publication remains a separate RPC decision.",
+        "Non-ended session400, missing session404, eighth-thousand-and-first byte413; quota7 returns429.",
+        "Provider/persistence failure returns generic500 and never publishes stale or partial generated text."
+      ],
+      "knownGaps": []
+    },
+    "look-reference-analysis": {
+      "purpose": "Analyze 1..10 user-supplied style/content images using configured vision provider; client normalizes returned profile payload.",
+      "authz": "Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket.",
+      "payloadContract": {
+        "body": "{action:'analyze',references:Reference[1..10],displayNameHint?:string(trimmed,max80)}",
+        "reference": "{id:string(nonempty,unique),kind:'style'|'content',mime:'image/png'|'image/jpeg'|'image/webp',uri:string(nonempty),weight?:number0..1,label?:string(max80),contentBase64?:string,storagePath?:string}; inline bytes take precedence when both supplied",
+        "limits": "Declared Content-Length <=12MiB; each validated decoded image<=8MiB with magic/MIME checks. Request currently does not independently enforce actual JSON byte length."
+      },
+      "successContract": {
+        "generated": "{status:'ok',payload:object,analyzedAtIso:string}; top-level apiKey/authorization/providerSecret removed from provider payload",
+        "unconfigured": "HTTP200 {status:'not-configured',message:string}"
+      },
+      "rateLimits": {
+        "kind": "process-memory",
+        "scope": "authenticated userId",
+        "defaultLimit": 4,
+        "maxConfiguredLimit": 30,
+        "windowSeconds": 60,
+        "env": "LOOK_AI_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "every authenticated POST before provider/body validation"
+        ],
+        "restart": "Map resets with worker/process; not a persistent quota"
+      },
+      "sideEffects": [
+        "Reads inline bytes or owner-prefixed storage object in LOOK_REFERENCE_STORAGE_BUCKET default media; sends images to vision provider",
+        "No LookProfile or image persistence; only memory quota changes"
+      ],
+      "failureSemantics": [
+        "405 method; 413 declared length; 401 auth; 429 process quota; 400 invalid action/reference/image/storage path; 500 malformed JSON/provider/other exceptions",
+        "Provider absent returns200 not-configured before request JSON parsing"
+      ],
+      "transportSemantics": "Auth10s, storage30s, vision90s. POST baseUrl/chat/completions with temperature0.2,response_format json_object and image data URIs. LOOK_AI_BASE_URL/MODEL/API_KEY each falls back to CHARACTER_AI_*; all three required. No arbitrary URI fetch or retry.",
+      "requiredTests": [
+        "1 and10 valid images accepted; 0/11 images, duplicate IDs, unsupported MIME, invalid weights and absent bytes/storage rejected400.",
+        "Foreign-user path, traversal and backslash cannot cause storage fetch; inline bytes override storagePath when both present.",
+        "Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.",
+        "Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.",
+        "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit."
+      ],
+      "knownGaps": [
+        "Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed."
+      ]
+    },
+    "session-media-token": {
+      "purpose": "Mint short-lived LiveKit room JWTs for active project members, with degraded gameplay-preserving responses.",
+      "authz": "/auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client.",
+      "payloadContract": {
+        "body": "{sessionId:string(trimmed,nonempty),ttlSeconds?:number}; no UUID format validation and no action required",
+        "ttl": "Math.min(300,Math.max(30,Math.floor(value))), default120 for non-number; non-finite numeric values are not separately rejected"
+      },
+      "successContract": {
+        "token": "{ok:true,token:string,url:string,roomId:string,expiresAt:ISO,ttlSeconds:number,grant:{canPublish:boolean,canSubscribe:boolean,receiveOnly:boolean}}",
+        "claims": "HS256; iss=API key, sub/name='user:'+userId, iat=now, nbf=now-10, exp=now+ttl; video.roomJoin=true, room='sagatree-session-'+sessionId; player/GM publish+subscribe+data; viewer receive-only"
+      },
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No worker-specific quota in source"
+      },
+      "sideEffects": [
+        "Reads auth/sessions/project_members; signs locally with LIVEKIT_API_SECRET; no DB writes and no outbound LiveKit request"
+      ],
+      "failureSemantics": [
+        "405 {error:'Method not allowed'}; 400 bad JSON or missing sessionId; 401 unauthorized; 403 no active membership or unsupported role",
+        "Errors except405 are {ok:false,degraded:true,reason:'bad_request'|'unauthorized'|'forbidden'|'media_service_unavailable',message:string}; missing Supabase/service-role/LiveKit config503",
+        "HTTP/storage failures that throw, JSON null and non-finite TTL are not covered by a worker-wide catch; do not claim a universal normalized500"
+      ],
+      "transportSemantics": "Auth/membership fetches have no explicit abort timeout; dispatcher caps worker at300s. Client media adapter treats structured degraded failures as media unavailable while gameplay remains usable.",
+      "requiredTests": [
+        "Distinct active player/GM/viewer accounts receive only server-derived room/identity/grants; foreign account403 and caller-supplied role/capabilities/room ignored.",
+        "Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.",
+        "No project_members row403 even if legacy session_players fixture exists; inactive member403.",
+        "Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.",
+        "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests."
+      ],
+      "knownGaps": [
+        "No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps."
+      ]
+    },
+    "character-avatar-meshy": {
+      "purpose": "Owner-scoped Meshy text/image generation jobs with poll-driven remesh/rig/materialize checkpoints.",
+      "authz": "Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix.",
+      "payloadContract": {
+        "config": "{action:'config'}",
+        "start": "{action:'start',clientNonce:string(trimmed,1..80),generationMode?:'image'|other(default text),characterId?:string,providerId?:'meshy',presetId?:string,presetVersion?:number,presetDirty?:boolean,settings?:Avatar3dGenerationSettings,prompt?:string,imageDataUri?:string,texturePrompt?:string}",
+        "text": "prompt whitespace normalized,8..500 chars",
+        "image": "PNG/JPEG/WebP base64 data URI,approx decoded1..4MiB; texturePrompt fallback prompt optional<=500 normalized; image placeholder narrative used if text shorter8",
+        "settings": "When settings is omitted use DEFAULT_RECOMMENDED_SETTINGS: model latest,geometry high,texture4k,pose a-pose,topology triangle,imageEnhancement false,pbr true,initialRemesh false,targetPolycount50000,outputFormat glb,keepMaster true,runtimePolycount50000. Supplied settings require model latest|meshy-5|meshy-6|meshy-7|meshy-t1|meshy-t2,geometry low|standard|high|maximum|smart-topology,texture standard|2k|4k|8k,pose a-pose|t-pose|none,topology triangle|quad,target100..300000,runtime1000..300000 (Number then rounded),outputFormat glb; booleans are true only for literaltrue; providerExtras filters keys and primitive values.",
+        "pollRetry": "{action:'poll'|'retry',jobId:string(nonempty)}; retry only failed/provider_unavailable; existing provider_task_id resumes materialization without paid create",
+        "preset": "presetId fast|recommended|maximum|custom else recommended; presetVersion finite number rounded>=1 else1; presetDirty only literaltrue. Runtime remesh helper further clamps runtimePolycount10000..100000."
+      },
+      "successContract": {
+        "config": "{status:'ok',meshyConfigured,promptMinChars:8,promptMaxChars:500,imageMaxBytes:4194304,supportsImageTo3d:true,defaultProviderId:'meshy',defaultPresetId:'recommended',wiredProviderIds:['meshy'],costHintDe}",
+        "job": "{status:'ok',job:row|provider-unavailable projection,replayed?:true}; exact poll status/progress/artifact/signedUrl variants in operation evidence",
+        "unconfigured": "HTTP200 {status:'not-configured',message:string}"
+      },
+      "rateLimits": {
+        "kind": "process-memory",
+        "scope": "authenticated userId on start",
+        "defaultLimit": 2,
+        "windowSeconds": 60,
+        "restart": "Map resets per worker/process; charged before idempotent replay lookup"
+      },
+      "sideEffects": [
+        "start may create one paid Meshy task then INSERT character_avatar_meshy_jobs; idempotency lookup uses userId|clientNonce|generationMode|jobPrompt.length",
+        "poll/retry update jobs, claim remesh/rigging provider steps through conditional PATCH and materialize GLB into character-avatars; optional master preservation and bounded downloads",
+        "All provider credentials derived from account; raw key never persisted in job. Storage+DB/provider writes are separate operations, not an ACID transaction"
+      ],
+      "failureSemantics": [
+        "405 method; 500 missing config/persistence; 401 auth; 400 JSON/nonce/prompt/image/settings/provider/retry-state; 404 absent own job; 429 start quota",
+        "Provider create unavailable returns HTTP200 status ok with provider_unavailable pseudo-job and id:null; not a durable successful job",
+        "Poll errors are mapped per stage to publicMeshyFailure strings; no automatic paid retry"
+      ],
+      "transportSemantics": "Auth10s and BYOK lookup10s. Meshy create/remesh/rig create30s, task polls20s; GLB GET defaults60s but materialize/master overrides120s, HEAD probe20s. Most job DB/storage fetches have no explicit abort timeout; dispatcher512MiB/300s is the outer ceiling. GLB download200MiB, remesh soft threshold80MiB, store150MiB; signed URLs604800s. No automatic paid start retry.",
+      "requiredTests": [
+        "Owner start/poll/retry works without project membership; account X jobId returns404 and cannot sign owner storage path.",
+        "Text8..500, nonce1..80,4MiB image and settings enums enforced; unsupported provider rejects400.",
+        "Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.",
+        "Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.",
+        "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits."
+      ],
+      "knownGaps": [
+        "start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
+        "meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic."
+      ]
+    },
+    "ai-gm": {
+      "purpose": "Historical AI-GM generation worker; currently not on dispatcher allowlist.",
+      "authz": "External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context.",
+      "payloadContract": {
+        "body": "POST {sessionId:string,action:string(1..5000),context?:Partial<SessionContext>,stream?:boolean,ruleset?:'dnd5e'|'pathfinder2e'|'custom',tone?:'serious'|'lighthearted'|'dark'|'heroic'}; actual validation checks string sessionId/action and action max length, not full nested enum types",
+        "stream": "stream !== false by default; GET URL ending /health only bypasses handler POST path (but remains externally404)"
+      },
+      "successContract": {
+        "stream": "HTTP200 Content-Type:text/event-stream carrying newline-delimited JSON, not SSE data: framing; narrative chunks {type:'narrative',content}, final {type:'complete',narrative,worldStateUpdate:null|object,diceRollsRequired?:array,combatInitiated:boolean}; stream failures {type:'error',error:string}",
+        "nonStream": "{narrative,worldStateUpdate?:object,diceRollsRequired?:array,combatInitiated:boolean}",
+        "health": "{status:'ok',provider,model,timestamp}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_ai_gm_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 12,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "AI_GM_RATE_LIMIT",
+        "configuredParsing": "parseInt; non-integer result ->12, otherwise clamp1..60 (0/negative become1)"
+      },
+      "sideEffects": [
+        "Quota consume; optional per-NPC GET lorekeeper context then LLM request; extracted world change triggers PUT to sessions worker",
+        "Default lorekeeper and sessions URLs point at blocked workers; failed fetch helpers can drop enrichment/world update. No guarantee that generated response means state persisted"
+      ],
+      "failureSemantics": [
+        "External404 always; isolated worker400 validation,401/403 membership,429 quota,503 missing quota config/store,405 method,500 error/message/stack or200 stream error chunk"
+      ],
+      "transportSemantics": "Provider and internal service requests lack universal explicit timeouts; streaming Ollama parser currently splits per received chunk, not a cross-chunk line buffer. No retry policy guaranteed.",
+      "requiredTests": [
+        "Dispatcher requests for ai-gm return404 for valid/invalid/no JWT, without creating worker.",
+        "Any future enablement requires separate reviewed GM/player projection and explicit replacement for blocked lorekeeper/sessions fan-out.",
+        "Isolated fixture validates action max5000, membership rejection before LLM,13th default quota request429.",
+        "If retained internally, pin NDJSON-under-text/event-stream framing and nonstream metadata shape; chunk-boundary/error/failed state write tests must pass."
+      ],
+      "knownGaps": [
+        "Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions."
+      ]
+    },
+    "main": {
+      "purpose": "Custom Edge Runtime dispatcher, not a routable worker.",
+      "authz": "Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately.",
+      "payloadContract": {
+        "transport": "Any HTTP method/body/query forwarded unchanged to allowlisted worker; normalized pathname always /functions/v1/<name>/<suffix>",
+        "jwt": "Bearer case-insensitive parser, exactly3 token segments, HS256 signature; numeric exp older than now denied; does not require exp, sub, audience or issuer at dispatcher layer"
+      },
+      "successContract": {
+        "proxy": "Exact worker Response forwarded; no body transform",
+        "options": "Allowed worker OPTIONS204 through shared CORS, unknown/blocked worker OPTIONS404"
+      },
+      "rateLimits": {
+        "kind": "none",
+        "scope": "dispatcher has no global quota; workers own quotas"
+      },
+      "sideEffects": [
+        "Creates EdgeRuntime.userWorkers with servicePath under /home/deno/functions/name,512MiB,300000ms timeout,module cache on,shared import map; forwards environment plus SUPABASE_FUNCTION_SLUG",
+        "No worker starts for blocked/unknown names. main and _shared never become nested workers"
+      ],
+      "failureSemantics": [
+        "400 {error:'missing function name'};404 {error:'Not found'};500 missing JWT_SECRET;401 missing/invalid/expired/unsupported-algorithm token",
+        "Dispatcher catch500 {error:message} and logs message; cannot assume redacted downstream exception text"
+      ],
+      "transportSemantics": "Restores prefix after nginx stripping and preserves query/method/body. Eight mounts are ai-provider-credentials, character-avatar-meshy, character-lore, item-model3d, item-thumbnail, look-reference-analysis, session-media-token, session-recap.",
+      "requiredTests": [
+        "Every one of15 unmounted workers, main, _shared,unknown and traversal returns404 before JWT/worker creation for GET/POST/OPTIONS.",
+        "Both supported URL prefixes reach same allowlisted worker with intact suffix/query/method/body.",
+        "Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.",
+        "JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.",
+        "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior."
+      ],
+      "knownGaps": [
+        "Dispatcher verifies signature and optional exp but not complete JWT claims; worker-side account authentication remains mandatory. Raw exception messages can escape in500 body."
+      ]
+    },
+    "item-thumbnail": {
+      "purpose": "Owner/world-owner item thumbnail image upload, generation and persisted asset/job resolution.",
+      "authz": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller.",
+      "payloadContract": {
+        "transport": "POST any worker subpath, OPTIONS204, other methods405; Content-Length preflight <= 14MiB, no independent actual JSON byte bound; JSON object with string action",
+        "config": "{action:'config'}",
+        "upload": "{action:'upload',definitionId:string(trimmed nonempty),contentBase64:string(nonempty),mime?:string}; validates PNG/JPEG/WebP magic and claimed MIME, decoded <= 10485760 bytes. Definition lookup/authz precede upload. Claimed image/jpg is accepted when magic is JPEG; output MIME remains image/jpeg.",
+        "generate": "{action:'generate',definitionId:string(trimmed nonempty),userExtra?:string}; null/undefined/empty extra =>empty; non-string400; whitespace normalized and sliced120. Prompt name80/description220/setting60/kind40, total600; input is definition payload, not arbitrary full prompt.",
+        "status": "{action:'status',jobId:string(trimmed nonempty)}; lookup only caller-owned job",
+        "resolve": "{action:'resolve',assetKey?:string,assetId?:string}; valid thumbnail2d: prefix wins over fallback assetId; nonempty required, UUID format not independently checked",
+        "removeLatestJob": "{action:'remove'|'latest-job',definitionId:string(trimmed nonempty)}; latest returns newest own job only"
+      },
+      "successContract": {
+        "config": "{status:'ok',meshyConfigured:boolean,maxBytes:10485760,allowedMime:['image/png', 'image/jpeg', 'image/webp']}",
+        "upload": "{status:'ok',assetId,assetKey,signedUrl,mime,byteSize}",
+        "generate": "{status:'ok',jobId,jobStatus:'waiting',progress:5}",
+        "status": "{status:'ok',jobId,jobStatus,progress,errorMessage?:string,assetKey?:string,signedUrl?:string}; terminal failed/canceled/succeeded replay; missing provider/task returns stored status/progress; completed active definition materializes asset and progress100",
+        "resolve": "{status:'ok',assetKey:'thumbnail2d:'+assetId,signedUrl}",
+        "remove": "{status:'ok',removed:true}",
+        "latest": "{status:'ok',job:null|{jobId,jobStatus,progress,errorMessage?:string,assetKey?:string}}; latest has no signedUrl",
+        "optionalFields": "JSON.stringify omits undefined optional properties rather than returning null; progress falls back0 for stored row,10 for active provider mapping"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_item_thumbnail_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 4,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "ITEM_THUMBNAIL_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "generate after provider resolve but before definition/body validation"
+        ],
+        "failure": "false =>429; RPC HTTP/invalid response throws => generic500; no provider create when quota fails"
+      },
+      "sideEffects": [
+        "Upload: item-thumbnails storage POST -> item_thumbnail_assets INSERT -> inventory_item_definitions.payload.assetKey PATCH -> seven-day signed URL. This is a multi-request sequence, not an atomic transaction.",
+        "Generate: resolve caller Meshy BYOK (host key only explicit AI_PROVIDER_ALLOW_HOST_KEYS=1), persistent quota RPC, provider paid create -> item_thumbnail_jobs INSERT. No idempotency key or automatic paid retry.",
+        "Status may poll provider, download validated image, run server raster optimization and reject failure instead of persisting original, upload asset, insert metadata, patch definition pointer and job. Definition is rechecked active/authorized before materialization.",
+        "Remove first unsets definition payload.assetKey; marks caller-owned linked asset deleted_at and attempts storage cleanup. World owner can clear other-owner pointer without deleting that user's physical asset.",
+        "resolve/status create seven-day signed URLs. latest-job is owner-filtered read. No realtime publishing."
+      ],
+      "failureSemantics": [
+        "Error envelope {status:'error',message:string,code?:string}; method405, body header413, missing Supabase config503, auth401, malformed JSON/missing action/required fields400, unknown action404.",
+        "Absent definition/job/asset404; foreign access or archived definition403; failed decode/validation and unexpected provider/DB/storage failure caught as generic500. Auth network errors occur before action catch.",
+        "Missing provider503 {status:'not-configured',message}; credits402 code PAYMENT_REQUIRED; provider/quota429 code RATE_LIMIT.",
+        "Provider terminal failed/canceled or inactive definition returns HTTP200 status ok with failed/canceled job and errorMessage. Several job PATCH and list/asset response statuses are unchecked; response alone does not prove durable update."
+      ],
+      "transportSemantics": "Auth10s,BYOK lookup10s,service20s,quota10s,storage upload30s,signing/cleanup10s; signed URLs604800s. Meshy create30s,poll20s,provider-image download20s (HTTPS allowlist,<=2 redirects). Provider image optimize targets1024px/1MiB; elapsed>10000ms yields failure after work, not an aborting CPU deadline. No automatic retry.",
+      "requiredTests": [
+        "Personal owner and world-profile owner can upload valid PNG/JPEG/WebP<=10MiB; distinct GM/member/foreign user403, archived definition403; no unauthorized storage/provider call.",
+        "generate consumes 4/60s per user; request5429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
+        "Each action returns its exact documented union; assetKey uses thumbnail2d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
+        "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+        "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+        "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies."
+      ],
+      "knownGaps": [
+        "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+        "Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented."
+      ]
+    },
+    "item-model3d": {
+      "purpose": "Owner/world-owner item GLB image-to-3D upload, generation and persisted asset/job resolution.",
+      "authz": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller.",
+      "payloadContract": {
+        "transport": "POST any worker subpath, OPTIONS204, other methods405; Content-Length preflight <= 70MiB, no independent actual JSON byte bound; JSON object with string action",
+        "config": "{action:'config'}",
+        "upload": "{action:'upload',definitionId:string(trimmed nonempty),contentBase64:string(nonempty),mime?:string}; validates four-byte glTF magic and claimed MIME (model/gltf-binary or application/octet-stream); no version/chunk structure validation, decoded <= 52428800 bytes. Definition lookup/authz precede upload.",
+        "generate": "{action:'generate',definitionId:string(trimmed nonempty)}; source is definition.payload.assetKey pointing at saved non-deleted thumbnail, or thumbnail Meshy task result; absent =>400 THUMBNAIL_REQUIRED",
+        "status": "{action:'status',jobId:string(trimmed nonempty)}; lookup only caller-owned job",
+        "resolve": "{action:'resolve',model3d?:string,assetId?:string}; valid model3d: prefix wins over fallback assetId; nonempty required, UUID format not independently checked",
+        "removeLatestJob": "{action:'remove'|'latest-job',definitionId:string(trimmed nonempty)}; latest returns newest own job only"
+      },
+      "successContract": {
+        "config": "{status:'ok',meshyConfigured:boolean,maxBytes:52428800,allowedMime:['model/gltf-binary']}",
+        "upload": "{status:'ok',assetId,model3d,signedUrl,mime,byteSize}",
+        "generate": "{status:'ok',jobId,jobStatus:'waiting',progress:5}",
+        "status": "{status:'ok',jobId,jobStatus,progress,errorMessage?:string,model3d?:string,signedUrl?:string}; terminal failed/canceled/succeeded replay; missing provider/task returns stored status/progress; completed active definition materializes asset and progress100",
+        "resolve": "{status:'ok',model3d:'model3d:'+assetId,signedUrl}",
+        "remove": "{status:'ok',removed:true}",
+        "latest": "{status:'ok',job:null|{jobId,jobStatus,progress,errorMessage?:string,model3d?:string}}; latest has no signedUrl",
+        "optionalFields": "JSON.stringify omits undefined optional properties rather than returning null; progress falls back0 for stored row,10 for active provider mapping"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_item_model3d_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 2,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "ITEM_MODEL3D_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "generate after provider resolve but before definition/body validation"
+        ],
+        "failure": "false =>429; RPC HTTP/invalid response throws => generic500; no provider create when quota fails"
+      },
+      "sideEffects": [
+        "Upload: item-models storage POST -> item_model3d_assets INSERT -> inventory_item_definitions.payload.model3d PATCH -> seven-day signed URL. This is a multi-request sequence, not an atomic transaction.",
+        "Generate: resolve caller Meshy BYOK (host key only explicit AI_PROVIDER_ALLOW_HOST_KEYS=1), persistent quota RPC, provider paid create -> item_model3d_jobs INSERT. No idempotency key or automatic paid retry.",
+        "Status may poll provider, download validated GLB, materialize, upload asset, insert metadata, patch definition pointer and job. Definition is rechecked active/authorized before materialization.",
+        "Remove first unsets definition payload.model3d; marks caller-owned linked asset deleted_at and attempts storage cleanup. World owner can clear other-owner pointer without deleting that user's physical asset.",
+        "resolve/status create seven-day signed URLs. latest-job is owner-filtered read. No realtime publishing."
+      ],
+      "failureSemantics": [
+        "Error envelope {status:'error',message:string,code?:string}; method405, body header413, missing Supabase config503, auth401, malformed JSON/missing action/required fields400, unknown action404.",
+        "Absent definition/job/asset404; foreign access or archived definition403; failed decode/validation and unexpected provider/DB/storage failure caught as generic500. Auth network errors occur before action catch.",
+        "Missing provider503 {status:'not-configured',message}; credits402 code PAYMENT_REQUIRED; provider/quota429 code RATE_LIMIT. Missing saved thumbnail400 code THUMBNAIL_REQUIRED.",
+        "Provider terminal failed/canceled or inactive definition returns HTTP200 status ok with failed/canceled job and errorMessage. Several job PATCH and list/asset response statuses are unchecked; response alone does not prove durable update."
+      ],
+      "transportSemantics": "Auth10s, BYOK lookup10s, service20s, quota10s; storage GLB upload60s, stored thumbnail download30s, signing/cleanup10s; signed URLs604800s. Meshy create30s,poll20s; provider GLB download60s (HTTPS allowlist and<=2 redirects). No request retry loop; status calls poll explicitly.",
+      "requiredTests": [
+        "Personal owner and world-profile owner can upload valid GLB<=50MiB; distinct GM/member/foreign user403, archived definition403; no unauthorized storage/provider call.",
+        "generate consumes 2/60s per user; request3429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
+        "Each action returns its exact documented union; model3d uses model3d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
+        "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+        "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+        "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies."
+      ],
+      "knownGaps": [
+        "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+        "Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
+        "GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure."
+      ]
+    },
+    "bestiary": {
+      "purpose": "Historical seeded monster catalog and random encounter calculator, held in process Maps.",
+      "payloadContract": {
+        "monster": "POST /monsters Partial<Monster>; all fields/types copied in schema appendix. Defaults name Unknown,type beast,size medium,CR0,xp calculated,hp10,hitDice2d6,ac10,speed.walk30,each ability10,senses[passive Perception10],languages/actions[],source custom. Falsy values use || fallback.",
+        "listSearch": "GET /monsters?type&cr(parseFloat)&size; /monsters/search?q(default empty), single /monsters/:id",
+        "encounter": "POST /encounters {name:string,description?:string,monsters:{monsterId:string,count:number}[],partySize:number,partyLevel:number,environment?:string}; absent monster IDs silently skipped for XP/returned list but still contribute to multiplier count",
+        "generate": "POST /encounters/generate {difficulty?:easy|medium|hard|deadly(default medium),partySize?:number(default4),partyLevel?:number(default1),environment?:string}; GET /encounters?difficulty and /encounters/:id"
+      },
+      "successContract": {
+        "resources": "Monster/Monster[] and Encounter/Encounter[] JSON200; exact MonsterAction and Encounter nested shapes in appendix",
+        "calculation": "Encounter totalXP=sum(known monster.xp*count); multiplier1/1.5/2/2.5/3/4 by total requested count, adjustedXP=floor(total*multiplier); calculateDifficulty source thresholds are retained"
+      },
+      "sideEffects": [
+        "monsters and encounters Maps mutate; SRD seed loads on worker initialization. Random generator calls Math.random and stores generated encounter. No DB, storage or provider calls."
+      ],
+      "requiredTests": [
+        "All bestiary paths remain dispatcher404 without Map initialization.",
+        "Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.",
+        "Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment."
+      ],
+      "knownGaps": [
+        "No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded."
+      ],
+      "authz": "Dispatcher denies bestiary with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/bestiary; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "characters": {
+      "purpose": "Historical in-memory character CRUD, progression, equipment and slot tracker.",
+      "payloadContract": {
+        "create": "POST /characters CreateCharacterRequest: ownerId,name,race,class strings; optional projectId/background/alignment/backstory/portraitUrl,isPublic,Partial<Attributes>,Partial<Proficiencies>,Omit<Equipment,id>[]; no runtime identity verification",
+        "update": "PUT /characters/:id Partial<Character>, shallow spread; fixes id to path and updatedAt to now, permits client ownerId and all other fields. GET list?ownerId&projectId; GET/DELETE/export by id; POST /characters/import Partial<Character>.",
+        "progression": "POST /:id/experience {xp:number}; POST /:id/level-up LevelUpRequest {characterId,choice?:{hpIncrease:average|roll|number,abilityScoreImprovement?:Partial<Attributes>,feat?:string,skillProficiency?:string}}; helper uses BODY characterId rather than path",
+        "equipment": "POST /:id/equipment Omit<Equipment,id>; DELETE /:id/equipment/:equipmentId; POST /:id/equip/:equipmentId and /unequip/:equipmentId",
+        "healthSlots": "POST /:id/damage {damage}, /heal {healing}, /temp-hp {tempHP}; POST /:id/spell-slots/:singleDigit/use and /spell-slots/restore"
+      },
+      "successContract": {
+        "character": "Character JSON; create201 otherwise200. Defaults level1,xp0,proficiency2,abilities10,skills{},savingThrows false,hp class hit die+Con modifier,AC10+Dex,speed30,initiativeDex,zero slots,empty arrays,Common language,isPublic false. Exact nested types/default helpers in appendix.",
+        "other": "experience {character,leveledUp}; addEquipment Equipment; slot use {success,remaining}; delete/remove/restore {success:true}"
+      },
+      "sideEffects": [
+        "Single characters Map only; HP/equipment/slot changes mutate objects; random UUIDs and HP roll. No persistent owner data or database writes."
+      ],
+      "requiredTests": [
+        "All characters methods stay dispatcher404, including cross-owner body and import payload.",
+        "Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.",
+        "Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested."
+      ],
+      "knownGaps": [
+        "addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
+        "No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields."
+      ],
+      "authz": "Dispatcher denies characters with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/characters; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "dm-tools": {
+      "purpose": "Historical local random dice, ability checks and Map-backed combat tracker; configured Redis URL is unused.",
+      "payloadContract": {
+        "dice": "POST /dice {notation:string,modifier?:number(default0),advantage?:adv|dis|null(defaultnull)}; POST /dice/multiple {rolls:{notation,modifier?,advantage?}[]}; exact dice grammar parseDiceNotation is included",
+        "combat": "POST /combat/init {sessionId:string,participants:Omit<CombatParticipant,initiative>[]}; GET /combat/:id or /combat/session/:sessionId; POST /:id/next,/end",
+        "changes": "POST /combat/:id/damage {targetId,damage}, /heal {targetId,healing}, /condition {targetId,condition}; DELETE /condition same body",
+        "check": "POST /check AbilityCheckRequest {character:{name,modifiers,proficiency?},ability,skill?,dc,advantage?,guidance?}; GET /conditions[/:id], /rulesets[/:id] static catalogs"
+      },
+      "successContract": {
+        "dice": "DiceResult {notation,rolls:number[],modifier,advantage?,total,criticalHit,criticalFail,details}; multiple array. d20 advantage rolls twice and keeps one; keep-high/low logic in source.",
+        "combat": "CombatState includes id,sessionId,round,currentTurn,participants,log,status,startedAt,endedAt?; full participants/log contracts in appendix; init sorts initiative descending",
+        "check": "{success,roll,ability,skill?,dc,modifier,criticalHit?,criticalFail?}; natural1 false/natural20 true, guidance d4 added; catalog results exact static object/array"
+      },
+      "sideEffects": [
+        "combatStates Map updates and Math.random rolls; REDIS_URL read but no Redis connection, no DB/storage/provider calls."
+      ],
+      "requiredTests": [
+        "dm-tools all routes remain404 at dispatcher, including dice and health.",
+        "Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.",
+        "Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state."
+      ],
+      "knownGaps": [
+        "Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence."
+      ],
+      "authz": "Dispatcher denies dm-tools with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/dm-tools; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "export": {
+      "purpose": "Historical in-memory format conversion; no stored export object or persisted import.",
+      "payloadContract": {
+        "export": "POST /export {type:character|session|world|campaign,id:string,format:json|pdf|markdown,data:Record<string,any>}; declared types are not runtime enums except format branch",
+        "import": "POST /import {content:string}; JSON.parse(content), no resource/schema validation"
+      },
+      "successContract": {
+        "export": "200 downloadable JSON/Markdown/minimal PDF bytes; Content-Type application/json,text/markdown,application/pdf; Content-Disposition attachment filename type-id.ext",
+        "import": "200 {success:true,data:any parsed JSON}",
+        "errors": "Invalid format400 {error:Invalid format}; invalid contentJSON400 {error:Invalid JSON}"
+      },
+      "sideEffects": [
+        "Creates response bytes only. No DB, object storage, queue, external network or actual imported resource."
+      ],
+      "requiredTests": [
+        "export/import routes remain dispatcher404.",
+        "Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.",
+        "Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts."
+      ],
+      "knownGaps": [
+        "No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline."
+      ],
+      "authz": "Dispatcher denies export with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/export; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "items": {
+      "purpose": "Historical seeded Item catalog and random item generator in one process Map.",
+      "payloadContract": {
+        "listRead": "GET /items?type&rarity, GET /items/:id",
+        "create": "POST /items Partial<Item>; name Unknown,type other,rarity common,weight0,value0,description empty,properties{},source custom; all field types in appendix",
+        "generate": "POST /items/generate {type?:string,rarity?:string}; missing values randomly chosen from fixed arrays; creates random value/weight and generated name/description"
+      },
+      "successContract": {
+        "resources": "200 Item[] or Item object; id UUID; known missing item404 {error:Item not found}; no pagination"
+      },
+      "sideEffects": [
+        "items Map and SRD initialization; Math.random generation, no DB/provider."
+      ],
+      "requiredTests": [
+        "items worker remains404 for list/create/generate.",
+        "Isolated fixture pins Item defaults, rarity/type filters and generated range behavior; invalid nested data records current lack of validation.",
+        "Actual inventory_item_definitions adapter is migrated independently; do not route it to this Map catalog."
+      ],
+      "knownGaps": [
+        "No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions."
+      ],
+      "authz": "Dispatcher denies items with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/items; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "lorekeeper": {
+      "purpose": "Historical Map-backed world graph, memories and consistency evaluator; not a Neo4j connection.",
+      "payloadContract": {
+        "graph": "POST /graph {projectId,name,description?}; GET /graph/:projectId BFS over outgoing edges",
+        "nodes": "POST /node {worldId,type:world|location|npc|item|event|faction|quest,name,description?,properties?:Record}; GET/PUT/DELETE /node/:id; PUT Partial<WorldNode>",
+        "relationships": "POST /relationship {from,to,type,properties?}; GET /relationships/:nodeId",
+        "memoryContext": "POST /memory {npcId,sessionId,type:event|relationship|location|item|conversation,content,importance?:number(default5 via ||)}; GET /memories/:npcId?limit(default10), /context/:sessionId, /npc/:npcId; POST /consistency/:id uses path ID and no body"
+      },
+      "successContract": {
+        "graph": "WorldNode root create; graph {root:WorldNode|null,nodes:WorldNode[],edges:Edge[]} with absent root returning null/empty200",
+        "others": "WorldNode,Edge,Memory or arrays; npc context {npc:null|WorldNode,memories,relationships}; session context {npcs,locations,events,memories}; consistency {valid,issues:{type,severity,message,nodes?,suggestion?}[]}; delete {success:true}"
+      },
+      "sideEffects": [
+        "nodes/edges/memories/graphs Maps; createNode writes node and has_type edge, delete removes related edges; no database or Neo4j request."
+      ],
+      "requiredTests": [
+        "Graph,context,NPC and consistency routes remain dispatcher404.",
+        "Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.",
+        "Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment."
+      ],
+      "knownGaps": [
+        "getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter."
+      ],
+      "authz": "Dispatcher denies lorekeeper with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/lorekeeper; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "marketplace": {
+      "purpose": "Historical seeded template marketplace in process memory; not the current marketplace_items adapter.",
+      "payloadContract": {
+        "catalog": "GET /templates?type&tag; GET /templates/:id; GET /search?q(default empty)",
+        "create": "POST /templates Partial<Template>; exact fields/defaults in schema/helper appendix, downloads0 and rating0",
+        "countRating": "POST /templates/:id/download no body; POST /templates/:id/rate {rating:number}; no identity or range verification"
+      },
+      "successContract": {
+        "resources": "Template/Template[] JSON200; sorted downloads descending for list; download increments count and returns full template; rate updates rating=(oldRating*(downloads||1)+rating)/((downloads||1)+1)"
+      },
+      "sideEffects": [
+        "templates Map mutation only; seeded sample templates. No increment_marketplace_downloads RPC or persistent download ledger."
+      ],
+      "requiredTests": [
+        "marketplace worker stays404 including download/rate.",
+        "Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.",
+        "Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker."
+      ],
+      "knownGaps": [
+        "Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence."
+      ],
+      "authz": "Dispatcher denies marketplace with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/marketplace; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "media": {
+      "purpose": "Historical media metadata Map; upload constructs a URL without storing bytes.",
+      "payloadContract": {
+        "upload": "POST /upload {filename:string,content:string(base64),projectId?:string,characterId?:string,tags?:string[],uploadedBy:string}; filename extension selects MIME; content length estimates size",
+        "read": "GET /media?projectId&type(prefix MIME); GET /media/:id",
+        "mutate": "PUT /media/:id/tags {tags:string[]}; DELETE /media/:id"
+      },
+      "successContract": {
+        "media": "{id,filename,type,size,url,projectId?,characterId?,tags,uploadedBy,uploadedAt}; size=floor(content.length*3/4), URL SUPABASE_URL(default localhost:8000)/storage/v1/object/media/id-filename",
+        "delete": "{success:true} even absent id; metadata read absent404; tag update absent throws500"
+      },
+      "sideEffects": [
+        "Only mediaFiles Map; no Supabase Storage upload, delete, signing, file validation or DB row persistence."
+      ],
+      "requiredTests": [
+        "media worker stays404.",
+        "Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.",
+        "Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract."
+      ],
+      "knownGaps": [
+        "Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled."
+      ],
+      "authz": "Dispatcher denies media with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/media; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "npcs": {
+      "purpose": "Historical random NPC/creature generator, memories, relationships and dialogue Maps.",
+      "payloadContract": {
+        "crud": "POST /npcs Partial<NPC>; GET /npcs?type&location&disposition; GET/PUT/DELETE /npcs/:id; GET /:id/export; POST /npcs/import Partial<NPC>",
+        "generate": "POST /npcs/generate {type?:npc|monster|creature,race?,class?,level?,location?,prompt?}; random name/class/level1..10/disposition/location; prompt accepted but unused",
+        "social": "POST /npcs/:id/memory {memory:string}; GET /:id/memories?limit(default10); POST /:id/relationship {targetId,relationship}; GET /:id/relationships",
+        "dialogue": "POST /npcs/:id/dialogue Omit<DialogueLine,id|npcId>; GET /:id/dialogues; full trigger/text/response types in appendix"
+      },
+      "successContract": {
+        "resources": "NPC/NPC[]200; defaults Unknown,npc,human,commoner,level1,hp/maxHp/ac10,speed30,neutral,Unknown location,arrays/maps empty,random stats; description generated only on create, not import",
+        "social": "memory write returns NPC; memories string[]; relationship write NPC/read Record; dialogue DialogueLine/read DialogueLine[]; delete success:true"
+      },
+      "sideEffects": [
+        "npcs/dialogues Maps and random generation only. No LLM despite prompt field, no persistent NPC-creature RPCs."
+      ],
+      "requiredTests": [
+        "npcs worker all CRUD/social/export/generator paths remain404.",
+        "Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.",
+        "Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy."
+      ],
+      "knownGaps": [
+        "No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime."
+      ],
+      "authz": "Dispatcher denies npcs with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/npcs; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "quests": {
+      "purpose": "Historical quest/objective tracker with fixed-template random generation in Map.",
+      "payloadContract": {
+        "createUpdate": "POST /quests Partial<Quest>; PUT /quests/:id Partial<Quest>; GET /quests?projectId&status; GET /quests/:id",
+        "complete": "POST /quests/:questId/complete/:objectiveId without body; missing objective leaves quest unchanged, all completed objectives sets quest.status=completed",
+        "generate": "POST /quests/generate {type?:main|side|personal(defaultside),level?:number(default1)}; random predefined template, generated objectives obj-index, XP100*level,gold10*level"
+      },
+      "successContract": {
+        "resource": "Quest {id,projectId,name,description,type,status,objectives:Objective[],rewards:Reward[],giver?,location?,prerequisites,createdAt,updatedAt}; defaults projectId empty,name Unknown Quest,type side,status available,arrays empty; all returns200 except absent GET404"
+      },
+      "sideEffects": [
+        "quests Map writes, timestamps and Math.random; no persistent project quest relation, reward grant or XP mutation on objective completion."
+      ],
+      "requiredTests": [
+        "quests worker all routes remain404.",
+        "Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.",
+        "Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement."
+      ],
+      "knownGaps": [
+        "Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards."
+      ],
+      "authz": "Dispatcher denies quests with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/quests; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "rulesets": {
+      "purpose": "Historical seeded ruleset Map with optional Open5e enrichment, separate from current rulesets-table adapter.",
+      "payloadContract": {
+        "catalog": "GET /rulesets; POST /rulesets Partial<Ruleset>; GET /rulesets/:id?enrich=true; id supplied or custom-Date.now, name Custom Ruleset,version1.0,empty maps/conditions,standard six abilities/seven dice,source custom,isOfficial false,isCustom true",
+        "supplements": "GET /rulesets/:id/spells?level(parseInt)&school&class; /monsters?type&cr(parseFloat); /items?type; /skills,/conditions,/classes,/races. enrich only equals literal true"
+      },
+      "successContract": {
+        "resources": "Ruleset/Ruleset[], Spell/Monster/Item arrays; nested skills/classes/races objects or {}, conditions[] even absent parent. Single absent ruleset404. Exact public types and Open5e field mapping in appendix",
+        "enrich": "Open5e results merged for eligible ruleset; provider fetch errors converted to empty result arrays"
+      },
+      "sideEffects": [
+        "rulesets Map create/enrichment cache; GET https://api.open5e.com/spells/?limit=500, /monsters/?limit=500, /weapons/?limit=500; no database/storage writes."
+      ],
+      "requiredTests": [
+        "rulesets and supplemental routes stay dispatcher404.",
+        "Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.",
+        "HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records."
+      ],
+      "knownGaps": [
+        "No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry."
+      ],
+      "authz": "Dispatcher denies rulesets with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/rulesets; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. Open5e GET failures produce empty arrays; three enrichment requests run in Promise.all."
+    },
+    "sessions": {
+      "purpose": "Historical Map-backed sessions, players, chat, world state, savepoints and logs; not current RPC runtime.",
+      "payloadContract": {
+        "createCrud": "POST /sessions {projectId,name,description?,worldState?:Partial<WorldState>}; GET /sessions?projectId, GET/PUT/DELETE /sessions/:id with Partial<Session> for update; start/pause/end POST",
+        "players": "POST /sessions/:id/join {userId,characterId?}; /leave {userId}; GET /players; identity supplied by body, no actual authentication",
+        "chat": "POST /:id/chat {userId,characterId?,characterName?,message,type,metadata?}; GET /chat?limit default100; DELETE /chat/:messageId",
+        "worldSave": "GET/PUT /:id/world-state Partial<WorldState>; POST /:id/save {name,description?,playerStates}; POST /:id/load/:savePointId; GET /:id/saves; DELETE /:id/save/:savePointId",
+        "logsImport": "GET /:id/logs?limit default100; POST /:id/logs {type,description,details?}; GET /:id/export; POST /sessions/import exported object"
+      },
+      "successContract": {
+        "session": "Session201 create,200 others; generated sequential per-Map project sessionNumber,status scheduled; default world-state location Unknown,time Morning,empty arrays/maps. GET single includes players and recentMessages(last50).",
+        "variants": "Join SessionPlayer; player list[]; chat ChatMessage/list[]; world WorldState; save SavePoint; load {worldState,playerStates}; logs SessionLog/list[]; export complete object; delete/leave/chat-delete/save-delete success:true; exact object definitions/default expressions in appendix"
+      },
+      "sideEffects": [
+        "sessions/sessionPlayers/chatMessages/sessionLogs Maps; lifecycle adds local logs, chat/player mutations, savepoints clone world/player state, load overwrites stored world state. No DB RPC, durable event log or realtime socket."
+      ],
+      "requiredTests": [
+        "All sessions methods,including world-state and import, remain dispatcher404.",
+        "Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.",
+        "Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker."
+      ],
+      "knownGaps": [
+        "No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees."
+      ],
+      "authz": "Dispatcher denies sessions with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/sessions; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "world": {
+      "purpose": "Historical Map-backed world settings, locations, events, factions, clock and random weather.",
+      "payloadContract": {
+        "world": "POST /worlds {projectId,name,description?,settings?:Partial<WorldSettings>}; GET /worlds/:id, /worlds/project/:projectId; PUT /worlds/:id Partial<World>",
+        "locationsEvents": "POST /:worldId/locations Omit<Location,id> with discovered defaultfalse; PUT /locations/:id Partial<Location>; POST /locations/:id/discover; POST /events Omit<WorldEvent,id>; GET /events?type",
+        "factionsTime": "POST /:worldId/factions Omit<Faction,id>; PUT /factions/:id/relationship {targetId,status}; POST /time/advance {hours?:number(default1 via ||)}; PUT /weather Partial<Weather>; POST /weather/random"
+      },
+      "successContract": {
+        "world": "World {id,projectId,name,description?,settings,locations,events,factions,quests,time,weather,createdAt,updatedAt}; defaults settings dnd5e/medieval/medium/serious/1..20,arrays empty,time current0/day1/month1/year1/hour8/minute0/Common Era/Gregorian,weather clear20C/calm/none",
+        "nested": "Location,WorldEvent,Faction,WorldTime,Weather or event[]200; all schemas/default helpers in appendix; random weather temp floor(random*40)-10 => -10..29"
+      },
+      "sideEffects": [
+        "worlds Map only; discovered flag, location/event/faction lists, simplified30-day clock, random weather, updatedAt. No atlas/place RPCs, map storage or database persistence."
+      ],
+      "requiredTests": [
+        "world routes remain dispatcher404,including settings and clock writes.",
+        "Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.",
+        "Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies."
+      ],
+      "knownGaps": [
+        "No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds."
+      ],
+      "authz": "Dispatcher denies world with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps.",
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No historical worker quota, persistence counter, retry budget or per-user scope exists."
+      },
+      "failureSemantics": [
+        "External endpoint always404 {error:'Not found'}, including OPTIONS; no historical code executes through main.",
+        "In isolated source fixtures, OPTIONS204 shared CORS; unmatched route/method404 {error:'Not found'}; missing single resource404 where explicit branch exists. Thrown missing/invalid body/helper errors500 {error:'Internal server error',message:string}; fields and exact branch exceptions are enumerated in response sites."
+      ],
+      "transportSemantics": "Historical path strips /functions/v1/world; no independent request-body ceiling or retry policy. All exact paths, method predicates, query/body reads, defaults and serialized response expressions are materialized in source evidence. No worker-specific abort timeout. No external network requests."
+    },
+    "spellbook": {
+      "purpose": "Historical seeded spells and per-character spellbook Maps, separate from current character/rules repositories.",
+      "authz": "Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted.",
+      "payloadContract": {
+        "catalog": "GET /spells?level(parseInt)&school&class(lowercase); GET /spells/:id; POST /spells Partial<Spell>",
+        "createDefaults": "name Unknown,level0,school evocation,castingTime 1 action,range60 feet,components[V,S],duration Instantaneous,description empty,classes[],source custom; all complete types/default expressions in appendix",
+        "book": "GET /spellbook/:characterId; POST /:characterId/learn,/prepare,/unprepare {spellId:string}; /cast {spellId:string,level:number}; /restore no body"
+      },
+      "successContract": {
+        "spells": "Spell/Spell[]200, missing single spell404; exact Spell school union and fields retained",
+        "book": "CharacterSpellbook {characterId,spells:{spellId,known,prepared}[],slotsUsed:Record<string,number>}; GET creates empty book if missing; learn adds known=true/prepared=false; prepare toggles existing record only",
+        "cast": "{success:boolean,remaining:number}; fixed maximum slots per level1..9 =4,3,3,3,2,1,1,1,1; exhausted or unknown level =>false/0. restore {success:true} and slotsUsed={}."
+      },
+      "rateLimits": {
+        "kind": "none",
+        "scope": "No per-user quota; slot counts are game bookkeeping in memory, not request rate limiting."
+      },
+      "sideEffects": [
+        "spells/spellbooks Maps only; GET book itself creates Map record. cast increments level slot counter without checking spell exists, is known/prepared or level matches spell. No DB/provider/network."
+      ],
+      "failureSemantics": [
+        "External404 for every method including OPTIONS. Isolated OPTIONS204; unsupported route/method404 {error:'Not found'}; missing spell404; thrown/malformed JSON500 {error:'Internal server error',message:string}."
+      ],
+      "transportSemantics": "Strip /functions/v1/spellbook in isolated handler; no request-byte bound, retry policy or abort timeout. Worker never starts through current dispatcher.",
+      "requiredTests": [
+        "All spellbook routes remain dispatcher404.",
+        "Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.",
+        "Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation."
+      ],
+      "knownGaps": [
+        "No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership."
+      ]
+    }
+  },
+  "infrastructure": {
+    "ai": {
+      "behavior": "Public facade manages current account BYOK catalog (ai-provider-credentials) and Organize Ollama prefs (ollama-settings get/upsert/test/listModels); providers validated through parse layer, no project membership precondition.",
+      "security": "User access token only to ai-provider-credentials and ollama-settings; no API key persisted in browser facade or returned as credential/settings metadata.",
+      "tests": [
+        "List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.",
+        "Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.",
+        "Foreign account cannot list or mutate owner credentials; missing session fails before invoke."
+      ]
+    },
+    "character": {
+      "behavior": "Character CRUD/presets/adventure arcs plus lore generation, portraits and owner avatar job/artifact flows; local rendering/VRM/media analysis modules stay client-side.",
+      "security": "Current authenticated owner filters and table RLS are authoritative; no actorId/owner field promotion from client. Storage bucket paths and model artifacts remain owner-bound.",
+      "tests": [
+        "Create/read/edit/delete own complete/draft character and reload; foreign owner and cross-owner FK writes denied.",
+        "Portrait/avatar upload, generation,poll/export and lore draft retain full shapes; creator rendering utilities are not moved to server merely because under infrastructure.",
+        "Presets/public catalog reads are preserved with current RLS; generated artifacts cannot resolve a foreign owner path."
+      ]
+    },
+    "inventory": {
+      "behavior": "Persists inventory arrays on character and item-definition catalog, signs item thumbnail/model assets, handles asynchronous generation jobs.",
+      "security": "Personal definitions owner-only; world definitions use world-profile ownership; archived mutations blocked; asset resolve follows existing owner/world policy.",
+      "tests": [
+        "Inventory add/equip/consume persistence survives reload and cross-owner updates fail.",
+        "Definition thumbnail and model upload/generate/status/resolve/remove preserve payload.assetKey/model3d and signed URL expiry.",
+        "Catalog list/search includes allowed standard/personal/world items without promoting client-supplied origins."
+      ]
+    },
+    "look": {
+      "behavior": "Look profile repository stores serialized domain payload and public IDs; reference analysis is an Edge request; runtime material/shader adapters are browser-side behavior.",
+      "security": "Look personal scope stays owner-only; storage refs accepted for vision must be caller-scoped. Runtime providers/config metadata never become private persisted credentials.",
+      "tests": [
+        "Look profile create/edit/duplicate/archive/reload returns same public IDs and payload semantics.",
+        "Reference analysis includes original1..10 refs and error/degraded states; no foreign storage path can be fetched.",
+        "Local look runtime adapters remain unchanged by persistence transport replacement."
+      ]
+    },
+    "marketplace": {
+      "behavior": "Catalog methods use marketplace_items and increment_marketplace_downloads(item_id). list has type/searchQuery/minRating/maxPrice filters and downloads-desc default; featured queries rating>=3.5,downloads desc,limit6, falling back to top6 downloads. create derives author_id from auth.getUser, initializes rating/downloads0; update/delete filter id and rely on server RLS. delete catches errors and returnsfalse. incrementDownloads returnsvoid, falls back on any RPC error to read+write downloads+1 and swallows exceptions.",
+      "security": "Create author_id comes from authenticated user; update/delete ownership is not checked in this adapter and must be enforced by effective server policy. Preserve published/catalog visibility as proved by SQL, not inferred from comments. The fallback count is non-atomic and cannot guarantee one durable increment.",
+      "tests": [
+        "List filters, sort defaults, single-read errors and featured fallback retain exact request/result behavior.",
+        "RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.",
+        "Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures."
+      ],
+      "knownGaps": [
+        "incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.",
+        "Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested."
+      ]
+    },
+    "media": {
+      "behavior": "Browser media optimizer dispatches image/audio/video/model3d engines, lazy worker messaging and budgets; current infrastructure/media has no Supabase RPC, table, Edge or realtime calls.",
+      "security": "No host data dependency should be invented. Preserve memory/byte budgets, MIME decoding and worker cancellation/error behavior.",
+      "tests": [
+        "Optimize image to target WebP budget with valid dimensions; cancel/reject oversized/unsupported input deterministically.",
+        "Audio/video/model3d capability/degraded contracts remain explicit; no new remote service required for current local optimizer."
+      ]
+    },
+    "npc-creature": {
+      "behavior": "Catalog definitions, controller assignments and session instances use repositories and five RPC operations; preserve promotion/demotion and temp-controller lifecycle.",
+      "security": "Definition owner and project GM/controller are distinct. Instance runtime update RPC is GM-only, replaces runtime object and leaves snapshot unchanged; permanent or temporary controller assignment does not itself authorize mutation. Exact effective RPC guards and adapter casts are linked.",
+      "tests": [
+        "Create/read/update allowed definitions; spawn/update/remove session instance through documented RPC and reload.",
+        "Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied."
+      ]
+    },
+    "project": {
+      "behavior": "Project creation/membership, default starter, join codes, selected character, saga permissions/bindings/overview/lore timeline span11 RPCs and direct project table operations.",
+      "security": "Project owner, projects.gm_user_id, active member and delegated capabilities are distinct; codes and public IDs do not grant capabilities beyond joining contract.",
+      "tests": [
+        "Create project/session,join by code,assign own eligible character and reload overview.",
+        "All11 RPC dependencies must be available before facade swap, including permission bundles and reveal bindings.",
+        "Wrong GM/member/cross-owner requests denied; reveal/permission changes alter player projection only as specified."
+      ]
+    },
+    "rulesets": {
+      "behavior": "Ruleset facade reads public/native definitions and manages permitted custom ruleset records through PostgREST; blocked rulesets worker is not called.",
+      "security": "Public-read policy must stay public where currently allowed; custom writes require owner as enforced by RLS.",
+      "tests": [
+        "Load default/native/custom ruleset with equivalent sorting and decoding.",
+        "Owner can save permitted custom ruleset; foreign owner write denied and public ruleset read not accidentally restricted."
+      ]
+    },
+    "saga": {
+      "behavior": "Saga definition editor/draft/version/publish/copy and project-from-version/duplicate plus session outcome promotion use RPC facades.",
+      "security": "Published version read, owner draft edit and GM outcome promotion have distinct policies; never return private draft content through version/public slug path.",
+      "tests": [
+        "Create/edit/save/publish/read version/copy native and instantiate project with stable IDs and version snapshot.",
+        "Duplicate saga playthrough and promote allowed session outcomes retain side effects and deny foreign owner/GM.",
+        "All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available."
+      ]
+    },
+    "session": {
+      "behavior": "Lifecycle/invites/recap/runtime use12 RPCs and2 Edge calls. Runtime loads authoritative snapshot before subscribing to sessions*,session_players* and session_events INSERT; each event refetches snapshot, resync is explicit. Lobby session-lobby:{id} uses ephemeral broadcast event ready with caller userId and boolean; it does not use postgres_changes. Media token adapter normalizes degraded errors. LiveKitRoomFactory is injected; absent factory fails closed, default presence lists local identity only, publishData uses unreliable transport.",
+      "security": "RPC/Edge derive session authority server-side. Runtime snapshot call precedes subscription; lobby ready has no membership check in this adapter and supplied userId is untrusted UI state, never gameplay authorization. Viewer publish gates and identity checks belong to media-plane domain/valid token, not arbitrary broadcast claims.",
+      "tests": [
+        "All12 exact RPC variants and2 Edge invokes preserve argument/error/decoder contracts; wrong user/GM/foreign session cannot mutate runtime.",
+        "Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.",
+        "Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.",
+        "Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit."
+      ],
+      "knownGaps": [
+        "Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.",
+        "Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.",
+        "LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification."
+      ]
+    },
+    "user-profile": {
+      "behavior": "ensureOwnProfileRow performs own select-then-insert and treats23505 duplicate race as success; getOwnProfile maps displayName/avatarPath/avatarUrl/updatedAt. getProfilesByUserIds trims/deduplicates arbitrary requested IDs, queries visible profile rows and signs avatar URLs in parallel for lobby display. uploadAvatar validates PNG/JPEG/WebP magic/MIME and<=5MiB, uploads owner/random path, updates own row, cleans failed new object best-effort and old object asynchronously, then signs604800s URL.",
+      "security": "Writes derive own user identity and storage prefix from authenticated user. Batch profile display intentionally reads visible other-user profiles and signs their visible avatars under actual table/storage policies. Do not invent an owner-only read restriction that breaks lobby identity; do not allow foreign profile writes.",
+      "tests": [
+        "Own row race23505 succeeds; actual select/insert errors fail with formatted details.",
+        "Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.",
+        "Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row."
+      ],
+      "knownGaps": [
+        "Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade."
+      ]
+    },
+    "world": {
+      "behavior": "World profiles and17 world/atlas/place RPCs, item/NPC definition reads, world-atlas image storage and world-map-pins uploads. Class-field this.tableName resolves to world_profiles.",
+      "security": "Owner/editor read differs from saga-player reveal projection; preserve p_saga_public_id,p_player_view and no private catalog/map/layer/title exposure.",
+      "tests": [
+        "Create world/node/maps; edit/rename/reparent/duplicate/archive/delete with consequence preview and reload into DB-backed tree.",
+        "Player sees only explicitly revealed map/place projection for the selected saga; owner without GM privileges follows actual per-RPC policy.",
+        "Map pin upload uses storage bucket (not a table); every17 RPC dependency and profile CRUD transport ready before facade cutover."
+      ]
+    }
+  }
+}

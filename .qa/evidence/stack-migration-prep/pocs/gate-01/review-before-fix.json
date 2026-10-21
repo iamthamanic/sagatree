@@ -1,0 +1,42 @@
+[
+  {
+    "case": "clean",
+    "fixtureRoot": "/tmp/pr860-gate01-review-oxxcv_q7/clean",
+    "renderExit": 0,
+    "verifyExit": 0,
+    "stdout": "GATE-01 recorded execution matches sources and observations (v24.19.0); no architecture approval.\n",
+    "stderr": ""
+  },
+  {
+    "case": "summary-drift",
+    "fixtureRoot": "/tmp/pr860-gate01-review-oxxcv_q7/summary-drift",
+    "renderExit": 0,
+    "verifyExit": 0,
+    "stdout": "GATE-01 recorded execution matches sources and observations (v24.19.0); no architecture approval.\n",
+    "stderr": ""
+  },
+  {
+    "case": "omitted-policy-source",
+    "fixtureRoot": "/tmp/pr860-gate01-review-oxxcv_q7/omitted-policy-source",
+    "renderExit": 0,
+    "verifyExit": 0,
+    "stdout": "GATE-01 recorded execution matches sources and observations (v24.19.0); no architecture approval.\n",
+    "stderr": ""
+  },
+  {
+    "case": "duplicate-case",
+    "fixtureRoot": "/tmp/pr860-gate01-review-oxxcv_q7/duplicate-case",
+    "renderExit": 0,
+    "verifyExit": 0,
+    "stdout": "GATE-01 recorded execution matches sources and observations (v24.19.0); no architecture approval.\n",
+    "stderr": ""
+  },
+  {
+    "case": "omitted-engine-observations",
+    "fixtureRoot": "/tmp/pr860-gate01-review-oxxcv_q7/omitted-engine-observations",
+    "renderExit": 0,
+    "verifyExit": 0,
+    "stdout": "GATE-01 recorded execution matches sources and observations (v24.19.0); no architecture approval.\n",
+    "stderr": ""
+  }
+]

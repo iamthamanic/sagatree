@@ -1,0 +1,5 @@
+
+> @sagatree/gate-01-poc@0.0.0 verify
+> node verify.mjs
+
+GATE-01 full sources, exact cases, components and derived measurements verified (v22.23.3); no architecture approval.
