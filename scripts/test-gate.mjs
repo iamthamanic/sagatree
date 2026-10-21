@@ -404,6 +404,18 @@ function checkMig010HostSkeleton() {
   );
 }
 
+function checkMig011SqliteSchema() {
+  console.log('MIG-011 SQLite schema (#790): migration journal / FK integrity self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-011-sqlite-schema.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2516,6 +2528,7 @@ checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
 checkMig010HostSkeleton();
+checkMig011SqliteSchema();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

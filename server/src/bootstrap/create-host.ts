@@ -10,12 +10,19 @@ import { loadConfig, type HostConfig } from '../config/load-config.ts';
 import { createIdentityPorts } from '../modules/identity/index.ts';
 import { createPermissionsPorts } from '../modules/permissions/index.ts';
 import { createOpsPorts } from '../modules/ops/index.ts';
+import { createWorldPorts } from '../modules/world/index.ts';
+import { createProjectPorts } from '../modules/project/index.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
+import {
+  bootstrapHostPersistence,
+  type HostDatabase,
+} from '../persistence/index.ts';
 
 export type HostInstance = {
   readonly config: HostConfig;
   readonly dataDirFingerprint: string;
+  readonly schemaVersion: number;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   isReady: () => boolean;
@@ -68,6 +75,14 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     }
     const actorId = identityResult.actorId;
 
+    const persistence = bootstrapHostPersistence({ dataDir: config.dataDir });
+    if (!persistence.ok) {
+      const step = persistence.failedStepId ? ` (failed step: ${persistence.failedStepId})` : '';
+      return { error: `${persistence.error}${step}`, code: 1 };
+    }
+    let db: HostDatabase | null = persistence.db;
+    const schemaVersion = persistence.schemaVersion;
+
     let ready = false;
     let acceptingMutations = true;
     let server: Server | null = null;
@@ -75,6 +90,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
 
     const identity = createIdentityPorts(actorId);
     const permissions = createPermissionsPorts();
+    createWorldPorts();
+    createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
@@ -96,6 +113,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     return {
       config,
       dataDirFingerprint,
+      schemaVersion,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
       async start() {
@@ -122,6 +140,14 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         ready = false;
         const current = server;
         server = null;
+        if (db) {
+          try {
+            db.close();
+          } catch {
+            /* ignore */
+          }
+          db = null;
+        }
         if (!current) return;
         await new Promise<void>((resolve, reject) => {
           current.close((err) => (err ? reject(err) : resolve()));

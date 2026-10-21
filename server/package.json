@@ -8,6 +8,6 @@
   },
   "scripts": {
     "start": "node --experimental-strip-types src/bootstrap/main.ts",
-    "self-test": "node --experimental-strip-types ../scripts/mig-010-host-skeleton.self-test.mjs"
+    "self-test": "node --experimental-strip-types ../scripts/mig-010-host-skeleton.self-test.mjs && node --experimental-strip-types ../scripts/mig-011-sqlite-schema.self-test.mjs"
   }
 }
