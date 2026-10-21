@@ -5,15 +5,17 @@
 - Call sites:
   - `src/infrastructure/world/world-atlas-service.ts`
 
-### Parameters (guess from SQL — verify)
+### Parameters (verified against live three-argument SQL signature in migration 105)
 ```
 p_map_id UUID
 p_player_view BOOLEAN DEFAULT false
+p_saga_public_id TEXT DEFAULT NULL
 ```
+A two-argument compatibility overload delegates to the three-argument function with NULL saga. The player projection must resolve the saga and enforce its revealed-map set before returning content.
 
-### Returns (guess): `JSONB`
+### Returns (verified): `JSONB`
 
-### Tables (guess): PUBLIC, jsonb_array_elements, public, v_layers, v_row
+### Source relations and guards: `world_atlas_maps`, `atlas_wb_resolve_saga_project`, `atlas_wb_party_revealed_map_ids`, `current_user_can_read_world_profile`, `current_user_can_edit_world_profile`. Full SQL effect/relationship audit remains required.
 
 ## NACHHER
 - Module: `server/src/application/commands/get_world_atlas_map.ts`
