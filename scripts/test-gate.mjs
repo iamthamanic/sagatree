@@ -416,6 +416,18 @@ function checkMig011SqliteSchema() {
   );
 }
 
+function checkMig013PolicyService() {
+  console.log('MIG-013 Policy Service (#792): deny-by-default matrix self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-013-policy-service.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2529,6 +2541,7 @@ checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
 checkMig010HostSkeleton();
 checkMig011SqliteSchema();
+checkMig013PolicyService();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

@@ -1,22 +1,26 @@
 /**
- * permissions module public API — deny-by-default policy stub (MIG-013 fills matrix).
+ * permissions module public API — sole host policy entry (deny-by-default).
  * Location: server/src/modules/permissions/index.ts
  */
 import type { Actor } from '../identity/index.ts';
+import type { HostDatabase } from '../../persistence/open-database.ts';
+import {
+  PolicyService,
+  type PolicyDecision,
+  type PolicyOp,
+  type PolicyResource,
+} from './internal/policy-service.ts';
 
-export type PolicyDecision = { readonly allow: boolean; readonly reason: string };
+export type { PolicyDecision, PolicyOp, PolicyResource };
 
 export type PermissionsPorts = {
-  readonly authorize: (op: string, actor: Actor) => PolicyDecision;
+  readonly authorize: (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
 };
 
-export function createPermissionsPorts(): PermissionsPorts {
+export function createPermissionsPorts(db: HostDatabase | null = null): PermissionsPorts {
+  const policy = new PolicyService(db);
   return {
-    authorize: (op, actor) => {
-      if (!actor?.actorId) return { allow: false, reason: 'missing-actor' };
-      if (op === 'host.health.read') return { allow: true, reason: 'public-health' };
-      if (op === 'host.ping.write') return { allow: true, reason: 'solo-mutation' };
-      return { allow: false, reason: 'deny-by-default' };
-    },
+    authorize: (op, actor, resource = {}) =>
+      policy.authorize(op, actor ? { actorId: actor.actorId } : null, resource),
   };
 }
