@@ -1,8 +1,23 @@
 {
   "schemaVersion": 1,
-  "note": "Evidence collection and source verification do not authorize an architecture choice. Approval requires a human decision with a verifiable source link and evidence artifact.",
+  "note": "Architecture APPROVED entries require a human GitHub issue comment on the gate issue (sourceUrl) plus an evidence file that exists in-repo. GATE-02..05 remain undecided/deferred.",
   "decisions": {
-    "GATE-01": { "status": "UNDECIDED" },
+    "GATE-01": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED — Drizzle + SagaTree Policy Service",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552",
+      "evidenceFile": "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+      "approvedAt": "2026-10-21T13:48:00Z",
+      "bindingConstraints": [
+        "docs/architecture/host-modular-monolith.md",
+        "policy-protected repository/application ports",
+        "additional import-boundary CI against unguarded Drizzle/DB-client access",
+        "separate world-owner and project-GM authority axes"
+      ],
+      "doesNotApprove": ["GATE-02", "GATE-03", "GATE-04", "GATE-05", "production-cutover"]
+    },
     "GATE-02": { "status": "UNDECIDED" },
     "GATE-03": { "status": "UNDECIDED" },
     "GATE-04": { "status": "UNDECIDED" },

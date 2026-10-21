@@ -93,5 +93,6 @@ export const migrationIssueIdentities = Object.freeze({
   "RPC-MARKETPLACE-COUNT": 878
 });
 export const migrationIssueIds = Object.freeze(Object.keys(migrationIssueIdentities));
-// This preparation task has no authority to start implementation or approve architecture.
-export const preparationAuthority = Object.freeze({ runnerExecution: false, architectureApproval: false });
+// Architecture APPROVED entries are allowed after an explicit human gate comment (see architecture-approvals.json).
+// Unrestricted runnerExecution across the inventory remains false; individual tickets start only with explicit freigabe.
+export const preparationAuthority = Object.freeze({ runnerExecution: false, architectureApproval: true });

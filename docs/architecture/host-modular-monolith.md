@@ -1,6 +1,7 @@
 # Host modular monolith — binding architecture contract
 
-> **Status:** Binding migration architecture for Epic #773 (NOT an ORM freigabe, NOT GATE-01 APPROVED).  
+> **Status:** Binding migration architecture for Epic #773.  
+> **ORM (GATE-01):** APPROVED — Drizzle + SagaTree Policy Service ([ADR-ST-05](ADR-ST-05-gate-01-drizzle-policy.md)); does **not** replace this module contract.  
 > **Anchors:** MIG-010/#789 (first technical enforcement), successors MIG-011/#790–MIG-013/#792 and functional ports that depend on them.  
 > **Companion:** `docs/architektur-sqlite-based.md` (product invariants). This file binds the **host module shape**.  
 > **Inventory sources:** `.qa/intake/edge-infra-contracts/inventory.json`, `src/domains/**`, `src/infrastructure/**`.
@@ -148,7 +149,7 @@ MIG-010 acceptance includes:
 3. Documented module DAG + ownership table above is the contract reviewers check.
 4. **Effective module-boundary acceptance** (not a placeholder): `scripts/architecture-boundary-check.mjs` → `checkRegisteredHostPackages()` resolves imports relative to the importing file (and supported aliases), classifies module membership on the resolved target, rejects private cross-module `internal`/`persistence` access, rejects cycles among `server/src/modules/*`, and limits private wiring to documented composition entries (`server/src/bootstrap/**`, `server/src/http/route-registry.ts` only — not all of `server/src/http/**`). Executable regressions live in `scripts/architecture-boundary-check.self-test.mjs` and run via `npm run test-gate`. This is **in addition to** future Drizzle/client import bans from GATE-01 follow-ons.
 
-GATE-01 APPROVED remains a separate human decision. Choosing Drizzle or ZenStack does not waive §§2–8.
+GATE-01 is APPROVED (Drizzle + SagaTree Policy Service; ADR-ST-05). Choosing Drizzle does not waive §§2–8; GATE-02..05 remain separate human decisions.
 
 ### RPC path convention (binding for child tickets)
 
