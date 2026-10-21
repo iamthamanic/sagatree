@@ -4,7 +4,7 @@
 - Path: `supabase/functions/characters/`
   - `supabase/functions/characters/index.ts`
 - Methods: DELETE, GET, OPTIONS, POST, PUT
-- Authz: Document if public/dispatcher-only
+- Authz: **UNREACHABLE via `main` dispatcher**; `edge-dispatcher-allowlist.ts` denies this legacy unauthenticated worker. Do not expose successor until a verified owner/service authorization contract is implemented and approved.
 - Shared: `cors.ts`
 - Secrets/env: n/a
 - Rate limits: rate-limit logic present in source — extract exact limits before port
@@ -33,7 +33,7 @@
 ## NACHHER
 - Service module: `server/src/services/characters/`
 - Depends on gates: GATE-02, GATE-03
-- Status: SPEC — implement after GATE-02/03 + host HTTP skeleton; no unsupervised API framework choice
+- Status: **BLOCKED — do not mount the successor** until owner/service authorization, denylist parity and the exact operation-specific contract are verified; GATE-02/03 approval is necessary but not sufficient.
 - Must preserve fail-closed authz, secret handling, CORS shared pattern
 
 ## TESTS
