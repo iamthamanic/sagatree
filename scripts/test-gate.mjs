@@ -392,6 +392,18 @@ function checkStackMigrationPrep() {
   });
 }
 
+function checkMig010HostSkeleton() {
+  console.log('MIG-010 host skeleton (#789): readiness / data-dir / shutdown self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-010-host-skeleton.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2503,6 +2515,7 @@ checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
+checkMig010HostSkeleton();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
