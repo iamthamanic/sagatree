@@ -37,7 +37,7 @@ PoC evidence: `.qa/evidence/stack-migration-prep/pocs/gate-01/`, decision packag
 
 ### Not approved by this ADR
 
-- GATE-02, GATE-03, GATE-04, GATE-05
+- GATE-02, GATE-03, GATE-05 (GATE-04 is a **separate** human decision — see [ADR-ST-08](ADR-ST-08-gate-04-sqlite-single-writer.md))
 - Production cutover / Supabase shutdown
 - ZenStack as the default host ORM (remains a documented alternative only if a future human decision revises this ADR)
 

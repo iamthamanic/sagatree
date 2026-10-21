@@ -2,6 +2,7 @@
 
 > **Status:** Binding migration architecture for Epic #773.  
 > **ORM (GATE-01):** APPROVED — Drizzle + SagaTree Policy Service ([ADR-ST-05](ADR-ST-05-gate-01-drizzle-policy.md)); does **not** replace this module contract.  
+> **SQLite writer (GATE-04):** APPROVED — single writer, WAL, `synchronous=FULL`, atomic state/revision/event/idempotency ([ADR-ST-08](ADR-ST-08-gate-04-sqlite-single-writer.md)); **implementation freigabe only** — capacity/cutover remain NOT RUN on MIG-700/#849.  
 > **Anchors:** MIG-010/#789 (first technical enforcement), successors MIG-011/#790–MIG-013/#792 and functional ports that depend on them.  
 > **Companion:** `docs/architektur-sqlite-based.md` (product invariants). This file binds the **host module shape**.  
 > **Inventory sources:** `.qa/intake/edge-infra-contracts/inventory.json`, `src/domains/**`, `src/infrastructure/**`.

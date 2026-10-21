@@ -1,8 +1,9 @@
 # GATE-04 — SQLite transactions, revision, concurrency, idempotency
 
-> **Status:** SPEC only — not APPROVED  
-> **GitHub:** #787 · Prep criteria: #776  
-> **Blocks:** MIG-022 and all session command ports
+> **Status:** **APPROVED — SQLite Single Writer (implementation freigabe only)** (human, 2026-10-21)  
+> **GitHub:** #787 · Prep criteria: #776 · ADR: [ADR-ST-08](../../../docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md)  
+> **Blocks removed for implementers:** MIG-011/#790 (with GATE-01); MIG-022 and session command ports still require their other gates  
+> **Not approved:** production capacity / cutover (NOT RUN → MIG-700/#849)
 
 ## Variant
 
@@ -47,8 +48,8 @@ Reference contracts:
 
 ## On APPROVED
 
-ADR-ST-08; unblock MIG-022.
+**Recorded 2026-10-21:** ADR-ST-08 + `architecture-approvals.json`. Unblocks MIG-011/#790 (with GATE-01). MIG-022 and session ports remain subject to their other gates. Capacity/cutover remain **NOT RUN** on MIG-700/#849.
 
 ## Explicit non-decision
 
-No agent APPROVED stamp. Does not authorize Postgres removal.
+Does **not** authorize production cutover, Postgres removal, GATE-02/03/05, or invented capacity SLOs.

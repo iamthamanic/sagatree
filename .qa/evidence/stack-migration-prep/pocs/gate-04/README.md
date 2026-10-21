@@ -1,6 +1,6 @@
 # GATE-04 executed evidence
 
-**Executed fixture: PASS. Technology decision: NOT APPROVED.**
+**Executed fixture: PASS. Technology decision: APPROVED — implementation freigabe only (ADR-ST-08, 2026-10-21). Production capacity/cutover: NOT RUN.**
 
 The reproducible entry point and full method/limits are documented in
 [`scripts/stack-migration-pocs/gate-04/README.md`](../../../../../scripts/stack-migration-pocs/gate-04/README.md).
