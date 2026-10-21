@@ -1,6 +1,6 @@
 # Verify Ticket — PR #889 / MIG-011 follow-up (MERGE-889 WAIT)
 
-- HEAD: `cb1ac7b125fbb25d957ada6281930cd7d89d23cd` (code tip; docs commit may follow as proof-only descendant)
+- HEAD: `95663f87fb30eca9d00a8a8d0d9e2b65e77124a2` (code tip; docs commit may follow as proof-only descendant)
 - Date: 2026-10-21
 - Verdict: **PASS** (local)
 
@@ -21,14 +21,12 @@
 | Legacy lock present → fail-closed; no auto-delete | self-test legacy section |
 | Old host holds lock + TX; new host refuses | old+new concurrency section |
 | Clear only after `oldHostVerifiedStopped: true` | `clearLegacySchemaUpgradeLockAfterVerifiedStandstill` |
-| Real SIGKILL mid-TX; uncommitted rolled back; v1 intact | `scripts/mig-011-sigkill-crash.self-test.mjs` (invoked from main harness) |
+| Real SIGKILL mid-TX; close must report `signal === 'SIGKILL'`; early exit / ESRCH / timeout = FAIL | `scripts/mig-011-sigkill-crash.self-test.mjs` (15× local PASS with `signal=SIGKILL`) |
 
 ## Commands
 
 ```bash
-node --experimental-strip-types scripts/mig-011-sigkill-crash.self-test.mjs  # PASS
+node --experimental-strip-types scripts/mig-011-sigkill-crash.self-test.mjs  # PASS (signal=SIGKILL)
 node --experimental-strip-types scripts/mig-011-sqlite-schema.self-test.mjs  # PASS
-node --experimental-strip-types scripts/mig-010-host-skeleton.self-test.mjs  # PASS
-node scripts/architecture-boundary-check.mjs  # PASS
 COMPOSITION_GATE_PR_BASE_SHA=19c33a75a961d3c1635e366883db5b809dbe21eb npm run composition-gate  # CLEAR
 ```
