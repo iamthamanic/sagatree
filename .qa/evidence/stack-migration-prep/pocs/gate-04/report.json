@@ -387,7 +387,7 @@
     },
     {
       "path": ".qa/design/gates/GATE-04-sqlite-revision-idempotency.md",
-      "sha256": "ace8265d2231a4b4fed7c82e838a140ff493491768498c5cd06852a37eeb3fca"
+      "sha256": "638a69310fe668d87709c615870324671b47ce0881a936ac54a7696a29b31e84"
     },
     {
       "path": ".qa/design/player-test-realtime-runtime-state.md",
