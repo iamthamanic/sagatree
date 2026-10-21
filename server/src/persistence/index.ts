@@ -4,18 +4,13 @@
  */
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  openHostDatabase,
-  foreignKeysEnabled,
-  acquireSchemaUpgradeLock,
-  tryRecoverStaleSchemaUpgradeLock,
-  type HostDatabase,
-} from './open-database.ts';
+import { openHostDatabase, foreignKeysEnabled, isSqliteBusyError, type HostDatabase } from './open-database.ts';
 import {
   runMigrations,
   listMigrationFiles,
   readMigrationFailure,
   readSchemaVersion,
+  discardLegacySchemaUpgradeLockFile,
   type MigrateResult,
 } from './migration-runner.ts';
 import { runIntegrityCheck, type IntegrityResult } from './integrity-check.ts';
@@ -25,12 +20,12 @@ import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
 export {
   openHostDatabase,
   foreignKeysEnabled,
-  acquireSchemaUpgradeLock,
-  tryRecoverStaleSchemaUpgradeLock,
+  isSqliteBusyError,
   runMigrations,
   listMigrationFiles,
   readMigrationFailure,
   readSchemaVersion,
+  discardLegacySchemaUpgradeLockFile,
   runIntegrityCheck,
   TABLE_OWNERSHIP,
   assertUniqueTableOwnership,
