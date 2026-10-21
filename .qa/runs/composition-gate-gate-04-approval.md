@@ -1,6 +1,6 @@
 # Composition Gate — gate-04-approval (#787)
 
-- HEAD_SHA: cf4e90ea354613597259fbb6a7783ddff14e25c5
+- HEAD_SHA: 4bed6a582ec20c9b45ccbf396654f0fd4f90ac95
 - BASE_SHA: cf4e90ea354613597259fbb6a7783ddff14e25c5
 - Date: 2026-10-21
 - Verdict: CLEAR
