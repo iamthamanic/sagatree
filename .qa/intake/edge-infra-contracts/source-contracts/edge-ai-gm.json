@@ -1,0 +1,1458 @@
+{
+  "schemaVersion": 1,
+  "function": "ai-gm",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "sha256": "050346396b229912655843940ecde2fbc2111a571ddc85d12b2149e3d2bc9f61"
+    },
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "sha256": "53e3c57da9e037c49582d6f5781b52198a74a2c0aabf758467caa7bc2aee7cac"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "sha256": "ab8d64dbe9361417307396cd2c940a07e400b4ac1680193dc65397225a3844c1"
+    }
+  ],
+  "operations": [
+    {
+      "id": "ai-gm:1",
+      "condition": "req.method === \"GET\" && req.url.endsWith('/health')",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 608,
+      "endLine": 617,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 609,
+          "endLine": 616,
+          "expression": "new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 609,
+          "endLine": 614,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 613,
+          "endLine": 613,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n    return new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }"
+    },
+    {
+      "id": "ai-gm:2",
+      "condition": "req.method === \"POST\"",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 620,
+      "endLine": 758,
+      "requestReads": [
+        "context.memories",
+        "context.relationships"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 627,
+          "endLine": 630,
+          "expression": "new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 639,
+          "endLine": 642,
+          "expression": "new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 647,
+          "endLine": 647,
+          "expression": "rateLimited"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 716,
+          "endLine": 718,
+          "expression": "new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 744,
+          "endLine": 746,
+          "expression": "new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 749,
+          "endLine": 756,
+          "expression": "new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 622,
+          "endLine": 622,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 625,
+          "endLine": 625,
+          "expression": "validateRequest",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: validation.error }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 637,
+          "endLine": 637,
+          "expression": "assertSessionMemberAccess",
+          "arguments": [
+            "req",
+            "request.sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 646,
+          "endLine": 646,
+          "expression": "enforceAiGmRateLimit",
+          "arguments": [
+            "req",
+            "headers"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 651,
+          "endLine": 653,
+          "expression": "request.context.npcs\n          .filter(npc => npc.id)\n          .map",
+          "arguments": [
+            "npc => getNPCContext(npc.id)"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 651,
+          "endLine": 652,
+          "expression": "request.context.npcs\n          .filter",
+          "arguments": [
+            "npc => npc.id"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 653,
+          "endLine": 653,
+          "expression": "getNPCContext",
+          "arguments": [
+            "npc.id"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 655,
+          "endLine": 655,
+          "expression": "Promise.all",
+          "arguments": [
+            "npcPromises"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 657,
+          "endLine": 662,
+          "expression": "npcContexts.forEach",
+          "arguments": [
+            "(context, i) => {\n          if (context && request.context?.npcs?.[i]) {\n            request.context.npcs[i].memories = context.memories || []\n            request.context.npcs[i].relationships = context.relationships || {}\n          }\n        }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "buildPrompt",
+          "arguments": [
+            "request"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 676,
+          "endLine": 676,
+          "expression": "generateNarrative",
+          "arguments": [
+            "prompt",
+            "true"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                    type: 'narrative',\n                    content: chunk.content,\n                  }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 685,
+          "endLine": 685,
+          "expression": "extractWorldStateUpdates",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 686,
+          "endLine": 686,
+          "expression": "extractDiceRollRequests",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 687,
+          "endLine": 687,
+          "expression": "extractCombatInitiated",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 691,
+          "endLine": 691,
+          "expression": "updateSessionWorldState",
+          "arguments": [
+            "request.sessionId",
+            "worldUpdate"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 703,
+          "endLine": 703,
+          "expression": "controller.close",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 709,
+          "endLine": 709,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 711,
+          "endLine": 711,
+          "expression": "controller.close",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 723,
+          "endLine": 723,
+          "expression": "generateNarrative",
+          "arguments": [
+            "prompt",
+            "false"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 729,
+          "endLine": 729,
+          "expression": "extractWorldStateUpdates",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 730,
+          "endLine": 730,
+          "expression": "extractDiceRollRequests",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 731,
+          "endLine": 731,
+          "expression": "extractCombatInitiated",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 734,
+          "endLine": 734,
+          "expression": "updateSessionWorldState",
+          "arguments": [
+            "request.sessionId",
+            "worldUpdate"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 744,
+          "endLine": 744,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "response"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 749,
+          "endLine": 753,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 751,
+          "endLine": 751,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ],
+      "exactBranch": "{\n    try {\n      const body = await req.json()\n      \n      // Validate request\n      const validation = validateRequest(body)\n      if (!validation.valid) {\n        return new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      const request: GMRequest = body\n      const stream = request.stream !== false\n\n      // #607: non-members must not reach Ollama / mutate world state\n      const memberDenied = await assertSessionMemberAccess(req, request.sessionId)\n      if (memberDenied) {\n        return new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })\n      }\n\n      // #670: persistent user quota before any LLM / lorekeeper fan-out\n      const rateLimited = await enforceAiGmRateLimit(req, headers)\n      if (rateLimited) return rateLimited\n      \n      // Fetch additional NPC context from Lorekeeper\n      if (request.context?.npcs) {\n        const npcPromises = request.context.npcs\n          .filter(npc => npc.id)\n          .map(npc => getNPCContext(npc.id))\n        \n        const npcContexts = await Promise.all(npcPromises)\n        \n        npcContexts.forEach((context, i) => {\n          if (context && request.context?.npcs?.[i]) {\n            request.context.npcs[i].memories = context.memories || []\n            request.context.npcs[i].relationships = context.relationships || {}\n          }\n        })\n      }\n      \n      // Build prompt\n      const prompt = buildPrompt(request)\n      \n      // Generate narrative\n      if (stream) {\n        const encoder = new TextEncoder()\n        let fullNarrative = ''\n        \n        const readableStream = new ReadableStream({\n          async start(controller) {\n            try {\n              for await (const chunk of generateNarrative(prompt, true)) {\n                if (chunk.type === 'narrative' && chunk.content) {\n                  fullNarrative += chunk.content\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n'))\n                } else if (chunk.type === 'complete') {\n                  // Extract structured data from completed narrative\n                  const worldUpdate = extractWorldStateUpdates(fullNarrative)\n                  const diceRolls = extractDiceRollRequests(fullNarrative)\n                  const combat = extractCombatInitiated(fullNarrative)\n                  \n                  // Update session world state if needed\n                  if (worldUpdate && request.sessionId) {\n                    await updateSessionWorldState(request.sessionId, worldUpdate)\n                  }\n                  \n                  // Send final metadata\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n'))\n                  \n                  controller.close()\n                }\n              }\n            } catch (error: unknown) {\n              controller.enqueue(encoder.encode(JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n'))\n              controller.close()\n            }\n          },\n        })\n        \n        return new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })\n      } else {\n        // Non-streaming\n        let fullNarrative = ''\n        \n        for await (const chunk of generateNarrative(prompt, false)) {\n          if (chunk.type === 'narrative' && chunk.content) {\n            fullNarrative = chunk.content\n          }\n        }\n        \n        const worldUpdate = extractWorldStateUpdates(fullNarrative)\n        const diceRolls = extractDiceRollRequests(fullNarrative)\n        const combat = extractCombatInitiated(fullNarrative)\n        \n        if (worldUpdate && request.sessionId) {\n          await updateSessionWorldState(request.sessionId, worldUpdate)\n        }\n        \n        const response: GMResponse = {\n          narrative: fullNarrative,\n          worldStateUpdate: worldUpdate || undefined,\n          diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n          combatInitiated: combat,\n        }\n        \n        return new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n    } catch (error: unknown) {\n      return new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n  }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 160,
+      "endLine": 165,
+      "expression": "new Response(JSON.stringify({\n      error: 'AI Game Master ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }), {\n      status: 503,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 170,
+      "endLine": 173,
+      "expression": "new Response(JSON.stringify({ error: 'Authentication required' }), {\n      status: 401,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 187,
+      "endLine": 192,
+      "expression": "new Response(JSON.stringify({\n        error: 'Zu viele AI-GM-Anfragen. Bitte warte kurz und versuche es erneut.',\n      }), {\n        status: 429,\n        headers: { ...headers, 'Content-Type': 'application/json' },\n      })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 199,
+      "endLine": 204,
+      "expression": "new Response(JSON.stringify({\n      error: 'AI Game Master ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }), {\n      status: 503,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 609,
+      "endLine": 616,
+      "expression": "new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 627,
+      "endLine": 630,
+      "expression": "new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 639,
+      "endLine": 642,
+      "expression": "new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 716,
+      "endLine": 718,
+      "expression": "new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 744,
+      "endLine": 746,
+      "expression": "new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 749,
+      "endLine": 756,
+      "expression": "new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 761,
+      "endLine": 764,
+      "expression": "new Response(JSON.stringify({ error: \"Method not allowed\" }), {\n    status: 405,\n    headers: { ...headers, \"Content-Type\": \"application/json\" },\n  })"
+    }
+  ],
+  "environment": [
+    "AI_GM_RATE_LIMIT",
+    "ANON_KEY",
+    "API_EXTERNAL_URL",
+    "CHARACTER_AI_ALLOWED_ORIGIN",
+    "CHARACTER_AI_API_KEY",
+    "CHARACTER_AI_BASE_URL",
+    "CHARACTER_AI_MODEL",
+    "CHARACTER_AI_PROVIDER",
+    "LOREKEEPER_URL",
+    "OLLAMA_HOST",
+    "OLLAMA_MODEL",
+    "SESSIONS_URL",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+  ],
+  "timeoutSites": [
+    {
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 52,
+      "endLine": 52,
+      "expression": "AbortSignal.timeout(10_000)"
+    }
+  ],
+  "effectSites": [
+    {
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 39,
+      "endLine": 53,
+      "expression": "fetchImpl(`${config.url.replace(/\\/+$/, '')}${RATE_LIMIT_RPC}`, {\n    method: 'POST',\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      'Content-Type': 'application/json',\n      Accept: 'application/json',\n    },\n    body: JSON.stringify({\n      p_user_id: userId,\n      p_limit: config.limit,\n      p_window_seconds: config.windowSeconds,\n    }),\n    signal: AbortSignal.timeout(10_000),\n  })"
+    },
+    {
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 54,
+      "endLine": 57,
+      "expression": "fetch(\n    `${base}/rest/v1/sessions?id=eq.${encodeURIComponent(sessionId)}&select=id,project_id`,\n    { headers },\n  )"
+    },
+    {
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 73,
+      "endLine": 73,
+      "expression": "fetch(`${base}/auth/v1/user`, { headers })"
+    },
+    {
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 89,
+      "endLine": 92,
+      "expression": "fetch(\n    `${base}/rest/v1/project_members?project_id=eq.${encodeURIComponent(projectId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.active&select=user_id,role&limit=1`,\n    { headers },\n  )"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 144,
+      "endLine": 150,
+      "expression": "fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      apikey: config.anonKey,\n      Authorization: auth,\n      'Content-Type': 'application/json',\n    },\n  })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 337,
+      "endLine": 340,
+      "expression": "fetch(`${LOREKEEPER_URL}/npc/${npcId}`, {\n      method: 'GET',\n      headers: { 'Content-Type': 'application/json' },\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 353,
+      "endLine": 357,
+      "expression": "fetch(`${LOREKEEPER_URL}/npc/${npcId}/memory`, {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ content: memory, type: 'event' }),\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 369,
+      "endLine": 373,
+      "expression": "fetch(`${SESSIONS_URL}/${sessionId}/world-state`, {\n      method: 'PUT',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ worldState }),\n    })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 393,
+      "endLine": 412,
+      "expression": "fetch(`${AI_BASE_URL}/chat/completions`, {\n    method: \"POST\",\n    headers: {\n      \"Content-Type\": \"application/json\",\n      Authorization: `Bearer ${AI_API_KEY}`,\n    },\n    body: JSON.stringify({\n      model: AI_MODEL,\n      stream,\n      temperature: 0.85,\n      messages: [\n        {\n          role: \"system\",\n          content:\n            \"You are the SagaTree AI Game Master. Follow the user prompt faithfully.\",\n        },\n        { role: \"user\", content: prompt },\n      ],\n    }),\n  })"
+    },
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 473,
+      "endLine": 481,
+      "expression": "fetch(`${ollamaHost}/api/generate`, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({\n      model: AI_MODEL || OLLAMA_MODEL,\n      prompt,\n      stream,\n    }),\n  })"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 600,
+      "endLine": 765,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  // Handle preflight\n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  // GET /health - Health check\n  if (req.method === \"GET\" && req.url.endsWith('/health')) {\n    return new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n  \n  // POST / - Generate narrative\n  if (req.method === \"POST\") {\n    try {\n      const body = await req.json()\n      \n      // Validate request\n      const validation = validateRequest(body)\n      if (!validation.valid) {\n        return new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      const request: GMRequest = body\n      const stream = request.stream !== false\n\n      // #607: non-members must not reach Ollama / mutate world state\n      const memberDenied = await assertSessionMemberAccess(req, request.sessionId)\n      if (memberDenied) {\n        return new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })\n      }\n\n      // #670: persistent user quota before any LLM / lorekeeper fan-out\n      const rateLimited = await enforceAiGmRateLimit(req, headers)\n      if (rateLimited) return rateLimited\n      \n      // Fetch additional NPC context from Lorekeeper\n      if (request.context?.npcs) {\n        const npcPromises = request.context.npcs\n          .filter(npc => npc.id)\n          .map(npc => getNPCContext(npc.id))\n        \n        const npcContexts = await Promise.all(npcPromises)\n        \n        npcContexts.forEach((context, i) => {\n          if (context && request.context?.npcs?.[i]) {\n            request.context.npcs[i].memories = context.memories || []\n            request.context.npcs[i].relationships = context.relationships || {}\n          }\n        })\n      }\n      \n      // Build prompt\n      const prompt = buildPrompt(request)\n      \n      // Generate narrative\n      if (stream) {\n        const encoder = new TextEncoder()\n        let fullNarrative = ''\n        \n        const readableStream = new ReadableStream({\n          async start(controller) {\n            try {\n              for await (const chunk of generateNarrative(prompt, true)) {\n                if (chunk.type === 'narrative' && chunk.content) {\n                  fullNarrative += chunk.content\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n'))\n                } else if (chunk.type === 'complete') {\n                  // Extract structured data from completed narrative\n                  const worldUpdate = extractWorldStateUpdates(fullNarrative)\n                  const diceRolls = extractDiceRollRequests(fullNarrative)\n                  const combat = extractCombatInitiated(fullNarrative)\n                  \n                  // Update session world state if needed\n                  if (worldUpdate && request.sessionId) {\n                    await updateSessionWorldState(request.sessionId, worldUpdate)\n                  }\n                  \n                  // Send final metadata\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n'))\n                  \n                  controller.close()\n                }\n              }\n            } catch (error: unknown) {\n              controller.enqueue(encoder.encode(JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n'))\n              controller.close()\n            }\n          },\n        })\n        \n        return new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })\n      } else {\n        // Non-streaming\n        let fullNarrative = ''\n        \n        for await (const chunk of generateNarrative(prompt, false)) {\n          if (chunk.type === 'narrative' && chunk.content) {\n            fullNarrative = chunk.content\n          }\n        }\n        \n        const worldUpdate = extractWorldStateUpdates(fullNarrative)\n        const diceRolls = extractDiceRollRequests(fullNarrative)\n        const combat = extractCombatInitiated(fullNarrative)\n        \n        if (worldUpdate && request.sessionId) {\n          await updateSessionWorldState(request.sessionId, worldUpdate)\n        }\n        \n        const response: GMResponse = {\n          narrative: fullNarrative,\n          worldStateUpdate: worldUpdate || undefined,\n          diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n          combatInitiated: combat,\n        }\n        \n        return new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n    } catch (error: unknown) {\n      return new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n  }\n  \n  // Method not allowed\n  return new Response(JSON.stringify({ error: \"Method not allowed\" }), {\n    status: 405,\n    headers: { ...headers, \"Content-Type\": \"application/json\" },\n  })\n})",
+      "requestReads": [
+        "context.memories",
+        "context.relationships"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 605,
+          "endLine": 605,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 609,
+          "endLine": 616,
+          "expression": "new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 627,
+          "endLine": 630,
+          "expression": "new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 639,
+          "endLine": 642,
+          "expression": "new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 647,
+          "endLine": 647,
+          "expression": "rateLimited"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 716,
+          "endLine": 718,
+          "expression": "new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 744,
+          "endLine": 746,
+          "expression": "new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 749,
+          "endLine": 756,
+          "expression": "new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 761,
+          "endLine": 764,
+          "expression": "new Response(JSON.stringify({ error: \"Method not allowed\" }), {\n    status: 405,\n    headers: { ...headers, \"Content-Type\": \"application/json\" },\n  })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 600,
+          "endLine": 765,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  // Handle preflight\n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  // GET /health - Health check\n  if (req.method === \"GET\" && req.url.endsWith('/health')) {\n    return new Response(JSON.stringify({\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }), {\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n  \n  // POST / - Generate narrative\n  if (req.method === \"POST\") {\n    try {\n      const body = await req.json()\n      \n      // Validate request\n      const validation = validateRequest(body)\n      if (!validation.valid) {\n        return new Response(JSON.stringify({ error: validation.error }), {\n          status: 400,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      const request: GMRequest = body\n      const stream = request.stream !== false\n\n      // #607: non-members must not reach Ollama / mutate world state\n      const memberDenied = await assertSessionMemberAccess(req, request.sessionId)\n      if (memberDenied) {\n        return new Response(memberDenied.body, {\n          status: memberDenied.status,\n          headers: { ...headers, 'Content-Type': 'application/json' },\n        })\n      }\n\n      // #670: persistent user quota before any LLM / lorekeeper fan-out\n      const rateLimited = await enforceAiGmRateLimit(req, headers)\n      if (rateLimited) return rateLimited\n      \n      // Fetch additional NPC context from Lorekeeper\n      if (request.context?.npcs) {\n        const npcPromises = request.context.npcs\n          .filter(npc => npc.id)\n          .map(npc => getNPCContext(npc.id))\n        \n        const npcContexts = await Promise.all(npcPromises)\n        \n        npcContexts.forEach((context, i) => {\n          if (context && request.context?.npcs?.[i]) {\n            request.context.npcs[i].memories = context.memories || []\n            request.context.npcs[i].relationships = context.relationships || {}\n          }\n        })\n      }\n      \n      // Build prompt\n      const prompt = buildPrompt(request)\n      \n      // Generate narrative\n      if (stream) {\n        const encoder = new TextEncoder()\n        let fullNarrative = ''\n        \n        const readableStream = new ReadableStream({\n          async start(controller) {\n            try {\n              for await (const chunk of generateNarrative(prompt, true)) {\n                if (chunk.type === 'narrative' && chunk.content) {\n                  fullNarrative += chunk.content\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n'))\n                } else if (chunk.type === 'complete') {\n                  // Extract structured data from completed narrative\n                  const worldUpdate = extractWorldStateUpdates(fullNarrative)\n                  const diceRolls = extractDiceRollRequests(fullNarrative)\n                  const combat = extractCombatInitiated(fullNarrative)\n                  \n                  // Update session world state if needed\n                  if (worldUpdate && request.sessionId) {\n                    await updateSessionWorldState(request.sessionId, worldUpdate)\n                  }\n                  \n                  // Send final metadata\n                  controller.enqueue(encoder.encode(JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n'))\n                  \n                  controller.close()\n                }\n              }\n            } catch (error: unknown) {\n              controller.enqueue(encoder.encode(JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n'))\n              controller.close()\n            }\n          },\n        })\n        \n        return new Response(readableStream, {\n          headers: { ...headers, \"Content-Type\": \"text/event-stream\" },\n        })\n      } else {\n        // Non-streaming\n        let fullNarrative = ''\n        \n        for await (const chunk of generateNarrative(prompt, false)) {\n          if (chunk.type === 'narrative' && chunk.content) {\n            fullNarrative = chunk.content\n          }\n        }\n        \n        const worldUpdate = extractWorldStateUpdates(fullNarrative)\n        const diceRolls = extractDiceRollRequests(fullNarrative)\n        const combat = extractCombatInitiated(fullNarrative)\n        \n        if (worldUpdate && request.sessionId) {\n          await updateSessionWorldState(request.sessionId, worldUpdate)\n        }\n        \n        const response: GMResponse = {\n          narrative: fullNarrative,\n          worldStateUpdate: worldUpdate || undefined,\n          diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n          combatInitiated: combat,\n        }\n        \n        return new Response(JSON.stringify(response), {\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n    } catch (error: unknown) {\n      return new Response(JSON.stringify({\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }), {\n        status: 500,\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n  }\n  \n  // Method not allowed\n  return new Response(JSON.stringify({ error: \"Method not allowed\" }), {\n    status: 405,\n    headers: { ...headers, \"Content-Type\": \"application/json\" },\n  })\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 601,
+          "endLine": 601,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 604,
+          "endLine": 604,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 608,
+          "endLine": 608,
+          "expression": "req.url.endsWith",
+          "arguments": [
+            "'/health'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 609,
+          "endLine": 614,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      status: 'ok',\n      provider: AI_PROVIDER,\n      model: AI_MODEL || OLLAMA_MODEL,\n      timestamp: new Date().toISOString(),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 613,
+          "endLine": 613,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 622,
+          "endLine": 622,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 625,
+          "endLine": 625,
+          "expression": "validateRequest",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: validation.error }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 637,
+          "endLine": 637,
+          "expression": "assertSessionMemberAccess",
+          "arguments": [
+            "req",
+            "request.sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 646,
+          "endLine": 646,
+          "expression": "enforceAiGmRateLimit",
+          "arguments": [
+            "req",
+            "headers"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 651,
+          "endLine": 653,
+          "expression": "request.context.npcs\n          .filter(npc => npc.id)\n          .map",
+          "arguments": [
+            "npc => getNPCContext(npc.id)"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 651,
+          "endLine": 652,
+          "expression": "request.context.npcs\n          .filter",
+          "arguments": [
+            "npc => npc.id"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 653,
+          "endLine": 653,
+          "expression": "getNPCContext",
+          "arguments": [
+            "npc.id"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 655,
+          "endLine": 655,
+          "expression": "Promise.all",
+          "arguments": [
+            "npcPromises"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 657,
+          "endLine": 662,
+          "expression": "npcContexts.forEach",
+          "arguments": [
+            "(context, i) => {\n          if (context && request.context?.npcs?.[i]) {\n            request.context.npcs[i].memories = context.memories || []\n            request.context.npcs[i].relationships = context.relationships || {}\n          }\n        }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "buildPrompt",
+          "arguments": [
+            "request"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 676,
+          "endLine": 676,
+          "expression": "generateNarrative",
+          "arguments": [
+            "prompt",
+            "true"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                    type: 'narrative',\n                    content: chunk.content,\n                  }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 679,
+          "endLine": 682,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                    type: 'narrative',\n                    content: chunk.content,\n                  }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 685,
+          "endLine": 685,
+          "expression": "extractWorldStateUpdates",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 686,
+          "endLine": 686,
+          "expression": "extractDiceRollRequests",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 687,
+          "endLine": 687,
+          "expression": "extractCombatInitiated",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 691,
+          "endLine": 691,
+          "expression": "updateSessionWorldState",
+          "arguments": [
+            "request.sessionId",
+            "worldUpdate"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 695,
+          "endLine": 701,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                    type: 'complete',\n                    narrative: fullNarrative,\n                    worldStateUpdate: worldUpdate,\n                    diceRollsRequired: diceRolls.length > 0 ? diceRolls : undefined,\n                    combatInitiated: combat,\n                  }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 703,
+          "endLine": 703,
+          "expression": "controller.close",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "controller.enqueue",
+          "arguments": [
+            "encoder.encode(JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n')"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "encoder.encode",
+          "arguments": [
+            "JSON.stringify({\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }) + '\\n'"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 707,
+          "endLine": 710,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n                type: 'error',\n                error: (error instanceof Error ? error.message : String(error)),\n              }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 709,
+          "endLine": 709,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 711,
+          "endLine": 711,
+          "expression": "controller.close",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 723,
+          "endLine": 723,
+          "expression": "generateNarrative",
+          "arguments": [
+            "prompt",
+            "false"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 729,
+          "endLine": 729,
+          "expression": "extractWorldStateUpdates",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 730,
+          "endLine": 730,
+          "expression": "extractDiceRollRequests",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 731,
+          "endLine": 731,
+          "expression": "extractCombatInitiated",
+          "arguments": [
+            "fullNarrative"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 734,
+          "endLine": 734,
+          "expression": "updateSessionWorldState",
+          "arguments": [
+            "request.sessionId",
+            "worldUpdate"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 744,
+          "endLine": 744,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "response"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 749,
+          "endLine": 753,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        error: \"Internal server error\",\n        message: (error instanceof Error ? error.message : String(error)),\n        stack: (error instanceof Error ? error.stack : undefined),\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 751,
+          "endLine": 751,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        },
+        {
+          "path": "supabase/functions/ai-gm/index.ts",
+          "line": 761,
+          "endLine": 761,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Method not allowed\" }"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AiGmRateLimitConfig",
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 8,
+      "endLine": 13,
+      "text": "export interface AiGmRateLimitConfig {\n  url: string;\n  serviceRoleKey: string;\n  limit: number;\n  windowSeconds: number;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "FetchLike",
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 15,
+      "endLine": 18,
+      "text": "type FetchLike = (\n  input: string | URL | Request,\n  init?: RequestInit,\n) => Promise<Response>;"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "RATE_LIMIT_RPC",
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "RATE_LIMIT_RPC = '/rest/v1/rpc/consume_ai_gm_rate_limit'"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "consumePersistentAiGmRateLimit",
+      "path": "supabase/functions/_shared/ai-gm-rate-limit.ts",
+      "line": 22,
+      "endLine": 65,
+      "text": "export async function consumePersistentAiGmRateLimit(\n  config: AiGmRateLimitConfig,\n  userId: string,\n  fetchImpl: FetchLike = fetch,\n): Promise<boolean> {\n  if (!userId.trim()) throw new Error('Rate limit user id is required');\n  if (!Number.isInteger(config.limit) || config.limit < 1 || config.limit > 60) {\n    throw new Error('Rate limit must be an integer between 1 and 60');\n  }\n  if (\n    !Number.isInteger(config.windowSeconds) ||\n    config.windowSeconds < 1 ||\n    config.windowSeconds > 3600\n  ) {\n    throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');\n  }\n\n  const response = await fetchImpl(`${config.url.replace(/\\/+$/, '')}${RATE_LIMIT_RPC}`, {\n    method: 'POST',\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      'Content-Type': 'application/json',\n      Accept: 'application/json',\n    },\n    body: JSON.stringify({\n      p_user_id: userId,\n      p_limit: config.limit,\n      p_window_seconds: config.windowSeconds,\n    }),\n    signal: AbortSignal.timeout(10_000),\n  });\n\n  if (!response.ok) {\n    throw new Error(`Persistent rate limit RPC returned ${response.status}`);\n  }\n\n  const body: unknown = await response.json();\n  if (typeof body !== 'boolean') {\n    throw new Error('Persistent rate limit RPC returned an invalid response');\n  }\n\n  return body;\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "restBase",
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 9,
+      "endLine": 17,
+      "text": "function restBase(\n  env: { get(key: string): string | undefined } = Deno.env,\n): string {\n  const raw =\n    env.get('SUPABASE_URL') ||\n    env.get('API_EXTERNAL_URL') ||\n    'http://supabase-kong:8000';\n  return raw.replace(/\\/$/, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "anonKey",
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 19,
+      "endLine": 21,
+      "text": "function anonKey(env: { get(key: string): string | undefined } = Deno.env): string {\n  return env.get('SUPABASE_ANON_KEY') || env.get('ANON_KEY') || '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "assertSessionMemberAccess",
+      "path": "supabase/functions/_shared/session-membership-gate.ts",
+      "line": 26,
+      "endLine": 108,
+      "text": "export async function assertSessionMemberAccess(\n  req: Request,\n  sessionId: string,\n  env: { get(key: string): string | undefined } = Deno.env,\n): Promise<Response | null> {\n  if (!sessionId || typeof sessionId !== 'string') {\n    return new Response(JSON.stringify({ error: 'Missing or invalid sessionId' }), {\n      status: 400,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const auth = req.headers.get('Authorization');\n  if (!auth?.toLowerCase().startsWith('bearer ')) {\n    return new Response(JSON.stringify({ error: 'missing Authorization bearer token' }), {\n      status: 401,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const key = anonKey(env);\n  const base = restBase(env);\n  const headers = {\n    apikey: key,\n    Authorization: auth,\n    'Content-Type': 'application/json',\n  };\n\n  const sessionRes = await fetch(\n    `${base}/rest/v1/sessions?id=eq.${encodeURIComponent(sessionId)}&select=id,project_id`,\n    { headers },\n  );\n  if (!sessionRes.ok) {\n    return new Response(JSON.stringify({ error: 'session lookup failed' }), {\n      status: 403,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n  const sessions = (await sessionRes.json()) as Array<{ id: string; project_id: string }>;\n  if (!Array.isArray(sessions) || sessions.length === 0) {\n    return new Response(JSON.stringify({ error: 'session not found or access denied' }), {\n      status: 403,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const projectId = sessions[0].project_id;\n  const userRes = await fetch(`${base}/auth/v1/user`, { headers });\n  if (!userRes.ok) {\n    return new Response(JSON.stringify({ error: 'unauthorized' }), {\n      status: 401,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n  const userBody = (await userRes.json()) as { id?: string };\n  const userId = userBody?.id;\n  if (!userId) {\n    return new Response(JSON.stringify({ error: 'unauthorized' }), {\n      status: 401,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const memberRes = await fetch(\n    `${base}/rest/v1/project_members?project_id=eq.${encodeURIComponent(projectId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.active&select=user_id,role&limit=1`,\n    { headers },\n  );\n  if (!memberRes.ok) {\n    return new Response(JSON.stringify({ error: 'membership lookup failed' }), {\n      status: 403,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n  const members = (await memberRes.json()) as unknown[];\n  if (!Array.isArray(members) || members.length === 0) {\n    return new Response(JSON.stringify({ error: 'not a project member' }), {\n      status: 403,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  return null;\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 9,
+      "endLine": 13,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n  methods: 'GET, POST, OPTIONS',\n  allowHeaders: 'authorization, x-client-info, apikey, content-type, x-session-id, Content-Type, Authorization, X-Session-Id',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Character",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 25,
+      "endLine": 36,
+      "text": "interface Character {\n  id: string\n  name: string\n  race?: string\n  class?: string\n  level?: number\n  hp?: number\n  maxHp?: number\n  ac?: number\n  inventory?: string[]\n  conditions?: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NPC",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 38,
+      "endLine": 45,
+      "text": "interface NPC {\n  id: string\n  name: string\n  description?: string\n  disposition?: 'friendly' | 'neutral' | 'hostile'\n  memories?: string[]\n  relationships?: Record<string, string>\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "WorldState",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 47,
+      "endLine": 54,
+      "text": "interface WorldState {\n  location: string\n  time?: string\n  weather?: string\n  activeCombats?: string[]\n  activeQuests?: string[]\n  exploredLocations?: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionContext",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 56,
+      "endLine": 64,
+      "text": "interface SessionContext {\n  sessionId: string\n  characters: Character[]\n  npcs: NPC[]\n  worldState: WorldState\n  recentEvents: string[]\n  ruleset?: string\n  tone?: 'serious' | 'lighthearted' | 'dark' | 'heroic'\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "GMRequest",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 66,
+      "endLine": 73,
+      "text": "interface GMRequest {\n  sessionId: string\n  action: string\n  context?: Partial<SessionContext>\n  stream?: boolean\n  ruleset?: 'dnd5e' | 'pathfinder2e' | 'custom'\n  tone?: 'serious' | 'lighthearted' | 'dark' | 'heroic'\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "GMResponse",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 75,
+      "endLine": 81,
+      "text": "interface GMResponse {\n  narrative: string\n  worldStateUpdate?: Partial<WorldState>\n  npcUpdates?: Array<{ id: string; memories: string[] }>\n  combatInitiated?: boolean\n  diceRollsRequired?: Array<{ type: string; dc?: number; description: string }>\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_HOST",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 87,
+      "endLine": 87,
+      "text": "OLLAMA_HOST = Deno.env.get(\"OLLAMA_HOST\") || \"http://ollama:11434\""
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_MODEL",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 88,
+      "endLine": 88,
+      "text": "OLLAMA_MODEL = Deno.env.get(\"OLLAMA_MODEL\") || \"llama3.2\""
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "AI_GM_RATE_LIMIT_WINDOW_SECONDS",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 90,
+      "endLine": 90,
+      "text": "AI_GM_RATE_LIMIT_WINDOW_SECONDS = 60"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_AI_GM_RATE_LIMIT",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 91,
+      "endLine": 91,
+      "text": "DEFAULT_AI_GM_RATE_LIMIT = 12"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "AI_PROVIDER",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 93,
+      "endLine": 93,
+      "text": "AI_PROVIDER = (Deno.env.get(\"CHARACTER_AI_PROVIDER\") || \"ollama\").trim()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "AI_MODEL",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 94,
+      "endLine": 98,
+      "text": "AI_MODEL = (\n  Deno.env.get(\"CHARACTER_AI_MODEL\") ||\n  Deno.env.get(\"OLLAMA_MODEL\") ||\n  \"llama3.2\"\n).trim()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "AI_BASE_URL",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 99,
+      "endLine": 103,
+      "text": "AI_BASE_URL = (\n  Deno.env.get(\"CHARACTER_AI_BASE_URL\") ||\n  Deno.env.get(\"OLLAMA_HOST\") ||\n  \"http://ollama:11434\"\n).replace(/\\/+$/, \"\")"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "AI_API_KEY",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 104,
+      "endLine": 104,
+      "text": "AI_API_KEY = (Deno.env.get(\"CHARACTER_AI_API_KEY\") || \"\").trim()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "LOREKEEPER_URL",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 105,
+      "endLine": 105,
+      "text": "LOREKEEPER_URL = Deno.env.get(\"LOREKEEPER_URL\") || \"http://localhost:9998/functions/v1/lorekeeper\""
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "SESSIONS_URL",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 106,
+      "endLine": 106,
+      "text": "SESSIONS_URL = Deno.env.get(\"SESSIONS_URL\") || \"http://localhost:9998/functions/v1/sessions\""
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "SYSTEM_PROMPTS",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 109,
+      "endLine": 114,
+      "text": "SYSTEM_PROMPTS: Record<string, string> = {\n  serious: \"You are a serious, atmospheric Dungeon Master. Create tension and drama. Use rich, evocative language.\",\n  lighthearted: \"You are a fun, lighthearted Dungeon Master. Include humor and wonder. Keep things entertaining.\",\n  dark: \"You are a dark, gritty Dungeon Master. Emphasize danger, consequences, and moral complexity.\",\n  heroic: \"You are an epic, heroic Dungeon Master. Inspire courage and heroism. Create legendary moments.\",\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getAiGmRateLimit",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 120,
+      "endLine": 124,
+      "text": "function getAiGmRateLimit(): number {\n  const raw = Number.parseInt(Deno.env.get('AI_GM_RATE_LIMIT') || '', 10)\n  if (!Number.isInteger(raw)) return DEFAULT_AI_GM_RATE_LIMIT\n  return Math.min(60, Math.max(1, raw))\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getSupabaseServiceConfig",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 126,
+      "endLine": 136,
+      "text": "function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anonKey: string } | null {\n  const url = (\n    Deno.env.get('SUPABASE_URL') ||\n    Deno.env.get('API_EXTERNAL_URL') ||\n    ''\n  ).replace(/\\/+$/, '')\n  const serviceRoleKey = (Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '').trim()\n  const anonKey = (Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('ANON_KEY') || '').trim()\n  if (!url || !serviceRoleKey || !anonKey) return null\n  return { url, serviceRoleKey, anonKey }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "resolveCallerUserId",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 139,
+      "endLine": 154,
+      "text": "async function resolveCallerUserId(req: Request): Promise<string | null> {\n  const auth = req.headers.get('Authorization')\n  if (!auth?.toLowerCase().startsWith('bearer ')) return null\n  const config = getSupabaseServiceConfig()\n  if (!config) return null\n  const userRes = await fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      apikey: config.anonKey,\n      Authorization: auth,\n      'Content-Type': 'application/json',\n    },\n  })\n  if (!userRes.ok) return null\n  const body = (await userRes.json()) as { id?: string }\n  return typeof body.id === 'string' && body.id ? body.id : null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "enforceAiGmRateLimit",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 156,
+      "endLine": 208,
+      "text": "async function enforceAiGmRateLimit(req: Request, headers: HeadersInit): Promise<Response | null> {\n  const config = getSupabaseServiceConfig()\n  if (!config) {\n    console.error('AI GM persistent rate limit unavailable: missing service-role configuration')\n    return new Response(JSON.stringify({\n      error: 'AI Game Master ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }), {\n      status: 503,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })\n  }\n\n  const userId = await resolveCallerUserId(req)\n  if (!userId) {\n    return new Response(JSON.stringify({ error: 'Authentication required' }), {\n      status: 401,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })\n  }\n\n  try {\n    const allowed = await consumePersistentAiGmRateLimit(\n      {\n        url: config.url,\n        serviceRoleKey: config.serviceRoleKey,\n        limit: getAiGmRateLimit(),\n        windowSeconds: AI_GM_RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    )\n    if (!allowed) {\n      return new Response(JSON.stringify({\n        error: 'Zu viele AI-GM-Anfragen. Bitte warte kurz und versuche es erneut.',\n      }), {\n        status: 429,\n        headers: { ...headers, 'Content-Type': 'application/json' },\n      })\n    }\n  } catch (error) {\n    console.error(\n      'AI GM persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    )\n    return new Response(JSON.stringify({\n      error: 'AI Game Master ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }), {\n      status: 503,\n      headers: { ...headers, 'Content-Type': 'application/json' },\n    })\n  }\n\n  return null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "validateRequest",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 210,
+      "endLine": 230,
+      "text": "function validateRequest(body: unknown): { valid: boolean; error?: string } {\n  if (!body || typeof body !== 'object') {\n    return { valid: false, error: \"Invalid request body\" }\n  }\n  \n  const request = body as Record<string, unknown>\n  \n  if (!request.sessionId || typeof request.sessionId !== 'string') {\n    return { valid: false, error: \"Missing or invalid sessionId\" }\n  }\n  \n  if (!request.action || typeof request.action !== 'string') {\n    return { valid: false, error: \"Missing or invalid action\" }\n  }\n  \n  if (request.action.length > 5000) {\n    return { valid: false, error: \"Action too long (max 5000 characters)\" }\n  }\n  \n  return { valid: true }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildCharacterSection",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 232,
+      "endLine": 243,
+      "text": "function buildCharacterSection(characters: Character[]): string {\n  if (!characters || characters.length === 0) return \"No characters in party\"\n  \n  return characters.map(c => {\n    const parts = [`- ${c.name}`]\n    if (c.race || c.class) parts.push(`(${c.race || 'Unknown'} ${c.class || 'Adventurer'})`)\n    if (c.level) parts.push(`Level ${c.level}`)\n    if (c.hp && c.maxHp) parts.push(`HP: ${c.hp}/${c.maxHp}`)\n    if (c.conditions && c.conditions.length > 0) parts.push(`Conditions: ${c.conditions.join(', ')}`)\n    return parts.join(' ')\n  }).join('\\n')\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildNPCSection",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 245,
+      "endLine": 257,
+      "text": "function buildNPCSection(npcs: NPC[]): string {\n  if (!npcs || npcs.length === 0) return \"No NPCs present\"\n  \n  return npcs.map(n => {\n    const parts = [`- ${n.name}`]\n    if (n.description) parts.push(`: ${n.description}`)\n    if (n.disposition) parts.push(`[${n.disposition}]`)\n    if (n.memories && n.memories.length > 0) {\n      parts.push(`\\n  Recent memories: ${n.memories.slice(-3).join('; ')}`)\n    }\n    return parts.join('')\n  }).join('\\n')\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildWorldSection",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 259,
+      "endLine": 275,
+      "text": "function buildWorldSection(worldState: WorldState): string {\n  const parts = [`## Current Location: ${worldState.location}`]\n  \n  if (worldState.time) parts.push(`Time: ${worldState.time}`)\n  if (worldState.weather) parts.push(`Weather: ${worldState.weather}`)\n  if (worldState.activeCombats && worldState.activeCombats.length > 0) {\n    parts.push(`Active Combats: ${worldState.activeCombats.join(', ')}`)\n  }\n  if (worldState.activeQuests && worldState.activeQuests.length > 0) {\n    parts.push(`Active Quests: ${worldState.activeQuests.join(', ')}`)\n  }\n  if (worldState.exploredLocations && worldState.exploredLocations.length > 0) {\n    parts.push(`Explored: ${worldState.exploredLocations.join(', ')}`)\n  }\n  \n  return parts.join('\\n')\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildRecentEventsSection",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 277,
+      "endLine": 281,
+      "text": "function buildRecentEventsSection(events: string[]): string {\n  if (!events || events.length === 0) return \"No recent events\"\n  \n  return events.slice(-5).map((e, i) => `${i + 1}. ${e}`).join('\\n')\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildPrompt",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 283,
+      "endLine": 329,
+      "text": "function buildPrompt(request: GMRequest): string {\n  const context = request.context || {} as Partial<SessionContext>\n  const tone = request.tone || context.tone || 'serious'\n  const ruleset = request.ruleset || context.ruleset || 'dnd5e'\n  \n  const systemPrompt = SYSTEM_PROMPTS[tone] || SYSTEM_PROMPTS.serious\n  \n  const characterSection = buildCharacterSection(context.characters || [])\n  const npcSection = buildNPCSection(context.npcs || [])\n  const worldSection = buildWorldSection(context.worldState || { location: 'Unknown' })\n  const eventsSection = buildRecentEventsSection(context.recentEvents || [])\n  \n  return `${systemPrompt}\n\n## Ruleset: ${ruleset.toUpperCase()}\n\n## Session\nID: ${request.sessionId}\n\n${worldSection}\n\n## Party Members\n${characterSection}\n\n## NPCs Present\n${npcSection}\n\n## Recent Events\n${eventsSection}\n\n## Guidelines\n- Stay in character as the Dungeon Master\n- Describe scenes vividly but concisely\n- React to player actions realistically\n- Call for dice rolls when appropriate (perception, attack, skill checks)\n- Maintain narrative consistency with established facts\n- Create opportunities for player agency\n- End responses with clear prompts for next actions\n- If combat begins, describe it cinematically\n- Track and reference NPC memories and relationships\n\n## Player Action\n${request.action}\n\n## Dungeon Master Response\n`\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getNPCContext",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 335,
+      "endLine": 349,
+      "text": "async function getNPCContext(npcId: string): Promise<NPC | null> {\n  try {\n    const response = await fetch(`${LOREKEEPER_URL}/npc/${npcId}`, {\n      method: 'GET',\n      headers: { 'Content-Type': 'application/json' },\n    })\n    \n    if (!response.ok) return null\n    \n    const data = await response.json()\n    return data as NPC\n  } catch {\n    return null\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateNPCMemory",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 351,
+      "endLine": 361,
+      "text": "async function updateNPCMemory(npcId: string, memory: string): Promise<void> {\n  try {\n    await fetch(`${LOREKEEPER_URL}/npc/${npcId}/memory`, {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ content: memory, type: 'event' }),\n    })\n  } catch {\n    // Silently fail - not critical\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateSessionWorldState",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 367,
+      "endLine": 377,
+      "text": "async function updateSessionWorldState(sessionId: string, worldState: Partial<WorldState>): Promise<void> {\n  try {\n    await fetch(`${SESSIONS_URL}/${sessionId}/world-state`, {\n      method: 'PUT',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ worldState }),\n    })\n  } catch {\n    // Silently fail - not critical\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateOpenAiCompatibleNarrative",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 383,
+      "endLine": 461,
+      "text": "async function* generateOpenAiCompatibleNarrative(\n  prompt: string,\n  stream: boolean,\n): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {\n  if (!AI_BASE_URL || !AI_API_KEY) {\n    throw new Error(\n      \"openai-compatible requires CHARACTER_AI_BASE_URL and CHARACTER_AI_API_KEY\",\n    )\n  }\n\n  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {\n    method: \"POST\",\n    headers: {\n      \"Content-Type\": \"application/json\",\n      Authorization: `Bearer ${AI_API_KEY}`,\n    },\n    body: JSON.stringify({\n      model: AI_MODEL,\n      stream,\n      temperature: 0.85,\n      messages: [\n        {\n          role: \"system\",\n          content:\n            \"You are the SagaTree AI Game Master. Follow the user prompt faithfully.\",\n        },\n        { role: \"user\", content: prompt },\n      ],\n    }),\n  })\n\n  if (!response.ok) {\n    throw new Error(`OpenAI-compatible provider error: ${response.status} ${response.statusText}`)\n  }\n\n  if (!stream) {\n    const data = await response.json() as {\n      choices?: Array<{ message?: { content?: string } }>\n    }\n    const content = data.choices?.[0]?.message?.content?.trim()\n    if (!content) throw new Error(\"OpenAI-compatible provider returned empty content\")\n    yield { type: \"narrative\", content }\n    yield { type: \"complete\", done: true }\n    return\n  }\n\n  const reader = response.body?.getReader()\n  if (!reader) throw new Error(\"No response stream\")\n  const decoder = new TextDecoder()\n  let buffer = \"\"\n\n  try {\n    while (true) {\n      const { done, value } = await reader.read()\n      if (done) break\n      buffer += decoder.decode(value, { stream: true })\n      const lines = buffer.split(\"\\n\")\n      buffer = lines.pop() ?? \"\"\n      for (const raw of lines) {\n        const line = raw.trim()\n        if (!line.startsWith(\"data:\")) continue\n        const payload = line.slice(5).trim()\n        if (!payload || payload === \"[DONE]\") continue\n        try {\n          const chunk = JSON.parse(payload) as {\n            choices?: Array<{ delta?: { content?: string } }>\n          }\n          const content = chunk.choices?.[0]?.delta?.content\n          if (content) yield { type: \"narrative\", content }\n        } catch {\n          // ignore partial JSON frames\n        }\n      }\n    }\n    yield { type: \"complete\", done: true }\n  } finally {\n    reader.releaseLock()\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateNarrative",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 463,
+      "endLine": 524,
+      "text": "async function* generateNarrative(\n  prompt: string,\n  stream: boolean = true\n): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {\n  if (AI_PROVIDER === \"openai-compatible\") {\n    yield* generateOpenAiCompatibleNarrative(prompt, stream)\n    return\n  }\n\n  const ollamaHost = AI_BASE_URL || OLLAMA_HOST\n  const response = await fetch(`${ollamaHost}/api/generate`, {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({\n      model: AI_MODEL || OLLAMA_MODEL,\n      prompt,\n      stream,\n    }),\n  })\n  \n  if (!response.ok) {\n    throw new Error(`Ollama error: ${response.statusText}`)\n  }\n  \n  if (!stream) {\n    const data = await response.json()\n    yield { type: 'narrative', content: data.response }\n    yield { type: 'complete', done: true }\n    return\n  }\n  \n  const reader = response.body?.getReader()\n  if (!reader) throw new Error(\"No response stream\")\n  \n  const decoder = new TextDecoder()\n  \n  try {\n    while (true) {\n      const { done, value } = await reader.read()\n      if (done) break\n      \n      const text = decoder.decode(value)\n      const lines = text.split('\\n').filter(Boolean)\n      \n      for (const line of lines) {\n        try {\n          const json = JSON.parse(line)\n          if (json.response) {\n            yield { type: 'narrative', content: json.response }\n          }\n          if (json.done) {\n            yield { type: 'complete', done: true }\n          }\n        } catch {\n          // Skip invalid JSON\n        }\n      }\n    }\n  } finally {\n    reader.releaseLock()\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "extractWorldStateUpdates",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 530,
+      "endLine": 546,
+      "text": "function extractWorldStateUpdates(narrative: string): Partial<WorldState> | null {\n  // Simple extraction - look for location changes, time mentions, etc.\n  const locationMatch = narrative.match(/(?:enters?|arrives? at|moves? to|in)\\s+(?:the\\s+)?([A-Z][a-zA-Z\\s']+)/i)\n  const timeMatch = narrative.match(/(?:time is now|it's now|hours? pass|morning|evening|night|dawn|dusk)/i)\n  \n  const updates: Partial<WorldState> = {}\n  \n  if (locationMatch) {\n    updates.location = locationMatch[1].trim()\n  }\n  \n  if (timeMatch) {\n    updates.time = timeMatch[0]\n  }\n  \n  return Object.keys(updates).length > 0 ? updates : null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "extractDiceRollRequests",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 548,
+      "endLine": 581,
+      "text": "function extractDiceRollRequests(narrative: string): Array<{ type: string; dc?: number; description: string }> {\n  const rolls: Array<{ type: string; dc?: number; description: string }> = []\n  \n  // Look for skill checks\n  const skillMatch = narrative.match(/(?:roll|make)\\s+(?:a\\s+)?(\\w+)\\s+check(?:\\s+DC\\s+(\\d+))?/i)\n  if (skillMatch) {\n    rolls.push({\n      type: skillMatch[1].toLowerCase(),\n      dc: skillMatch[2] ? parseInt(skillMatch[2]) : undefined,\n      description: `Roll ${skillMatch[1]} check`,\n    })\n  }\n  \n  // Look for attack rolls\n  const attackMatch = narrative.match(/(?:roll|make)\\s+(?:an?\\s+)?attack\\s+roll/i)\n  if (attackMatch) {\n    rolls.push({\n      type: 'attack',\n      description: 'Roll attack',\n    })\n  }\n  \n  // Look for saving throws\n  const saveMatch = narrative.match(/(?:make|roll)\\s+(?:a\\s+)?(\\w+)\\s+saving\\s+throw(?:\\s+DC\\s+(\\d+))?/i)\n  if (saveMatch) {\n    rolls.push({\n      type: `${saveMatch[1].toLowerCase()}Save`,\n      dc: saveMatch[2] ? parseInt(saveMatch[2]) : undefined,\n      description: `Roll ${saveMatch[1]} saving throw`,\n    })\n  }\n  \n  return rolls\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "extractCombatInitiated",
+      "path": "supabase/functions/ai-gm/index.ts",
+      "line": 583,
+      "endLine": 594,
+      "text": "function extractCombatInitiated(narrative: string): boolean {\n  const combatIndicators = [\n    /rolls? for initiative/i,\n    /combat begins/i,\n    /enemies? appear/i,\n    /draws? (?:their|his|her) weapon/i,\n    /attacks?!/i,\n    /initiative/i,\n  ]\n  \n  return combatIndicators.some(pattern => pattern.test(narrative))\n}"
+    }
+  ]
+}

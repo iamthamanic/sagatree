@@ -1,41 +1,31 @@
-# Phase 3 — Stable Baseline
+# Source baseline and observed behavior
 
-| Field | Value |
+| Item | Evidence |
 | --- | --- |
-| Baseline commit | `4bc40a3142811f23f528b17698abc6d674d2ee75` |
-| Subject | `feat(atlas): hard E2E gate closing epic #746 (#755) (#769)` |
-| Branch | `origin/main` |
-| `npm run test-gate` | PASS (2026-10-20, local on prep branch = main tip) |
-| Known acceptance gap | Atlas live E2E optional → #770 |
-| Production migration | NOT approved |
+| Source baseline | `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248` |
+| Original PR #860 head | `839a8c256f53fc7f3be3375efd127ae07524458f` |
+| Effective SQL source chain | 106 migrations, applied unchanged in isolation |
+| PostgreSQL | 15.18; official pinned Supabase/GoTrue/Storage bootstrap |
+| Catalog | 177 functions, 144 policies, 59 relations, 541 columns, 287 constraints |
+| RPC source parity | 177/177 observed function definitions match source extraction |
+| Product backend | Actual GoTrue password grants and PostgREST v12.0.1 |
+| SQL secure behavior suite | 25 tests: 16 passed, 9 failed |
+| Atlas product browser | 3 tests: 1 passed, 2 failed; no skipped or flaky tests |
+| Actual RLS canary | Clean policy passes; deliberately widened policy fails the expected case |
+| Product deployment state | Not inspected or certified by the isolated source baseline |
 
-## Golden fixture scenarios (required for later Alt/Neu)
+## Evidence location
 
-These must be representable as synthetic or controlled-clone fixtures (no prod writes):
+The complete reports, source fingerprints, sanitized browser observations and artifact manifest are under `parity-fixtures/execution-2026-10-21/`. Its README maps successful and failed scenarios precisely. The RPC inventory separately records source semantics, effective isolated ACLs and explicit source/implementation blockers.
 
-1. Dornhain/Donalu world hierarchy with real place/map links  
-2. GM + ≥2 players  
-3. Characters with inventory + abilities  
-4. Secret NPCs and maps (`gm_only` / unrevealed)  
-5. Session join, dice, combat  
-6. Concurrent commands (revision / idempotency)  
-7. Savegame + reload  
-8. Cross-owner and unauthorized access negatives  
+The initial historical baseline `4bc40a31` and its old test result do not prove execution of these new tests. Repository HEAD identifies the checkout; per-file hashes identify the actually executed working-tree harness. No new PASS is attributed to an unexecuted immutable commit.
 
-## Contracts to keep green across migration
+## Reproduced blockers
 
-- `npm run test-gate` (architecture, CORS, avatar pins, domain validators, secrets)  
-- Browser E2E suite  
-- Negative authz suite (`docs/ops/negative-authz-suite.md`)  
-- Session runtime revision design (`.qa/design/player-test-realtime-runtime-state.md`)  
-- Atlas worldbuilder contract  
-- CE / IV / AU experience contracts where UI changes  
+Two helper functions are callable as anon in the isolated Supabase default-ACL fixture and can mutate foreign data: `append_session_event` and `sagatree_resolve_adventure_command`. Both also permit foreign authenticated callers. Further failing security probes cover foreign leave, client-controlled legacy-pin redaction, and cross-saga Atlas reveals.
 
-## Known problems (explicit)
+The two functional SQL failures are a roll resolver still reading `v_character.user_id` after the ownership-column rename, and ambiguous resolution of `save_session_recap_summary(uuid,text)`.
 
-| ID | Problem | Severity |
-| --- | --- | --- |
-| K-01 | Atlas live product E2E not mandatory in CI | High (acceptance) |
-| K-02 | Dependabot Three/MediaPipe blocked by intentional pins | Info (protective) |
-| K-03 | React 19 / leaflet 5 / types-dom blocked by peer matrix | Medium (upgrade debt) |
-| K-04 | No prior `.qa/intake/local-first-stack-migration-*` in repo (reconstructed this prep) | Info |
+The actual browser reveals two Atlas blockers: missing saga context in the player workbench request and an overlay intercepting the normal tools-button click. An owner rename already persists across reload, and real reveal APIs work for both players; these partial successes do not close Atlas #770.
+
+All failures require explicit correction and regression evidence before safe parity or cutover can be claimed. No test is weakened to accept insecure legacy behavior.

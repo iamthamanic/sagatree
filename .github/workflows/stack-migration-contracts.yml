@@ -1,0 +1,35 @@
+name: Stack migration source contracts
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stack-migration-contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contracts:
+    name: RPC source regeneration and migration contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .qa/intake/rpc-contracts/parser-requirements.txt
+      - run: npm ci
+      - run: python -m pip install -r .qa/intake/rpc-contracts/parser-requirements.txt
+      - name: Recompute RPC sources and validate issue graph, Edge contracts and negative tests
+        run: npm run check:stack-migration-prep
+      - name: Repeat real SQLite atomicity and crash proof
+        run: node scripts/stack-migration-pocs/gate-04/check.mjs --check

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-21T09:25:05.553Z",
+  "mode": "existing pure composition classifier and secret rules applied to local index; not a committed-HEAD CLI run",
+  "baseCommit": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
+  "indexTreeAtCheck": "969451b8bbaeb27f399f3b9d457ce631e76e0404",
+  "changedFileCount": 471,
+  "composition": {
+    "result": "SKIPPED",
+    "requiresProof": false,
+    "reason": "tooling/docs/QA-only diff; no business event hop chain",
+    "zones": [
+      "tooling"
+    ],
+    "scriptSha256": "d6230338d77457ea96605ac3f2111ed9233ca3bef18f53083b67f5ce61ee5b8a"
+  },
+  "secretScan": {
+    "result": "PASS",
+    "addedLineCount": 431507,
+    "findings": [],
+    "scriptSha256": "fcbacbe7655d79441c76a5fb649423ac6c5ae72ecdb52f3c239a288ae236da0a"
+  }
+}

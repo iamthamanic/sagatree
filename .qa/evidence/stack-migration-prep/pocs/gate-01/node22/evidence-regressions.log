@@ -1,0 +1,92 @@
+
+> @sagatree/gate-01-poc@0.0.0 test:evidence
+> node --test verify.test.mjs
+
+TAP version 13
+# Subtest: recorded successful execution has complete source coverage and derived summaries
+ok 1 - recorded successful execution has complete source coverage and derived summaries
+  ---
+  duration_ms: 24.762287
+  type: 'test'
+  ...
+# Subtest: inflated PASS count is rejected even if report rendering is updated
+ok 2 - inflated PASS count is rejected even if report rendering is updated
+  ---
+  duration_ms: 3.820989
+  type: 'test'
+  ...
+# Subtest: changed report latency is rejected
+ok 3 - changed report latency is rejected
+  ---
+  duration_ms: 1.050583
+  type: 'test'
+  ...
+# Subtest: coordinated false latency summary still disagrees with measured samples
+ok 4 - coordinated false latency summary still disagrees with measured samples
+  ---
+  duration_ms: 0.844588
+  type: 'test'
+  ...
+# Subtest: duplicated PASS does not replace the required cross-saga case
+ok 5 - duplicated PASS does not replace the required cross-saga case
+  ---
+  duration_ms: 1.143551
+  type: 'test'
+  ...
+# Subtest: missing required component fails: directZenstackEngine
+ok 6 - missing required component fails: directZenstackEngine
+  ---
+  duration_ms: 0.720986
+  type: 'test'
+  ...
+# Subtest: missing required component fails: drizzleRawCapability
+ok 7 - missing required component fails: drizzleRawCapability
+  ---
+  duration_ms: 0.993188
+  type: 'test'
+  ...
+# Subtest: missing required component fails: applicationImportBoundary
+ok 8 - missing required component fails: applicationImportBoundary
+  ---
+  duration_ms: 0.724862
+  type: 'test'
+  ...
+# Subtest: missing direct engine denial is rejected
+ok 9 - missing direct engine denial is rejected
+  ---
+  duration_ms: 1.206423
+  type: 'test'
+  ...
+# Subtest: missing import-boundary probe is rejected
+ok 10 - missing import-boundary probe is rejected
+  ---
+  duration_ms: 1.097452
+  type: 'test'
+  ...
+# Subtest: cold process sample cannot be replaced by a summary alone
+ok 11 - cold process sample cannot be replaced by a summary alone
+  ---
+  duration_ms: 0.811871
+  type: 'test'
+  ...
+# Subtest: omitting the policy source entry cannot suppress its drift check
+ok 12 - omitting the policy source entry cannot suppress its drift check
+  ---
+  duration_ms: 1.642909
+  type: 'test'
+  ...
+# Subtest: omitting the observation hash cannot suppress evidence drift
+ok 13 - omitting the observation hash cannot suppress evidence drift
+  ---
+  duration_ms: 1.230499
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 107.498218

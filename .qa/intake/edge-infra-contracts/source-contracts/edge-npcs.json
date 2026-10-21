@@ -1,0 +1,2036 @@
+{
+  "schemaVersion": 1,
+  "function": "npcs",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "sha256": "b6977fface56851f37ad76d698f6a8167d62a42e1286181bd6e359ad06e8a70c"
+    }
+  ],
+  "operations": [
+    {
+      "id": "npcs:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 438,
+      "endLine": 446,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 439,
+          "endLine": 445,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 439,
+          "endLine": 443,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 441,
+          "endLine": 441,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:2",
+      "condition": "req.method === \"POST\" && path === \"/npcs\"",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 449,
+      "endLine": 456,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 453,
+          "endLine": 455,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 450,
+          "endLine": 450,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 451,
+          "endLine": 451,
+          "expression": "createNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 453,
+          "endLine": 453,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const npc = await createNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:3",
+      "condition": "req.method === \"GET\" && path === \"/npcs\"",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 459,
+      "endLine": 470,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 467,
+          "endLine": 469,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 461,
+          "endLine": 461,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 462,
+          "endLine": 462,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'location'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 463,
+          "endLine": 463,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'disposition'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 465,
+          "endLine": 465,
+          "expression": "listNPCs",
+          "arguments": [
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 467,
+          "endLine": 467,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        location: url.searchParams.get('location') || undefined,\n        disposition: url.searchParams.get('disposition') || undefined,\n      }\n      const list = await listNPCs(filter)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:4",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 473,
+      "endLine": 487,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 478,
+          "endLine": 481,
+          "expression": "new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 484,
+          "endLine": 486,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 474,
+          "endLine": 474,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 475,
+          "endLine": 475,
+          "expression": "getNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 478,
+          "endLine": 478,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"NPC not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 484,
+          "endLine": 484,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const npc = await getNPC(id)\n      \n      if (!npc) {\n        return new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:5",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/npcs\\/[\\w-]+$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 490,
+      "endLine": 498,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 495,
+          "endLine": 497,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 491,
+          "endLine": 491,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 492,
+          "endLine": 492,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 493,
+          "endLine": 493,
+          "expression": "updateNPC",
+          "arguments": [
+            "id",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 495,
+          "endLine": 495,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await updateNPC(id, body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:6",
+      "condition": "req.method === \"DELETE\" && path.match(/^\\/npcs\\/[\\w-]+$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 501,
+      "endLine": 508,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 505,
+          "endLine": 507,
+          "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 502,
+          "endLine": 502,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "deleteNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 505,
+          "endLine": 505,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      await deleteNPC(id)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:7",
+      "condition": "req.method === \"POST\" && path === \"/npcs/generate\"",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 511,
+      "endLine": 518,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 515,
+          "endLine": 517,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 512,
+          "endLine": 512,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "generateNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 515,
+          "endLine": 515,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const npc = await generateNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:8",
+      "condition": "req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/memory$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 521,
+      "endLine": 529,
+      "requestReads": [
+        "body.memory"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 526,
+          "endLine": 528,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 522,
+          "endLine": 522,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "addMemory",
+          "arguments": [
+            "id",
+            "body.memory"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await addMemory(id, body.memory)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:9",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/memories$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 532,
+      "endLine": 540,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 537,
+          "endLine": 539,
+          "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 533,
+          "endLine": 533,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('limit') || '10'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'limit'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "getMemories",
+          "arguments": [
+            "id",
+            "limit"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memories"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(id, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:10",
+      "condition": "req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationship$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 543,
+      "endLine": 551,
+      "requestReads": [
+        "body.relationship",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 548,
+          "endLine": 550,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 544,
+          "endLine": 544,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 545,
+          "endLine": 545,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 546,
+          "endLine": 546,
+          "expression": "setRelationship",
+          "arguments": [
+            "id",
+            "body.targetId",
+            "body.relationship"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 548,
+          "endLine": 548,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await setRelationship(id, body.targetId, body.relationship)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:11",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationships$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 554,
+      "endLine": 561,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 558,
+          "endLine": 560,
+          "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 555,
+          "endLine": 555,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 556,
+          "endLine": 556,
+          "expression": "getRelationships",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 558,
+          "endLine": 558,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "relationships"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const relationships = await getRelationships(id)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:12",
+      "condition": "req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogue$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 564,
+      "endLine": 572,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 569,
+          "endLine": 571,
+          "expression": "new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 565,
+          "endLine": 565,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 566,
+          "endLine": 566,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 567,
+          "endLine": 567,
+          "expression": "addDialogue",
+          "arguments": [
+            "id",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 569,
+          "endLine": 569,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "dialogue"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const dialogue = await addDialogue(id, body)\n      \n      return new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:13",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogues$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 575,
+      "endLine": 582,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 579,
+          "endLine": 581,
+          "expression": "new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 576,
+          "endLine": 576,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 577,
+          "endLine": 577,
+          "expression": "getDialogues",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 579,
+          "endLine": 579,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "dialogues"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const dialogues = await getDialogues(id)\n      \n      return new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:14",
+      "condition": "req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/export$/)",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 585,
+      "endLine": 592,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 589,
+          "endLine": 591,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 586,
+          "endLine": 586,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 587,
+          "endLine": 587,
+          "expression": "exportNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 589,
+          "endLine": 589,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const npc = await exportNPC(id)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "npcs:15",
+      "condition": "req.method === \"POST\" && path === \"/npcs/import\"",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 595,
+      "endLine": 602,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 599,
+          "endLine": 601,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 596,
+          "endLine": 596,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 597,
+          "endLine": 597,
+          "expression": "importNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 599,
+          "endLine": 599,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const npc = await importNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 439,
+      "endLine": 445,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 453,
+      "endLine": 455,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 467,
+      "endLine": 469,
+      "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 478,
+      "endLine": 481,
+      "expression": "new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 484,
+      "endLine": 486,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 495,
+      "endLine": 497,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 505,
+      "endLine": 507,
+      "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 515,
+      "endLine": 517,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 526,
+      "endLine": 528,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 537,
+      "endLine": 539,
+      "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 548,
+      "endLine": 550,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 558,
+      "endLine": 560,
+      "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 569,
+      "endLine": 571,
+      "expression": "new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 579,
+      "endLine": 581,
+      "expression": "new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 589,
+      "endLine": 591,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 599,
+      "endLine": 601,
+      "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 605,
+      "endLine": 608,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 611,
+      "endLine": 617,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 213,
+      "endLine": 213,
+      "expression": "npcs.set(id, npc)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 232,
+      "endLine": 232,
+      "expression": "npcs.set(id, updated)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 237,
+      "endLine": 237,
+      "expression": "npcs.delete(id)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 238,
+      "endLine": 238,
+      "expression": "dialogues.delete(id)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 316,
+      "endLine": 316,
+      "expression": "npcs.set(npcId, npc)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 339,
+      "endLine": 339,
+      "expression": "npcs.set(npcId, npc)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 364,
+      "endLine": 364,
+      "expression": "dialogues.set(npcId, npcDialogues)"
+    },
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 419,
+      "endLine": 419,
+      "expression": "npcs.set(id, npc)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 427,
+      "endLine": 619,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/npcs\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs - Create NPC\n    if (req.method === \"POST\" && path === \"/npcs\") {\n      const body = await req.json()\n      const npc = await createNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs - List NPCs\n    if (req.method === \"GET\" && path === \"/npcs\") {\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        location: url.searchParams.get('location') || undefined,\n        disposition: url.searchParams.get('disposition') || undefined,\n      }\n      const list = await listNPCs(filter)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id - Get NPC\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const npc = await getNPC(id)\n      \n      if (!npc) {\n        return new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /npcs/:id - Update NPC\n    if (req.method === \"PUT\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await updateNPC(id, body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /npcs/:id - Delete NPC\n    if (req.method === \"DELETE\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      await deleteNPC(id)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/generate - Generate NPC\n    if (req.method === \"POST\" && path === \"/npcs/generate\") {\n      const body = await req.json()\n      const npc = await generateNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/memory - Add memory\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/memory$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await addMemory(id, body.memory)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/memories - Get memories\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/memories$/)) {\n      const id = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(id, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/relationship - Set relationship\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationship$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await setRelationship(id, body.targetId, body.relationship)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/relationships - Get relationships\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationships$/)) {\n      const id = path.split(\"/\")[2]\n      const relationships = await getRelationships(id)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/dialogue - Add dialogue\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogue$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const dialogue = await addDialogue(id, body)\n      \n      return new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/dialogues - Get dialogues\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogues$/)) {\n      const id = path.split(\"/\")[2]\n      const dialogues = await getDialogues(id)\n      \n      return new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/export - Export NPC\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/export$/)) {\n      const id = path.split(\"/\")[2]\n      const npc = await exportNPC(id)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/import - Import NPC\n    if (req.method === \"POST\" && path === \"/npcs/import\") {\n      const body = await req.json()\n      const npc = await importNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [
+        "body.memory",
+        "body.relationship",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 431,
+          "endLine": 431,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 439,
+          "endLine": 445,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 453,
+          "endLine": 455,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 467,
+          "endLine": 469,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 478,
+          "endLine": 481,
+          "expression": "new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 484,
+          "endLine": 486,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 495,
+          "endLine": 497,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 505,
+          "endLine": 507,
+          "expression": "new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 515,
+          "endLine": 517,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 526,
+          "endLine": 528,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 537,
+          "endLine": 539,
+          "expression": "new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 548,
+          "endLine": 550,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 558,
+          "endLine": 560,
+          "expression": "new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 569,
+          "endLine": 571,
+          "expression": "new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 579,
+          "endLine": 581,
+          "expression": "new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 589,
+          "endLine": 591,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 599,
+          "endLine": 601,
+          "expression": "new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 605,
+          "endLine": 608,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 611,
+          "endLine": 617,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 427,
+          "endLine": 619,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/npcs\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs - Create NPC\n    if (req.method === \"POST\" && path === \"/npcs\") {\n      const body = await req.json()\n      const npc = await createNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs - List NPCs\n    if (req.method === \"GET\" && path === \"/npcs\") {\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        location: url.searchParams.get('location') || undefined,\n        disposition: url.searchParams.get('disposition') || undefined,\n      }\n      const list = await listNPCs(filter)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id - Get NPC\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const npc = await getNPC(id)\n      \n      if (!npc) {\n        return new Response(JSON.stringify({ error: \"NPC not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // PUT /npcs/:id - Update NPC\n    if (req.method === \"PUT\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await updateNPC(id, body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /npcs/:id - Delete NPC\n    if (req.method === \"DELETE\" && path.match(/^\\/npcs\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      await deleteNPC(id)\n      \n      return new Response(JSON.stringify({ success: true }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/generate - Generate NPC\n    if (req.method === \"POST\" && path === \"/npcs/generate\") {\n      const body = await req.json()\n      const npc = await generateNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/memory - Add memory\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/memory$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await addMemory(id, body.memory)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/memories - Get memories\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/memories$/)) {\n      const id = path.split(\"/\")[2]\n      const limit = parseInt(url.searchParams.get('limit') || '10')\n      const memories = await getMemories(id, limit)\n      \n      return new Response(JSON.stringify(memories), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/relationship - Set relationship\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationship$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const npc = await setRelationship(id, body.targetId, body.relationship)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/relationships - Get relationships\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/relationships$/)) {\n      const id = path.split(\"/\")[2]\n      const relationships = await getRelationships(id)\n      \n      return new Response(JSON.stringify(relationships), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/:id/dialogue - Add dialogue\n    if (req.method === \"POST\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogue$/)) {\n      const id = path.split(\"/\")[2]\n      const body = await req.json()\n      const dialogue = await addDialogue(id, body)\n      \n      return new Response(JSON.stringify(dialogue), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/dialogues - Get dialogues\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/dialogues$/)) {\n      const id = path.split(\"/\")[2]\n      const dialogues = await getDialogues(id)\n      \n      return new Response(JSON.stringify(dialogues), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /npcs/:id/export - Export NPC\n    if (req.method === \"GET\" && path.match(/^\\/npcs\\/[\\w-]+\\/export$/)) {\n      const id = path.split(\"/\")[2]\n      const npc = await exportNPC(id)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /npcs/import - Import NPC\n    if (req.method === \"POST\" && path === \"/npcs/import\") {\n      const body = await req.json()\n      const npc = await importNPC(body)\n      \n      return new Response(JSON.stringify(npc), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 428,
+          "endLine": 428,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 430,
+          "endLine": 430,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 434,
+          "endLine": 434,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/npcs\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 439,
+          "endLine": 443,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['npcs', 'generation', 'memories', 'relationships', 'dialogues', 'import-export'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 441,
+          "endLine": 441,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 450,
+          "endLine": 450,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 451,
+          "endLine": 451,
+          "expression": "createNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 453,
+          "endLine": 453,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 461,
+          "endLine": 461,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 462,
+          "endLine": 462,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'location'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 463,
+          "endLine": 463,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'disposition'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 465,
+          "endLine": 465,
+          "expression": "listNPCs",
+          "arguments": [
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 467,
+          "endLine": 467,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 473,
+          "endLine": 473,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 474,
+          "endLine": 474,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 475,
+          "endLine": 475,
+          "expression": "getNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 478,
+          "endLine": 478,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"NPC not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 484,
+          "endLine": 484,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 490,
+          "endLine": 490,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 491,
+          "endLine": 491,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 492,
+          "endLine": 492,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 493,
+          "endLine": 493,
+          "expression": "updateNPC",
+          "arguments": [
+            "id",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 495,
+          "endLine": 495,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 501,
+          "endLine": 501,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 502,
+          "endLine": 502,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 503,
+          "endLine": 503,
+          "expression": "deleteNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 505,
+          "endLine": 505,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 512,
+          "endLine": 512,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 513,
+          "endLine": 513,
+          "expression": "generateNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 515,
+          "endLine": 515,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 521,
+          "endLine": 521,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/memory$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 522,
+          "endLine": 522,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 523,
+          "endLine": 523,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 524,
+          "endLine": 524,
+          "expression": "addMemory",
+          "arguments": [
+            "id",
+            "body.memory"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 526,
+          "endLine": 526,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 532,
+          "endLine": 532,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/memories$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 533,
+          "endLine": 533,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('limit') || '10'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 534,
+          "endLine": 534,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'limit'"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 535,
+          "endLine": 535,
+          "expression": "getMemories",
+          "arguments": [
+            "id",
+            "limit"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 537,
+          "endLine": 537,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "memories"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 543,
+          "endLine": 543,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/relationship$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 544,
+          "endLine": 544,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 545,
+          "endLine": 545,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 546,
+          "endLine": 546,
+          "expression": "setRelationship",
+          "arguments": [
+            "id",
+            "body.targetId",
+            "body.relationship"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 548,
+          "endLine": 548,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 554,
+          "endLine": 554,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/relationships$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 555,
+          "endLine": 555,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 556,
+          "endLine": 556,
+          "expression": "getRelationships",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 558,
+          "endLine": 558,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "relationships"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 564,
+          "endLine": 564,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/dialogue$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 565,
+          "endLine": 565,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 566,
+          "endLine": 566,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 567,
+          "endLine": 567,
+          "expression": "addDialogue",
+          "arguments": [
+            "id",
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 569,
+          "endLine": 569,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "dialogue"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 575,
+          "endLine": 575,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/dialogues$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 576,
+          "endLine": 576,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 577,
+          "endLine": 577,
+          "expression": "getDialogues",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 579,
+          "endLine": 579,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "dialogues"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 585,
+          "endLine": 585,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/npcs\\/[\\w-]+\\/export$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 586,
+          "endLine": 586,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 587,
+          "endLine": 587,
+          "expression": "exportNPC",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 589,
+          "endLine": 589,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 596,
+          "endLine": 596,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 597,
+          "endLine": 597,
+          "expression": "importNPC",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 599,
+          "endLine": 599,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "npc"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 605,
+          "endLine": 605,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 611,
+          "endLine": 614,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/npcs/index.ts",
+          "line": 613,
+          "endLine": 613,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 21,
+      "endLine": 46,
+      "text": "interface NPC {\n  id: string\n  name: string\n  type: 'npc' | 'monster' | 'creature'\n  race?: string\n  class?: string\n  level?: number\n  hp: number\n  maxHp: number\n  ac: number\n  speed?: number\n  description?: string\n  disposition: 'friendly' | 'neutral' | 'hostile' | 'unknown'\n  location?: string\n  memories: string[]\n  relationships: Record<string, string>\n  stats?: NPCStats\n  abilities?: string[]\n  actions?: string[]\n  inventory: string[]\n  portrait?: string\n  notes?: string\n  tags: string[]\n  createdAt: string\n  updatedAt: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NPCStats",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 48,
+      "endLine": 55,
+      "text": "interface NPCStats {\n  strength: number\n  dexterity: number\n  constitution: number\n  intelligence: number\n  wisdom: number\n  charisma: number\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "DialogueLine",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 57,
+      "endLine": 65,
+      "text": "interface DialogueLine {\n  id: string\n  npcId: string\n  trigger: string\n  text: string\n  conditions?: string[]\n  responses?: DialogueResponse[]\n  tags: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "DialogueResponse",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 67,
+      "endLine": 71,
+      "text": "interface DialogueResponse {\n  text: string\n  nextDialogueId?: string\n  effect?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "NPCGenerator",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 73,
+      "endLine": 81,
+      "text": "interface NPCGenerator {\n  name: string\n  race: string\n  class: string\n  level: number\n  disposition: 'friendly' | 'neutral' | 'hostile'\n  location: string\n  description: string\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "npcs",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 87,
+      "endLine": 87,
+      "text": "npcs = new Map<string, NPC>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "dialogues",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 88,
+      "endLine": 88,
+      "text": "dialogues = new Map<string, DialogueLine[]>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "NAMES",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 94,
+      "endLine": 101,
+      "text": "NAMES = {\n  human: { male: ['Aldric', 'Brom', 'Cedric', 'Darvin', 'Eldon', 'Finn', 'Garrick', 'Harold'], female: ['Alara', 'Brea', 'Cora', 'Dara', 'Elara', 'Fia', 'Gwen', 'Hanna'] },\n  elf: { male: ['Aelrindel', 'Braenar', 'Caelynn', 'Daelys', 'Elandorr', 'Faelyn', 'Gaelin', 'Hadar'], female: ['Aeliana', 'Braelynn', 'Caelynn', 'Daelynn', 'Elanna', 'Faelynn', 'Gaelynn', 'Haelynn'] },\n  dwarf: { male: ['Adrik', 'Bardin', 'Dolgan', 'Gardin', 'Harbek', 'Kargan', 'Mardin', 'Thordak'], female: ['Annora', 'Brynna', 'Dagna', 'Greta', 'Helga', 'Kadra', 'Marda', 'Thora'] },\n  halfling: { male: ['Alton', 'Bram', 'Cedric', 'Dunn', 'Eldon', 'Finbar', 'Garrett', 'Hob'], female: ['Bella', 'Cora', 'Daisy', 'Elsa', 'Fiona', 'Gemma', 'Holly', 'Ivy'] },\n  tiefling: { male: ['Aktaeos', 'Barakas', 'Damakos', 'Ephren', 'Gauros', 'Kairon', 'Melech', 'Nerios'], female: ['Akta', 'Bryseis', 'Criella', 'Ephyra', 'Grieta', 'Kalista', 'Melia', 'Nyx'] },\n  dragonborn: { male: ['Arjhan', 'Bharash', 'Donaar', 'Ghesh', 'Havar', 'Kriv', 'Medrash', 'Nadarr'], female: ['Akra', 'Bharra', 'Daaria', 'Gheshra', 'Havara', 'Kriva', 'Medra', 'Nadaara'] }\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CLASSES",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 103,
+      "endLine": 103,
+      "text": "CLASSES = ['Fighter', 'Wizard', 'Rogue', 'Cleric', 'Ranger', 'Paladin', 'Barbarian', 'Bard', 'Druid', 'Monk', 'Sorcerer', 'Warlock']"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DISPOSITIONS",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 105,
+      "endLine": 105,
+      "text": "DISPOSITIONS: Array<'friendly' | 'neutral' | 'hostile'> = ['friendly', 'neutral', 'hostile']"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "LOCATIONS",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 107,
+      "endLine": 107,
+      "text": "LOCATIONS = ['Tavern', 'Market', 'Temple', 'Castle', 'Forest', 'Mountain', 'Village', 'City', 'Dungeon Entrance', 'Port']"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PERSONALITY_TRAITS",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 109,
+      "endLine": 120,
+      "text": "PERSONALITY_TRAITS = [\n  'is always polite and respectful',\n  'has a dry sense of humor',\n  'is suspicious of strangers',\n  'loves to tell stories',\n  'is deeply religious',\n  'has a quick temper',\n  'is very curious',\n  'is always looking for a bargain',\n  'is terrified of magic',\n  'has a secret agenda'\n]"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PHYSICAL_TRAITS",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 122,
+      "endLine": 131,
+      "text": "PHYSICAL_TRAITS = [\n  'has a scar across their face',\n  'wears distinctive jewelry',\n  'has unusual eye color',\n  'walks with a limp',\n  'has tattoos covering their arms',\n  'dresses in fine clothes',\n  'has a missing finger',\n  'carries a weapon everywhere'\n]"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 137,
+      "endLine": 139,
+      "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "randomFrom",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 141,
+      "endLine": 143,
+      "text": "function randomFrom<T>(arr: T[]): T {\n  return arr[Math.floor(Math.random() * arr.length)]\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateName",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 145,
+      "endLine": 148,
+      "text": "function generateName(race: string = 'human', gender: 'male' | 'female' = 'male'): string {\n  const raceNames = NAMES[race.toLowerCase() as keyof typeof NAMES] || NAMES.human\n  return randomFrom(raceNames[gender] || raceNames.male)\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateStats",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 150,
+      "endLine": 159,
+      "text": "function generateStats(): NPCStats {\n  return {\n    strength: Math.floor(Math.random() * 15) + 3,\n    dexterity: Math.floor(Math.random() * 15) + 3,\n    constitution: Math.floor(Math.random() * 15) + 3,\n    intelligence: Math.floor(Math.random() * 15) + 3,\n    wisdom: Math.floor(Math.random() * 15) + 3,\n    charisma: Math.floor(Math.random() * 15) + 3,\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateDescription",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 161,
+      "endLine": 172,
+      "text": "function generateDescription(npc: Partial<NPC>): string {\n  const traits: string[] = []\n  \n  if (npc.race) traits.push(`is a ${npc.race}`)\n  if (npc.class) traits.push(`${npc.class}`)\n  if (npc.level) traits.push(`level ${npc.level}`)\n  \n  const personality = randomFrom(PERSONALITY_TRAITS)\n  const physical = randomFrom(PHYSICAL_TRAITS)\n  \n  return `${npc.name || 'This NPC'} ${traits.join(', ')}. They ${personality} and ${physical}.`\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 178,
+      "endLine": 215,
+      "text": "async function createNPC(data: Partial<NPC>): Promise<NPC> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const npc: NPC = {\n    id,\n    name: data.name || 'Unknown',\n    type: data.type || 'npc',\n    race: data.race || 'human',\n    class: data.class || 'commoner',\n    level: data.level || 1,\n    hp: data.hp || 10,\n    maxHp: data.maxHp || 10,\n    ac: data.ac || 10,\n    speed: data.speed || 30,\n    description: data.description || '',\n    disposition: data.disposition || 'neutral',\n    location: data.location || 'Unknown',\n    memories: data.memories || [],\n    relationships: data.relationships || {},\n    stats: data.stats || generateStats(),\n    abilities: data.abilities || [],\n    actions: data.actions || [],\n    inventory: data.inventory || [],\n    portrait: data.portrait,\n    notes: data.notes,\n    tags: data.tags || [],\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  if (!npc.description) {\n    npc.description = generateDescription(npc)\n  }\n  \n  npcs.set(id, npc)\n  return npc\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 217,
+      "endLine": 219,
+      "text": "async function getNPC(id: string): Promise<NPC | null> {\n  return npcs.get(id) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 221,
+      "endLine": 234,
+      "text": "async function updateNPC(id: string, data: Partial<NPC>): Promise<NPC> {\n  const npc = npcs.get(id)\n  if (!npc) throw new Error(\"NPC not found\")\n  \n  const updated: NPC = {\n    ...npc,\n    ...data,\n    id,\n    updatedAt: new Date().toISOString(),\n  }\n  \n  npcs.set(id, updated)\n  return updated\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "deleteNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 236,
+      "endLine": 239,
+      "text": "async function deleteNPC(id: string): Promise<void> {\n  npcs.delete(id)\n  dialogues.delete(id)\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listNPCs",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 241,
+      "endLine": 255,
+      "text": "async function listNPCs(filter?: { type?: string; location?: string; disposition?: string }): Promise<NPC[]> {\n  let all = Array.from(npcs.values())\n  \n  if (filter?.type) {\n    all = all.filter(n => n.type === filter.type)\n  }\n  if (filter?.location) {\n    all = all.filter(n => n.location === filter.location)\n  }\n  if (filter?.disposition) {\n    all = all.filter(n => n.disposition === filter.disposition)\n  }\n  \n  return all\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 261,
+      "endLine": 303,
+      "text": "async function generateNPC(options: {\n  type?: 'npc' | 'monster' | 'creature'\n  race?: string\n  class?: string\n  level?: number\n  location?: string\n  prompt?: string\n}): Promise<NPC> {\n  const race = options.race || randomFrom(Object.keys(NAMES))\n  const gender = Math.random() > 0.5 ? 'male' : 'female'\n  const name = generateName(race, gender)\n  const npcClass = options.class || randomFrom(CLASSES)\n  const level = options.level || Math.floor(Math.random() * 10) + 1\n  const disposition = randomFrom(DISPOSITIONS)\n  const location = options.location || randomFrom(LOCATIONS)\n  \n  // Calculate HP based on class and level\n  const hitDie: Record<string, number> = {\n    'Barbarian': 12, 'Fighter': 10, 'Paladin': 10, 'Ranger': 10,\n    'Bard': 8, 'Cleric': 8, 'Druid': 8, 'Monk': 8, 'Rogue': 8, 'Warlock': 8,\n    'Sorcerer': 6, 'Wizard': 6,\n  }\n  const hd = hitDie[npcClass] || 8\n  const conMod = Math.floor((Math.floor(Math.random() * 15) + 3 - 10) / 2)\n  const maxHp = hd + conMod + (level - 1) * (Math.floor(hd / 2) + 1 + conMod)\n  \n  return createNPC({\n    name,\n    type: options.type || 'npc',\n    race,\n    class: npcClass,\n    level,\n    hp: maxHp,\n    maxHp,\n    ac: Math.floor(Math.random() * 6) + 12,\n    disposition,\n    location,\n    memories: [],\n    relationships: {},\n    stats: generateStats(),\n    tags: [race.toLowerCase(), npcClass.toLowerCase(), disposition],\n  })\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addMemory",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 309,
+      "endLine": 318,
+      "text": "async function addMemory(npcId: string, memory: string): Promise<NPC> {\n  const npc = npcs.get(npcId)\n  if (!npc) throw new Error(\"NPC not found\")\n  \n  npc.memories.push(memory)\n  npc.updatedAt = new Date().toISOString()\n  \n  npcs.set(npcId, npc)\n  return npc\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMemories",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 320,
+      "endLine": 326,
+      "text": "async function getMemories(npcId: string, limit?: number): Promise<string[]> {\n  const npc = npcs.get(npcId)\n  if (!npc) throw new Error(\"NPC not found\")\n  \n  const all = npc.memories\n  return limit ? all.slice(-limit) : all\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "setRelationship",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 332,
+      "endLine": 341,
+      "text": "async function setRelationship(npcId: string, targetId: string, relationship: string): Promise<NPC> {\n  const npc = npcs.get(npcId)\n  if (!npc) throw new Error(\"NPC not found\")\n  \n  npc.relationships[targetId] = relationship\n  npc.updatedAt = new Date().toISOString()\n  \n  npcs.set(npcId, npc)\n  return npc\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getRelationships",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 343,
+      "endLine": 348,
+      "text": "async function getRelationships(npcId: string): Promise<Record<string, string>> {\n  const npc = npcs.get(npcId)\n  if (!npc) throw new Error(\"NPC not found\")\n  \n  return npc.relationships\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "addDialogue",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 354,
+      "endLine": 367,
+      "text": "async function addDialogue(npcId: string, dialogue: Omit<DialogueLine, 'id' | 'npcId'>): Promise<DialogueLine> {\n  const id = generateId()\n  const line: DialogueLine = {\n    id,\n    npcId,\n    ...dialogue,\n  }\n  \n  const npcDialogues = dialogues.get(npcId) || []\n  npcDialogues.push(line)\n  dialogues.set(npcId, npcDialogues)\n  \n  return line\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getDialogues",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 369,
+      "endLine": 371,
+      "text": "async function getDialogues(npcId: string): Promise<DialogueLine[]> {\n  return dialogues.get(npcId) || []\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getDialogueByTrigger",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 373,
+      "endLine": 376,
+      "text": "async function getDialogueByTrigger(npcId: string, trigger: string): Promise<DialogueLine | null> {\n  const npcDialogues = dialogues.get(npcId) || []\n  return npcDialogues.find(d => d.trigger === trigger) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "exportNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 382,
+      "endLine": 386,
+      "text": "async function exportNPC(npcId: string): Promise<NPC> {\n  const npc = npcs.get(npcId)\n  if (!npc) throw new Error(\"NPC not found\")\n  return JSON.parse(JSON.stringify(npc))\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "importNPC",
+      "path": "supabase/functions/npcs/index.ts",
+      "line": 388,
+      "endLine": 421,
+      "text": "async function importNPC(data: Partial<NPC>): Promise<NPC> {\n  const id = generateId()\n  const now = new Date().toISOString()\n  \n  const npc: NPC = {\n    id,\n    name: data.name || 'Unknown',\n    type: data.type || 'npc',\n    race: data.race || 'human',\n    class: data.class || 'commoner',\n    level: data.level || 1,\n    hp: data.hp || 10,\n    maxHp: data.maxHp || 10,\n    ac: data.ac || 10,\n    speed: data.speed || 30,\n    description: data.description || '',\n    disposition: data.disposition || 'neutral',\n    location: data.location || 'Unknown',\n    memories: data.memories || [],\n    relationships: data.relationships || {},\n    stats: data.stats || generateStats(),\n    abilities: data.abilities || [],\n    actions: data.actions || [],\n    inventory: data.inventory || [],\n    portrait: data.portrait,\n    notes: data.notes,\n    tags: data.tags || [],\n    createdAt: now,\n    updatedAt: now,\n  }\n  \n  npcs.set(id, npc)\n  return npc\n}"
+    }
+  ]
+}

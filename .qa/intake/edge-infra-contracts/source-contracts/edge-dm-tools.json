@@ -1,0 +1,2131 @@
+{
+  "schemaVersion": 1,
+  "function": "dm-tools",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "sha256": "66d72e2b61594814ad11b9e2eeede2b17d1ee8169058dcdc89702adcad2e0a6f"
+    }
+  ],
+  "operations": [
+    {
+      "id": "dm-tools:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 649,
+      "endLine": 657,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 650,
+          "endLine": 656,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 650,
+          "endLine": 654,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 652,
+          "endLine": 652,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:2",
+      "condition": "req.method === \"POST\" && path === \"/dice\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 660,
+      "endLine": 669,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 666,
+          "endLine": 668,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 661,
+          "endLine": 661,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 664,
+          "endLine": 664,
+          "expression": "rollDice",
+          "arguments": [
+            "notation",
+            "modifier || 0",
+            "advantage || null"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const { notation, modifier, advantage } = body\n      \n      const result = rollDice(notation, modifier || 0, advantage || null)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:3",
+      "condition": "req.method === \"POST\" && path === \"/dice/multiple\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 672,
+      "endLine": 679,
+      "requestReads": [
+        "body.rolls"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 676,
+          "endLine": 678,
+          "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 673,
+          "endLine": 673,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 674,
+          "endLine": 674,
+          "expression": "rollMultiple",
+          "arguments": [
+            "body.rolls"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 676,
+          "endLine": 676,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "results"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const results = rollMultiple(body.rolls)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:4",
+      "condition": "req.method === \"POST\" && path === \"/combat/init\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 682,
+      "endLine": 689,
+      "requestReads": [
+        "body.participants",
+        "body.sessionId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 686,
+          "endLine": 688,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 683,
+          "endLine": 683,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 684,
+          "endLine": 684,
+          "expression": "initCombat",
+          "arguments": [
+            "body.sessionId",
+            "body.participants"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 686,
+          "endLine": 686,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const combat = await initCombat(body.sessionId, body.participants)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:5",
+      "condition": "req.method === \"GET\" && path.match(/^\\/combat\\/[\\w-]+$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 692,
+      "endLine": 706,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 697,
+          "endLine": 700,
+          "expression": "new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 703,
+          "endLine": 705,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 693,
+          "endLine": 693,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 694,
+          "endLine": 694,
+          "expression": "getCombatState",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 697,
+          "endLine": 697,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Combat not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 703,
+          "endLine": 703,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const combat = await getCombatState(combatId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:6",
+      "condition": "req.method === \"GET\" && path.match(/^\\/combat\\/session\\/[\\w-]+$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 709,
+      "endLine": 723,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 714,
+          "endLine": 717,
+          "expression": "new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 720,
+          "endLine": 722,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 710,
+          "endLine": 710,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 711,
+          "endLine": 711,
+          "expression": "getCombatBySession",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 714,
+          "endLine": 714,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"No active combat\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 720,
+          "endLine": 720,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const sessionId = path.split(\"/\")[3]\n      const combat = await getCombatBySession(sessionId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:7",
+      "condition": "req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/next$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 726,
+      "endLine": 733,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 730,
+          "endLine": 732,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 727,
+          "endLine": 727,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 728,
+          "endLine": 728,
+          "expression": "nextTurn",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 730,
+          "endLine": 730,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const combat = await nextTurn(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:8",
+      "condition": "req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/damage$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 736,
+      "endLine": 744,
+      "requestReads": [
+        "body.damage",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 741,
+          "endLine": 743,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 737,
+          "endLine": 737,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 738,
+          "endLine": 738,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 739,
+          "endLine": 739,
+          "expression": "applyDamage",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.damage"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 741,
+          "endLine": 741,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyDamage(combatId, body.targetId, body.damage)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:9",
+      "condition": "req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/heal$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 747,
+      "endLine": 755,
+      "requestReads": [
+        "body.healing",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 752,
+          "endLine": 754,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 748,
+          "endLine": 748,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 749,
+          "endLine": 749,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 750,
+          "endLine": 750,
+          "expression": "applyHealing",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.healing"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 752,
+          "endLine": 752,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyHealing(combatId, body.targetId, body.healing)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:10",
+      "condition": "req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 758,
+      "endLine": 766,
+      "requestReads": [
+        "body.condition",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 763,
+          "endLine": 765,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 759,
+          "endLine": 759,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 760,
+          "endLine": 760,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 761,
+          "endLine": 761,
+          "expression": "applyCondition",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.condition"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 763,
+          "endLine": 763,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:11",
+      "condition": "req.method === \"DELETE\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 769,
+      "endLine": 777,
+      "requestReads": [
+        "body.condition",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 774,
+          "endLine": 776,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 770,
+          "endLine": 770,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 771,
+          "endLine": 771,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 772,
+          "endLine": 772,
+          "expression": "removeCondition",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.condition"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 774,
+          "endLine": 774,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await removeCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:12",
+      "condition": "req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/end$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 780,
+      "endLine": 787,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 784,
+          "endLine": 786,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 781,
+          "endLine": 781,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 782,
+          "endLine": 782,
+          "expression": "endCombat",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 784,
+          "endLine": 784,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const combatId = path.split(\"/\")[2]\n      const combat = await endCombat(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:13",
+      "condition": "req.method === \"POST\" && path === \"/check\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 790,
+      "endLine": 797,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 794,
+          "endLine": 796,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 791,
+          "endLine": 791,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 792,
+          "endLine": 792,
+          "expression": "performAbilityCheck",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 794,
+          "endLine": 794,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const result = await performAbilityCheck(body)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:14",
+      "condition": "req.method === \"GET\" && path === \"/conditions\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 800,
+      "endLine": 804,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 801,
+          "endLine": 803,
+          "expression": "new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 801,
+          "endLine": 801,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "CONDITIONS"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:15",
+      "condition": "req.method === \"GET\" && path.match(/^\\/conditions\\/[\\w-]+$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 807,
+      "endLine": 821,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 812,
+          "endLine": 815,
+          "expression": "new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 818,
+          "endLine": 820,
+          "expression": "new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 808,
+          "endLine": 808,
+          "expression": "path.split(\"/\")[2].toLowerCase",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 808,
+          "endLine": 808,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 812,
+          "endLine": 812,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Condition not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 818,
+          "endLine": 818,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "condition"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const conditionName = path.split(\"/\")[2].toLowerCase()\n      const condition = CONDITIONS[conditionName]\n      \n      if (!condition) {\n        return new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:16",
+      "condition": "req.method === \"GET\" && path === \"/rulesets\"",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 824,
+      "endLine": 828,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 825,
+          "endLine": 827,
+          "expression": "new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 825,
+          "endLine": 825,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "RULESETS"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "dm-tools:17",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 831,
+      "endLine": 845,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 836,
+          "endLine": 839,
+          "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 842,
+          "endLine": 844,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 832,
+          "endLine": 832,
+          "expression": "path.split(\"/\")[2].toLowerCase",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 832,
+          "endLine": 832,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 836,
+          "endLine": 836,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Ruleset not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 842,
+          "endLine": 842,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const rulesetName = path.split(\"/\")[2].toLowerCase()\n      const ruleset = RULESETS[rulesetName]\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 650,
+      "endLine": 656,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 666,
+      "endLine": 668,
+      "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 676,
+      "endLine": 678,
+      "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 686,
+      "endLine": 688,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 697,
+      "endLine": 700,
+      "expression": "new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 703,
+      "endLine": 705,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 714,
+      "endLine": 717,
+      "expression": "new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 720,
+      "endLine": 722,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 730,
+      "endLine": 732,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 741,
+      "endLine": 743,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 752,
+      "endLine": 754,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 763,
+      "endLine": 765,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 774,
+      "endLine": 776,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 784,
+      "endLine": 786,
+      "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 794,
+      "endLine": 796,
+      "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 801,
+      "endLine": 803,
+      "expression": "new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 812,
+      "endLine": 815,
+      "expression": "new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 818,
+      "endLine": 820,
+      "expression": "new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 825,
+      "endLine": 827,
+      "expression": "new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 836,
+      "endLine": 839,
+      "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 842,
+      "endLine": 844,
+      "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 848,
+      "endLine": 851,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 854,
+      "endLine": 860,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN",
+    "REDIS_URL"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 325,
+      "endLine": 325,
+      "expression": "combatStates.set(combatId, combatState)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 377,
+      "endLine": 377,
+      "expression": "combatStates.set(combatId, combat)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 420,
+      "endLine": 420,
+      "expression": "combatStates.set(combatId, combat)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 453,
+      "endLine": 453,
+      "expression": "combatStates.set(combatId, combat)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 481,
+      "endLine": 481,
+      "expression": "combatStates.set(combatId, combat)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 507,
+      "endLine": 507,
+      "expression": "combatStates.set(combatId, combat)"
+    },
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 524,
+      "endLine": 524,
+      "expression": "combatStates.set(combatId, combat)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 638,
+      "endLine": 862,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/dm-tools\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /dice - Roll dice\n    if (req.method === \"POST\" && path === \"/dice\") {\n      const body = await req.json()\n      const { notation, modifier, advantage } = body\n      \n      const result = rollDice(notation, modifier || 0, advantage || null)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /dice/multiple - Roll multiple dice\n    if (req.method === \"POST\" && path === \"/dice/multiple\") {\n      const body = await req.json()\n      const results = rollMultiple(body.rolls)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/init - Initialize combat\n    if (req.method === \"POST\" && path === \"/combat/init\") {\n      const body = await req.json()\n      const combat = await initCombat(body.sessionId, body.participants)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /combat/:id - Get combat state\n    if (req.method === \"GET\" && path.match(/^\\/combat\\/[\\w-]+$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await getCombatState(combatId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /combat/session/:sessionId - Get active combat for session\n    if (req.method === \"GET\" && path.match(/^\\/combat\\/session\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[3]\n      const combat = await getCombatBySession(sessionId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/next - Next turn\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/next$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await nextTurn(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/damage - Apply damage\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/damage$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyDamage(combatId, body.targetId, body.damage)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/heal - Apply healing\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/heal$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyHealing(combatId, body.targetId, body.healing)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/condition - Apply condition\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /combat/:id/condition - Remove condition\n    if (req.method === \"DELETE\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await removeCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/end - End combat\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/end$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await endCombat(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /check - Ability check\n    if (req.method === \"POST\" && path === \"/check\") {\n      const body = await req.json()\n      const result = await performAbilityCheck(body)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /conditions - List all conditions\n    if (req.method === \"GET\" && path === \"/conditions\") {\n      return new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /conditions/:name - Get specific condition\n    if (req.method === \"GET\" && path.match(/^\\/conditions\\/[\\w-]+$/)) {\n      const conditionName = path.split(\"/\")[2].toLowerCase()\n      const condition = CONDITIONS[conditionName]\n      \n      if (!condition) {\n        return new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets - List all rulesets\n    if (req.method === \"GET\" && path === \"/rulesets\") {\n      return new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:name - Get specific ruleset\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)) {\n      const rulesetName = path.split(\"/\")[2].toLowerCase()\n      const ruleset = RULESETS[rulesetName]\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [
+        "body.condition",
+        "body.damage",
+        "body.healing",
+        "body.participants",
+        "body.rolls",
+        "body.sessionId",
+        "body.targetId"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 650,
+          "endLine": 656,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 666,
+          "endLine": 668,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 676,
+          "endLine": 678,
+          "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 686,
+          "endLine": 688,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 697,
+          "endLine": 700,
+          "expression": "new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 703,
+          "endLine": 705,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 714,
+          "endLine": 717,
+          "expression": "new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 720,
+          "endLine": 722,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 730,
+          "endLine": 732,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 741,
+          "endLine": 743,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 752,
+          "endLine": 754,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 763,
+          "endLine": 765,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 774,
+          "endLine": 776,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 784,
+          "endLine": 786,
+          "expression": "new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 794,
+          "endLine": 796,
+          "expression": "new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 801,
+          "endLine": 803,
+          "expression": "new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 812,
+          "endLine": 815,
+          "expression": "new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 818,
+          "endLine": 820,
+          "expression": "new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 825,
+          "endLine": 827,
+          "expression": "new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 836,
+          "endLine": 839,
+          "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 842,
+          "endLine": 844,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 848,
+          "endLine": 851,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 854,
+          "endLine": 860,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 638,
+          "endLine": 862,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/dm-tools\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /dice - Roll dice\n    if (req.method === \"POST\" && path === \"/dice\") {\n      const body = await req.json()\n      const { notation, modifier, advantage } = body\n      \n      const result = rollDice(notation, modifier || 0, advantage || null)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /dice/multiple - Roll multiple dice\n    if (req.method === \"POST\" && path === \"/dice/multiple\") {\n      const body = await req.json()\n      const results = rollMultiple(body.rolls)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/init - Initialize combat\n    if (req.method === \"POST\" && path === \"/combat/init\") {\n      const body = await req.json()\n      const combat = await initCombat(body.sessionId, body.participants)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /combat/:id - Get combat state\n    if (req.method === \"GET\" && path.match(/^\\/combat\\/[\\w-]+$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await getCombatState(combatId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"Combat not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /combat/session/:sessionId - Get active combat for session\n    if (req.method === \"GET\" && path.match(/^\\/combat\\/session\\/[\\w-]+$/)) {\n      const sessionId = path.split(\"/\")[3]\n      const combat = await getCombatBySession(sessionId)\n      \n      if (!combat) {\n        return new Response(JSON.stringify({ error: \"No active combat\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/next - Next turn\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/next$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await nextTurn(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/damage - Apply damage\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/damage$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyDamage(combatId, body.targetId, body.damage)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/heal - Apply healing\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/heal$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyHealing(combatId, body.targetId, body.healing)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/condition - Apply condition\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await applyCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // DELETE /combat/:id/condition - Remove condition\n    if (req.method === \"DELETE\" && path.match(/^\\/combat\\/[\\w-]+\\/condition$/)) {\n      const combatId = path.split(\"/\")[2]\n      const body = await req.json()\n      const combat = await removeCondition(combatId, body.targetId, body.condition)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /combat/:id/end - End combat\n    if (req.method === \"POST\" && path.match(/^\\/combat\\/[\\w-]+\\/end$/)) {\n      const combatId = path.split(\"/\")[2]\n      const combat = await endCombat(combatId)\n      \n      return new Response(JSON.stringify(combat), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /check - Ability check\n    if (req.method === \"POST\" && path === \"/check\") {\n      const body = await req.json()\n      const result = await performAbilityCheck(body)\n      \n      return new Response(JSON.stringify(result), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /conditions - List all conditions\n    if (req.method === \"GET\" && path === \"/conditions\") {\n      return new Response(JSON.stringify(CONDITIONS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /conditions/:name - Get specific condition\n    if (req.method === \"GET\" && path.match(/^\\/conditions\\/[\\w-]+$/)) {\n      const conditionName = path.split(\"/\")[2].toLowerCase()\n      const condition = CONDITIONS[conditionName]\n      \n      if (!condition) {\n        return new Response(JSON.stringify({ error: \"Condition not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(condition), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets - List all rulesets\n    if (req.method === \"GET\" && path === \"/rulesets\") {\n      return new Response(JSON.stringify(RULESETS), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:name - Get specific ruleset\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)) {\n      const rulesetName = path.split(\"/\")[2].toLowerCase()\n      const ruleset = RULESETS[rulesetName]\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 639,
+          "endLine": 639,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 641,
+          "endLine": 641,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 645,
+          "endLine": 645,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/dm-tools\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 650,
+          "endLine": 654,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['dice', 'combat', 'conditions', 'ability-checks', 'rulesets'],\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 652,
+          "endLine": 652,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 661,
+          "endLine": 661,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 664,
+          "endLine": 664,
+          "expression": "rollDice",
+          "arguments": [
+            "notation",
+            "modifier || 0",
+            "advantage || null"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 673,
+          "endLine": 673,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 674,
+          "endLine": 674,
+          "expression": "rollMultiple",
+          "arguments": [
+            "body.rolls"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 676,
+          "endLine": 676,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "results"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 683,
+          "endLine": 683,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 684,
+          "endLine": 684,
+          "expression": "initCombat",
+          "arguments": [
+            "body.sessionId",
+            "body.participants"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 686,
+          "endLine": 686,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 692,
+          "endLine": 692,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 693,
+          "endLine": 693,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 694,
+          "endLine": 694,
+          "expression": "getCombatState",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 697,
+          "endLine": 697,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Combat not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 703,
+          "endLine": 703,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 709,
+          "endLine": 709,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/session\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 710,
+          "endLine": 710,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 711,
+          "endLine": 711,
+          "expression": "getCombatBySession",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 714,
+          "endLine": 714,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"No active combat\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 720,
+          "endLine": 720,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 726,
+          "endLine": 726,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/next$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 727,
+          "endLine": 727,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 728,
+          "endLine": 728,
+          "expression": "nextTurn",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 730,
+          "endLine": 730,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 736,
+          "endLine": 736,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/damage$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 737,
+          "endLine": 737,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 738,
+          "endLine": 738,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 739,
+          "endLine": 739,
+          "expression": "applyDamage",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.damage"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 741,
+          "endLine": 741,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 747,
+          "endLine": 747,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/heal$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 748,
+          "endLine": 748,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 749,
+          "endLine": 749,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 750,
+          "endLine": 750,
+          "expression": "applyHealing",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.healing"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 752,
+          "endLine": 752,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 758,
+          "endLine": 758,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/condition$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 759,
+          "endLine": 759,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 760,
+          "endLine": 760,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 761,
+          "endLine": 761,
+          "expression": "applyCondition",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.condition"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 763,
+          "endLine": 763,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 769,
+          "endLine": 769,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/condition$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 770,
+          "endLine": 770,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 771,
+          "endLine": 771,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 772,
+          "endLine": 772,
+          "expression": "removeCondition",
+          "arguments": [
+            "combatId",
+            "body.targetId",
+            "body.condition"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 774,
+          "endLine": 774,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 780,
+          "endLine": 780,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/combat\\/[\\w-]+\\/end$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 781,
+          "endLine": 781,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 782,
+          "endLine": 782,
+          "expression": "endCombat",
+          "arguments": [
+            "combatId"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 784,
+          "endLine": 784,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "combat"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 791,
+          "endLine": 791,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 792,
+          "endLine": 792,
+          "expression": "performAbilityCheck",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 794,
+          "endLine": 794,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "result"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 801,
+          "endLine": 801,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "CONDITIONS"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 807,
+          "endLine": 807,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/conditions\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 808,
+          "endLine": 808,
+          "expression": "path.split(\"/\")[2].toLowerCase",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 808,
+          "endLine": 808,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 812,
+          "endLine": 812,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Condition not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 818,
+          "endLine": 818,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "condition"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 825,
+          "endLine": 825,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "RULESETS"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 831,
+          "endLine": 831,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 832,
+          "endLine": 832,
+          "expression": "path.split(\"/\")[2].toLowerCase",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 832,
+          "endLine": 832,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 836,
+          "endLine": 836,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Ruleset not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 842,
+          "endLine": 842,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 848,
+          "endLine": 848,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 854,
+          "endLine": 857,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/dm-tools/index.ts",
+          "line": 856,
+          "endLine": 856,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "DiceRoll",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 21,
+      "endLine": 29,
+      "text": "interface DiceRoll {\n  notation: string\n  count: number\n  sides: number\n  modifier: number\n  keepHighest?: number\n  keepLowest?: number\n  advantage?: 'adv' | 'dis'\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "DiceResult",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 31,
+      "endLine": 40,
+      "text": "interface DiceResult {\n  notation: string\n  rolls: number[]\n  modifier: number\n  advantage?: 'adv' | 'dis'\n  total: number\n  criticalHit?: boolean\n  criticalFail?: boolean\n  details?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CombatParticipant",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 42,
+      "endLine": 53,
+      "text": "interface CombatParticipant {\n  id: string\n  name: string\n  type: 'player' | 'npc' | 'monster'\n  initiative: number\n  initiativeBonus?: number\n  hp: number\n  maxHp: number\n  ac: number\n  conditions: string[]\n  notes?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CombatState",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 55,
+      "endLine": 65,
+      "text": "interface CombatState {\n  id: string\n  sessionId: string\n  round: number\n  currentTurn: number\n  participants: CombatParticipant[]\n  log: CombatLogEntry[]\n  status: 'inactive' | 'active' | 'paused' | 'completed'\n  startedAt?: string\n  endedAt?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CombatLogEntry",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 67,
+      "endLine": 80,
+      "text": "interface CombatLogEntry {\n  type: string\n  timestamp: string\n  round?: number\n  turn?: number\n  actor?: string\n  target?: string\n  action?: string\n  result?: any\n  damage?: number\n  healing?: number\n  details?: string\n  participants?: Array<{ id: string; name: string; initiative: number }>\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Condition",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 82,
+      "endLine": 87,
+      "text": "interface Condition {\n  name: string\n  description: string\n  effects: string[]\n  duration?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Spell",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 89,
+      "endLine": 101,
+      "text": "interface Spell {\n  id: string\n  name: string\n  level: number\n  school: string\n  castingTime: string\n  range: string\n  components: string[]\n  duration: string\n  description: string\n  higherLevels?: string\n  classes: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AbilityCheckRequest",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 103,
+      "endLine": 114,
+      "text": "interface AbilityCheckRequest {\n  character: {\n    name: string\n    modifiers: Record<string, number>\n    proficiency?: number\n  }\n  ability: string\n  skill?: string\n  dc: number\n  advantage?: 'adv' | 'dis'\n  guidance?: boolean\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "REDIS_URL",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 120,
+      "endLine": 120,
+      "text": "REDIS_URL = Deno.env.get(\"REDIS_URL\") || \"redis://localhost:6379\""
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CONDITIONS",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 123,
+      "endLine": 199,
+      "text": "CONDITIONS: Record<string, Condition> = {\n  blinded: {\n    name: \"Blinded\",\n    description: \"A blinded creature can't see and automatically fails any ability check that requires sight.\",\n    effects: [\"Disadvantage on attack rolls\", \"Attack rolls against you have advantage\"],\n  },\n  charmed: {\n    name: \"Charmed\",\n    description: \"A charmed creature can't attack the charmer or target the charmer with harmful abilities or magical effects.\",\n    effects: [\"Can't attack charmer\", \"Social advantage on charmer\"],\n  },\n  deafened: {\n    name: \"Deafened\",\n    description: \"A deafened creature can't hear and automatically fails any ability check that requires hearing.\",\n    effects: [\"Can't hear\", \"Fails hearing checks\"],\n  },\n  frightened: {\n    name: \"Frightened\",\n    description: \"A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.\",\n    effects: [\"Disadvantage on checks and attacks\", \"Can't approach source of fear\"],\n  },\n  grappled: {\n    name: \"Grappled\",\n    description: \"A grappled creature's speed becomes 0, and it can't benefit from any bonus to its speed.\",\n    effects: [\"Speed 0\", \"Can't move\"],\n  },\n  incapacitated: {\n    name: \"Incapacitated\",\n    description: \"An incapacitated creature can't take actions or reactions.\",\n    effects: [\"No actions\", \"No reactions\"],\n  },\n  invisible: {\n    name: \"Invisible\",\n    description: \"An invisible creature is impossible to see without the aid of magic or a special sense.\",\n    effects: [\"Attack rolls against you have disadvantage\", \"Your attack rolls have advantage\"],\n  },\n  paralyzed: {\n    name: \"Paralyzed\",\n    description: \"A paralyzed creature is incapacitated and can't move or speak.\",\n    effects: [\"Incapacitated\", \"Auto-fail STR/DEX saves\", \"Attacks against you have advantage\", \"Critical hits against you\"],\n  },\n  petrified: {\n    name: \"Petrified\",\n    description: \"A petrified creature is transformed, along with any nonmagical objects it is wearing or carrying, into a solid inanimate substance.\",\n    effects: [\"Incapacitated\", \"Can't move/speak\", \"Resistance to all damage\", \"Immune to poison/disease\"],\n  },\n  poisoned: {\n    name: \"Poisoned\",\n    description: \"A poisoned creature has disadvantage on attack rolls and ability checks.\",\n    effects: [\"Disadvantage on attacks and checks\"],\n  },\n  prone: {\n    name: \"Prone\",\n    description: \"A prone creature's only movement method is to crawl or stand up.\",\n    effects: [\"Crawl movement only\", \"Disadvantage on attacks\", \"Melee attacks against you have advantage\"],\n  },\n  restrained: {\n    name: \"Restrained\",\n    description: \"A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed.\",\n    effects: [\"Speed 0\", \"Disadvantage on attacks\", \"Advantage on attacks against you\", \"Disadvantage on DEX saves\"],\n  },\n  stunned: {\n    name: \"Stunned\",\n    description: \"A stunned creature is incapacitated, can't move, and can speak only falteringly.\",\n    effects: [\"Incapacitated\", \"Can't move\", \"Auto-fail STR/DEX saves\", \"Attacks against you have advantage\"],\n  },\n  unconscious: {\n    name: \"Unconscious\",\n    description: \"An unconscious creature is incapacitated, can't move or speak, and is unaware of its surroundings.\",\n    effects: [\"Incapacitated\", \"Can't move/speak\", \"Unaware\", \"Auto-fail STR/DEX saves\", \"Attacks against you have advantage\", \"Critical hits against you\"],\n  },\n  exhausted: {\n    name: \"Exhaustion\",\n    description: \"Exhaustion is measured in six levels. Each level adds additional effects.\",\n    effects: [\"Level 1: Disadvantage on ability checks\", \"Level 2: Speed halved\", \"Level 3: Disadvantage on attacks and saves\", \"Level 4: HP max halved\", \"Level 5: Speed 0\", \"Level 6: Death\"],\n  },\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "parseDiceNotation",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 205,
+      "endLine": 221,
+      "text": "function parseDiceNotation(notation: string): DiceRoll {\n  // Parse: d20, 2d6, 3d8+5, 4d6kh3, 2d20kh1 (advantage)\n  const match = notation.match(/^(\\d+)?d(\\d+)([+-]\\d+)?(kh(\\d+))?(kl(\\d+))?$/i)\n  \n  if (!match) {\n    throw new Error(`Invalid dice notation: ${notation}`)\n  }\n  \n  return {\n    notation,\n    count: parseInt(match[1]) || 1,\n    sides: parseInt(match[2]),\n    modifier: parseInt(match[3]) || 0,\n    keepHighest: match[5] ? parseInt(match[5]) : undefined,\n    keepLowest: match[7] ? parseInt(match[7]) : undefined,\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "rollSingle",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 223,
+      "endLine": 225,
+      "text": "function rollSingle(sides: number): number {\n  return Math.floor(Math.random() * sides) + 1\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "rollDice",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 227,
+      "endLine": 275,
+      "text": "function rollDice(\n  notation: string,\n  modifier: number = 0,\n  advantage: 'adv' | 'dis' | null = null\n): DiceResult {\n  const dice = parseDiceNotation(notation)\n  \n  // Roll dice\n  let rolls: number[]\n  \n  if (dice.sides === 20 && advantage) {\n    // Advantage/disadvantage: roll twice\n    const roll1 = rollSingle(dice.sides)\n    const roll2 = rollSingle(dice.sides)\n    rolls = advantage === 'adv' ? [Math.max(roll1, roll2)] : [Math.min(roll1, roll2)]\n  } else if (dice.keepHighest || dice.keepLowest) {\n    // Roll multiple, keep some\n    const allRolls = Array.from({ length: dice.count }, () => rollSingle(dice.sides))\n    if (dice.keepHighest) {\n      rolls = allRolls.sort((a, b) => b - a).slice(0, dice.keepHighest)\n    } else if (dice.keepLowest) {\n      rolls = allRolls.sort((a, b) => a - b).slice(0, dice.keepLowest as number)\n    } else {\n      rolls = allRolls\n    }\n  } else {\n    rolls = Array.from({ length: dice.count }, () => rollSingle(dice.sides))\n  }\n  \n  const total = rolls.reduce((sum, roll) => sum + roll, 0) + modifier\n  \n  // Check for critical hit/fail on d20\n  const criticalHit = dice.sides === 20 && rolls[0] === 20\n  const criticalFail = dice.sides === 20 && rolls[0] === 1\n  \n  // Build details string\n  const details = `${rolls.join(' + ')}${modifier !== 0 ? ` ${modifier >= 0 ? '+' : ''} ${modifier}` : ''} = ${total}`\n  \n  return {\n    notation: notation,\n    rolls,\n    modifier,\n    advantage: advantage || undefined,\n    total,\n    criticalHit,\n    criticalFail,\n    details,\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "rollMultiple",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 277,
+      "endLine": 279,
+      "text": "function rollMultiple(rolls: Array<{ notation: string; modifier?: number; advantage?: 'adv' | 'dis' }>): DiceResult[] {\n  return rolls.map(r => rollDice(r.notation, r.modifier || 0, r.advantage || null))\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "combatStates",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 286,
+      "endLine": 286,
+      "text": "combatStates = new Map<string, CombatState>()"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createCombatId",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 288,
+      "endLine": 290,
+      "text": "function createCombatId(): string {\n  return crypto.randomUUID()\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "initCombat",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 292,
+      "endLine": 327,
+      "text": "async function initCombat(\n  sessionId: string,\n  participants: Array<Omit<CombatParticipant, 'initiative'>>\n): Promise<CombatState> {\n  // Roll initiative for each participant\n  const participantsWithInitiative = participants.map(p => ({\n    ...p,\n    initiative: rollDice('d20').total + (p.initiativeBonus || 0),\n    conditions: p.conditions || [],\n  })).sort((a, b) => b.initiative - a.initiative)\n  \n  const combatId = createCombatId()\n  \n  const combatState: CombatState = {\n    id: combatId,\n    sessionId,\n    round: 1,\n    currentTurn: 0,\n    participants: participantsWithInitiative,\n    log: [{\n      type: 'combat_start',\n      timestamp: new Date().toISOString(),\n      round: 1,\n      participants: participantsWithInitiative.map(p => ({\n        id: p.id,\n        name: p.name,\n        initiative: p.initiative,\n      })),\n    }],\n    status: 'active',\n    startedAt: new Date().toISOString(),\n  }\n  \n  combatStates.set(combatId, combatState)\n  return combatState\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getCombatState",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 329,
+      "endLine": 331,
+      "text": "async function getCombatState(combatId: string): Promise<CombatState | null> {\n  return combatStates.get(combatId) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getCombatBySession",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 333,
+      "endLine": 340,
+      "text": "async function getCombatBySession(sessionId: string): Promise<CombatState | null> {\n  for (const [, combat] of combatStates) {\n    if (combat.sessionId === sessionId && combat.status === 'active') {\n      return combat\n    }\n  }\n  return null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "nextTurn",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 342,
+      "endLine": 379,
+      "text": "async function nextTurn(combatId: string): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  // Clear expired conditions at end of turn\n  const currentParticipant = combat.participants[combat.currentTurn]\n  if (currentParticipant) {\n    // Remove conditions that expire at end of turn\n    // (This would need more complex condition tracking in production)\n  }\n  \n  // Advance turn\n  combat.currentTurn = (combat.currentTurn + 1) % combat.participants.length\n  \n  // New round?\n  if (combat.currentTurn === 0) {\n    combat.round++\n    \n    combat.log.push({\n      type: 'round_start',\n      timestamp: new Date().toISOString(),\n      round: combat.round,\n    })\n  }\n  \n  const nextParticipant = combat.participants[combat.currentTurn]\n  \n  combat.log.push({\n    type: 'turn_start',\n    timestamp: new Date().toISOString(),\n    round: combat.round,\n    turn: combat.currentTurn,\n    actor: nextParticipant.name,\n  })\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "applyDamage",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 381,
+      "endLine": 422,
+      "text": "async function applyDamage(combatId: string, targetId: string, damage: number): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  const target = combat.participants.find(p => p.id === targetId)\n  if (!target) throw new Error(\"Target not found in combat\")\n  \n  const previousHp = target.hp\n  target.hp = Math.max(0, target.hp - damage)\n  \n  combat.log.push({\n    type: 'damage',\n    timestamp: new Date().toISOString(),\n    round: combat.round,\n    turn: combat.currentTurn,\n    target: target.name,\n    damage,\n    result: {\n      previousHp,\n      currentHp: target.hp,\n      maxHp: target.maxHp,\n    },\n  })\n  \n  // Check for death/unconsciousness\n  if (target.hp === 0) {\n    target.conditions.push('unconscious')\n    \n    combat.log.push({\n      type: 'condition_applied',\n      timestamp: new Date().toISOString(),\n      round: combat.round,\n      turn: combat.currentTurn,\n      target: target.name,\n      action: 'unconscious',\n      details: `${target.name} falls unconscious`,\n    })\n  }\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "applyHealing",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 424,
+      "endLine": 455,
+      "text": "async function applyHealing(combatId: string, targetId: string, healing: number): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  const target = combat.participants.find(p => p.id === targetId)\n  if (!target) throw new Error(\"Target not found in combat\")\n  \n  const previousHp = target.hp\n  target.hp = Math.min(target.maxHp, target.hp + healing)\n  \n  // Remove unconscious condition if healed\n  if (previousHp === 0 && target.hp > 0) {\n    target.conditions = target.conditions.filter(c => c !== 'unconscious')\n  }\n  \n  combat.log.push({\n    type: 'healing',\n    timestamp: new Date().toISOString(),\n    round: combat.round,\n    turn: combat.currentTurn,\n    target: target.name,\n    healing,\n    result: {\n      previousHp,\n      currentHp: target.hp,\n      maxHp: target.maxHp,\n    },\n  })\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "applyCondition",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 457,
+      "endLine": 483,
+      "text": "async function applyCondition(\n  combatId: string,\n  targetId: string,\n  condition: string\n): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  const target = combat.participants.find(p => p.id === targetId)\n  if (!target) throw new Error(\"Target not found in combat\")\n  \n  if (!target.conditions.includes(condition)) {\n    target.conditions.push(condition)\n    \n    combat.log.push({\n      type: 'condition_applied',\n      timestamp: new Date().toISOString(),\n      round: combat.round,\n      turn: combat.currentTurn,\n      target: target.name,\n      action: condition,\n    })\n  }\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "removeCondition",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 485,
+      "endLine": 509,
+      "text": "async function removeCondition(\n  combatId: string,\n  targetId: string,\n  condition: string\n): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  const target = combat.participants.find(p => p.id === targetId)\n  if (!target) throw new Error(\"Target not found in combat\")\n  \n  target.conditions = target.conditions.filter(c => c !== condition)\n  \n  combat.log.push({\n    type: 'condition_removed',\n    timestamp: new Date().toISOString(),\n    round: combat.round,\n    turn: combat.currentTurn,\n    target: target.name,\n    action: condition,\n  })\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "endCombat",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 511,
+      "endLine": 526,
+      "text": "async function endCombat(combatId: string): Promise<CombatState> {\n  const combat = combatStates.get(combatId)\n  if (!combat) throw new Error(\"Combat not found\")\n  \n  combat.status = 'completed'\n  combat.endedAt = new Date().toISOString()\n  \n  combat.log.push({\n    type: 'combat_end',\n    timestamp: new Date().toISOString(),\n    round: combat.round,\n  })\n  \n  combatStates.set(combatId, combat)\n  return combat\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "performAbilityCheck",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 532,
+      "endLine": 571,
+      "text": "async function performAbilityCheck(request: AbilityCheckRequest): Promise<{\n  success: boolean\n  roll: DiceResult\n  ability: string\n  skill?: string\n  dc: number\n  modifier: number\n  criticalHit?: boolean\n  criticalFail?: boolean\n}> {\n  const modifier = request.character.modifiers[request.ability] || 0\n  const proficiency = request.character.proficiency || 0\n  \n  // Skill check uses ability modifier + proficiency\n  const totalModifier = request.skill\n    ? modifier + proficiency\n    : modifier\n  \n  // Guidance adds 1d4\n  let guidanceBonus = 0\n  if (request.guidance) {\n    guidanceBonus = rollDice('d4').total\n  }\n  \n  const roll = rollDice('d20', totalModifier + guidanceBonus, request.advantage || null)\n  \n  // Natural 20 always succeeds, natural 1 always fails\n  const success = roll.criticalFail ? false : (roll.criticalHit ? true : roll.total >= request.dc)\n  \n  return {\n    success,\n    roll,\n    ability: request.ability,\n    skill: request.skill,\n    dc: request.dc,\n    modifier: totalModifier,\n    criticalHit: roll.criticalHit,\n    criticalFail: roll.criticalFail,\n  }\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "RULESETS",
+      "path": "supabase/functions/dm-tools/index.ts",
+      "line": 577,
+      "endLine": 632,
+      "text": "RULESETS: Record<string, any> = {\n  dnd5e: {\n    name: \"D&D 5th Edition\",\n    abilities: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],\n    skills: {\n      acrobatics: 'dexterity',\n      'animal handling': 'wisdom',\n      arcana: 'intelligence',\n      athletics: 'strength',\n      deception: 'charisma',\n      history: 'intelligence',\n      insight: 'wisdom',\n      intimidation: 'charisma',\n      investigation: 'intelligence',\n      medicine: 'wisdom',\n      nature: 'intelligence',\n      perception: 'wisdom',\n      performance: 'charisma',\n      persuasion: 'charisma',\n      religion: 'intelligence',\n      'sleight of hand': 'dexterity',\n      stealth: 'dexterity',\n      survival: 'wisdom',\n    },\n    conditions: Object.keys(CONDITIONS),\n    dice: ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'],\n    advantage: true,\n    inspiration: true,\n  },\n  pathfinder2e: {\n    name: \"Pathfinder 2nd Edition\",\n    abilities: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],\n    skills: {\n      acrobatics: 'dexterity',\n      arcana: 'intelligence',\n      athletics: 'strength',\n      crafting: 'intelligence',\n      deception: 'charisma',\n      diplomacy: 'charisma',\n      intimidation: 'charisma',\n      medicine: 'wisdom',\n      nature: 'wisdom',\n      occultism: 'intelligence',\n      performance: 'charisma',\n      religion: 'wisdom',\n      society: 'intelligence',\n      stealth: 'dexterity',\n      survival: 'wisdom',\n      thievery: 'dexterity',\n    },\n    conditions: Object.keys(CONDITIONS),\n    dice: ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'],\n    advantage: true,\n    'degree-of-success': true,\n  },\n}"
+    }
+  ]
+}

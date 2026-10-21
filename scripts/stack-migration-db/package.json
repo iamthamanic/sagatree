@@ -1,0 +1,20 @@
+{
+  "name": "sagatree-stack-migration-db-baseline",
+  "private": true,
+  "type": "module",
+  "description": "Isolated PostgreSQL 15 baseline and migration-contract evidence; never a production migration runner.",
+  "scripts": {
+    "test": "node run.mjs",
+    "canary": "node canary.mjs",
+    "provision:services": "python3 provision-tools.py",
+    "product": "node product-run.mjs"
+  },
+  "dependencies": {
+    "@playwright/test": "1.55.1",
+    "embedded-postgres": "15.18.0-beta.17",
+    "pg": "8.16.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

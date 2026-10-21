@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "note": "Evidence collection and source verification do not authorize an architecture choice. Approval requires a human decision with a verifiable source link and evidence artifact.",
+  "decisions": {
+    "GATE-01": { "status": "UNDECIDED" },
+    "GATE-02": { "status": "UNDECIDED" },
+    "GATE-03": { "status": "UNDECIDED" },
+    "GATE-04": { "status": "UNDECIDED" },
+    "GATE-05": { "status": "DEFERRED_UNTIL_BROWSER_HOST_COMPLETE" }
+  }
+}

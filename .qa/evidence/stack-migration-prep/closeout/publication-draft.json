@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "status": "AWAITING_EXPLICIT_PUBLICATION_AUTHORIZATION",
+  "repository": "iamthamanic/sagatree",
+  "visibility": "public",
+  "contentIncludes": "Canonical migration contracts, preparation code, isolated execution evidence and documented security findings",
+  "authorizationBoundary": "No runner activation, architecture approval, merge, release, production change or cutover",
+  "pullRequest": {
+    "number": 860,
+    "title": "docs(qa): remediate migration contract security gaps and validator",
+    "bodyFile": ".qa/evidence/stack-migration-prep/closeout/pr860-body.md",
+    "bodySha256": "0793046e02c80ba2fb0b398f4c0199a8e353079590dfb0d1646fde7ce17e09b1",
+    "expectedHead": "839a8c256f53fc7f3be3375efd127ae07524458f",
+    "keepDraft": true
+  },
+  "epic": {
+    "number": 773,
+    "title": "Epic: SagaTree Local-First Stack-Migration (inkl. Vorbereitung, Gates, Cutover)",
+    "bodyFile": ".qa/evidence/stack-migration-prep/closeout/epic773-body.md",
+    "bodySha256": "11481f5195cd5006b59270adb34469877dd03c5e3209a5dbc533fd84d5e42af3",
+    "expectedPreviousBodySha256": "9efb3c26d74dfb2da540da9a46a5663fd8a06521b6eca485183a62fa41ceae55",
+    "labels": [
+      "P0",
+      "Architecture",
+      "feature"
+    ]
+  },
+  "issueUpdates": {
+    "manifest": ".qa/evidence/stack-migration-prep/issue-publish-plan.json",
+    "manifestSha256": "e5b8756f3f65a6b523a932e1d63c0495790b8a421c5030440c32cd815a420e8e",
+    "verifiedAlready": 41,
+    "pending": 49,
+    "receipt": ".qa/evidence/stack-migration-prep/github-contract-sync.json"
+  }
+}

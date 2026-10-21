@@ -1,0 +1,62 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+  AgentShield Security Report
+  2026-10-21T08:45:56.668Z
+  Target: /workspace/scratch/feb45e6e10c7/sagatree/.cursor
+
+  Grade: A (99/100)
+
+  Score Breakdown
+  Secrets        ████████████████████ 100
+  Permissions    ████████████████████ 98
+  Hooks          ████████████████████ 100
+  MCP Servers    ████████████████████ 100
+  Agents         ███████████████████░ 95
+
+  Recognized Defenses (1, listed for credit, never scored)
+  ✓ Permission deny list  .claude/settings.json
+
+  Harness Adapters
+  Matched: 2/9
+  Claude Code (strong)
+    Evidence: .claude/CLAUDE.md, .claude/mcp.json, .claude/settings.json
+  Project-local Templates (strong)
+    Evidence: rules, skills
+
+  Summary
+  Files scanned: 7
+  Findings: 4 total — 0 critical, 0 high, 1 medium, 1 low, 2 info
+
+  Findings
+
+  ● MEDIUM (1)
+
+    ● Missing prompt defense: Output control defense
+      .claude/CLAUDE.md
+      Prompt should constrain risky output forms such as executable code, HTML, links, or scripts. (OWASP LLM Top 10: LLM02 Insecure Output Handling)
+      Evidence: Missing output-manipulation defense in .claude/CLAUDE.md
+
+  ● LOW (1)
+
+    ● No Stop hooks for session-end verification
+      .claude/settings.json
+      Hooks are configured but no Stop hooks exist. Stop hooks run when a session ends and are useful for final verification — checking for uncommitted secrets, ensuring console.log statements were removed, or auditing file changes.
+      Fix: Add a Stop hook for session-end checks
+
+  ○ INFO (2)
+
+    ○ Prohibition of dangerously-skip-permissions (good practice)
+      .claude/CLAUDE.md:21
+      Found "dangerously-skip-permissions" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: dangerously-skip-permissions
+
+    ○ Prohibition of --no-verify (good practice)
+      .claude/CLAUDE.md:21
+      Found "--no-verify" in a negated/prohibitive context. This is correct — the config is telling the agent NOT to use this flag.
+      Evidence: --no-verify
+
+  ─────────────────────────────────────────
+  AgentShield — Security auditor for AI agent configs
+

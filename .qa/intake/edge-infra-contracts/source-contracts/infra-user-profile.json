@@ -1,0 +1,1010 @@
+{
+  "schemaVersion": 1,
+  "area": "user-profile",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "sha256": "79b2b404b93bdf7174d30341c08b23662aaa412686c9b3251106e1d79fc42045"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "sha256": "ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "sha256": "21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "sha256": "049906c505155c6b73f71355d44b607d251d556a565a03d44bc7ed86a5a8c981"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/media/index.ts",
+      "sha256": "768ded2d0f0fd1d510d660924e787817673955dbeff021d7de9e0a8d8e38bdec"
+    },
+    {
+      "path": "src/domains/media/optimization-contract.ts",
+      "sha256": "ba9216dab79a9c03f66a16b77dedf1c26d4d00d6ae2693cc5a68919d1647846d"
+    },
+    {
+      "path": "src/domains/media/optimization-policy.ts",
+      "sha256": "6145574bc08d1eb94f54d488ebc1f8bc030c2a956e3e3fd24cb15a7c8e50c5ec"
+    },
+    {
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "sha256": "2f3f3472e9a3448099144be0993fd83bbbc2270050ce76dceadd8821501c26b7"
+    },
+    {
+      "path": "src/domains/user-profile/display-name.ts",
+      "sha256": "87cfc4858f198e56ea2857c505162f112efd5edacde4dbb1f7fcd995b4535516"
+    },
+    {
+      "path": "src/domains/user-profile/index.ts",
+      "sha256": "d094d245ff9356298ef20c48635ca3e7adcc0e1ccf180554586949e0b496c496"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "sha256": "7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "sha256": "d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/index.ts",
+      "sha256": "4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/optimize-image.ts",
+      "sha256": "bf73e826651227f704aff5ed584546a087f22f26c68a4c45ba918dfefbe7ce3e"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/raster-decode.ts",
+      "sha256": "8ba5eda07565b10d1fb3d4090d068d12b1415399088c6c6b4a2aadc3fe4d290c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "sha256": "1178fc226c85aee4f4989a7bd650d0b9830b37657c7499c1cec174b4aa9af364"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "sha256": "501095579c8bf1cc3af3a93147f4ab9fe1f280909c02e759d3d95c0f7151d45d"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "sha256": "7e7a1669b42c38b713f35952517260a61ca636cc6f84f29c76b949e3bcc2f70c"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "sha256": "718b74e3146c6723862f0a4639eb5b7905a35f70a8c0e3c6e33d530a4ef80b84"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "sha256": "bcc13ca0c9f7bfa1a68e6c893509b21e682fe2c44732945fba85215042ac6d62"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "sha256": "d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/index.ts",
+      "sha256": "c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02"
+    },
+    {
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "sha256": "7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9"
+    },
+    {
+      "path": "src/lib/authenticatedUser.ts",
+      "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+    },
+    {
+      "path": "src/lib/localAdmin.ts",
+      "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+    },
+    {
+      "path": "src/lib/networkTimeout.ts",
+      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaKind",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type MediaKind = 'image' | 'video' | 'model3d' | 'audio';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeStatus",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 18,
+      "endLine": 24,
+      "text": "export type MediaOptimizeStatus =\n  | 'optimized'\n  | 'unchanged'\n  | 'unsupported'\n  | 'over-budget'\n  | 'aborted'\n  | 'failed';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetProfileId",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 36,
+      "endLine": 41,
+      "text": "export type AssetProfileId =\n  | 'character-portrait'\n  | 'map-pin'\n  | 'look-reference'\n  | 'item-thumbnail'\n  | 'user-avatar';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaByteBudget",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 55,
+      "endLine": 58,
+      "text": "export type MediaByteBudget = {\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailureCode",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 60,
+      "endLine": 68,
+      "text": "export type MediaOptimizeFailureCode =\n  | 'unsupported-kind'\n  | 'unsupported-mime'\n  | 'over-max-upload'\n  | 'over-aggregate-budget'\n  | 'encode-failed'\n  | 'aborted'\n  | 'invalid-input'\n  | 'wasm-unavailable';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeInputMeta",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 70,
+      "endLine": 81,
+      "text": "export type MediaOptimizeInputMeta = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  /** True when source is an animated GIF (or similar) that must not be silently flattened. */\n  readonly hasAnimation?: boolean;\n  /** True when source has an alpha channel that policy must preserve. */\n  readonly hasAlpha?: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResultBase",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 83,
+      "endLine": 87,
+      "text": "type MediaOptimizeResultBase = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly input: MediaOptimizeInputMeta;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOptimizedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 89,
+      "endLine": 95,
+      "text": "export type MediaOptimizeOptimizedResult = MediaOptimizeResultBase & {\n  readonly status: 'optimized';\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnchangedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 97,
+      "endLine": 102,
+      "text": "export type MediaOptimizeUnchangedResult = MediaOptimizeResultBase & {\n  readonly status: 'unchanged';\n  /** Echo of the validated original — required for unchanged. */\n  readonly outputMimeType: string;\n  readonly outputByteSize: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeUnsupportedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 104,
+      "endLine": 108,
+      "text": "export type MediaOptimizeUnsupportedResult = MediaOptimizeResultBase & {\n  readonly status: 'unsupported';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeOverBudgetResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 110,
+      "endLine": 115,
+      "text": "export type MediaOptimizeOverBudgetResult = MediaOptimizeResultBase & {\n  readonly status: 'over-budget';\n  readonly code: 'over-max-upload' | 'over-aggregate-budget';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeAbortedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 117,
+      "endLine": 121,
+      "text": "export type MediaOptimizeAbortedResult = MediaOptimizeResultBase & {\n  readonly status: 'aborted';\n  readonly code: 'aborted';\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeFailedResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 123,
+      "endLine": 127,
+      "text": "export type MediaOptimizeFailedResult = MediaOptimizeResultBase & {\n  readonly status: 'failed';\n  readonly code: MediaOptimizeFailureCode;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaOptimizeResult",
+      "path": "src/domains/media/optimization-contract.ts",
+      "line": 129,
+      "endLine": 135,
+      "text": "export type MediaOptimizeResult =\n  | MediaOptimizeOptimizedResult\n  | MediaOptimizeUnchangedResult\n  | MediaOptimizeUnsupportedResult\n  | MediaOptimizeOverBudgetResult\n  | MediaOptimizeAbortedResult\n  | MediaOptimizeFailedResult;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "GifAnimationPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "export type GifAnimationPolicy = 'allow' | 'convert-static-required' | 'reject';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageAssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 21,
+      "endLine": 36,
+      "text": "export type ImageAssetPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: 'image';\n  readonly allowedMimeTypes: readonly string[];\n  readonly budget: MediaByteBudget;\n  /** Soft max dimension hint for later engines (not a hard encode floor here). */\n  readonly maxEdgePx: number;\n  readonly minQuality: number;\n  readonly preserveAlpha: boolean;\n  readonly gifAnimation: GifAnimationPolicy;\n  /** When false, engines must not emit WebP until coordinated migration completes. */\n  readonly allowWebpOutput: boolean;\n  readonly maxImagesPerRequest?: number;\n  /** Hard aggregate JSON/Base64 request ceiling (Look analysis). */\n  readonly maxAggregateRequestBytes?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UnsupportedKindPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 38,
+      "endLine": 43,
+      "text": "export type UnsupportedKindPolicy = {\n  readonly profileId: AssetProfileId;\n  readonly kind: Exclude<MediaKind, 'image'>;\n  readonly supported: false;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AssetPolicy",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 45,
+      "endLine": 45,
+      "text": "export type AssetPolicy = ImageAssetPolicy | UnsupportedKindPolicy;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPolicyEvaluation",
+      "path": "src/domains/media/optimization-policy.ts",
+      "line": 167,
+      "endLine": 180,
+      "text": "export type MediaPolicyEvaluation =\n  | { readonly ok: true; readonly policy: ImageAssetPolicy }\n  | {\n      readonly ok: false;\n      readonly reason:\n        | 'unsupported-mime'\n        | 'over-max-upload'\n        | 'gif-not-allowed'\n        | 'animation-not-allowed'\n        | 'too-many-images'\n        | 'over-aggregate-budget';\n      readonly message: string;\n      readonly policy: ImageAssetPolicy;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "UserProfileVm",
+      "path": "src/domains/user-profile/contracts/user-profile.types.ts",
+      "line": 6,
+      "endLine": 13,
+      "text": "export type UserProfileVm = {\n  readonly id: string;\n  readonly displayName: string | null;\n  readonly avatarPath: string | null;\n  /** Signed or resolvable URL for UI; null when no avatar_path. */\n  readonly avatarUrl: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AccountDisplayNameInput",
+      "path": "src/domains/user-profile/display-name.ts",
+      "line": 8,
+      "endLine": 13,
+      "text": "export type AccountDisplayNameInput = {\n  readonly profileDisplayName?: string | null;\n  readonly authDisplayName?: string | null;\n  readonly authUsername?: string | null;\n  readonly email?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AudioEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type AudioEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageWorkerEncodeRequest",
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 9,
+      "endLine": 21,
+      "text": "export type ImageWorkerEncodeRequest = {\n  readonly type: 'encode';\n  readonly requestId: string;\n  readonly width: number;\n  readonly height: number;\n  /** RGBA pixel buffer (transferred). */\n  readonly rgba: ArrayBuffer;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageWorkerResponse",
+      "path": "src/infrastructure/media/optimizer/engines/image/image.worker.ts",
+      "line": 23,
+      "endLine": 39,
+      "text": "export type ImageWorkerResponse =\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: true;\n      readonly buffer: ArrayBuffer;\n      readonly width: number;\n      readonly height: number;\n    }\n  | {\n      readonly type: 'result';\n      readonly requestId: string;\n      readonly ok: false;\n      readonly reason: 'over-budget' | 'encode-failed' | 'aborted';\n      readonly message: string;\n      readonly attemptedByteSize?: number;\n    };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ResourceLimitFailure",
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 38,
+      "endLine": 42,
+      "text": "export type ResourceLimitFailure = {\n  readonly ok: false;\n  readonly code: 'invalid-input' | 'over-max-upload';\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ResourceLimitSuccess",
+      "path": "src/infrastructure/media/optimizer/engines/image/resource-limits.ts",
+      "line": 44,
+      "endLine": 44,
+      "text": "export type ResourceLimitSuccess = { readonly ok: true };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ImageEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/image/types.ts",
+      "line": 8,
+      "endLine": 17,
+      "text": "export type ImageEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n  /** Raw image bytes — required for encode/decode. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  /** Optional sink for optimized WebP bytes (keeps Blob out of domain results). */\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpEncodeOptions",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 9,
+      "endLine": 15,
+      "text": "export type WebpEncodeOptions = {\n  readonly lossless?: number;\n  readonly exact?: number;\n  readonly quality?: number;\n  readonly method?: number;\n  readonly alpha_quality?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpEncodeFn",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 17,
+      "endLine": 20,
+      "text": "export type WebpEncodeFn = (\n  data: ImageData,\n  opts: WebpEncodeOptions,\n) => Promise<ArrayBuffer>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ScaleImageDataFn",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 22,
+      "endLine": 26,
+      "text": "export type ScaleImageDataFn = (\n  source: ImageData,\n  targetW: number,\n  targetH: number,\n) => Promise<ImageData>;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetParams",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 28,
+      "endLine": 41,
+      "text": "export type WebpBudgetParams = {\n  readonly imageData: ImageData;\n  readonly encode: WebpEncodeFn;\n  readonly scaleImageData: ScaleImageDataFn;\n  /** Soft goal for the ladder (preferred encoded size). */\n  readonly targetBytes: number;\n  /** Hard ceiling — failure if nothing ≤ this. */\n  readonly maxUploadBytes: number;\n  /** Reject candidates larger than the original payload (kein Dateiwachstum). */\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetSuccess",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export type WebpBudgetSuccess = {\n  readonly ok: true;\n  readonly buffer: ArrayBuffer;\n  readonly width: number;\n  readonly height: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetFailure",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 50,
+      "endLine": 55,
+      "text": "export type WebpBudgetFailure = {\n  readonly ok: false;\n  readonly reason: 'over-budget' | 'aborted' | 'encode-failed';\n  readonly message: string;\n  readonly attemptedByteSize?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WebpBudgetResult",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-budget.ts",
+      "line": 57,
+      "endLine": 57,
+      "text": "export type WebpBudgetResult = WebpBudgetSuccess | WebpBudgetFailure;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "WorkerEncodeParams",
+      "path": "src/infrastructure/media/optimizer/engines/image/webp-worker-client.ts",
+      "line": 14,
+      "endLine": 22,
+      "text": "export type WorkerEncodeParams = {\n  readonly imageData: ImageData;\n  readonly targetBytes: number;\n  readonly maxUploadBytes: number;\n  readonly maxOutputBytes: number;\n  readonly minQuality: number;\n  readonly minEdgePx?: number;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "Model3dEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/model3d/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type Model3dEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "VideoEngineRequest",
+      "path": "src/infrastructure/media/optimizer/engines/video/index.ts",
+      "line": 14,
+      "endLine": 17,
+      "text": "export type VideoEngineRequest = {\n  readonly input: MediaOptimizeInputMeta;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "OptimizeMediaRequest",
+      "path": "src/infrastructure/media/optimizer/media-optimizer.ts",
+      "line": 20,
+      "endLine": 35,
+      "text": "export type OptimizeMediaRequest = {\n  readonly kind: MediaKind;\n  readonly profileId: AssetProfileId;\n  readonly mimeType: string;\n  readonly byteSize: number;\n  readonly width?: number;\n  readonly height?: number;\n  readonly hasAnimation?: boolean;\n  readonly hasAlpha?: boolean;\n  readonly signal?: AbortSignal;\n  /** Image payload for the WebP engine (#630); ignored by stub engines. */\n  readonly bytes?: Blob | ArrayBuffer | Uint8Array;\n  readonly imageCountInRequest?: number;\n  readonly aggregateRequestBytes?: number;\n  readonly onOptimizedBytes?: (bytes: Uint8Array) => void;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "TimedOut",
+      "path": "src/lib/networkTimeout.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type TimedOut = typeof TIMED_OUT;"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "storage",
+      "name": "user-avatars",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 61,
+      "endLine": 62,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.storage\n    .from(USER_AVATARS_BUCKET)",
+      "chain": "supabase.storage\n    .from(USER_AVATARS_BUCKET)\n    .createSignedUrl(path, USER_AVATAR_SIGNED_SECONDS)",
+      "arguments": [
+        "USER_AVATARS_BUCKET"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 59,
+        "endLine": 66,
+        "text": "async function signedUrlForPath(path: string | null): Promise<string | null> {\n  if (!path) return null;\n  const { data, error } = await supabase.storage\n    .from(USER_AVATARS_BUCKET)\n    .createSignedUrl(path, USER_AVATAR_SIGNED_SECONDS);\n  if (error || !data?.signedUrl) return null;\n  return data.signedUrl;\n}"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 92,
+      "endLine": 92,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 91,
+        "endLine": 108,
+        "text": "async ensureOwnProfileRow(): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    const { data, error: selectError } = await supabase\n      .from('user_profiles')\n      .select('id')\n      .eq('id', userId)\n      .maybeSingle();\n    if (selectError) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(selectError)}`);\n    }\n    if (data) return;\n\n    const { error: insertError } = await supabase.from('user_profiles').insert({ id: userId });\n    if (!insertError) return;\n    // Concurrent ensure / signup trigger already created the row.\n    if (insertError.code === '23505') return;\n    throw new Error(`Profil konnte nicht angelegt werden: ${formatSupabaseError(insertError)}`);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 93,
+      "endLine": 94,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('user_profiles')",
+      "chain": "supabase\n      .from('user_profiles')\n      .select('id')\n      .eq('id', userId)\n      .maybeSingle()",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 91,
+        "endLine": 108,
+        "text": "async ensureOwnProfileRow(): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    const { data, error: selectError } = await supabase\n      .from('user_profiles')\n      .select('id')\n      .eq('id', userId)\n      .maybeSingle();\n    if (selectError) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(selectError)}`);\n    }\n    if (data) return;\n\n    const { error: insertError } = await supabase.from('user_profiles').insert({ id: userId });\n    if (!insertError) return;\n    // Concurrent ensure / signup trigger already created the row.\n    if (insertError.code === '23505') return;\n    throw new Error(`Profil konnte nicht angelegt werden: ${formatSupabaseError(insertError)}`);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 103,
+      "endLine": 103,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from('user_profiles')",
+      "chain": "supabase.from('user_profiles').insert({ id: userId })",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 91,
+        "endLine": 108,
+        "text": "async ensureOwnProfileRow(): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    const { data, error: selectError } = await supabase\n      .from('user_profiles')\n      .select('id')\n      .eq('id', userId)\n      .maybeSingle();\n    if (selectError) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(selectError)}`);\n    }\n    if (data) return;\n\n    const { error: insertError } = await supabase.from('user_profiles').insert({ id: userId });\n    if (!insertError) return;\n    // Concurrent ensure / signup trigger already created the row.\n    if (insertError.code === '23505') return;\n    throw new Error(`Profil konnte nicht angelegt werden: ${formatSupabaseError(insertError)}`);\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 111,
+      "endLine": 111,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 110,
+        "endLine": 125,
+        "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n    const { data, error } = await supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .eq('id', userId)\n      .maybeSingle();\n    if (error) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(error)}`);\n    }\n    if (!data) return null;\n    const row = data as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 113,
+      "endLine": 114,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('user_profiles')",
+      "chain": "supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .eq('id', userId)\n      .maybeSingle()",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 110,
+        "endLine": 125,
+        "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n    const { data, error } = await supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .eq('id', userId)\n      .maybeSingle();\n    if (error) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(error)}`);\n    }\n    if (!data) return null;\n    const row = data as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 134,
+      "endLine": 135,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('user_profiles')",
+      "chain": "supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .in('id', ids)",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 131,
+        "endLine": 146,
+        "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    const ids = [...new Set(userIds.map((id) => id.trim()).filter(Boolean))];\n    if (ids.length === 0) return [];\n    const { data, error } = await supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .in('id', ids);\n    if (error) {\n      throw new Error(`Profile konnten nicht geladen werden: ${formatSupabaseError(error)}`);\n    }\n    const rows = (data ?? []) as UserProfileRow[];\n    const mapped = await Promise.all(\n      rows.map(async (row) => mapRow(row, await signedUrlForPath(row.avatar_path))),\n    );\n    return mapped;\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 149,
+      "endLine": 149,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "storage",
+      "name": "user-avatars",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 165,
+      "endLine": 166,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.storage\n      .from(USER_AVATARS_BUCKET)",
+      "chain": "supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      })",
+      "arguments": [
+        "USER_AVATARS_BUCKET"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 175,
+      "endLine": 176,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('user_profiles')",
+      "chain": "supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle()",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "user_profiles",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 185,
+      "endLine": 186,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('user_profiles')",
+      "chain": "supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single()",
+      "arguments": [
+        "'user_profiles'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "storage",
+      "name": "user-avatars",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 193,
+      "endLine": 193,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.storage.from(USER_AVATARS_BUCKET)",
+      "chain": "supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath])",
+      "arguments": [
+        "USER_AVATARS_BUCKET"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    },
+    {
+      "kind": "storage",
+      "name": "user-avatars",
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 202,
+      "endLine": 202,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.storage.from(USER_AVATARS_BUCKET)",
+      "chain": "supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath])",
+      "arguments": [
+        "USER_AVATARS_BUCKET"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+        "line": 148,
+        "endLine": 208,
+        "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 5,
+      "endLine": 8,
+      "module": "./account-avatar-store",
+      "resolvedPath": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "expression": "import {\n  publishAccountAvatarUrl,\n  subscribeAccountAvatarUrl,\n} from './account-avatar-store';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/authenticatedUser",
+      "resolvedPath": "src/lib/authenticatedUser.ts",
+      "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "../../domains/user-profile",
+      "resolvedPath": "src/domains/user-profile/index.ts",
+      "expression": "import type { UserProfileVm } from '../../domains/user-profile';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../domains/user-profile",
+      "resolvedPath": "src/domains/user-profile/index.ts",
+      "expression": "import type { UserProfileVm } from '../../domains/user-profile';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "./supabase-user-profile.repository",
+      "resolvedPath": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "expression": "import { supabaseUserProfileRepository } from './supabase-user-profile.repository';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 25,
+      "endLine": 25,
+      "module": "../media/optimizer",
+      "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
+      "expression": "import('../media/optimizer')",
+      "kind": "dynamic-import"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export const ACCOUNT_AVATAR_CHANGED_EVENT = 'sagatree:account-avatar-changed';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 13,
+      "endLine": 15,
+      "text": "export type AccountAvatarChangedDetail = {\n  readonly avatarUrl: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "export function notifyAccountAvatarChanged(avatarUrl: string | null): void {\n  publishAccountAvatarUrl(avatarUrl);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 21,
+      "endLine": 25,
+      "text": "export function subscribeAccountAvatarChanged(\n  listener: (avatarUrl: string | null) => void,\n): () => void {\n  return subscribeAccountAvatarUrl(listener);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "export function getAccountAvatarUrlCache(): string | null {\n  return cachedAvatarUrl;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 21,
+      "endLine": 23,
+      "text": "export function getAccountAvatarLoadedUserId(): string | null {\n  return remoteLoadedUserId;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 25,
+      "endLine": 31,
+      "text": "export function publishAccountAvatarUrl(avatarUrl: string | null): void {\n  if (cachedAvatarUrl === avatarUrl) return;\n  cachedAvatarUrl = avatarUrl;\n  for (const listener of listeners) {\n    listener(avatarUrl);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 33,
+      "endLine": 41,
+      "text": "export function clearAccountAvatarUrlCache(): void {\n  remoteLoadedUserId = null;\n  loadInFlight = null;\n  if (cachedAvatarUrl === null) return;\n  cachedAvatarUrl = null;\n  for (const listener of listeners) {\n    listener(null);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 43,
+      "endLine": 48,
+      "text": "export function subscribeAccountAvatarUrl(listener: AvatarListener): () => void {\n  listeners.add(listener);\n  return () => {\n    listeners.delete(listener);\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 56,
+      "endLine": 83,
+      "text": "export function ensureAccountAvatarLoaded(\n  userId: string,\n  loadProfile: ProfileLoader,\n): Promise<void> {\n  if (remoteLoadedUserId === userId) {\n    return Promise.resolve();\n  }\n  if (loadInFlight) return loadInFlight;\n\n  loadInFlight = (async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  })();\n\n  return loadInFlight;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 211,
+      "endLine": 211,
+      "text": "export const supabaseUserProfileRepository = new SupabaseUserProfileRepository();"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 8,
+      "endLine": 15,
+      "text": "export type UploadUserAvatarOptions = {\n  /**\n   * When true, skip client optimize (caller already ran user-avatar intake).\n   * Storage MIME/magic-byte/owner checks still run in the repository.\n   */\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 21,
+      "endLine": 61,
+      "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 63,
+      "endLine": 80,
+      "text": "export const userProfileService = {\n  async getOwnProfile(): Promise<UserProfileVm | null> {\n    return supabaseUserProfileRepository.getOwnProfile();\n  },\n\n  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  },\n\n  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  },\n\n  prepareAvatarFile: prepareUserAvatarFile,\n};"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "notifyAccountAvatarChanged",
+      "text": "export function notifyAccountAvatarChanged(avatarUrl: string | null): void {\n  publishAccountAvatarUrl(avatarUrl);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-changed.ts",
+      "line": 21,
+      "endLine": 25,
+      "name": "subscribeAccountAvatarChanged",
+      "text": "export function subscribeAccountAvatarChanged(\n  listener: (avatarUrl: string | null) => void,\n): () => void {\n  return subscribeAccountAvatarUrl(listener);\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "getAccountAvatarUrlCache",
+      "text": "export function getAccountAvatarUrlCache(): string | null {\n  return cachedAvatarUrl;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 21,
+      "endLine": 23,
+      "name": "getAccountAvatarLoadedUserId",
+      "text": "export function getAccountAvatarLoadedUserId(): string | null {\n  return remoteLoadedUserId;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 25,
+      "endLine": 31,
+      "name": "publishAccountAvatarUrl",
+      "text": "export function publishAccountAvatarUrl(avatarUrl: string | null): void {\n  if (cachedAvatarUrl === avatarUrl) return;\n  cachedAvatarUrl = avatarUrl;\n  for (const listener of listeners) {\n    listener(avatarUrl);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 33,
+      "endLine": 41,
+      "name": "clearAccountAvatarUrlCache",
+      "text": "export function clearAccountAvatarUrlCache(): void {\n  remoteLoadedUserId = null;\n  loadInFlight = null;\n  if (cachedAvatarUrl === null) return;\n  cachedAvatarUrl = null;\n  for (const listener of listeners) {\n    listener(null);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 43,
+      "endLine": 48,
+      "name": "subscribeAccountAvatarUrl",
+      "text": "export function subscribeAccountAvatarUrl(listener: AvatarListener): () => void {\n  listeners.add(listener);\n  return () => {\n    listeners.delete(listener);\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 45,
+      "endLine": 47,
+      "name": "callback",
+      "text": "() => {\n    listeners.delete(listener);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 56,
+      "endLine": 83,
+      "name": "ensureAccountAvatarLoaded",
+      "text": "export function ensureAccountAvatarLoaded(\n  userId: string,\n  loadProfile: ProfileLoader,\n): Promise<void> {\n  if (remoteLoadedUserId === userId) {\n    return Promise.resolve();\n  }\n  if (loadInFlight) return loadInFlight;\n\n  loadInFlight = (async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  })();\n\n  return loadInFlight;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/account-avatar-store.ts",
+      "line": 65,
+      "endLine": 80,
+      "name": "callback",
+      "text": "async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 29,
+      "endLine": 57,
+      "name": "sniffUserAvatarMime",
+      "text": "async function sniffUserAvatarMime(file: File): Promise<UserAvatarMime | null> {\n  const header = new Uint8Array(await file.slice(0, 12).arrayBuffer());\n  if (\n    header.length >= 8 &&\n    header[0] === 0x89 &&\n    header[1] === 0x50 &&\n    header[2] === 0x4e &&\n    header[3] === 0x47\n  ) {\n    return 'image/png';\n  }\n  if (header.length >= 3 && header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) {\n    return 'image/jpeg';\n  }\n  if (\n    header.length >= 12 &&\n    header[0] === 0x52 &&\n    header[1] === 0x49 &&\n    header[2] === 0x46 &&\n    header[3] === 0x46 &&\n    header[8] === 0x57 &&\n    header[9] === 0x45 &&\n    header[10] === 0x42 &&\n    header[11] === 0x50\n  ) {\n    return 'image/webp';\n  }\n  return null;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 59,
+      "endLine": 66,
+      "name": "signedUrlForPath",
+      "text": "async function signedUrlForPath(path: string | null): Promise<string | null> {\n  if (!path) return null;\n  const { data, error } = await supabase.storage\n    .from(USER_AVATARS_BUCKET)\n    .createSignedUrl(path, USER_AVATAR_SIGNED_SECONDS);\n  if (error || !data?.signedUrl) return null;\n  return data.signedUrl;\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 68,
+      "endLine": 76,
+      "name": "mapRow",
+      "text": "function mapRow(row: UserProfileRow, avatarUrl: string | null): UserProfileVm {\n  return {\n    id: row.id,\n    displayName: row.display_name,\n    avatarPath: row.avatar_path,\n    avatarUrl,\n    updatedAt: row.updated_at,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 78,
+      "endLine": 84,
+      "name": "formatSupabaseError",
+      "text": "function formatSupabaseError(error: { message?: string; code?: string; details?: string } | null): string {\n  if (!error) return 'unbekannter Fehler';\n  const parts = [error.message, error.code ? `[${error.code}]` : null, error.details]\n    .map((part) => (typeof part === 'string' ? part.trim() : ''))\n    .filter((part) => part.length > 0);\n  return parts.length > 0 ? parts.join(' ') : 'unbekannter Fehler';\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 81,
+      "endLine": 81,
+      "name": "callback",
+      "text": "(part) => (typeof part === 'string' ? part.trim() : '')"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 82,
+      "endLine": 82,
+      "name": "callback",
+      "text": "(part) => part.length > 0"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 91,
+      "endLine": 108,
+      "name": "ensureOwnProfileRow",
+      "text": "async ensureOwnProfileRow(): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    const { data, error: selectError } = await supabase\n      .from('user_profiles')\n      .select('id')\n      .eq('id', userId)\n      .maybeSingle();\n    if (selectError) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(selectError)}`);\n    }\n    if (data) return;\n\n    const { error: insertError } = await supabase.from('user_profiles').insert({ id: userId });\n    if (!insertError) return;\n    // Concurrent ensure / signup trigger already created the row.\n    if (insertError.code === '23505') return;\n    throw new Error(`Profil konnte nicht angelegt werden: ${formatSupabaseError(insertError)}`);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 110,
+      "endLine": 125,
+      "name": "getOwnProfile",
+      "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n    const { data, error } = await supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .eq('id', userId)\n      .maybeSingle();\n    if (error) {\n      throw new Error(`Profil konnte nicht geladen werden: ${formatSupabaseError(error)}`);\n    }\n    if (!data) return null;\n    const row = data as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 131,
+      "endLine": 146,
+      "name": "getProfilesByUserIds",
+      "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    const ids = [...new Set(userIds.map((id) => id.trim()).filter(Boolean))];\n    if (ids.length === 0) return [];\n    const { data, error } = await supabase\n      .from('user_profiles')\n      .select('id, display_name, avatar_path, updated_at')\n      .in('id', ids);\n    if (error) {\n      throw new Error(`Profile konnten nicht geladen werden: ${formatSupabaseError(error)}`);\n    }\n    const rows = (data ?? []) as UserProfileRow[];\n    const mapped = await Promise.all(\n      rows.map(async (row) => mapRow(row, await signedUrlForPath(row.avatar_path))),\n    );\n    return mapped;\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 132,
+      "endLine": 132,
+      "name": "callback",
+      "text": "(id) => id.trim()"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 143,
+      "endLine": 143,
+      "name": "callback",
+      "text": "async (row) => mapRow(row, await signedUrlForPath(row.avatar_path))"
+    },
+    {
+      "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
+      "line": 148,
+      "endLine": 208,
+      "name": "uploadAvatar",
+      "text": "async uploadAvatar(file: File): Promise<UserProfileVm> {\n    const userId = await getAuthenticatedUserId();\n    await this.ensureOwnProfileRow();\n\n    const sniffed = await sniffUserAvatarMime(file);\n    if (!sniffed) {\n      throw new Error('Ungültiger Dateityp. Nur PNG, JPEG und WEBP sind erlaubt.');\n    }\n    if (file.type && file.type !== sniffed) {\n      throw new Error('Deklarierter Bildtyp stimmt nicht mit dem Dateiinhalt überein.');\n    }\n    if (file.size > USER_AVATAR_MAX_BYTES) {\n      throw new Error('Datei zu groß. Maximum ist 5MB.');\n    }\n\n    const extension = USER_AVATAR_MIME_EXTENSIONS[sniffed];\n    const filePath = `${userId}/${crypto.randomUUID()}.${extension}`;\n    const { error: uploadError } = await supabase.storage\n      .from(USER_AVATARS_BUCKET)\n      .upload(filePath, file, {\n        contentType: sniffed,\n        upsert: false,\n      });\n    if (uploadError) {\n      throw new Error(`Avatar-Upload fehlgeschlagen: ${formatSupabaseError(uploadError)}`);\n    }\n\n    const { data: previous } = await supabase\n      .from('user_profiles')\n      .select('avatar_path')\n      .eq('id', userId)\n      .maybeSingle();\n    const previousPath =\n      previous && typeof (previous as { avatar_path?: unknown }).avatar_path === 'string'\n        ? (previous as { avatar_path: string }).avatar_path\n        : null;\n\n    const { data: updated, error: updateError } = await supabase\n      .from('user_profiles')\n      .update({ avatar_path: filePath })\n      .eq('id', userId)\n      .select('id, display_name, avatar_path, updated_at')\n      .single();\n    if (updateError || !updated) {\n      // Best-effort cleanup of orphan object; keep prior avatar_path on row.\n      await supabase.storage.from(USER_AVATARS_BUCKET).remove([filePath]);\n      throw new Error(\n        updateError\n          ? `Avatar konnte nicht gespeichert werden: ${formatSupabaseError(updateError)}`\n          : 'Avatar konnte nicht gespeichert werden',\n      );\n    }\n\n    if (previousPath && previousPath !== filePath) {\n      void supabase.storage.from(USER_AVATARS_BUCKET).remove([previousPath]);\n    }\n\n    const row = updated as UserProfileRow;\n    const avatarUrl = await signedUrlForPath(row.avatar_path);\n    return mapRow(row, avatarUrl);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 21,
+      "endLine": 61,
+      "name": "prepareUserAvatarFile",
+      "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 34,
+      "endLine": 36,
+      "name": "callback",
+      "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 64,
+      "endLine": 66,
+      "name": "getOwnProfile",
+      "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    return supabaseUserProfileRepository.getOwnProfile();\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 68,
+      "endLine": 70,
+      "name": "getProfilesByUserIds",
+      "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/user-profile-service.ts",
+      "line": 72,
+      "endLine": 77,
+      "name": "uploadAvatar",
+      "text": "async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  }"
+    }
+  ]
+}

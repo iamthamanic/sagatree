@@ -1,0 +1,868 @@
+{
+  "schemaVersion": 1,
+  "function": "items",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "sha256": "df39e72e7edcc1aee6fa9a7b30c0708f1f2c5c660158699724177d0e55645fa4"
+    }
+  ],
+  "operations": [
+    {
+      "id": "items:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/items/index.ts",
+      "line": 41,
+      "endLine": 41,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['items', 'search', 'filter'] }"
+          ]
+        }
+      ],
+      "exactBranch": "return new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "id": "items:2",
+      "condition": "req.method === \"GET\" && path === \"/items\"",
+      "path": "supabase/functions/items/index.ts",
+      "line": 42,
+      "endLine": 42,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'rarity'"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "listItems",
+          "arguments": [
+            "type",
+            "rarity"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{ const type = url.searchParams.get('type') || undefined; const rarity = url.searchParams.get('rarity') || undefined; const list = await listItems(type, rarity); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "items:3",
+      "condition": "req.method === \"GET\" && path.match(/^\\/items\\/[\\w-]+$/)",
+      "path": "supabase/functions/items/index.ts",
+      "line": 43,
+      "endLine": 43,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "getItem",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Item not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        }
+      ],
+      "exactBranch": "{ const id = path.split(\"/\")[2]; const item = await getItem(id); if (!item) return new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "items:4",
+      "condition": "req.method === \"POST\" && path === \"/items\"",
+      "path": "supabase/functions/items/index.ts",
+      "line": 44,
+      "endLine": 44,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "createItem",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        }
+      ],
+      "exactBranch": "{ const body = await req.json(); const item = await createItem(body); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "items:5",
+      "condition": "req.method === \"POST\" && path === \"/items/generate\"",
+      "path": "supabase/functions/items/index.ts",
+      "line": 45,
+      "endLine": 45,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "createItem",
+          "arguments": [
+            "{ name: `Magic ${types[Math.floor(Math.random() * types.length)]}`, type: types[Math.floor(Math.random() * types.length)] as Item['type'], rarity: rarities[Math.floor(Math.random() * rarities.length)] as Item['rarity'], weight: Math.floor(Math.random() * 50), value: Math.floor(Math.random() * 50000) }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * types.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * types.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * rarities.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * 50"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * 50000"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        }
+      ],
+      "exactBranch": "{ const types = ['weapon', 'armor', 'potion', 'scroll', 'wondrous']; const rarities = ['common', 'uncommon', 'rare', 'very rare', 'legendary']; const item = await createItem({ name: `Magic ${types[Math.floor(Math.random() * types.length)]}`, type: types[Math.floor(Math.random() * types.length)] as Item['type'], rarity: rarities[Math.floor(Math.random() * rarities.length)] as Item['rarity'], weight: Math.floor(Math.random() * 50), value: Math.floor(Math.random() * 50000) }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 41,
+      "endLine": 41,
+      "expression": "new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 42,
+      "endLine": 42,
+      "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 43,
+      "endLine": 43,
+      "expression": "new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 43,
+      "endLine": 43,
+      "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 44,
+      "endLine": 44,
+      "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 45,
+      "endLine": 45,
+      "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 46,
+      "endLine": 46,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 47,
+      "endLine": 47,
+      "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 26,
+      "endLine": 26,
+      "expression": "items.set(i.id, i)"
+    },
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 32,
+      "endLine": 32,
+      "expression": "items.set(id, item)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/items/index.ts",
+      "line": 34,
+      "endLine": 48,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/items\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"GET\" && path === \"/items\") { const type = url.searchParams.get('type') || undefined; const rarity = url.searchParams.get('rarity') || undefined; const list = await listItems(type, rarity); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/items\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const item = await getItem(id); if (!item) return new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/items\") { const body = await req.json(); const item = await createItem(body); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/items/generate\") { const types = ['weapon', 'armor', 'potion', 'scroll', 'wondrous']; const rarities = ['common', 'uncommon', 'rare', 'very rare', 'legendary']; const item = await createItem({ name: `Magic ${types[Math.floor(Math.random() * types.length)]}`, type: types[Math.floor(Math.random() * types.length)] as Item['type'], rarity: rarities[Math.floor(Math.random() * rarities.length)] as Item['rarity'], weight: Math.floor(Math.random() * 50), value: Math.floor(Math.random() * 50000) }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n})",
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 46,
+          "endLine": 46,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 47,
+          "endLine": 47,
+          "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 34,
+          "endLine": 48,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/items\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['items', 'search', 'filter'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"GET\" && path === \"/items\") { const type = url.searchParams.get('type') || undefined; const rarity = url.searchParams.get('rarity') || undefined; const list = await listItems(type, rarity); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/items\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const item = await getItem(id); if (!item) return new Response(JSON.stringify({ error: \"Item not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/items\") { const body = await req.json(); const item = await createItem(body); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"POST\" && path === \"/items/generate\") { const types = ['weapon', 'armor', 'potion', 'scroll', 'wondrous']; const rarities = ['common', 'uncommon', 'rare', 'very rare', 'legendary']; const item = await createItem({ name: `Magic ${types[Math.floor(Math.random() * types.length)]}`, type: types[Math.floor(Math.random() * types.length)] as Item['type'], rarity: rarities[Math.floor(Math.random() * rarities.length)] as Item['rarity'], weight: Math.floor(Math.random() * 50), value: Math.floor(Math.random() * 50000) }); return new Response(JSON.stringify(item), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/items\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['items', 'search', 'filter'] }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'rarity'"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "listItems",
+          "arguments": [
+            "type",
+            "rarity"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 42,
+          "endLine": 42,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/items\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "getItem",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Item not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 43,
+          "endLine": 43,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "createItem",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 44,
+          "endLine": 44,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "createItem",
+          "arguments": [
+            "{ name: `Magic ${types[Math.floor(Math.random() * types.length)]}`, type: types[Math.floor(Math.random() * types.length)] as Item['type'], rarity: rarities[Math.floor(Math.random() * rarities.length)] as Item['rarity'], weight: Math.floor(Math.random() * 50), value: Math.floor(Math.random() * 50000) }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * types.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * types.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * rarities.length"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * 50"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.floor",
+          "arguments": [
+            "Math.random() * 50000"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "Math.random",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 45,
+          "endLine": 45,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "item"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 46,
+          "endLine": 46,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 47,
+          "endLine": 47,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }"
+          ]
+        },
+        {
+          "path": "supabase/functions/items/index.ts",
+          "line": 47,
+          "endLine": 47,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/items/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Item",
+      "path": "supabase/functions/items/index.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "interface Item { id: string; name: string; type: 'weapon' | 'armor' | 'shield' | 'potion' | 'scroll' | 'wondrous' | 'tool' | 'other'; rarity: 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary' | 'artifact'; weight: number; value: number; description: string; properties: Record<string,any>; source: string }"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "items",
+      "path": "supabase/functions/items/index.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "items = new Map<string, Item>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "srdItems",
+      "path": "supabase/functions/items/index.ts",
+      "line": 17,
+      "endLine": 24,
+      "text": "srdItems: Item[] = [\n  { id: 'longsword', name: 'Longsword', type: 'weapon', rarity: 'common', weight: 3, value: 15, description: 'A versatile melee weapon.', properties: { damage: '1d8 slashing', versatile: '1d10' }, source: 'SRD' },\n  { id: 'chain-mail', name: 'Chain Mail', type: 'armor', rarity: 'common', weight: 55, value: 75, description: 'Made of interlocking metal rings, chain mail includes a layer of quilted fabric underneath to prevent painful chafing.', properties: { ac: 16, strength: 13, stealth: 'disadvantage' }, source: 'SRD' },\n  { id: 'shield', name: 'Shield', type: 'shield', rarity: 'common', weight: 6, value: 10, description: 'A shield made of wood or metal.', properties: { ac: 2 }, source: 'SRD' },\n  { id: 'potion-healing', name: 'Potion of Healing', type: 'potion', rarity: 'common', weight: 0.1, value: 50, description: 'You regain 2d4+2 hit points when you drink this potion.', properties: { healing: '2d4+2' }, source: 'SRD' },\n  { id: 'scroll-fireball', name: 'Scroll of Fireball', type: 'scroll', rarity: 'uncommon', weight: 0, value: 200, description: 'A scroll containing the Fireball spell.', properties: { spell: 'fireball', level: 3 }, source: 'SRD' },\n  { id: 'bag-holding', name: 'Bag of Holding', type: 'wondrous', rarity: 'uncommon', weight: 15, value: 4000, description: 'This bag has an interior space considerably larger than its outside dimensions.', properties: { capacity: 500, weightLimit: 500 }, source: 'SRD' }\n]"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/items/index.ts",
+      "line": 28,
+      "endLine": 28,
+      "text": "function generateId(): string { return crypto.randomUUID() }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listItems",
+      "path": "supabase/functions/items/index.ts",
+      "line": 30,
+      "endLine": 30,
+      "text": "async function listItems(type?: string, rarity?: string): Promise<Item[]> { let all = Array.from(items.values()); if (type) all = all.filter(i => i.type === type); if (rarity) all = all.filter(i => i.rarity === rarity); return all }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getItem",
+      "path": "supabase/functions/items/index.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "async function getItem(id: string): Promise<Item | null> { return items.get(id) || null }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createItem",
+      "path": "supabase/functions/items/index.ts",
+      "line": 32,
+      "endLine": 32,
+      "text": "async function createItem(data: Partial<Item>): Promise<Item> { const id = generateId(); const item: Item = { id, name: data.name || 'Unknown', type: data.type || 'other', rarity: data.rarity || 'common', weight: data.weight || 0, value: data.value || 0, description: data.description || '', properties: data.properties || {}, source: data.source || 'custom' }; items.set(id, item); return item }"
+    }
+  ]
+}

@@ -1,0 +1,1915 @@
+{
+  "schemaVersion": 1,
+  "area": "look",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "sha256": "19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "sha256": "4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb"
+    },
+    {
+      "path": "src/infrastructure/look/index.ts",
+      "sha256": "eadd350c8c0e50352b4c1d40eae7581a05bd43ec32fb9c3a311235cf8a57140d"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "sha256": "2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "sha256": "a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "sha256": "c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "sha256": "64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "sha256": "343b0633794f4aaa3fddc22bf97c0c6a24f4d70210460cf2d0a9d1779f79b10e"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "sha256": "ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "sha256": "4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "sha256": "26ee5c67078a58d989167c19a36ddf2dca8d79ed840e0e30879a9b5c563b0cb7"
+    },
+    {
+      "path": "src/domains/look/advanced-adaption.ts",
+      "sha256": "c90df8e1dea1b4f641677cab0beec580b0904c3bdb272e7f6fa4cf42730770d5"
+    },
+    {
+      "path": "src/domains/look/advanced-look-capability-status.ts",
+      "sha256": "8812db0fc1121ffec2e1985650d4968e0c82e201d2db20363e6e248c1ea1c9dd"
+    },
+    {
+      "path": "src/domains/look/advanced-look-provider-registry.ts",
+      "sha256": "915dc569d7dac9a4fa0e79a8b5a5e4738e6a7ac90db9d41f4c9d6bd344277529"
+    },
+    {
+      "path": "src/domains/look/capability-metadata.ts",
+      "sha256": "2f0902e0e4f29931f8fc066251c234326af7d7b9e553713507f3adf7ba85dad2"
+    },
+    {
+      "path": "src/domains/look/index.ts",
+      "sha256": "e667f9f85e3f658bd33b596e73fbdb75bda168eadec2ffdd1c778d173337bc59"
+    },
+    {
+      "path": "src/domains/look/invariants.ts",
+      "sha256": "52acc9213f3b5a65b6e9cc76fadd47368b2f8d6d7e0d5ae73ccfa4d460df8a9d"
+    },
+    {
+      "path": "src/domains/look/library-query.ts",
+      "sha256": "ac9712635bf88db68a6b849454b5f18657ebc21f7e56140377f697e30cb23ac3"
+    },
+    {
+      "path": "src/domains/look/parse.ts",
+      "sha256": "087a08665705c6d82c92ddee83e40b19a7243c4f08d1a08d8744c2e0c5cc1306"
+    },
+    {
+      "path": "src/domains/look/persistence-contracts.ts",
+      "sha256": "fce690cdfa0bded2ae00b62f9db2043ae3b01fb0d9db7b489bc82e22c62dc97c"
+    },
+    {
+      "path": "src/domains/look/personal-look-override.ts",
+      "sha256": "c3d95da0d51245da6df9ae735297e025213d806a648f1ca6d822c2955b77df32"
+    },
+    {
+      "path": "src/domains/look/reference-analysis.ts",
+      "sha256": "e1157c73b47a86cf3d5115aff751807775cd6056e7f254b2b5fbf7278ced1e51"
+    },
+    {
+      "path": "src/domains/look/resolve.ts",
+      "sha256": "80e29915c579fbc187741192cc38e6f67154246ae1b97ee666b6e0d610baa584"
+    },
+    {
+      "path": "src/domains/look/system-default.ts",
+      "sha256": "eca9aacce5aa2f3e879ededa648b8c41eea133be4da9f37d0fbf8399c201fc19"
+    },
+    {
+      "path": "src/domains/look/types.ts",
+      "sha256": "50f245351c3f2168038a45831a0cb0c35ed5c15488aeacb3aff7f9ccc3d87262"
+    },
+    {
+      "path": "src/domains/look/write-draft.ts",
+      "sha256": "7c8b04b229269b73a26b64d68f0656dc5ada2048e75cd29d5a53887fc6f29e58"
+    },
+    {
+      "path": "src/infrastructure/character/avatar/mtoon-style-applier.ts",
+      "sha256": "1c9fc4fdb30546c0b34ccb222035c74d78251985e575f8a79da86f3f6cd762be"
+    },
+    {
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "sha256": "e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30"
+    },
+    {
+      "path": "src/lib/authenticatedUser.ts",
+      "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+    },
+    {
+      "path": "src/lib/localAdmin.ts",
+      "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+    },
+    {
+      "path": "src/lib/networkTimeout.ts",
+      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MtoonMaterialClass",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "export type MtoonMaterialClass = (typeof MTOON_MATERIAL_CLASSES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MtoonPerformancePreset",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 23,
+      "endLine": 23,
+      "text": "export type MtoonPerformancePreset = 'desktop' | 'mobile';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MtoonRenderPath",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 25,
+      "endLine": 25,
+      "text": "export type MtoonRenderPath = 'mtoon' | 'pbr-fallback';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonLightRig",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 27,
+      "endLine": 44,
+      "text": "export interface MtoonLightRig {\n  hemisphereSky: string;\n  hemisphereGround: string;\n  hemisphereIntensity: number;\n  keyColor: string;\n  keyIntensity: number;\n  keyPosition: readonly [number, number, number];\n  fillColor: string;\n  fillIntensity: number;\n  fillPosition: readonly [number, number, number];\n  rimColor: string;\n  rimIntensity: number;\n  rimPosition: readonly [number, number, number];\n  exposure: number;\n  shadowMapSize: number;\n  /** Soft shadow band bias hint for toon readability (documentation / applier). */\n  shadowBias: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonMaterialClassProfile",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 46,
+      "endLine": 60,
+      "text": "export interface MtoonMaterialClassProfile {\n  classId: MtoonMaterialClass;\n  labelDe: string;\n  /** Name/hint tokens used to classify materials (allowlisted). */\n  nameHints: readonly string[];\n  shadingToonyFactor: number;\n  shadingShiftFactor: number;\n  shadeColorMultiply: number;\n  parametricRimStrength: number;\n  outlineEnabled: boolean;\n  outlineWidthFactor: number;\n  /** PBR fallback when MToon is unavailable. */\n  pbrRoughness: number;\n  pbrMetalness: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonOutlinePolicy",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 62,
+      "endLine": 68,
+      "text": "export interface MtoonOutlinePolicy {\n  mode: 'screenCoordinates';\n  defaultWidthFactor: number;\n  color: string;\n  /** Classes that never receive outline (sorting / artifact avoidance). */\n  disabledClasses: readonly MtoonMaterialClass[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonPerformanceProfile",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 70,
+      "endLine": 77,
+      "text": "export interface MtoonPerformanceProfile {\n  preset: MtoonPerformancePreset;\n  maxPixelRatio: number;\n  shadowMapSize: number;\n  antialias: boolean;\n  rimIntensityScale: number;\n  outlineWidthScale: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SagaTreeMToonProfileV1",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 79,
+      "endLine": 90,
+      "text": "export interface SagaTreeMToonProfileV1 {\n  contractVersion: typeof MTOON_PROFILE_VERSION;\n  preferredPath: 'mtoon';\n  fallbackPath: 'pbr-fallback';\n  background: string;\n  fogNear: number;\n  fogFar: number;\n  light: MtoonLightRig;\n  outline: MtoonOutlinePolicy;\n  materials: Readonly<Record<MtoonMaterialClass, MtoonMaterialClassProfile>>;\n  performance: Readonly<Record<MtoonPerformancePreset, MtoonPerformanceProfile>>;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonStyleCompatibility",
+      "path": "src/domains/character/avatar/mtoon-profile.ts",
+      "line": 92,
+      "endLine": 96,
+      "text": "export interface MtoonStyleCompatibility {\n  path: MtoonRenderPath;\n  /** Non-blocking DE hint for imports with limited style support. */\n  noticeDe: string | null;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookGuideInputKind",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 31,
+      "endLine": 32,
+      "text": "export type AdvancedLookGuideInputKind =\n  (typeof ADVANCED_LOOK_GUIDE_INPUT_KINDS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookGuideInputDescriptor",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "export type AdvancedLookGuideInputDescriptor = {\n  readonly kind: AdvancedLookGuideInputKind;\n  /** Optional when a pass is not available for a frame/session. */\n  readonly required: boolean;\n  readonly labelDe: string;\n  readonly descriptionDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookProviderCapabilities",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 92,
+      "endLine": 98,
+      "text": "export type AdvancedLookProviderCapabilities = {\n  readonly providerId: string;\n  readonly supportsRendered: boolean;\n  readonly supportsRealtime: boolean;\n  /** Subset of guide kinds this provider can consume when present. */\n  readonly supportedGuideInputs: readonly AdvancedLookGuideInputKind[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookDegradeReason",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 100,
+      "endLine": 104,
+      "text": "export type AdvancedLookDegradeReason =\n  | 'provider_missing'\n  | 'execution_mode_unsupported'\n  | 'guide_input_unsupported'\n  | 'advanced_capability_absent';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookNegotiationOk",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 106,
+      "endLine": 112,
+      "text": "export type AdvancedLookNegotiationOk = {\n  readonly ok: true;\n  readonly providerId: string;\n  readonly executionMode: LookExecutionMode;\n  readonly acceptedGuideInputs: readonly AdvancedLookGuideInputKind[];\n  readonly omittedGuideInputs: readonly AdvancedLookGuideInputKind[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookNegotiationFail",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 114,
+      "endLine": 120,
+      "text": "export type AdvancedLookNegotiationFail = {\n  readonly ok: false;\n  readonly reason: AdvancedLookDegradeReason;\n  readonly messageDe: string;\n  readonly executionMode: LookExecutionMode | null;\n  readonly providerId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookNegotiationResult",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 122,
+      "endLine": 124,
+      "text": "export type AdvancedLookNegotiationResult =\n  | AdvancedLookNegotiationOk\n  | AdvancedLookNegotiationFail;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookAdaptionRequest",
+      "path": "src/domains/look/advanced-adaption.ts",
+      "line": 130,
+      "endLine": 135,
+      "text": "export type AdvancedLookAdaptionRequest = {\n  readonly profile: LookProfile;\n  readonly references: readonly LookReference[];\n  readonly executionMode: LookExecutionMode;\n  readonly guideInputs: readonly AdvancedLookGuideInputKind[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookModeStatusId",
+      "path": "src/domains/look/advanced-look-capability-status.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export type AdvancedLookModeStatusId = 'available' | 'unavailable';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookModeStatusRow",
+      "path": "src/domains/look/advanced-look-capability-status.ts",
+      "line": 13,
+      "endLine": 23,
+      "text": "export type AdvancedLookModeStatusRow = {\n  readonly mode: 'rendered' | 'realtime';\n  readonly labelDe: string;\n  readonly status: AdvancedLookModeStatusId;\n  readonly statusLabelDe: string;\n  readonly hintDe: string;\n  readonly providerId: string | null;\n  /** Primary action must stay disabled when unavailable — no fake run. */\n  readonly runEnabled: boolean;\n  readonly runLabelDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AdvancedLookCapabilityStatusView",
+      "path": "src/domains/look/advanced-look-capability-status.ts",
+      "line": 25,
+      "endLine": 30,
+      "text": "export type AdvancedLookCapabilityStatusView = {\n  readonly basicSummaryDe: string;\n  readonly advancedSummaryDe: string;\n  readonly providerCount: number;\n  readonly rows: readonly AdvancedLookModeStatusRow[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookCapabilityAvailability",
+      "path": "src/domains/look/capability-metadata.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "export type LookCapabilityAvailability = 'supported' | 'reserved';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookCapabilityMeta",
+      "path": "src/domains/look/capability-metadata.ts",
+      "line": 21,
+      "endLine": 33,
+      "text": "export type LookCapabilityMeta = {\n  readonly id: LookCapability;\n  readonly availability: LookCapabilityAvailability;\n  /** Short DE label for UI lists. */\n  readonly labelDe: string;\n  /** Longer DE description for editor / docs tooltips. */\n  readonly descriptionDe: string;\n  /**\n   * When availability is `reserved`, UI must show this (or equivalent from\n   * `lookCapabilityUnavailableLabel`) — never fake controls that write config.\n   */\n  readonly unavailableLabelDe: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookInvariantResult",
+      "path": "src/domains/look/invariants.ts",
+      "line": 9,
+      "endLine": 11,
+      "text": "export type LookInvariantResult =\n  | { readonly ok: true }\n  | { readonly ok: false; readonly code: string; readonly message: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookLibraryFilters",
+      "path": "src/domains/look/library-query.ts",
+      "line": 20,
+      "endLine": 23,
+      "text": "export type LookLibraryFilters = {\n  readonly status: 'all' | LookProfileStatus;\n  readonly source: 'all' | LookSource;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CreateLookProfileInput",
+      "path": "src/domains/look/persistence-contracts.ts",
+      "line": 14,
+      "endLine": 16,
+      "text": "export type CreateLookProfileInput = {\n  readonly draft: LookProfileWriteDraft;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AppendLookProfileVersionInput",
+      "path": "src/domains/look/persistence-contracts.ts",
+      "line": 18,
+      "endLine": 21,
+      "text": "export type AppendLookProfileVersionInput = {\n  readonly profileId: string;\n  readonly draft: LookProfileWriteDraft;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "DuplicateLookProfileInput",
+      "path": "src/domains/look/persistence-contracts.ts",
+      "line": 23,
+      "endLine": 26,
+      "text": "export type DuplicateLookProfileInput = {\n  readonly sourceProfileId: string;\n  readonly displayName?: string;\n};"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "LookProfileRepository",
+      "path": "src/domains/look/persistence-contracts.ts",
+      "line": 28,
+      "endLine": 49,
+      "text": "export interface LookProfileRepository {\n  listProfiles(options?: {\n    includeArchived?: boolean;\n  }): Promise<LookProfileRecord[]>;\n\n  getProfileById(profileId: string): Promise<LookProfileRecord | null>;\n\n  createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord>;\n\n  /** Append-only: creates version N+1; never mutates prior versions. */\n  appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord>;\n\n  archiveProfile(profileId: string): Promise<LookProfileRecord>;\n\n  /**\n   * Duplicate creates a new active profile (version 1) from the source current\n   * version. Archived sources are allowed (copy stays active).\n   */\n  duplicateProfile(input: DuplicateLookProfileInput): Promise<LookProfileRecord>;\n\n  listVersions(profileId: string): Promise<LookProfileVersion[]>;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PersonalLookOverrideWriteInput",
+      "path": "src/domains/look/personal-look-override.ts",
+      "line": 8,
+      "endLine": 17,
+      "text": "export type PersonalLookOverrideWriteInput = {\n  readonly characterOwnerUserId: string;\n  readonly actorUserId: string;\n  /** Null/empty clears the override. */\n  readonly personalLookProfileId: string | null;\n  readonly lookOwnerUserId: string | null;\n  readonly lookStatus: 'active' | 'archived' | string | null;\n  /** False if any active saga for the character disallows overrides. */\n  readonly sagaAllowsPlayerOverrides: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PersonalLookOverrideWriteResult",
+      "path": "src/domains/look/personal-look-override.ts",
+      "line": 19,
+      "endLine": 21,
+      "text": "export type PersonalLookOverrideWriteResult =\n  | { readonly ok: true }\n  | { readonly ok: false; readonly code: string; readonly messageDe: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisMime",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 24,
+      "endLine": 25,
+      "text": "export type LookReferenceAnalysisMime =\n  (typeof LOOK_REFERENCE_ANALYSIS_MIME_TYPES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisImageInput",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 39,
+      "endLine": 48,
+      "text": "export type LookReferenceAnalysisImageInput = {\n  readonly id: string;\n  readonly kind: LookReferenceKind;\n  readonly mime: LookReferenceAnalysisMime;\n  /** Opaque URI or storage key — domain does not fetch. */\n  readonly uri: string;\n  /** Optional blend weight in [0, 1]. */\n  readonly weight?: number;\n  readonly label?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookAnalysisPalette",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 50,
+      "endLine": 55,
+      "text": "export type LookAnalysisPalette = {\n  readonly primary: string;\n  readonly secondary: string;\n  readonly accent: string;\n  readonly background: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookAnalysisKnobs",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 57,
+      "endLine": 64,
+      "text": "export type LookAnalysisKnobs = {\n  readonly characterStylization: number;\n  readonly characterOutline: number;\n  readonly lightingWarmth: number;\n  readonly lightingKey: number;\n  readonly postFxContrast: number;\n  readonly postFxSaturation: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisProvenance",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 66,
+      "endLine": 72,
+      "text": "export type LookReferenceAnalysisProvenance = {\n  readonly analysisVersion: typeof LOOK_REFERENCE_ANALYSIS_VERSION;\n  readonly analyzedAtIso: string;\n  readonly referenceIds: readonly string[];\n  readonly styleReferenceCount: number;\n  readonly contentReferenceCount: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisDraft",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 74,
+      "endLine": 82,
+      "text": "export type LookReferenceAnalysisDraft = {\n  readonly displayName: string;\n  readonly palette: LookAnalysisPalette;\n  readonly knobs: LookAnalysisKnobs;\n  /** Motif notes from content refs — never treated as a style source. */\n  readonly contentNotes: string;\n  readonly provenance: LookReferenceAnalysisProvenance;\n  readonly references: readonly LookReference[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisFailure",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 84,
+      "endLine": 88,
+      "text": "export type LookReferenceAnalysisFailure = {\n  readonly ok: false;\n  readonly code: string;\n  readonly messageDe: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisSuccess",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 90,
+      "endLine": 94,
+      "text": "export type LookReferenceAnalysisSuccess = {\n  readonly ok: true;\n  readonly draft: LookReferenceAnalysisDraft;\n  readonly writeDraft: LookProfileWriteDraft;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalysisOutcome",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 96,
+      "endLine": 98,
+      "text": "export type LookReferenceAnalysisOutcome =\n  | LookReferenceAnalysisSuccess\n  | LookReferenceAnalysisFailure;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceAnalyzer",
+      "path": "src/domains/look/reference-analysis.ts",
+      "line": 104,
+      "endLine": 109,
+      "text": "export type LookReferenceAnalyzer = {\n  analyze(input: {\n    readonly references: readonly LookReferenceAnalysisImageInput[];\n    readonly displayNameHint?: string;\n  }): Promise<LookReferenceAnalysisOutcome>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookSource",
+      "path": "src/domains/look/types.ts",
+      "line": 16,
+      "endLine": 16,
+      "text": "export type LookSource = (typeof LOOK_SOURCES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookExecutionMode",
+      "path": "src/domains/look/types.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "export type LookExecutionMode = (typeof LOOK_EXECUTION_MODES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookFunctionalCapability",
+      "path": "src/domains/look/types.ts",
+      "line": 49,
+      "endLine": 50,
+      "text": "export type LookFunctionalCapability =\n  (typeof LOOK_FUNCTIONAL_CAPABILITIES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReservedCapability",
+      "path": "src/domains/look/types.ts",
+      "line": 52,
+      "endLine": 53,
+      "text": "export type LookReservedCapability =\n  (typeof LOOK_RESERVED_CAPABILITIES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookCapability",
+      "path": "src/domains/look/types.ts",
+      "line": 55,
+      "endLine": 55,
+      "text": "export type LookCapability = (typeof LOOK_CAPABILITIES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookScope",
+      "path": "src/domains/look/types.ts",
+      "line": 65,
+      "endLine": 65,
+      "text": "export type LookScope = (typeof LOOK_SCOPES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReferenceKind",
+      "path": "src/domains/look/types.ts",
+      "line": 73,
+      "endLine": 73,
+      "text": "export type LookReferenceKind = (typeof LOOK_REFERENCE_KINDS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookReference",
+      "path": "src/domains/look/types.ts",
+      "line": 75,
+      "endLine": 83,
+      "text": "export type LookReference = {\n  readonly id: string;\n  readonly kind: LookReferenceKind;\n  /** Opaque URI or library resource id — domain does not fetch. */\n  readonly uri: string;\n  readonly label?: string;\n  /** Optional blend weight in [0, 1]. */\n  readonly weight?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookProfileStatus",
+      "path": "src/domains/look/types.ts",
+      "line": 88,
+      "endLine": 88,
+      "text": "export type LookProfileStatus = (typeof LOOK_PROFILE_STATUSES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookProfileRecord",
+      "path": "src/domains/look/types.ts",
+      "line": 90,
+      "endLine": 94,
+      "text": "export type LookProfileRecord = {\n  readonly profile: LookProfile;\n  readonly status: LookProfileStatus;\n  readonly current: LookProfileVersion;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookProfileWriteDraft",
+      "path": "src/domains/look/types.ts",
+      "line": 96,
+      "endLine": 103,
+      "text": "export type LookProfileWriteDraft = {\n  readonly displayName: string;\n  readonly source: LookSource;\n  readonly references: readonly LookReference[];\n  readonly capabilities: readonly LookCapability[];\n  readonly executionModes: readonly LookExecutionMode[];\n  readonly ownerScope?: LookScope;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookProfileVersion",
+      "path": "src/domains/look/types.ts",
+      "line": 105,
+      "endLine": 114,
+      "text": "export type LookProfileVersion = {\n  readonly profileId: string;\n  readonly version: number;\n  readonly source: LookSource;\n  readonly displayName: string;\n  readonly references: readonly LookReference[];\n  readonly capabilities: readonly LookCapability[];\n  readonly executionModes: readonly LookExecutionMode[];\n  readonly createdAtIso: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookProfile",
+      "path": "src/domains/look/types.ts",
+      "line": 116,
+      "endLine": 124,
+      "text": "export type LookProfile = {\n  readonly id: string;\n  /** Immutable public look id (LK-XXXXX). */\n  readonly publicId?: string;\n  readonly currentVersion: number;\n  readonly ownerScope: LookScope;\n  /** Optional ownership label (user/saga id) — not authorization. */\n  readonly ownerId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookResolutionContext",
+      "path": "src/domains/look/types.ts",
+      "line": 127,
+      "endLine": 134,
+      "text": "export type LookResolutionContext = {\n  readonly systemDefaultProfileId: string;\n  readonly sagaDefaultProfileId: string | null;\n  readonly sessionOverrideProfileId: string | null;\n  readonly personalOverrideProfileId: string | null;\n  /** When false, stored personal overrides are ignored. */\n  readonly playerOverridesAllowed: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookResolutionTarget",
+      "path": "src/domains/look/types.ts",
+      "line": 136,
+      "endLine": 136,
+      "text": "export type LookResolutionTarget = 'world' | 'player-character';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookResolutionResult",
+      "path": "src/domains/look/types.ts",
+      "line": 138,
+      "endLine": 146,
+      "text": "export type LookResolutionResult = {\n  readonly profileId: string;\n  readonly scopeApplied: LookScope;\n  readonly reason:\n    | 'session-override'\n    | 'personal-override'\n    | 'saga-default'\n    | 'system-default';\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LookDraftValidationError",
+      "path": "src/domains/look/write-draft.ts",
+      "line": 84,
+      "endLine": 87,
+      "text": "export type LookDraftValidationError = {\n  readonly code: string;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MtoonStyleLights",
+      "path": "src/infrastructure/character/avatar/mtoon-style-applier.ts",
+      "line": 20,
+      "endLine": 25,
+      "text": "export interface MtoonStyleLights {\n  hemisphere: THREE.HemisphereLight;\n  key: THREE.DirectionalLight;\n  fill: THREE.DirectionalLight;\n  rim: THREE.DirectionalLight;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MaterialStyleSnapshot",
+      "path": "src/infrastructure/character/avatar/mtoon-style-applier.ts",
+      "line": 265,
+      "endLine": 276,
+      "text": "export interface MaterialStyleSnapshot {\n  material: THREE.Material;\n  color?: string;\n  roughness?: number;\n  metalness?: number;\n  shadeColorFactor?: string;\n  shadingToonyFactor?: number;\n  shadingShiftFactor?: number;\n  outlineWidthMode?: string;\n  outlineWidthFactor?: number;\n  parametricRimFresnelPowerFactor?: number;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ToonLabSpikeVerdict",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type ToonLabSpikeVerdict = 'GO' | 'BLOCKED';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ToonLabSpikeCheckId",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 14,
+      "endLine": 25,
+      "text": "export type ToonLabSpikeCheckId =\n  | 'peer-three'\n  | 'peer-three-vrm'\n  | 'peer-react'\n  | 'renderer-stack'\n  | 'skinned-mesh'\n  | 'morph-targets'\n  | 'alpha-transparency'\n  | 'pbr-maps'\n  | 'animation-skeleton'\n  | 'portrait-capture'\n  | 'silent-upgrade';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikeHostVersions",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 27,
+      "endLine": 33,
+      "text": "export interface ToonLabSpikeHostVersions {\n  three: string;\n  threeVrm: string;\n  react: string;\n  avatarRenderer: 'WebGLRenderer' | 'WebGPURenderer' | 'unknown';\n  materialPath: 'mtoon-glsl' | 'pbr' | 'tsl-node' | 'mixed';\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikePeerRequirements",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 35,
+      "endLine": 42,
+      "text": "export interface ToonLabSpikePeerRequirements {\n  three: string;\n  threeVrm: string;\n  react: string;\n  rendererDefault: 'WebGPURenderer';\n  materialStack: 'TSL/NodeMaterial';\n  glslPathRemoved: boolean;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikeFixtureAsset",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 63,
+      "endLine": 68,
+      "text": "export interface ToonLabSpikeFixtureAsset {\n  id: string;\n  kind: 'glb-pbr' | 'vrm-mtoon';\n  relativePath: string;\n  role: 'human-male-body' | 'human-male-vrm-face';\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikeCheckRow",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 86,
+      "endLine": 92,
+      "text": "export interface ToonLabSpikeCheckRow {\n  id: ToonLabSpikeCheckId;\n  label: string;\n  pbrOrMtoonBaseline: 'pass' | 'fail' | 'n/a';\n  toonLabPath: 'pass' | 'fail' | 'blocked' | 'n/a';\n  notes: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikeFinding",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 94,
+      "endLine": 98,
+      "text": "export interface ToonLabSpikeFinding {\n  id: string;\n  severity: 'blocker' | 'risk' | 'info';\n  detail: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ToonLabSpikeDecision",
+      "path": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "line": 100,
+      "endLine": 109,
+      "text": "export interface ToonLabSpikeDecision {\n  verdict: ToonLabSpikeVerdict;\n  packageName: typeof TOONLAB_SPIKE_PACKAGE;\n  packageVersion: typeof TOONLAB_SPIKE_EVALUATED_VERSION;\n  findings: ToonLabSpikeFinding[];\n  matrix: ToonLabSpikeCheckRow[];\n  /** Concrete path if a later ticket unblocks integration — never a silent upgrade. */\n  minimalIntegrationPath: readonly string[];\n  performanceRisks: readonly string[];\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "TimedOut",
+      "path": "src/lib/networkTimeout.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type TimedOut = typeof TIMED_OUT;"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "edge",
+      "name": "look-reference-analysis",
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 127,
+      "endLine": 145,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  )",
+      "chain": "supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  )",
+      "arguments": [
+        "'look-reference-analysis'",
+        "{\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+        "line": 101,
+        "endLine": 172,
+        "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 62,
+      "endLine": 62,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 59,
+        "endLine": 82,
+        "text": "async listProfiles(options?: {\n    includeArchived?: boolean;\n  }): Promise<LookProfileRecord[]> {\n    await getAuthenticatedUserId();\n    let query = supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS);\n    if (!options?.includeArchived) {\n      query = query.eq('status', 'active');\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      query.order('updated_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfiles konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfiles konnten nicht geladen werden: ${error.message}`);\n    }\n    const rows = (data ?? []) as LookProfileDto[];\n    const out: LookProfileRecord[] = [];\n    for (const row of rows) {\n      const record = await this.loadRecord(row.id);\n      if (record) out.push(record);\n    }\n    return out;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profiles",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 63,
+      "endLine": 63,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(PROFILES)",
+      "chain": "supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS)",
+      "arguments": [
+        "PROFILES"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 59,
+        "endLine": 82,
+        "text": "async listProfiles(options?: {\n    includeArchived?: boolean;\n  }): Promise<LookProfileRecord[]> {\n    await getAuthenticatedUserId();\n    let query = supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS);\n    if (!options?.includeArchived) {\n      query = query.eq('status', 'active');\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      query.order('updated_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfiles konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfiles konnten nicht geladen werden: ${error.message}`);\n    }\n    const rows = (data ?? []) as LookProfileDto[];\n    const out: LookProfileRecord[] = [];\n    for (const row of rows) {\n      const record = await this.loadRecord(row.id);\n      if (record) out.push(record);\n    }\n    return out;\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 85,
+      "endLine": 85,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 84,
+        "endLine": 87,
+        "text": "async getProfileById(profileId: string): Promise<LookProfileRecord | null> {\n    await getAuthenticatedUserId();\n    return this.loadRecord(assertProfileId(profileId));\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 90,
+      "endLine": 90,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 89,
+        "endLine": 128,
+        "text": "async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const draft = requireDraft(input.draft);\n    const profileId = newLookProfileId();\n    const ownerScope = resolveOwnerScope(draft);\n    const createdAt = new Date().toISOString();\n\n    const { error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);\n    }\n\n    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,\n      );\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record) {\n      throw new Error('LookProfile nach Create nicht lesbar.');\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profiles",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 97,
+      "endLine": 97,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(PROFILES)",
+      "chain": "supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      })",
+      "arguments": [
+        "PROFILES"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 89,
+        "endLine": 128,
+        "text": "async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const draft = requireDraft(input.draft);\n    const profileId = newLookProfileId();\n    const ownerScope = resolveOwnerScope(draft);\n    const createdAt = new Date().toISOString();\n\n    const { error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);\n    }\n\n    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,\n      );\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record) {\n      throw new Error('LookProfile nach Create nicht lesbar.');\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profile_versions",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 113,
+      "endLine": 113,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(VERSIONS)",
+      "chain": "supabase.from(VERSIONS).insert(versionInsert)",
+      "arguments": [
+        "VERSIONS"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 89,
+        "endLine": 128,
+        "text": "async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const draft = requireDraft(input.draft);\n    const profileId = newLookProfileId();\n    const ownerScope = resolveOwnerScope(draft);\n    const createdAt = new Date().toISOString();\n\n    const { error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);\n    }\n\n    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,\n      );\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record) {\n      throw new Error('LookProfile nach Create nicht lesbar.');\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 131,
+      "endLine": 131,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 130,
+        "endLine": 184,
+        "text": "async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const profileId = assertProfileId(input.profileId);\n    const draft = requireDraft(input.draft);\n    const existing = await this.loadRecord(profileId);\n    if (!existing) {\n      throw new Error('LookProfile nicht gefunden.');\n    }\n    if (existing.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung für dieses LookProfile.');\n    }\n    if (existing.status === 'archived') {\n      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');\n    }\n\n    const nextVersion = existing.profile.currentVersion + 1;\n    const createdAt = new Date().toISOString();\n    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);\n\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      if (/duplicate|unique|conflict/i.test(versionError.message)) {\n        throw new Error(\n          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',\n        );\n      }\n      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);\n    }\n\n    const { error: bumpError } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',\n    );\n    if (bumpError) {\n      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record || record.profile.currentVersion !== nextVersion) {\n      throw new Error(\n        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',\n      );\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profile_versions",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 150,
+      "endLine": 150,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(VERSIONS)",
+      "chain": "supabase.from(VERSIONS).insert(versionInsert)",
+      "arguments": [
+        "VERSIONS"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 130,
+        "endLine": 184,
+        "text": "async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const profileId = assertProfileId(input.profileId);\n    const draft = requireDraft(input.draft);\n    const existing = await this.loadRecord(profileId);\n    if (!existing) {\n      throw new Error('LookProfile nicht gefunden.');\n    }\n    if (existing.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung für dieses LookProfile.');\n    }\n    if (existing.status === 'archived') {\n      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');\n    }\n\n    const nextVersion = existing.profile.currentVersion + 1;\n    const createdAt = new Date().toISOString();\n    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);\n\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      if (/duplicate|unique|conflict/i.test(versionError.message)) {\n        throw new Error(\n          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',\n        );\n      }\n      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);\n    }\n\n    const { error: bumpError } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',\n    );\n    if (bumpError) {\n      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record || record.profile.currentVersion !== nextVersion) {\n      throw new Error(\n        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',\n      );\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profiles",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 164,
+      "endLine": 165,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from(PROFILES)",
+      "chain": "supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion)",
+      "arguments": [
+        "PROFILES"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 130,
+        "endLine": 184,
+        "text": "async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const profileId = assertProfileId(input.profileId);\n    const draft = requireDraft(input.draft);\n    const existing = await this.loadRecord(profileId);\n    if (!existing) {\n      throw new Error('LookProfile nicht gefunden.');\n    }\n    if (existing.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung für dieses LookProfile.');\n    }\n    if (existing.status === 'archived') {\n      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');\n    }\n\n    const nextVersion = existing.profile.currentVersion + 1;\n    const createdAt = new Date().toISOString();\n    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);\n\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      if (/duplicate|unique|conflict/i.test(versionError.message)) {\n        throw new Error(\n          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',\n        );\n      }\n      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);\n    }\n\n    const { error: bumpError } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',\n    );\n    if (bumpError) {\n      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record || record.profile.currentVersion !== nextVersion) {\n      throw new Error(\n        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',\n      );\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 187,
+      "endLine": 187,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 186,
+        "endLine": 206,
+        "text": "async archiveProfile(profileId: string): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { error } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ status: 'archived' })\n        .eq('id', id)\n        .eq('owner_user_id', userId),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht archiviert werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfile konnte nicht archiviert werden: ${error.message}`);\n    }\n    const record = await this.loadRecord(id);\n    if (!record) {\n      throw new Error('LookProfile nach Archivierung nicht lesbar.');\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profiles",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 190,
+      "endLine": 191,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from(PROFILES)",
+      "chain": "supabase\n        .from(PROFILES)\n        .update({ status: 'archived' })\n        .eq('id', id)\n        .eq('owner_user_id', userId)",
+      "arguments": [
+        "PROFILES"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 186,
+        "endLine": 206,
+        "text": "async archiveProfile(profileId: string): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { error } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ status: 'archived' })\n        .eq('id', id)\n        .eq('owner_user_id', userId),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht archiviert werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfile konnte nicht archiviert werden: ${error.message}`);\n    }\n    const record = await this.loadRecord(id);\n    if (!record) {\n      throw new Error('LookProfile nach Archivierung nicht lesbar.');\n    }\n    return record;\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 209,
+      "endLine": 209,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 208,
+        "endLine": 234,
+        "text": "async duplicateProfile(input: DuplicateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const sourceId = assertProfileId(input.sourceProfileId);\n    const source = await this.loadRecord(sourceId);\n    if (!source) {\n      throw new Error('Quell-LookProfile nicht gefunden.');\n    }\n    if (source.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung zum Duplizieren dieses Looks.');\n    }\n\n    const displayName =\n      typeof input.displayName === 'string' && input.displayName.trim().length > 0\n        ? input.displayName.trim()\n        : `${source.current.displayName} (Kopie)`;\n\n    return this.createProfile({\n      draft: {\n        displayName,\n        source: source.current.source,\n        references: source.current.references,\n        capabilities: source.current.capabilities,\n        executionModes: source.current.executionModes,\n        ownerScope: source.profile.ownerScope,\n      },\n    });\n  }"
+      }
+    },
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 237,
+      "endLine": 237,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 236,
+        "endLine": 254,
+        "text": "async listVersions(profileId: string): Promise<LookProfileVersion[]> {\n    await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', id)\n        .order('version', { ascending: true }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Look-Versionen konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`Look-Versionen konnten nicht geladen werden: ${error.message}`);\n    }\n    return ((data ?? []) as LookProfileVersionDto[])\n      .map(mapLookProfileVersionRow)\n      .filter((row): row is LookProfileVersion => row !== null);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profile_versions",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 240,
+      "endLine": 241,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from(VERSIONS)",
+      "chain": "supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', id)\n        .order('version', { ascending: true })",
+      "arguments": [
+        "VERSIONS"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 236,
+        "endLine": 254,
+        "text": "async listVersions(profileId: string): Promise<LookProfileVersion[]> {\n    await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', id)\n        .order('version', { ascending: true }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Look-Versionen konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`Look-Versionen konnten nicht geladen werden: ${error.message}`);\n    }\n    return ((data ?? []) as LookProfileVersionDto[])\n      .map(mapLookProfileVersionRow)\n      .filter((row): row is LookProfileVersion => row !== null);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profiles",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 258,
+      "endLine": 258,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(PROFILES)",
+      "chain": "supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle()",
+      "arguments": [
+        "PROFILES"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 256,
+        "endLine": 285,
+        "text": "private async loadRecord(profileId: string): Promise<LookProfileRecord | null> {\n    const { data: profileData, error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht geladen werden: ${profileError.message}`);\n    }\n    if (!profileData) return null;\n    const profileRow = profileData as LookProfileDto;\n\n    const { data: versionData, error: versionError } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', profileId)\n        .eq('version', profileRow.current_version)\n        .maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht geladen werden: ${versionError.message}`,\n      );\n    }\n    if (!versionData) return null;\n    return mapLookProfileRecord(profileRow, versionData as LookProfileVersionDto);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "look_profile_versions",
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 269,
+      "endLine": 270,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from(VERSIONS)",
+      "chain": "supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', profileId)\n        .eq('version', profileRow.current_version)\n        .maybeSingle()",
+      "arguments": [
+        "VERSIONS"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/look/supabase-look.repository.ts",
+        "line": 256,
+        "endLine": 285,
+        "text": "private async loadRecord(profileId: string): Promise<LookProfileRecord | null> {\n    const { data: profileData, error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht geladen werden: ${profileError.message}`);\n    }\n    if (!profileData) return null;\n    const profileRow = profileData as LookProfileDto;\n\n    const { data: versionData, error: versionError } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', profileId)\n        .eq('version', profileRow.current_version)\n        .maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht geladen werden: ${versionError.message}`,\n      );\n    }\n    if (!versionData) return null;\n    return mapLookProfileRecord(profileRow, versionData as LookProfileVersionDto);\n  }"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "three",
+      "resolvedPath": null,
+      "expression": "import type { Object3D, Scene } from 'three';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../../../domains/look/types",
+      "resolvedPath": "src/domains/look/types.ts",
+      "expression": "import type { LookCapability, LookProfileVersion } from '../../../domains/look/types';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "../../../domains/character/avatar/mtoon-profile",
+      "resolvedPath": "src/domains/character/avatar/mtoon-profile.ts",
+      "expression": "import { createSagaTreeMToonProfileV1 } from '../../../domains/character/avatar/mtoon-profile';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 10,
+      "endLine": 17,
+      "module": "../../character/avatar/mtoon-style-applier",
+      "resolvedPath": "src/infrastructure/character/avatar/mtoon-style-applier.ts",
+      "expression": "import {\n  applyMtoonProfileToModel,\n  applyMtoonProfileToScene,\n  applyNeutralPreviewLights,\n  restoreMaterialStyleSnapshots,\n  type MaterialStyleSnapshot,\n  type MtoonStyleLights,\n} from '../../character/avatar/mtoon-style-applier';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 18,
+      "endLine": 23,
+      "module": "../look-runtime-types",
+      "resolvedPath": "src/infrastructure/look/look-runtime-types.ts",
+      "expression": "import type {\n  LookCapabilityApplyResult,\n  LookRuntimeApplyResult,\n  LookRuntimeTarget,\n  LookStyleAdapter,\n} from '../look-runtime-types';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../../character/avatar/toonlab-compatibility-spike",
+      "resolvedPath": "src/infrastructure/character/avatar/toonlab-compatibility-spike.ts",
+      "expression": "import { evaluateToonLabCompatibilitySpike } from '../../character/avatar/toonlab-compatibility-spike';"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "../look-runtime-types",
+      "resolvedPath": "src/infrastructure/look/look-runtime-types.ts",
+      "expression": "import type { LookRuntimeApplyResult, LookStyleAdapter } from '../look-runtime-types';"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "./look-runtime-types",
+      "resolvedPath": "src/infrastructure/look/look-runtime-types.ts",
+      "expression": "import type { LookMaterialRole } from './look-runtime-types';"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 8,
+      "endLine": 13,
+      "module": "../../domains/look",
+      "resolvedPath": "src/domains/look/index.ts",
+      "expression": "import {\n  normalizeLookReferenceAnalysisPayload,\n  type LookReferenceAnalysisImageInput,\n  type LookReferenceAnalysisOutcome,\n  type LookReferenceAnalyzer,\n} from '../../domains/look';"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 14,
+      "endLine": 14,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 7,
+      "endLine": 11,
+      "module": "../../domains/look/types",
+      "resolvedPath": "src/domains/look/types.ts",
+      "expression": "import type {\n  LookCapability,\n  LookExecutionMode,\n  LookProfileVersion,\n} from '../../domains/look/types';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../../domains/look/types",
+      "resolvedPath": "src/domains/look/types.ts",
+      "expression": "import type { LookExecutionMode, LookProfileVersion } from '../../domains/look/types';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./adapters/host-mtoon-look-adapter",
+      "resolvedPath": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "expression": "import { createHostMtoonLookAdapter } from './adapters/host-mtoon-look-adapter';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./adapters/toonlab-look-adapter",
+      "resolvedPath": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "expression": "import { createToonLabLookAdapter } from './adapters/toonlab-look-adapter';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 11,
+      "endLine": 16,
+      "module": "./look-runtime-types",
+      "resolvedPath": "src/infrastructure/look/look-runtime-types.ts",
+      "expression": "import type {\n  LookRuntimeApplyResult,\n  LookRuntimeTarget,\n  LookStyleAdapter,\n  LookStyleProviderId,\n} from './look-runtime-types';"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 7,
+      "endLine": 15,
+      "module": "../../domains/look",
+      "resolvedPath": "src/domains/look/index.ts",
+      "expression": "import type {\n  AppendLookProfileVersionInput,\n  CreateLookProfileInput,\n  DuplicateLookProfileInput,\n  LookProfileRecord,\n  LookProfileVersion,\n  LookReferenceAnalysisDraft,\n  LookReferenceAnalysisOutcome,\n} from '../../domains/look';"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 16,
+      "endLine": 16,
+      "module": "../../domains/look",
+      "resolvedPath": "src/domains/look/index.ts",
+      "expression": "import { buildLookProfileWriteDraftFromAnalysis } from '../../domains/look';"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 17,
+      "endLine": 20,
+      "module": "./look-reference-analysis-service",
+      "resolvedPath": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "expression": "import {\n  analyzeLookReferences,\n  type LookReferenceAnalysisRequest,\n} from './look-reference-analysis-service';"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 21,
+      "endLine": 21,
+      "module": "./supabase-look.repository",
+      "resolvedPath": "src/infrastructure/look/supabase-look.repository.ts",
+      "expression": "import { supabaseLookProfileRepository } from './supabase-look.repository';"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 6,
+      "endLine": 18,
+      "module": "../../domains/look",
+      "resolvedPath": "src/domains/look/index.ts",
+      "expression": "import {\n  parseLookCapabilities,\n  parseLookExecutionModes,\n  parseLookProfile,\n  parseLookProfileVersion,\n  parseLookReferences,\n  parseLookScope,\n  type LookProfileRecord,\n  type LookProfileStatus,\n  type LookProfileVersion,\n  type LookProfileWriteDraft,\n  type LookScope,\n} from '../../domains/look';"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 7,
+      "endLine": 16,
+      "module": "../../domains/look",
+      "resolvedPath": "src/domains/look/index.ts",
+      "expression": "import {\n  normalizeLookProfileWriteDraft,\n  type AppendLookProfileVersionInput,\n  type CreateLookProfileInput,\n  type DuplicateLookProfileInput,\n  type LookProfileRecord,\n  type LookProfileRepository,\n  type LookProfileVersion,\n  type LookProfileWriteDraft,\n} from '../../domains/look';"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 17,
+      "endLine": 17,
+      "module": "../../lib/authenticatedUser",
+      "resolvedPath": "src/lib/authenticatedUser.ts",
+      "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 18,
+      "endLine": 18,
+      "module": "../../lib/networkTimeout",
+      "resolvedPath": "src/lib/networkTimeout.ts",
+      "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 19,
+      "endLine": 19,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 20,
+      "endLine": 29,
+      "module": "./look.persistence",
+      "resolvedPath": "src/infrastructure/look/look.persistence.ts",
+      "expression": "import {\n  LOOK_PROFILE_COLUMNS,\n  LOOK_PROFILE_VERSION_COLUMNS,\n  mapLookProfileRecord,\n  mapLookProfileVersionRow,\n  resolveOwnerScope,\n  toPersistedVersionInsert,\n  type LookProfileDto,\n  type LookProfileVersionDto,\n} from './look.persistence';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 78,
+      "endLine": 160,
+      "text": "export function createHostMtoonLookAdapter(): LookStyleAdapter {\n  const profile = createSagaTreeMToonProfileV1();\n\n  return {\n    id: 'host-mtoon',\n    isAvailable: () => true,\n    unavailableReasonDe: null,\n    restoreBaseline: (target) => {\n      restoreSnapshots(target);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      if (scene && lights) {\n        applyNeutralPreviewLights(scene, lights);\n      }\n      return {\n        status: 'restored',\n        providerId: 'host-mtoon',\n        profileId: null,\n        version: null,\n        executionMode: null,\n        capabilities: [],\n        noticeDe: null,\n      };\n    },\n    apply: ({ version, target, executionMode }) => {\n      restoreSnapshots(target);\n      const root = asObject3D(target.root);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      const applied = new Set<LookCapability>();\n\n      if (!root || !scene || !lights) {\n        return {\n          status: 'unsupported',\n          providerId: 'host-mtoon',\n          profileId: version.profileId,\n          version: version.version,\n          executionMode,\n          capabilities: capabilityResults(version, applied),\n          noticeDe: 'Look-Ziel (Root/Scene/Lights) fehlt.',\n        };\n      }\n\n      if (version.capabilities.includes('lighting')) {\n        applyMtoonProfileToScene(scene, lights, profile);\n        applied.add('lighting');\n      } else {\n        applyNeutralPreviewLights(scene, lights);\n      }\n\n      if (version.capabilities.includes('character')) {\n        applyMtoonProfileToModel({\n          root,\n          profile,\n          isImportModel: target.isImportModel,\n          colors: {\n            skin: target.colors.skin,\n            hair: target.colors.hair,\n            clothing: target.colors.clothing,\n            eyes: target.colors.eyes,\n          },\n        });\n        applied.add('character');\n      }\n\n      if (version.capabilities.includes('postFx')) {\n        applied.add('postFx');\n      }\n\n      const caps = capabilityResults(version, applied);\n      const anyApplied = caps.some((c) => c.status === 'applied' || c.status === 'partial');\n      return {\n        status: anyApplied ? (caps.every((c) => c.status === 'applied') ? 'applied' : 'partial') : 'unsupported',\n        providerId: 'host-mtoon',\n        profileId: version.profileId,\n        version: version.version,\n        executionMode,\n        capabilities: caps,\n        noticeDe: null,\n      };\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 26,
+      "endLine": 37,
+      "text": "export function createToonLabLookAdapter(): LookStyleAdapter {\n  const decision = evaluateToonLabCompatibilitySpike();\n  const available = decision.verdict === 'GO';\n\n  return {\n    id: 'toonlab',\n    isAvailable: () => available,\n    unavailableReasonDe: available ? null : BLOCKED_DE,\n    apply: ({ version }) => blockedResult(version.profileId, version.version),\n    restoreBaseline: () => blockedResult(null, null),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 26,
+      "endLine": 35,
+      "text": "export function classifyLookMaterialRole(materialOrMeshName: string): LookMaterialRole {\n  const normalized = materialOrMeshName.trim().toLowerCase();\n  if (!normalized) return 'unclassified';\n  for (const entry of ROLE_HINTS) {\n    if (entry.hints.some((hint) => normalized.includes(hint))) {\n      return entry.role;\n    }\n  }\n  return 'unclassified';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 37,
+      "endLine": 39,
+      "text": "export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {\n  return role !== 'unclassified';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 16,
+      "endLine": 21,
+      "text": "export type LookReferenceAnalysisRequestImage = LookReferenceAnalysisImageInput & {\n  /** Inline image for edge vision call. */\n  readonly contentBase64?: string;\n  /** Owner-scoped storage path alternative to contentBase64. */\n  readonly storagePath?: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 23,
+      "endLine": 26,
+      "text": "export type LookReferenceAnalysisRequest = {\n  readonly references: readonly LookReferenceAnalysisRequestImage[];\n  readonly displayNameHint?: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 101,
+      "endLine": 172,
+      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 175,
+      "endLine": 184,
+      "text": "export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {\n  return {\n    async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 14,
+      "endLine": 14,
+      "text": "export type LookRuntimeBaselineMode = 'pbr-neutral';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 16,
+      "endLine": 16,
+      "text": "export type LookStyleProviderId = 'host-mtoon' | 'toonlab' | 'none';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 18,
+      "endLine": 26,
+      "text": "export type LookMaterialRole =\n  | 'skin'\n  | 'hair'\n  | 'eyes'\n  | 'cloth'\n  | 'leather'\n  | 'metal'\n  | 'cybernetic'\n  | 'unclassified';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 28,
+      "endLine": 33,
+      "text": "export type LookRuntimeApplyStatus =\n  | 'applied'\n  | 'partial'\n  | 'restored'\n  | 'unsupported'\n  | 'blocked';"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 35,
+      "endLine": 39,
+      "text": "export type LookCapabilityApplyResult = {\n  readonly capability: LookCapability;\n  readonly status: LookRuntimeApplyStatus;\n  readonly noticeDe: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 41,
+      "endLine": 49,
+      "text": "export type LookRuntimeApplyResult = {\n  readonly status: LookRuntimeApplyStatus;\n  readonly providerId: LookStyleProviderId;\n  readonly profileId: string | null;\n  readonly version: number | null;\n  readonly executionMode: LookExecutionMode | null;\n  readonly capabilities: readonly LookCapabilityApplyResult[];\n  readonly noticeDe: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 51,
+      "endLine": 64,
+      "text": "export type LookRuntimeTarget = {\n  readonly root: unknown;\n  readonly scene: unknown;\n  readonly styleLights: unknown;\n  /** Load-time material snapshots — restore before every apply. */\n  readonly materialSnapshots: unknown;\n  readonly isImportModel: boolean;\n  readonly colors: {\n    readonly skin?: string;\n    readonly hair?: string;\n    readonly clothing?: string;\n    readonly eyes?: string;\n  };\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime-types.ts",
+      "line": 66,
+      "endLine": 76,
+      "text": "export type LookStyleAdapter = {\n  readonly id: LookStyleProviderId;\n  readonly isAvailable: () => boolean;\n  readonly unavailableReasonDe: string | null;\n  readonly apply: (input: {\n    readonly version: LookProfileVersion;\n    readonly target: LookRuntimeTarget;\n    readonly executionMode: LookExecutionMode;\n  }) => LookRuntimeApplyResult;\n  readonly restoreBaseline: (target: LookRuntimeTarget) => LookRuntimeApplyResult;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 18,
+      "endLine": 22,
+      "text": "export type LookRuntimeOptions = {\n  readonly preferProvider?: LookStyleProviderId;\n  readonly hostAdapter?: LookStyleAdapter;\n  readonly toonLabAdapter?: LookStyleAdapter;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 24,
+      "endLine": 87,
+      "text": "export class LookRuntime {\n  private readonly host: LookStyleAdapter;\n  private readonly toonLab: LookStyleAdapter;\n  private readonly preferProvider: LookStyleProviderId;\n  private lastResult: LookRuntimeApplyResult | null = null;\n\n  constructor(options: LookRuntimeOptions = {}) {\n    this.host = options.hostAdapter ?? createHostMtoonLookAdapter();\n    this.toonLab = options.toonLabAdapter ?? createToonLabLookAdapter();\n    this.preferProvider = options.preferProvider ?? 'host-mtoon';\n  }\n\n  getLastResult(): LookRuntimeApplyResult | null {\n    return this.lastResult;\n  }\n\n  selectAdapter(executionMode: LookExecutionMode): LookStyleAdapter {\n    if (\n      this.preferProvider === 'toonlab' &&\n      this.toonLab.isAvailable() &&\n      executionMode === 'rendered'\n    ) {\n      return this.toonLab;\n    }\n    // Realtime avatar preview stays on host WebGL/MToon until spike GO.\n    if (this.toonLab.isAvailable() && this.preferProvider === 'toonlab') {\n      return this.toonLab;\n    }\n    return this.host;\n  }\n\n  restorePbrNeutral(target: LookRuntimeTarget): LookRuntimeApplyResult {\n    const result = this.host.restoreBaseline(target);\n    this.lastResult = result;\n    return result;\n  }\n\n  applyLookProfile(\n    version: LookProfileVersion,\n    target: LookRuntimeTarget,\n    executionMode: LookExecutionMode = 'realtime',\n  ): LookRuntimeApplyResult {\n    const mode =\n      version.executionModes.includes(executionMode)\n        ? executionMode\n        : (version.executionModes[0] ?? 'realtime');\n    const adapter = this.selectAdapter(mode);\n    if (!adapter.isAvailable()) {\n      // Fail soft to host so preview still works when ToonLab is preferred but blocked.\n      const fallback = this.host.apply({ version, target, executionMode: mode });\n      this.lastResult = {\n        ...fallback,\n        noticeDe:\n          adapter.unavailableReasonDe ??\n          'Bevorzugter Look-Provider nicht verfügbar — Host-MToon verwendet.',\n        status: fallback.status === 'applied' ? 'partial' : fallback.status,\n      };\n      return this.lastResult;\n    }\n    const result = adapter.apply({ version, target, executionMode: mode });\n    this.lastResult = result;\n    return result;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 89,
+      "endLine": 91,
+      "text": "export function createLookRuntime(options?: LookRuntimeOptions): LookRuntime {\n  return new LookRuntime(options);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 23,
+      "endLine": 27,
+      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 29,
+      "endLine": 33,
+      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 35,
+      "endLine": 39,
+      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 41,
+      "endLine": 45,
+      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 47,
+      "endLine": 51,
+      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 53,
+      "endLine": 57,
+      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 59,
+      "endLine": 63,
+      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 66,
+      "endLine": 70,
+      "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 76,
+      "endLine": 84,
+      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 20,
+      "endLine": 21,
+      "text": "export const LOOK_PROFILE_COLUMNS =\n  'id, public_id, owner_user_id, owner_scope, current_version, status, created_at, updated_at' as const;"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 23,
+      "endLine": 24,
+      "text": "export const LOOK_PROFILE_VERSION_COLUMNS =\n  'profile_id, version, source, display_name, capabilities, execution_modes, look_references, created_at' as const;"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 26,
+      "endLine": 35,
+      "text": "export type LookProfileDto = {\n  id: string;\n  public_id?: string | null;\n  owner_user_id: string;\n  owner_scope: string;\n  current_version: number;\n  status: string;\n  created_at: string;\n  updated_at: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 37,
+      "endLine": 46,
+      "text": "export type LookProfileVersionDto = {\n  profile_id: string;\n  version: number;\n  source: string;\n  display_name: string;\n  capabilities: unknown;\n  execution_modes: unknown;\n  look_references: unknown;\n  created_at: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 48,
+      "endLine": 61,
+      "text": "export function mapLookProfileVersionRow(\n  row: LookProfileVersionDto,\n): LookProfileVersion | null {\n  return parseLookProfileVersion({\n    profileId: row.profile_id,\n    version: row.version,\n    source: row.source,\n    displayName: row.display_name,\n    capabilities: row.capabilities,\n    executionModes: row.execution_modes,\n    references: row.look_references,\n    createdAtIso: row.created_at,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 63,
+      "endLine": 89,
+      "text": "export function mapLookProfileRecord(\n  profileRow: LookProfileDto,\n  versionRow: LookProfileVersionDto,\n): LookProfileRecord | null {\n  const profile = parseLookProfile({\n    id: profileRow.id,\n    publicId:\n      typeof profileRow.public_id === 'string' && profileRow.public_id.trim()\n        ? profileRow.public_id.trim().toUpperCase()\n        : undefined,\n    currentVersion: profileRow.current_version,\n    ownerScope: profileRow.owner_scope,\n    ownerId: profileRow.owner_user_id,\n  });\n  if (profile === null) return null;\n  if (profileRow.status !== 'active' && profileRow.status !== 'archived') {\n    return null;\n  }\n  const current = mapLookProfileVersionRow(versionRow);\n  if (current === null) return null;\n  if (current.version !== profile.currentVersion) return null;\n  return {\n    profile,\n    status: profileRow.status as LookProfileStatus,\n    current,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 91,
+      "endLine": 116,
+      "text": "export function toPersistedVersionInsert(\n  profileId: string,\n  version: number,\n  draft: LookProfileWriteDraft,\n  createdAtIso: string,\n): {\n  profile_id: string;\n  version: number;\n  source: string;\n  display_name: string;\n  capabilities: LookProfileWriteDraft['capabilities'];\n  execution_modes: LookProfileWriteDraft['executionModes'];\n  look_references: LookProfileWriteDraft['references'];\n  created_at: string;\n} {\n  return {\n    profile_id: profileId,\n    version,\n    source: draft.source,\n    display_name: draft.displayName,\n    capabilities: draft.capabilities,\n    execution_modes: draft.executionModes,\n    look_references: draft.references,\n    created_at: createdAtIso,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 118,
+      "endLine": 122,
+      "text": "export function resolveOwnerScope(draft: LookProfileWriteDraft): LookScope {\n  const scope = draft.ownerScope ?? 'player-character';\n  const parsed = parseLookScope(scope);\n  return parsed ?? 'player-character';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 125,
+      "endLine": 127,
+      "text": "export function extractReferenceUris(version: LookProfileVersion): string[] {\n  return version.references.map((ref) => ref.uri);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 129,
+      "endLine": 131,
+      "text": "export function assertParsedCapabilities(value: unknown): string[] {\n  return parseLookCapabilities(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 133,
+      "endLine": 135,
+      "text": "export function assertParsedExecutionModes(value: unknown): string[] {\n  return parseLookExecutionModes(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 137,
+      "endLine": 139,
+      "text": "export function assertParsedReferences(value: unknown) {\n  return parseLookReferences(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 58,
+      "endLine": 286,
+      "text": "export class SupabaseLookProfileRepository implements LookProfileRepository {\n  async listProfiles(options?: {\n    includeArchived?: boolean;\n  }): Promise<LookProfileRecord[]> {\n    await getAuthenticatedUserId();\n    let query = supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS);\n    if (!options?.includeArchived) {\n      query = query.eq('status', 'active');\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      query.order('updated_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfiles konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfiles konnten nicht geladen werden: ${error.message}`);\n    }\n    const rows = (data ?? []) as LookProfileDto[];\n    const out: LookProfileRecord[] = [];\n    for (const row of rows) {\n      const record = await this.loadRecord(row.id);\n      if (record) out.push(record);\n    }\n    return out;\n  }\n\n  async getProfileById(profileId: string): Promise<LookProfileRecord | null> {\n    await getAuthenticatedUserId();\n    return this.loadRecord(assertProfileId(profileId));\n  }\n\n  async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const draft = requireDraft(input.draft);\n    const profileId = newLookProfileId();\n    const ownerScope = resolveOwnerScope(draft);\n    const createdAt = new Date().toISOString();\n\n    const { error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);\n    }\n\n    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,\n      );\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record) {\n      throw new Error('LookProfile nach Create nicht lesbar.');\n    }\n    return record;\n  }\n\n  async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const profileId = assertProfileId(input.profileId);\n    const draft = requireDraft(input.draft);\n    const existing = await this.loadRecord(profileId);\n    if (!existing) {\n      throw new Error('LookProfile nicht gefunden.');\n    }\n    if (existing.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung für dieses LookProfile.');\n    }\n    if (existing.status === 'archived') {\n      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');\n    }\n\n    const nextVersion = existing.profile.currentVersion + 1;\n    const createdAt = new Date().toISOString();\n    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);\n\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      if (/duplicate|unique|conflict/i.test(versionError.message)) {\n        throw new Error(\n          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',\n        );\n      }\n      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);\n    }\n\n    const { error: bumpError } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',\n    );\n    if (bumpError) {\n      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record || record.profile.currentVersion !== nextVersion) {\n      throw new Error(\n        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',\n      );\n    }\n    return record;\n  }\n\n  async archiveProfile(profileId: string): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { error } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ status: 'archived' })\n        .eq('id', id)\n        .eq('owner_user_id', userId),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht archiviert werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfile konnte nicht archiviert werden: ${error.message}`);\n    }\n    const record = await this.loadRecord(id);\n    if (!record) {\n      throw new Error('LookProfile nach Archivierung nicht lesbar.');\n    }\n    return record;\n  }\n\n  async duplicateProfile(input: DuplicateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const sourceId = assertProfileId(input.sourceProfileId);\n    const source = await this.loadRecord(sourceId);\n    if (!source) {\n      throw new Error('Quell-LookProfile nicht gefunden.');\n    }\n    if (source.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung zum Duplizieren dieses Looks.');\n    }\n\n    const displayName =\n      typeof input.displayName === 'string' && input.displayName.trim().length > 0\n        ? input.displayName.trim()\n        : `${source.current.displayName} (Kopie)`;\n\n    return this.createProfile({\n      draft: {\n        displayName,\n        source: source.current.source,\n        references: source.current.references,\n        capabilities: source.current.capabilities,\n        executionModes: source.current.executionModes,\n        ownerScope: source.profile.ownerScope,\n      },\n    });\n  }\n\n  async listVersions(profileId: string): Promise<LookProfileVersion[]> {\n    await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', id)\n        .order('version', { ascending: true }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Look-Versionen konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`Look-Versionen konnten nicht geladen werden: ${error.message}`);\n    }\n    return ((data ?? []) as LookProfileVersionDto[])\n      .map(mapLookProfileVersionRow)\n      .filter((row): row is LookProfileVersion => row !== null);\n  }\n\n  private async loadRecord(profileId: string): Promise<LookProfileRecord | null> {\n    const { data: profileData, error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS).eq('id', profileId).maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht geladen werden: ${profileError.message}`);\n    }\n    if (!profileData) return null;\n    const profileRow = profileData as LookProfileDto;\n\n    const { data: versionData, error: versionError } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', profileId)\n        .eq('version', profileRow.current_version)\n        .maybeSingle(),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht geladen werden: ${versionError.message}`,\n      );\n    }\n    if (!versionData) return null;\n    return mapLookProfileRecord(profileRow, versionData as LookProfileVersionDto);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 288,
+      "endLine": 288,
+      "text": "export const supabaseLookProfileRepository = new SupabaseLookProfileRepository();"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 25,
+      "endLine": 27,
+      "name": "asObject3D",
+      "text": "function asObject3D(value: unknown): Object3D | null {\n  return value && typeof value === 'object' ? (value as Object3D) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 29,
+      "endLine": 31,
+      "name": "asScene",
+      "text": "function asScene(value: unknown): Scene | null {\n  return value && typeof value === 'object' ? (value as Scene) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 33,
+      "endLine": 35,
+      "name": "asLights",
+      "text": "function asLights(value: unknown): MtoonStyleLights | null {\n  return value && typeof value === 'object' ? (value as MtoonStyleLights) : null;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 37,
+      "endLine": 39,
+      "name": "asSnapshots",
+      "text": "function asSnapshots(value: unknown): MaterialStyleSnapshot[] {\n  return Array.isArray(value) ? (value as MaterialStyleSnapshot[]) : [];\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 41,
+      "endLine": 69,
+      "name": "capabilityResults",
+      "text": "function capabilityResults(\n  version: LookProfileVersion,\n  applied: ReadonlySet<LookCapability>,\n): LookCapabilityApplyResult[] {\n  return version.capabilities.map((capability) => {\n    if (capability === 'character' || capability === 'lighting') {\n      return {\n        capability,\n        status: applied.has(capability) ? 'applied' : 'unsupported',\n        noticeDe: applied.has(capability)\n          ? null\n          : 'Fähigkeit konnte auf dem Host-Adapter nicht angewendet werden.',\n      };\n    }\n    if (capability === 'postFx') {\n      return {\n        capability,\n        status: 'partial',\n        noticeDe:\n          'PostFX ist auf dem Host-MToon-Pfad vorbereitet, aber noch ohne eigenen Pass (no-op).',\n      };\n    }\n    return {\n      capability,\n      status: 'unsupported',\n      noticeDe: 'Welt-Domain noch nicht verfügbar.',\n    };\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 45,
+      "endLine": 68,
+      "name": "callback",
+      "text": "(capability) => {\n    if (capability === 'character' || capability === 'lighting') {\n      return {\n        capability,\n        status: applied.has(capability) ? 'applied' : 'unsupported',\n        noticeDe: applied.has(capability)\n          ? null\n          : 'Fähigkeit konnte auf dem Host-Adapter nicht angewendet werden.',\n      };\n    }\n    if (capability === 'postFx') {\n      return {\n        capability,\n        status: 'partial',\n        noticeDe:\n          'PostFX ist auf dem Host-MToon-Pfad vorbereitet, aber noch ohne eigenen Pass (no-op).',\n      };\n    }\n    return {\n      capability,\n      status: 'unsupported',\n      noticeDe: 'Welt-Domain noch nicht verfügbar.',\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 71,
+      "endLine": 76,
+      "name": "restoreSnapshots",
+      "text": "function restoreSnapshots(target: LookRuntimeTarget): void {\n  const snapshots = asSnapshots(target.materialSnapshots);\n  if (snapshots.length > 0) {\n    restoreMaterialStyleSnapshots(snapshots);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 78,
+      "endLine": 160,
+      "name": "createHostMtoonLookAdapter",
+      "text": "export function createHostMtoonLookAdapter(): LookStyleAdapter {\n  const profile = createSagaTreeMToonProfileV1();\n\n  return {\n    id: 'host-mtoon',\n    isAvailable: () => true,\n    unavailableReasonDe: null,\n    restoreBaseline: (target) => {\n      restoreSnapshots(target);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      if (scene && lights) {\n        applyNeutralPreviewLights(scene, lights);\n      }\n      return {\n        status: 'restored',\n        providerId: 'host-mtoon',\n        profileId: null,\n        version: null,\n        executionMode: null,\n        capabilities: [],\n        noticeDe: null,\n      };\n    },\n    apply: ({ version, target, executionMode }) => {\n      restoreSnapshots(target);\n      const root = asObject3D(target.root);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      const applied = new Set<LookCapability>();\n\n      if (!root || !scene || !lights) {\n        return {\n          status: 'unsupported',\n          providerId: 'host-mtoon',\n          profileId: version.profileId,\n          version: version.version,\n          executionMode,\n          capabilities: capabilityResults(version, applied),\n          noticeDe: 'Look-Ziel (Root/Scene/Lights) fehlt.',\n        };\n      }\n\n      if (version.capabilities.includes('lighting')) {\n        applyMtoonProfileToScene(scene, lights, profile);\n        applied.add('lighting');\n      } else {\n        applyNeutralPreviewLights(scene, lights);\n      }\n\n      if (version.capabilities.includes('character')) {\n        applyMtoonProfileToModel({\n          root,\n          profile,\n          isImportModel: target.isImportModel,\n          colors: {\n            skin: target.colors.skin,\n            hair: target.colors.hair,\n            clothing: target.colors.clothing,\n            eyes: target.colors.eyes,\n          },\n        });\n        applied.add('character');\n      }\n\n      if (version.capabilities.includes('postFx')) {\n        applied.add('postFx');\n      }\n\n      const caps = capabilityResults(version, applied);\n      const anyApplied = caps.some((c) => c.status === 'applied' || c.status === 'partial');\n      return {\n        status: anyApplied ? (caps.every((c) => c.status === 'applied') ? 'applied' : 'partial') : 'unsupported',\n        providerId: 'host-mtoon',\n        profileId: version.profileId,\n        version: version.version,\n        executionMode,\n        capabilities: caps,\n        noticeDe: null,\n      };\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 83,
+      "endLine": 83,
+      "name": "callback",
+      "text": "() => true"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 85,
+      "endLine": 101,
+      "name": "callback",
+      "text": "(target) => {\n      restoreSnapshots(target);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      if (scene && lights) {\n        applyNeutralPreviewLights(scene, lights);\n      }\n      return {\n        status: 'restored',\n        providerId: 'host-mtoon',\n        profileId: null,\n        version: null,\n        executionMode: null,\n        capabilities: [],\n        noticeDe: null,\n      };\n    }"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 102,
+      "endLine": 158,
+      "name": "callback",
+      "text": "({ version, target, executionMode }) => {\n      restoreSnapshots(target);\n      const root = asObject3D(target.root);\n      const scene = asScene(target.scene);\n      const lights = asLights(target.styleLights);\n      const applied = new Set<LookCapability>();\n\n      if (!root || !scene || !lights) {\n        return {\n          status: 'unsupported',\n          providerId: 'host-mtoon',\n          profileId: version.profileId,\n          version: version.version,\n          executionMode,\n          capabilities: capabilityResults(version, applied),\n          noticeDe: 'Look-Ziel (Root/Scene/Lights) fehlt.',\n        };\n      }\n\n      if (version.capabilities.includes('lighting')) {\n        applyMtoonProfileToScene(scene, lights, profile);\n        applied.add('lighting');\n      } else {\n        applyNeutralPreviewLights(scene, lights);\n      }\n\n      if (version.capabilities.includes('character')) {\n        applyMtoonProfileToModel({\n          root,\n          profile,\n          isImportModel: target.isImportModel,\n          colors: {\n            skin: target.colors.skin,\n            hair: target.colors.hair,\n            clothing: target.colors.clothing,\n            eyes: target.colors.eyes,\n          },\n        });\n        applied.add('character');\n      }\n\n      if (version.capabilities.includes('postFx')) {\n        applied.add('postFx');\n      }\n\n      const caps = capabilityResults(version, applied);\n      const anyApplied = caps.some((c) => c.status === 'applied' || c.status === 'partial');\n      return {\n        status: anyApplied ? (caps.every((c) => c.status === 'applied') ? 'applied' : 'partial') : 'unsupported',\n        providerId: 'host-mtoon',\n        profileId: version.profileId,\n        version: version.version,\n        executionMode,\n        capabilities: caps,\n        noticeDe: null,\n      };\n    }"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 148,
+      "endLine": 148,
+      "name": "callback",
+      "text": "(c) => c.status === 'applied' || c.status === 'partial'"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
+      "line": 150,
+      "endLine": 150,
+      "name": "callback",
+      "text": "(c) => c.status === 'applied'"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 14,
+      "endLine": 24,
+      "name": "blockedResult",
+      "text": "function blockedResult(profileId: string | null, version: number | null): LookRuntimeApplyResult {\n  return {\n    status: 'blocked',\n    providerId: 'toonlab',\n    profileId,\n    version,\n    executionMode: null,\n    capabilities: [],\n    noticeDe: BLOCKED_DE,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 26,
+      "endLine": 37,
+      "name": "createToonLabLookAdapter",
+      "text": "export function createToonLabLookAdapter(): LookStyleAdapter {\n  const decision = evaluateToonLabCompatibilitySpike();\n  const available = decision.verdict === 'GO';\n\n  return {\n    id: 'toonlab',\n    isAvailable: () => available,\n    unavailableReasonDe: available ? null : BLOCKED_DE,\n    apply: ({ version }) => blockedResult(version.profileId, version.version),\n    restoreBaseline: () => blockedResult(null, null),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 32,
+      "endLine": 32,
+      "name": "callback",
+      "text": "() => available"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 34,
+      "endLine": 34,
+      "name": "callback",
+      "text": "({ version }) => blockedResult(version.profileId, version.version)"
+    },
+    {
+      "path": "src/infrastructure/look/adapters/toonlab-look-adapter.ts",
+      "line": 35,
+      "endLine": 35,
+      "name": "callback",
+      "text": "() => blockedResult(null, null)"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 26,
+      "endLine": 35,
+      "name": "classifyLookMaterialRole",
+      "text": "export function classifyLookMaterialRole(materialOrMeshName: string): LookMaterialRole {\n  const normalized = materialOrMeshName.trim().toLowerCase();\n  if (!normalized) return 'unclassified';\n  for (const entry of ROLE_HINTS) {\n    if (entry.hints.some((hint) => normalized.includes(hint))) {\n      return entry.role;\n    }\n  }\n  return 'unclassified';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 30,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(hint) => normalized.includes(hint)"
+    },
+    {
+      "path": "src/infrastructure/look/look-material-roles.ts",
+      "line": 37,
+      "endLine": 39,
+      "name": "isTintableLookMaterialRole",
+      "text": "export function isTintableLookMaterialRole(role: LookMaterialRole): boolean {\n  return role !== 'unclassified';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 39,
+      "endLine": 41,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 43,
+      "endLine": 71,
+      "name": "parseEdgeResponse",
+      "text": "function parseEdgeResponse(value: unknown): EdgeOk | EdgeFail {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return {\n      status: 'error',\n      message: 'Die Analyse-Antwort hatte ein ungültiges Format.',\n    };\n  }\n  if (\n    value.status === 'ok' &&\n    isRecord(value.payload) &&\n    typeof value.analyzedAtIso === 'string'\n  ) {\n    return {\n      status: 'ok',\n      payload: value.payload,\n      analyzedAtIso: value.analyzedAtIso,\n    };\n  }\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n  return {\n    status: 'error',\n    message: 'Die Analyse-Antwort hatte ein ungültiges Format.',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 73,
+      "endLine": 75,
+      "name": "hasResponseContext",
+      "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 77,
+      "endLine": 86,
+      "name": "getFunctionErrorMessage",
+      "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseEdgeResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 91,
+      "endLine": 94,
+      "name": "estimateBase64Bytes",
+      "text": "function estimateBase64Bytes(b64: string | undefined): number {\n  if (!b64) return 0;\n  return Math.ceil((b64.length * 3) / 4);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 101,
+      "endLine": 172,
+      "name": "analyzeLookReferences",
+      "text": "export async function analyzeLookReferences(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  const aggregateBytes = request.references.reduce(\n    (sum, ref) => sum + estimateBase64Bytes(ref.contentBase64),\n    0,\n  );\n  if (aggregateBytes > LOOK_REFERENCE_AGGREGATE_MAX_BYTES) {\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe: `Gesamtgröße der Referenzbilder überschreitet ${(LOOK_REFERENCE_AGGREGATE_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB.`,\n    };\n  }\n\n  const domainInputs: LookReferenceAnalysisImageInput[] = request.references.map(\n    (ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    }),\n  );\n\n  const { data, error } = await supabase.functions.invoke(\n    'look-reference-analysis',\n    {\n      body: {\n        action: 'analyze',\n        displayNameHint: request.displayNameHint,\n        references: request.references.map((ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })),\n      },\n    },\n  );\n\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    return {\n      ok: false,\n      code: 'edge-error',\n      messageDe:\n        serverMessage ??\n        'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n    };\n  }\n\n  const edge = parseEdgeResponse(data);\n  if (edge.status !== 'ok') {\n    return {\n      ok: false,\n      code: edge.status,\n      messageDe: edge.message,\n    };\n  }\n\n  return normalizeLookReferenceAnalysisPayload(edge.payload, {\n    references: domainInputs,\n    displayNameHint: request.displayNameHint,\n    analyzedAtIso: edge.analyzedAtIso,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 105,
+      "endLine": 105,
+      "name": "callback",
+      "text": "(sum, ref) => sum + estimateBase64Bytes(ref.contentBase64)"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 117,
+      "endLine": 124,
+      "name": "callback",
+      "text": "(ref) => ({\n      id: ref.id,\n      kind: ref.kind,\n      mime: ref.mime,\n      uri: ref.uri,\n      weight: ref.weight,\n      label: ref.label,\n    })"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 133,
+      "endLine": 142,
+      "name": "callback",
+      "text": "(ref) => ({\n          id: ref.id,\n          kind: ref.kind,\n          mime: ref.mime,\n          uri: ref.uri,\n          weight: ref.weight,\n          label: ref.label,\n          contentBase64: ref.contentBase64,\n          storagePath: ref.storagePath,\n        })"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 175,
+      "endLine": 184,
+      "name": "createEdgeLookReferenceAnalyzer",
+      "text": "export function createEdgeLookReferenceAnalyzer(): LookReferenceAnalyzer {\n  return {\n    async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-reference-analysis-service.ts",
+      "line": 177,
+      "endLine": 182,
+      "name": "analyze",
+      "text": "async analyze(input) {\n      return analyzeLookReferences({\n        references: input.references,\n        displayNameHint: input.displayNameHint,\n      });\n    }"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 36,
+      "endLine": 38,
+      "name": "getLastResult",
+      "text": "getLastResult(): LookRuntimeApplyResult | null {\n    return this.lastResult;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 40,
+      "endLine": 53,
+      "name": "selectAdapter",
+      "text": "selectAdapter(executionMode: LookExecutionMode): LookStyleAdapter {\n    if (\n      this.preferProvider === 'toonlab' &&\n      this.toonLab.isAvailable() &&\n      executionMode === 'rendered'\n    ) {\n      return this.toonLab;\n    }\n    // Realtime avatar preview stays on host WebGL/MToon until spike GO.\n    if (this.toonLab.isAvailable() && this.preferProvider === 'toonlab') {\n      return this.toonLab;\n    }\n    return this.host;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 55,
+      "endLine": 59,
+      "name": "restorePbrNeutral",
+      "text": "restorePbrNeutral(target: LookRuntimeTarget): LookRuntimeApplyResult {\n    const result = this.host.restoreBaseline(target);\n    this.lastResult = result;\n    return result;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 61,
+      "endLine": 86,
+      "name": "applyLookProfile",
+      "text": "applyLookProfile(\n    version: LookProfileVersion,\n    target: LookRuntimeTarget,\n    executionMode: LookExecutionMode = 'realtime',\n  ): LookRuntimeApplyResult {\n    const mode =\n      version.executionModes.includes(executionMode)\n        ? executionMode\n        : (version.executionModes[0] ?? 'realtime');\n    const adapter = this.selectAdapter(mode);\n    if (!adapter.isAvailable()) {\n      // Fail soft to host so preview still works when ToonLab is preferred but blocked.\n      const fallback = this.host.apply({ version, target, executionMode: mode });\n      this.lastResult = {\n        ...fallback,\n        noticeDe:\n          adapter.unavailableReasonDe ??\n          'Bevorzugter Look-Provider nicht verfügbar — Host-MToon verwendet.',\n        status: fallback.status === 'applied' ? 'partial' : fallback.status,\n      };\n      return this.lastResult;\n    }\n    const result = adapter.apply({ version, target, executionMode: mode });\n    this.lastResult = result;\n    return result;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/look-runtime.ts",
+      "line": 89,
+      "endLine": 91,
+      "name": "createLookRuntime",
+      "text": "export function createLookRuntime(options?: LookRuntimeOptions): LookRuntime {\n  return new LookRuntime(options);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 23,
+      "endLine": 27,
+      "name": "listLookProfiles",
+      "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 29,
+      "endLine": 33,
+      "name": "getLookProfile",
+      "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 35,
+      "endLine": 39,
+      "name": "createLookProfile",
+      "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 41,
+      "endLine": 45,
+      "name": "appendLookProfileVersion",
+      "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 47,
+      "endLine": 51,
+      "name": "archiveLookProfile",
+      "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 53,
+      "endLine": 57,
+      "name": "duplicateLookProfile",
+      "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 59,
+      "endLine": 63,
+      "name": "listLookProfileVersions",
+      "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 66,
+      "endLine": 70,
+      "name": "analyzeLookReferencesForDraft",
+      "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look-service.ts",
+      "line": 76,
+      "endLine": 84,
+      "name": "createLookProfileFromReferenceAnalysis",
+      "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 48,
+      "endLine": 61,
+      "name": "mapLookProfileVersionRow",
+      "text": "export function mapLookProfileVersionRow(\n  row: LookProfileVersionDto,\n): LookProfileVersion | null {\n  return parseLookProfileVersion({\n    profileId: row.profile_id,\n    version: row.version,\n    source: row.source,\n    displayName: row.display_name,\n    capabilities: row.capabilities,\n    executionModes: row.execution_modes,\n    references: row.look_references,\n    createdAtIso: row.created_at,\n  });\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 63,
+      "endLine": 89,
+      "name": "mapLookProfileRecord",
+      "text": "export function mapLookProfileRecord(\n  profileRow: LookProfileDto,\n  versionRow: LookProfileVersionDto,\n): LookProfileRecord | null {\n  const profile = parseLookProfile({\n    id: profileRow.id,\n    publicId:\n      typeof profileRow.public_id === 'string' && profileRow.public_id.trim()\n        ? profileRow.public_id.trim().toUpperCase()\n        : undefined,\n    currentVersion: profileRow.current_version,\n    ownerScope: profileRow.owner_scope,\n    ownerId: profileRow.owner_user_id,\n  });\n  if (profile === null) return null;\n  if (profileRow.status !== 'active' && profileRow.status !== 'archived') {\n    return null;\n  }\n  const current = mapLookProfileVersionRow(versionRow);\n  if (current === null) return null;\n  if (current.version !== profile.currentVersion) return null;\n  return {\n    profile,\n    status: profileRow.status as LookProfileStatus,\n    current,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 91,
+      "endLine": 116,
+      "name": "toPersistedVersionInsert",
+      "text": "export function toPersistedVersionInsert(\n  profileId: string,\n  version: number,\n  draft: LookProfileWriteDraft,\n  createdAtIso: string,\n): {\n  profile_id: string;\n  version: number;\n  source: string;\n  display_name: string;\n  capabilities: LookProfileWriteDraft['capabilities'];\n  execution_modes: LookProfileWriteDraft['executionModes'];\n  look_references: LookProfileWriteDraft['references'];\n  created_at: string;\n} {\n  return {\n    profile_id: profileId,\n    version,\n    source: draft.source,\n    display_name: draft.displayName,\n    capabilities: draft.capabilities,\n    execution_modes: draft.executionModes,\n    look_references: draft.references,\n    created_at: createdAtIso,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 118,
+      "endLine": 122,
+      "name": "resolveOwnerScope",
+      "text": "export function resolveOwnerScope(draft: LookProfileWriteDraft): LookScope {\n  const scope = draft.ownerScope ?? 'player-character';\n  const parsed = parseLookScope(scope);\n  return parsed ?? 'player-character';\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 125,
+      "endLine": 127,
+      "name": "extractReferenceUris",
+      "text": "export function extractReferenceUris(version: LookProfileVersion): string[] {\n  return version.references.map((ref) => ref.uri);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 126,
+      "endLine": 126,
+      "name": "callback",
+      "text": "(ref) => ref.uri"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 129,
+      "endLine": 131,
+      "name": "assertParsedCapabilities",
+      "text": "export function assertParsedCapabilities(value: unknown): string[] {\n  return parseLookCapabilities(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 133,
+      "endLine": 135,
+      "name": "assertParsedExecutionModes",
+      "text": "export function assertParsedExecutionModes(value: unknown): string[] {\n  return parseLookExecutionModes(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/look.persistence.ts",
+      "line": 137,
+      "endLine": 139,
+      "name": "assertParsedReferences",
+      "text": "export function assertParsedReferences(value: unknown) {\n  return parseLookReferences(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 34,
+      "endLine": 40,
+      "name": "newLookProfileId",
+      "text": "function newLookProfileId(): string {\n  const rand =\n    typeof crypto !== 'undefined' && 'randomUUID' in crypto\n      ? crypto.randomUUID().replace(/-/g, '').slice(0, 12)\n      : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;\n  return `look:${rand}`;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 42,
+      "endLine": 48,
+      "name": "assertProfileId",
+      "text": "function assertProfileId(profileId: string): string {\n  const trimmed = profileId.trim();\n  if (trimmed.length < 8 || trimmed.length > 160) {\n    throw new Error('Ungültige LookProfile-ID.');\n  }\n  return trimmed;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 50,
+      "endLine": 56,
+      "name": "requireDraft",
+      "text": "function requireDraft(raw: unknown): LookProfileWriteDraft {\n  const normalized = normalizeLookProfileWriteDraft(raw);\n  if (normalized.ok === false) {\n    throw new Error(normalized.error.message);\n  }\n  return normalized.draft;\n}"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 59,
+      "endLine": 82,
+      "name": "listProfiles",
+      "text": "async listProfiles(options?: {\n    includeArchived?: boolean;\n  }): Promise<LookProfileRecord[]> {\n    await getAuthenticatedUserId();\n    let query = supabase.from(PROFILES).select(LOOK_PROFILE_COLUMNS);\n    if (!options?.includeArchived) {\n      query = query.eq('status', 'active');\n    }\n    const { data, error } = await raceWithTimeoutReject(\n      query.order('updated_at', { ascending: false }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfiles konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfiles konnten nicht geladen werden: ${error.message}`);\n    }\n    const rows = (data ?? []) as LookProfileDto[];\n    const out: LookProfileRecord[] = [];\n    for (const row of rows) {\n      const record = await this.loadRecord(row.id);\n      if (record) out.push(record);\n    }\n    return out;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 84,
+      "endLine": 87,
+      "name": "getProfileById",
+      "text": "async getProfileById(profileId: string): Promise<LookProfileRecord | null> {\n    await getAuthenticatedUserId();\n    return this.loadRecord(assertProfileId(profileId));\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 89,
+      "endLine": 128,
+      "name": "createProfile",
+      "text": "async createProfile(input: CreateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const draft = requireDraft(input.draft);\n    const profileId = newLookProfileId();\n    const ownerScope = resolveOwnerScope(draft);\n    const createdAt = new Date().toISOString();\n\n    const { error: profileError } = await raceWithTimeoutReject(\n      supabase.from(PROFILES).insert({\n        id: profileId,\n        owner_user_id: userId,\n        owner_scope: ownerScope,\n        current_version: 1,\n        status: 'active',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (profileError) {\n      throw new Error(`LookProfile konnte nicht angelegt werden: ${profileError.message}`);\n    }\n\n    const versionInsert = toPersistedVersionInsert(profileId, 1, draft, createdAt);\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Version konnte nicht angelegt werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      throw new Error(\n        `LookProfile-Version konnte nicht angelegt werden: ${versionError.message}`,\n      );\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record) {\n      throw new Error('LookProfile nach Create nicht lesbar.');\n    }\n    return record;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 130,
+      "endLine": 184,
+      "name": "appendVersion",
+      "text": "async appendVersion(input: AppendLookProfileVersionInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const profileId = assertProfileId(input.profileId);\n    const draft = requireDraft(input.draft);\n    const existing = await this.loadRecord(profileId);\n    if (!existing) {\n      throw new Error('LookProfile nicht gefunden.');\n    }\n    if (existing.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung für dieses LookProfile.');\n    }\n    if (existing.status === 'archived') {\n      throw new Error('Archivierte Looks können nicht versioniert werden. Bitte duplizieren.');\n    }\n\n    const nextVersion = existing.profile.currentVersion + 1;\n    const createdAt = new Date().toISOString();\n    const versionInsert = toPersistedVersionInsert(profileId, nextVersion, draft, createdAt);\n\n    const { error: versionError } = await raceWithTimeoutReject(\n      supabase.from(VERSIONS).insert(versionInsert),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Look-Version konnte nicht geschrieben werden (Zeitüberschreitung).',\n    );\n    if (versionError) {\n      if (/duplicate|unique|conflict/i.test(versionError.message)) {\n        throw new Error(\n          'Konflikt: diese Look-Version existiert bereits (gleichzeitiges Update). Bitte erneut versuchen.',\n        );\n      }\n      throw new Error(`Neue Look-Version fehlgeschlagen: ${versionError.message}`);\n    }\n\n    const { error: bumpError } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ current_version: nextVersion })\n        .eq('id', profileId)\n        .eq('owner_user_id', userId)\n        .eq('current_version', existing.profile.currentVersion),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile-Versionzeiger konnte nicht aktualisiert werden (Zeitüberschreitung).',\n    );\n    if (bumpError) {\n      throw new Error(`LookProfile-Versionzeiger fehlgeschlagen: ${bumpError.message}`);\n    }\n\n    const record = await this.loadRecord(profileId);\n    if (!record || record.profile.currentVersion !== nextVersion) {\n      throw new Error(\n        'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',\n      );\n    }\n    return record;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 186,
+      "endLine": 206,
+      "name": "archiveProfile",
+      "text": "async archiveProfile(profileId: string): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { error } = await raceWithTimeoutReject(\n      supabase\n        .from(PROFILES)\n        .update({ status: 'archived' })\n        .eq('id', id)\n        .eq('owner_user_id', userId),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'LookProfile konnte nicht archiviert werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`LookProfile konnte nicht archiviert werden: ${error.message}`);\n    }\n    const record = await this.loadRecord(id);\n    if (!record) {\n      throw new Error('LookProfile nach Archivierung nicht lesbar.');\n    }\n    return record;\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 208,
+      "endLine": 234,
+      "name": "duplicateProfile",
+      "text": "async duplicateProfile(input: DuplicateLookProfileInput): Promise<LookProfileRecord> {\n    const userId = await getAuthenticatedUserId();\n    const sourceId = assertProfileId(input.sourceProfileId);\n    const source = await this.loadRecord(sourceId);\n    if (!source) {\n      throw new Error('Quell-LookProfile nicht gefunden.');\n    }\n    if (source.profile.ownerId !== userId) {\n      throw new Error('Keine Berechtigung zum Duplizieren dieses Looks.');\n    }\n\n    const displayName =\n      typeof input.displayName === 'string' && input.displayName.trim().length > 0\n        ? input.displayName.trim()\n        : `${source.current.displayName} (Kopie)`;\n\n    return this.createProfile({\n      draft: {\n        displayName,\n        source: source.current.source,\n        references: source.current.references,\n        capabilities: source.current.capabilities,\n        executionModes: source.current.executionModes,\n        ownerScope: source.profile.ownerScope,\n      },\n    });\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 236,
+      "endLine": 254,
+      "name": "listVersions",
+      "text": "async listVersions(profileId: string): Promise<LookProfileVersion[]> {\n    await getAuthenticatedUserId();\n    const id = assertProfileId(profileId);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase\n        .from(VERSIONS)\n        .select(LOOK_PROFILE_VERSION_COLUMNS)\n        .eq('profile_id', id)\n        .order('version', { ascending: true }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Look-Versionen konnten nicht geladen werden (Zeitüberschreitung).',\n    );\n    if (error) {\n      throw new Error(`Look-Versionen konnten nicht geladen werden: ${error.message}`);\n    }\n    return ((data ?? []) as LookProfileVersionDto[])\n      .map(mapLookProfileVersionRow)\n      .filter((row): row is LookProfileVersion => row !== null);\n  }"
+    },
+    {
+      "path": "src/infrastructure/look/supabase-look.repository.ts",
+      "line": 253,
+      "endLine": 253,
+      "name": "callback",
+      "text": "(row): row is LookProfileVersion => row !== null"
+    }
+  ]
+}

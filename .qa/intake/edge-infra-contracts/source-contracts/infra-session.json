@@ -1,0 +1,2444 @@
+{
+  "schemaVersion": 1,
+  "area": "session",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "sha256": "88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a"
+    },
+    {
+      "path": "src/infrastructure/session/media/index.ts",
+      "sha256": "ba6906bf57e04303b283786671d0ae7e0024949e512d59b3b783289e6ba19155"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "sha256": "ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "sha256": "1dbdf0f7c75c1edc435fb629d5029a1c04806a5a6cbcf9b037ad8a620dcc34cd"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "sha256": "07e4692a4eb42ab86393e808e495383f3c7348d8a2699881dc4590869cc90bd6"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "sha256": "31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "sha256": "1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "sha256": "ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "sha256": "16cca2d213514c81493ffa0d9e5def922b0708c38cda7e8eb374b20e1f28b8c9"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "sha256": "dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "sha256": "30c4a639e8e6daf815eb1cb137744c0513fcb3ed20cbb58f2c0781b928bcb7f9"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "sha256": "fec3f16b9ff82cead9d8433b0b1b4a4038d13c2dd6e7458c4a0c55413c77483c"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "sha256": "8169475c50d9fabdba387b0d9f8039f3fc0416c5280df537237efa2dc8deb711"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "sha256": "d2f1e89fca1ef75c6b6c633ce8e9169801d3394e52912661c07457511ec4fdac"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/resource-id/session-routing.ts",
+      "sha256": "8a471af964126b08e663785fec8c260762629d673747ec8b72cec0369b963400"
+    },
+    {
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "sha256": "5c5fea67625237d0ae703e54e07dceb52d1694df8fe7bab6248b13810f4df411"
+    },
+    {
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "sha256": "dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc"
+    },
+    {
+      "path": "src/domains/session/contracts/session-lifecycle.ts",
+      "sha256": "c70eb365aa31906dc8cd8f7a3cc2c5ed1141b5bab8489a1d56ced8a41c1ce5be"
+    },
+    {
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "sha256": "14a939d627bc1b7393a8e32c1a9bf9f2b74aab0058416bd6e73a9a59cbcc7c7f"
+    },
+    {
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
+    },
+    {
+      "path": "src/domains/session/contracts/session.types.ts",
+      "sha256": "3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04"
+    },
+    {
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "sha256": "7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b"
+    },
+    {
+      "path": "src/lib/authenticatedUser.ts",
+      "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+    },
+    {
+      "path": "src/lib/localAdmin.ts",
+      "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+    },
+    {
+      "path": "src/lib/networkTimeout.ts",
+      "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "ProjectSessionLifecycleStatus",
+      "path": "src/domains/resource-id/session-routing.ts",
+      "line": 8,
+      "endLine": 13,
+      "text": "export type ProjectSessionLifecycleStatus =\n  | 'scheduled'\n  | 'active'\n  | 'paused'\n  | 'completed'\n  | 'cancelled';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionLifecyclePhase",
+      "path": "src/domains/resource-id/session-routing.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "export type SessionLifecyclePhase = 'prepare' | 'lobby' | 'live' | 'recap';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSessionRole",
+      "path": "src/domains/resource-id/session-routing.ts",
+      "line": 17,
+      "endLine": 17,
+      "text": "export type LiveSessionRole = 'gm' | 'player' | 'observer' | 'none';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveViewTarget",
+      "path": "src/domains/resource-id/session-routing.ts",
+      "line": 19,
+      "endLine": 24,
+      "text": "export type LiveViewTarget =\n  | { kind: 'gamemaster' }\n  | { kind: 'player'; characterPublicId: string }\n  | { kind: 'player-resolve' }\n  | { kind: 'display' }\n  | { kind: 'forbidden'; reason: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionRole",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export type SessionRole = (typeof SESSION_ROLES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionCapability",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 16,
+      "endLine": 16,
+      "text": "export type SessionCapability = (typeof SESSION_CAPABILITIES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSurfaceKind",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 26,
+      "endLine": 26,
+      "text": "export type LiveSurfaceKind = (typeof LIVE_SURFACE_KINDS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "VisibilityAudience",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 36,
+      "endLine": 36,
+      "text": "export type VisibilityAudience = (typeof VISIBILITY_AUDIENCES)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSessionAccess",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 38,
+      "endLine": 43,
+      "text": "export type LiveSessionAccess = {\n  readonly role: SessionRole;\n  readonly capabilities: readonly SessionCapability[];\n  /** Assigned character for player private knowledge; null for GM/viewer. */\n  readonly characterId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSessionCommandKind",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 45,
+      "endLine": 51,
+      "text": "export type LiveSessionCommandKind =\n  | 'gameplay_mutate'\n  | 'reveal'\n  | 'cue'\n  | 'media_token'\n  | 'program_switch'\n  | 'director_preview';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSessionPermission",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 53,
+      "endLine": 63,
+      "text": "export type LiveSessionPermission =\n  | 'read_public'\n  | 'read_shared'\n  | 'read_character_private'\n  | 'read_gm_only'\n  | 'read_program'\n  | 'write_gameplay'\n  | 'reveal'\n  | 'cue'\n  | 'media_issue'\n  | 'director_control';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "LiveSessionAccessValidation",
+      "path": "src/domains/session/contracts/live-session-access.ts",
+      "line": 102,
+      "endLine": 104,
+      "text": "export type LiveSessionAccessValidation =\n  | { readonly ok: true; readonly access: LiveSessionAccess }\n  | { readonly ok: false; readonly code: string; readonly message: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionInviteErrorCode",
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "line": 9,
+      "endLine": 17,
+      "text": "export type SessionInviteErrorCode =\n  | 'missing_token'\n  | 'not_found'\n  | 'revoked'\n  | 'expired'\n  | 'session_missing'\n  | 'session_completed'\n  | 'saga_missing'\n  | 'unknown';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionInviteResolveOk",
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "line": 19,
+      "endLine": 29,
+      "text": "export type SessionInviteResolveOk = {\n  readonly ok: true;\n  readonly sagaPublicId: string;\n  readonly sessionPublicId: string;\n  readonly projectId: string;\n  readonly sessionId: string;\n  readonly sessionStatus: string;\n  readonly alreadyMember: boolean;\n  readonly isProjectGm: boolean;\n  readonly characterPublicId: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionInviteResolveFail",
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "line": 31,
+      "endLine": 34,
+      "text": "export type SessionInviteResolveFail = {\n  readonly ok: false;\n  readonly errorCode: SessionInviteErrorCode;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionInviteResolveResult",
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "line": 36,
+      "endLine": 36,
+      "text": "export type SessionInviteResolveResult = SessionInviteResolveOk | SessionInviteResolveFail;"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionInviteCreateResult",
+      "path": "src/domains/session/contracts/session-invite.ts",
+      "line": 38,
+      "endLine": 43,
+      "text": "export type SessionInviteCreateResult = {\n  readonly id: string;\n  readonly token: string;\n  readonly sessionId: string;\n  readonly expiresAt: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PlaySessionStatus",
+      "path": "src/domains/session/contracts/session-lifecycle.ts",
+      "line": 7,
+      "endLine": 7,
+      "text": "export type PlaySessionStatus = 'waiting' | 'active' | 'paused' | 'completed';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionLifecycleScreen",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type SessionLifecycleScreen = 'prepare' | 'lobby' | 'live' | 'recap';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrepareCtaKind",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 14,
+      "endLine": 14,
+      "text": "export type PrepareCtaKind = 'lobby' | 'invite' | 'live-resume' | 'back';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "RecapCtaKind",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 16,
+      "endLine": 16,
+      "text": "export type RecapCtaKind = 'next-session' | 'saga' | 'home';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionLifecycleSummary",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 18,
+      "endLine": 29,
+      "text": "export type SessionLifecycleSummary = {\n  readonly sessionId: string;\n  readonly sessionPublicId: string;\n  readonly sagaPublicId: string;\n  readonly sessionName: string;\n  readonly sagaName: string | null;\n  readonly statusLabelDe: string;\n  readonly code: string;\n  readonly playerCount: number;\n  readonly startedAtIso: string | null;\n  readonly endedAtIso: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "RecapHighlightLine",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 31,
+      "endLine": 35,
+      "text": "export type RecapHighlightLine = {\n  readonly id: string;\n  readonly kind: string;\n  readonly summary: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "RecapConsequenceInput",
+      "path": "src/domains/session/contracts/session-prepare-recap.ts",
+      "line": 107,
+      "endLine": 113,
+      "text": "export type RecapConsequenceInput = {\n  readonly id: string;\n  readonly kind: string;\n  readonly summary: string;\n  readonly createdAt?: string | null;\n  readonly visibility?: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SessionEventKind",
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "line": 11,
+      "endLine": 26,
+      "text": "export type SessionEventKind =\n  | 'join'\n  | 'leave'\n  | 'presence'\n  | 'status'\n  | 'roll'\n  | 'damage'\n  | 'condition'\n  | 'scene'\n  | 'combat'\n  | 'gameplay'\n  | 'program'\n  | 'reveal'\n  | 'life'\n  | 'adventure'\n  | 'cue';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionPresenceEntry",
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "line": 46,
+      "endLine": 51,
+      "text": "export interface SessionPresenceEntry {\n  userId: string;\n  characterId: string | null;\n  isOnline: boolean;\n  joinedAt: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionGameplayState",
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "line": 56,
+      "endLine": 60,
+      "text": "export interface SessionGameplayState {\n  sceneId: string | null;\n  combatActive: boolean;\n  shared: Record<string, unknown>;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionRuntimeState",
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "line": 65,
+      "endLine": 72,
+      "text": "export interface SessionRuntimeState {\n  sessionId: string;\n  revision: number;\n  status: PlaySessionStatus;\n  roster: SessionPresenceEntry[];\n  gameplay: SessionGameplayState;\n  updatedAt: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionEventRecord",
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "line": 74,
+      "endLine": 83,
+      "text": "export interface SessionEventRecord {\n  id: string;\n  sessionId: string;\n  kind: SessionEventKind;\n  actorUserId: string | null;\n  payload: Record<string, unknown>;\n  revisionAfter: number;\n  createdAt: string;\n  idempotencyKey: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionDto",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 11,
+      "endLine": 25,
+      "text": "export interface SessionDto {\n  id: string;\n  code: string;\n  name: string | null;\n  /** Adventure/project binding — maps from `project_id`. */\n  adventure_id: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  gm_user_id: string;\n  status: PlaySessionStatus;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionPlayerDto",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 27,
+      "endLine": 34,
+      "text": "export interface SessionPlayerDto {\n  id: string;\n  session_id: string;\n  user_id: string;\n  character_id: string | null;\n  is_online: boolean;\n  joined_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateSessionDto",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 36,
+      "endLine": 41,
+      "text": "export interface CreateSessionDto {\n  name: string;\n  /** Prefer `project_id`; `adventure_id` kept as alias for SessionJoin. */\n  project_id?: string;\n  adventure_id?: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "JoinSessionDto",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 43,
+      "endLine": 46,
+      "text": "export interface JoinSessionDto {\n  code: string;\n  character_id?: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionVm",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 48,
+      "endLine": 62,
+      "text": "export interface SessionVm {\n  id: string;\n  code: string;\n  name: string;\n  adventureId: string | null;\n  projectId: string | null;\n  publicId: string | null;\n  gmUserId: string;\n  status: PlaySessionStatus;\n  createdAt: Date;\n  updatedAt: Date;\n  startedAt: Date | null;\n  endedAt: Date | null;\n  players: SessionPlayerVm[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SessionPlayerVm",
+      "path": "src/domains/session/contracts/session.types.ts",
+      "line": 64,
+      "endLine": 71,
+      "text": "export interface SessionPlayerVm {\n  id: string;\n  sessionId: string;\n  userId: string;\n  characterId: string | null;\n  isOnline: boolean;\n  joinedAt: Date;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaTrackKind",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "export type MediaTrackKind = (typeof MEDIA_TRACK_KINDS)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPlaneHealth",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 24,
+      "endLine": 24,
+      "text": "export type MediaPlaneHealth = (typeof MEDIA_PLANE_HEALTH)[number];"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPublishIntent",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 26,
+      "endLine": 29,
+      "text": "export type MediaPublishIntent = {\n  readonly kind: MediaTrackKind;\n  readonly enabled: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPresenceParticipant",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 31,
+      "endLine": 35,
+      "text": "export type MediaPresenceParticipant = {\n  readonly identity: string;\n  readonly role: LiveSessionAccess['role'];\n  readonly published: readonly MediaTrackKind[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPresenceSnapshot",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 37,
+      "endLine": 42,
+      "text": "export type MediaPresenceSnapshot = {\n  readonly roomId: string;\n  readonly health: MediaPlaneHealth;\n  readonly localIdentity: string | null;\n  readonly participants: readonly MediaPresenceParticipant[];\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaGrant",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 44,
+      "endLine": 51,
+      "text": "export type MediaGrant = {\n  readonly canPublishCamera: boolean;\n  readonly canPublishMicrophone: boolean;\n  readonly canPublishLiveactData: boolean;\n  readonly canSubscribe: boolean;\n  /** Viewer default: receive-only. */\n  readonly receiveOnly: boolean;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPlaneHealthReason",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 127,
+      "endLine": 133,
+      "text": "export type MediaPlaneHealthReason =\n  | 'ok'\n  | 'media_service_unavailable'\n  | 'permission_denied'\n  | 'token_rejected'\n  | 'network'\n  | 'role_downgrade';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MediaPlaneStatus",
+      "path": "src/domains/session/media/media-plane-contract.ts",
+      "line": 135,
+      "endLine": 139,
+      "text": "export type MediaPlaneStatus = {\n  readonly health: MediaPlaneHealth;\n  readonly reason: MediaPlaneHealthReason;\n  readonly message: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "TimedOut",
+      "path": "src/lib/networkTimeout.ts",
+      "line": 12,
+      "endLine": 12,
+      "text": "export type TimedOut = typeof TIMED_OUT;"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "auth-helper",
+      "name": null,
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 34,
+      "endLine": 34,
+      "resolution": "dynamic-expression",
+      "expression": "getAuthenticatedUserId()",
+      "chain": "getAuthenticatedUserId()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/live-session-access.resolver.ts",
+        "line": 31,
+        "endLine": 48,
+        "text": "export async function resolveLiveSessionAccessFromMembership(\n  membership: AuthoritativeSessionMembership,\n): Promise<LiveSessionAccess> {\n  const userId = await getAuthenticatedUserId();\n  if (membership.userId !== userId) {\n    throw new Error('Session-Mitgliedschaft gehört nicht zum angemeldeten Nutzer.');\n  }\n  const validated = validateLiveSessionAccess({\n    role: membership.role,\n    capabilities: membership.capabilities,\n    characterId: membership.characterId,\n    allowPlayerDirector: membership.allowPlayerDirector === true,\n  });\n  if (validated.ok === false) {\n    throw new Error(validated.message);\n  }\n  return validated.access;\n}"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 67,
+      "endLine": 67,
+      "resolution": "dynamic-expression",
+      "expression": "this.room.connect(input.url, input.token)",
+      "chain": "this.room.connect(input.url, input.token)",
+      "arguments": [
+        "input.url",
+        "input.token"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 51,
+        "endLine": 75,
+        "text": "async connect(input: MediaPlaneConnectInput): Promise<void> {\n    this.health = 'connecting';\n    this.roomId = deriveMediaRoomId(input.sessionId);\n    this.localIdentity = input.identity;\n    this.role = input.access.role;\n    this.published = [];\n\n    if (!this.roomFactory) {\n      this.health = 'unavailable';\n      throw new Error(\n        'LiveKit room factory not configured (media plane degraded).',\n      );\n    }\n\n    try {\n      this.room = await this.roomFactory();\n      await this.room.connect(input.url, input.token);\n      this.attachDataListener();\n      this.health = 'ready';\n    } catch (error) {\n      this.room = null;\n      this.health = 'unavailable';\n      throw error instanceof Error ? error : new Error(String(error));\n    }\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 80,
+      "endLine": 80,
+      "resolution": "dynamic-expression",
+      "expression": "this.room?.disconnect()",
+      "chain": "this.room?.disconnect()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 77,
+        "endLine": 89,
+        "text": "async disconnect(): Promise<void> {\n    try {\n      this.detachDataListener();\n      await this.room?.disconnect();\n    } finally {\n      this.room = null;\n      this.health = 'unavailable';\n      this.localIdentity = null;\n      this.published = [];\n      this.roomId = '';\n      this.dataHandlers.clear();\n    }\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 99,
+      "endLine": 99,
+      "resolution": "dynamic-expression",
+      "expression": "local?.setCameraEnabled?.(true)",
+      "chain": "local?.setCameraEnabled?.(true)",
+      "arguments": [
+        "true"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 91,
+        "endLine": 107,
+        "text": "async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' || !this.room) {\n      throw new Error('LiveKit room not ready');\n    }\n    const local = this.room.localParticipant;\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (intent.kind === 'camera') {\n        await local?.setCameraEnabled?.(true);\n      } else if (intent.kind === 'microphone') {\n        await local?.setMicrophoneEnabled?.(true);\n      }\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 101,
+      "endLine": 101,
+      "resolution": "dynamic-expression",
+      "expression": "local?.setMicrophoneEnabled?.(true)",
+      "chain": "local?.setMicrophoneEnabled?.(true)",
+      "arguments": [
+        "true"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 91,
+        "endLine": 107,
+        "text": "async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' || !this.room) {\n      throw new Error('LiveKit room not ready');\n    }\n    const local = this.room.localParticipant;\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (intent.kind === 'camera') {\n        await local?.setCameraEnabled?.(true);\n      } else if (intent.kind === 'microphone') {\n        await local?.setMicrophoneEnabled?.(true);\n      }\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 112,
+      "endLine": 112,
+      "resolution": "dynamic-expression",
+      "expression": "local?.setCameraEnabled?.(false)",
+      "chain": "local?.setCameraEnabled?.(false)",
+      "arguments": [
+        "false"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 109,
+        "endLine": 116,
+        "text": "async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    const local = this.room?.localParticipant;\n    for (const kind of kinds) {\n      if (kind === 'camera') await local?.setCameraEnabled?.(false);\n      if (kind === 'microphone') await local?.setMicrophoneEnabled?.(false);\n    }\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 113,
+      "endLine": 113,
+      "resolution": "dynamic-expression",
+      "expression": "local?.setMicrophoneEnabled?.(false)",
+      "chain": "local?.setMicrophoneEnabled?.(false)",
+      "arguments": [
+        "false"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 109,
+        "endLine": 116,
+        "text": "async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    const local = this.room?.localParticipant;\n    for (const kind of kinds) {\n      if (kind === 'camera') await local?.setCameraEnabled?.(false);\n      if (kind === 'microphone') await local?.setMicrophoneEnabled?.(false);\n    }\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": null,
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 145,
+      "endLine": 148,
+      "resolution": "dynamic-expression",
+      "expression": "this.room.localParticipant.publishData(bytes, {\n      reliable: false,\n      topic,\n    })",
+      "chain": "this.room.localParticipant.publishData(bytes, {\n      reliable: false,\n      topic,\n    })",
+      "arguments": [
+        "bytes",
+        "{\n      reliable: false,\n      topic,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 140,
+        "endLine": 152,
+        "text": "async publishData(topic: string, payload: string): Promise<void> {\n    if (this.health !== 'ready' || !this.room?.localParticipant?.publishData) {\n      throw new Error('LiveKit data publish unavailable');\n    }\n    const bytes = new TextEncoder().encode(payload);\n    await this.room.localParticipant.publishData(bytes, {\n      reliable: false,\n      topic,\n    });\n    if (topic === 'liveact-data' && !this.published.includes('liveact-data')) {\n      this.published.push('liveact-data');\n    }\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": "dataReceived",
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 181,
+      "endLine": 181,
+      "resolution": "literal-or-constant",
+      "expression": "this.room.on('dataReceived', this.dataListener)",
+      "chain": "this.room.on('dataReceived', this.dataListener)",
+      "arguments": [
+        "'dataReceived'",
+        "this.dataListener"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 161,
+        "endLine": 182,
+        "text": "private attachDataListener(): void {\n    if (!this.room?.on) return;\n    this.detachDataListener();\n    this.dataListener = (...args: unknown[]) => {\n      const payload = args[0];\n      const participant = args[1] as { identity?: string } | undefined;\n      const topic =\n        typeof args[2] === 'string'\n          ? args[2]\n          : typeof (args[2] as { topic?: string } | undefined)?.topic === 'string'\n            ? (args[2] as { topic: string }).topic\n            : 'liveact-data';\n      if (!(payload instanceof Uint8Array)) return;\n      const publisherIdentity =\n        typeof participant?.identity === 'string' ? participant.identity : '';\n      if (!publisherIdentity || publisherIdentity === this.localIdentity) return;\n      const text = new TextDecoder().decode(payload);\n      const message = { topic, payload: text, publisherIdentity };\n      for (const handler of this.dataHandlers) handler(message);\n    };\n    this.room.on('dataReceived', this.dataListener);\n  }"
+      }
+    },
+    {
+      "kind": "provider-sdk",
+      "name": "dataReceived",
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 186,
+      "endLine": 186,
+      "resolution": "literal-or-constant",
+      "expression": "this.room.off('dataReceived', this.dataListener)",
+      "chain": "this.room.off('dataReceived', this.dataListener)",
+      "arguments": [
+        "'dataReceived'",
+        "this.dataListener"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+        "line": 184,
+        "endLine": 189,
+        "text": "private detachDataListener(): void {\n    if (this.room?.off && this.dataListener) {\n      this.room.off('dataReceived', this.dataListener);\n    }\n    this.dataListener = null;\n  }"
+      }
+    },
+    {
+      "kind": "edge",
+      "name": "session-media-token",
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 39,
+      "endLine": 41,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
+      "chain": "supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    })",
+      "arguments": [
+        "'session-media-token'",
+        "{\n      body: { sessionId },\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/media/media-token-client.ts",
+        "line": 25,
+        "endLine": 100,
+        "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+      }
+    },
+    {
+      "kind": "realtime-subscription",
+      "name": "broadcast",
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 30,
+      "endLine": 37,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
+      "chain": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
+      "arguments": [
+        "'broadcast'",
+        "{ event: 'ready' }",
+        "({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 22,
+        "endLine": 69,
+        "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "channel",
+      "name": null,
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 30,
+      "endLine": 31,
+      "resolution": "dynamic-expression",
+      "expression": "supabase\n    .channel(topic)",
+      "chain": "supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    })",
+      "arguments": [
+        "topic"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 22,
+        "endLine": 69,
+        "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "realtime-subscribe",
+      "name": null,
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 44,
+      "endLine": 49,
+      "resolution": "dynamic-expression",
+      "expression": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    })",
+      "chain": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    })",
+      "arguments": [
+        "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 39,
+        "endLine": 50,
+        "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  }"
+      }
+    },
+    {
+      "kind": "realtime-send",
+      "name": null,
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 55,
+      "endLine": 59,
+      "resolution": "dynamic-expression",
+      "expression": "channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      })",
+      "chain": "channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      })",
+      "arguments": [
+        "{\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 53,
+        "endLine": 60,
+        "text": "async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    }"
+      }
+    },
+    {
+      "kind": "realtime-cleanup",
+      "name": null,
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 64,
+      "endLine": 64,
+      "resolution": "dynamic-expression",
+      "expression": "supabase.removeChannel(channel)",
+      "chain": "supabase.removeChannel(channel)",
+      "arguments": [
+        "channel"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-lobby-channel.ts",
+        "line": 61,
+        "endLine": 67,
+        "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+      }
+    },
+    {
+      "kind": "edge",
+      "name": "session-recap",
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 76,
+      "endLine": 78,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
+      "chain": "supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    })",
+      "arguments": [
+        "'session-recap'",
+        "{\n      body: { sessionId },\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-recap-ai-service.ts",
+        "line": 75,
+        "endLine": 96,
+        "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "save_session_recap_summary",
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 104,
+      "endLine": 108,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
+      "chain": "supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      })",
+      "arguments": [
+        "'save_session_recap_summary'",
+        "{\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-recap-ai-service.ts",
+        "line": 98,
+        "endLine": 127,
+        "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "get_session_recap",
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 29,
+      "endLine": 29,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('get_session_recap', { p_session_id: sessionId })",
+      "chain": "supabase.rpc('get_session_recap', { p_session_id: sessionId })",
+      "arguments": [
+        "'get_session_recap'",
+        "{ p_session_id: sessionId }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-recap-service.ts",
+        "line": 27,
+        "endLine": 51,
+        "text": "async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_session_recap', { p_session_id: sessionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Recap Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Recap konnte nicht geladen werden');\n    }\n    if (data == null) return null;\n    if (!isRecord(data)) {\n      throw new Error('Ungültige Recap-Antwort');\n    }\n    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n    const summaryStatus =\n      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n    return {\n      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n      summaryStatus,\n      highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n    };\n  }"
+      }
+    },
+    {
+      "kind": "realtime-subscription",
+      "name": "postgres_changes",
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 44,
+      "endLine": 76,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "arguments": [
+        "'postgres_changes'",
+        "{\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      }",
+        "() => {\n        void refresh();\n      }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 26,
+        "endLine": 102,
+        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "realtime-subscription",
+      "name": "postgres_changes",
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 44,
+      "endLine": 64,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "arguments": [
+        "'postgres_changes'",
+        "{\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      }",
+        "() => {\n        void refresh();\n      }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 26,
+        "endLine": 102,
+        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "realtime-subscription",
+      "name": "postgres_changes",
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 44,
+      "endLine": 52,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )",
+      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "arguments": [
+        "'postgres_changes'",
+        "{ event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` }",
+        "() => {\n        void refresh();\n      }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 26,
+        "endLine": 102,
+        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "channel",
+      "name": null,
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 44,
+      "endLine": 45,
+      "resolution": "dynamic-expression",
+      "expression": "supabase\n    .channel(topic)",
+      "chain": "supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )",
+      "arguments": [
+        "topic"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 26,
+        "endLine": 102,
+        "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+      }
+    },
+    {
+      "kind": "realtime-subscribe",
+      "name": null,
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 83,
+      "endLine": 88,
+      "resolution": "dynamic-expression",
+      "expression": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    })",
+      "chain": "channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    })",
+      "arguments": [
+        "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 78,
+        "endLine": 89,
+        "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  }"
+      }
+    },
+    {
+      "kind": "realtime-cleanup",
+      "name": null,
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 97,
+      "endLine": 97,
+      "resolution": "dynamic-expression",
+      "expression": "supabase.removeChannel(channel)",
+      "chain": "supabase.removeChannel(channel)",
+      "arguments": [
+        "channel"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-channel.ts",
+        "line": 94,
+        "endLine": 100,
+        "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "get_session_runtime_snapshot",
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 90,
+      "endLine": 92,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    })",
+      "chain": "supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    })",
+      "arguments": [
+        "'get_session_runtime_snapshot'",
+        "{\n      p_session_id: sessionId,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-service.ts",
+        "line": 89,
+        "endLine": 97,
+        "text": "async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {\n    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    });\n    if (error || !data) {\n      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "apply_session_runtime_command",
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 107,
+      "endLine": 113,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    })",
+      "chain": "supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    })",
+      "arguments": [
+        "'apply_session_runtime_command'",
+        "{\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-service.ts",
+        "line": 99,
+        "endLine": 126,
+        "text": "async applyCommand(input: {\n    sessionId: string;\n    expectedRevision: number;\n    kind: SessionEventKind | string;\n    payload?: Record<string, unknown>;\n    idempotencyKey?: string | null;\n  }): Promise<SessionRuntimeState> {\n    const kind = assertSessionEventKind(input.kind);\n    const { data, error } = await supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    });\n\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(input.sessionId);\n        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Runtime-Befehl lieferte kein Ergebnis');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "set_session_player_presence",
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 133,
+      "endLine": 137,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    })",
+      "chain": "supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    })",
+      "arguments": [
+        "'set_session_player_presence'",
+        "{\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-runtime-service.ts",
+        "line": 128,
+        "endLine": 149,
+        "text": "async setPresence(\n    sessionId: string,\n    isOnline: boolean,\n    expectedRevision?: number | null,\n  ): Promise<SessionRuntimeState> {\n    const { data, error } = await supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    });\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(sessionId);\n        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Presence-Update fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+      }
+    },
+    {
+      "kind": "auth",
+      "name": null,
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 67,
+      "endLine": 67,
+      "resolution": "dynamic-expression",
+      "expression": "supabase.auth.getSession()",
+      "chain": "supabase.auth.getSession()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 64,
+        "endLine": 80,
+        "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
+      }
+    },
+    {
+      "kind": "auth",
+      "name": null,
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 72,
+      "endLine": 72,
+      "resolution": "dynamic-expression",
+      "expression": "supabase.auth.getUser()",
+      "chain": "supabase.auth.getUser()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 64,
+        "endLine": 80,
+        "text": "private async requireAuthUser(): Promise<{ id: string }> {\n    const {\n      data: { session },\n    } = await supabase.auth.getSession();\n    if (session?.user?.id) return session.user;\n\n    const {\n      data: { user },\n    } = await supabase.auth.getUser();\n    if (user?.id) return user;\n\n    if (isLocalAdminSession()) {\n      return { id: LOCAL_ADMIN_USER_ID };\n    }\n\n    throw new Error('User not authenticated');\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "projects",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 84,
+      "endLine": 85,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('projects')",
+      "chain": "supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle()",
+      "arguments": [
+        "'projects'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 82,
+        "endLine": 91,
+        "text": "private async resolveGmUserId(projectId: string | null): Promise<string> {\n    if (!projectId) return '';\n    const { data, error } = await supabase\n      .from('projects')\n      .select('gm_user_id')\n      .eq('id', projectId)\n      .maybeSingle();\n    if (error || !data) return '';\n    return typeof data.gm_user_id === 'string' ? data.gm_user_id : '';\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "session_players",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 142,
+      "endLine": 143,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from(this.playersTableName)",
+      "chain": "supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId)",
+      "arguments": [
+        "this.playersTableName"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 141,
+        "endLine": 152,
+        "text": "private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {\n    const { data, error } = await supabase\n      .from(this.playersTableName)\n      .select('*')\n      .eq('session_id', sessionId);\n\n    if (error) {\n      console.error('Failed to load session players:', error);\n      return [];\n    }\n    return (data ?? []) as SessionPlayerDto[];\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "create_play_session",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 162,
+      "endLine": 165,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
+      "chain": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
+      "arguments": [
+        "'create_play_session'",
+        "{\n      p_project_id: projectId,\n      p_name: payload.name,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 154,
+        "endLine": 173,
+        "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "join_session_by_code",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 180,
+      "endLine": 183,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
+      "chain": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
+      "arguments": [
+        "'join_session_by_code'",
+        "{\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 175,
+        "endLine": 192,
+        "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const code = normalizeSessionJoinCode(payload.code);\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "sessions",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 195,
+      "endLine": 196,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from(this.tableName)",
+      "chain": "supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
+      "arguments": [
+        "this.tableName"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 194,
+        "endLine": 208,
+        "text": "async getSessionById(id: string): Promise<SessionVm> {\n    const { data: session, error: sessionError } = await supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (sessionError || !session) {\n      throw new Error('Session not found');\n    }\n\n    const dto = await this.mapRowToDto(session as unknown as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "projects",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 213,
+      "endLine": 214,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('projects')",
+      "chain": "supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id)",
+      "arguments": [
+        "'projects'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 210,
+        "endLine": 269,
+        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "sessions",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 226,
+      "endLine": 227,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from(this.tableName)",
+      "chain": "supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false })",
+      "arguments": [
+        "this.tableName"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 210,
+        "endLine": 269,
+        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "session_players",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 238,
+      "endLine": 239,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from(this.playersTableName)",
+      "chain": "supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id)",
+      "arguments": [
+        "this.playersTableName"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 210,
+        "endLine": 269,
+        "text": "async getUserSessions(): Promise<SessionVm[]> {\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "set_session_status",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 278,
+      "endLine": 281,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
+      "chain": "supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    })",
+      "arguments": [
+        "'set_session_status'",
+        "{\n      p_session_id: id,\n      p_status: status,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 271,
+        "endLine": 290,
+        "text": "async updateSessionStatus(\n    id: string,\n    status: PlaySessionStatus,\n  ): Promise<SessionVm> {\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n\n    const { data, error } = await supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "leave_play_session",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 295,
+      "endLine": 297,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
+      "chain": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
+      "arguments": [
+        "'leave_play_session'",
+        "{\n      p_session_id: sessionId,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 292,
+        "endLine": 302,
+        "text": "async leaveSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "sessions",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 314,
+      "endLine": 314,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from(this.tableName)",
+      "chain": "supabase.from(this.tableName).delete().eq('id', id)",
+      "arguments": [
+        "this.tableName"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 307,
+        "endLine": 323,
+        "text": "async deleteSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "create_session_invite",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 330,
+      "endLine": 332,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
+      "chain": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
+      "arguments": [
+        "'create_session_invite'",
+        "{\n      p_session_id: sessionId,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 328,
+        "endLine": 341,
+        "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "resolve_session_invite",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 352,
+      "endLine": 354,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
+      "chain": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
+      "arguments": [
+        "'resolve_session_invite'",
+        "{\n      p_token: normalized,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 346,
+        "endLine": 359,
+        "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "revoke_session_invite",
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 367,
+      "endLine": 369,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
+      "chain": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
+      "arguments": [
+        "'revoke_session_invite'",
+        "{\n      p_token: normalized,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/session/session-service.ts",
+        "line": 361,
+        "endLine": 373,
+        "text": "async revokeSessionInvite(token: string): Promise<void> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 8,
+      "endLine": 12,
+      "module": "../../domains/session/contracts/live-session-access",
+      "resolvedPath": "src/domains/session/contracts/live-session-access.ts",
+      "expression": "import {\n  filterPayloadForAccess,\n  validateLiveSessionAccess,\n  type LiveSessionAccess,\n} from '../../domains/session/contracts/live-session-access';"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 13,
+      "endLine": 13,
+      "module": "../../lib/authenticatedUser",
+      "resolvedPath": "src/lib/authenticatedUser.ts",
+      "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 8,
+      "endLine": 14,
+      "module": "../../../domains/session/media/media-plane-contract",
+      "resolvedPath": "src/domains/session/media/media-plane-contract.ts",
+      "expression": "import {\n  deriveMediaRoomId,\n  type MediaPlaneHealth,\n  type MediaPresenceSnapshot,\n  type MediaPublishIntent,\n  type MediaTrackKind,\n} from '../../../domains/session/media/media-plane-contract';"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 15,
+      "endLine": 19,
+      "module": "./media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "expression": "import type {\n  MediaPlaneAdapter,\n  MediaPlaneConnectInput,\n  MediaPlaneDataHandler,\n} from './media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 8,
+      "endLine": 13,
+      "module": "../../../domains/session/media/media-plane-contract",
+      "resolvedPath": "src/domains/session/media/media-plane-contract.ts",
+      "expression": "import type {\n  MediaPlaneHealth,\n  MediaPresenceSnapshot,\n  MediaPublishIntent,\n  MediaTrackKind,\n} from '../../../domains/session/media/media-plane-contract';"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 14,
+      "endLine": 14,
+      "module": "../../../domains/session/contracts/live-session-access",
+      "resolvedPath": "src/domains/session/contracts/live-session-access.ts",
+      "expression": "import type { LiveSessionAccess } from '../../../domains/session/contracts/live-session-access';"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 5,
+      "endLine": 11,
+      "module": "../../../domains/session/media/media-plane-contract",
+      "resolvedPath": "src/domains/session/media/media-plane-contract.ts",
+      "expression": "import {\n  deriveMediaRoomId,\n  type MediaPlaneHealth,\n  type MediaPresenceSnapshot,\n  type MediaPublishIntent,\n  type MediaTrackKind,\n} from '../../../domains/session/media/media-plane-contract';"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 12,
+      "endLine": 16,
+      "module": "./media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "expression": "import type {\n  MediaPlaneAdapter,\n  MediaPlaneConnectInput,\n  MediaPlaneDataHandler,\n} from './media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 17,
+      "endLine": 20,
+      "module": "./memory-media-plane-bus",
+      "resolvedPath": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "expression": "import {\n  defaultMemoryMediaPlaneBus,\n  type MemoryMediaPlaneBus,\n} from './memory-media-plane-bus';"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "./media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "expression": "import type { MediaPlaneDataHandler, MediaPlaneDataMessage } from './media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../../domains/session/contracts/live-session-access",
+      "resolvedPath": "src/domains/session/contracts/live-session-access.ts",
+      "expression": "import type { LiveSessionAccess } from '../../../domains/session/contracts/live-session-access';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 6,
+      "endLine": 16,
+      "module": "../../../domains/session/media/media-plane-contract",
+      "resolvedPath": "src/domains/session/media/media-plane-contract.ts",
+      "expression": "import {\n  canPublishTrack,\n  canSubscribeMedia,\n  degradedMediaStatus,\n  filterPublishIntentsForAccess,\n  readyMediaStatus,\n  type MediaPlaneStatus,\n  type MediaPresenceSnapshot,\n  type MediaPublishIntent,\n  type MediaTrackKind,\n} from '../../../domains/session/media/media-plane-contract';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 17,
+      "endLine": 20,
+      "module": "./media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "expression": "import type {\n  MediaPlaneAdapter,\n  MediaPlaneDataHandler,\n} from './media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 21,
+      "endLine": 21,
+      "module": "./media-token-client",
+      "resolvedPath": "src/infrastructure/session/media/media-token-client.ts",
+      "expression": "import { fetchSessionMediaToken } from './media-token-client';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 22,
+      "endLine": 22,
+      "module": "./livekit-media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "expression": "import { LiveKitMediaPlaneAdapter } from './livekit-media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 23,
+      "endLine": 23,
+      "module": "./memory-media-plane-adapter",
+      "resolvedPath": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "expression": "import { MemoryMediaPlaneAdapter } from './memory-media-plane-adapter';"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "@supabase/supabase-js",
+      "resolvedPath": null,
+      "expression": "import type { RealtimeChannel } from '@supabase/supabase-js';"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/networkTimeout",
+      "resolvedPath": "src/lib/networkTimeout.ts",
+      "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/networkTimeout",
+      "resolvedPath": "src/lib/networkTimeout.ts",
+      "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 7,
+      "endLine": 10,
+      "module": "../../domains/session/contracts/session-prepare-recap",
+      "resolvedPath": "src/domains/session/contracts/session-prepare-recap.ts",
+      "expression": "import {\n  parsePersistedRecapHighlightLines,\n  type RecapHighlightLine,\n} from '../../domains/session/contracts/session-prepare-recap';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "@supabase/supabase-js",
+      "resolvedPath": null,
+      "expression": "import type { RealtimeChannel } from '@supabase/supabase-js';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 7,
+      "endLine": 7,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "../../domains/session/contracts/session-runtime",
+      "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
+      "expression": "import type { SessionRuntimeState } from '../../domains/session/contracts/session-runtime';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./session-runtime-service",
+      "resolvedPath": "src/infrastructure/session/session-runtime-service.ts",
+      "expression": "import { sessionRuntimeService } from './session-runtime-service';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 7,
+      "endLine": 12,
+      "module": "../../domains/session/contracts/session-runtime",
+      "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
+      "expression": "import type {\n  SessionEventKind,\n  SessionGameplayState,\n  SessionPresenceEntry,\n  SessionRuntimeState,\n} from '../../domains/session/contracts/session-runtime';"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 13,
+      "endLine": 18,
+      "module": "../../domains/session/contracts/session-runtime",
+      "resolvedPath": "src/domains/session/contracts/session-runtime.ts",
+      "expression": "import {\n  StaleRuntimeRevisionError,\n  assertSessionEventKind,\n  emptyGameplayState,\n  normalizeRuntimeStatus,\n} from '../../domains/session/contracts/session-runtime';"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 11,
+      "endLine": 14,
+      "module": "../../lib/localAdmin",
+      "resolvedPath": "src/lib/localAdmin.ts",
+      "expression": "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 15,
+      "endLine": 23,
+      "module": "../../domains/session/contracts/session.types",
+      "resolvedPath": "src/domains/session/contracts/session.types.ts",
+      "expression": "import type {\n  SessionDto,\n  SessionVm,\n  CreateSessionDto,\n  JoinSessionDto,\n  SessionPlayerDto,\n  SessionPlayerVm,\n  PlaySessionStatus,\n} from '../../domains/session/contracts/session.types';"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 24,
+      "endLine": 28,
+      "module": "../../domains/session/contracts/session-lifecycle",
+      "resolvedPath": "src/domains/session/contracts/session-lifecycle.ts",
+      "expression": "import {\n  assertPlaySessionStatusTransition,\n  normalizePlaySessionStatus,\n  normalizeSessionJoinCode,\n} from '../../domains/session/contracts/session-lifecycle';"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 29,
+      "endLine": 35,
+      "module": "../../domains/session/contracts/session-invite",
+      "resolvedPath": "src/domains/session/contracts/session-invite.ts",
+      "expression": "import {\n  mapInviteCreatePayload,\n  mapInviteResolvePayload,\n  normalizeInviteToken,\n  type SessionInviteCreateResult,\n  type SessionInviteResolveResult,\n} from '../../domains/session/contracts/session-invite';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 18,
+      "endLine": 25,
+      "text": "export type AuthoritativeSessionMembership = {\n  readonly userId: string;\n  readonly role: string;\n  /** Capabilities column from membership — never from client body. */\n  readonly capabilities: readonly string[];\n  readonly characterId: string | null;\n  readonly allowPlayerDirector?: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 31,
+      "endLine": 48,
+      "text": "export async function resolveLiveSessionAccessFromMembership(\n  membership: AuthoritativeSessionMembership,\n): Promise<LiveSessionAccess> {\n  const userId = await getAuthenticatedUserId();\n  if (membership.userId !== userId) {\n    throw new Error('Session-Mitgliedschaft gehört nicht zum angemeldeten Nutzer.');\n  }\n  const validated = validateLiveSessionAccess({\n    role: membership.role,\n    capabilities: membership.capabilities,\n    characterId: membership.characterId,\n    allowPlayerDirector: membership.allowPlayerDirector === true,\n  });\n  if (validated.ok === false) {\n    throw new Error(validated.message);\n  }\n  return validated.access;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 54,
+      "endLine": 59,
+      "text": "export function buildLiveSessionReadModel(\n  access: LiveSessionAccess,\n  authoritativePayload: Record<string, unknown>,\n): Record<string, unknown> {\n  return filterPayloadForAccess(access, authoritativePayload);\n}"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 65,
+      "endLine": 74,
+      "text": "export function rejectClientCapabilityElevation(input: {\n  authoritativeCapabilities: readonly string[];\n  clientClaimedCapabilities: unknown;\n}): readonly string[] {\n  if (input.clientClaimedCapabilities === undefined || input.clientClaimedCapabilities === null) {\n    return input.authoritativeCapabilities;\n  }\n  // Any client claim is ignored — authoritative wins.\n  return input.authoritativeCapabilities;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 36,
+      "endLine": 36,
+      "text": "export type LiveKitRoomFactory = () => Promise<LiveKitRoomLike>;"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 38,
+      "endLine": 190,
+      "text": "export class LiveKitMediaPlaneAdapter implements MediaPlaneAdapter {\n  readonly providerId = 'livekit' as const;\n  private health: MediaPlaneHealth = 'unavailable';\n  private roomId = '';\n  private localIdentity: string | null = null;\n  private role: MediaPresenceSnapshot['participants'][number]['role'] = 'viewer';\n  private published: MediaTrackKind[] = [];\n  private room: LiveKitRoomLike | null = null;\n  private readonly dataHandlers = new Set<MediaPlaneDataHandler>();\n  private dataListener: ((...args: unknown[]) => void) | null = null;\n\n  constructor(private readonly roomFactory?: LiveKitRoomFactory) {}\n\n  async connect(input: MediaPlaneConnectInput): Promise<void> {\n    this.health = 'connecting';\n    this.roomId = deriveMediaRoomId(input.sessionId);\n    this.localIdentity = input.identity;\n    this.role = input.access.role;\n    this.published = [];\n\n    if (!this.roomFactory) {\n      this.health = 'unavailable';\n      throw new Error(\n        'LiveKit room factory not configured (media plane degraded).',\n      );\n    }\n\n    try {\n      this.room = await this.roomFactory();\n      await this.room.connect(input.url, input.token);\n      this.attachDataListener();\n      this.health = 'ready';\n    } catch (error) {\n      this.room = null;\n      this.health = 'unavailable';\n      throw error instanceof Error ? error : new Error(String(error));\n    }\n  }\n\n  async disconnect(): Promise<void> {\n    try {\n      this.detachDataListener();\n      await this.room?.disconnect();\n    } finally {\n      this.room = null;\n      this.health = 'unavailable';\n      this.localIdentity = null;\n      this.published = [];\n      this.roomId = '';\n      this.dataHandlers.clear();\n    }\n  }\n\n  async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' || !this.room) {\n      throw new Error('LiveKit room not ready');\n    }\n    const local = this.room.localParticipant;\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (intent.kind === 'camera') {\n        await local?.setCameraEnabled?.(true);\n      } else if (intent.kind === 'microphone') {\n        await local?.setMicrophoneEnabled?.(true);\n      }\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }\n\n  async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    const local = this.room?.localParticipant;\n    for (const kind of kinds) {\n      if (kind === 'camera') await local?.setCameraEnabled?.(false);\n      if (kind === 'microphone') await local?.setMicrophoneEnabled?.(false);\n    }\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }\n\n  getPresence(): MediaPresenceSnapshot {\n    return {\n      roomId: this.roomId,\n      health: this.health,\n      localIdentity: this.localIdentity,\n      participants:\n        this.localIdentity === null\n          ? []\n          : [\n              {\n                identity: this.localIdentity,\n                role: this.role,\n                published: [...this.published],\n              },\n            ],\n    };\n  }\n\n  getHealth(): MediaPlaneHealth {\n    return this.health;\n  }\n\n  async publishData(topic: string, payload: string): Promise<void> {\n    if (this.health !== 'ready' || !this.room?.localParticipant?.publishData) {\n      throw new Error('LiveKit data publish unavailable');\n    }\n    const bytes = new TextEncoder().encode(payload);\n    await this.room.localParticipant.publishData(bytes, {\n      reliable: false,\n      topic,\n    });\n    if (topic === 'liveact-data' && !this.published.includes('liveact-data')) {\n      this.published.push('liveact-data');\n    }\n  }\n\n  subscribeData(handler: MediaPlaneDataHandler): () => void {\n    this.dataHandlers.add(handler);\n    return () => {\n      this.dataHandlers.delete(handler);\n    };\n  }\n\n  private attachDataListener(): void {\n    if (!this.room?.on) return;\n    this.detachDataListener();\n    this.dataListener = (...args: unknown[]) => {\n      const payload = args[0];\n      const participant = args[1] as { identity?: string } | undefined;\n      const topic =\n        typeof args[2] === 'string'\n          ? args[2]\n          : typeof (args[2] as { topic?: string } | undefined)?.topic === 'string'\n            ? (args[2] as { topic: string }).topic\n            : 'liveact-data';\n      if (!(payload instanceof Uint8Array)) return;\n      const publisherIdentity =\n        typeof participant?.identity === 'string' ? participant.identity : '';\n      if (!publisherIdentity || publisherIdentity === this.localIdentity) return;\n      const text = new TextDecoder().decode(payload);\n      const message = { topic, payload: text, publisherIdentity };\n      for (const handler of this.dataHandlers) handler(message);\n    };\n    this.room.on('dataReceived', this.dataListener);\n  }\n\n  private detachDataListener(): void {\n    if (this.room?.off && this.dataListener) {\n      this.room.off('dataReceived', this.dataListener);\n    }\n    this.dataListener = null;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 16,
+      "endLine": 22,
+      "text": "export type MediaPlaneConnectInput = {\n  readonly sessionId: string;\n  readonly access: LiveSessionAccess;\n  readonly identity: string;\n  readonly token: string;\n  readonly url: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 25,
+      "endLine": 29,
+      "text": "export type MediaPlaneDataMessage = {\n  readonly topic: string;\n  readonly payload: string;\n  readonly publisherIdentity: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "export type MediaPlaneDataHandler = (message: MediaPlaneDataMessage) => void;"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-plane-adapter.ts",
+      "line": 33,
+      "endLine": 45,
+      "text": "export type MediaPlaneAdapter = {\n  readonly providerId: 'livekit' | 'memory' | 'none';\n  connect(input: MediaPlaneConnectInput): Promise<void>;\n  disconnect(): Promise<void>;\n  publish(intents: readonly MediaPublishIntent[]): Promise<void>;\n  unpublish(kinds: readonly MediaTrackKind[]): Promise<void>;\n  getPresence(): MediaPresenceSnapshot;\n  getHealth(): MediaPlaneHealth;\n  /** Publish ephemeral UTF-8 data (LiveAct network frames). */\n  publishData?(topic: string, payload: string): Promise<void>;\n  /** Subscribe to ephemeral data; returns unsubscribe. */\n  subscribeData?(handler: MediaPlaneDataHandler): () => void;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 7,
+      "endLine": 14,
+      "text": "export type MediaTokenSuccess = {\n  readonly ok: true;\n  readonly token: string;\n  readonly url: string;\n  readonly roomId: string;\n  readonly expiresAt: string;\n  readonly ttlSeconds: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 16,
+      "endLine": 21,
+      "text": "export type MediaTokenDegraded = {\n  readonly ok: false;\n  readonly degraded: true;\n  readonly reason: 'media_service_unavailable' | 'forbidden' | 'unauthorized' | 'bad_request';\n  readonly message: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 23,
+      "endLine": 23,
+      "text": "export type MediaTokenResult = MediaTokenSuccess | MediaTokenDegraded;"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 25,
+      "endLine": 100,
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 24,
+      "endLine": 128,
+      "text": "export class MemoryMediaPlaneAdapter implements MediaPlaneAdapter {\n  readonly providerId = 'memory' as const;\n  private health: MediaPlaneHealth = 'unavailable';\n  private roomId = '';\n  private localIdentity: string | null = null;\n  private published: MediaTrackKind[] = [];\n  private role: MediaPresenceSnapshot['participants'][number]['role'] = 'viewer';\n  private unsubData: (() => void) | null = null;\n  private readonly localDataHandlers = new Set<MediaPlaneDataHandler>();\n\n  constructor(private readonly bus: MemoryMediaPlaneBus = defaultMemoryMediaPlaneBus) {}\n\n  async connect(input: MediaPlaneConnectInput): Promise<void> {\n    if (!input.token || !input.url) {\n      this.health = 'unavailable';\n      throw new Error('Media token/url missing');\n    }\n    this.health = 'connecting';\n    this.roomId = deriveMediaRoomId(input.sessionId);\n    this.localIdentity = input.identity;\n    this.role = input.access.role;\n    this.published = [];\n    this.unsubData?.();\n    this.unsubData = this.bus.subscribe(input.identity, (message) => {\n      for (const handler of this.localDataHandlers) handler(message);\n    });\n    this.health = 'ready';\n  }\n\n  async disconnect(): Promise<void> {\n    this.unsubData?.();\n    this.unsubData = null;\n    this.localDataHandlers.clear();\n    this.health = 'unavailable';\n    this.localIdentity = null;\n    this.published = [];\n    this.roomId = '';\n  }\n\n  async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' && this.health !== 'reconnecting') {\n      throw new Error('Media plane not ready');\n    }\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }\n\n  async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }\n\n  async publishData(topic: string, payload: string): Promise<void> {\n    if (this.health !== 'ready' || !this.localIdentity) {\n      throw new Error('Media plane not ready for data');\n    }\n    if (!this.published.includes('liveact-data') && topic === 'liveact-data') {\n      // Allow data publish when liveact-data intent was published OR topic is liveact-data after explicit enable\n      this.published.push('liveact-data');\n    }\n    this.bus.publish({\n      topic,\n      payload,\n      publisherIdentity: this.localIdentity,\n    });\n  }\n\n  subscribeData(handler: MediaPlaneDataHandler): () => void {\n    this.localDataHandlers.add(handler);\n    return () => {\n      this.localDataHandlers.delete(handler);\n    };\n  }\n\n  getPresence(): MediaPresenceSnapshot {\n    return {\n      roomId: this.roomId,\n      health: this.health,\n      localIdentity: this.localIdentity,\n      participants:\n        this.localIdentity === null\n          ? []\n          : [\n              {\n                identity: this.localIdentity,\n                role: this.role,\n                published: [...this.published],\n              },\n            ],\n    };\n  }\n\n  getHealth(): MediaPlaneHealth {\n    return this.health;\n  }\n\n  /** Test helper: simulate reconnect cycle. */\n  async simulateReconnect(): Promise<void> {\n    this.health = 'reconnecting';\n    this.health = 'ready';\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 8,
+      "endLine": 28,
+      "text": "export class MemoryMediaPlaneBus {\n  private readonly handlers = new Set<{\n    identity: string;\n    handler: MediaPlaneDataHandler;\n  }>();\n\n  subscribe(identity: string, handler: MediaPlaneDataHandler): () => void {\n    const entry = { identity, handler };\n    this.handlers.add(entry);\n    return () => {\n      this.handlers.delete(entry);\n    };\n  }\n\n  publish(message: MediaPlaneDataMessage): void {\n    for (const entry of this.handlers) {\n      if (entry.identity === message.publisherIdentity) continue;\n      entry.handler(message);\n    }\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "export const defaultMemoryMediaPlaneBus = new MemoryMediaPlaneBus();"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 25,
+      "endLine": 30,
+      "text": "export type SessionMediaPlaneOptions = {\n  /** Prefer memory adapter (tests). Default: LiveKit with degrade. */\n  readonly preferMemory?: boolean;\n  readonly adapter?: MediaPlaneAdapter;\n  readonly tokenFetcher?: typeof fetchSessionMediaToken;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 32,
+      "endLine": 211,
+      "text": "export class SessionMediaPlane {\n  private adapter: MediaPlaneAdapter;\n  private status: MediaPlaneStatus = degradedMediaStatus(\n    'media_service_unavailable',\n    'Media plane noch nicht verbunden.',\n  );\n  private access: LiveSessionAccess | null = null;\n  private readonly tokenFetcher: typeof fetchSessionMediaToken;\n\n  constructor(options: SessionMediaPlaneOptions = {}) {\n    this.tokenFetcher = options.tokenFetcher ?? fetchSessionMediaToken;\n    if (options.adapter) {\n      this.adapter = options.adapter;\n    } else if (options.preferMemory === true) {\n      this.adapter = new MemoryMediaPlaneAdapter();\n    } else {\n      this.adapter = new LiveKitMediaPlaneAdapter();\n    }\n  }\n\n  getStatus(): MediaPlaneStatus {\n    return this.status;\n  }\n\n  getPresence(): MediaPresenceSnapshot {\n    return this.adapter.getPresence();\n  }\n\n  /**\n   * Connect using membership-derived token. Media outage → degraded, no throw to UI callers\n   * unless `throwOnUnavailable` (tests).\n   */\n  async connect(input: {\n    sessionId: string;\n    access: LiveSessionAccess;\n    identity: string;\n    throwOnUnavailable?: boolean;\n  }): Promise<MediaPlaneStatus> {\n    this.access = input.access;\n    if (!canSubscribeMedia(input.access)) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Keine Media-Berechtigung für diese Rolle.',\n      );\n      return this.status;\n    }\n\n    const tokenResult = await this.tokenFetcher({ sessionId: input.sessionId });\n    if (tokenResult.ok === false) {\n      this.status = degradedMediaStatus(\n        tokenResult.reason === 'forbidden' || tokenResult.reason === 'unauthorized'\n          ? 'permission_denied'\n          : 'media_service_unavailable',\n        tokenResult.message,\n      );\n      if (input.throwOnUnavailable) {\n        throw new Error(tokenResult.message);\n      }\n      return this.status;\n    }\n\n    try {\n      await this.adapter.connect({\n        sessionId: input.sessionId,\n        access: input.access,\n        identity: input.identity,\n        token: tokenResult.token,\n        url: tokenResult.url,\n      });\n      this.status = readyMediaStatus();\n      return this.status;\n    } catch (error) {\n      this.status = degradedMediaStatus(\n        'media_service_unavailable',\n        error instanceof Error\n          ? error.message\n          : 'Media-Verbindung fehlgeschlagen.',\n      );\n      if (input.throwOnUnavailable) throw error;\n      return this.status;\n    }\n  }\n\n  async disconnect(): Promise<void> {\n    await this.adapter.disconnect();\n    this.status = degradedMediaStatus(\n      'media_service_unavailable',\n      'Media plane getrennt.',\n    );\n    this.access = null;\n  }\n\n  /**\n   * Publish only intents allowed by current access. Explicit gesture expected by UI.\n   */\n  async publish(intents: readonly MediaPublishIntent[]): Promise<MediaPlaneStatus> {\n    if (!this.access) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Media plane nicht verbunden.',\n      );\n      return this.status;\n    }\n    if (this.status.health !== 'ready' && this.status.health !== 'reconnecting') {\n      return this.status;\n    }\n    const allowed = filterPublishIntentsForAccess(this.access, intents);\n    if (allowed.length === 0) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Publish für diese Rolle nicht erlaubt.',\n      );\n      return this.status;\n    }\n    try {\n      await this.adapter.publish(allowed);\n      this.status = readyMediaStatus();\n    } catch (error) {\n      this.status = degradedMediaStatus(\n        'network',\n        error instanceof Error ? error.message : 'Publish fehlgeschlagen.',\n      );\n    }\n    return this.status;\n  }\n\n  async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    await this.adapter.unpublish(kinds);\n  }\n\n  /**\n   * Publish ephemeral LiveAct network JSON when access allows liveact-data (#364).\n   */\n  async publishLiveActData(payload: string): Promise<boolean> {\n    if (!this.access || !canPublishTrack(this.access, 'liveact-data')) {\n      return false;\n    }\n    if (this.status.health !== 'ready' && this.status.health !== 'reconnecting') {\n      return false;\n    }\n    if (typeof this.adapter.publishData !== 'function') {\n      return false;\n    }\n    try {\n      await this.adapter.publishData('liveact-data', payload);\n      return true;\n    } catch {\n      return false;\n    }\n  }\n\n  subscribeLiveActData(handler: MediaPlaneDataHandler): () => void {\n    if (typeof this.adapter.subscribeData !== 'function') {\n      return () => undefined;\n    }\n    return this.adapter.subscribeData(handler);\n  }\n\n  /**\n   * Apply role downgrade: drop forbidden tracks and refresh status.\n   */\n  async applyAccessDowngrade(access: LiveSessionAccess): Promise<MediaPlaneStatus> {\n    this.access = access;\n    const presence = this.adapter.getPresence();\n    const local = presence.participants.find((p) => p.identity === presence.localIdentity);\n    const published = local?.published ?? [];\n    const forbidden = published.filter((kind) => !canPublishTrack(access, kind));\n    if (forbidden.length > 0) {\n      await this.adapter.unpublish(forbidden);\n      this.status = degradedMediaStatus(\n        'role_downgrade',\n        'Publish-Rechte entzogen — Tracks entfernt.',\n      );\n      if (this.adapter.getHealth() === 'ready') {\n        this.status = readyMediaStatus();\n      }\n    }\n    return this.status;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 10,
+      "endLine": 13,
+      "text": "export type LobbyReadyPayload = {\n  readonly userId: string;\n  readonly ready: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 17,
+      "endLine": 20,
+      "text": "export type SessionLobbySubscription = {\n  sendReady: (payload: LobbyReadyPayload) => Promise<void>;\n  unsubscribe: () => Promise<void>;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 22,
+      "endLine": 69,
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 8,
+      "endLine": 8,
+      "text": "export type EpisodeSummaryStatus = 'none' | 'draft' | 'approved';"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 10,
+      "endLine": 15,
+      "text": "export type SessionRecapAiGenerateResult = {\n  readonly summaryText: string;\n  readonly summaryStatus: EpisodeSummaryStatus;\n  readonly provider: string;\n  readonly model: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 130,
+      "endLine": 130,
+      "text": "export const sessionRecapAiService = new SessionRecapAiService();"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 12,
+      "endLine": 20,
+      "text": "export type SessionRecapDto = {\n  readonly sessionId: string;\n  readonly summaryText: string | null;\n  /** #573 — none|draft|approved (players only receive approved text). */\n  readonly summaryStatus: 'none' | 'draft' | 'approved';\n  readonly highlights: readonly RecapHighlightLine[];\n  readonly createdAt: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 54,
+      "endLine": 54,
+      "text": "export const sessionRecapService = new SessionRecapService();"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 11,
+      "endLine": 11,
+      "text": "export type SessionRuntimeListener = (state: SessionRuntimeState) => void;"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 13,
+      "endLine": 19,
+      "text": "export interface SessionRuntimeSubscription {\n  /** Latest authoritative snapshot after connect or resync. */\n  getState: () => SessionRuntimeState | null;\n  /** Force snapshot reload + keep channel (reconnect path). */\n  resync: () => Promise<SessionRuntimeState>;\n  unsubscribe: () => Promise<void>;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 26,
+      "endLine": 102,
+      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 64,
+      "endLine": 81,
+      "text": "export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {\n  const sessionId = typeof data.sessionId === 'string' ? data.sessionId : '';\n  if (!sessionId) {\n    throw new Error('Runtime-Snapshot ohne sessionId');\n  }\n  const revision = typeof data.revision === 'number' ? data.revision : Number(data.revision ?? 0);\n  if (!Number.isFinite(revision)) {\n    throw new Error('Runtime-Snapshot ohne gültige Revision');\n  }\n  return {\n    sessionId,\n    revision,\n    status: normalizeRuntimeStatus(typeof data.status === 'string' ? data.status : 'waiting'),\n    roster: mapRoster(data.roster),\n    gameplay: mapGameplay(data.gameplay),\n    updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 152,
+      "endLine": 152,
+      "text": "export const sessionRuntimeService = new SessionRuntimeService();"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 376,
+      "endLine": 376,
+      "text": "export const sessionService = new SessionService();"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 31,
+      "endLine": 48,
+      "name": "resolveLiveSessionAccessFromMembership",
+      "text": "export async function resolveLiveSessionAccessFromMembership(\n  membership: AuthoritativeSessionMembership,\n): Promise<LiveSessionAccess> {\n  const userId = await getAuthenticatedUserId();\n  if (membership.userId !== userId) {\n    throw new Error('Session-Mitgliedschaft gehört nicht zum angemeldeten Nutzer.');\n  }\n  const validated = validateLiveSessionAccess({\n    role: membership.role,\n    capabilities: membership.capabilities,\n    characterId: membership.characterId,\n    allowPlayerDirector: membership.allowPlayerDirector === true,\n  });\n  if (validated.ok === false) {\n    throw new Error(validated.message);\n  }\n  return validated.access;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 54,
+      "endLine": 59,
+      "name": "buildLiveSessionReadModel",
+      "text": "export function buildLiveSessionReadModel(\n  access: LiveSessionAccess,\n  authoritativePayload: Record<string, unknown>,\n): Record<string, unknown> {\n  return filterPayloadForAccess(access, authoritativePayload);\n}"
+    },
+    {
+      "path": "src/infrastructure/session/live-session-access.resolver.ts",
+      "line": 65,
+      "endLine": 74,
+      "name": "rejectClientCapabilityElevation",
+      "text": "export function rejectClientCapabilityElevation(input: {\n  authoritativeCapabilities: readonly string[];\n  clientClaimedCapabilities: unknown;\n}): readonly string[] {\n  if (input.clientClaimedCapabilities === undefined || input.clientClaimedCapabilities === null) {\n    return input.authoritativeCapabilities;\n  }\n  // Any client claim is ignored — authoritative wins.\n  return input.authoritativeCapabilities;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 51,
+      "endLine": 75,
+      "name": "connect",
+      "text": "async connect(input: MediaPlaneConnectInput): Promise<void> {\n    this.health = 'connecting';\n    this.roomId = deriveMediaRoomId(input.sessionId);\n    this.localIdentity = input.identity;\n    this.role = input.access.role;\n    this.published = [];\n\n    if (!this.roomFactory) {\n      this.health = 'unavailable';\n      throw new Error(\n        'LiveKit room factory not configured (media plane degraded).',\n      );\n    }\n\n    try {\n      this.room = await this.roomFactory();\n      await this.room.connect(input.url, input.token);\n      this.attachDataListener();\n      this.health = 'ready';\n    } catch (error) {\n      this.room = null;\n      this.health = 'unavailable';\n      throw error instanceof Error ? error : new Error(String(error));\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 77,
+      "endLine": 89,
+      "name": "disconnect",
+      "text": "async disconnect(): Promise<void> {\n    try {\n      this.detachDataListener();\n      await this.room?.disconnect();\n    } finally {\n      this.room = null;\n      this.health = 'unavailable';\n      this.localIdentity = null;\n      this.published = [];\n      this.roomId = '';\n      this.dataHandlers.clear();\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 91,
+      "endLine": 107,
+      "name": "publish",
+      "text": "async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' || !this.room) {\n      throw new Error('LiveKit room not ready');\n    }\n    const local = this.room.localParticipant;\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (intent.kind === 'camera') {\n        await local?.setCameraEnabled?.(true);\n      } else if (intent.kind === 'microphone') {\n        await local?.setMicrophoneEnabled?.(true);\n      }\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 109,
+      "endLine": 116,
+      "name": "unpublish",
+      "text": "async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    const local = this.room?.localParticipant;\n    for (const kind of kinds) {\n      if (kind === 'camera') await local?.setCameraEnabled?.(false);\n      if (kind === 'microphone') await local?.setMicrophoneEnabled?.(false);\n    }\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 115,
+      "endLine": 115,
+      "name": "callback",
+      "text": "(k) => !kinds.includes(k)"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 118,
+      "endLine": 134,
+      "name": "getPresence",
+      "text": "getPresence(): MediaPresenceSnapshot {\n    return {\n      roomId: this.roomId,\n      health: this.health,\n      localIdentity: this.localIdentity,\n      participants:\n        this.localIdentity === null\n          ? []\n          : [\n              {\n                identity: this.localIdentity,\n                role: this.role,\n                published: [...this.published],\n              },\n            ],\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 136,
+      "endLine": 138,
+      "name": "getHealth",
+      "text": "getHealth(): MediaPlaneHealth {\n    return this.health;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 140,
+      "endLine": 152,
+      "name": "publishData",
+      "text": "async publishData(topic: string, payload: string): Promise<void> {\n    if (this.health !== 'ready' || !this.room?.localParticipant?.publishData) {\n      throw new Error('LiveKit data publish unavailable');\n    }\n    const bytes = new TextEncoder().encode(payload);\n    await this.room.localParticipant.publishData(bytes, {\n      reliable: false,\n      topic,\n    });\n    if (topic === 'liveact-data' && !this.published.includes('liveact-data')) {\n      this.published.push('liveact-data');\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 154,
+      "endLine": 159,
+      "name": "subscribeData",
+      "text": "subscribeData(handler: MediaPlaneDataHandler): () => void {\n    this.dataHandlers.add(handler);\n    return () => {\n      this.dataHandlers.delete(handler);\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 156,
+      "endLine": 158,
+      "name": "callback",
+      "text": "() => {\n      this.dataHandlers.delete(handler);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
+      "line": 164,
+      "endLine": 180,
+      "name": "callback",
+      "text": "(...args: unknown[]) => {\n      const payload = args[0];\n      const participant = args[1] as { identity?: string } | undefined;\n      const topic =\n        typeof args[2] === 'string'\n          ? args[2]\n          : typeof (args[2] as { topic?: string } | undefined)?.topic === 'string'\n            ? (args[2] as { topic: string }).topic\n            : 'liveact-data';\n      if (!(payload instanceof Uint8Array)) return;\n      const publisherIdentity =\n        typeof participant?.identity === 'string' ? participant.identity : '';\n      if (!publisherIdentity || publisherIdentity === this.localIdentity) return;\n      const text = new TextDecoder().decode(payload);\n      const message = { topic, payload: text, publisherIdentity };\n      for (const handler of this.dataHandlers) handler(message);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/media/media-token-client.ts",
+      "line": 25,
+      "endLine": 100,
+      "name": "fetchSessionMediaToken",
+      "text": "export async function fetchSessionMediaToken(input: {\n  sessionId: string;\n}): Promise<MediaTokenResult> {\n  const sessionId = input.sessionId.trim();\n  if (!sessionId) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'bad_request',\n      message: 'sessionId fehlt.',\n    };\n  }\n\n  try {\n    const { data, error } = await supabase.functions.invoke('session-media-token', {\n      body: { sessionId },\n    });\n    if (error) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: error.message || 'Media-Token-Dienst nicht erreichbar.',\n      };\n    }\n    const record = data as Record<string, unknown> | null;\n    if (!record || typeof record !== 'object') {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Leere Media-Token-Antwort.',\n      };\n    }\n    if (record.degraded === true || record.ok === false) {\n      const reason =\n        record.reason === 'forbidden' ||\n        record.reason === 'unauthorized' ||\n        record.reason === 'bad_request'\n          ? record.reason\n          : 'media_service_unavailable';\n      return {\n        ok: false,\n        degraded: true,\n        reason,\n        message:\n          typeof record.message === 'string'\n            ? record.message\n            : 'Media plane degraded.',\n      };\n    }\n    const token = typeof record.token === 'string' ? record.token : '';\n    const url = typeof record.url === 'string' ? record.url : '';\n    const roomId = typeof record.roomId === 'string' ? record.roomId : '';\n    const expiresAt =\n      typeof record.expiresAt === 'string' ? record.expiresAt : '';\n    const ttlSeconds =\n      typeof record.ttlSeconds === 'number' ? record.ttlSeconds : 0;\n    if (!token || !url || !roomId) {\n      return {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Media-Token unvollständig.',\n      };\n    }\n    return { ok: true, token, url, roomId, expiresAt, ttlSeconds };\n  } catch (error) {\n    return {\n      ok: false,\n      degraded: true,\n      reason: 'media_service_unavailable',\n      message: error instanceof Error ? error.message : 'Media-Token-Fehler.',\n    };\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 36,
+      "endLine": 51,
+      "name": "connect",
+      "text": "async connect(input: MediaPlaneConnectInput): Promise<void> {\n    if (!input.token || !input.url) {\n      this.health = 'unavailable';\n      throw new Error('Media token/url missing');\n    }\n    this.health = 'connecting';\n    this.roomId = deriveMediaRoomId(input.sessionId);\n    this.localIdentity = input.identity;\n    this.role = input.access.role;\n    this.published = [];\n    this.unsubData?.();\n    this.unsubData = this.bus.subscribe(input.identity, (message) => {\n      for (const handler of this.localDataHandlers) handler(message);\n    });\n    this.health = 'ready';\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 47,
+      "endLine": 49,
+      "name": "callback",
+      "text": "(message) => {\n      for (const handler of this.localDataHandlers) handler(message);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 53,
+      "endLine": 61,
+      "name": "disconnect",
+      "text": "async disconnect(): Promise<void> {\n    this.unsubData?.();\n    this.unsubData = null;\n    this.localDataHandlers.clear();\n    this.health = 'unavailable';\n    this.localIdentity = null;\n    this.published = [];\n    this.roomId = '';\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 63,
+      "endLine": 73,
+      "name": "publish",
+      "text": "async publish(intents: readonly MediaPublishIntent[]): Promise<void> {\n    if (this.health !== 'ready' && this.health !== 'reconnecting') {\n      throw new Error('Media plane not ready');\n    }\n    for (const intent of intents) {\n      if (!intent.enabled) continue;\n      if (!this.published.includes(intent.kind)) {\n        this.published.push(intent.kind);\n      }\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 75,
+      "endLine": 77,
+      "name": "unpublish",
+      "text": "async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    this.published = this.published.filter((k) => !kinds.includes(k));\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 76,
+      "endLine": 76,
+      "name": "callback",
+      "text": "(k) => !kinds.includes(k)"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 79,
+      "endLine": 92,
+      "name": "publishData",
+      "text": "async publishData(topic: string, payload: string): Promise<void> {\n    if (this.health !== 'ready' || !this.localIdentity) {\n      throw new Error('Media plane not ready for data');\n    }\n    if (!this.published.includes('liveact-data') && topic === 'liveact-data') {\n      // Allow data publish when liveact-data intent was published OR topic is liveact-data after explicit enable\n      this.published.push('liveact-data');\n    }\n    this.bus.publish({\n      topic,\n      payload,\n      publisherIdentity: this.localIdentity,\n    });\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 94,
+      "endLine": 99,
+      "name": "subscribeData",
+      "text": "subscribeData(handler: MediaPlaneDataHandler): () => void {\n    this.localDataHandlers.add(handler);\n    return () => {\n      this.localDataHandlers.delete(handler);\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 96,
+      "endLine": 98,
+      "name": "callback",
+      "text": "() => {\n      this.localDataHandlers.delete(handler);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 101,
+      "endLine": 117,
+      "name": "getPresence",
+      "text": "getPresence(): MediaPresenceSnapshot {\n    return {\n      roomId: this.roomId,\n      health: this.health,\n      localIdentity: this.localIdentity,\n      participants:\n        this.localIdentity === null\n          ? []\n          : [\n              {\n                identity: this.localIdentity,\n                role: this.role,\n                published: [...this.published],\n              },\n            ],\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 119,
+      "endLine": 121,
+      "name": "getHealth",
+      "text": "getHealth(): MediaPlaneHealth {\n    return this.health;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-adapter.ts",
+      "line": 124,
+      "endLine": 127,
+      "name": "simulateReconnect",
+      "text": "async simulateReconnect(): Promise<void> {\n    this.health = 'reconnecting';\n    this.health = 'ready';\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 14,
+      "endLine": 20,
+      "name": "subscribe",
+      "text": "subscribe(identity: string, handler: MediaPlaneDataHandler): () => void {\n    const entry = { identity, handler };\n    this.handlers.add(entry);\n    return () => {\n      this.handlers.delete(entry);\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "callback",
+      "text": "() => {\n      this.handlers.delete(entry);\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/media/memory-media-plane-bus.ts",
+      "line": 22,
+      "endLine": 27,
+      "name": "publish",
+      "text": "publish(message: MediaPlaneDataMessage): void {\n    for (const entry of this.handlers) {\n      if (entry.identity === message.publisherIdentity) continue;\n      entry.handler(message);\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 52,
+      "endLine": 54,
+      "name": "getStatus",
+      "text": "getStatus(): MediaPlaneStatus {\n    return this.status;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 56,
+      "endLine": 58,
+      "name": "getPresence",
+      "text": "getPresence(): MediaPresenceSnapshot {\n    return this.adapter.getPresence();\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 64,
+      "endLine": 113,
+      "name": "connect",
+      "text": "async connect(input: {\n    sessionId: string;\n    access: LiveSessionAccess;\n    identity: string;\n    throwOnUnavailable?: boolean;\n  }): Promise<MediaPlaneStatus> {\n    this.access = input.access;\n    if (!canSubscribeMedia(input.access)) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Keine Media-Berechtigung für diese Rolle.',\n      );\n      return this.status;\n    }\n\n    const tokenResult = await this.tokenFetcher({ sessionId: input.sessionId });\n    if (tokenResult.ok === false) {\n      this.status = degradedMediaStatus(\n        tokenResult.reason === 'forbidden' || tokenResult.reason === 'unauthorized'\n          ? 'permission_denied'\n          : 'media_service_unavailable',\n        tokenResult.message,\n      );\n      if (input.throwOnUnavailable) {\n        throw new Error(tokenResult.message);\n      }\n      return this.status;\n    }\n\n    try {\n      await this.adapter.connect({\n        sessionId: input.sessionId,\n        access: input.access,\n        identity: input.identity,\n        token: tokenResult.token,\n        url: tokenResult.url,\n      });\n      this.status = readyMediaStatus();\n      return this.status;\n    } catch (error) {\n      this.status = degradedMediaStatus(\n        'media_service_unavailable',\n        error instanceof Error\n          ? error.message\n          : 'Media-Verbindung fehlgeschlagen.',\n      );\n      if (input.throwOnUnavailable) throw error;\n      return this.status;\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 115,
+      "endLine": 122,
+      "name": "disconnect",
+      "text": "async disconnect(): Promise<void> {\n    await this.adapter.disconnect();\n    this.status = degradedMediaStatus(\n      'media_service_unavailable',\n      'Media plane getrennt.',\n    );\n    this.access = null;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 127,
+      "endLine": 156,
+      "name": "publish",
+      "text": "async publish(intents: readonly MediaPublishIntent[]): Promise<MediaPlaneStatus> {\n    if (!this.access) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Media plane nicht verbunden.',\n      );\n      return this.status;\n    }\n    if (this.status.health !== 'ready' && this.status.health !== 'reconnecting') {\n      return this.status;\n    }\n    const allowed = filterPublishIntentsForAccess(this.access, intents);\n    if (allowed.length === 0) {\n      this.status = degradedMediaStatus(\n        'permission_denied',\n        'Publish für diese Rolle nicht erlaubt.',\n      );\n      return this.status;\n    }\n    try {\n      await this.adapter.publish(allowed);\n      this.status = readyMediaStatus();\n    } catch (error) {\n      this.status = degradedMediaStatus(\n        'network',\n        error instanceof Error ? error.message : 'Publish fehlgeschlagen.',\n      );\n    }\n    return this.status;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 158,
+      "endLine": 160,
+      "name": "unpublish",
+      "text": "async unpublish(kinds: readonly MediaTrackKind[]): Promise<void> {\n    await this.adapter.unpublish(kinds);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 165,
+      "endLine": 181,
+      "name": "publishLiveActData",
+      "text": "async publishLiveActData(payload: string): Promise<boolean> {\n    if (!this.access || !canPublishTrack(this.access, 'liveact-data')) {\n      return false;\n    }\n    if (this.status.health !== 'ready' && this.status.health !== 'reconnecting') {\n      return false;\n    }\n    if (typeof this.adapter.publishData !== 'function') {\n      return false;\n    }\n    try {\n      await this.adapter.publishData('liveact-data', payload);\n      return true;\n    } catch {\n      return false;\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 183,
+      "endLine": 188,
+      "name": "subscribeLiveActData",
+      "text": "subscribeLiveActData(handler: MediaPlaneDataHandler): () => void {\n    if (typeof this.adapter.subscribeData !== 'function') {\n      return () => undefined;\n    }\n    return this.adapter.subscribeData(handler);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 185,
+      "endLine": 185,
+      "name": "callback",
+      "text": "() => undefined"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 193,
+      "endLine": 210,
+      "name": "applyAccessDowngrade",
+      "text": "async applyAccessDowngrade(access: LiveSessionAccess): Promise<MediaPlaneStatus> {\n    this.access = access;\n    const presence = this.adapter.getPresence();\n    const local = presence.participants.find((p) => p.identity === presence.localIdentity);\n    const published = local?.published ?? [];\n    const forbidden = published.filter((kind) => !canPublishTrack(access, kind));\n    if (forbidden.length > 0) {\n      await this.adapter.unpublish(forbidden);\n      this.status = degradedMediaStatus(\n        'role_downgrade',\n        'Publish-Rechte entzogen — Tracks entfernt.',\n      );\n      if (this.adapter.getHealth() === 'ready') {\n        this.status = readyMediaStatus();\n      }\n    }\n    return this.status;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 196,
+      "endLine": 196,
+      "name": "callback",
+      "text": "(p) => p.identity === presence.localIdentity"
+    },
+    {
+      "path": "src/infrastructure/session/media/session-media-plane.ts",
+      "line": 198,
+      "endLine": 198,
+      "name": "callback",
+      "text": "(kind) => !canPublishTrack(access, kind)"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 22,
+      "endLine": 69,
+      "name": "subscribeSessionLobbyReady",
+      "text": "export async function subscribeSessionLobbyReady(\n  sessionId: string,\n  onReady: LobbyReadyListener,\n): Promise<SessionLobbySubscription> {\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const topic = `session-lobby:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on('broadcast', { event: 'ready' }, ({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    });\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  });\n\n  return {\n    sendReady: async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    },\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 32,
+      "endLine": 37,
+      "name": "callback",
+      "text": "({ payload }) => {\n      if (disposed) return;\n      const userId = typeof payload?.userId === 'string' ? payload.userId : null;\n      if (!userId) return;\n      onReady({ userId, ready: payload?.ready === true });\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 39,
+      "endLine": 50,
+      "name": "callback",
+      "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Lobby-Kanal fehlt'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    });\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 44,
+      "endLine": 49,
+      "name": "callback",
+      "text": "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Lobby-Kanal: ${status}`));\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 53,
+      "endLine": 60,
+      "name": "callback",
+      "text": "async (payload) => {\n      if (!channel || disposed) return;\n      await channel.send({\n        type: 'broadcast',\n        event: 'ready',\n        payload: { userId: payload.userId, ready: payload.ready === true },\n      });\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-lobby-channel.ts",
+      "line": 61,
+      "endLine": 67,
+      "name": "callback",
+      "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 28,
+      "endLine": 30,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 32,
+      "endLine": 57,
+      "name": "parseFunctionResponse",
+      "text": "function parseFunctionResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n  }\n  if (\n    value.status === 'ok' &&\n    typeof value.summaryText === 'string' &&\n    typeof value.provider === 'string' &&\n    typeof value.model === 'string'\n  ) {\n    return {\n      status: 'ok',\n      summaryText: value.summaryText,\n      summaryStatus: typeof value.summaryStatus === 'string' ? value.summaryStatus : 'draft',\n      provider: value.provider,\n      model: value.model,\n    };\n  }\n  if (\n    (value.status === 'not-configured' || value.status === 'error') &&\n    typeof value.message === 'string'\n  ) {\n    return { status: value.status, message: value.message };\n  }\n  return { status: 'error', message: 'Die KI-Antwort hatte ein ungültiges Format.' };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 59,
+      "endLine": 61,
+      "name": "hasResponseContext",
+      "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 63,
+      "endLine": 72,
+      "name": "getFunctionErrorMessage",
+      "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const responseBody: unknown = await error.context.clone().json();\n    const parsed = parseFunctionResponse(responseBody);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 75,
+      "endLine": 96,
+      "name": "generateDraft",
+      "text": "async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {\n    const { data, error } = await supabase.functions.invoke('session-recap', {\n      body: { sessionId },\n    });\n    if (error) {\n      const serverMessage = await getFunctionErrorMessage(error);\n      throw new Error(\n        serverMessage ??\n          'Zusammenfassung konnte nicht generiert werden. Bitte manuell schreiben.',\n      );\n    }\n    const response = parseFunctionResponse(data);\n    if (response.status !== 'ok') {\n      throw new Error(response.message);\n    }\n    return {\n      summaryText: response.summaryText,\n      summaryStatus: response.summaryStatus === 'approved' ? 'approved' : 'draft',\n      provider: response.provider,\n      model: response.model,\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-ai-service.ts",
+      "line": 98,
+      "endLine": 127,
+      "name": "saveSummary",
+      "text": "async saveSummary(\n    sessionId: string,\n    summaryText: string,\n    status: 'draft' | 'approved',\n  ): Promise<{ summaryText: string | null; summaryStatus: EpisodeSummaryStatus }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_session_recap_summary', {\n        p_session_id: sessionId,\n        p_summary_text: summaryText,\n        p_status: status,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Zusammenfassung konnte nicht gespeichert werden');\n    }\n    if (!isRecord(data)) {\n      return { summaryText, summaryStatus: status };\n    }\n    return {\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : summaryText,\n      summaryStatus:\n        data.summaryStatus === 'approved'\n          ? 'approved'\n          : data.summaryStatus === 'draft'\n            ? 'draft'\n            : 'none',\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 22,
+      "endLine": 24,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null && !Array.isArray(value);\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-recap-service.ts",
+      "line": 27,
+      "endLine": 51,
+      "name": "getBySessionId",
+      "text": "async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_session_recap', { p_session_id: sessionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Recap Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Recap konnte nicht geladen werden');\n    }\n    if (data == null) return null;\n    if (!isRecord(data)) {\n      throw new Error('Ungültige Recap-Antwort');\n    }\n    const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';\n    const summaryStatus =\n      statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';\n    return {\n      sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,\n      summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,\n      summaryStatus,\n      highlights: parsePersistedRecapHighlightLines(data.highlightLines),\n      createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,\n      updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 26,
+      "endLine": 102,
+      "name": "subscribeSessionRuntime",
+      "text": "export async function subscribeSessionRuntime(\n  sessionId: string,\n  onChange: SessionRuntimeListener,\n): Promise<SessionRuntimeSubscription> {\n  let current: SessionRuntimeState | null = await sessionRuntimeService.getSnapshot(sessionId);\n  onChange(current);\n\n  let channel: RealtimeChannel | null = null;\n  let disposed = false;\n\n  const refresh = async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  };\n\n  const topic = `session-runtime:${sessionId}`;\n  channel = supabase\n    .channel(topic)\n    .on(\n      'postgres_changes',\n      { event: '*', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: '*',\n        schema: 'public',\n        table: 'session_players',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    )\n    .on(\n      'postgres_changes',\n      {\n        event: 'INSERT',\n        schema: 'public',\n        table: 'session_events',\n        filter: `session_id=eq.${sessionId}`,\n      },\n      () => {\n        void refresh();\n      },\n    );\n\n  await new Promise<void>((resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  });\n\n  return {\n    getState: () => current,\n    resync: refresh,\n    unsubscribe: async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 36,
+      "endLine": 41,
+      "name": "refresh",
+      "text": "async (): Promise<SessionRuntimeState> => {\n    const next = await sessionRuntimeService.getSnapshot(sessionId);\n    current = next;\n    if (!disposed) onChange(next);\n    return next;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 49,
+      "endLine": 51,
+      "name": "callback",
+      "text": "() => {\n        void refresh();\n      }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 61,
+      "endLine": 63,
+      "name": "callback",
+      "text": "() => {\n        void refresh();\n      }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 73,
+      "endLine": 75,
+      "name": "callback",
+      "text": "() => {\n        void refresh();\n      }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 78,
+      "endLine": 89,
+      "name": "callback",
+      "text": "(resolve, reject) => {\n    if (!channel) {\n      reject(new Error('Realtime-Kanal konnte nicht erstellt werden'));\n      return;\n    }\n    channel.subscribe((status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    });\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 83,
+      "endLine": 88,
+      "name": "callback",
+      "text": "(status) => {\n      if (status === 'SUBSCRIBED') resolve();\n      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {\n        reject(new Error(`Realtime-Subscribe fehlgeschlagen: ${status}`));\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 92,
+      "endLine": 92,
+      "name": "callback",
+      "text": "() => current"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-channel.ts",
+      "line": 94,
+      "endLine": 100,
+      "name": "callback",
+      "text": "async () => {\n      disposed = true;\n      if (channel) {\n        await supabase.removeChannel(channel);\n        channel = null;\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 31,
+      "endLine": 47,
+      "name": "mapRoster",
+      "text": "function mapRoster(raw: unknown): SessionPresenceEntry[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SessionPresenceEntry[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const userId = typeof row.userId === 'string' ? row.userId : null;\n    if (!userId) continue;\n    out.push({\n      userId,\n      characterId: typeof row.characterId === 'string' ? row.characterId : null,\n      isOnline: row.isOnline === true,\n      joinedAt: typeof row.joinedAt === 'string' ? row.joinedAt : new Date(0).toISOString(),\n    });\n  }\n  return out;\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 49,
+      "endLine": 62,
+      "name": "mapGameplay",
+      "text": "function mapGameplay(raw: unknown): SessionGameplayState {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {\n    return emptyGameplayState();\n  }\n  const row = raw as Record<string, unknown>;\n  const sceneId = typeof row.sceneId === 'string' && row.sceneId.trim() !== '' ? row.sceneId : null;\n  const combatActive = row.combatActive === true;\n  const sharedRaw = row.shared;\n  const shared =\n    sharedRaw && typeof sharedRaw === 'object' && !Array.isArray(sharedRaw)\n      ? (sharedRaw as Record<string, unknown>)\n      : {};\n  return { sceneId, combatActive, shared };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 64,
+      "endLine": 81,
+      "name": "mapSnapshotJson",
+      "text": "export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {\n  const sessionId = typeof data.sessionId === 'string' ? data.sessionId : '';\n  if (!sessionId) {\n    throw new Error('Runtime-Snapshot ohne sessionId');\n  }\n  const revision = typeof data.revision === 'number' ? data.revision : Number(data.revision ?? 0);\n  if (!Number.isFinite(revision)) {\n    throw new Error('Runtime-Snapshot ohne gültige Revision');\n  }\n  return {\n    sessionId,\n    revision,\n    status: normalizeRuntimeStatus(typeof data.status === 'string' ? data.status : 'waiting'),\n    roster: mapRoster(data.roster),\n    gameplay: mapGameplay(data.gameplay),\n    updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString(),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 83,
+      "endLine": 86,
+      "name": "isStaleRpcError",
+      "text": "function isStaleRpcError(message: string): boolean {\n  const lower = message.toLowerCase();\n  return lower.includes('stale revision') || lower.includes('40001');\n}"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 89,
+      "endLine": 97,
+      "name": "getSnapshot",
+      "text": "async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {\n    const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {\n      p_session_id: sessionId,\n    });\n    if (error || !data) {\n      throw new Error(error?.message ?? 'Runtime-Snapshot fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 99,
+      "endLine": 126,
+      "name": "applyCommand",
+      "text": "async applyCommand(input: {\n    sessionId: string;\n    expectedRevision: number;\n    kind: SessionEventKind | string;\n    payload?: Record<string, unknown>;\n    idempotencyKey?: string | null;\n  }): Promise<SessionRuntimeState> {\n    const kind = assertSessionEventKind(input.kind);\n    const { data, error } = await supabase.rpc('apply_session_runtime_command', {\n      p_session_id: input.sessionId,\n      p_expected_revision: input.expectedRevision,\n      p_kind: kind,\n      p_payload: input.payload ?? {},\n      p_idempotency_key: input.idempotencyKey ?? null,\n    });\n\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(input.sessionId);\n        throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Runtime-Befehl lieferte kein Ergebnis');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-runtime-service.ts",
+      "line": 128,
+      "endLine": 149,
+      "name": "setPresence",
+      "text": "async setPresence(\n    sessionId: string,\n    isOnline: boolean,\n    expectedRevision?: number | null,\n  ): Promise<SessionRuntimeState> {\n    const { data, error } = await supabase.rpc('set_session_player_presence', {\n      p_session_id: sessionId,\n      p_is_online: isOnline,\n      p_expected_revision: expectedRevision ?? null,\n    });\n    if (error) {\n      if (isStaleRpcError(error.message)) {\n        const snap = await this.getSnapshot(sessionId);\n        throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);\n      }\n      throw new Error(error.message);\n    }\n    if (!data) {\n      throw new Error('Presence-Update fehlgeschlagen');\n    }\n    return mapSnapshotJson(data as SnapshotJson);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 126,
+      "endLine": 126,
+      "name": "callback",
+      "text": "(p) => this.mapPlayerToViewModel(p)"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 154,
+      "endLine": 173,
+      "name": "createSession",
+      "text": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 175,
+      "endLine": 192,
+      "name": "joinSession",
+      "text": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const code = normalizeSessionJoinCode(payload.code);\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 194,
+      "endLine": 208,
+      "name": "getSessionById",
+      "text": "async getSessionById(id: string): Promise<SessionVm> {\n    const { data: session, error: sessionError } = await supabase\n      .from(this.tableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (sessionError || !session) {\n      throw new Error('Session not found');\n    }\n\n    const dto = await this.mapRowToDto(session as unknown as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 210,
+      "endLine": 269,
+      "name": "getUserSessions",
+      "text": "async getUserSessions(): Promise<SessionVm[]> {\n    const user = await this.requireAuthUser();\n\n    const { data: gmProjects, error: gmProjectsError } = await supabase\n      .from('projects')\n      .select('id')\n      .eq('gm_user_id', user.id);\n\n    if (gmProjectsError) {\n      throw new Error(`Failed to fetch GM projects: ${gmProjectsError.message}`);\n    }\n\n    const gmProjectIds = (gmProjects ?? []).map((p) => p.id as string);\n\n    let gmSessions: SessionRow[] = [];\n    if (gmProjectIds.length > 0) {\n      const { data, error } = await supabase\n        .from(this.tableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .in('project_id', gmProjectIds)\n        .neq('status', 'completed')\n        .order('created_at', { ascending: false });\n      if (error) {\n        throw new Error(`Failed to fetch GM sessions: ${error.message}`);\n      }\n      gmSessions = (data ?? []) as unknown as SessionRow[];\n    }\n\n    const { data: playerRecords, error: playerError } = await supabase\n      .from(this.playersTableName)\n      .select(`*, sessions!inner(${SESSION_SAFE_COLUMNS})`)\n      .eq('user_id', user.id);\n\n    if (playerError) {\n      console.error('Failed to fetch player sessions:', playerError);\n    }\n\n    type PlayerSessionJoinRow = { sessions: SessionRow | SessionRow[] | null };\n    const playerSessions = ((playerRecords || []) as PlayerSessionJoinRow[])\n      .map((record) => record.sessions)\n      .flatMap((session) => (Array.isArray(session) ? session : session ? [session] : []))\n      .filter((session) => session.status !== 'completed');\n\n    const allSessionIds = new Set<string>();\n    const combined: SessionRow[] = [];\n    [...gmSessions, ...playerSessions].forEach((session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    });\n\n    return Promise.all(\n      combined.map(async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }),\n    );\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 222,
+      "endLine": 222,
+      "name": "callback",
+      "text": "(p) => p.id as string"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 249,
+      "endLine": 249,
+      "name": "callback",
+      "text": "(record) => record.sessions"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 250,
+      "endLine": 250,
+      "name": "callback",
+      "text": "(session) => (Array.isArray(session) ? session : session ? [session] : [])"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 251,
+      "endLine": 251,
+      "name": "callback",
+      "text": "(session) => session.status !== 'completed'"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 255,
+      "endLine": 260,
+      "name": "callback",
+      "text": "(session) => {\n      if (!allSessionIds.has(session.id)) {\n        allSessionIds.add(session.id);\n        combined.push(session);\n      }\n    }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 263,
+      "endLine": 267,
+      "name": "callback",
+      "text": "async (session) => {\n        const dto = await this.mapRowToDto(session);\n        const players = await this.loadPlayers(session.id);\n        return this.mapToViewModel(dto, players);\n      }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 271,
+      "endLine": 290,
+      "name": "updateSessionStatus",
+      "text": "async updateSessionStatus(\n    id: string,\n    status: PlaySessionStatus,\n  ): Promise<SessionVm> {\n    const current = await this.getSessionById(id);\n    assertPlaySessionStatusTransition(current.status, status);\n\n    const { data, error } = await supabase.rpc('set_session_status', {\n      p_session_id: id,\n      p_status: status,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to update session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(id);\n    return this.mapToViewModel(dto, players);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 292,
+      "endLine": 302,
+      "name": "leaveSession",
+      "text": "async leaveSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 307,
+      "endLine": 323,
+      "name": "deleteSession",
+      "text": "async deleteSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n    const id = sessionId.trim();\n    if (!id) {\n      throw new Error('Session-ID fehlt');\n    }\n\n    const { error } = await supabase.from(this.tableName).delete().eq('id', id);\n\n    if (error) {\n      throw new Error(\n        error.message.includes('row-level security')\n          ? 'Nur der Gamemaster kann Sessions löschen.'\n          : `Session konnte nicht gelöscht werden: ${error.message}`,\n      );\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 328,
+      "endLine": 341,
+      "name": "createSessionInvite",
+      "text": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 346,
+      "endLine": 359,
+      "name": "resolveSessionInvite",
+      "text": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }"
+    },
+    {
+      "path": "src/infrastructure/session/session-service.ts",
+      "line": 361,
+      "endLine": 373,
+      "name": "revokeSessionInvite",
+      "text": "async revokeSessionInvite(token: string): Promise<void> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }"
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "area": "ai",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "sha256": "2d8233ab5816f88afd6b20db580e87d6f8d8b447a28e0f02d02d7c7425249d50"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/ai-providers/contracts.ts",
+      "sha256": "7ddd1f75a92998d2ed8ec32d8bf868ed74ef8d2cd5a4f1b1aa07e57e587102cb"
+    },
+    {
+      "path": "src/domains/ai-providers/index.ts",
+      "sha256": "dbbb48cd0daaae1c9796fee4530955eb9278b73b4aaa516688d0a4b5299b4604"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AiModality",
+      "path": "src/domains/ai-providers/contracts.ts",
+      "line": 6,
+      "endLine": 6,
+      "text": "export type AiModality = 'image' | '3d' | 'video' | 'audio';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AiProviderAuthKind",
+      "path": "src/domains/ai-providers/contracts.ts",
+      "line": 8,
+      "endLine": 8,
+      "text": "export type AiProviderAuthKind = 'api_key';"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "AiProviderCredentialStatus",
+      "path": "src/domains/ai-providers/contracts.ts",
+      "line": 10,
+      "endLine": 10,
+      "text": "export type AiProviderCredentialStatus = 'active' | 'invalid' | 'revoked';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AiProviderCredentialMeta",
+      "path": "src/domains/ai-providers/contracts.ts",
+      "line": 12,
+      "endLine": 14,
+      "text": "export interface AiProviderCredentialMeta {\n  credits?: number;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "AiProviderCredentialView",
+      "path": "src/domains/ai-providers/contracts.ts",
+      "line": 16,
+      "endLine": 28,
+      "text": "export interface AiProviderCredentialView {\n  providerId: string;\n  displayName: string;\n  modalities: readonly AiModality[];\n  auth: AiProviderAuthKind;\n  docsUrl: string | null;\n  configured: boolean;\n  keyHint: string | null;\n  status: AiProviderCredentialStatus | null;\n  addedAt: string | null;\n  lastValidatedAt: string | null;\n  meta: AiProviderCredentialMeta;\n}"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "edge",
+      "name": "ai-provider-credentials",
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 57,
+      "endLine": 57,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke('ai-provider-credentials', { body })",
+      "chain": "supabase.functions.invoke('ai-provider-credentials', { body })",
+      "arguments": [
+        "'ai-provider-credentials'",
+        "{ body }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+        "line": 56,
+        "endLine": 63,
+        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 7,
+      "endLine": 12,
+      "module": "../../domains/ai-providers",
+      "resolvedPath": "src/domains/ai-providers/index.ts",
+      "expression": "import type {\n  AiModality,\n  AiProviderAuthKind,\n  AiProviderCredentialStatus,\n  AiProviderCredentialView,\n} from '../../domains/ai-providers';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 143,
+      "endLine": 143,
+      "text": "export const aiProviderCredentialsService = new AiProviderCredentialsService();"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 19,
+      "endLine": 21,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 23,
+      "endLine": 39,
+      "name": "parseResponse",
+      "text": "function parseResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Ungültige Serverantwort.' };\n  }\n  if (value.status === 'ok') return value as FunctionResponse;\n  if (\n    (value.status === 'error' || value.status === 'not-configured') &&\n    typeof value.message === 'string'\n  ) {\n    return {\n      status: value.status,\n      message: value.message,\n      code: typeof value.code === 'string' ? value.code : undefined,\n    };\n  }\n  return { status: 'error', message: 'Ungültige Serverantwort.' };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 41,
+      "endLine": 43,
+      "name": "hasResponseContext",
+      "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 45,
+      "endLine": 54,
+      "name": "getFunctionErrorMessage",
+      "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const body: unknown = await error.context.clone().json();\n    const parsed = parseResponse(body);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 56,
+      "endLine": 63,
+      "name": "invoke",
+      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 65,
+      "endLine": 68,
+      "name": "parseModality",
+      "text": "function parseModality(value: unknown): AiModality | null {\n  if (value === 'image' || value === '3d' || value === 'video' || value === 'audio') return value;\n  return null;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 70,
+      "endLine": 72,
+      "name": "parseAuth",
+      "text": "function parseAuth(_value: unknown): AiProviderAuthKind {\n  return 'api_key';\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 74,
+      "endLine": 77,
+      "name": "parseStatus",
+      "text": "function parseStatus(value: unknown): AiProviderCredentialStatus | null {\n  if (value === 'active' || value === 'invalid' || value === 'revoked') return value;\n  return null;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 79,
+      "endLine": 102,
+      "name": "parseProviderView",
+      "text": "function parseProviderView(value: unknown): AiProviderCredentialView | null {\n  if (!isRecord(value) || typeof value.providerId !== 'string') return null;\n  const modalities = Array.isArray(value.modalities)\n    ? value.modalities.filter((m): m is AiModality => parseModality(m) !== null)\n    : [];\n  const meta = isRecord(value.meta) ? value.meta : {};\n  const credits = typeof meta.credits === 'number' && Number.isFinite(meta.credits)\n    ? Math.max(0, Math.round(meta.credits))\n    : undefined;\n\n  return {\n    providerId: value.providerId,\n    displayName: typeof value.displayName === 'string' ? value.displayName : value.providerId,\n    modalities,\n    auth: parseAuth(value.auth),\n    docsUrl: typeof value.docsUrl === 'string' ? value.docsUrl : null,\n    configured: value.configured === true,\n    keyHint: typeof value.keyHint === 'string' ? value.keyHint : null,\n    status: parseStatus(value.status),\n    addedAt: typeof value.addedAt === 'string' ? value.addedAt : null,\n    lastValidatedAt: typeof value.lastValidatedAt === 'string' ? value.lastValidatedAt : null,\n    meta: credits === undefined ? {} : { credits },\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 82,
+      "endLine": 82,
+      "name": "callback",
+      "text": "(m): m is AiModality => parseModality(m) !== null"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 105,
+      "endLine": 115,
+      "name": "list",
+      "text": "async list(modality?: AiModality): Promise<AiProviderCredentialView[]> {\n    const response = await invoke({\n      action: 'list',\n      ...(modality ? { modality } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const providers = Array.isArray(response.providers) ? response.providers : [];\n    return providers\n      .map((row) => parseProviderView(row))\n      .filter((row): row is AiProviderCredentialView => row !== null);\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 113,
+      "endLine": 113,
+      "name": "callback",
+      "text": "(row) => parseProviderView(row)"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 114,
+      "endLine": 114,
+      "name": "callback",
+      "text": "(row): row is AiProviderCredentialView => row !== null"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 117,
+      "endLine": 127,
+      "name": "upsert",
+      "text": "async upsert(providerId: string, apiKey: string): Promise<AiProviderCredentialView> {\n    const response = await invoke({\n      action: 'upsert',\n      providerId,\n      apiKey,\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const provider = parseProviderView(response.provider);\n    if (!provider) throw new Error('Speicher-Antwort unvollständig.');\n    return provider;\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 129,
+      "endLine": 135,
+      "name": "refresh",
+      "text": "async refresh(providerId: string): Promise<AiProviderCredentialView> {\n    const response = await invoke({ action: 'refresh', providerId });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const provider = parseProviderView(response.provider);\n    if (!provider) throw new Error('Aktualisierungs-Antwort unvollständig.');\n    return provider;\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
+      "line": 137,
+      "endLine": 140,
+      "name": "delete",
+      "text": "async delete(providerId: string): Promise<void> {\n    const response = await invoke({ action: 'delete', providerId });\n    if (response.status !== 'ok') throw new Error(response.message);\n  }"
+    }
+  ]
+}

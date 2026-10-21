@@ -1,17 +1,196 @@
-# RPC `increment_marketplace_downloads`
+# RPC-Vertrag: `increment_marketplace_downloads`
 
-## VORHER
-- SQL: `src/supabase/deploy_marketplace.sql`, `src/supabase/add_marketplace_rpc.sql` (not in supabase/migrations — **investigate**)
-- Call sites: `src/infrastructure/marketplace/marketplace-service.ts`
+Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.
 
-## NACHHER
-- Module: `server/src/application/commands/increment_marketplace_downloads.ts`
-- Status: BLOCKED until deploy path clarified
+**Status:** `source-blocked`. Quellcode-Baseline `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Umsetzungsfreigabe: nein.**
 
-## TESTS
-- Happy path increments download count
-- Authz negative
-- Idempotent or documented non-idempotent behavior
+**Teilaufgabe:** [#878](https://github.com/iamthamanic/sagatree/issues/878) — RPC-MARKETPLACE-COUNT; Koordinator [#816](https://github.com/iamthamanic/sagatree/issues/816).
 
-## GRENZEN
-- No silent drop of marketplace metrics
+Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wurden mit echtem isoliertem PostgreSQL 15 verglichen. Dieser Nachweis bestätigt keine produktiv deployte Datenbank, keinen PostgREST-/JWT-Transport und keine vollständige Verhaltensparität. Konkrete rote Legacy-Tests bleiben Freigabesperren. Bei der optionalen Marketplace-Funktion ist bereits ihre Installation außerhalb dieser Kette offen.
+
+## Verhalten
+
+- UPDATE marketplace_items SET downloads=downloads+1 WHEREid=item_id; Rückgabevoid. Unbekannte ID ist No-op; NULL-downloads bleibt bei SQL-AdditionNULL.
+- add_marketplace_rpc.sql und deploy_marketplace.sql enthalten denselben Funktionsbody, keine zwei gleichzeitig gültigen Overloads.
+- Der Marketplace-Adapter fällt bei RPC-Fehler auf direkten Tabellen-Read/Update zurück; dessen RLS/Race-Verhalten ist Teil des Caller-Vertrags.
+- Bei Installation über deploy_marketplace.sql setzt der BEFORE-UPDATE-Trigger marketplace_updated_at zusätzlich updated_at=now(); die reine add_marketplace_rpc.sql setzt diese Tabellen-/Triggerinstallation voraus und belegt sie nicht.
+
+## Berechtigungen
+
+- Keine auth.uid-/Owner-/Statusprüfung im Funktionsbody. Beide alternativen Installationsskripte lassen PUBLIC EXECUTE bestehen; ein Skript gewährt anon zusätzlich explizit.
+- SECURITY DEFINER ohne gesetzten search_path; effektive Installation und Plattform-ACL sind für diese optionale Funktion nicht durch den Migrationskatalog nachgewiesen.
+
+## SQL-Signatur 1
+
+`public.increment_marketplace_downloads(uuid)`
+
+| Parameter | PostgreSQL-Typ | Modus | Default |
+| --- | --- | --- | --- |
+| item_id | `uuid` | DEFAULT | Kein Default — expliziter Wert erforderlich |
+
+**RETURNS:** `void`.
+
+**Wirksame Definition:** [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`).
+
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/increment_marketplace_downloads-1.sql](effective-sql/increment_marketplace_downloads-1.sql); SHA-256 `c5b091e339730043782c23ee4508607ae630090963006afc9a9ffb598df12d44`.
+
+### Ausführungskontext und ACL
+
+| Eigenschaft | Belegter Wert |
+| --- | --- |
+| SECURITY DEFINER | True |
+| search_path | Nicht im Funktionsheader gesetzt |
+| Migration-/Skript-EXECUTE-Deklarationen | PUBLIC, authenticated |
+| ACL-Scope | Migration/optional-script declarations starting from PostgreSQL PUBLIC default; platform default ACL is separate below. |
+
+**Keine Katalogbeobachtung:** Diese optionale Funktion fehlt in der Repository-Migrationskette. Alternative Installationsquellen stehen unten.
+
+### Exakte Return-Pfade
+
+| Parser-Zeile | Bedingungspfad | Return-Ausdruck |
+| --- | --- | --- |
+| 2 | unbedingt | `RETURN datum/void` |
+
+### Explizite SQL-Fehler dieses Overloads
+
+Keine eigene RAISE-EXCEPTION-Anweisung. Fehler können aus delegierten Funktionen, Typkonvertierung oder Datenbank-Constraints stammen.
+
+## Transaktion, Idempotenz und Folgewirkungen
+
+- SQL-Inkrement ist ein atomisches UPDATE; Wiederholung zählt erneut. Client-Fallback ist getrenntes Read/Update und besitzt diesen atomischen Zählvertrag nicht.
+
+**Direkt referenzierte reale Relationen:** `public.marketplace_items`.
+
+**Transitive reale Relationen:** `public.marketplace_items`.
+
+Diese Relationen stammen aus PostgreSQL-AST-RangeVars und DML-Zielen, einschließlich erreichbarer SQL-Helper und anwendbarer Trigger. CTE-Namen, Aliase und SQL-Schlüsselwörter sind ausgeschlossen. Temporäre Zuordnungstabellen tragen ausdrücklich das Schema pg_temp.
+
+### Direkte und transitive DML-Effekte
+
+| Funktion | Operation | Relation | Spalten | Bedingungspfad |
+| --- | --- | --- | --- | --- |
+| increment_marketplace_downloads | UPDATE | `public.marketplace_items` | downloads | Optionale Installation |
+
+## Alternative Installationsquellen
+
+Dies sind unabhängige Skriptvarianten derselben Signatur, keine nebeneinander wirksamen Overloads.
+
+### src/supabase/add_marketplace_rpc.sql
+
+[src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) (Zeilen 1–17, SHA-256 `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670`)
+
+**Deklarierte EXECUTE-Rollen:** PUBLIC, authenticated.
+
+### src/supabase/deploy_marketplace.sql
+
+[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 76–89, SHA-256 `9a3ac08ec02d458e955203754b7e6cb566462dfe64c95ea5c1ede62730fdb903`)
+
+**Deklarierte EXECUTE-Rollen:** PUBLIC, anon, authenticated.
+
+**Mitinstallierter Tabellen-/Policy-/Trigger-Vertrag:**
+
+```sql
+CREATE TABLE IF NOT EXISTS marketplace_items (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), type text NOT NULL CHECK (type IN ('world', 'adventure', 'character', 'item', 'ruleset')), title text NOT NULL, description text, author_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE, data jsonb NOT NULL DEFAULT '{}', rating numeric(3, 2) NOT NULL DEFAULT 0.00 CHECK (rating >= 0 AND rating <= 5), downloads integer NOT NULL DEFAULT 0, price numeric(10, 2) NOT NULL DEFAULT 0.00 CHECK (price >= 0), image_url text, tags text[] DEFAULT CAST(ARRAY[] AS text[]), is_featured boolean NOT NULL DEFAULT FALSE, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE marketplace_items ENABLE ROW LEVEL SECURITY ;
+CREATE POLICY "Marketplace items are viewable by everyone" ON marketplace_items AS PERMISSIVE FOR select TO PUBLIC USING (TRUE);
+CREATE POLICY "Authenticated users can create marketplace items" ON marketplace_items AS PERMISSIVE FOR insert TO authenticated WITH CHECK (auth.uid() = author_id);
+CREATE POLICY "Authors can update their own marketplace items" ON marketplace_items AS PERMISSIVE FOR update TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id);
+CREATE POLICY "Authors can delete their own marketplace items" ON marketplace_items AS PERMISSIVE FOR delete TO authenticated USING (auth.uid() = author_id);
+CREATE TRIGGER marketplace_updated_at BEFORE UPDATE ON marketplace_items FOR EACH ROW EXECUTE PROCEDURE update_marketplace_updated_at();
+```
+
+**Mitinstallierter Trigger-Helper:**
+
+```sql
+CREATE OR REPLACE FUNCTION update_marketplace_updated_at() RETURNS trigger AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+## Caller: Request-Mapping, Response-Decoding und Fehler
+
+### src/infrastructure/marketplace/marketplace-service.ts:225
+
+AST-Auflösung: `string-literal`; SHA-256 `84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000`.
+
+Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
+
+```typescript
+export async function incrementDownloads(id: string): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('increment_marketplace_downloads', {
+      item_id: id,
+    });
+
+    if (error) {
+      // Fallback if RPC doesn't exist yet
+      const { data: item } = await supabase
+        .from('marketplace_items')
+        .select('downloads')
+        .eq('id', id)
+        .single();
+
+      if (item) {
+        await supabase
+          .from('marketplace_items')
+          .update({ downloads: item.downloads + 1 })
+          .eq('id', id);
+      }
+    }
+  } catch (error) {
+    console.error('Error incrementing downloads:', error);
+  }
+}
+```
+
+Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertrags-Typen sind zusätzlich mit vollständigem Source-Text in callers.json und inventory.json.callerContracts.supportingDeclarations gespeichert:
+
+| Symbol | Quelle | Zeile | SHA-256 |
+| --- | --- | --- | --- |
+| `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `supabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 40 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `supabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 41 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| `supabase` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 43 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+
+## Konkrete Abnahmekriterien
+
+- [ ] Optionale Installation ausdrücklich auswählen und im Zielmodell bestätigen; full-migration-chain darf nicht fälschlich eine vorhandene Funktion behaupten.
+- [ ] Vorhandenes Item erhöht atomar um1; unbekannteID/NULLID sind No-op, NULLZähler-Verhalten separat prüfen.
+- [ ] Öffentliche/anon Aufrufbarkeit und DEFINER/search_path-Scope durch expliziten Nachfolgervertrag festlegen; kein stiller authenticated-only Anspruch.
+- [ ] RPC fehlt bzw. liefertFehler: exakten Client-Fallback samt parallelem Download/RLS prüfen, damit Zählverluste sichtbar werden.
+
+Diese Punkte sind verpflichtende Tests für den Nachfolger. Ihre Auflistung behauptet keinen grünen Live-Test. Bereits ausgeführte isolierte SQL-Proben und ihre roten Legacy-Ergebnisse sind gesondert in legacy-observations.json erfasst.
+
+## Legacy-Defekte und offene Entscheidungen
+
+### Medium — RPC-DEPLOY-OPTIONAL-MARKETPLACE
+
+Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.
+
+**Beleg:** src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.
+
+**Erforderliche Nachfolger-Abnahme:** Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.
+
+### Medium — RPC-ACL-MARKETPLACE-DEFINER
+
+Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.
+
+**Beleg:** Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.
+
+**Erforderliche Nachfolger-Abnahme:** Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.
+
+## Vollständige Quellenbindung
+
+Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquellen und Caller-/Decoderquellen. Der zusätzliche isolierte Katalogvergleich steht in [.qa/intake/rpc-contracts/postgres-proof.json](postgres-proof.json).
+
+| Quelle | SHA-256 |
+| --- | --- |
+| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000` |
+| [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
+| [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
+| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `9a3ac08ec02d458e955203754b7e6cb566462dfe64c95ea5c1ede62730fdb903` |

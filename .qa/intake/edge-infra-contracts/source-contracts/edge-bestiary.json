@@ -1,0 +1,1265 @@
+{
+  "schemaVersion": 1,
+  "function": "bestiary",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "sha256": "b1c116175dd85d93685972b1188eb2499153ac581e65cb1c30ac25f2ea8fe444"
+    }
+  ],
+  "operations": [
+    {
+      "id": "bestiary:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 548,
+      "endLine": 557,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 549,
+          "endLine": 556,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 549,
+          "endLine": 554,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 551,
+          "endLine": 551,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:2",
+      "condition": "req.method === \"GET\" && path === \"/monsters\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 560,
+      "endLine": 571,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 568,
+          "endLine": 570,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 562,
+          "endLine": 562,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "parseFloat",
+          "arguments": [
+            "url.searchParams.get('cr')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 564,
+          "endLine": 564,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'size'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 566,
+          "endLine": 566,
+          "expression": "listMonsters",
+          "arguments": [
+            "filters"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 568,
+          "endLine": 568,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const filters = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n        size: url.searchParams.get('size') || undefined,\n      }\n      const list = await listMonsters(filters)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:3",
+      "condition": "req.method === \"GET\" && path === \"/monsters/search\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 574,
+      "endLine": 581,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 578,
+          "endLine": 580,
+          "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 575,
+          "endLine": 575,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'q'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 576,
+          "endLine": 576,
+          "expression": "searchMonsters",
+          "arguments": [
+            "query"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 578,
+          "endLine": 578,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "results"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const query = url.searchParams.get('q') || ''\n      const results = await searchMonsters(query)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:4",
+      "condition": "req.method === \"GET\" && path.match(/^\\/monsters\\/[\\w-]+$/)",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 584,
+      "endLine": 598,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 589,
+          "endLine": 592,
+          "expression": "new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 595,
+          "endLine": 597,
+          "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 585,
+          "endLine": 585,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 586,
+          "endLine": 586,
+          "expression": "getMonster",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 589,
+          "endLine": 589,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Monster not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 595,
+          "endLine": 595,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monster"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const monster = await getMonster(id)\n      \n      if (!monster) {\n        return new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:5",
+      "condition": "req.method === \"POST\" && path === \"/monsters\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 601,
+      "endLine": 608,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 605,
+          "endLine": 607,
+          "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 602,
+          "endLine": 602,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 603,
+          "endLine": 603,
+          "expression": "createMonster",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 605,
+          "endLine": 605,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monster"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const monster = await createMonster(body)\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:6",
+      "condition": "req.method === \"POST\" && path === \"/encounters\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 611,
+      "endLine": 618,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 615,
+          "endLine": 617,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 612,
+          "endLine": 612,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 613,
+          "endLine": 613,
+          "expression": "createEncounter",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 615,
+          "endLine": 615,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const encounter = await createEncounter(body)\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:7",
+      "condition": "req.method === \"GET\" && path.match(/^\\/encounters\\/[\\w-]+$/)",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 621,
+      "endLine": 635,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 626,
+          "endLine": 629,
+          "expression": "new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 632,
+          "endLine": 634,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 622,
+          "endLine": 622,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 623,
+          "endLine": 623,
+          "expression": "getEncounter",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 626,
+          "endLine": 626,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Encounter not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 632,
+          "endLine": 632,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const encounter = await getEncounter(id)\n      \n      if (!encounter) {\n        return new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:8",
+      "condition": "req.method === \"GET\" && path === \"/encounters\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 638,
+      "endLine": 645,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 642,
+          "endLine": 644,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 639,
+          "endLine": 639,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'difficulty'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 640,
+          "endLine": 640,
+          "expression": "listEncounters",
+          "arguments": [
+            "difficulty as 'easy' | 'medium' | 'hard' | 'deadly' | undefined"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const difficulty = url.searchParams.get('difficulty') || undefined\n      const list = await listEncounters(difficulty as 'easy' | 'medium' | 'hard' | 'deadly' | undefined)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "bestiary:9",
+      "condition": "req.method === \"POST\" && path === \"/encounters/generate\"",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 648,
+      "endLine": 660,
+      "requestReads": [
+        "body.difficulty",
+        "body.environment",
+        "body.partyLevel",
+        "body.partySize"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 657,
+          "endLine": 659,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 649,
+          "endLine": 649,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 650,
+          "endLine": 655,
+          "expression": "generateEncounter",
+          "arguments": [
+            "{\n        difficulty: body.difficulty || 'medium',\n        partySize: body.partySize || 4,\n        partyLevel: body.partyLevel || 1,\n        environment: body.environment,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 657,
+          "endLine": 657,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const encounter = await generateEncounter({\n        difficulty: body.difficulty || 'medium',\n        partySize: body.partySize || 4,\n        partyLevel: body.partyLevel || 1,\n        environment: body.environment,\n      })\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 549,
+      "endLine": 556,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 568,
+      "endLine": 570,
+      "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 578,
+      "endLine": 580,
+      "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 589,
+      "endLine": 592,
+      "expression": "new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 595,
+      "endLine": 597,
+      "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 605,
+      "endLine": 607,
+      "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 615,
+      "endLine": 617,
+      "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 626,
+      "endLine": 629,
+      "expression": "new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 632,
+      "endLine": 634,
+      "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 642,
+      "endLine": 644,
+      "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 657,
+      "endLine": 659,
+      "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 663,
+      "endLine": 666,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 669,
+      "endLine": 675,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 290,
+      "endLine": 290,
+      "expression": "monsters.set(m.id, m)"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 390,
+      "endLine": 390,
+      "expression": "monsters.set(id, monster)"
+    },
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 462,
+      "endLine": 462,
+      "expression": "encounters.set(id, encounter)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 537,
+      "endLine": 677,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/bestiary\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters - List monsters\n    if (req.method === \"GET\" && path === \"/monsters\") {\n      const filters = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n        size: url.searchParams.get('size') || undefined,\n      }\n      const list = await listMonsters(filters)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters/search - Search monsters\n    if (req.method === \"GET\" && path === \"/monsters/search\") {\n      const query = url.searchParams.get('q') || ''\n      const results = await searchMonsters(query)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters/:id - Get monster\n    if (req.method === \"GET\" && path.match(/^\\/monsters\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const monster = await getMonster(id)\n      \n      if (!monster) {\n        return new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /monsters - Create monster\n    if (req.method === \"POST\" && path === \"/monsters\") {\n      const body = await req.json()\n      const monster = await createMonster(body)\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /encounters - Create encounter\n    if (req.method === \"POST\" && path === \"/encounters\") {\n      const body = await req.json()\n      const encounter = await createEncounter(body)\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /encounters/:id - Get encounter\n    if (req.method === \"GET\" && path.match(/^\\/encounters\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const encounter = await getEncounter(id)\n      \n      if (!encounter) {\n        return new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /encounters - List encounters\n    if (req.method === \"GET\" && path === \"/encounters\") {\n      const difficulty = url.searchParams.get('difficulty') || undefined\n      const list = await listEncounters(difficulty as 'easy' | 'medium' | 'hard' | 'deadly' | undefined)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /encounters/generate - Generate random encounter\n    if (req.method === \"POST\" && path === \"/encounters/generate\") {\n      const body = await req.json()\n      const encounter = await generateEncounter({\n        difficulty: body.difficulty || 'medium',\n        partySize: body.partySize || 4,\n        partyLevel: body.partyLevel || 1,\n        environment: body.environment,\n      })\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [
+        "body.difficulty",
+        "body.environment",
+        "body.partyLevel",
+        "body.partySize"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 541,
+          "endLine": 541,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 549,
+          "endLine": 556,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 568,
+          "endLine": 570,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 578,
+          "endLine": 580,
+          "expression": "new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 589,
+          "endLine": 592,
+          "expression": "new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 595,
+          "endLine": 597,
+          "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 605,
+          "endLine": 607,
+          "expression": "new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 615,
+          "endLine": 617,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 626,
+          "endLine": 629,
+          "expression": "new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 632,
+          "endLine": 634,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 642,
+          "endLine": 644,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 657,
+          "endLine": 659,
+          "expression": "new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 663,
+          "endLine": 666,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 669,
+          "endLine": 675,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 537,
+          "endLine": 677,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/bestiary\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters - List monsters\n    if (req.method === \"GET\" && path === \"/monsters\") {\n      const filters = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n        size: url.searchParams.get('size') || undefined,\n      }\n      const list = await listMonsters(filters)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters/search - Search monsters\n    if (req.method === \"GET\" && path === \"/monsters/search\") {\n      const query = url.searchParams.get('q') || ''\n      const results = await searchMonsters(query)\n      \n      return new Response(JSON.stringify(results), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /monsters/:id - Get monster\n    if (req.method === \"GET\" && path.match(/^\\/monsters\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const monster = await getMonster(id)\n      \n      if (!monster) {\n        return new Response(JSON.stringify({ error: \"Monster not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /monsters - Create monster\n    if (req.method === \"POST\" && path === \"/monsters\") {\n      const body = await req.json()\n      const monster = await createMonster(body)\n      \n      return new Response(JSON.stringify(monster), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /encounters - Create encounter\n    if (req.method === \"POST\" && path === \"/encounters\") {\n      const body = await req.json()\n      const encounter = await createEncounter(body)\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /encounters/:id - Get encounter\n    if (req.method === \"GET\" && path.match(/^\\/encounters\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const encounter = await getEncounter(id)\n      \n      if (!encounter) {\n        return new Response(JSON.stringify({ error: \"Encounter not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /encounters - List encounters\n    if (req.method === \"GET\" && path === \"/encounters\") {\n      const difficulty = url.searchParams.get('difficulty') || undefined\n      const list = await listEncounters(difficulty as 'easy' | 'medium' | 'hard' | 'deadly' | undefined)\n      \n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /encounters/generate - Generate random encounter\n    if (req.method === \"POST\" && path === \"/encounters/generate\") {\n      const body = await req.json()\n      const encounter = await generateEncounter({\n        difficulty: body.difficulty || 'medium',\n        partySize: body.partySize || 4,\n        partyLevel: body.partyLevel || 1,\n        environment: body.environment,\n      })\n      \n      return new Response(JSON.stringify(encounter), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 538,
+          "endLine": 538,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 540,
+          "endLine": 540,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 544,
+          "endLine": 544,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/bestiary\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 549,
+          "endLine": 554,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['monsters', 'encounters', 'generation', 'search'],\n        monsterCount: monsters.size,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 551,
+          "endLine": 551,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 562,
+          "endLine": 562,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "parseFloat",
+          "arguments": [
+            "url.searchParams.get('cr')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 563,
+          "endLine": 563,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 564,
+          "endLine": 564,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'size'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 566,
+          "endLine": 566,
+          "expression": "listMonsters",
+          "arguments": [
+            "filters"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 568,
+          "endLine": 568,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 575,
+          "endLine": 575,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'q'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 576,
+          "endLine": 576,
+          "expression": "searchMonsters",
+          "arguments": [
+            "query"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 578,
+          "endLine": 578,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "results"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 584,
+          "endLine": 584,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/monsters\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 585,
+          "endLine": 585,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 586,
+          "endLine": 586,
+          "expression": "getMonster",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 589,
+          "endLine": 589,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Monster not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 595,
+          "endLine": 595,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monster"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 602,
+          "endLine": 602,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 603,
+          "endLine": 603,
+          "expression": "createMonster",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 605,
+          "endLine": 605,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monster"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 612,
+          "endLine": 612,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 613,
+          "endLine": 613,
+          "expression": "createEncounter",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 615,
+          "endLine": 615,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 621,
+          "endLine": 621,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/encounters\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 622,
+          "endLine": 622,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 623,
+          "endLine": 623,
+          "expression": "getEncounter",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 626,
+          "endLine": 626,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Encounter not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 632,
+          "endLine": 632,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 639,
+          "endLine": 639,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'difficulty'"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 640,
+          "endLine": 640,
+          "expression": "listEncounters",
+          "arguments": [
+            "difficulty as 'easy' | 'medium' | 'hard' | 'deadly' | undefined"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 649,
+          "endLine": 649,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 650,
+          "endLine": 655,
+          "expression": "generateEncounter",
+          "arguments": [
+            "{\n        difficulty: body.difficulty || 'medium',\n        partySize: body.partySize || 4,\n        partyLevel: body.partyLevel || 1,\n        environment: body.environment,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 657,
+          "endLine": 657,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "encounter"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 663,
+          "endLine": 663,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 669,
+          "endLine": 672,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/bestiary/index.ts",
+          "line": 671,
+          "endLine": 671,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Monster",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 21,
+      "endLine": 55,
+      "text": "interface Monster {\n  id: string\n  name: string\n  type: string\n  size: 'tiny' | 'small' | 'medium' | 'large' | 'huge' | 'gargantuan'\n  challengeRating: number\n  xp: number\n  hp: number\n  hitDice: string\n  ac: number\n  armorType?: string\n  speed: Record<string, number>\n  strength: number\n  dexterity: number\n  constitution: number\n  intelligence: number\n  wisdom: number\n  charisma: number\n  savingThrows?: Record<string, number>\n  skills?: Record<string, number>\n  damageVulnerabilities?: string[]\n  damageResistances?: string[]\n  damageImmunities?: string[]\n  conditionImmunities?: string[]\n  senses: string[]\n  languages: string[]\n  challengeRatingText: string\n  specialTraits?: string[]\n  actions: MonsterAction[]\n  legendaryActions?: MonsterAction[]\n  reactions?: MonsterAction[]\n  description?: string\n  environment?: string[]\n  source: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MonsterAction",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 57,
+      "endLine": 65,
+      "text": "interface MonsterAction {\n  name: string\n  description: string\n  attackBonus?: number\n  damage?: string\n  damageType?: string\n  recharge?: string\n  legendaryCost?: number\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Encounter",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 67,
+      "endLine": 84,
+      "text": "interface Encounter {\n  id: string\n  name: string\n  description?: string\n  monsters: Array<{\n    monsterId: string\n    name: string\n    count: number\n    xp: number\n  }>\n  totalXP: number\n  adjustedXP: number\n  difficulty: 'easy' | 'medium' | 'hard' | 'deadly'\n  partySize: number\n  partyLevel: number\n  environment?: string\n  createdAt: string\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "monsters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 90,
+      "endLine": 90,
+      "text": "monsters = new Map<string, Monster>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "encounters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 91,
+      "endLine": 91,
+      "text": "encounters = new Map<string, Encounter>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "srdMonsters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 97,
+      "endLine": 287,
+      "text": "srdMonsters: Monster[] = [\n  {\n    id: 'goblin',\n    name: 'Goblin',\n    type: 'humanoid',\n    size: 'small',\n    challengeRating: 0.25,\n    xp: 50,\n    hp: 7,\n    hitDice: '2d6',\n    ac: 15,\n    armorType: 'leather armor, shield',\n    speed: { walk: 30 },\n    strength: 8,\n    dexterity: 14,\n    constitution: 10,\n    intelligence: 10,\n    wisdom: 8,\n    charisma: 8,\n    skills: { stealth: 6 },\n    senses: ['darkvision 60 ft.'],\n    languages: ['Common', 'Goblin'],\n    challengeRatingText: '1/4',\n    specialTraits: ['Nimble Escape: The goblin can take the Disengage or Hide action as a bonus action on each of its turns.'],\n    actions: [\n      { name: 'Scimitar', description: 'Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.', attackBonus: 4, damage: '1d6+2', damageType: 'slashing' },\n      { name: 'Shortbow', description: 'Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.', attackBonus: 4, damage: '1d6+2', damageType: 'piercing' },\n    ],\n    environment: ['forest', 'mountain', 'underdark'],\n    source: 'SRD',\n  },\n  {\n    id: 'orc',\n    name: 'Orc',\n    type: 'humanoid',\n    size: 'medium',\n    challengeRating: 0.5,\n    xp: 100,\n    hp: 15,\n    hitDice: '2d8+4',\n    ac: 13,\n    armorType: 'hide armor',\n    speed: { walk: 30 },\n    strength: 16,\n    dexterity: 12,\n    constitution: 16,\n    intelligence: 7,\n    wisdom: 11,\n    charisma: 10,\n    senses: ['darkvision 60 ft.'],\n    languages: ['Common', 'Orc'],\n    challengeRatingText: '1/2',\n    specialTraits: ['Aggressive: As a bonus action, the orc can move up to its speed toward a hostile creature that it can see.'],\n    actions: [\n      { name: 'Greataxe', description: 'Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12 + 3) slashing damage.', attackBonus: 5, damage: '1d12+3', damageType: 'slashing' },\n      { name: 'Javelin', description: 'Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage.', attackBonus: 5, damage: '1d6+3', damageType: 'piercing' },\n    ],\n    environment: ['forest', 'mountain', 'grassland'],\n    source: 'SRD',\n  },\n  {\n    id: 'skeleton',\n    name: 'Skeleton',\n    type: 'undead',\n    size: 'medium',\n    challengeRating: 0.25,\n    xp: 50,\n    hp: 13,\n    hitDice: '2d8+4',\n    ac: 13,\n    armorType: 'armor scraps',\n    speed: { walk: 30 },\n    strength: 10,\n    dexterity: 14,\n    constitution: 15,\n    intelligence: 6,\n    wisdom: 8,\n    charisma: 5,\n    damageVulnerabilities: ['bludgeoning'],\n    damageImmunities: ['poison'],\n    conditionImmunities: ['exhausted', 'poisoned'],\n    senses: ['darkvision 60 ft.', 'passive Perception 9'],\n    languages: ['understands Common but can\\'t speak'],\n    challengeRatingText: '1/4',\n    actions: [\n      { name: 'Shortbow', description: 'Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.', attackBonus: 4, damage: '1d6+2', damageType: 'piercing' },\n      { name: 'Shortsword', description: 'Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.', attackBonus: 4, damage: '1d6+2', damageType: 'piercing' },\n    ],\n    environment: ['any'],\n    source: 'SRD',\n  },\n  {\n    id: 'zombie',\n    name: 'Zombie',\n    type: 'undead',\n    size: 'medium',\n    challengeRating: 0.25,\n    xp: 50,\n    hp: 22,\n    hitDice: '3d8+9',\n    ac: 8,\n    speed: { walk: 20 },\n    strength: 13,\n    dexterity: 6,\n    constitution: 16,\n    intelligence: 3,\n    wisdom: 6,\n    charisma: 5,\n    damageImmunities: ['poison'],\n    conditionImmunities: ['poisoned'],\n    senses: ['darkvision 60 ft.', 'passive Perception 8'],\n    languages: ['understands Common but can\\'t speak'],\n    challengeRatingText: '1/4',\n    specialTraits: ['Undead Fortitude: If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5 + the damage taken, unless the damage is radiant or a critical hit. On a success, the zombie drops to 1 hit point.'],\n    actions: [\n      { name: 'Slam', description: 'Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) bludgeoning damage.', attackBonus: 3, damage: '1d6+1', damageType: 'bludgeoning' },\n    ],\n    environment: ['any'],\n    source: 'SRD',\n  },\n  {\n    id: 'dragon-red-ancient',\n    name: 'Ancient Red Dragon',\n    type: 'dragon',\n    size: 'gargantuan',\n    challengeRating: 24,\n    xp: 62000,\n    hp: 546,\n    hitDice: '28d20+252',\n    ac: 22,\n    armorType: 'natural armor',\n    speed: { walk: 40, fly: 80 },\n    strength: 30,\n    dexterity: 10,\n    constitution: 29,\n    intelligence: 18,\n    wisdom: 15,\n    charisma: 23,\n    savingThrows: { dexterity: 6, constitution: 15, wisdom: 8, charisma: 12 },\n    skills: { perception: 14, stealth: 6 },\n    damageImmunities: ['fire'],\n    senses: ['blindsight 60 ft.', 'darkvision 120 ft.', 'passive Perception 24'],\n    languages: ['Common', 'Draconic'],\n    challengeRatingText: '24',\n    specialTraits: [\n      'Legendary Resistance (3/Day): If the dragon fails a saving throw, it can choose to succeed instead.',\n      'Fire Immunity: The dragon is immune to fire damage.',\n    ],\n    actions: [\n      { name: 'Bite', description: 'Melee Weapon Attack: +17 to hit, reach 15 ft., one target. Hit: 21 (2d10 + 10) piercing damage plus 14 (4d6) fire damage.', attackBonus: 17, damage: '2d10+10', damageType: 'piercing' },\n      { name: 'Claw', description: 'Melee Weapon Attack: +17 to hit, reach 10 ft., one target. Hit: 17 (2d6 + 10) slashing damage.', attackBonus: 17, damage: '2d6+10', damageType: 'slashing' },\n      { name: 'Tail', description: 'Melee Weapon Attack: +17 to hit, reach 20 ft., one target. Hit: 19 (2d8 + 10) bludgeoning damage.', attackBonus: 17, damage: '2d8+10', damageType: 'bludgeoning' },\n      { name: 'Fire Breath', description: 'The dragon exhales fire in a 90-foot cone. Each creature in that area must make a DC 24 Dexterity saving throw, taking 91 (26d6) fire damage on a failed save, or half as much damage on a successful one.', recharge: '5-6' },\n    ],\n    legendaryActions: [\n      { name: 'Detect', description: 'The dragon makes a Wisdom (Perception) check.', legendaryCost: 1 },\n      { name: 'Tail Attack', description: 'The dragon makes a tail attack.', legendaryCost: 1 },\n      { name: 'Wing Attack', description: 'The dragon beats its wings. Each creature within 15 ft. of the dragon must succeed on a DC 24 Dexterity saving throw or take 16 (2d6 + 5) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed.', legendaryCost: 2 },\n    ],\n    environment: ['mountain'],\n    source: 'SRD',\n  },\n  {\n    id: 'bandit',\n    name: 'Bandit',\n    type: 'humanoid',\n    size: 'medium',\n    challengeRating: 0.125,\n    xp: 25,\n    hp: 11,\n    hitDice: '2d8+2',\n    ac: 12,\n    armorType: 'leather armor',\n    speed: { walk: 30 },\n    strength: 11,\n    dexterity: 12,\n    constitution: 11,\n    intelligence: 10,\n    wisdom: 10,\n    charisma: 10,\n    senses: ['passive Perception 10'],\n    languages: ['any one language (usually Common)'],\n    challengeRatingText: '1/8',\n    actions: [\n      { name: 'Scimitar', description: 'Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) slashing damage.', attackBonus: 3, damage: '1d6+1', damageType: 'slashing' },\n      { name: 'Light Crossbow', description: 'Ranged Weapon Attack: +3 to hit, range 80/320 ft., one target. Hit: 5 (1d8 + 1) piercing damage.', attackBonus: 3, damage: '1d8+1', damageType: 'piercing' },\n    ],\n    environment: ['any'],\n    source: 'SRD',\n  },\n]"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 296,
+      "endLine": 298,
+      "text": "function generateId(): string {\n  return crypto.randomUUID()\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "calculateXP",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 300,
+      "endLine": 311,
+      "text": "function calculateXP(cr: number): number {\n  const xpTable: Record<number, number> = {\n    0: 10, 0.125: 25, 0.25: 50, 0.5: 100,\n    1: 200, 2: 450, 3: 700, 4: 1100, 5: 1800,\n    6: 2300, 7: 2900, 8: 3900, 9: 5000, 10: 5900,\n    11: 7200, 12: 8400, 13: 10000, 14: 11500, 15: 13000,\n    16: 15000, 17: 18000, 18: 20000, 19: 22000, 20: 25000,\n    21: 33000, 22: 41000, 23: 50000, 24: 62000, 25: 75000,\n    26: 90000, 27: 105000, 28: 120000, 29: 135000, 30: 155000,\n  }\n  return xpTable[cr] || 0\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "calculateDifficulty",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 313,
+      "endLine": 325,
+      "text": "function calculateDifficulty(xp: number, partySize: number, partyLevel: number): 'easy' | 'medium' | 'hard' | 'deadly' {\n  const thresholds = {\n    easy: 25 * partyLevel * partySize,\n    medium: 50 * partyLevel * partySize,\n    hard: 75 * partyLevel * partySize,\n    deadly: 100 * partyLevel * partySize,\n  }\n  \n  if (xp <= thresholds.easy) return 'easy'\n  if (xp <= thresholds.medium) return 'medium'\n  if (xp <= thresholds.hard) return 'hard'\n  return 'deadly'\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listMonsters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 331,
+      "endLine": 345,
+      "text": "async function listMonsters(filters?: { type?: string; cr?: number; size?: string }): Promise<Monster[]> {\n  let all = Array.from(monsters.values())\n  \n  if (filters?.type) {\n    all = all.filter(m => m.type.toLowerCase() === filters.type!.toLowerCase())\n  }\n  if (filters?.cr !== undefined) {\n    all = all.filter(m => m.challengeRating === filters.cr)\n  }\n  if (filters?.size) {\n    all = all.filter(m => m.size === filters.size)\n  }\n  \n  return all.sort((a, b) => a.challengeRating - b.challengeRating)\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMonster",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 347,
+      "endLine": 349,
+      "text": "async function getMonster(id: string): Promise<Monster | null> {\n  return monsters.get(id) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createMonster",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 351,
+      "endLine": 392,
+      "text": "async function createMonster(data: Partial<Monster>): Promise<Monster> {\n  const id = generateId()\n  \n  const monster: Monster = {\n    id,\n    name: data.name || 'Unknown',\n    type: data.type || 'beast',\n    size: data.size || 'medium',\n    challengeRating: data.challengeRating || 0,\n    xp: data.xp || calculateXP(data.challengeRating || 0),\n    hp: data.hp || 10,\n    hitDice: data.hitDice || '2d6',\n    ac: data.ac || 10,\n    armorType: data.armorType,\n    speed: data.speed || { walk: 30 },\n    strength: data.strength || 10,\n    dexterity: data.dexterity || 10,\n    constitution: data.constitution || 10,\n    intelligence: data.intelligence || 10,\n    wisdom: data.wisdom || 10,\n    charisma: data.charisma || 10,\n    savingThrows: data.savingThrows,\n    skills: data.skills,\n    damageVulnerabilities: data.damageVulnerabilities,\n    damageResistances: data.damageResistances,\n    damageImmunities: data.damageImmunities,\n    conditionImmunities: data.conditionImmunities,\n    senses: data.senses || ['passive Perception 10'],\n    languages: data.languages || [],\n    challengeRatingText: data.challengeRatingText || String(data.challengeRating || 0),\n    specialTraits: data.specialTraits,\n    actions: data.actions || [],\n    legendaryActions: data.legendaryActions,\n    reactions: data.reactions,\n    description: data.description,\n    environment: data.environment,\n    source: data.source || 'custom',\n  }\n  \n  monsters.set(id, monster)\n  return monster\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "searchMonsters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 394,
+      "endLine": 402,
+      "text": "async function searchMonsters(query: string): Promise<Monster[]> {\n  const lowerQuery = query.toLowerCase()\n  \n  return Array.from(monsters.values()).filter(m =>\n    m.name.toLowerCase().includes(lowerQuery) ||\n    m.type.toLowerCase().includes(lowerQuery) ||\n    (m.description && m.description.toLowerCase().includes(lowerQuery))\n  )\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createEncounter",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 408,
+      "endLine": 464,
+      "text": "async function createEncounter(data: {\n  name: string\n  description?: string\n  monsters: Array<{ monsterId: string; count: number }>\n  partySize: number\n  partyLevel: number\n  environment?: string\n}): Promise<Encounter> {\n  const id = generateId()\n  \n  // Calculate XP\n  let totalXP = 0\n  const encounterMonsters: Encounter['monsters'] = []\n  \n  for (const m of data.monsters) {\n    const monster = monsters.get(m.monsterId)\n    if (monster) {\n      const xp = monster.xp * m.count\n      totalXP += xp\n      encounterMonsters.push({\n        monsterId: m.monsterId,\n        name: monster.name,\n        count: m.count,\n        xp: monster.xp,\n      })\n    }\n  }\n  \n  // Adjust XP for number of monsters\n  const monsterCount = data.monsters.reduce((sum, m) => sum + m.count, 0)\n  let multiplier = 1\n  if (monsterCount === 2) multiplier = 1.5\n  else if (monsterCount >= 3 && monsterCount <= 6) multiplier = 2\n  else if (monsterCount >= 7 && monsterCount <= 10) multiplier = 2.5\n  else if (monsterCount >= 11 && monsterCount <= 14) multiplier = 3\n  else if (monsterCount >= 15) multiplier = 4\n  \n  const adjustedXP = Math.floor(totalXP * multiplier)\n  const difficulty = calculateDifficulty(adjustedXP, data.partySize, data.partyLevel)\n  \n  const encounter: Encounter = {\n    id,\n    name: data.name,\n    description: data.description,\n    monsters: encounterMonsters,\n    totalXP,\n    adjustedXP,\n    difficulty,\n    partySize: data.partySize,\n    partyLevel: data.partyLevel,\n    environment: data.environment,\n    createdAt: new Date().toISOString(),\n  }\n  \n  encounters.set(id, encounter)\n  return encounter\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getEncounter",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 466,
+      "endLine": 468,
+      "text": "async function getEncounter(id: string): Promise<Encounter | null> {\n  return encounters.get(id) || null\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listEncounters",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 470,
+      "endLine": 478,
+      "text": "async function listEncounters(difficulty?: string): Promise<Encounter[]> {\n  let all = Array.from(encounters.values())\n  \n  if (difficulty) {\n    all = all.filter(e => e.difficulty === difficulty)\n  }\n  \n  return all\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateEncounter",
+      "path": "supabase/functions/bestiary/index.ts",
+      "line": 480,
+      "endLine": 531,
+      "text": "async function generateEncounter(params: {\n  difficulty: 'easy' | 'medium' | 'hard' | 'deadly'\n  partySize: number\n  partyLevel: number\n  environment?: string\n}): Promise<Encounter> {\n  // Calculate XP budget\n  const xpThresholds = {\n    easy: 25 * params.partyLevel * params.partySize,\n    medium: 50 * params.partyLevel * params.partySize,\n    hard: 75 * params.partyLevel * params.partySize,\n    deadly: 100 * params.partyLevel * params.partySize,\n  }\n  \n  const budget = xpThresholds[params.difficulty]\n  \n  // Filter monsters by CR (appropriate for party level)\n  const appropriateCRs = [params.partyLevel - 1, params.partyLevel, params.partyLevel + 1]\n    .filter(cr => cr >= 0)\n  \n  const availableMonsters = Array.from(monsters.values()).filter(m =>\n    appropriateCRs.includes(m.challengeRating) &&\n    (!params.environment || (m.environment && m.environment.includes(params.environment)))\n  )\n  \n  // Build encounter\n  const selectedMonsters: Array<{ monsterId: string; count: number }> = []\n  let currentXP = 0\n  \n  while (currentXP < budget && availableMonsters.length > 0) {\n    // Pick a random monster\n    const monster = availableMonsters[Math.floor(Math.random() * availableMonsters.length)]\n    \n    // Calculate how many we can add\n    const maxCount = Math.floor((budget - currentXP) / monster.xp)\n    if (maxCount < 1) break\n    \n    const count = Math.min(maxCount, 6) // Max 6 of any monster\n    \n    selectedMonsters.push({ monsterId: monster.id, count })\n    currentXP += monster.xp * count\n  }\n  \n  return createEncounter({\n    name: `${params.difficulty.charAt(0).toUpperCase() + params.difficulty.slice(1)} Encounter`,\n    description: `A ${params.difficulty} encounter for a party of ${params.partySize} level ${params.partyLevel} adventurers`,\n    monsters: selectedMonsters,\n    partySize: params.partySize,\n    partyLevel: params.partyLevel,\n    environment: params.environment,\n  })\n}"
+    }
+  ]
+}

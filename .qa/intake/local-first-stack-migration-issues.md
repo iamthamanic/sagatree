@@ -1,121 +1,98 @@
-# Local-first stack migration — Issue drafts
+# Migration contracts
 
-> **NOT published to GitHub from this file alone.** Count=72. Baseline `4bc40a314281`.
+90 veröffentlichte, einzeln verlinkte Verträge. Die vier ursprünglichen RPC-Sammeltickets sind Koordinatoren; 18 Untertickets teilen alle 57 RPCs exklusiv auf.
 
-GitHub Epic #773 already lists child issues #774–#852; this JSON remains the machine contract.
+Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-migration-plan-contracts.mjs gerendert. Änderungen an Abhängigkeiten, Acceptance, Runner und Design sind mit npm run check:stack-migration-prep zu prüfen.
 
-## Coverage
-
-```json
-{
-  "legacyMigrations": 106,
-  "legacyEdgeFunctions": 24,
-  "legacyFrontendRpcs": 55,
-  "infraAreas": 13,
-  "issuesTotal": 72,
-  "issuesReady": 2,
-  "issuesBlockedOrNeedsDesign": 70,
-  "gateIssues": 5,
-  "openArchitectureDecisions": 5
-}
-```
-
-## Review remediation
-
-```json
-{
-  "pr771CodexP1_cutoverDeps": "MIG-700 dependsOn expanded to all wave MIG-* + GATEs + ATLAS-LIVE-E2E",
-  "pr771CodexP2_storageDistinctACs": true,
-  "pr771CodexP2_opsDistinctACs": true,
-  "deferredToGithub": {
-    "775": "Atlas #770 prerequisite wiring",
-    "776": "GATE-02..05 measurable criteria docs",
-    "777": "Per-RPC individual contracts",
-    "778": "Per-Edge/infra individual contracts",
-    "779": "Canonical GitHub contract quality enforcement",
-    "780": "Shutdown dependency enforcement automation",
-    "781": "Parity harness implementation"
-  }
-}
-```
-
-## Issues (compact)
-
-| ID | Title | Priority | Wave | Status | Depends (n) |
-|---|---|---|---|---|---|
-| MIG-001 | Evidence lock: freeze main baseline + golden fixture contract | P0 | migration-wave-0-evidence | ready | 0 |
-| MIG-002 | Complete legacy inventory matrix (SQL/RLS/RPC/Edge/Storage/Realtime/Infra) | P0 | migration-wave-0-evidence | ready | 1 |
-| GATE-01 | PoC: Drizzle+PolicyService vs ZenStack 3 for SQLite authz | P0 | migration-wave-0-evidence | needs-design | 2 |
-| GATE-02 | PoC: Better Auth session model + Colyseus auth handshake | P0 | migration-wave-0-evidence | needs-design | 2 |
-| GATE-03 | PoC: Colyseus HTTP routes vs separate Hono API layer | P0 | migration-wave-0-evidence | needs-design | 2 |
-| GATE-04 | PoC: Preserve revision/transaction/idempotency guarantees under SQLite writer model | P0 | migration-wave-0-evidence | needs-design | 2 |
-| GATE-05 | Desktop packaging PoC (Tauri+sidecar vs Electron) — deferred until browser host parity | P2 | migration-wave-8-tauri-cutover | needs-design | 2 |
-| MIG-010 | Node host skeleton (health, config, data dir) | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-011 | SQLite schema bootstrap + migration runner | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-012 | Repository port pattern + first world read adapter | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-013 | SagaTree Policy Service core (deny-by-default) | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-014 | Better Auth host accounts (remote-reachable mode) | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-015 | Solo local identity without privilege transfer | P0 | migration-wave-1-host-auth | blocked | 3 |
-| MIG-020 | HTTP command/query transport layer | P0 | migration-wave-2-api-realtime | blocked | 4 |
-| MIG-021 | Realtime session rooms + snapshot/resync | P0 | migration-wave-2-api-realtime | blocked | 4 |
-| MIG-022 | SessionRuntimeState port (revision+idempotency) | P0 | migration-wave-2-api-realtime | blocked | 4 |
-| MIG-023 | Invite/join codes without privilege escalation | P0 | migration-wave-2-api-realtime | blocked | 4 |
-| MIG-024 | Player/GM/spectator projections filter | P0 | migration-wave-2-api-realtime | blocked | 4 |
-| MIG-301 | Port infrastructure/ai adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-302 | Port infrastructure/character adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-303 | Port infrastructure/inventory adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-304 | Port infrastructure/look adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-305 | Port infrastructure/marketplace adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-306 | Port infrastructure/media adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-307 | Port infrastructure/npc-creature adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-308 | Port infrastructure/project adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-309 | Port infrastructure/rulesets adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-310 | Port infrastructure/saga adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-311 | Port infrastructure/session adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-312 | Port infrastructure/user-profile adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-313 | Port infrastructure/world adapters from Supabase to host repositories | P1 | migration-wave-3-domain-ports | blocked | 3 |
-| MIG-350 | Replace Postgres RPC cluster: world/atlas RPCs | P1 | migration-wave-3-domain-ports | blocked | 2 |
-| MIG-351 | Replace Postgres RPC cluster: session/runtime RPCs | P1 | migration-wave-3-domain-ports | blocked | 2 |
-| MIG-352 | Replace Postgres RPC cluster: saga/project RPCs | P1 | migration-wave-3-domain-ports | blocked | 2 |
-| MIG-353 | Replace Postgres RPC cluster: remaining RPCs | P1 | migration-wave-3-domain-ports | blocked | 2 |
-| MIG-401 | Port Edge Function `ai-gm` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-402 | Port Edge Function `ai-provider-credentials` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-403 | Port Edge Function `bestiary` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-404 | Port Edge Function `character-avatar-meshy` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-405 | Port Edge Function `character-lore` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-406 | Port Edge Function `characters` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-407 | Port Edge Function `dm-tools` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-408 | Port Edge Function `export` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-409 | Port Edge Function `item-model3d` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-410 | Port Edge Function `item-thumbnail` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-411 | Port Edge Function `items` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-412 | Port Edge Function `look-reference-analysis` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-413 | Port Edge Function `lorekeeper` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-414 | Port Edge Function `main` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-415 | Port Edge Function `marketplace` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-416 | Port Edge Function `media` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-417 | Port Edge Function `npcs` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-418 | Port Edge Function `quests` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-419 | Port Edge Function `rulesets` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-420 | Port Edge Function `session-media-token` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-421 | Port Edge Function `session-recap` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-422 | Port Edge Function `sessions` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-423 | Port Edge Function `spellbook` to Node host service/adapter | P2 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-424 | Port Edge Function `world` to Node host service/adapter | P1 | migration-wave-4-edge-ai-media | blocked | 3 |
-| MIG-500 | Local protected asset service (replace Storage buckets) | P1 | migration-wave-5-storage-export | blocked | 2 |
-| MIG-501 | Optional tus for large uploads | P1 | migration-wave-5-storage-export | blocked | 1 |
-| MIG-502 | Export/import versioned bundles + restore drills | P1 | migration-wave-5-storage-export | blocked | 2 |
-| MIG-503 | Postgres→SQLite data migration dry-run tooling | P1 | migration-wave-5-storage-export | blocked | 2 |
-| MIG-600 | Negative authz suite parity on host | P1 | migration-wave-6-security-ops | blocked | 2 |
-| MIG-601 | Docker Compose simplification for host+optional AI/media | P1 | migration-wave-6-security-ops | blocked | 2 |
-| MIG-602 | CI Quality Gates for host unit/integration/e2e | P1 | migration-wave-6-security-ops | blocked | 2 |
-| MIG-603 | Ops: backup/restore/update/rollback runbooks | P1 | migration-wave-6-security-ops | blocked | 2 |
-| MIG-700 | Controlled cutover per world/saga with freeze+delta | P2 | migration-wave-7-cutover-tauri | blocked | 67 |
-| MIG-701 | Supabase dual-run parity window | P2 | migration-wave-7-cutover-tauri | blocked | 1 |
-| MIG-702 | Supabase shutdown only after parity+restore proof | P2 | migration-wave-7-cutover-tauri | blocked | 2 |
-| MIG-703 | Tauri integration before external desktop test phase | P2 | migration-wave-7-cutover-tauri | blocked | 2 |
-| ATLAS-LIVE-E2E | Mandatory Atlas live E2E on isolated test DB (GitHub #770) | P0 | migration-wave-0-evidence | blocked | 0 |
-
-## GitHub mapping (PREP-06)
-
-All 72 localIds mapped to GitHub issues (see `.qa/evidence/stack-migration-prep/github-issue-map.json`). Contract quality enforced by `scripts/stack-migration-prep-check.mjs`.
+| Reihenfolge | Welle | Issue | Ausführung | Vorgänger |
+| --- | --- | --- | --- | --- |
+| 1 | 0 | MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | blocked | — |
+| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | blocked | #782 |
+| 3 | 0 | MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | blocked | #782 |
+| 4 | 0 | GATE-01 [#784](https://github.com/iamthamanic/sagatree/issues/784) | needs-design | #782, #783 |
+| 5 | 0 | GATE-02 [#785](https://github.com/iamthamanic/sagatree/issues/785) | needs-design | #782, #783 |
+| 6 | 0 | GATE-03 [#786](https://github.com/iamthamanic/sagatree/issues/786) | needs-design | #782, #783 |
+| 7 | 0 | GATE-04 [#787](https://github.com/iamthamanic/sagatree/issues/787) | needs-design | #782, #783 |
+| 8 | 1 | MIG-010 [#789](https://github.com/iamthamanic/sagatree/issues/789) | blocked | #782, #783, #784 |
+| 9 | 1 | MIG-011 [#790](https://github.com/iamthamanic/sagatree/issues/790) | blocked | #789, #784, #787 |
+| 10 | 1 | MIG-013 [#792](https://github.com/iamthamanic/sagatree/issues/792) | blocked | #790, #784 |
+| 11 | 1 | MIG-012 [#791](https://github.com/iamthamanic/sagatree/issues/791) | blocked | #790, #792 |
+| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | blocked | #789, #790, #792, #785 |
+| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | blocked | #789, #790, #792, #785 |
+| 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | blocked | #790, #792 |
+| 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | blocked | #789, #792, #793, #786 |
+| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | blocked | #790, #792, #793, #787 |
+| 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | blocked | #795, #797, #785 |
+| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | blocked | #792, #797, #784 |
+| 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | blocked | #795, #797, #799, #785, #786 |
+| 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | blocked | #790, #783 |
+| 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | blocked | #795, #792, #797, #799, #784, #785, #787, #871 |
+| 24 | 2 | RPC-SAGA-PROVISION [#873](https://github.com/iamthamanic/sagatree/issues/873) | blocked | #795, #792, #797, #799, #784, #785, #787, #872 |
+| 25 | 2 | RPC-PROJECT-MEMBERSHIP [#874](https://github.com/iamthamanic/sagatree/issues/874) | blocked | #795, #792, #797, #799, #784, #785, #787, #873 |
+| 26 | 2 | RPC-SAGA-GOVERNANCE [#875](https://github.com/iamthamanic/sagatree/issues/875) | blocked | #795, #792, #797, #799, #784, #785, #787, #874 |
+| 27 | 2 | RPC-SESSION-RUNTIME [#867](https://github.com/iamthamanic/sagatree/issues/867) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 28 | 2 | RPC-SESSION-LIFECYCLE [#868](https://github.com/iamthamanic/sagatree/issues/868) | blocked | #795, #792, #797, #799, #784, #785, #787, #867 |
+| 29 | 2 | RPC-NPC-INSTANCES [#877](https://github.com/iamthamanic/sagatree/issues/877) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 30 | 2 | MIG-353 [#816](https://github.com/iamthamanic/sagatree/issues/816) | blocked | #877, #878 |
+| 31 | 2 | RPC-SESSION-ACCESS [#869](https://github.com/iamthamanic/sagatree/issues/869) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 32 | 2 | RPC-SESSION-RECAP [#870](https://github.com/iamthamanic/sagatree/issues/870) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 33 | 2 | MIG-351 [#814](https://github.com/iamthamanic/sagatree/issues/814) | blocked | #867, #868, #869, #870 |
+| 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | blocked | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
+| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | blocked | #871, #872, #873, #874, #875, #876 |
+| 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | blocked | #795, #792, #797, #799, #784, #785, #787, #861 |
+| 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | blocked | #795, #792, #797, #799, #784, #785, #787, #862 |
+| 39 | 2 | RPC-WORLD-CREATE [#864](https://github.com/iamthamanic/sagatree/issues/864) | blocked | #795, #792, #797, #799, #784, #785, #787, #863 |
+| 40 | 2 | RPC-WORLD-RESTRUCTURE [#865](https://github.com/iamthamanic/sagatree/issues/865) | blocked | #795, #792, #797, #799, #784, #785, #787, #864 |
+| 41 | 2 | RPC-WORLD-DESTRUCTIVE [#866](https://github.com/iamthamanic/sagatree/issues/866) | blocked | #795, #792, #797, #799, #784, #785, #787, #865 |
+| 42 | 2 | MIG-350 [#813](https://github.com/iamthamanic/sagatree/issues/813) | blocked | #861, #862, #863, #864, #865, #866 |
+| 43 | 3 | MIG-401 [#817](https://github.com/iamthamanic/sagatree/issues/817) | blocked | #795, #792, #793, #791 |
+| 44 | 3 | MIG-402 [#818](https://github.com/iamthamanic/sagatree/issues/818) | blocked | #795, #792, #793, #791 |
+| 45 | 3 | MIG-403 [#819](https://github.com/iamthamanic/sagatree/issues/819) | blocked | #795, #792, #793 |
+| 46 | 3 | MIG-404 [#820](https://github.com/iamthamanic/sagatree/issues/820) | blocked | #795, #792, #793, #818, #791, #841 |
+| 47 | 3 | MIG-405 [#821](https://github.com/iamthamanic/sagatree/issues/821) | blocked | #795, #792, #793, #791 |
+| 48 | 3 | MIG-406 [#822](https://github.com/iamthamanic/sagatree/issues/822) | blocked | #795, #792, #793 |
+| 49 | 3 | MIG-407 [#823](https://github.com/iamthamanic/sagatree/issues/823) | blocked | #795, #792, #793 |
+| 50 | 3 | MIG-408 [#824](https://github.com/iamthamanic/sagatree/issues/824) | blocked | #795, #792, #793, #841 |
+| 51 | 3 | MIG-409 [#825](https://github.com/iamthamanic/sagatree/issues/825) | blocked | #795, #792, #793, #818, #791, #841 |
+| 52 | 3 | MIG-410 [#826](https://github.com/iamthamanic/sagatree/issues/826) | blocked | #795, #792, #793, #818, #791, #841 |
+| 53 | 3 | MIG-411 [#827](https://github.com/iamthamanic/sagatree/issues/827) | blocked | #795, #792, #793 |
+| 54 | 3 | MIG-412 [#828](https://github.com/iamthamanic/sagatree/issues/828) | blocked | #795, #792, #793, #841 |
+| 55 | 3 | MIG-413 [#829](https://github.com/iamthamanic/sagatree/issues/829) | blocked | #795, #792, #793 |
+| 56 | 3 | MIG-415 [#831](https://github.com/iamthamanic/sagatree/issues/831) | blocked | #795, #792, #793 |
+| 57 | 3 | MIG-416 [#832](https://github.com/iamthamanic/sagatree/issues/832) | blocked | #795, #792, #793, #841 |
+| 58 | 3 | MIG-417 [#833](https://github.com/iamthamanic/sagatree/issues/833) | blocked | #795, #792, #793 |
+| 59 | 3 | MIG-418 [#834](https://github.com/iamthamanic/sagatree/issues/834) | blocked | #795, #792, #793 |
+| 60 | 3 | MIG-419 [#835](https://github.com/iamthamanic/sagatree/issues/835) | blocked | #795, #792, #793 |
+| 61 | 3 | MIG-420 [#836](https://github.com/iamthamanic/sagatree/issues/836) | blocked | #795, #792, #793, #791, #841 |
+| 62 | 3 | MIG-421 [#837](https://github.com/iamthamanic/sagatree/issues/837) | blocked | #795, #792, #793, #870, #791 |
+| 63 | 3 | MIG-414 [#830](https://github.com/iamthamanic/sagatree/issues/830) | blocked | #795, #792, #793, #818, #820, #821, #825, #826, #828, #836, #837 |
+| 64 | 3 | MIG-422 [#838](https://github.com/iamthamanic/sagatree/issues/838) | blocked | #795, #792, #793 |
+| 65 | 3 | MIG-423 [#839](https://github.com/iamthamanic/sagatree/issues/839) | blocked | #795, #792, #793 |
+| 66 | 3 | MIG-424 [#840](https://github.com/iamthamanic/sagatree/issues/840) | blocked | #795, #792, #793 |
+| 67 | 4 | MIG-301 [#800](https://github.com/iamthamanic/sagatree/issues/800) | blocked | #791, #792, #795, #818, #793 |
+| 68 | 4 | MIG-302 [#801](https://github.com/iamthamanic/sagatree/issues/801) | blocked | #791, #792, #795, #820, #821, #841, #793 |
+| 69 | 4 | MIG-303 [#802](https://github.com/iamthamanic/sagatree/issues/802) | blocked | #791, #792, #795, #825, #826, #793 |
+| 70 | 4 | MIG-304 [#803](https://github.com/iamthamanic/sagatree/issues/803) | blocked | #791, #792, #795, #828, #793 |
+| 71 | 4 | MIG-305 [#804](https://github.com/iamthamanic/sagatree/issues/804) | blocked | #791, #792, #795, #878, #793 |
+| 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | blocked | #791, #792, #795 |
+| 73 | 4 | MIG-307 [#806](https://github.com/iamthamanic/sagatree/issues/806) | blocked | #791, #792, #795, #877, #793 |
+| 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | blocked | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
+| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | blocked | #791, #792, #795, #793 |
+| 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | blocked | #791, #792, #795, #871, #873, #872, #876, #793 |
+| 77 | 4 | MIG-311 [#810](https://github.com/iamthamanic/sagatree/issues/810) | blocked | #791, #792, #795, #867, #868, #869, #870, #836, #837, #796, #793 |
+| 78 | 4 | MIG-312 [#811](https://github.com/iamthamanic/sagatree/issues/811) | blocked | #791, #792, #795, #841, #793 |
+| 79 | 4 | MIG-313 [#812](https://github.com/iamthamanic/sagatree/issues/812) | blocked | #791, #792, #795, #866, #864, #865, #862, #861, #863, #841, #793 |
+| 80 | 5 | MIG-501 [#842](https://github.com/iamthamanic/sagatree/issues/842) | blocked | #841, #795 |
+| 81 | 5 | MIG-502 [#843](https://github.com/iamthamanic/sagatree/issues/843) | blocked | #841, #844, #795 |
+| 82 | 6 | MIG-600 [#845](https://github.com/iamthamanic/sagatree/issues/845) | blocked | #796, #798, #799, #841, #816, #814, #815, #813, #817, #818, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 83 | 6 | MIG-601 [#846](https://github.com/iamthamanic/sagatree/issues/846) | blocked | #789, #793, #794, #841, #830 |
+| 84 | 6 | MIG-602 [#847](https://github.com/iamthamanic/sagatree/issues/847) | blocked | #845, #846, #770, #816, #814, #815, #813, #817, #818, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 85 | 6 | MIG-603 [#848](https://github.com/iamthamanic/sagatree/issues/848) | blocked | #843, #844, #846 |
+| 86 | 7 | GATE-05 [#788](https://github.com/iamthamanic/sagatree/issues/788) | needs-design | #847, #848 |
+| 87 | 7 | MIG-700 [#849](https://github.com/iamthamanic/sagatree/issues/849) | blocked | #782, #770, #783, #784, #785, #786, #787, #789, #790, #792, #791, #793, #794, #841, #795, #797, #798, #799, #796, #844, #816, #814, #815, #813, #817, #818, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #842, #843, #845, #846, #847, #848, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 88 | 7 | MIG-701 [#850](https://github.com/iamthamanic/sagatree/issues/850) | blocked | #849 |
+| 89 | 7 | MIG-702 [#851](https://github.com/iamthamanic/sagatree/issues/851) | blocked | #849, #850, #770, #848 |
+| 90 | 7 | MIG-703 [#852](https://github.com/iamthamanic/sagatree/issues/852) | blocked | #788, #847, #848 |

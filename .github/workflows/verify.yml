@@ -44,6 +44,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python for PostgreSQL contract parsing
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .qa/intake/rpc-contracts/parser-requirements.txt
+
+      - name: Install pinned PostgreSQL parser
+        run: python -m pip install -r .qa/intake/rpc-contracts/parser-requirements.txt
+
       # #671 — fail CI on high/critical advisories (full tree after lockfile hygiene)
       - name: npm audit (high+)
         run: npm audit --audit-level=high

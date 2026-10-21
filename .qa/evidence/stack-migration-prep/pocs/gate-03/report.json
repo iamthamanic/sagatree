@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-03",
+  "status": "PASS",
+  "executedStatus": "PASS",
+  "approval": "NOT APPROVED",
+  "scope": "Executed isolated candidate libraries over real local HTTP and WebSocket; no product integration or human technology decision.",
+  "versions": {
+    "@colyseus/core": "0.18.20",
+    "@colyseus/schema": "5.0.8",
+    "@colyseus/sdk": "0.18.5",
+    "@colyseus/ws-transport": "0.18.4",
+    "@hono/node-server": "2.1.5",
+    "better-auth": "1.7.12",
+    "esbuild": "0.25.12",
+    "hono": "4.13.13",
+    "jose": "6.2.13",
+    "playwright": "1.55.1",
+    "typescript": "5.8.3",
+    "ws": "8.22.0"
+  },
+  "criteria": [
+    {
+      "variant": "minimal",
+      "row": 1,
+      "cases": [
+        "minimal-1"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "minimal",
+      "row": 2,
+      "cases": [
+        "common-2"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "minimal",
+      "row": 3,
+      "cases": [
+        "minimal-3"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "minimal",
+      "row": 4,
+      "cases": [
+        "minimal-4"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "minimal",
+      "row": 5,
+      "cases": [
+        "common-5"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "hono",
+      "row": 1,
+      "cases": [
+        "hono-1"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "hono",
+      "row": 2,
+      "cases": [
+        "common-2"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "hono",
+      "row": 3,
+      "cases": [
+        "hono-3"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "hono",
+      "row": 4,
+      "cases": [
+        "hono-4"
+      ],
+      "status": "PASS"
+    },
+    {
+      "variant": "hono",
+      "row": 5,
+      "cases": [
+        "common-5"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "cases": [
+    {
+      "id": "common-2",
+      "title": "Typed client compiles and OpenAPI describes the actual command/query surface",
+      "status": "PASS",
+      "evidence": {
+        "typescript": "5.8.3",
+        "diagnostics": 0,
+        "compiledClientUsedByLiveLoadTest": true,
+        "runtimeDecoders": [
+          "CommandAck",
+          "Snapshot",
+          "ApiFailure"
+        ],
+        "malformedRealHttpResponsesRejected": 7,
+        "validStructuredDenialPreserved": true,
+        "uncheckedResponseCasts": 0,
+        "openapiPaths": [
+          "/api/failure",
+          "/api/gm-command",
+          "/api/ping-session",
+          "/api/snapshot",
+          "/api/whoami",
+          "/health"
+        ],
+        "schemaGenerationToolExecuted": false
+      }
+    },
+    {
+      "id": "minimal-1",
+      "title": "HTTP and WebSocket use identical current policy and denial reasons",
+      "status": "PASS",
+      "evidence": {
+        "samePolicyImplementation": true,
+        "identicalDenyCode": "GM_REQUIRED",
+        "clientRoleOverrideIgnored": true,
+        "unauthorizedSideEffects": 0,
+        "healthPublic": true,
+        "commandRequiresAuthentication": true,
+        "jsonNullRejectedIdentically": {
+          "httpStatus": 400,
+          "code": "INVALID_PAYLOAD"
+        }
+      }
+    },
+    {
+      "id": "minimal-3",
+      "title": "200 concurrent commands by 1 GM and 2 players retain every ACK and delta",
+      "status": "PASS",
+      "evidence": {
+        "actors": {
+          "hostAdmin": 1,
+          "players": 2
+        },
+        "concurrentCommands": 200,
+        "httpCommands": 100,
+        "webSocketCommands": 100,
+        "acknowledgements": 200,
+        "lostAcknowledgements": 0,
+        "uniqueRevisions": 200,
+        "deltasPerObserver": [
+          200,
+          200,
+          200
+        ],
+        "errorRate": 0
+      }
+    },
+    {
+      "id": "minimal-4",
+      "title": "A caught HTTP 500 leaves the existing WebSocket room usable",
+      "status": "PASS",
+      "evidence": {
+        "observedHttpStatus": 500,
+        "sameRoomAndSeat": true,
+        "commandAcknowledgedAfterFailure": true,
+        "socketDisconnects": 0,
+        "processCrashIsolationTested": false
+      }
+    },
+    {
+      "id": "minimal-reconnect-200",
+      "title": "200 real reconnects overlap 200 HTTP commands without lost ACKs",
+      "status": "PASS",
+      "evidence": {
+        "concurrentReconnects": 200,
+        "concurrentHttpCommands": 200,
+        "concurrentHttpAcks": 200,
+        "concurrentHttpUniqueRevisions": 200,
+        "realTimeOverlapObserved": true,
+        "reconnectCompletionsWhileHttpInFlightObserved": true,
+        "httpBurstTrigger": "first real WS reconnect handshake; no artificial delay",
+        "signedInIdentities": 3,
+        "transport": "real ws TCP connections via Colyseus SDK",
+        "successfulReconnects": 200,
+        "sameSeats": 200,
+        "checkedRoles": 200,
+        "errors": 0,
+        "errorRate": 0,
+        "freshLoginStorm": false
+      }
+    },
+    {
+      "id": "hono-1",
+      "title": "HTTP and WebSocket use identical current policy and denial reasons",
+      "status": "PASS",
+      "evidence": {
+        "samePolicyImplementation": true,
+        "identicalDenyCode": "GM_REQUIRED",
+        "clientRoleOverrideIgnored": true,
+        "unauthorizedSideEffects": 0,
+        "healthPublic": true,
+        "commandRequiresAuthentication": true,
+        "jsonNullRejectedIdentically": {
+          "httpStatus": 400,
+          "code": "INVALID_PAYLOAD"
+        }
+      }
+    },
+    {
+      "id": "hono-3",
+      "title": "200 concurrent commands by 1 GM and 2 players retain every ACK and delta",
+      "status": "PASS",
+      "evidence": {
+        "actors": {
+          "hostAdmin": 1,
+          "players": 2
+        },
+        "concurrentCommands": 200,
+        "httpCommands": 100,
+        "webSocketCommands": 100,
+        "acknowledgements": 200,
+        "lostAcknowledgements": 0,
+        "uniqueRevisions": 200,
+        "deltasPerObserver": [
+          200,
+          200,
+          200
+        ],
+        "errorRate": 0
+      }
+    },
+    {
+      "id": "hono-4",
+      "title": "A caught HTTP 500 leaves the existing WebSocket room usable",
+      "status": "PASS",
+      "evidence": {
+        "observedHttpStatus": 500,
+        "sameRoomAndSeat": true,
+        "commandAcknowledgedAfterFailure": true,
+        "socketDisconnects": 0,
+        "processCrashIsolationTested": false
+      }
+    },
+    {
+      "id": "hono-reconnect-200",
+      "title": "200 real reconnects overlap 200 HTTP commands without lost ACKs",
+      "status": "PASS",
+      "evidence": {
+        "concurrentReconnects": 200,
+        "concurrentHttpCommands": 200,
+        "concurrentHttpAcks": 200,
+        "concurrentHttpUniqueRevisions": 200,
+        "realTimeOverlapObserved": true,
+        "reconnectCompletionsWhileHttpInFlightObserved": true,
+        "httpBurstTrigger": "first real WS reconnect handshake; no artificial delay",
+        "signedInIdentities": 3,
+        "transport": "real ws TCP connections via Colyseus SDK",
+        "successfulReconnects": 200,
+        "sameSeats": 200,
+        "checkedRoles": 200,
+        "errors": 0,
+        "errorRate": 0,
+        "freshLoginStorm": false
+      }
+    },
+    {
+      "id": "common-5",
+      "title": "One business/policy implementation with explicit adapter and fixture boundaries",
+      "status": "PASS",
+      "evidence": {
+        "lineCounts": {
+          "policy.mjs": 92,
+          "server.mjs": 220,
+          "harness.mjs": 100,
+          "browser.mjs": 130,
+          "observations.mjs": 44,
+          "check.mjs": 458,
+          "api-client.ts": 46
+        },
+        "sharedPolicyAndCommands": "policy.mjs",
+        "httpAndRoomWiring": "server.mjs",
+        "reproducibilityOnly": [
+          "harness.mjs",
+          "browser.mjs",
+          "observations.mjs",
+          "check.mjs"
+        ],
+        "productionFrameworkChoice": "NOT APPROVED"
+      }
+    }
+  ],
+  "installedIntegrationSources": [
+    {
+      "path": "node_modules/@colyseus/core/build/MatchMaker.mjs",
+      "sha256": "499146e1dd86bc7c0625ee855e84f174ba7bd2b41ea0811111b06d364f721d06"
+    },
+    {
+      "path": "node_modules/@colyseus/core/build/Room.mjs",
+      "sha256": "2ad8dca4d12bafebc0c4670c3d910e9d6d8758e9e38abda942b3572778fdc919"
+    },
+    {
+      "path": "node_modules/@colyseus/core/build/Server.mjs",
+      "sha256": "eee255c5b130efa8884599e0bebd7f8c3a581e11dfd014ccd6be640f25563f11"
+    },
+    {
+      "path": "node_modules/@colyseus/ws-transport/build/WebSocketTransport.mjs",
+      "sha256": "2c9593106d8e228c89ea2ea351d2081d169c9c37b80c0748eaaf4194c197d88b"
+    },
+    {
+      "path": "node_modules/@colyseus/sdk/build/Client.mjs",
+      "sha256": "8cef0c0fadd939d4d06671a0a0d715d06c883fffef4ec2b9ad9cef88b032dbc0"
+    },
+    {
+      "path": "node_modules/@colyseus/sdk/build/Room.mjs",
+      "sha256": "b0bdbb6cee37084fc296aeed3b30fa20e7cf234b371f5e8a71691a31e248a07d"
+    },
+    {
+      "path": "node_modules/@colyseus/sdk/build/transport/WebSocketTransport.mjs",
+      "sha256": "0ca36b78ada1694b2bbbf46eae526a601f8a952aced1d9a06926752c7e88568b"
+    },
+    {
+      "path": "node_modules/@colyseus/better-call/dist/endpoint.mjs",
+      "sha256": "dea53e9a16b5484100cdfbcc28ba645435e35f6eada9382b75dc8138877cb74a"
+    },
+    {
+      "path": "node_modules/better-auth/dist/plugins/jwt/sign.mjs",
+      "sha256": "d2df8bfaf29163b799d878bb1220cf41ba5e9442e0bab99cfeb1b1ef4c61e78f"
+    },
+    {
+      "path": "node_modules/better-auth/dist/api/routes/session.mjs",
+      "sha256": "5bba4211c8d8412103240f5cea3dc3cab242dbef9b08c24009f184b0eff7b1e9"
+    },
+    {
+      "path": "node_modules/better-auth/dist/api/routes/sign-out.mjs",
+      "sha256": "b90732b4bd502965384f43bb8f833d78e7b0b1a33d816a94850659f76b6577ea"
+    },
+    {
+      "path": "node_modules/better-auth/dist/api/routes/sign-in.mjs",
+      "sha256": "e488e900bf495fbd2535e8fa6ba1563194d84e4b60adf7b79f531d1145c5213f"
+    },
+    {
+      "path": "node_modules/better-auth/dist/plugins/bearer/index.mjs",
+      "sha256": "d02f7f2df2372cdf372bcee8c68e93ae2c46b0216eb0104f06a58562db3f1fbd"
+    }
+  ],
+  "observationValidation": "Recorded observations are required and checked against the stable report hash, runtime/schema, exact sample counts, percentile order, revocation deadline, ACK/reconnect success and measured concurrency invariants; fresh timings need not equal historical timings.",
+  "notRun": [
+    {
+      "id": "process-failure-isolation",
+      "status": "NOT RUN",
+      "reason": "HTTP 500 is a caught request failure, not a killed/blocked shared process. Both variants share a process in this fixture; Hono does not provide process isolation by itself."
+    },
+    {
+      "id": "production-operations",
+      "status": "NOT RUN",
+      "reason": "In-memory counter commands, loopback, three reused authenticated identities, no production state size, hardware/SLO, long soak, distributed rooms, external logging/metrics backend or backpressure qualification."
+    },
+    {
+      "id": "generated-openapi",
+      "status": "NOT RUN",
+      "reason": "Explicit OpenAPI fixture document and compiled typed client are provided; full automatic schema generation and compatibility with a product-wide client generator were not exercised."
+    }
+  ],
+  "securityAndIntegrationBoundaries": [
+    "Better Auth owns email/password sign-in, real SQLite sessions, signed cookies, bearer sessions, JWT issuance, JWKS and logout/revoke.",
+    "JWT signature/issuer/audience/expiry verification is combined with the real current session record; signature-only verification cannot prove immediate logout revocation.",
+    "Initial join/create reservation checks current auth. Colyseus HTTP reconnect reservation uses its existing reconnect ticket and does not itself rerun onAuth; even absent auth or wrong Origin can reach that reservation response. The actual WS upgrade enforces Origin and current actor/session binding, then room reconnect and every command recheck current auth/policy. A reservation response is not successful room access. Active clients are rechecked every 250ms.",
+    "Real Chromium demonstrated a failing cookie credential-isolation goal: document.cookie cannot read the HttpOnly cookie, but sign-in JSON and set-auth-token expose usable session bearers to JavaScript in the combined A/B auth profile. GATE-02 A/1 and the overall gate are FAIL. No token proxy or cookie-only production profile is claimed.",
+    "The pinned Colyseus reserveSeatFor authData.sessionId hook creates a random seat id so the WS upgrade can bind it to the exact Better Auth session. This source-dependent integration seam is hashed and not a product architecture decision.",
+    "Better Auth cookies and JWTs are never placed in URLs. The Colyseus SDK uses seat/reconnection identifiers in protocol URLs; their additional binding to the current actor and exact Better Auth session is explicitly tested. Evidence contains neither auth credentials nor actual seat/reconnect identifiers. Auth rate limiting is disabled only for this controlled fixture."
+  ],
+  "sources": [
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/package.json",
+      "sha256": "11097246edb5a42e2b71cd67be6b29ef50951cb0c3804b37f8b63703a2eae212"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/package-lock.json",
+      "sha256": "1786da5433d10109dd010b9fb13dae4b876155966a8bf3b580d37d727b65ca88"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/policy.mjs",
+      "sha256": "4630a72cc2fe0c483f507171616e100d21c6f24253f5ffc9fb462ff5ead20bd6"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/server.mjs",
+      "sha256": "11aac1a29fb4aa125213bc8cd4cfeed1d7d9601c4144bf464ddcc430a46e3247"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/harness.mjs",
+      "sha256": "3e400c9c4211096b0dbecacfb3a810ddd92b08a4fa413155bdaa0fd2ac91cdb6"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/browser.mjs",
+      "sha256": "4c8412cac15bbd27f363e8271b7c41cabd533c9fc56d88a7405d16c6f1c97fec"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/observations.mjs",
+      "sha256": "79608aa2c5de98281aa37b374d8eba1632d07b9d88b1464b9704be7d5a88dd78"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/check.mjs",
+      "sha256": "167cf32d620231cfa26fbad0ff407357d13e35310e8b71caa746aad136bbd890"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/api-client.ts",
+      "sha256": "c446bdb2e2fa74eca92493e032e22473d658b96702c0ec0555a10357036b14e1"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/openapi.json",
+      "sha256": "22a1a47679c11fe9d8c99bcc97b20ba6bb7d7ccf1fbabfe102080382215c8972"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-02-03/README.md",
+      "sha256": "2fb85192187a7a02c7232a9ada09c20d7fed1d75ffaebdc30d624c86569ddc34"
+    },
+    {
+      "path": ".qa/design/gates/GATE-03-colyseus-http-vs-hono.md",
+      "sha256": "ca708ff74f44da2a4733ff2b6e8a9f91371e90d6656515fd1bdb2a14258ee0c3"
+    }
+  ],
+  "primaryDocumentation": [
+    "https://better-auth.com/docs/adapters/sqlite",
+    "https://better-auth.com/docs/concepts/database",
+    "https://better-auth.com/docs/plugins/bearer",
+    "https://better-auth.com/docs/plugins/jwt",
+    "https://better-auth.com/docs/concepts/session-management",
+    "https://docs.colyseus.io/auth/room",
+    "https://docs.colyseus.io/room/reconnection",
+    "https://docs.colyseus.io/server",
+    "https://docs.colyseus.io/server/transport/ws",
+    "https://docs.colyseus.io/state/schema",
+    "https://hono.dev/docs/getting-started/nodejs",
+    "https://playwright.dev/docs/api/class-browser",
+    "https://playwright.dev/docs/api/class-browsercontext"
+  ]
+}

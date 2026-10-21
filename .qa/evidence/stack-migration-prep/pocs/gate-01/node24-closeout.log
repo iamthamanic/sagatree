@@ -1,0 +1,93 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 check
+> npm run generate && npm run typecheck && npm run run && npm run render && npm run verify && npm run test:evidence
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 generate
+> zen generate --schema zenstack/schema.zmodel
+
+- Generating TypeScript schema
+✔ Generating TypeScript schema
+[32mGeneration completed successfully in 238ms.[39m
+[32m[39m
+You can now create a ZenStack client with it.
+
+```ts
+import { ZenStackClient } from '@zenstackhq/orm';
+import { schema } from 'zenstack/schema';
+
+const client = new ZenStackClient(schema, {
+    dialect: { ... }
+});
+```
+
+Check documentation: https://zenstack.dev/docs/
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 typecheck
+> tsc --noEmit
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 run
+> node --import tsx run.ts
+
+Running real SQLite candidate: drizzle
+Running real SQLite candidate: zenstack
+{
+  "gate": "GATE-01",
+  "status": "EXECUTED_SCOPE_PASS",
+  "candidates": [
+    {
+      "name": "drizzle",
+      "pass": 42,
+      "fail": 0
+    },
+    {
+      "name": "zenstack",
+      "pass": 42,
+      "fail": 0
+    }
+  ],
+  "evidence": ".qa/evidence/stack-migration-prep/pocs/gate-01"
+}
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 render
+> node render-report.mjs
+
+Rendered GATE-01 evidence report for v24.19.0
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 verify
+> node verify.mjs
+
+GATE-01 full sources, exact cases, components and derived measurements verified (v24.19.0); no architecture approval.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @sagatree/gate-01-poc@0.0.0 test:evidence
+> node --test verify.test.mjs
+
+✔ recorded successful execution has complete source coverage and derived summaries (21.887197ms)
+✔ inflated PASS count is rejected even if report rendering is updated (2.897203ms)
+✔ changed report latency is rejected (1.543091ms)
+✔ coordinated false latency summary still disagrees with measured samples (0.963645ms)
+✔ duplicated PASS does not replace the required cross-saga case (1.266923ms)
+✔ missing required component fails: directZenstackEngine (0.658193ms)
+✔ missing required component fails: drizzleRawCapability (0.882856ms)
+✔ missing required component fails: applicationImportBoundary (0.767955ms)
+✔ missing direct engine denial is rejected (0.90637ms)
+✔ missing import-boundary probe is rejected (0.971827ms)
+✔ cold process sample cannot be replaced by a summary alone (0.688939ms)
+✔ omitting the policy source entry cannot suppress its drift check (1.656679ms)
+✔ omitting the observation hash cannot suppress evidence drift (1.923133ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 107.762876

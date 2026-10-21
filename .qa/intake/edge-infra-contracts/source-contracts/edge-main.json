@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "function": "main",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "sha256": "8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370"
+    },
+    {
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "sha256": "14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c"
+    },
+    {
+      "path": "supabase/functions/main/index.ts",
+      "sha256": "92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e"
+    }
+  ],
+  "operations": [
+    {
+      "id": "main:handler",
+      "condition": "Complete handler with ordered method/auth/body guards",
+      "path": "supabase/functions/main/index.ts",
+      "line": 56,
+      "endLine": 105,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 62,
+          "endLine": 65,
+          "expression": "new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 70,
+          "endLine": 73,
+          "expression": "new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 77,
+          "endLine": 77,
+          "expression": "jwtDenied"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "await worker.fetch(toWorkerRequest(req, serviceName))"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 100,
+          "endLine": 103,
+          "expression": "new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 56,
+          "endLine": 105,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  try {\n    const url = new URL(req.url);\n    const serviceName = resolveServiceName(url.pathname);\n\n    if (!serviceName) {\n      return new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    // Fail closed before JWT / worker create — legacy mounts never start.\n    if (!isEdgeDispatcherAllowed(serviceName)) {\n      return new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    const jwtDenied = await gateEdgeRequestJwt(req);\n    if (jwtDenied) return jwtDenied;\n\n    const servicePath = `/home/deno/functions/${serviceName}`;\n    const envVarsObj = {\n      ...Deno.env.toObject(),\n      SUPABASE_FUNCTION_SLUG: serviceName,\n    };\n    const envVars = Object.entries(envVarsObj) as Array<[string, string]>;\n\n    const worker = await EdgeRuntime.userWorkers.create({\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    });\n\n    return await worker.fetch(toWorkerRequest(req, serviceName));\n  } catch (error) {\n    const message = error instanceof Error ? error.message : String(error);\n    console.error('edge main dispatch failed', message);\n    return new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "resolveServiceName",
+          "arguments": [
+            "url.pathname"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: 'missing function name' }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 69,
+          "endLine": 69,
+          "expression": "isEdgeDispatcherAllowed",
+          "arguments": [
+            "serviceName"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 70,
+          "endLine": 70,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: 'Not found' }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 76,
+          "endLine": 76,
+          "expression": "gateEdgeRequestJwt",
+          "arguments": [
+            "req"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 81,
+          "endLine": 81,
+          "expression": "Deno.env.toObject",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 84,
+          "endLine": 84,
+          "expression": "Object.entries",
+          "arguments": [
+            "envVarsObj"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 86,
+          "endLine": 94,
+          "expression": "EdgeRuntime.userWorkers.create",
+          "arguments": [
+            "{\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "worker.fetch",
+          "arguments": [
+            "toWorkerRequest(req, serviceName)"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "toWorkerRequest",
+          "arguments": [
+            "req",
+            "serviceName"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 98,
+          "endLine": 98,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 99,
+          "endLine": 99,
+          "expression": "console.error",
+          "arguments": [
+            "'edge main dispatch failed'",
+            "message"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 100,
+          "endLine": 100,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: message }"
+          ]
+        }
+      ],
+      "exactBranch": "serve(async (req: Request) => {\n  try {\n    const url = new URL(req.url);\n    const serviceName = resolveServiceName(url.pathname);\n\n    if (!serviceName) {\n      return new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    // Fail closed before JWT / worker create — legacy mounts never start.\n    if (!isEdgeDispatcherAllowed(serviceName)) {\n      return new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    const jwtDenied = await gateEdgeRequestJwt(req);\n    if (jwtDenied) return jwtDenied;\n\n    const servicePath = `/home/deno/functions/${serviceName}`;\n    const envVarsObj = {\n      ...Deno.env.toObject(),\n      SUPABASE_FUNCTION_SLUG: serviceName,\n    };\n    const envVars = Object.entries(envVarsObj) as Array<[string, string]>;\n\n    const worker = await EdgeRuntime.userWorkers.create({\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    });\n\n    return await worker.fetch(toWorkerRequest(req, serviceName));\n  } catch (error) {\n    const message = error instanceof Error ? error.message : String(error);\n    console.error('edge main dispatch failed', message);\n    return new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n});"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/main/index.ts",
+      "line": 62,
+      "endLine": 65,
+      "expression": "new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+    },
+    {
+      "path": "supabase/functions/main/index.ts",
+      "line": 70,
+      "endLine": 73,
+      "expression": "new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+    },
+    {
+      "path": "supabase/functions/main/index.ts",
+      "line": 100,
+      "endLine": 103,
+      "expression": "new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    })"
+    }
+  ],
+  "environment": [
+    "JWT_SECRET",
+    "VERIFY_JWT"
+  ],
+  "timeoutSites": [],
+  "effectSites": [],
+  "handler": [
+    {
+      "path": "supabase/functions/main/index.ts",
+      "line": 56,
+      "endLine": 105,
+      "text": "serve(async (req: Request) => {\n  try {\n    const url = new URL(req.url);\n    const serviceName = resolveServiceName(url.pathname);\n\n    if (!serviceName) {\n      return new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    // Fail closed before JWT / worker create — legacy mounts never start.\n    if (!isEdgeDispatcherAllowed(serviceName)) {\n      return new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    const jwtDenied = await gateEdgeRequestJwt(req);\n    if (jwtDenied) return jwtDenied;\n\n    const servicePath = `/home/deno/functions/${serviceName}`;\n    const envVarsObj = {\n      ...Deno.env.toObject(),\n      SUPABASE_FUNCTION_SLUG: serviceName,\n    };\n    const envVars = Object.entries(envVarsObj) as Array<[string, string]>;\n\n    const worker = await EdgeRuntime.userWorkers.create({\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    });\n\n    return await worker.fetch(toWorkerRequest(req, serviceName));\n  } catch (error) {\n    const message = error instanceof Error ? error.message : String(error);\n    console.error('edge main dispatch failed', message);\n    return new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n});",
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 62,
+          "endLine": 65,
+          "expression": "new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 70,
+          "endLine": 73,
+          "expression": "new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      })"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 77,
+          "endLine": 77,
+          "expression": "jwtDenied"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "await worker.fetch(toWorkerRequest(req, serviceName))"
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 100,
+          "endLine": 103,
+          "expression": "new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 56,
+          "endLine": 105,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  try {\n    const url = new URL(req.url);\n    const serviceName = resolveServiceName(url.pathname);\n\n    if (!serviceName) {\n      return new Response(JSON.stringify({ error: 'missing function name' }), {\n        status: 400,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    // Fail closed before JWT / worker create — legacy mounts never start.\n    if (!isEdgeDispatcherAllowed(serviceName)) {\n      return new Response(JSON.stringify({ error: 'Not found' }), {\n        status: 404,\n        headers: { 'Content-Type': 'application/json' },\n      });\n    }\n\n    const jwtDenied = await gateEdgeRequestJwt(req);\n    if (jwtDenied) return jwtDenied;\n\n    const servicePath = `/home/deno/functions/${serviceName}`;\n    const envVarsObj = {\n      ...Deno.env.toObject(),\n      SUPABASE_FUNCTION_SLUG: serviceName,\n    };\n    const envVars = Object.entries(envVarsObj) as Array<[string, string]>;\n\n    const worker = await EdgeRuntime.userWorkers.create({\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    });\n\n    return await worker.fetch(toWorkerRequest(req, serviceName));\n  } catch (error) {\n    const message = error instanceof Error ? error.message : String(error);\n    console.error('edge main dispatch failed', message);\n    return new Response(JSON.stringify({ error: message }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 59,
+          "endLine": 59,
+          "expression": "resolveServiceName",
+          "arguments": [
+            "url.pathname"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 62,
+          "endLine": 62,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: 'missing function name' }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 69,
+          "endLine": 69,
+          "expression": "isEdgeDispatcherAllowed",
+          "arguments": [
+            "serviceName"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 70,
+          "endLine": 70,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: 'Not found' }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 76,
+          "endLine": 76,
+          "expression": "gateEdgeRequestJwt",
+          "arguments": [
+            "req"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 81,
+          "endLine": 81,
+          "expression": "Deno.env.toObject",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 84,
+          "endLine": 84,
+          "expression": "Object.entries",
+          "arguments": [
+            "envVarsObj"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 86,
+          "endLine": 94,
+          "expression": "EdgeRuntime.userWorkers.create",
+          "arguments": [
+            "{\n      servicePath,\n      // Avatar Meshy materialize (GLB download/upload) needs headroom; 256MB OOM-kills the container.\n      memoryLimitMb: 512,\n      workerTimeoutMs: 5 * 60 * 1000,\n      noModuleCache: false,\n      importMapPath: '/home/deno/import_map.json',\n      envVars,\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "worker.fetch",
+          "arguments": [
+            "toWorkerRequest(req, serviceName)"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 96,
+          "endLine": 96,
+          "expression": "toWorkerRequest",
+          "arguments": [
+            "req",
+            "serviceName"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 98,
+          "endLine": 98,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 99,
+          "endLine": 99,
+          "expression": "console.error",
+          "arguments": [
+            "'edge main dispatch failed'",
+            "message"
+          ]
+        },
+        {
+          "path": "supabase/functions/main/index.ts",
+          "line": 100,
+          "endLine": 100,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: message }"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "EDGE_DISPATCHER_ALLOWLIST",
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "line": 10,
+      "endLine": 19,
+      "text": "EDGE_DISPATCHER_ALLOWLIST = [\n  'ai-provider-credentials',\n  'character-avatar-meshy',\n  'character-lore',\n  'item-model3d',\n  'item-thumbnail',\n  'look-reference-analysis',\n  'session-media-token',\n  'session-recap',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EdgeDispatcherAllowedName",
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "export type EdgeDispatcherAllowedName = (typeof EDGE_DISPATCHER_ALLOWLIST)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "ALLOWED",
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "line": 23,
+      "endLine": 23,
+      "text": "ALLOWED = new Set<string>(EDGE_DISPATCHER_ALLOWLIST)"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "EDGE_DISPATCHER_BLOCKED",
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "line": 26,
+      "endLine": 26,
+      "text": "EDGE_DISPATCHER_BLOCKED = new Set(['main', '_shared'])"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isEdgeDispatcherAllowed",
+      "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+      "line": 28,
+      "endLine": 32,
+      "text": "export function isEdgeDispatcherAllowed(serviceName: string): boolean {\n  if (!serviceName || serviceName.includes('..')) return false;\n  if (EDGE_DISPATCHER_BLOCKED.has(serviceName)) return false;\n  return ALLOWED.has(serviceName);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "base64UrlToBytes",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 10,
+      "endLine": 17,
+      "text": "function base64UrlToBytes(input: string): Uint8Array {\n  const padded = input.replace(/-/g, '+').replace(/_/g, '/');\n  const pad = padded.length % 4 === 0 ? '' : '='.repeat(4 - (padded.length % 4));\n  const binary = atob(padded + pad);\n  const bytes = new Uint8Array(binary.length);\n  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);\n  return bytes;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "bytesToBase64Url",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 19,
+      "endLine": 22,
+      "text": "function bytesToBase64Url(bytes: ArrayBuffer): string {\n  const bin = String.fromCharCode(...new Uint8Array(bytes));\n  return btoa(bin).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/g, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isJwtVerificationEnabled",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 25,
+      "endLine": 32,
+      "text": "export function isJwtVerificationEnabled(\n  env: { get(key: string): string | undefined } = Deno.env,\n): boolean {\n  const raw = env.get('VERIFY_JWT');\n  if (raw === undefined || raw === '') return true;\n  const normalized = raw.trim().toLowerCase();\n  return normalized !== 'false' && normalized !== '0' && normalized !== 'no';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "extractBearerToken",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 34,
+      "endLine": 38,
+      "text": "export function extractBearerToken(authHeader: string | null): string | null {\n  if (!authHeader) return null;\n  const match = authHeader.match(/^Bearer\\s+(\\S+)/i);\n  return match?.[1] ?? null;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "verifyHs256",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 40,
+      "endLine": 85,
+      "text": "async function verifyHs256(\n  token: string,\n  secret: string,\n): Promise<{ ok: true } | { ok: false; reason: string }> {\n  const parts = token.split('.');\n  if (parts.length !== 3) return { ok: false, reason: 'invalid jwt header' };\n\n  let header: { alg?: string; typ?: string };\n  try {\n    header = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0]))) as {\n      alg?: string;\n      typ?: string;\n    };\n  } catch {\n    return { ok: false, reason: 'invalid jwt header' };\n  }\n  if (header.alg !== 'HS256') {\n    return { ok: false, reason: 'unsupported jwt algorithm' };\n  }\n\n  const key = await crypto.subtle.importKey(\n    'raw',\n    new TextEncoder().encode(secret),\n    { name: 'HMAC', hash: 'SHA-256' },\n    false,\n    ['sign'],\n  );\n  const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);\n  const sig = await crypto.subtle.sign('HMAC', key, data);\n  if (bytesToBase64Url(sig) !== parts[2]) {\n    return { ok: false, reason: 'invalid jwt' };\n  }\n\n  try {\n    const payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[1]))) as {\n      exp?: number;\n    };\n    if (typeof payload.exp === 'number' && payload.exp * 1000 < Date.now()) {\n      return { ok: false, reason: 'jwt expired' };\n    }\n  } catch {\n    return { ok: false, reason: 'invalid jwt payload' };\n  }\n\n  return { ok: true };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "gateEdgeRequestJwt",
+      "path": "supabase/functions/_shared/edge-jwt-gate.ts",
+      "line": 92,
+      "endLine": 124,
+      "text": "export async function gateEdgeRequestJwt(\n  req: Request,\n  env: { get(key: string): string | undefined } = Deno.env,\n): Promise<Response | null> {\n  if (req.method === 'OPTIONS') return null;\n  if (!isJwtVerificationEnabled(env)) return null;\n\n  const secret = env.get('JWT_SECRET')?.trim();\n  if (!secret) {\n    return new Response(JSON.stringify({ error: 'JWT_SECRET not configured' }), {\n      status: 500,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const token = extractBearerToken(req.headers.get('Authorization'));\n  if (!token) {\n    return new Response(JSON.stringify({ error: 'missing Authorization bearer token' }), {\n      status: 401,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  const verified = await verifyHs256(token, secret);\n  if (!verified.ok) {\n    return new Response(JSON.stringify({ error: verified.reason }), {\n      status: 401,\n      headers: { 'Content-Type': 'application/json' },\n    });\n  }\n\n  return null;\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "EdgeRuntime",
+      "path": "supabase/functions/main/index.ts",
+      "line": 17,
+      "endLine": 28,
+      "text": "EdgeRuntime: {\n  userWorkers: {\n    create: (opts: {\n      servicePath: string;\n      memoryLimitMb?: number;\n      workerTimeoutMs?: number;\n      noModuleCache?: boolean;\n      importMapPath?: string | null;\n      envVars?: Array<[string, string]>;\n    }) => Promise<{ fetch: (req: Request) => Promise<Response> }>;\n  };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "resolveServiceName",
+      "path": "supabase/functions/main/index.ts",
+      "line": 30,
+      "endLine": 37,
+      "text": "function resolveServiceName(pathname: string): string | null {\n  const segments = pathname.split('/').filter(Boolean);\n  if (segments.length === 0) return null;\n  if (segments[0] === 'functions' && segments[1] === 'v1') {\n    return segments[2] ?? null;\n  }\n  return segments[0] ?? null;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "toWorkerRequest",
+      "path": "supabase/functions/main/index.ts",
+      "line": 40,
+      "endLine": 52,
+      "text": "function toWorkerRequest(req: Request, serviceName: string): Request {\n  const url = new URL(req.url);\n  const segments = url.pathname.split('/').filter(Boolean);\n  let afterService: string[];\n  if (segments[0] === 'functions' && segments[1] === 'v1') {\n    afterService = segments.slice(3);\n  } else {\n    afterService = segments.slice(1);\n  }\n  const suffix = afterService.length > 0 ? `/${afterService.join('/')}` : '';\n  url.pathname = `/functions/v1/${serviceName}${suffix}`;\n  return new Request(url.toString(), req);\n}"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+name: Stack migration baseline
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stack-migration-baseline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-baseline:
+    name: PostgreSQL baseline security and persistence
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: scripts/stack-migration-db/package-lock.json
+      - run: npm ci --prefix scripts/stack-migration-db
+      - run: npm audit --prefix scripts/stack-migration-db --audit-level=high
+      # Existing source defects remain red. No known-failure allowlist.
+      - run: npm test --prefix scripts/stack-migration-db
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: postgres-baseline-${{ github.run_id }}-${{ github.run_attempt }}
+          path: scripts/stack-migration-db/artifacts/
+          if-no-files-found: error
+
+  rls-canary:
+    name: Actual RLS regression canary
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: scripts/stack-migration-db/package-lock.json
+      - run: npm ci --prefix scripts/stack-migration-db
+      # Green means the deliberately opened policy was detected, not safe parity.
+      - run: npm run canary --prefix scripts/stack-migration-db
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actual-rls-canary-${{ github.run_id }}-${{ github.run_attempt }}
+          path: scripts/stack-migration-db/artifacts/canary/
+          if-no-files-found: error
+
+  atlas-isolated-product:
+    name: Atlas isolated real product journey
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            scripts/stack-migration-db/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix scripts/stack-migration-db
+      - run: node scripts/stack-migration-db/node_modules/@playwright/test/cli.js install-deps chromium
+      - run: python3 scripts/stack-migration-db/provision-tools.py
+      - run: python3 scripts/stack-migration-db/provision-browser.py
+      # Every run creates a fresh real DB and random local auth credentials.
+      - run: npm run product --prefix scripts/stack-migration-db
+        env:
+          ATLAS_ISOLATED_CHROMIUM: ${{ github.workspace }}/scripts/stack-migration-db/artifacts/chromium/chrome-headless-shell-linux64/chrome-headless-shell
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atlas-isolated-product-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            scripts/stack-migration-db/artifacts/product/
+            scripts/stack-migration-db/artifacts/tools/sources.json
+            scripts/stack-migration-db/artifacts/chromium/source.json
+          if-no-files-found: error

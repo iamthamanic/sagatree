@@ -1,0 +1,880 @@
+{
+  "schemaVersion": 1,
+  "function": "media",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "sha256": "66a58039d5dbbeb94de3eb7f33e127d4559409e7839a777d754e2d3f8bc5843a"
+    }
+  ],
+  "operations": [
+    {
+      "id": "media:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/media/index.ts",
+      "line": 34,
+      "endLine": 34,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 34,
+          "endLine": 34,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 34,
+          "endLine": 34,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }"
+          ]
+        }
+      ],
+      "exactBranch": "return new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "id": "media:2",
+      "condition": "req.method === \"POST\" && path === \"/upload\"",
+      "path": "supabase/functions/media/index.ts",
+      "line": 35,
+      "endLine": 35,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "uploadMedia",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        }
+      ],
+      "exactBranch": "{ const body = await req.json(); const media = await uploadMedia(body); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "media:3",
+      "condition": "req.method === \"GET\" && path === \"/media\"",
+      "path": "supabase/functions/media/index.ts",
+      "line": 36,
+      "endLine": 36,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'projectId'"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "listMedia",
+          "arguments": [
+            "projectId",
+            "type"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{ const projectId = url.searchParams.get('projectId') || undefined; const type = url.searchParams.get('type') || undefined; const list = await listMedia(projectId, type); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "media:4",
+      "condition": "req.method === \"GET\" && path.match(/^\\/media\\/[\\w-]+$/)",
+      "path": "supabase/functions/media/index.ts",
+      "line": 37,
+      "endLine": 37,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "getMedia",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Media not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        }
+      ],
+      "exactBranch": "{ const id = path.split(\"/\")[2]; const media = await getMedia(id); if (!media) return new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "media:5",
+      "condition": "req.method === \"PUT\" && path.match(/^\\/media\\/[\\w-]+\\/tags$/)",
+      "path": "supabase/functions/media/index.ts",
+      "line": 38,
+      "endLine": 38,
+      "requestReads": [
+        "body.tags"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "updateMediaTags",
+          "arguments": [
+            "id",
+            "body.tags"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        }
+      ],
+      "exactBranch": "{ const id = path.split(\"/\")[2]; const body = await req.json(); const media = await updateMediaTags(id, body.tags); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    },
+    {
+      "id": "media:6",
+      "condition": "req.method === \"DELETE\" && path.match(/^\\/media\\/[\\w-]+$/)",
+      "path": "supabase/functions/media/index.ts",
+      "line": 39,
+      "endLine": 39,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "deleteMedia",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        }
+      ],
+      "exactBranch": "{ const id = path.split(\"/\")[2]; await deleteMedia(id); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 34,
+      "endLine": 34,
+      "expression": "new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 35,
+      "endLine": 35,
+      "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 36,
+      "endLine": 36,
+      "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 37,
+      "endLine": 37,
+      "expression": "new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 37,
+      "endLine": 37,
+      "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 38,
+      "endLine": 38,
+      "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 39,
+      "endLine": 39,
+      "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 40,
+      "endLine": 40,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 41,
+      "endLine": 41,
+      "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN",
+    "SUPABASE_URL"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 21,
+      "endLine": 21,
+      "expression": "mediaFiles.set(id, media)"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 24,
+      "endLine": 24,
+      "expression": "mediaFiles.delete(id)"
+    },
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 25,
+      "endLine": 25,
+      "expression": "mediaFiles.set(id, media)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/media/index.ts",
+      "line": 27,
+      "endLine": 42,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/media\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"POST\" && path === \"/upload\") { const body = await req.json(); const media = await uploadMedia(body); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path === \"/media\") { const projectId = url.searchParams.get('projectId') || undefined; const type = url.searchParams.get('type') || undefined; const list = await listMedia(projectId, type); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/media\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const media = await getMedia(id); if (!media) return new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"PUT\" && path.match(/^\\/media\\/[\\w-]+\\/tags$/)) { const id = path.split(\"/\")[2]; const body = await req.json(); const media = await updateMediaTags(id, body.tags); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"DELETE\" && path.match(/^\\/media\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; await deleteMedia(id); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n})",
+      "requestReads": [
+        "body.tags"
+      ],
+      "returns": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 30,
+          "endLine": 30,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 34,
+          "endLine": 34,
+          "expression": "new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 40,
+          "endLine": 40,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 27,
+          "endLine": 42,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse\n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/media\", \"\")\n  try {\n    if (req.method === \"GET\" && path === \"/health\") return new Response(JSON.stringify({ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }), { headers: { ...headers, \"Content-Type\": \"application/json\" } })\n    if (req.method === \"POST\" && path === \"/upload\") { const body = await req.json(); const media = await uploadMedia(body); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path === \"/media\") { const projectId = url.searchParams.get('projectId') || undefined; const type = url.searchParams.get('type') || undefined; const list = await listMedia(projectId, type); return new Response(JSON.stringify(list), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"GET\" && path.match(/^\\/media\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; const media = await getMedia(id); if (!media) return new Response(JSON.stringify({ error: \"Media not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } }); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"PUT\" && path.match(/^\\/media\\/[\\w-]+\\/tags$/)) { const id = path.split(\"/\")[2]; const body = await req.json(); const media = await updateMediaTags(id, body.tags); return new Response(JSON.stringify(media), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    if (req.method === \"DELETE\" && path.match(/^\\/media\\/[\\w-]+$/)) { const id = path.split(\"/\")[2]; await deleteMedia(id); return new Response(JSON.stringify({ success: true }), { headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n    return new Response(JSON.stringify({ error: \"Not found\" }), { status: 404, headers: { ...headers, \"Content-Type\": \"application/json\" } })\n  } catch (error: unknown) { return new Response(JSON.stringify({ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }), { status: 500, headers: { ...headers, \"Content-Type\": \"application/json\" } }) }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 28,
+          "endLine": 28,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 29,
+          "endLine": 29,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 32,
+          "endLine": 32,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/media\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 34,
+          "endLine": 34,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ status: 'ok', features: ['upload', 'download', 'delete', 'tags'] }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "uploadMedia",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 35,
+          "endLine": 35,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'projectId'"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "listMedia",
+          "arguments": [
+            "projectId",
+            "type"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 36,
+          "endLine": 36,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/media\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "getMedia",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Media not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 37,
+          "endLine": 37,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/media\\/[\\w-]+\\/tags$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "updateMediaTags",
+          "arguments": [
+            "id",
+            "body.tags"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 38,
+          "endLine": 38,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "media"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/media\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "deleteMedia",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 39,
+          "endLine": 39,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ success: true }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 40,
+          "endLine": 40,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Internal server error\", message: (error instanceof Error ? error.message : String(error)) }"
+          ]
+        },
+        {
+          "path": "supabase/functions/media/index.ts",
+          "line": 41,
+          "endLine": 41,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/media/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Media",
+      "path": "supabase/functions/media/index.ts",
+      "line": 13,
+      "endLine": 13,
+      "text": "interface Media { id: string; filename: string; type: string; size: number; url: string; projectId?: string; characterId?: string; tags: string[]; uploadedBy: string; uploadedAt: string }"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "mediaFiles",
+      "path": "supabase/functions/media/index.ts",
+      "line": 15,
+      "endLine": 15,
+      "text": "mediaFiles = new Map<string, Media>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "STORAGE_URL",
+      "path": "supabase/functions/media/index.ts",
+      "line": 16,
+      "endLine": 16,
+      "text": "STORAGE_URL = Deno.env.get(\"SUPABASE_URL\") || \"http://localhost:8000\""
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "generateId",
+      "path": "supabase/functions/media/index.ts",
+      "line": 18,
+      "endLine": 18,
+      "text": "function generateId(): string { return crypto.randomUUID() }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMimeType",
+      "path": "supabase/functions/media/index.ts",
+      "line": 19,
+      "endLine": 19,
+      "text": "function getMimeType(filename: string): string { const ext = filename.split('.').pop()?.toLowerCase(); const types: Record<string,string> = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml', pdf: 'application/pdf', mp3: 'audio/mpeg', wav: 'audio/wav', mp4: 'video/mp4', webm: 'video/webm' }; return types[ext || ''] || 'application/octet-stream' }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "uploadMedia",
+      "path": "supabase/functions/media/index.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "async function uploadMedia(data: { filename: string; content: string; projectId?: string; characterId?: string; tags?: string[]; uploadedBy: string }): Promise<Media> { const id = generateId(); const type = getMimeType(data.filename); const url = `${STORAGE_URL}/storage/v1/object/media/${id}-${data.filename}`; const size = Math.floor((data.content.length * 3) / 4); const media: Media = { id, filename: data.filename, type, size, url, projectId: data.projectId, characterId: data.characterId, tags: data.tags || [], uploadedBy: data.uploadedBy, uploadedAt: new Date().toISOString() }; mediaFiles.set(id, media); return media }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMedia",
+      "path": "supabase/functions/media/index.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "async function getMedia(id: string): Promise<Media | null> { return mediaFiles.get(id) || null }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listMedia",
+      "path": "supabase/functions/media/index.ts",
+      "line": 23,
+      "endLine": 23,
+      "text": "async function listMedia(projectId?: string, type?: string): Promise<Media[]> { let all = Array.from(mediaFiles.values()); if (projectId) all = all.filter(m => m.projectId === projectId); if (type) all = all.filter(m => m.type.startsWith(type)); return all }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "deleteMedia",
+      "path": "supabase/functions/media/index.ts",
+      "line": 24,
+      "endLine": 24,
+      "text": "async function deleteMedia(id: string): Promise<void> { mediaFiles.delete(id) }"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "updateMediaTags",
+      "path": "supabase/functions/media/index.ts",
+      "line": 25,
+      "endLine": 25,
+      "text": "async function updateMediaTags(id: string, tags: string[]): Promise<Media> { const media = mediaFiles.get(id); if (!media) throw new Error(\"Media not found\"); media.tags = tags; mediaFiles.set(id, media); return media }"
+    }
+  ]
+}

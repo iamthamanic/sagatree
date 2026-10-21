@@ -1,0 +1,233 @@
+{
+  "repository": "https://github.com/supabase/auth",
+  "ref": "v2.143.0",
+  "commit": "269895f3257b5d95fda992f48ab6569d87f01a82",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "migrations/00_init_auth_schema.up.sql",
+      "sha256": "4c3ab2565f2836d8fa0a54fd9d153facaee0c4c6258fa0a794c93446ddc10f71",
+      "sql": "-- auth.users definition\n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.users (\n\tinstance_id uuid NULL,\n\tid uuid NOT NULL UNIQUE,\n\taud varchar(255) NULL,\n\t\"role\" varchar(255) NULL,\n\temail varchar(255) NULL UNIQUE,\n\tencrypted_password varchar(255) NULL,\n\tconfirmed_at timestamptz NULL,\n\tinvited_at timestamptz NULL,\n\tconfirmation_token varchar(255) NULL,\n\tconfirmation_sent_at timestamptz NULL,\n\trecovery_token varchar(255) NULL,\n\trecovery_sent_at timestamptz NULL,\n\temail_change_token varchar(255) NULL,\n\temail_change varchar(255) NULL,\n\temail_change_sent_at timestamptz NULL,\n\tlast_sign_in_at timestamptz NULL,\n\traw_app_meta_data jsonb NULL,\n\traw_user_meta_data jsonb NULL,\n\tis_super_admin bool NULL,\n\tcreated_at timestamptz NULL,\n\tupdated_at timestamptz NULL,\n\tCONSTRAINT users_pkey PRIMARY KEY (id)\n);\nCREATE INDEX IF NOT EXISTS users_instance_id_email_idx ON {{ index .Options \"Namespace\" }}.users USING btree (instance_id, email);\nCREATE INDEX IF NOT EXISTS users_instance_id_idx ON {{ index .Options \"Namespace\" }}.users USING btree (instance_id);\ncomment on table {{ index .Options \"Namespace\" }}.users is 'Auth: Stores user login data within a secure schema.';\n\n-- auth.refresh_tokens definition\n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.refresh_tokens (\n\tinstance_id uuid NULL,\n\tid bigserial NOT NULL,\n\t\"token\" varchar(255) NULL,\n\tuser_id varchar(255) NULL,\n\trevoked bool NULL,\n\tcreated_at timestamptz NULL,\n\tupdated_at timestamptz NULL,\n\tCONSTRAINT refresh_tokens_pkey PRIMARY KEY (id)\n);\nCREATE INDEX IF NOT EXISTS refresh_tokens_instance_id_idx ON {{ index .Options \"Namespace\" }}.refresh_tokens USING btree (instance_id);\nCREATE INDEX IF NOT EXISTS refresh_tokens_instance_id_user_id_idx ON {{ index .Options \"Namespace\" }}.refresh_tokens USING btree (instance_id, user_id);\nCREATE INDEX IF NOT EXISTS refresh_tokens_token_idx ON {{ index .Options \"Namespace\" }}.refresh_tokens USING btree (token);\ncomment on table {{ index .Options \"Namespace\" }}.refresh_tokens is 'Auth: Store of tokens used to refresh JWT tokens once they expire.';\n\n-- auth.instances definition\n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.instances (\n\tid uuid NOT NULL,\n\tuuid uuid NULL,\n\traw_base_config text NULL,\n\tcreated_at timestamptz NULL,\n\tupdated_at timestamptz NULL,\n\tCONSTRAINT instances_pkey PRIMARY KEY (id)\n);\ncomment on table {{ index .Options \"Namespace\" }}.instances is 'Auth: Manages users across multiple sites.';\n\n-- auth.audit_log_entries definition\n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.audit_log_entries (\n\tinstance_id uuid NULL,\n\tid uuid NOT NULL,\n\tpayload json NULL,\n\tcreated_at timestamptz NULL,\n\tCONSTRAINT audit_log_entries_pkey PRIMARY KEY (id)\n);\nCREATE INDEX IF NOT EXISTS audit_logs_instance_id_idx ON {{ index .Options \"Namespace\" }}.audit_log_entries USING btree (instance_id);\ncomment on table {{ index .Options \"Namespace\" }}.audit_log_entries is 'Auth: Audit trail for user actions.';\n\n-- auth.schema_migrations definition\n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.schema_migrations (\n\t\"version\" varchar(255) NOT NULL,\n\tCONSTRAINT schema_migrations_pkey PRIMARY KEY (\"version\")\n);\ncomment on table {{ index .Options \"Namespace\" }}.schema_migrations is 'Auth: Manages updates to the auth system.';\n\t\t\n-- Gets the User ID from the request cookie\ncreate or replace function {{ index .Options \"Namespace\" }}.uid() returns uuid as $$\n  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;\n$$ language sql stable;\n\n-- Gets the User ID from the request cookie\ncreate or replace function {{ index .Options \"Namespace\" }}.role() returns text as $$\n  select nullif(current_setting('request.jwt.claim.role', true), '')::text;\n$$ language sql stable;\n"
+    },
+    {
+      "path": "migrations/20210710035447_alter_users.up.sql",
+      "sha256": "b87f889d4839b7e092f186ad244f3f5294ab5c0f50ef2feb40cab1307be8c9cd",
+      "sql": "-- alter user schema\n\nALTER TABLE {{ index .Options \"Namespace\" }}.users \nADD COLUMN IF NOT EXISTS phone VARCHAR(15) NULL UNIQUE DEFAULT NULL,\nADD COLUMN IF NOT EXISTS phone_confirmed_at timestamptz NULL DEFAULT NULL,\nADD COLUMN IF NOT EXISTS phone_change VARCHAR(15) NULL DEFAULT '',\nADD COLUMN IF NOT EXISTS phone_change_token VARCHAR(255) NULL DEFAULT '',\nADD COLUMN IF NOT EXISTS phone_change_sent_at timestamptz NULL DEFAULT NULL;\n\nDO $$\nBEGIN\n  IF NOT EXISTS(SELECT *\n    FROM information_schema.columns\n    WHERE table_schema = '{{ index .Options \"Namespace\" }}' and table_name='users' and column_name='email_confirmed_at')\n  THEN\n      ALTER TABLE \"{{ index .Options \"Namespace\" }}\".\"users\" RENAME COLUMN \"confirmed_at\" TO \"email_confirmed_at\";\n  END IF;\nEND $$;\n\n"
+    },
+    {
+      "path": "migrations/20210722035447_adds_confirmed_at.up.sql",
+      "sha256": "32499502e5d57594d2373e6f00d7b436a9b275c85b889680913f00d6ebc3ae73",
+      "sql": "-- adds confirmed at\n\nALTER TABLE {{ index .Options \"Namespace\" }}.users\nADD COLUMN IF NOT EXISTS confirmed_at timestamptz GENERATED ALWAYS AS (LEAST (users.email_confirmed_at, users.phone_confirmed_at)) STORED;\n"
+    },
+    {
+      "path": "migrations/20210730183235_add_email_change_confirmed.up.sql",
+      "sha256": "88da41a1dbae8077a26a4811c4d80b925162e5423c803467d3bff78407b4d995",
+      "sql": "-- adds email_change_confirmed\n\nALTER TABLE {{ index .Options \"Namespace\" }}.users\nADD COLUMN IF NOT EXISTS email_change_token_current varchar(255) null DEFAULT '', \nADD COLUMN IF NOT EXISTS email_change_confirm_status smallint DEFAULT 0 CHECK (email_change_confirm_status >= 0 AND email_change_confirm_status <= 2);\n\nDO $$\nBEGIN\n  IF NOT EXISTS(SELECT *\n    FROM information_schema.columns\n    WHERE table_schema = '{{ index .Options \"Namespace\" }}' and table_name='users' and column_name='email_change_token_new')\n  THEN\n      ALTER TABLE \"{{ index .Options \"Namespace\" }}\".\"users\" RENAME COLUMN \"email_change_token\" TO \"email_change_token_new\";\n  END IF;\nEND $$;\n"
+    },
+    {
+      "path": "migrations/20210909172000_create_identities_table.up.sql",
+      "sha256": "4c2d6a94d34d34f98f1fa83537a0068f4813e49a19cfc2fd4e9199e5a941cc84",
+      "sql": "-- adds identities table \n\nCREATE TABLE IF NOT EXISTS {{ index .Options \"Namespace\" }}.identities (\n    id text NOT NULL,\n    user_id uuid NOT NULL,\n    identity_data JSONB NOT NULL,\n    provider text NOT NULL,\n    last_sign_in_at timestamptz NULL,\n    created_at timestamptz NULL,\n    updated_at timestamptz NULL,\n    CONSTRAINT identities_pkey PRIMARY KEY (provider, id),\n    CONSTRAINT identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES {{ index .Options \"Namespace\" }}.users(id) ON DELETE CASCADE\n);\nCOMMENT ON TABLE {{ index .Options \"Namespace\" }}.identities is 'Auth: Stores identities associated to a user.';\n"
+    },
+    {
+      "path": "migrations/20210927181326_add_refresh_token_parent.up.sql",
+      "sha256": "73fb1d320fb85e231e322d0da6184adcda838c755a2b3f1e0894c249a59ba4e3",
+      "sql": "-- adds parent column\n\nALTER TABLE {{ index .Options \"Namespace\" }}.refresh_tokens\nADD COLUMN IF NOT EXISTS parent varchar(255) NULL;\n\nDO $$\nBEGIN\n  IF NOT EXISTS(SELECT *\n    FROM information_schema.constraint_column_usage\n    WHERE table_schema = '{{ index .Options \"Namespace\" }}' and table_name='refresh_tokens' and constraint_name='refresh_tokens_token_unique')\n  THEN\n      ALTER TABLE \"{{ index .Options \"Namespace\" }}\".\"refresh_tokens\" ADD CONSTRAINT refresh_tokens_token_unique UNIQUE (\"token\");\n  END IF;\n\n  IF NOT EXISTS(SELECT *\n    FROM information_schema.constraint_column_usage\n    WHERE table_schema = '{{ index .Options \"Namespace\" }}' and table_name='refresh_tokens' and constraint_name='refresh_tokens_parent_fkey')\n  THEN\n      ALTER TABLE \"{{ index .Options \"Namespace\" }}\".\"refresh_tokens\" ADD CONSTRAINT refresh_tokens_parent_fkey FOREIGN KEY (parent) REFERENCES {{ index .Options \"Namespace\" }}.refresh_tokens(\"token\");\n  END IF;\n\n  CREATE INDEX IF NOT EXISTS refresh_tokens_parent_idx ON \"{{ index .Options \"Namespace\" }}\".\"refresh_tokens\" USING btree (parent);\nEND $$;\n\n"
+    },
+    {
+      "path": "migrations/20211122151130_create_user_id_idx.up.sql",
+      "sha256": "0fbc4d8b62329aa444ea5820eef86e32a57a709964a2c65bc0463083b7130b02",
+      "sql": "-- create index on identities.user_id\n\nCREATE INDEX IF NOT EXISTS identities_user_id_idx ON \"{{ index .Options \"Namespace\" }}\".identities using btree (user_id);\n"
+    },
+    {
+      "path": "migrations/20211124214934_update_auth_functions.up.sql",
+      "sha256": "abf8d29849e04db2b6a84ea9c8c58daafdabdd3e3520051efb9ec362f4679992",
+      "sql": "-- update auth functions\n\ncreate or replace function {{ index .Options \"Namespace\" }}.uid() \nreturns uuid \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    current_setting('request.jwt.claim.sub', true),\n    (current_setting('request.jwt.claims', true)::jsonb ->> 'sub')\n  )::uuid\n$$;\n\ncreate or replace function {{ index .Options \"Namespace\" }}.role() \nreturns text \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    current_setting('request.jwt.claim.role', true),\n    (current_setting('request.jwt.claims', true)::jsonb ->> 'role')\n  )::text\n$$;\n\ncreate or replace function {{ index .Options \"Namespace\" }}.email() \nreturns text \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    current_setting('request.jwt.claim.email', true),\n    (current_setting('request.jwt.claims', true)::jsonb ->> 'email')\n  )::text\n$$;\n"
+    },
+    {
+      "path": "migrations/20211202183645_update_auth_uid.up.sql",
+      "sha256": "a70a3afa97c67fbb31aacbea496da0d01b9a809dc4b861f3187cb7e3ba5fda2d",
+      "sql": "-- update auth.uid()\n\ncreate or replace function {{ index .Options \"Namespace\" }}.uid()\nreturns uuid\nlanguage sql stable\nas $$\n  select\n  nullif(\n    coalesce(\n      current_setting('request.jwt.claim.sub', true),\n      (current_setting('request.jwt.claims', true)::jsonb ->> 'sub')\n    ),\n    ''\n  )::uuid\n$$;\n"
+    },
+    {
+      "path": "migrations/20220114185221_update_user_idx.up.sql",
+      "sha256": "89eb7cb7f44efcbf48ed854faca0347dea80cebff1693a8dc532d581729de0cd",
+      "sql": "-- updates users_instance_id_email_idx definition\n\nDROP INDEX IF EXISTS users_instance_id_email_idx;\nCREATE INDEX IF NOT EXISTS users_instance_id_email_idx on \"{{ index .Options \"Namespace\" }}\".users using btree (instance_id, lower(email));\n"
+    },
+    {
+      "path": "migrations/20220114185340_add_banned_until.up.sql",
+      "sha256": "8aea70090fdeeafc4bbf206a799551e3f7bce0e6749d8c7cc8033e983e750e38",
+      "sql": "-- adds banned_until column\n\nALTER TABLE {{ index .Options \"Namespace\" }}.users\nADD COLUMN IF NOT EXISTS banned_until timestamptz NULL;\n"
+    },
+    {
+      "path": "migrations/20220224000811_update_auth_functions.up.sql",
+      "sha256": "5b72022d73e64a8e474d2122ac42f299bb7ce4d59755cdcc78e72abfe5d47dc0",
+      "sql": "-- update auth functions\n\ncreate or replace function {{ index .Options \"Namespace\" }}.uid() \nreturns uuid \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.sub', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')\n  )::uuid\n$$;\n\ncreate or replace function {{ index .Options \"Namespace\" }}.role() \nreturns text \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.role', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role')\n  )::text\n$$;\n\ncreate or replace function {{ index .Options \"Namespace\" }}.email() \nreturns text \nlanguage sql stable\nas $$\n  select \n  coalesce(\n    nullif(current_setting('request.jwt.claim.email', true), ''),\n    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'email')\n  )::text\n$$;\n"
+    },
+    {
+      "path": "migrations/20220323170000_add_user_reauthentication.up.sql",
+      "sha256": "5fb66f473dd37e7141c5165254a6706cae3d2cab3632b92fb0f8f7cb58f7655d",
+      "sql": "-- adds reauthentication_token and reauthentication_sent_at \n\nALTER TABLE {{ index .Options \"Namespace\" }}.users\nADD COLUMN IF NOT EXISTS reauthentication_token varchar(255) null default '',\nADD COLUMN IF NOT EXISTS reauthentication_sent_at timestamptz null default null;\n"
+    },
+    {
+      "path": "migrations/20220429102000_add_unique_idx.up.sql",
+      "sha256": "4f9ce72459f72a601c4901eed0d4f5b9e9731c31f8d643736a118739c29538ee",
+      "sql": "-- add partial unique indices to confirmation_token, recovery_token, email_change_token_current, email_change_token_new, phone_change_token, reauthentication_token\n-- ignores partial unique index creation on fields which contain empty strings, whitespaces or purely numeric otps\n\nDROP INDEX IF EXISTS confirmation_token_idx; \nDROP INDEX IF EXISTS recovery_token_idx;\nDROP INDEX IF EXISTS email_change_token_current_idx;\nDROP INDEX IF EXISTS email_change_token_new_idx;\nDROP INDEX IF EXISTS reauthentication_token_idx;\n\nCREATE UNIQUE INDEX IF NOT EXISTS confirmation_token_idx ON {{ index .Options \"Namespace\" }}.users USING btree (confirmation_token) WHERE confirmation_token !~ '^[0-9 ]*$';\nCREATE UNIQUE INDEX IF NOT EXISTS recovery_token_idx ON {{ index .Options \"Namespace\" }}.users USING btree (recovery_token) WHERE recovery_token !~ '^[0-9 ]*$';\nCREATE UNIQUE INDEX IF NOT EXISTS email_change_token_current_idx ON {{ index .Options \"Namespace\" }}.users USING btree (email_change_token_current) WHERE email_change_token_current !~ '^[0-9 ]*$';\nCREATE UNIQUE INDEX IF NOT EXISTS email_change_token_new_idx ON {{ index .Options \"Namespace\" }}.users USING btree (email_change_token_new) WHERE email_change_token_new !~ '^[0-9 ]*$';\nCREATE UNIQUE INDEX IF NOT EXISTS reauthentication_token_idx ON {{ index .Options \"Namespace\" }}.users USING btree (reauthentication_token) WHERE reauthentication_token !~ '^[0-9 ]*$';\n"
+    },
+    {
+      "path": "migrations/20220531120530_add_auth_jwt_function.up.sql",
+      "sha256": "91d2d5e47f19e65a63ec411f6cbb18755ec1792cb4249694dc261ef59cc78a10",
+      "sql": "-- add auth.jwt function\n\ncomment on function {{ index .Options \"Namespace\" }}.uid() is 'Deprecated. Use auth.jwt() -> ''sub'' instead.';\ncomment on function {{ index .Options \"Namespace\" }}.role() is 'Deprecated. Use auth.jwt() -> ''role'' instead.';\ncomment on function {{ index .Options \"Namespace\" }}.email() is 'Deprecated. Use auth.jwt() -> ''email'' instead.';\n\ncreate or replace function {{ index .Options \"Namespace\" }}.jwt()\nreturns jsonb\nlanguage sql stable\nas $$\n  select \n    coalesce(\n        nullif(current_setting('request.jwt.claim', true), ''),\n        nullif(current_setting('request.jwt.claims', true), '')\n    )::jsonb\n$$;\n"
+    },
+    {
+      "path": "migrations/20220614074223_add_ip_address_to_audit_log.postgres.up.sql",
+      "sha256": "0e2cbe2fc509b97f27803c04e723215c3944a7f84c043dd8f7cd7118c199a5dc",
+      "sql": "-- Add IP Address to audit log\nALTER TABLE {{ index .Options \"Namespace\" }}.audit_log_entries\nADD COLUMN IF NOT EXISTS ip_address VARCHAR(64) NOT NULL DEFAULT '';\n"
+    },
+    {
+      "path": "migrations/20220811173540_add_sessions_table.up.sql",
+      "sha256": "840c19639d972143bc3fc05a16e77da45c076edcba229c94b019a2db1f0eb192",
+      "sql": "-- Add session_id column to refresh_tokens table\ncreate table if not exists {{ index .Options \"Namespace\" }}.sessions (\n    id uuid not null,\n    user_id uuid not null,\n    created_at timestamptz null,\n    updated_at timestamptz null,\n    constraint sessions_pkey primary key (id),\n    constraint sessions_user_id_fkey foreign key (user_id) references {{ index .Options \"Namespace\" }}.users(id) on delete cascade\n);\ncomment on table {{ index .Options \"Namespace\" }}.sessions is 'Auth: Stores session data associated to a user.';\n\nalter table {{ index .Options \"Namespace\" }}.refresh_tokens\nadd column if not exists session_id uuid null;\n\ndo $$\nbegin\n  if not exists(select *\n    from information_schema.constraint_column_usage\n    where table_schema = '{{ index .Options \"Namespace\" }}' and table_name='sessions' and constraint_name='refresh_tokens_session_id_fkey')\n  then\n      alter table \"{{ index .Options \"Namespace\" }}\".\"refresh_tokens\" add constraint refresh_tokens_session_id_fkey foreign key (session_id) references {{ index .Options \"Namespace\" }}.sessions(id) on delete cascade;\n  end if;\nEND $$;\n"
+    },
+    {
+      "path": "migrations/20221003041349_add_mfa_schema.up.sql",
+      "sha256": "058ab23f8e55fd3ebd353f5367b9308ce88a95d0fe604b754337941095c5f3ce",
+      "sql": "-- see: https://stackoverflow.com/questions/7624919/check-if-a-user-defined-type-already-exists-in-postgresql/48382296#48382296\ndo $$ begin\n    create type factor_type as enum('totp', 'webauthn');\n    create type factor_status as enum('unverified', 'verified');\n    create type aal_level as enum('aal1', 'aal2', 'aal3');\nexception\n    when duplicate_object then null;\nend $$;\n\n-- auth.mfa_factors definition\ncreate table if not exists {{ index .Options \"Namespace\" }}.mfa_factors(\n       id uuid not null,\n       user_id uuid not null,\n       friendly_name text null,\n       factor_type factor_type not null,\n       status factor_status not null,\n       created_at timestamptz not null,\n       updated_at timestamptz not null,\n       secret text null,\n       constraint mfa_factors_pkey primary key(id),\n       constraint mfa_factors_user_id_fkey foreign key (user_id) references {{ index .Options \"Namespace\" }}.users(id) on delete cascade\n);\ncomment on table {{ index .Options \"Namespace\" }}.mfa_factors is 'auth: stores metadata about factors';\n\ncreate unique index if not exists mfa_factors_user_friendly_name_unique on {{ index .Options \"Namespace\" }}.mfa_factors (friendly_name, user_id) where trim(friendly_name) <> '';\n\n-- auth.mfa_challenges definition\ncreate table if not exists {{ index .Options \"Namespace\" }}.mfa_challenges(\n       id uuid not null,\n       factor_id uuid not null,\n       created_at timestamptz not null,\n       verified_at timestamptz  null,\n       ip_address  inet not null,\n       constraint mfa_challenges_pkey primary key (id),\n       constraint mfa_challenges_auth_factor_id_fkey foreign key (factor_id) references {{ index .Options \"Namespace\" }}.mfa_factors(id) on delete cascade\n);\ncomment on table {{ index .Options \"Namespace\" }}.mfa_challenges is 'auth: stores metadata about challenge requests made';\n\n\n\n-- add factor_id and amr claims to session\ncreate table if not exists {{ index .Options \"Namespace\" }}.mfa_amr_claims(\n    session_id uuid not null,\n    created_at timestamptz not null,\n    updated_at timestamptz not null,\n    authentication_method text not null,\n    constraint mfa_amr_claims_session_id_authentication_method_pkey unique(session_id, authentication_method),\n    constraint mfa_amr_claims_session_id_fkey foreign key(session_id) references {{ index .Options \"Namespace\" }}.sessions(id) on delete cascade\n);\ncomment on table {{ index .Options \"Namespace\" }}.mfa_amr_claims is 'auth: stores authenticator method reference claims for multi factor authentication';\n"
+    },
+    {
+      "path": "migrations/20221003041400_add_aal_and_factor_id_to_sessions.up.sql",
+      "sha256": "cea7d73fd31f39a0134ee4aaa16e5ff4af953cbc3f5e3321af38776bcda4943f",
+      "sql": "-- add factor_id to sessions\n alter table {{ index .Options \"Namespace\" }}.sessions add column if not exists factor_id uuid null;\n alter table {{ index .Options \"Namespace\" }}.sessions add column if not exists aal aal_level null;\n"
+    },
+    {
+      "path": "migrations/20221011041400_add_mfa_indexes.up.sql",
+      "sha256": "32ab5cd482674c98fd5926e7c0995fc216d2cc2b1ff77554b6c45b4bd758dd6f",
+      "sql": "alter table {{ index .Options \"Namespace\" }}.mfa_amr_claims\n  add column if not exists id uuid not null;\n\ndo $$\nbegin\n  if not exists\n     (select constraint_name\n      from information_schema.table_constraints\n      where table_schema = '{{ index .Options \"Namespace\" }}'\n      and table_name = 'mfa_amr_claims'\n      and constraint_name = 'amr_id_pk')\n  then\n    alter table {{ index .Options \"Namespace\" }}.mfa_amr_claims add constraint amr_id_pk primary key(id);\n  end if;\nend $$;\n\ncreate index if not exists user_id_created_at_idx on {{ index .Options \"Namespace\" }}.sessions (user_id, created_at);\ncreate index if not exists factor_id_created_at_idx on {{ index .Options \"Namespace\" }}.mfa_factors (user_id, created_at);\n\n"
+    },
+    {
+      "path": "migrations/20221020193600_add_sessions_user_id_index.up.sql",
+      "sha256": "7b33e11e8092ea07d2f4e899558b46e0a5573f0c43a56532f1f640c2c7eb7802",
+      "sql": "create index if not exists sessions_user_id_idx on {{ index .Options \"Namespace\" }}.sessions (user_id);\n\n"
+    },
+    {
+      "path": "migrations/20221021073300_add_refresh_tokens_session_id_revoked_index.up.sql",
+      "sha256": "63887b7bd3045561c4930575d4fa324fc9090630193989a9736dd84328d1ec55",
+      "sql": "create index if not exists refresh_tokens_session_id_revoked_idx on {{ index .Options \"Namespace\" }}.refresh_tokens (session_id, revoked);\n"
+    },
+    {
+      "path": "migrations/20221021082433_add_saml.up.sql",
+      "sha256": "af0bbfdb64dd32f512712f45b44e0dce4e9af8ce7874e01c3a804f95eeb3a387",
+      "sql": "-- Multi-instance mode (see auth.instances) table intentionally not supported and ignored.\n\ncreate table if not exists {{ index .Options \"Namespace\" }}.sso_providers (\n\tid uuid not null,\n\tresource_id text null,\n\tcreated_at timestamptz null,\n\tupdated_at timestamptz null,\n\tprimary key (id),\n\tconstraint \"resource_id not empty\" check (resource_id = null or char_length(resource_id) > 0)\n);\n\ncomment on table {{ index .Options \"Namespace\" }}.sso_providers is 'Auth: Manages SSO identity provider information; see saml_providers for SAML.';\ncomment on column {{ index .Options \"Namespace\" }}.sso_providers.resource_id is 'Auth: Uniquely identifies a SSO provider according to a user-chosen resource ID (case insensitive), useful in infrastructure as code.';\n\ncreate unique index if not exists sso_providers_resource_id_idx on {{ index .Options \"Namespace\" }}.sso_providers (lower(resource_id));\n\ncreate table if not exists {{ index .Options \"Namespace\" }}.sso_domains (\n\tid uuid not null,\n\tsso_provider_id uuid not null,\n\tdomain text not null,\n\tcreated_at timestamptz null,\n\tupdated_at timestamptz null,\n\tprimary key (id),\n\tforeign key (sso_provider_id) references {{ index .Options \"Namespace\" }}.sso_providers (id) on delete cascade,\n\tconstraint \"domain not empty\" check (char_length(domain) > 0)\n);\n\ncreate index if not exists sso_domains_sso_provider_id_idx on {{ index .Options \"Namespace\" }}.sso_domains (sso_provider_id);\ncreate unique index if not exists sso_domains_domain_idx on {{ index .Options \"Namespace\" }}.sso_domains (lower(domain));\n\ncomment on table {{ index .Options \"Namespace\" }}.sso_domains is 'Auth: Manages SSO email address domain mapping to an SSO Identity Provider.';\n\ncreate table if not exists {{ index .Options \"Namespace\" }}.saml_providers (\n\tid uuid not null,\n\tsso_provider_id uuid not null,\n\tentity_id text not null unique,\n\tmetadata_xml text not null,\n\tmetadata_url text null,\n\tattribute_mapping jsonb null,\n\tcreated_at timestamptz null,\n\tupdated_at timestamptz null,\n\tprimary key (id),\n\tforeign key (sso_provider_id) references {{ index .Options \"Namespace\" }}.sso_providers (id) on delete cascade,\n\tconstraint \"metadata_xml not empty\" check (char_length(metadata_xml) > 0),\n\tconstraint \"metadata_url not empty\" check (metadata_url = null or char_length(metadata_url) > 0),\n\tconstraint \"entity_id not empty\" check (char_length(entity_id) > 0)\n);\n\ncreate index if not exists saml_providers_sso_provider_id_idx on {{ index .Options \"Namespace\" }}.saml_providers (sso_provider_id);\n\ncomment on table {{ index .Options \"Namespace\" }}.saml_providers is 'Auth: Manages SAML Identity Provider connections.';\n\ncreate table if not exists {{ index .Options \"Namespace\" }}.saml_relay_states (\n\tid uuid not null,\n\tsso_provider_id uuid not null,\n\trequest_id text not null,\n\tfor_email text null,\n\tredirect_to text null,\n\tfrom_ip_address inet null,\n\tcreated_at timestamptz null,\n\tupdated_at timestamptz null,\n\tprimary key (id),\n\tforeign key (sso_provider_id) references {{ index .Options \"Namespace\" }}.sso_providers (id) on delete cascade,\n\tconstraint \"request_id not empty\" check(char_length(request_id) > 0)\n);\n\ncreate index if not exists saml_relay_states_sso_provider_id_idx on {{ index .Options \"Namespace\" }}.saml_relay_states (sso_provider_id);\ncreate index if not exists saml_relay_states_for_email_idx on {{ index .Options \"Namespace\" }}.saml_relay_states (for_email);\n\ncomment on table {{ index .Options \"Namespace\" }}.saml_relay_states is 'Auth: Contains SAML Relay State information for each Service Provider initiated login.';\n\ncreate table if not exists {{ index .Options \"Namespace\" }}.sso_sessions (\n\tid uuid not null,\n\tsession_id uuid not null,\n\tsso_provider_id uuid null,\n\tnot_before timestamptz null,\n\tnot_after timestamptz null,\n\tidp_initiated boolean default false,\n\tcreated_at timestamptz null,\n\tupdated_at timestamptz null,\n\tprimary key (id),\n\tforeign key (session_id) references {{ index .Options \"Namespace\" }}.sessions (id) on delete cascade,\n\tforeign key (sso_provider_id) references {{ index .Options \"Namespace\" }}.sso_providers (id) on delete cascade\n);\n\ncreate index if not exists sso_sessions_session_id_idx on {{ index .Options \"Namespace\" }}.sso_sessions (session_id);\ncreate index if not exists sso_sessions_sso_provider_id_idx on {{ index .Options \"Namespace\" }}.sso_sessions (sso_provider_id);\n\ncomment on table {{ index .Options \"Namespace\" }}.sso_sessions is 'Auth: A session initiated by an SSO Identity Provider';\n\n"
+    },
+    {
+      "path": "migrations/20221027105023_add_identities_user_id_idx.up.sql",
+      "sha256": "1e7c07b825b2ee8bdfe8fee06588525b97f3771efc6c365c7057c0f7abfbd30a",
+      "sql": "create index if not exists identities_user_id_idx on {{ index .Options \"Namespace\" }}.identities using btree (user_id);\n"
+    },
+    {
+      "path": "migrations/20221114143122_add_session_not_after_column.up.sql",
+      "sha256": "7bf30a94308028f0c8140166e9a6f3d77356daa1147e5740a27cc983e39b854c",
+      "sql": "alter table only {{ index .Options \"Namespace\" }}.sessions\n  add column if not exists not_after timestamptz;\n\ncomment on column {{ index .Options \"Namespace\" }}.sessions.not_after is 'Auth: Not after is a nullable column that contains a timestamp after which the session should be regarded as expired.';\n"
+    },
+    {
+      "path": "migrations/20221114143410_remove_parent_foreign_key_refresh_tokens.up.sql",
+      "sha256": "5e804d7c82e0e6dca6f72e2350951e87714f6890fe63c2388dcbfa9aea687f2f",
+      "sql": "alter table only {{ index .Options \"Namespace\" }}.refresh_tokens\n  drop constraint refresh_tokens_parent_fkey;\n"
+    },
+    {
+      "path": "migrations/20221125140132_backfill_email_identity.up.sql",
+      "sha256": "60cfea2750a2c79c0d69bb3a08edee0efb830c12212cac0ffdb5d44937c2839d",
+      "sql": "-- backfill the auth.identities column by adding an email identity \n-- for all auth.users with an email and password \n\ndo $$\nbegin\n\tinsert into {{ index .Options \"Namespace\" }}.identities (id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)\n\tselect id, id as user_id, jsonb_build_object('sub', id, 'email', email) as identity_data, 'email' as provider, null as last_sign_in_at, '2022-11-25' as created_at, '2022-11-25' as updated_at\n\tfrom {{ index .Options \"Namespace\" }}.users as users\n\twhere encrypted_password != '' and email is not null and not exists(select user_id from {{ index .Options \"Namespace\" }}.identities where user_id = users.id);\nend;\n$$;\n"
+    },
+    {
+      "path": "migrations/20221208132122_backfill_email_last_sign_in_at.up.sql",
+      "sha256": "462f871362dcffdd87d70bf79941f779e7137afce4039cf7b8bfe60d74e14e34",
+      "sql": "-- previous backfill migration left last_sign_in_at to be null, which broke some projects\n\ndo $$\nbegin\nupdate {{ index .Options \"Namespace\" }}.identities\n  set last_sign_in_at = '2022-11-25'\n  where\n    last_sign_in_at is null and\n    created_at = '2022-11-25' and\n    updated_at = '2022-11-25' and\n    provider = 'email' and\n    id = user_id::text;\nend $$;\n"
+    },
+    {
+      "path": "migrations/20221215195500_modify_users_email_unique_index.up.sql",
+      "sha256": "0a2cdcd4101a418ec7b482800327fc90238b498db01a657dbbeefdba8b8f3866",
+      "sql": "-- this change is relatively temporary\n-- it is meant to keep database consistency guarantees until there is proper\n-- introduction of account linking / merging / delinking APIs, at which point\n-- rows in the users table will allow duplicates but with programmatic control\n\nalter table only {{ index .Options \"Namespace\" }}.users\n  add column if not exists is_sso_user boolean not null default false;\n\ncomment on column {{ index .Options \"Namespace\" }}.users.is_sso_user is 'Auth: Set this column to true when the account comes from SSO. These accounts can have duplicate emails.';\n\ndo $$\nbegin\n  alter table only {{ index .Options \"Namespace\" }}.users\n    drop constraint if exists users_email_key;\nexception\n-- dependent object: https://www.postgresql.org/docs/current/errcodes-appendix.html\nwhen SQLSTATE '2BP01' then\n  raise notice 'Unable to drop users_email_key constraint due to dependent objects, please resolve this manually or SSO may not work';\nend $$;\n\ncreate unique index if not exists users_email_partial_key on {{ index .Options \"Namespace\" }}.users (email) where (is_sso_user = false);\n\ncomment on index {{ index .Options \"Namespace\" }}.users_email_partial_key is 'Auth: A partial unique index that applies only when is_sso_user is false';\n"
+    },
+    {
+      "path": "migrations/20221215195800_add_identities_email_column.up.sql",
+      "sha256": "3ddff50750549b790eecbeac2194966ca98354564f4fba537cda70d96b575d39",
+      "sql": "do $$\nbegin\n  update\n    {{ index .Options \"Namespace\" }}.identities as identities\n  set\n    identity_data = identity_data || jsonb_build_object('email', (select email from {{ index .Options \"Namespace\" }}.users where id = identities.user_id)),\n    updated_at = '2022-11-25'\n  where identities.provider = 'email' and identity_data->>'email' is null;\nend $$;\n\nalter table only {{ index .Options \"Namespace\" }}.identities\n  add column if not exists email text generated always as (lower(identity_data->>'email')) stored;\n\ncomment on column {{ index .Options \"Namespace\" }}.identities.email is 'Auth: Email is a generated column that references the optional email property in the identity_data';\n\ncreate index if not exists identities_email_idx on {{ index .Options \"Namespace\" }}.identities (email text_pattern_ops);\n\ncomment on index {{ index .Options \"Namespace\" }}.identities_email_idx is 'Auth: Ensures indexed queries on the email column';\n"
+    },
+    {
+      "path": "migrations/20221215195900_remove_sso_sessions.up.sql",
+      "sha256": "f79ad2aaaa4f748836595a9ef10b3df0234e53032c339f0c74e3181271af1801",
+      "sql": "-- sso_sessions is not used as all of the necessary data is in sessions\ndrop table if exists {{ index .Options \"Namespace\" }}.sso_sessions;\n\n"
+    },
+    {
+      "path": "migrations/20230116124310_alter_phone_type.up.sql",
+      "sha256": "7d6fd7f428bd6633ab622ff1d933feb9bbe0904224eced052aae82fac2ef36a5",
+      "sql": "-- alter phone field column type to accomodate for soft deletion \n\ndo $$\nbegin\n  alter table {{ index .Options \"Namespace\" }}.users\n    alter column phone type text,\n    alter column phone_change type text;\nexception\n  -- SQLSTATE errcodes https://www.postgresql.org/docs/current/errcodes-appendix.html\n  when SQLSTATE '0A000' then\n    raise notice 'Unable to change data type of phone, phone_change columns due to use by a view or rule';\n  when SQLSTATE '2BP01' then\n    raise notice 'Unable to change data type of phone, phone_change columns due to dependent objects';\nend $$;\n"
+    },
+    {
+      "path": "migrations/20230116124412_add_deleted_at.up.sql",
+      "sha256": "144a735e50373686e04d0cd3d46b997262162dda14965870342f65cd0b5a7845",
+      "sql": "-- adds deleted_at column to auth.users \n\nalter table {{ index .Options \"Namespace\" }}.users \nadd column if not exists deleted_at timestamptz null;\n"
+    },
+    {
+      "path": "migrations/20230131181311_backfill_invite_identities.up.sql",
+      "sha256": "f88443609f6d15d3d1bff00e69a6c7a455fa331cb30747c8448d5e219729a2df",
+      "sql": "-- backfills the missing email identity for invited users\n\ndo $$\nbegin\n\tinsert into {{ index .Options \"Namespace\" }}.identities (id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)\n\tselect id, id as user_id, jsonb_build_object('sub', id, 'email', email) as identity_data, 'email' as provider, null as last_sign_in_at, '2023-01-25' as created_at, '2023-01-25' as updated_at\n\tfrom {{ index .Options \"Namespace\" }}.users as users\n\twhere invited_at is not null and not exists (select user_id from {{ index .Options \"Namespace\" }}.identities where user_id = users.id and provider = 'email');\nend $$;\n"
+    },
+    {
+      "path": "migrations/20230322519590_add_flow_state_table.up.sql",
+      "sha256": "55445d9e1f10d46e6edaf4718fca5be01d031e038a4a141c2eedb591f5936af7",
+      "sql": "-- see: https://stackoverflow.com/questions/7624919/check-if-a-user-defined-type-already-exists-in-postgresql/48382296#48382296\ndo $$ begin\n    create type code_challenge_method as enum('s256', 'plain');\nexception\n    when duplicate_object then null;\nend $$;\ncreate table if not exists {{ index .Options \"Namespace\" }}.flow_state(\n       id uuid primary key,\n       user_id uuid null,\n       auth_code text not null,\n       code_challenge_method code_challenge_method not null,\n       code_challenge text not null,\n       provider_type text not null,\n       provider_access_token text null,\n       provider_refresh_token text null,\n       created_at timestamptz null,\n       updated_at timestamptz null\n);\ncreate index if not exists idx_auth_code on {{ index .Options \"Namespace\" }}.flow_state(auth_code);\ncomment on table {{ index .Options \"Namespace\" }}.flow_state is 'stores metadata for pkce logins';\n"
+    },
+    {
+      "path": "migrations/20230402418590_add_authentication_method_to_flow_state_table.up.sql",
+      "sha256": "8f10e836a25f85ccdac620c36f871effc84e7d6020bd38fd002ddd119847fd84",
+      "sql": "alter table {{index .Options \"Namespace\" }}.flow_state\nadd column if not exists authentication_method text not null;\ncreate index if not exists idx_user_id_auth_method on {{index .Options \"Namespace\" }}.flow_state (user_id, authentication_method);\n\n-- Update comment as we have generalized the table\ncomment on table {{ index .Options \"Namespace\" }}.flow_state is 'stores metadata for pkce logins';\n"
+    },
+    {
+      "path": "migrations/20230411005111_remove_duplicate_idx.up.sql",
+      "sha256": "cc1b7b8a172693abafa64d0273240fa8181fdf5dde565e15b94adb38ec40c2e9",
+      "sql": "drop index if exists {{index .Options \"Namespace\" }}.refresh_tokens_token_idx;\n"
+    },
+    {
+      "path": "migrations/20230508135423_add_cleanup_indexes.up.sql",
+      "sha256": "89d4747491836d2bc33cc340029624d88ed9cf7e32574c3a9fbbe2431a27b5c8",
+      "sql": "-- Indexes used for cleaning up old or stale objects.\n\ncreate index if not exists\n  refresh_tokens_updated_at_idx\n  on {{ index .Options \"Namespace\" }}.refresh_tokens (updated_at desc);\n\ncreate index if not exists\n  flow_state_created_at_idx\n  on {{ index .Options \"Namespace\" }}.flow_state (created_at desc);\n\ncreate index if not exists\n  saml_relay_states_created_at_idx\n  on {{ index .Options \"Namespace\" }}.saml_relay_states (created_at desc);\n\ncreate index if not exists\n  sessions_not_after_idx\n  on {{ index .Options \"Namespace\" }}.sessions (not_after desc);\n"
+    },
+    {
+      "path": "migrations/20230523124323_add_mfa_challenge_cleanup_index.up.sql",
+      "sha256": "af534c2184d12d00bef8fbd8b593f5a4c8b3297854bd205fb4e3bcdba9d6ca56",
+      "sql": "-- Index used to clean up mfa challenges\n\ncreate index if not exists\n  mfa_challenge_created_at_idx\n  on {{ index .Options \"Namespace\" }}.mfa_challenges (created_at desc);\n"
+    },
+    {
+      "path": "migrations/20230818113222_add_flow_state_to_relay_state.up.sql",
+      "sha256": "cc6587385b84deba61c31e0749eb8064f9cdf5aa6db5239713fa31966de4f2dd",
+      "sql": "alter table {{ index .Options \"Namespace\" }}.saml_relay_states add column if not exists flow_state_id uuid references {{ index .Options \"Namespace\" }}.flow_state(id) on delete cascade default null;\n"
+    },
+    {
+      "path": "migrations/20230914180801_add_mfa_factors_user_id_idx.up.sql",
+      "sha256": "844c575a40f9609987638bb29716deaaad3b9c1c1e8c399204d870018f867684",
+      "sql": "create index if not exists mfa_factors_user_id_idx on {{ index .Options \"Namespace\" }}.mfa_factors(user_id);\n"
+    },
+    {
+      "path": "migrations/20231027141322_add_session_refresh_columns.up.sql",
+      "sha256": "d4aa51107599c755003464121d4c0d99e617543bfee9a816fd76df0b399aafe0",
+      "sql": "alter table if exists {{ index .Options \"Namespace\" }}.sessions\n  add column if not exists refreshed_at timestamp without time zone,\n  add column if not exists user_agent text,\n  add column if not exists ip inet;\n"
+    },
+    {
+      "path": "migrations/20231114161723_add_sessions_tag.up.sql",
+      "sha256": "e32711d98cd7c3f5920ca2a79df9c597433dac1b7e8b56df7b0becb96319d147",
+      "sql": "alter table if exists {{ index .Options \"Namespace\" }}.sessions\n  add column if not exists tag text;\n"
+    },
+    {
+      "path": "migrations/20231117164230_add_id_pkey_identities.up.sql",
+      "sha256": "8822b2807b672d38b212618193efdb6fc2cf787e564a495940c1a8844155d7b0",
+      "sql": "do $$\nbegin\n    if not exists(select * \n        from information_schema.columns\n        where table_schema = '{{ index .Options \"Namespace\" }}' and table_name='identities' and column_name='provider_id')\n    then\n        alter table if exists {{ index .Options \"Namespace\" }}.identities \n        rename column id to provider_id;\n    end if;\nend$$;\n\nalter table if exists {{ index .Options \"Namespace\" }}.identities \n    drop constraint if exists identities_pkey,\n    add column if not exists id uuid default gen_random_uuid() primary key;\n\ndo $$\nbegin\n  if not exists\n     (select constraint_name\n      from information_schema.table_constraints\n      where table_schema = '{{ index .Options \"Namespace\" }}'\n      and table_name = 'identities'\n      and constraint_name = 'identities_provider_id_provider_unique')\n  then\n    alter table if exists {{ index .Options \"Namespace\" }}.identities \n    add constraint identities_provider_id_provider_unique \n    unique(provider_id, provider);\n  end if;\nend $$;\n"
+    },
+    {
+      "path": "migrations/20240115144230_remove_ip_address_from_saml_relay_state.sql",
+      "sha256": "9e104ca8b63695f6427ff057b5b7801ef7e4cc3baf32d4289e61b0015128d651",
+      "sql": "do $$\nbegin\n   if exists (select from information_schema.columns where table_schema = '{{ index .Options \"Namespace\" }}' and table_name = 'saml_relay_states' and column_name = 'from_ip_address') then\n      alter table {{ index .Options \"Namespace\" }}.saml_relay_states drop column from_ip_address;\n   end if;\nend\n$$;\n"
+    }
+  ]
+}

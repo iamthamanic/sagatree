@@ -1,0 +1,1613 @@
+{
+  "schemaVersion": 1,
+  "function": "rulesets",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "supabase/functions/_shared/cors.ts",
+      "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "sha256": "4b753ed274bf0abe01b36c7cce304d6c7b474260c28e30bf7f01465b380d4661"
+    }
+  ],
+  "operations": [
+    {
+      "id": "rulesets:1",
+      "condition": "req.method === \"GET\" && path === \"/health\"",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 577,
+      "endLine": 586,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 578,
+          "endLine": 585,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 578,
+          "endLine": 583,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 580,
+          "endLine": 580,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        }
+      ],
+      "exactBranch": "{\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:2",
+      "condition": "req.method === \"GET\" && path === \"/rulesets\"",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 589,
+      "endLine": 594,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 591,
+          "endLine": 593,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 590,
+          "endLine": 590,
+          "expression": "listRulesets",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 591,
+          "endLine": 591,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const list = await listRulesets()\n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:3",
+      "condition": "req.method === \"POST\" && path === \"/rulesets\"",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 597,
+      "endLine": 603,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 600,
+          "endLine": 602,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 598,
+          "endLine": 598,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 599,
+          "endLine": 599,
+          "expression": "createRuleset",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 600,
+          "endLine": 600,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const body = await req.json()\n      const ruleset = await createRuleset(body)\n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:4",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 606,
+      "endLine": 621,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 612,
+          "endLine": 615,
+          "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 618,
+          "endLine": 620,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 607,
+          "endLine": 607,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 608,
+          "endLine": 608,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'enrich'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 609,
+          "endLine": 609,
+          "expression": "getRuleset",
+          "arguments": [
+            "id",
+            "enrich"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 612,
+          "endLine": 612,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Ruleset not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 618,
+          "endLine": 618,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const enrich = url.searchParams.get('enrich') === 'true'\n      const ruleset = await getRuleset(id, enrich)\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:5",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/spells$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 624,
+      "endLine": 635,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 632,
+          "endLine": 634,
+          "expression": "new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 625,
+          "endLine": 625,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('level')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 628,
+          "endLine": 628,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'school'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 629,
+          "endLine": 629,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'class'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 631,
+          "endLine": 631,
+          "expression": "getSpells",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 632,
+          "endLine": 632,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spells"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const filter = {\n        level: url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined,\n        school: url.searchParams.get('school') || undefined,\n        class: url.searchParams.get('class') || undefined,\n      }\n      const spells = await getSpells(id, filter)\n      return new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:6",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/monsters$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 638,
+      "endLine": 648,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 645,
+          "endLine": 647,
+          "expression": "new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 639,
+          "endLine": 639,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 641,
+          "endLine": 641,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "parseFloat",
+          "arguments": [
+            "url.searchParams.get('cr')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 644,
+          "endLine": 644,
+          "expression": "getMonsters",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 645,
+          "endLine": 645,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monsters"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n      }\n      const monsters = await getMonsters(id, filter)\n      return new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:7",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/items$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 651,
+      "endLine": 660,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 657,
+          "endLine": 659,
+          "expression": "new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 652,
+          "endLine": 652,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 654,
+          "endLine": 654,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 656,
+          "endLine": 656,
+          "expression": "getItems",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 657,
+          "endLine": 657,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "items"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n      }\n      const items = await getItems(id, filter)\n      return new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:8",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/skills$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 663,
+      "endLine": 669,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 666,
+          "endLine": 668,
+          "expression": "new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 664,
+          "endLine": 664,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 665,
+          "endLine": 665,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.skills || {}"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:9",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/conditions$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 672,
+      "endLine": 678,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 675,
+          "endLine": 677,
+          "expression": "new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 673,
+          "endLine": 673,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 674,
+          "endLine": 674,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 675,
+          "endLine": 675,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.conditions || []"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:10",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/classes$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 681,
+      "endLine": 687,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 684,
+          "endLine": 686,
+          "expression": "new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 682,
+          "endLine": 682,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 683,
+          "endLine": 683,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 684,
+          "endLine": 684,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.classes || {}"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    },
+    {
+      "id": "rulesets:11",
+      "condition": "req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/races$/)",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 690,
+      "endLine": 696,
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 693,
+          "endLine": 695,
+          "expression": "new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 691,
+          "endLine": 691,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 692,
+          "endLine": 692,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 693,
+          "endLine": 693,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.races || {}"
+          ]
+        }
+      ],
+      "exactBranch": "{\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }"
+    }
+  ],
+  "responseSites": [
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 578,
+      "endLine": 585,
+      "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 591,
+      "endLine": 593,
+      "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 600,
+      "endLine": 602,
+      "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 612,
+      "endLine": 615,
+      "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 618,
+      "endLine": 620,
+      "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 632,
+      "endLine": 634,
+      "expression": "new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 645,
+      "endLine": 647,
+      "expression": "new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 657,
+      "endLine": 659,
+      "expression": "new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 666,
+      "endLine": 668,
+      "expression": "new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 675,
+      "endLine": 677,
+      "expression": "new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 684,
+      "endLine": 686,
+      "expression": "new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 693,
+      "endLine": 695,
+      "expression": "new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 699,
+      "endLine": 702,
+      "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 705,
+      "endLine": 711,
+      "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+    }
+  ],
+  "environment": [
+    "CHARACTER_AI_ALLOWED_ORIGIN"
+  ],
+  "timeoutSites": [],
+  "effectSites": [
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 361,
+      "endLine": 361,
+      "expression": "rulesets.set(dnd5eSRD.id, dnd5eSRD)"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 362,
+      "endLine": 362,
+      "expression": "rulesets.set(pathfinder2e.id, pathfinder2e)"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 372,
+      "endLine": 372,
+      "expression": "fetch(`${OPEN5E_API}/spells/?limit=500`)"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 397,
+      "endLine": 397,
+      "expression": "fetch(`${OPEN5E_API}/monsters/?limit=500`)"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 426,
+      "endLine": 426,
+      "expression": "fetch(`${OPEN5E_API}/weapons/?limit=500`)"
+    },
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 510,
+      "endLine": 510,
+      "expression": "rulesets.set(id, ruleset)"
+    }
+  ],
+  "handler": [
+    {
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 566,
+      "endLine": 713,
+      "text": "serve(async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/rulesets\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets - List all rulesets\n    if (req.method === \"GET\" && path === \"/rulesets\") {\n      const list = await listRulesets()\n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /rulesets - Create custom ruleset\n    if (req.method === \"POST\" && path === \"/rulesets\") {\n      const body = await req.json()\n      const ruleset = await createRuleset(body)\n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id - Get ruleset\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const enrich = url.searchParams.get('enrich') === 'true'\n      const ruleset = await getRuleset(id, enrich)\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/spells - Get spells\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/spells$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        level: url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined,\n        school: url.searchParams.get('school') || undefined,\n        class: url.searchParams.get('class') || undefined,\n      }\n      const spells = await getSpells(id, filter)\n      return new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/monsters - Get monsters\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/monsters$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n      }\n      const monsters = await getMonsters(id, filter)\n      return new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/items - Get items\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/items$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n      }\n      const items = await getItems(id, filter)\n      return new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/skills - Get skills\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/skills$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/conditions - Get conditions\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/conditions$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/classes - Get classes\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/classes$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/races - Get races\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/races$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n})",
+      "requestReads": [],
+      "returns": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 570,
+          "endLine": 570,
+          "expression": "optionsResponse"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 578,
+          "endLine": 585,
+          "expression": "new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 591,
+          "endLine": 593,
+          "expression": "new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 600,
+          "endLine": 602,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 612,
+          "endLine": 615,
+          "expression": "new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 618,
+          "endLine": 620,
+          "expression": "new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 632,
+          "endLine": 634,
+          "expression": "new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 645,
+          "endLine": 647,
+          "expression": "new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 657,
+          "endLine": 659,
+          "expression": "new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 666,
+          "endLine": 668,
+          "expression": "new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 675,
+          "endLine": 677,
+          "expression": "new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 684,
+          "endLine": 686,
+          "expression": "new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 693,
+          "endLine": 695,
+          "expression": "new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 699,
+          "endLine": 702,
+          "expression": "new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 705,
+          "endLine": 711,
+          "expression": "new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })"
+        }
+      ],
+      "calls": [
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 566,
+          "endLine": 713,
+          "expression": "serve",
+          "arguments": [
+            "async (req: Request) => {\n  const headers = corsHeaders(req, CORS_OPTS)\n  \n  const optionsResponse = handleOptions(req, CORS_OPTS)\n  if (optionsResponse) return optionsResponse\n  \n  const url = new URL(req.url)\n  const path = url.pathname.replace(\"/functions/v1/rulesets\", \"\")\n  \n  try {\n    // GET /health\n    if (req.method === \"GET\" && path === \"/health\") {\n      return new Response(JSON.stringify({\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets - List all rulesets\n    if (req.method === \"GET\" && path === \"/rulesets\") {\n      const list = await listRulesets()\n      return new Response(JSON.stringify(list), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // POST /rulesets - Create custom ruleset\n    if (req.method === \"POST\" && path === \"/rulesets\") {\n      const body = await req.json()\n      const ruleset = await createRuleset(body)\n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id - Get ruleset\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+$/)) {\n      const id = path.split(\"/\")[2]\n      const enrich = url.searchParams.get('enrich') === 'true'\n      const ruleset = await getRuleset(id, enrich)\n      \n      if (!ruleset) {\n        return new Response(JSON.stringify({ error: \"Ruleset not found\" }), {\n          status: 404,\n          headers: { ...headers, \"Content-Type\": \"application/json\" },\n        })\n      }\n      \n      return new Response(JSON.stringify(ruleset), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/spells - Get spells\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/spells$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        level: url.searchParams.get('level') ? parseInt(url.searchParams.get('level')!) : undefined,\n        school: url.searchParams.get('school') || undefined,\n        class: url.searchParams.get('class') || undefined,\n      }\n      const spells = await getSpells(id, filter)\n      return new Response(JSON.stringify(spells), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/monsters - Get monsters\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/monsters$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n        cr: url.searchParams.get('cr') ? parseFloat(url.searchParams.get('cr')!) : undefined,\n      }\n      const monsters = await getMonsters(id, filter)\n      return new Response(JSON.stringify(monsters), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/items - Get items\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/items$/)) {\n      const id = path.split(\"/\")[2]\n      const filter = {\n        type: url.searchParams.get('type') || undefined,\n      }\n      const items = await getItems(id, filter)\n      return new Response(JSON.stringify(items), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/skills - Get skills\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/skills$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.skills || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/conditions - Get conditions\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/conditions$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.conditions || []), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/classes - Get classes\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/classes$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.classes || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // GET /rulesets/:id/races - Get races\n    if (req.method === \"GET\" && path.match(/^\\/rulesets\\/[\\w-]+\\/races$/)) {\n      const id = path.split(\"/\")[2]\n      const ruleset = rulesets.get(id)\n      return new Response(JSON.stringify(ruleset?.races || {}), {\n        headers: { ...headers, \"Content-Type\": \"application/json\" },\n      })\n    }\n    \n    // Not found\n    return new Response(JSON.stringify({ error: \"Not found\" }), {\n      status: 404,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n    \n  } catch (error: unknown) {\n    return new Response(JSON.stringify({\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }), {\n      status: 500,\n      headers: { ...headers, \"Content-Type\": \"application/json\" },\n    })\n  }\n}"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 567,
+          "endLine": 567,
+          "expression": "corsHeaders",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 569,
+          "endLine": 569,
+          "expression": "handleOptions",
+          "arguments": [
+            "req",
+            "CORS_OPTS"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 573,
+          "endLine": 573,
+          "expression": "url.pathname.replace",
+          "arguments": [
+            "\"/functions/v1/rulesets\"",
+            "\"\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 578,
+          "endLine": 583,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n        status: 'ok',\n        timestamp: new Date().toISOString(),\n        features: ['rulesets', 'skills', 'conditions', 'classes', 'races', 'spells', 'monsters', 'items', 'open5e'],\n        rulesetCount: rulesets.size,\n      }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 580,
+          "endLine": 580,
+          "expression": "new Date().toISOString",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 590,
+          "endLine": 590,
+          "expression": "listRulesets",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 591,
+          "endLine": 591,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "list"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 598,
+          "endLine": 598,
+          "expression": "req.json",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 599,
+          "endLine": 599,
+          "expression": "createRuleset",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 600,
+          "endLine": 600,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 606,
+          "endLine": 606,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 607,
+          "endLine": 607,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 608,
+          "endLine": 608,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'enrich'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 609,
+          "endLine": 609,
+          "expression": "getRuleset",
+          "arguments": [
+            "id",
+            "enrich"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 612,
+          "endLine": 612,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Ruleset not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 618,
+          "endLine": 618,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 624,
+          "endLine": 624,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/spells$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 625,
+          "endLine": 625,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "parseInt",
+          "arguments": [
+            "url.searchParams.get('level')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 627,
+          "endLine": 627,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'level'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 628,
+          "endLine": 628,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'school'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 629,
+          "endLine": 629,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'class'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 631,
+          "endLine": 631,
+          "expression": "getSpells",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 632,
+          "endLine": 632,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "spells"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 638,
+          "endLine": 638,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/monsters$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 639,
+          "endLine": 639,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 641,
+          "endLine": 641,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "parseFloat",
+          "arguments": [
+            "url.searchParams.get('cr')!"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 642,
+          "endLine": 642,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'cr'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 644,
+          "endLine": 644,
+          "expression": "getMonsters",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 645,
+          "endLine": 645,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "monsters"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 651,
+          "endLine": 651,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/items$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 652,
+          "endLine": 652,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 654,
+          "endLine": 654,
+          "expression": "url.searchParams.get",
+          "arguments": [
+            "'type'"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 656,
+          "endLine": 656,
+          "expression": "getItems",
+          "arguments": [
+            "id",
+            "filter"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 657,
+          "endLine": 657,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "items"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 663,
+          "endLine": 663,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/skills$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 664,
+          "endLine": 664,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 665,
+          "endLine": 665,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 666,
+          "endLine": 666,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.skills || {}"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 672,
+          "endLine": 672,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/conditions$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 673,
+          "endLine": 673,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 674,
+          "endLine": 674,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 675,
+          "endLine": 675,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.conditions || []"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 681,
+          "endLine": 681,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/classes$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 682,
+          "endLine": 682,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 683,
+          "endLine": 683,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 684,
+          "endLine": 684,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.classes || {}"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 690,
+          "endLine": 690,
+          "expression": "path.match",
+          "arguments": [
+            "/^\\/rulesets\\/[\\w-]+\\/races$/"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 691,
+          "endLine": 691,
+          "expression": "path.split",
+          "arguments": [
+            "\"/\""
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 692,
+          "endLine": 692,
+          "expression": "rulesets.get",
+          "arguments": [
+            "id"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 693,
+          "endLine": 693,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "ruleset?.races || {}"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 699,
+          "endLine": 699,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{ error: \"Not found\" }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 705,
+          "endLine": 708,
+          "expression": "JSON.stringify",
+          "arguments": [
+            "{\n      error: \"Internal server error\",\n      message: (error instanceof Error ? error.message : String(error)),\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/rulesets/index.ts",
+          "line": 707,
+          "endLine": 707,
+          "expression": "String",
+          "arguments": [
+            "error"
+          ]
+        }
+      ]
+    }
+  ],
+  "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_METHODS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "DEFAULT_CORS_METHODS = 'GET, POST, PUT, DELETE, OPTIONS'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "DEFAULT_CORS_ALLOW_HEADERS",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 10,
+      "endLine": 11,
+      "text": "DEFAULT_CORS_ALLOW_HEADERS =\n  'authorization, x-client-info, apikey, content-type'"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "CorsOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 13,
+      "endLine": 32,
+      "text": "export type CorsOptions = {\n  /** Override Allow-Methods (e.g. \"POST, OPTIONS\" for POST-only functions). */\n  methods?: string;\n  allowHeaders?: string;\n  /**\n   * Env keys tried in order for the allowlist CSV (or explicit `*`).\n   * Default: CHARACTER_AI_ALLOWED_ORIGIN\n   */\n  envKeys?: string[];\n  /** When true (default), include Content-Type: application/json on CORS header bags. */\n  includeJsonContentType?: boolean;\n  /**\n   * When origin does not match allowlist/localhost:\n   * - omit (default): do not set Access-Control-Allow-Origin (fail-closed)\n   * - configured-or-star: set configured value or `*` (legacy meshy fallback)\n   */\n  missingOriginPolicy?: 'omit' | 'configured-or-star';\n  /** When true, echo localhost even if an allowlist env is set (legacy meshy). */\n  allowLocalhostWhenConfigured?: boolean;\n};"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "readConfiguredOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 34,
+      "endLine": 40,
+      "text": "function readConfiguredOrigin(envKeys: string[]): string {\n  for (const key of envKeys) {\n    const value = Deno.env.get(key)?.trim() ?? '';\n    if (value) return value;\n  }\n  return '';\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalDevOrigin",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 42,
+      "endLine": 44,
+      "text": "export function isLocalDevOrigin(origin: string): boolean {\n  return /^https?:\\/\\/(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(origin);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "corsHeaders",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 46,
+      "endLine": 96,
+      "text": "export function corsHeaders(\n  request: Request,\n  opts: CorsOptions = {},\n): Record<string, string> {\n  const envKeys = opts.envKeys?.length\n    ? opts.envKeys\n    : ['CHARACTER_AI_ALLOWED_ORIGIN'];\n  const configured = readConfiguredOrigin(envKeys);\n  const requestOrigin = request.headers.get('Origin');\n  const headers: Record<string, string> = {\n    'Access-Control-Allow-Methods': opts.methods ?? DEFAULT_CORS_METHODS,\n    'Access-Control-Allow-Headers':\n      opts.allowHeaders ?? DEFAULT_CORS_ALLOW_HEADERS,\n    Vary: 'Origin',\n  };\n\n  if (opts.includeJsonContentType !== false) {\n    headers['Content-Type'] = 'application/json';\n  }\n\n  if (configured === '*') {\n    headers['Access-Control-Allow-Origin'] = '*';\n    return headers;\n  }\n\n  const allowlist = configured\n    .split(',')\n    .map((entry) => entry.trim())\n    .filter(Boolean);\n\n  if (requestOrigin && allowlist.includes(requestOrigin)) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  const localhostOk =\n    Boolean(requestOrigin) &&\n    isLocalDevOrigin(requestOrigin!) &&\n    (!configured || opts.allowLocalhostWhenConfigured === true);\n\n  if (localhostOk && requestOrigin) {\n    headers['Access-Control-Allow-Origin'] = requestOrigin;\n    return headers;\n  }\n\n  if (opts.missingOriginPolicy === 'configured-or-star') {\n    headers['Access-Control-Allow-Origin'] = configured || '*';\n  }\n\n  return headers;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "handleOptions",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 99,
+      "endLine": 108,
+      "text": "export function handleOptions(\n  request: Request,\n  opts?: CorsOptions,\n): Response | null {\n  if (request.method !== 'OPTIONS') return null;\n  return new Response(null, {\n    status: 204,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "jsonResponse",
+      "path": "supabase/functions/_shared/cors.ts",
+      "line": 110,
+      "endLine": 120,
+      "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "CORS_OPTS",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 7,
+      "endLine": 9,
+      "text": "CORS_OPTS: CorsOptions = {\n  missingOriginPolicy: 'configured-or-star',\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Ruleset",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 21,
+      "endLine": 39,
+      "text": "interface Ruleset {\n  id: string\n  name: string\n  version: string\n  description: string\n  abilities: string[]\n  skills: Record<string, string>\n  conditions: string[]\n  dice: string[]\n  classes: Record<string, ClassInfo>\n  races: Record<string, RaceInfo>\n  features: Record<string, FeatureInfo>\n  spells?: Spell[]\n  monsters?: Monster[]\n  items?: Item[]\n  source: string\n  isOfficial: boolean\n  isCustom: boolean\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "ClassInfo",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 41,
+      "endLine": 52,
+      "text": "interface ClassInfo {\n  hitDie: number\n  primaryAbility: string\n  saves: string[]\n  features?: string[]\n  description?: string\n  spellcasting?: {\n    ability: string\n    spellsKnown?: number[]\n    spellSlots?: Record<string, number[]>\n  }\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "RaceInfo",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 54,
+      "endLine": 60,
+      "text": "interface RaceInfo {\n  bonuses: Record<string, number>\n  speed: number\n  traits?: string[]\n  description?: string\n  languages?: string[]\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "FeatureInfo",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 62,
+      "endLine": 67,
+      "text": "interface FeatureInfo {\n  name: string\n  description: string\n  level?: number\n  source?: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Spell",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 69,
+      "endLine": 82,
+      "text": "interface Spell {\n  id: string\n  name: string\n  level: number\n  school: string\n  castingTime: string\n  range: string\n  components: string[]\n  duration: string\n  description: string\n  higherLevels?: string\n  classes: string[]\n  source: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Monster",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 84,
+      "endLine": 101,
+      "text": "interface Monster {\n  id: string\n  name: string\n  type: string\n  size: string\n  challengeRating: number\n  hp: number\n  ac: number\n  speed: string\n  str: number\n  dex: number\n  con: number\n  int: number\n  wis: number\n  cha: number\n  actions: string[]\n  source: string\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Item",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 103,
+      "endLine": 112,
+      "text": "interface Item {\n  id: string\n  name: string\n  type: string\n  rarity: string\n  weight: number\n  cost: string\n  description: string\n  source: string\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "rulesets",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 118,
+      "endLine": 118,
+      "text": "rulesets = new Map<string, Ruleset>()"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "dnd5eSRD",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 124,
+      "endLine": 317,
+      "text": "dnd5eSRD: Ruleset = {\n  id: 'dnd5e-srd',\n  name: 'D&D 5th Edition SRD',\n  version: '5.1',\n  description: 'Dungeons & Dragons 5th Edition System Reference Document',\n  abilities: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],\n  skills: {\n    'acrobatics': 'dexterity',\n    'animal handling': 'wisdom',\n    'arcana': 'intelligence',\n    'athletics': 'strength',\n    'deception': 'charisma',\n    'history': 'intelligence',\n    'insight': 'wisdom',\n    'intimidation': 'charisma',\n    'investigation': 'intelligence',\n    'medicine': 'wisdom',\n    'nature': 'intelligence',\n    'perception': 'wisdom',\n    'performance': 'charisma',\n    'persuasion': 'charisma',\n    'religion': 'intelligence',\n    'sleight of hand': 'dexterity',\n    'stealth': 'dexterity',\n    'survival': 'wisdom',\n  },\n  conditions: [\n    'blinded', 'charmed', 'deafened', 'frightened', 'grappled',\n    'incapacitated', 'invisible', 'paralyzed', 'petrified', 'poisoned',\n    'prone', 'restrained', 'stunned', 'unconscious', 'exhausted'\n  ],\n  dice: ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'],\n  classes: {\n    'barbarian': {\n      hitDie: 12,\n      primaryAbility: 'strength',\n      saves: ['strength', 'constitution'],\n      features: ['Rage', 'Unarmored Defense', 'Reckless Attack', 'Danger Sense', 'Primal Path', 'Extra Attack', 'Fast Movement', 'Feral Instinct', 'Brutal Critical', 'Relentless Rage', 'Persistent Rage', 'Indomitable Might', 'Primal Champion'],\n      description: 'A fierce warrior of primitive background who can enter a battle fury',\n    },\n    'bard': {\n      hitDie: 8,\n      primaryAbility: 'charisma',\n      saves: ['dexterity', 'charisma'],\n      features: ['Spellcasting', 'Bardic Inspiration', 'Jack of All Trades', 'Song of Rest', 'Bard College', 'Expertise', 'Font of Inspiration', 'Countercharm', 'Magical Secrets', 'Superior Inspiration'],\n      description: 'An inspiring magician whose power echoes the music of creation',\n    },\n    'cleric': {\n      hitDie: 8,\n      primaryAbility: 'wisdom',\n      saves: ['wisdom', 'charisma'],\n      features: ['Spellcasting', 'Divine Domain', 'Channel Divinity', 'Ability Score Improvement', 'Destroy Undead', 'Divine Strike', 'Divine Intervention'],\n      spellcasting: {\n        ability: 'wisdom',\n        spellSlots: {\n          '1': [3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9],\n        },\n      },\n      description: 'A priestly champion who wields divine magic in service of a higher power',\n    },\n    'druid': {\n      hitDie: 8,\n      primaryAbility: 'wisdom',\n      saves: ['intelligence', 'wisdom'],\n      features: ['Spellcasting', 'Druidic', 'Wild Shape', 'Druid Circle', 'Wild Shape Improvement', 'Beast Spells', 'Archdruid'],\n      description: 'A priest of nature, wielding elemental powers and wild shaping',\n    },\n    'fighter': {\n      hitDie: 10,\n      primaryAbility: 'strength',\n      saves: ['strength', 'constitution'],\n      features: ['Fighting Style', 'Second Wind', 'Action Surge', 'Martial Archetype', 'Extra Attack', 'Indomitable', 'Ability Score Improvement'],\n      description: 'A master of martial combat, skilled with a variety of weapons and armor',\n    },\n    'monk': {\n      hitDie: 8,\n      primaryAbility: 'dexterity',\n      saves: ['strength', 'dexterity'],\n      features: ['Unarmored Defense', 'Martial Arts', 'Ki', 'Unarmored Movement', 'Monastic Tradition', 'Deflect Missiles', 'Slow Fall', 'Extra Attack', 'Stunning Strike', 'Ki-Empowered Strikes', 'Evasion', 'Stillness of Mind', 'Purity of Body', 'Tongue of the Sun and Moon', 'Diamond Soul', 'Timeless Body', 'Empty Body', 'Perfect Self'],\n      description: 'A master of martial arts, harnessing the power of body and soul',\n    },\n    'paladin': {\n      hitDie: 10,\n      primaryAbility: 'charisma',\n      saves: ['wisdom', 'charisma'],\n      features: ['Divine Sense', 'Lay on Hands', 'Fighting Style', 'Spellcasting', 'Divine Smite', 'Divine Health', 'Sacred Oath', 'Aura of Protection', 'Aura of Courage', 'Improved Divine Smite', 'Cleansing Touch', 'Aura Improvements'],\n      description: 'A holy warrior bound to a sacred oath',\n    },\n    'ranger': {\n      hitDie: 10,\n      primaryAbility: 'dexterity',\n      saves: ['strength', 'dexterity'],\n      features: ['Favored Enemy', 'Natural Explorer', 'Fighting Style', 'Spellcasting', 'Ranger Archetype', 'Extra Attack', 'Favored Enemy Improvements', 'Natural Explorer Improvements', 'Lands Stride', 'Hide in Plain Sight', 'Vanish', 'Feral Senses', 'Foe Slayer'],\n      description: 'A warrior who combats threats on the edges of civilization',\n    },\n    'rogue': {\n      hitDie: 8,\n      primaryAbility: 'dexterity',\n      saves: ['dexterity', 'intelligence'],\n      features: ['Expertise', 'Sneak Attack', 'Thieves Cant', 'Cunning Action', 'Roguish Archetype', 'Ability Score Improvement', 'Uncanny Dodge', 'Evasion', 'Reliable Talent', 'Blindsense', 'Slippery Mind', 'Elusive', 'Stroke of Luck'],\n      description: 'A scoundrel who uses stealth and trickery to overcome obstacles',\n    },\n    'sorcerer': {\n      hitDie: 6,\n      primaryAbility: 'charisma',\n      saves: ['constitution', 'charisma'],\n      features: ['Spellcasting', 'Sorcerous Origin', 'Font of Magic', 'Sorcery Points', 'Metamagic', 'Sorcerous Restoration', 'Ability Score Improvement'],\n      description: 'A spellcaster who draws magic from within',\n    },\n    'warlock': {\n      hitDie: 8,\n      primaryAbility: 'charisma',\n      saves: ['wisdom', 'charisma'],\n      features: ['Otherworldly Patron', 'Pact Magic', 'Eldritch Invocations', 'Pact Boon', 'Ability Score Improvement', 'Mystic Arcanum', 'Eldritch Master'],\n      description: 'A magic-user who gains power through a pact with a powerful entity',\n    },\n    'wizard': {\n      hitDie: 6,\n      primaryAbility: 'intelligence',\n      saves: ['intelligence', 'wisdom'],\n      features: ['Spellcasting', 'Arcane Recovery', 'Arcane Tradition', 'Ability Score Improvement', 'Spell Mastery', 'Signature Spells'],\n      description: 'A scholarly magic-user capable of manipulating the structures of reality',\n    },\n  },\n  races: {\n    'human': {\n      bonuses: { 'all': 1 },\n      speed: 30,\n      traits: ['Versatility'],\n      description: 'Humans are the most adaptable and ambitious people',\n      languages: ['Common'],\n    },\n    'elf': {\n      bonuses: { 'dexterity': 2 },\n      speed: 30,\n      traits: ['Darkvision', 'Keen Senses', 'Fey Ancestry', 'Trance'],\n      description: 'Elves are magical people of otherworldly grace',\n      languages: ['Common', 'Elvish'],\n    },\n    'dwarf': {\n      bonuses: { 'constitution': 2 },\n      speed: 25,\n      traits: ['Darkvision', 'Dwarven Resilience', 'Dwarven Combat Training', 'Stonecunning'],\n      description: 'Dwarves are solid and enduring like the mountains',\n      languages: ['Common', 'Dwarvish'],\n    },\n    'halfling': {\n      bonuses: { 'dexterity': 2 },\n      speed: 25,\n      traits: ['Lucky', 'Brave', 'Halfling Nimbleness'],\n      description: 'Halflings are a small and clever people',\n      languages: ['Common', 'Halfling'],\n    },\n    'dragonborn': {\n      bonuses: { 'strength': 2, 'charisma': 1 },\n      speed: 30,\n      traits: ['Draconic Ancestry', 'Breath Weapon', 'Damage Resistance'],\n      description: 'Dragonborn are proud, honorable dragon-kin',\n      languages: ['Common', 'Draconic'],\n    },\n    'gnome': {\n      bonuses: { 'intelligence': 2 },\n      speed: 25,\n      traits: ['Darkvision', 'Gnome Cunning'],\n      description: 'Gnomes are clever and inventive tricksters',\n      languages: ['Common', 'Gnomish'],\n    },\n    'half-elf': {\n      bonuses: { 'charisma': 2 },\n      speed: 30,\n      traits: ['Skill Versatility', 'Fey Ancestry'],\n      description: 'Half-elves combine human curiosity with elven grace',\n      languages: ['Common', 'Elvish'],\n    },\n    'half-orc': {\n      bonuses: { 'strength': 2, 'constitution': 1 },\n      speed: 30,\n      traits: ['Darkvision', 'Savage Attacks', 'Relentless Endurance', 'Menacing'],\n      description: 'Half-orcs combine human versatility with orcish ferocity',\n      languages: ['Common', 'Orc'],\n    },\n    'tiefling': {\n      bonuses: { 'charisma': 2, 'intelligence': 1 },\n      speed: 30,\n      traits: ['Darkvision', 'Hellish Resistance', 'Infernal Legacy'],\n      description: 'Tieflings bear the mark of the infernal',\n      languages: ['Common', 'Infernal'],\n    },\n  },\n  features: {},\n  source: 'SRD',\n  isOfficial: true,\n  isCustom: false,\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "pathfinder2e",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 320,
+      "endLine": 358,
+      "text": "pathfinder2e: Ruleset = {\n  id: 'pf2e-core',\n  name: 'Pathfinder 2nd Edition',\n  version: '2.0',\n  description: 'Pathfinder 2nd Edition Core Rules',\n  abilities: ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],\n  skills: {\n    'acrobatics': 'dexterity',\n    'arcana': 'intelligence',\n    'athletics': 'strength',\n    'crafting': 'intelligence',\n    'deception': 'charisma',\n    'diplomacy': 'charisma',\n    'intimidation': 'charisma',\n    'medicine': 'wisdom',\n    'nature': 'wisdom',\n    'occultism': 'intelligence',\n    'performance': 'charisma',\n    'religion': 'wisdom',\n    'society': 'intelligence',\n    'stealth': 'dexterity',\n    'survival': 'wisdom',\n    'thievery': 'dexterity',\n  },\n  conditions: [\n    'blinded', 'broken', 'clumsy', 'confused', 'controlled', 'dazzled', 'deafened',\n    'doomed', 'drained', 'dying', 'encumbered', 'enfeebled', 'fascinated', 'fatigued',\n    'flat-footed', 'fleeing', 'frightened', 'grabbed', 'hidden', 'immobilized',\n    'invisible', 'paralyzed', 'petrified', 'prone', 'quickened', 'restrained', 'sick',\n    'slowed', 'stunned', 'stupefied', 'unconscious', 'undetected', 'wounded'\n  ],\n  dice: ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'],\n  classes: {},\n  races: {},\n  features: {},\n  source: 'OGL',\n  isOfficial: true,\n  isCustom: false,\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OPEN5E_API",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 368,
+      "endLine": 368,
+      "text": "OPEN5E_API = 'https://api.open5e.com'"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "fetchOpen5eSpells",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 370,
+      "endLine": 393,
+      "text": "async function fetchOpen5eSpells(): Promise<Spell[]> {\n  try {\n    const response = await fetch(`${OPEN5E_API}/spells/?limit=500`)\n    const data = await response.json()\n    \n    return data.results.map((spell: any) => ({\n      id: spell.slug,\n      name: spell.name,\n      level: parseInt(spell.level) || 0,\n      school: spell.school,\n      castingTime: spell.casting_time,\n      range: spell.range,\n      components: spell.components.split(',').map((c: string) => c.trim()),\n      duration: spell.duration,\n      description: spell.desc,\n      higherLevels: spell.higher_level,\n      classes: spell.dnd_class.split(',').map((c: string) => c.trim().toLowerCase()),\n      source: 'Open5e',\n    }))\n  } catch (error: unknown) {\n    console.error('Failed to fetch Open5e spells:', error)\n    return []\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "fetchOpen5eMonsters",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 395,
+      "endLine": 422,
+      "text": "async function fetchOpen5eMonsters(): Promise<Monster[]> {\n  try {\n    const response = await fetch(`${OPEN5E_API}/monsters/?limit=500`)\n    const data = await response.json()\n    \n    return data.results.map((monster: any) => ({\n      id: monster.slug,\n      name: monster.name,\n      type: monster.type,\n      size: monster.size,\n      challengeRating: parseFloat(monster.cr) || 0,\n      hp: monster.hit_points,\n      ac: monster.armor_class,\n      speed: monster.speed,\n      str: monster.strength,\n      dex: monster.dexterity,\n      con: monster.constitution,\n      int: monster.intelligence,\n      wis: monster.wisdom,\n      cha: monster.charisma,\n      actions: [],\n      source: 'Open5e',\n    }))\n  } catch (error: unknown) {\n    console.error('Failed to fetch Open5e monsters:', error)\n    return []\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "fetchOpen5eItems",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 424,
+      "endLine": 443,
+      "text": "async function fetchOpen5eItems(): Promise<Item[]> {\n  try {\n    const response = await fetch(`${OPEN5E_API}/weapons/?limit=500`)\n    const data = await response.json()\n    \n    return data.results.map((item: any) => ({\n      id: item.slug,\n      name: item.name,\n      type: 'weapon',\n      rarity: 'common',\n      weight: 0,\n      cost: item.cost,\n      description: item.desc || '',\n      source: 'Open5e',\n    }))\n  } catch (error: unknown) {\n    console.error('Failed to fetch Open5e items:', error)\n    return []\n  }\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "enrichRulesetWithOpen5e",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 446,
+      "endLine": 469,
+      "text": "async function enrichRulesetWithOpen5e(rulesetId: string): Promise<Ruleset | null> {\n  const ruleset = rulesets.get(rulesetId)\n  if (!ruleset) return null\n  \n  // Only enrich D&D 5e\n  if (rulesetId !== 'dnd5e-srd') return ruleset\n  \n  // Fetch Open5e data\n  const [spells, monsters, items] = await Promise.all([\n    fetchOpen5eSpells(),\n    fetchOpen5eMonsters(),\n    fetchOpen5eItems(),\n  ])\n  \n  // Merge into ruleset\n  const enriched: Ruleset = {\n    ...ruleset,\n    spells: [...(ruleset.spells || []), ...spells],\n    monsters: [...(ruleset.monsters || []), ...monsters],\n    items: [...(ruleset.items || []), ...items],\n  }\n  \n  return enriched\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "listRulesets",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 475,
+      "endLine": 477,
+      "text": "async function listRulesets(): Promise<Ruleset[]> {\n  return Array.from(rulesets.values())\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getRuleset",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 479,
+      "endLine": 488,
+      "text": "async function getRuleset(id: string, enrich: boolean = false): Promise<Ruleset | null> {\n  const ruleset = rulesets.get(id)\n  if (!ruleset) return null\n  \n  if (enrich) {\n    return enrichRulesetWithOpen5e(id)\n  }\n  \n  return ruleset\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "createRuleset",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 490,
+      "endLine": 512,
+      "text": "async function createRuleset(data: Partial<Ruleset>): Promise<Ruleset> {\n  const id = data.id || `custom-${Date.now()}`\n  \n  const ruleset: Ruleset = {\n    id,\n    name: data.name || 'Custom Ruleset',\n    version: data.version || '1.0',\n    description: data.description || '',\n    abilities: data.abilities || ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'],\n    skills: data.skills || {},\n    conditions: data.conditions || [],\n    dice: data.dice || ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'],\n    classes: data.classes || {},\n    races: data.races || {},\n    features: data.features || {},\n    source: data.source || 'custom',\n    isOfficial: false,\n    isCustom: true,\n  }\n  \n  rulesets.set(id, ruleset)\n  return ruleset\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getSpells",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 514,
+      "endLine": 531,
+      "text": "async function getSpells(rulesetId: string, filter?: { level?: number; school?: string; class?: string }): Promise<Spell[]> {\n  const ruleset = await getRuleset(rulesetId, true)\n  if (!ruleset || !ruleset.spells) return []\n  \n  let spells = ruleset.spells\n  \n  if (filter?.level !== undefined) {\n    spells = spells.filter(s => s.level === filter.level)\n  }\n  if (filter?.school) {\n    spells = spells.filter(s => s.school.toLowerCase() === filter.school!.toLowerCase())\n  }\n  if (filter?.class) {\n    spells = spells.filter(s => s.classes.includes(filter.class!.toLowerCase()))\n  }\n  \n  return spells\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getMonsters",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 533,
+      "endLine": 547,
+      "text": "async function getMonsters(rulesetId: string, filter?: { type?: string; cr?: number }): Promise<Monster[]> {\n  const ruleset = await getRuleset(rulesetId, true)\n  if (!ruleset || !ruleset.monsters) return []\n  \n  let monsters = ruleset.monsters\n  \n  if (filter?.type) {\n    monsters = monsters.filter(m => m.type.toLowerCase() === filter.type!.toLowerCase())\n  }\n  if (filter?.cr !== undefined) {\n    monsters = monsters.filter(m => m.challengeRating === filter.cr)\n  }\n  \n  return monsters\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "getItems",
+      "path": "supabase/functions/rulesets/index.ts",
+      "line": 549,
+      "endLine": 560,
+      "text": "async function getItems(rulesetId: string, filter?: { type?: string }): Promise<Item[]> {\n  const ruleset = await getRuleset(rulesetId, true)\n  if (!ruleset || !ruleset.items) return []\n  \n  let items = ruleset.items\n  \n  if (filter?.type) {\n    items = items.filter(i => i.type === filter.type)\n  }\n  \n  return items\n}"
+    }
+  ]
+}

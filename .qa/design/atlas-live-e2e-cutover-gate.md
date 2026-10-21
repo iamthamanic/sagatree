@@ -81,3 +81,12 @@ Until ATLAS-CI-01..03 are human-approved, **#770 remains OPEN** and migration cu
 - Green Browser E2E that skips the live test  
 - Contract-mode `data-atlas-nav-source=db` alone  
 - Marker files / screenshots without DB assertions  
+
+
+## Executed isolated product evidence — 2026-10-21
+
+The isolated backend implementation is now concrete: PostgreSQL15.18 with all106 unchanged repository migrations, official GoTrue2.143.0 and PostgREST12.0.1 binaries, synthetic actors, and the actual Vite product in Chromium. Full evidence is in `.qa/evidence/stack-migration-prep/parity-fixtures/execution-2026-10-21/`.
+
+The browser suite is **1/3 PASS, 2/3 FAIL, zero skipped/flaky**. Owner map rendering and a real rename persist through reload. The tools button is then blocked by the top-view overlay. Both players authenticate and receive correct real API visibility before/after GM reveal, but player1 cannot render the revealed map through the UI because sagaPublicId is lost between WorldAtlasWorkbench and useWorldAtlasEditor. Cross-owner browser/API access is denied correctly.
+
+Issue #770 therefore remains open and blocks cutover. The new workflow runs the product suite without optional environment skips. Existing deployment credentials are unnecessary. Further editor operations and the two observed UI failures still require complete evidence; successful SQL or API calls alone do not satisfy the product journey.
