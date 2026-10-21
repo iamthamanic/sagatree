@@ -11,7 +11,7 @@ Recap-Projektion und Zusammenfassung: get_session_recap, save_session_recap_summ
 
 ## Goal
 
-Recap-Projektion und Zusammenfassung: get_session_recap, save_session_recap_summary als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_session_recap.ts, server/src/application/commands/save_session_recap_summary.ts.
+Recap-Projektion und Zusammenfassung: get_session_recap, save_session_recap_summary als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/session-recap/get_session_recap/index.ts, server/src/application/session-recap/save_session_recap_summary/index.ts, server/src/modules/session/index.ts, server/src/application/commands/get_session_recap.ts, server/src/application/commands/save_session_recap_summary.ts, server/src/application/session-recap/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/sessi
 
 ### Nachher und Verhalten
 
-Recap-Projektion und Zusammenfassung: get_session_recap, save_session_recap_summary als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_session_recap.ts, server/src/application/commands/save_session_recap_summary.ts.
+Recap-Projektion und Zusammenfassung: get_session_recap, save_session_recap_summary als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/session-recap/get_session_recap/index.ts, server/src/application/session-recap/save_session_recap_summary/index.ts, server/src/modules/session/index.ts, server/src/application/commands/get_session_recap.ts, server/src/application/commands/save_session_recap_summary.ts, server/src/application/session-recap/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/domains/session/contracts/session-prepare-recap.ts`, `src/infrastructure/session/session-recap-ai-service.ts`, `src/infrastructure/session/session-recap-service.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/040_session_join_code_security.sql`, `supabase/migrations/041_session_runtime_state.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/051_session_director_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/053_sessions_look_override.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/061_session_recaps_and_handover.sql`, `supabase/migrations/062_session_recap_ai_summary.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/073_sagatree_schema_rename_compat.sql`, `supabase/migrations/085_fix_function_bodies_sagatree.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`
-- Änderbare Zielpfade: `server/src/application/commands/get_session_recap.ts`, `server/src/application/commands/save_session_recap_summary.ts`
+- Änderbare Zielpfade: `server/src/application/session-recap/get_session_recap/index.ts`, `server/src/application/session-recap/save_session_recap_summary/index.ts`, `server/src/modules/session/index.ts`, `server/src/application/commands/get_session_recap.ts`, `server/src/application/commands/save_session_recap_summary.ts`, `server/src/application/session-recap/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/get_session_recap.md`, `.qa/intake/rpc-contracts/save_session_recap_summary.md`
 
 ## Security & Data

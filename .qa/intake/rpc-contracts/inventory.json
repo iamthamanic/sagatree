@@ -3302,8 +3302,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/apply_session_runtime_command.ts",
-        "status": "BLOCKED until GATE-01/04 + per-command design review"
+        "commandModule": "server/src/application/session-runtime/apply_session_runtime_command/index.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/apply_session_runtime_command.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Führt genau einen der 15 Session-Runtime-Befehlstypen mit Revisionsprüfung, Event und rollenabhängiger Snapshot-Antwort aus.",
       "authorization": [
@@ -7955,8 +7958,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/archive_world_node_subtree.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-destructive/archive_world_node_subtree/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/archive_world_node_subtree.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Archiviert einen Weltort samt Nachfahren nach der erforderlichen Folgenbestätigung.",
       "authorization": [
@@ -9408,8 +9414,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/assign_npc_creature_controller.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/npc-instances/assign_npc_creature_controller/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/npc-creature/index.ts",
+        "transitionalAdapter": "server/src/application/commands/assign_npc_creature_controller.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Setzt den permanenten Controller einer NPC-/Creature-Definition innerhalb eines Projekts.",
       "authorization": [
@@ -10553,8 +10562,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/clear_npc_creature_instance_temp_controllers_for_session.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/npc-instances/clear_npc_creature_instance_temp_controllers_for_session/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/npc-creature/index.ts",
+        "transitionalAdapter": "server/src/application/commands/clear_npc_creature_instance_temp_controllers_for_session.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Entfernt temporäre NPC-Controller ausschließlich für Instanzen einer Session.",
       "authorization": [
@@ -11306,8 +11318,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/copy_native_saga_definition.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-authoring/copy_native_saga_definition/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/copy_native_saga_definition.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erstellt eine eigene User-Kopie einer nativen veröffentlichten Saga.",
       "authorization": [
@@ -12579,8 +12594,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_play_session.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-lifecycle/create_play_session/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_play_session.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt als Projekt-GM eine unmittelbar wartende Spielsession.",
       "authorization": [
@@ -14208,8 +14226,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_project_from_saga_version.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-provision/create_project_from_saga_version/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/project/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_project_from_saga_version.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt eine neue Spielgruppe aus einer konkreten Published-Saga-Version.",
       "authorization": [
@@ -15583,8 +15604,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_project_session.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-lifecycle/create_project_session/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_project_session.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Legt eine geplante Projekt-Session mit Adventure- und Wissensübergabe an.",
       "authorization": [
@@ -16686,8 +16710,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_session_invite.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-access/create_session_invite/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_session_invite.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Rotiert als Session-GM das Einladungs-Token mit sieben Tagen Gültigkeit.",
       "authorization": [
@@ -17379,8 +17406,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_user_saga_definition.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-authoring/create_user_saga_definition/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_user_saga_definition.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt eine eigene User-Saga mit erstem Entwurf und Revision null.",
       "authorization": [
@@ -19096,8 +19126,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/create_world_node_with_maps.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-create/create_world_node_with_maps/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/create_world_node_with_maps.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt einen kanonischen Weltknoten mit fehlender Vorfahrenkette, Karten und Verknüpfungen.",
       "authorization": [
@@ -20400,8 +20433,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/delete_world_node.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-destructive/delete_world_node/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/delete_world_node.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Entfernt bestätigten Weltteilbaum, löst Saga-Ortsreferenzen und löscht dessen verknüpfte Nicht-Weltkarten.",
       "authorization": [
@@ -22112,8 +22148,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/duplicate_saga_playthrough.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-provision/duplicate_saga_playthrough/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/project/index.ts",
+        "transitionalAdapter": "server/src/application/commands/duplicate_saga_playthrough.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Dupliziert als GM eine Spielgruppe im Modus fresh oder with_progress.",
       "authorization": [
@@ -23499,8 +23538,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/duplicate_world_node.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-restructure/duplicate_world_node/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/duplicate_world_node.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Kopiert einen Weltort wahlweise mit Nachfahren und erzeugt neue leere Primärkarten.",
       "authorization": [
@@ -26425,8 +26467,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/ensure_native_starter_project.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-provision/ensure_native_starter_project/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/project/index.ts",
+        "transitionalAdapter": "server/src/application/commands/ensure_native_starter_project.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Stellt die native Starter-Spielgruppe bereit und provisioniert für Dornhain die zugehörigen Seed-Daten.",
       "authorization": [
@@ -28123,8 +28168,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/ensure_world_atlas_root.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-atlas/ensure_world_atlas_root/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/ensure_world_atlas_root.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Stellt eine Atlas-Wurzelkarte bereit und liefert die vollständige Editor-Kartenliste.",
       "authorization": [
@@ -29222,8 +29270,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_my_saga_permissions.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-governance/get_my_saga_permissions/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_my_saga_permissions.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liefert die effektiven Berechtigungs-Keys und Bundle-Zuordnung des aktuellen Saga-Mitglieds.",
       "authorization": [
@@ -30193,8 +30244,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_native_saga_definition_by_slug.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-version-read/get_native_saga_definition_by_slug/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_native_saga_definition_by_slug.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Findet die neueste veröffentlichte native Saga-Version anhand des Slugs.",
       "authorization": [
@@ -31062,8 +31116,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_saga_definition_editor.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-authoring/get_saga_definition_editor/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_saga_definition_editor.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liefert die Editor-Payload und kann für eigene User-Sagas einen fehlenden Draft anlegen.",
       "authorization": [
@@ -32222,8 +32279,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_saga_definition_version.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-version-read/get_saga_definition_version/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_saga_definition_version.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liest eine veröffentlichte oder berechtigte Saga-Version mit rollenabhängiger Payload-Projektion.",
       "authorization": [
@@ -33627,8 +33687,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_saga_lore_timeline.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-projections/get_saga_lore_timeline/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_saga_lore_timeline.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt die Saga-Lore-Timeline aus Definition, Recaps und Asset-Bindings.",
       "authorization": [
@@ -35828,8 +35891,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_saga_overview.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-projections/get_saga_overview/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_saga_overview.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt die aktuelle Saga-Übersicht mit Episoden, Ensemble und gefiltertem World-State.",
       "authorization": [
@@ -37138,8 +37204,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_session_recap.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-recap/get_session_recap/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_session_recap.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liest den Recap und projiziert Zusammenfassung und Highlights nach Session-Rolle.",
       "authorization": [
@@ -38432,8 +38501,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_session_runtime_snapshot.ts",
-        "status": "BLOCKED until GATE-01/04 + per-command design review"
+        "commandModule": "server/src/application/session-runtime/get_session_runtime_snapshot/index.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_session_runtime_snapshot.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liest den aktuellen Runtime-Zustand einer Session und projiziert Knowledge/Adventure anhand der Rolle.",
       "authorization": [
@@ -40298,8 +40370,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_world_atlas_map.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-atlas/get_world_atlas_map/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_world_atlas_map.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liefert genau eine Atlas-Karte mit erzwungener Party-Geometrie-/Metadatenprojektion.",
       "authorization": [
@@ -41471,8 +41546,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/get_world_map.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-map/get_world_map/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/get_world_map.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liest die Legacy-Tile-Weltkarte; der bestehende Player-Filter lässt sich per RPC-Flag umgehen.",
       "authorization": [
@@ -41808,8 +41886,11 @@
       "dependencyFunctions": [],
       "dependencyEdges": [],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/increment_marketplace_downloads.ts",
-        "status": "BLOCKED — confirm whether function is deployed via migrations or only legacy sql; may need migration backfill issue"
+        "commandModule": "server/src/application/marketplace-count/increment_marketplace_downloads/index.ts",
+        "status": "BLOCKED — confirm whether function is deployed via migrations or only legacy sql; may need migration backfill issue",
+        "owningModule": "server/src/modules/marketplace/index.ts",
+        "transitionalAdapter": "server/src/application/commands/increment_marketplace_downloads.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.",
       "authorization": [
@@ -43219,8 +43300,11 @@
       ],
       "dependencyEdges": [],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/join_project_by_code.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/project-membership/join_project_by_code/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/project/index.ts",
+        "transitionalAdapter": "server/src/application/commands/join_project_by_code.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt die eigene aktive Player-Mitgliedschaft anhand eines Projektcodes.",
       "authorization": [
@@ -45107,8 +45191,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/join_session_by_code.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-access/join_session_by_code/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/join_session_by_code.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Tritt einer nicht abgeschlossenen Session bei und stellt Projektmitgliedschaft und Roster her.",
       "authorization": [
@@ -45931,8 +46018,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/leave_play_session.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-access/leave_play_session/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/leave_play_session.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Entfernt die eigene Roster-Zeile; die bestehende Implementierung hat einen Fremdnutzer-Autorisierungsfehler.",
       "authorization": [
@@ -46987,8 +47077,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/list_saga_bindings.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-governance/list_saga_bindings/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/list_saga_bindings.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Listet die für den aktuellen Saga-Akteur sichtbaren Asset-Bindings.",
       "authorization": [
@@ -47977,8 +48070,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/list_saga_member_permission_state.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-governance/list_saga_member_permission_state/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/list_saga_member_permission_state.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Liefert aktive Saga-Mitglieder samt Bundle und Bearbeitbarkeit.",
       "authorization": [
@@ -49596,8 +49692,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/list_world_atlas_maps.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-atlas/list_world_atlas_maps/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/list_world_atlas_maps.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Listet Atlas-Karten als Editor oder anhand der gewählten Saga-Party-Freigaben.",
       "authorization": [
@@ -51008,8 +51107,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/list_world_place_map_links.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-places/list_world_place_map_links/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/list_world_place_map_links.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Listet Kartenverknüpfungen für die Welt oder die freigegebenen Saga-Orte.",
       "authorization": [
@@ -52487,8 +52589,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/list_world_places.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-places/list_world_places/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/list_world_places.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Listet nicht archivierte Weltorte in Editor- oder Saga-Party-Projektion.",
       "authorization": [
@@ -53465,8 +53570,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/preview_world_node_consequences.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-destructive/preview_world_node_consequences/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/preview_world_node_consequences.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Berechnet die Auswirkungen einer Teilbaumoperation ohne zu schreiben.",
       "authorization": [
@@ -55234,8 +55342,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/promote_session_outcome_to_saga.ts",
-        "status": "BLOCKED until source defect decisions, GATE-01 and per-command review"
+        "commandModule": "server/src/application/saga-projections/promote_session_outcome_to_saga/index.ts",
+        "status": "BLOCKED until source defect decisions, GATE-01 and per-command review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/promote_session_outcome_to_saga.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Übernimmt eine Session-Konsequenz idempotent als Knowledge-Fact in den eigenen Saga-Entwurf.",
       "authorization": [
@@ -56961,8 +57072,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/promote_session_outcome_to_world.ts",
-        "status": "BLOCKED until source defect decisions, GATE-01 and per-command review"
+        "commandModule": "server/src/application/saga-projections/promote_session_outcome_to_world/index.ts",
+        "status": "BLOCKED until source defect decisions, GATE-01 and per-command review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/promote_session_outcome_to_world.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Übernimmt eine Session-Konsequenz als Lore-Fact in die verbundene eigene Welt.",
       "authorization": [
@@ -57846,8 +57960,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/publish_saga_definition_version.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-authoring/publish_saga_definition_version/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/publish_saga_definition_version.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Veröffentlicht den eigenen aktuellen Draft als neue unveränderliche Version.",
       "authorization": [
@@ -58817,8 +58934,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/remove_npc_creature_instance.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/npc-instances/remove_npc_creature_instance/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/npc-creature/index.ts",
+        "transitionalAdapter": "server/src/application/commands/remove_npc_creature_instance.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Löscht als aktiver Projekt-GM eine bestimmte NPC-Instanz.",
       "authorization": [
@@ -59718,8 +59838,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/rename_world_node.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-create/rename_world_node/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/rename_world_node.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Benennt einen vorhandenen Weltknoten um und macht einen Placeholder zum Draft.",
       "authorization": [
@@ -61242,8 +61365,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/reparent_world_node.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-restructure/reparent_world_node/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/reparent_world_node.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Verschiebt einen Weltknoten und dessen Primärkarten-Parent nach ausdrücklicher Bestätigung.",
       "authorization": [
@@ -62761,8 +62887,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/resolve_session_invite.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-access/resolve_session_invite/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/resolve_session_invite.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Löst ein Invite-Token auf und liefert die für die Beitrittsoberfläche benötigten IDs und Zustände.",
       "authorization": [
@@ -63879,8 +64008,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/revoke_session_invite.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-access/revoke_session_invite/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/revoke_session_invite.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Widerruft ein konkretes Session-Einladungs-Token.",
       "authorization": [
@@ -64805,8 +64937,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/save_saga_definition_draft.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-authoring/save_saga_definition_draft/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/save_saga_definition_draft.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Speichert den eigenen Saga-Entwurf mit optimistischer Revisionskontrolle.",
       "authorization": [
@@ -66120,8 +66255,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/save_session_recap_summary.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-recap/save_session_recap_summary/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/save_session_recap_summary.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Speichert Summary und Freigabestatus eines Recaps; zwei effektive SQL-Overloads bleiben erhalten.",
       "authorization": [
@@ -67089,8 +67227,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/save_world_map.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-map/save_world_map/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/save_world_map.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Speichert die Legacy-Weltkarte mit Größen-/Bildpfadprüfung und optional erzwungener Revision.",
       "authorization": [
@@ -68018,8 +68159,11 @@
       ],
       "dependencyEdges": [],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/set_my_project_character.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/project-membership/set_my_project_character/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/project/index.ts",
+        "transitionalAdapter": "server/src/application/commands/set_my_project_character.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Ändert oder entfernt den Charakter der eigenen aktiven Projektmitgliedschaft.",
       "authorization": [
@@ -69076,8 +69220,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/set_saga_binding_reveal.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-governance/set_saga_binding_reveal/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/set_saga_binding_reveal.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Ändert die Sichtbarkeit eines projektgebundenen Saga-Assets.",
       "authorization": [
@@ -70253,8 +70400,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/set_saga_member_bundle.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/saga-governance/set_saga_member_bundle/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/saga/index.ts",
+        "transitionalAdapter": "server/src/application/commands/set_saga_member_bundle.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Ersetzt die Bundle-Berechtigungen eines Saga-Mitglieds atomar.",
       "authorization": [
@@ -71593,8 +71743,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/set_session_player_presence.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-runtime/set_session_player_presence/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/set_session_player_presence.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Setzt die eigene Anwesenheit und liefert einen neuen Session-Snapshot.",
       "authorization": [
@@ -73195,8 +73348,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/set_session_status.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/session-lifecycle/set_session_status/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/session/index.ts",
+        "transitionalAdapter": "server/src/application/commands/set_session_status.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Führt den GM-Statusübergang einer Session einschließlich Abschluss-Recap und Handover aus.",
       "authorization": [
@@ -75298,8 +75454,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/spawn_npc_creature_instance.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/npc-instances/spawn_npc_creature_instance/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/npc-creature/index.ts",
+        "transitionalAdapter": "server/src/application/commands/spawn_npc_creature_instance.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erzeugt eine projektbezogene generische oder persistente NPC-Instanz mit unveränderlichem Ausgangs-Snapshot.",
       "authorization": [
@@ -76616,8 +76775,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/update_npc_creature_instance_runtime.ts",
-        "status": "BLOCKED until GATE-01/04 + per-command design review"
+        "commandModule": "server/src/application/npc-instances/update_npc_creature_instance_runtime/index.ts",
+        "status": "BLOCKED until GATE-01/04 + per-command design review",
+        "owningModule": "server/src/modules/npc-creature/index.ts",
+        "transitionalAdapter": "server/src/application/commands/update_npc_creature_instance_runtime.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Ersetzt als aktiver Projekt-GM das gesamte Runtime-Objekt einer NPC-Instanz.",
       "authorization": [
@@ -78542,8 +78704,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/upsert_world_atlas_map.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-atlas/upsert_world_atlas_map/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/upsert_world_atlas_map.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Legt Atlas-Karten an oder ersetzt sie mit Revisionskontrolle und GeoJSON-Validierung.",
       "authorization": [
@@ -79611,8 +79776,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/upsert_world_place.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-places/upsert_world_place/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/upsert_world_place.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Erstellt oder aktualisiert einen Weltort und erhöht dessen Revision.",
       "authorization": [
@@ -80829,8 +80997,11 @@
         }
       ],
       "proposedSuccessor": {
-        "commandModule": "server/src/application/commands/upsert_world_place_map_link.ts",
-        "status": "BLOCKED until GATE-01 + per-command design review"
+        "commandModule": "server/src/application/world-places/upsert_world_place_map_link/index.ts",
+        "status": "BLOCKED until GATE-01 + per-command design review",
+        "owningModule": "server/src/modules/world/index.ts",
+        "transitionalAdapter": "server/src/application/commands/upsert_world_place_map_link.ts",
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
       },
       "summary": "Verknüpft Ort und Karte innerhalb derselben Welt oder aktualisiert die bestehende Usage-Verknüpfung.",
       "authorization": [

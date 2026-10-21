@@ -11,7 +11,7 @@ Marketplace-Downloadzähler und Fallback: increment_marketplace_downloads als zu
 
 ## Goal
 
-Marketplace-Downloadzähler und Fallback: increment_marketplace_downloads als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/increment_marketplace_downloads.ts.
+Marketplace-Downloadzähler und Fallback: increment_marketplace_downloads als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/marketplace-count/increment_marketplace_downloads/index.ts, server/src/modules/marketplace/index.ts, server/src/application/commands/increment_marketplace_downloads.ts, server/src/application/marketplace-count/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructur
 
 ### Nachher und Verhalten
 
-Marketplace-Downloadzähler und Fallback: increment_marketplace_downloads als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/increment_marketplace_downloads.ts.
+Marketplace-Downloadzähler und Fallback: increment_marketplace_downloads als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/marketplace-count/increment_marketplace_downloads/index.ts, server/src/modules/marketplace/index.ts, server/src/application/commands/increment_marketplace_downloads.ts, server/src/application/marketplace-count/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/supabase.ts`, `src/supabase/add_marketplace_rpc.sql`, `src/supabase/deploy_marketplace.sql`
-- Änderbare Zielpfade: `server/src/application/commands/increment_marketplace_downloads.ts`
+- Änderbare Zielpfade: `server/src/application/marketplace-count/increment_marketplace_downloads/index.ts`, `server/src/modules/marketplace/index.ts`, `server/src/application/commands/increment_marketplace_downloads.ts`, `server/src/application/marketplace-count/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/increment_marketplace_downloads.md`
 
 ## Security & Data

@@ -11,7 +11,7 @@ Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Read
 
 ## Goal
 
-Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen. Zielpfade: server/src/bootstrap, server/src/config, server/src/modules, server/src/application.
+Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen. Zielpfade: server/src/bootstrap, server/src/config, server/src/modules, server/src/application, server/src/http/route-registry.ts, scripts/architecture-boundary-check.mjs, scripts/architecture-boundary-check.self-test.mjs.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/lib/supabase.
 
 ### Nachher und Verhalten
 
-Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen. Zielpfade: server/src/bootstrap, server/src/config, server/src/modules, server/src/application.
+Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen. Zielpfade: server/src/bootstrap, server/src/config, server/src/modules, server/src/application, server/src/http/route-registry.ts, scripts/architecture-boundary-check.mjs, scripts/architecture-boundary-check.self-test.mjs.
 
 ## Scope
 
 - Quellpfade: `src/lib/supabase.ts`, `docs/architektur-sqlite-based.md`, `docs/architecture/host-modular-monolith.md`
-- Änderbare Zielpfade: `server/src/bootstrap`, `server/src/config`, `server/src/modules`, `server/src/application`
+- Änderbare Zielpfade: `server/src/bootstrap`, `server/src/config`, `server/src/modules`, `server/src/application`, `server/src/http/route-registry.ts`, `scripts/architecture-boundary-check.mjs`, `scripts/architecture-boundary-check.self-test.mjs`
 - Quellverträge: `src/lib/supabase.ts`, `docs/architektur-sqlite-based.md`, `docs/architecture/host-modular-monolith.md`
 
 ## Security & Data
@@ -68,7 +68,7 @@ Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration
 
 - Gegeben: Der verbindliche Host-Modulvertrag und die Repository-Architekturregeln
 - Wenn: MIG-010 den Composition-Root und die Modul-DAG verdrahtet
-- Dann: server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.
+- Dann: server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; checkRegisteredHostPackages in scripts/architecture-boundary-check.mjs (Self-Test + npm run test-gate) weist relative Private-Cross-Imports, Modulzyklen und nicht-composition http/**-Zugriffe ab und läuft zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.
 - Quelle: `src/lib/supabase.ts`, `docs/architektur-sqlite-based.md`, `docs/architecture/host-modular-monolith.md`
 
 ## Acceptance
@@ -76,7 +76,7 @@ Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration
 - [ ] Der Host meldet Readiness erst nach erfolgreicher Initialisierung und verwendet nach Neustart dasselbe Datenverzeichnis.
 - [ ] Der Prozess endet mit Fehlercode und einer redigierten Ursache; er meldet nicht fälschlich gesund und weicht nicht still auf ein neues Verzeichnis aus.
 - [ ] Neue Mutationen werden abgewiesen, bereits bestätigte Daten bleiben erhalten und Listener/DB-Ressourcen werden geschlossen.
-- [ ] server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.
+- [ ] server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; checkRegisteredHostPackages in scripts/architecture-boundary-check.mjs (Self-Test + npm run test-gate) weist relative Private-Cross-Imports, Modulzyklen und nicht-composition http/**-Zugriffe ab und läuft zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

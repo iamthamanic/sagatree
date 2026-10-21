@@ -75,13 +75,21 @@ export const planContracts = {
   'MIG-010': contract(
     'Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen.',
     ['src/lib/supabase.ts', 'docs/architektur-sqlite-based.md', 'docs/architecture/host-modular-monolith.md'],
-    ['server/src/bootstrap', 'server/src/config', 'server/src/modules', 'server/src/application'],
+    [
+      'server/src/bootstrap',
+      'server/src/config',
+      'server/src/modules',
+      'server/src/application',
+      'server/src/http/route-registry.ts',
+      'scripts/architecture-boundary-check.mjs',
+      'scripts/architecture-boundary-check.self-test.mjs',
+    ],
     'Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration. Health-Ausgaben enthalten keine Tokens, Schlüssel oder Dateiinhalte. Modulgrenzen und Repository-Ownership aus docs/architecture/host-modular-monolith.md sind verbindlich; ORM-Wahl (GATE-01) ersetzt sie nicht.',
     [
       ['Ein leeres, beschreibbares Datenverzeichnis und keine Cloud-Credentials', 'der Host im Solo-Modus startet', 'Der Host meldet Readiness erst nach erfolgreicher Initialisierung und verwendet nach Neustart dasselbe Datenverzeichnis.'],
       ['Ungültige Konfiguration, belegter Port oder nicht beschreibbares Datenverzeichnis', 'der Host startet', 'Der Prozess endet mit Fehlercode und einer redigierten Ursache; er meldet nicht fälschlich gesund und weicht nicht still auf ein neues Verzeichnis aus.'],
       ['Laufende Requests und ein Terminationssignal', 'der Host herunterfährt', 'Neue Mutationen werden abgewiesen, bereits bestätigte Daten bleiben erhalten und Listener/DB-Ressourcen werden geschlossen.'],
-      ['Der verbindliche Host-Modulvertrag und die Repository-Architekturregeln', 'MIG-010 den Composition-Root und die Modul-DAG verdrahtet', 'server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.'],
+      ['Der verbindliche Host-Modulvertrag und die Repository-Architekturregeln', 'MIG-010 den Composition-Root und die Modul-DAG verdrahtet', 'server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; checkRegisteredHostPackages in scripts/architecture-boundary-check.mjs (Self-Test + npm run test-gate) weist relative Private-Cross-Imports, Modulzyklen und nicht-composition http/**-Zugriffe ab und läuft zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.'],
     ], ['MIG-001', 'MIG-002', 'GATE-01']),
   'MIG-011': contract(
     'Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.',

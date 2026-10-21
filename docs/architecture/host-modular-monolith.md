@@ -146,9 +146,19 @@ MIG-010 acceptance includes:
 1. `server/` package root registered in repository architecture rules.
 2. Bootstrap composition root exists with explicit module wiring hooks (even if stubs).
 3. Documented module DAG + ownership table above is the contract reviewers check.
-4. Placeholder CI hook for **module-boundary** checks (no cycles; no private cross-imports) is scheduled in #789 scope — **in addition to** future Drizzle/client import bans from GATE-01 follow-ons.
+4. **Effective module-boundary acceptance** (not a placeholder): `scripts/architecture-boundary-check.mjs` → `checkRegisteredHostPackages()` resolves imports relative to the importing file (and supported aliases), classifies module membership on the resolved target, rejects private cross-module `internal`/`persistence` access, rejects cycles among `server/src/modules/*`, and limits private wiring to documented composition entries (`server/src/bootstrap/**`, `server/src/http/route-registry.ts` only — not all of `server/src/http/**`). Executable regressions live in `scripts/architecture-boundary-check.self-test.mjs` and run via `npm run test-gate`. This is **in addition to** future Drizzle/client import bans from GATE-01 follow-ons.
 
 GATE-01 APPROVED remains a separate human decision. Choosing Drizzle or ZenStack does not waive §§2–8.
+
+### RPC path convention (binding for child tickets)
+
+| Role | Path |
+| --- | --- |
+| Use-case entry (source of truth) | `server/src/application/<family>/<rpc_name>/index.ts` |
+| Owning module public API | `server/src/modules/<module>/index.ts` |
+| Transitional adapter (optional) | `server/src/application/commands/<rpc_name>.ts` — thin re-export of the use-case only; no new business logic |
+
+Canonical split inventory: `.qa/intake/rpc-contracts/split-groups.json`.
 
 ## 10. Non-claims
 

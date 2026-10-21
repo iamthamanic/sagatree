@@ -13,11 +13,14 @@ import {
   checkContentImportPaths,
   checkEradicatedLegacyRoots,
   checkLegacyFreeze,
+  checkRegisteredHostPackages,
   extractImportPaths,
+  findDirectedCycles,
   resolveRelativeImport,
+  resolveServerImport,
   runArchitectureBoundaryCheck,
 } from './architecture-boundary-check.mjs';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -315,5 +318,96 @@ assert(
   live.counts.legacyCurrent <= live.counts.legacyBaseline,
   'live legacy path count must not exceed baseline',
 );
+
+// --- Host modular monolith (Epic #773 / MIG-010) ---
+assert(
+  resolveServerImport(
+    'server/src/modules/session/internal/action.ts',
+    '../../world/persistence/repo.js',
+  ) === 'server/src/modules/world/persistence/repo',
+  'resolveServerImport must resolve relative private paths across modules',
+);
+
+assert(
+  findDirectedCycles(
+    new Map([
+      ['session', new Set(['world'])],
+      ['world', new Set(['session'])],
+    ]),
+  ).some((cycle) => cycle.includes('session') && cycle.includes('world')),
+  'findDirectedCycles must detect session↔world',
+);
+
+const hostFixture = mkdtempSync(join(tmpdir(), 'host-mod-'));
+function writeHost(rel, body) {
+  const abs = join(hostFixture, rel);
+  mkdirSync(join(abs, '..'), { recursive: true });
+  writeFileSync(abs, body);
+}
+writeHost('server/README.md', 'See docs/architecture/host-modular-monolith.md\n');
+writeHost('server/src/modules/world/persistence/repo.ts', 'export const worldRepo = 1;\n');
+writeHost('server/src/modules/world/index.ts', "export { worldRepo as world } from './persistence/repo.js';\n");
+writeHost(
+  'server/src/modules/session/internal/action.ts',
+  "import { worldRepo } from '../../world/persistence/repo.js';\nexport const action = worldRepo;\n",
+);
+writeHost('server/src/modules/session/index.ts', "export { world } from '../world/index.js';\n");
+writeHost('server/src/http/debug.ts', "import { worldRepo } from '../modules/world/persistence/repo.js';\nexport const d = worldRepo;\n");
+// Make the cycle mutual: world public barrel also imports session.
+writeHost('server/src/modules/world/index.ts', "export { session } from '../session/index.js';\nexport const world = 1;\n");
+writeHost('server/src/modules/session/index.ts', "export { world } from '../world/index.js';\nexport const session = 1;\n");
+
+const hostViolations = checkRegisteredHostPackages(hostFixture);
+assert(
+  hostViolations.some(
+    (v) =>
+      v.file.includes('session/internal/action') &&
+      /private path of world|forbidden private module import/.test(v.rule),
+  ),
+  `relative cross-module private import must fail, got ${JSON.stringify(hostViolations)}`,
+);
+assert(
+  hostViolations.some((v) => /forbidden module dependency cycle/.test(v.rule)),
+  `public session↔world cycle must fail, got ${JSON.stringify(hostViolations)}`,
+);
+assert(
+  hostViolations.some(
+    (v) => v.file.includes('http/debug') && /forbidden private module import|private path of world/.test(v.rule),
+  ),
+  `non-composition http/debug private import must fail, got ${JSON.stringify(hostViolations)}`,
+);
+rmSync(hostFixture, { recursive: true, force: true });
+
+const hostOk = mkdtempSync(join(tmpdir(), 'host-ok-'));
+function writeOk(rel, body) {
+  const abs = join(hostOk, rel);
+  mkdirSync(join(abs, '..'), { recursive: true });
+  writeFileSync(abs, body);
+}
+writeOk('server/README.md', 'host-modular-monolith contract\n');
+writeOk('server/src/modules/world/persistence/repo.ts', 'export const worldRepo = 1;\n');
+writeOk('server/src/modules/world/index.ts', "export { worldRepo as readWorld } from './persistence/repo.js';\n");
+writeOk(
+  'server/src/modules/session/internal/action.ts',
+  "import { readWorld } from '../index.js';\nexport const action = readWorld;\n",
+);
+writeOk(
+  'server/src/modules/session/index.ts',
+  "import { readWorld } from '../world/index.js';\nexport const session = readWorld;\n",
+);
+writeOk(
+  'server/src/http/route-registry.ts',
+  "import { worldRepo } from '../modules/world/persistence/repo.js';\nexport const routes = worldRepo;\n",
+);
+writeOk(
+  'server/src/bootstrap/main.ts',
+  "import { worldRepo } from '../modules/world/persistence/repo.js';\nexport const boot = worldRepo;\n",
+);
+const hostOkViolations = checkRegisteredHostPackages(hostOk);
+assert(
+  hostOkViolations.length === 0,
+  `public + same-module + composition wiring must pass, got ${JSON.stringify(hostOkViolations)}`,
+);
+rmSync(hostOk, { recursive: true, force: true });
 
 console.log('Architecture boundary self-test passed.');

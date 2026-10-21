@@ -11,7 +11,7 @@ Legacy-Weltkarte lesen und speichern: get_world_map, save_world_map als zusammen
 
 ## Goal
 
-Legacy-Weltkarte lesen und speichern: get_world_map, save_world_map als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_world_map.ts, server/src/application/commands/save_world_map.ts.
+Legacy-Weltkarte lesen und speichern: get_world_map, save_world_map als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/world-map/get_world_map/index.ts, server/src/application/world-map/save_world_map/index.ts, server/src/modules/world/index.ts, server/src/application/commands/get_world_map.ts, server/src/application/commands/save_world_map.ts, server/src/application/world-map/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructur
 
 ### Nachher und Verhalten
 
-Legacy-Weltkarte lesen und speichern: get_world_map, save_world_map als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_world_map.ts, server/src/application/commands/save_world_map.ts.
+Legacy-Weltkarte lesen und speichern: get_world_map, save_world_map als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/world-map/get_world_map/index.ts, server/src/application/world-map/save_world_map/index.ts, server/src/modules/world/index.ts, server/src/application/commands/get_world_map.ts, server/src/application/commands/save_world_map.ts, server/src/application/world-map/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/infrastructure/world/world-map-service.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/004_project_membership_security.sql`, `supabase/migrations/008_world_profiles.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/019_world_profiles_read_for_adventure.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/068_world_maps.sql`, `supabase/migrations/083_world_profiles_public_id.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`
-- Änderbare Zielpfade: `server/src/application/commands/get_world_map.ts`, `server/src/application/commands/save_world_map.ts`
+- Änderbare Zielpfade: `server/src/application/world-map/get_world_map/index.ts`, `server/src/application/world-map/save_world_map/index.ts`, `server/src/modules/world/index.ts`, `server/src/application/commands/get_world_map.ts`, `server/src/application/commands/save_world_map.ts`, `server/src/application/world-map/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/get_world_map.md`, `.qa/intake/rpc-contracts/save_world_map.md`
 
 ## Security & Data

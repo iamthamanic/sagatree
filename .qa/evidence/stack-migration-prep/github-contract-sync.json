@@ -2,88 +2,172 @@
   "schemaVersion": 2,
   "repository": "iamthamanic/sagatree",
   "status": "synchronized-and-verified",
-  "lastVerifiedAt": "2026-10-21T11:43:45.539Z",
-  "correctionOrder": "2026-10-21-truncate-architecture-reopen",
-  "evidenceMeaning": "Fresh verify after full requiredTest coverage + host modular monolith + reopen #782/#783. Not GATE/merge approval.",
+  "lastVerifiedAt": "2026-10-21T12:08:03.432Z",
+  "correctionOrder": "2026-10-21-host-checker-rpc-paths",
+  "evidenceMeaning": "Fresh verify after effective host module-boundary checker + RPC path harmonization (#873/#789). Not GATE/merge approval.",
   "syncedCount": 90,
   "pendingCount": 0,
   "focus": [
-    {
-      "localId": "MIG-001",
-      "number": 782,
-      "bodyOk": true,
-      "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": false,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
-    },
-    {
-      "localId": "MIG-002",
-      "number": 783,
-      "bodyOk": true,
-      "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": true,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
-    },
     {
       "localId": "MIG-010",
       "number": 789,
       "bodyOk": true,
       "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": false,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
+      "state": "OPEN"
     },
     {
-      "localId": "MIG-011",
-      "number": 790,
+      "localId": "RPC-MARKETPLACE-COUNT",
+      "number": 878,
       "bodyOk": true,
       "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": false,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
+      "state": "OPEN"
     },
     {
-      "localId": "MIG-013",
-      "number": 792,
+      "localId": "RPC-SAGA-AUTHORING",
+      "number": 871,
       "bodyOk": true,
       "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": false,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
+      "state": "OPEN"
     },
     {
-      "localId": "MIG-012",
-      "number": 791,
+      "localId": "RPC-SAGA-VERSION-READ",
+      "number": 872,
       "bodyOk": true,
       "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": false,
-      "has429": false,
-      "hasEncrypt": false,
-      "missingContractLabels": []
+      "state": "OPEN"
     },
     {
-      "localId": "MIG-402",
-      "number": 818,
+      "localId": "RPC-SAGA-PROVISION",
+      "number": 873,
       "bodyOk": true,
       "titleOk": true,
-      "state": "OPEN",
-      "hasOllama": true,
-      "has429": true,
-      "hasEncrypt": true,
-      "missingContractLabels": []
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-PROJECT-MEMBERSHIP",
+      "number": 874,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SAGA-GOVERNANCE",
+      "number": 875,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SESSION-RUNTIME",
+      "number": 867,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SESSION-LIFECYCLE",
+      "number": 868,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-NPC-INSTANCES",
+      "number": 877,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "MIG-353",
+      "number": 816,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SESSION-ACCESS",
+      "number": 869,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SESSION-RECAP",
+      "number": 870,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "MIG-351",
+      "number": 814,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-SAGA-PROJECTIONS",
+      "number": 876,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "MIG-352",
+      "number": 815,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-WORLD-MAP",
+      "number": 861,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "number": 862,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-WORLD-PLACES",
+      "number": 863,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-WORLD-CREATE",
+      "number": 864,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-WORLD-RESTRUCTURE",
+      "number": 865,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "RPC-WORLD-DESTRUCTIVE",
+      "number": 866,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
+    },
+    {
+      "localId": "MIG-350",
+      "number": 813,
+      "bodyOk": true,
+      "titleOk": true,
+      "state": "OPEN"
     }
   ],
   "mismatches": []

@@ -11,7 +11,7 @@ Folgenvorschau, Archivierung und Löschung: preview_world_node_consequences, arc
 
 ## Goal
 
-Folgenvorschau, Archivierung und Löschung: preview_world_node_consequences, archive_world_node_subtree, delete_world_node als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/preview_world_node_consequences.ts, server/src/application/commands/archive_world_node_subtree.ts, server/src/application/commands/delete_world_node.ts.
+Folgenvorschau, Archivierung und Löschung: preview_world_node_consequences, archive_world_node_subtree, delete_world_node als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/world-destructive/preview_world_node_consequences/index.ts, server/src/application/world-destructive/archive_world_node_subtree/index.ts, server/src/application/world-destructive/delete_world_node/index.ts, server/src/modules/world/index.ts, server/src/application/commands/preview_world_node_consequences.ts, server/src/application/commands/archive_world_node_subtree.ts, server/src/application/commands/delete_world_node.ts, server/src/application/world-destructive/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructur
 
 ### Nachher und Verhalten
 
-Folgenvorschau, Archivierung und Löschung: preview_world_node_consequences, archive_world_node_subtree, delete_world_node als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/preview_world_node_consequences.ts, server/src/application/commands/archive_world_node_subtree.ts, server/src/application/commands/delete_world_node.ts.
+Folgenvorschau, Archivierung und Löschung: preview_world_node_consequences, archive_world_node_subtree, delete_world_node als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/world-destructive/preview_world_node_consequences/index.ts, server/src/application/world-destructive/archive_world_node_subtree/index.ts, server/src/application/world-destructive/delete_world_node/index.ts, server/src/modules/world/index.ts, server/src/application/commands/preview_world_node_consequences.ts, server/src/application/commands/archive_world_node_subtree.ts, server/src/application/commands/delete_world_node.ts, server/src/application/world-destructive/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/infrastructure/world/world-place-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`, `supabase/migrations/008_world_profiles.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/019_world_profiles_read_for_adventure.sql`, `supabase/migrations/075_saga_permission_grants.sql`, `supabase/migrations/083_world_profiles_public_id.sql`, `supabase/migrations/094_world_atlas.sql`, `supabase/migrations/095_donalu_world_places.sql`, `supabase/migrations/101_world_places_select_editor_only.sql`, `supabase/migrations/102_world_atlas_player_redaction_force.sql`, `supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql`, `supabase/migrations/104_atlas_worldbuilder_mutations.sql`
-- Änderbare Zielpfade: `server/src/application/commands/preview_world_node_consequences.ts`, `server/src/application/commands/archive_world_node_subtree.ts`, `server/src/application/commands/delete_world_node.ts`
+- Änderbare Zielpfade: `server/src/application/world-destructive/preview_world_node_consequences/index.ts`, `server/src/application/world-destructive/archive_world_node_subtree/index.ts`, `server/src/application/world-destructive/delete_world_node/index.ts`, `server/src/modules/world/index.ts`, `server/src/application/commands/preview_world_node_consequences.ts`, `server/src/application/commands/archive_world_node_subtree.ts`, `server/src/application/commands/delete_world_node.ts`, `server/src/application/world-destructive/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/preview_world_node_consequences.md`, `.qa/intake/rpc-contracts/archive_world_node_subtree.md`, `.qa/intake/rpc-contracts/delete_world_node.md`
 
 ## Security & Data

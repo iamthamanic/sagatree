@@ -11,7 +11,7 @@ Session anlegen und Status wechseln: create_play_session, create_project_session
 
 ## Goal
 
-Session anlegen und Status wechseln: create_play_session, create_project_session, set_session_status als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/create_play_session.ts, server/src/application/commands/create_project_session.ts, server/src/application/commands/set_session_status.ts.
+Session anlegen und Status wechseln: create_play_session, create_project_session, set_session_status als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/session-lifecycle/create_play_session/index.ts, server/src/application/session-lifecycle/create_project_session/index.ts, server/src/application/session-lifecycle/set_session_status/index.ts, server/src/modules/session/index.ts, server/src/application/commands/create_play_session.ts, server/src/application/commands/create_project_session.ts, server/src/application/commands/set_session_status.ts, server/src/application/session-lifecycle/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/proje
 
 ### Nachher und Verhalten
 
-Session anlegen und Status wechseln: create_play_session, create_project_session, set_session_status als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/create_play_session.ts, server/src/application/commands/create_project_session.ts, server/src/application/commands/set_session_status.ts.
+Session anlegen und Status wechseln: create_play_session, create_project_session, set_session_status als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/session-lifecycle/create_play_session/index.ts, server/src/application/session-lifecycle/create_project_session/index.ts, server/src/application/session-lifecycle/set_session_status/index.ts, server/src/modules/session/index.ts, server/src/application/commands/create_play_session.ts, server/src/application/commands/create_project_session.ts, server/src/application/commands/set_session_status.ts, server/src/application/session-lifecycle/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/domains/project/contracts/project.types.ts`, `src/domains/session/contracts/session-lifecycle.ts`, `src/domains/session/contracts/session.types.ts`, `src/infrastructure/project/project-service.ts`, `src/infrastructure/session/session-service.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/040_session_join_code_security.sql`, `supabase/migrations/041_session_runtime_state.sql`, `supabase/migrations/046_look_profiles.sql`, `supabase/migrations/047_session_program_presentation.sql`, `supabase/migrations/048_session_knowledge_reveals.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/051_session_director_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/053_sessions_look_override.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/061_session_recaps_and_handover.sql`, `supabase/migrations/062_session_recap_ai_summary.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/073_sagatree_schema_rename_compat.sql`, `supabase/migrations/084_look_profiles_public_id.sql`, `supabase/migrations/085_fix_function_bodies_sagatree.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`
-- Änderbare Zielpfade: `server/src/application/commands/create_play_session.ts`, `server/src/application/commands/create_project_session.ts`, `server/src/application/commands/set_session_status.ts`
+- Änderbare Zielpfade: `server/src/application/session-lifecycle/create_play_session/index.ts`, `server/src/application/session-lifecycle/create_project_session/index.ts`, `server/src/application/session-lifecycle/set_session_status/index.ts`, `server/src/modules/session/index.ts`, `server/src/application/commands/create_play_session.ts`, `server/src/application/commands/create_project_session.ts`, `server/src/application/commands/set_session_status.ts`, `server/src/application/session-lifecycle/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/create_play_session.md`, `.qa/intake/rpc-contracts/create_project_session.md`, `.qa/intake/rpc-contracts/set_session_status.md`
 
 ## Security & Data

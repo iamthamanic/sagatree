@@ -47,8 +47,12 @@ Legacy-Weltkarte lesen und speichern
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-map/get_world_map/index.ts`
+- `server/src/application/world-map/save_world_map/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/get_world_map.ts`
 - `server/src/application/commands/save_world_map.ts`
+- `server/src/application/world-map/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -94,10 +98,16 @@ Atlas-Kartenprojektion und Revision
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-atlas/ensure_world_atlas_root/index.ts`
+- `server/src/application/world-atlas/list_world_atlas_maps/index.ts`
+- `server/src/application/world-atlas/get_world_atlas_map/index.ts`
+- `server/src/application/world-atlas/upsert_world_atlas_map/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/ensure_world_atlas_root.ts`
 - `server/src/application/commands/list_world_atlas_maps.ts`
 - `server/src/application/commands/get_world_atlas_map.ts`
 - `server/src/application/commands/upsert_world_atlas_map.ts`
+- `server/src/application/world-atlas/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -153,10 +163,16 @@ Orte und Kartenverknüpfungen
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-places/list_world_places/index.ts`
+- `server/src/application/world-places/list_world_place_map_links/index.ts`
+- `server/src/application/world-places/upsert_world_place/index.ts`
+- `server/src/application/world-places/upsert_world_place_map_link/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/list_world_places.ts`
 - `server/src/application/commands/list_world_place_map_links.ts`
 - `server/src/application/commands/upsert_world_place.ts`
 - `server/src/application/commands/upsert_world_place_map_link.ts`
+- `server/src/application/world-places/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -209,8 +225,12 @@ Kanonischen Weltknoten erstellen und benennen
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-create/create_world_node_with_maps/index.ts`
+- `server/src/application/world-create/rename_world_node/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/create_world_node_with_maps.ts`
 - `server/src/application/commands/rename_world_node.ts`
+- `server/src/application/world-create/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -253,8 +273,12 @@ Weltknoten verschieben und duplizieren
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-restructure/reparent_world_node/index.ts`
+- `server/src/application/world-restructure/duplicate_world_node/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/reparent_world_node.ts`
 - `server/src/application/commands/duplicate_world_node.ts`
+- `server/src/application/world-restructure/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -298,9 +322,14 @@ Folgenvorschau, Archivierung und Löschung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/world-destructive/preview_world_node_consequences/index.ts`
+- `server/src/application/world-destructive/archive_world_node_subtree/index.ts`
+- `server/src/application/world-destructive/delete_world_node/index.ts`
+- `server/src/modules/world/index.ts`
 - `server/src/application/commands/preview_world_node_consequences.ts`
 - `server/src/application/commands/archive_world_node_subtree.ts`
 - `server/src/application/commands/delete_world_node.ts`
+- `server/src/application/world-destructive/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -345,9 +374,14 @@ Session-Runtime, Snapshot und Presence
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/session-runtime/apply_session_runtime_command/index.ts`
+- `server/src/application/session-runtime/get_session_runtime_snapshot/index.ts`
+- `server/src/application/session-runtime/set_session_player_presence/index.ts`
+- `server/src/modules/session/index.ts`
 - `server/src/application/commands/apply_session_runtime_command.ts`
 - `server/src/application/commands/get_session_runtime_snapshot.ts`
 - `server/src/application/commands/set_session_player_presence.ts`
+- `server/src/application/session-runtime/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -415,9 +449,14 @@ Session anlegen und Status wechseln
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/session-lifecycle/create_play_session/index.ts`
+- `server/src/application/session-lifecycle/create_project_session/index.ts`
+- `server/src/application/session-lifecycle/set_session_status/index.ts`
+- `server/src/modules/session/index.ts`
 - `server/src/application/commands/create_play_session.ts`
 - `server/src/application/commands/create_project_session.ts`
 - `server/src/application/commands/set_session_status.ts`
+- `server/src/application/session-lifecycle/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -475,11 +514,18 @@ Session-Beitritt, Austritt und Einladung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/session-access/join_session_by_code/index.ts`
+- `server/src/application/session-access/leave_play_session/index.ts`
+- `server/src/application/session-access/create_session_invite/index.ts`
+- `server/src/application/session-access/resolve_session_invite/index.ts`
+- `server/src/application/session-access/revoke_session_invite/index.ts`
+- `server/src/modules/session/index.ts`
 - `server/src/application/commands/join_session_by_code.ts`
 - `server/src/application/commands/leave_play_session.ts`
 - `server/src/application/commands/create_session_invite.ts`
 - `server/src/application/commands/resolve_session_invite.ts`
 - `server/src/application/commands/revoke_session_invite.ts`
+- `server/src/application/session-access/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -542,8 +588,12 @@ Recap-Projektion und Zusammenfassung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/session-recap/get_session_recap/index.ts`
+- `server/src/application/session-recap/save_session_recap_summary/index.ts`
+- `server/src/modules/session/index.ts`
 - `server/src/application/commands/get_session_recap.ts`
 - `server/src/application/commands/save_session_recap_summary.ts`
+- `server/src/application/session-recap/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -596,11 +646,18 @@ Saga-Entwurf, Kopie und Veröffentlichung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/saga-authoring/create_user_saga_definition/index.ts`
+- `server/src/application/saga-authoring/copy_native_saga_definition/index.ts`
+- `server/src/application/saga-authoring/get_saga_definition_editor/index.ts`
+- `server/src/application/saga-authoring/save_saga_definition_draft/index.ts`
+- `server/src/application/saga-authoring/publish_saga_definition_version/index.ts`
+- `server/src/modules/saga/index.ts`
 - `server/src/application/commands/create_user_saga_definition.ts`
 - `server/src/application/commands/copy_native_saga_definition.ts`
 - `server/src/application/commands/get_saga_definition_editor.ts`
 - `server/src/application/commands/save_saga_definition_draft.ts`
 - `server/src/application/commands/publish_saga_definition_version.ts`
+- `server/src/application/saga-authoring/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -638,8 +695,12 @@ Saga-Versionen und native Katalogprojektion
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/saga-version-read/get_native_saga_definition_by_slug/index.ts`
+- `server/src/application/saga-version-read/get_saga_definition_version/index.ts`
+- `server/src/modules/saga/index.ts`
 - `server/src/application/commands/get_native_saga_definition_by_slug.ts`
 - `server/src/application/commands/get_saga_definition_version.ts`
+- `server/src/application/saga-version-read/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -686,9 +747,15 @@ Spielgruppe aus Version und Starter-Provisionierung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/saga-provision/create_project_from_saga_version/index.ts`
+- `server/src/application/saga-provision/duplicate_saga_playthrough/index.ts`
+- `server/src/application/saga-provision/ensure_native_starter_project/index.ts`
+- `server/src/modules/project/index.ts`
+- `server/src/modules/saga/index.ts`
 - `server/src/application/commands/create_project_from_saga_version.ts`
 - `server/src/application/commands/duplicate_saga_playthrough.ts`
 - `server/src/application/commands/ensure_native_starter_project.ts`
+- `server/src/application/saga-provision/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -765,8 +832,12 @@ Projektbeitritt und eigener Charakter
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/project-membership/join_project_by_code/index.ts`
+- `server/src/application/project-membership/set_my_project_character/index.ts`
+- `server/src/modules/project/index.ts`
 - `server/src/application/commands/join_project_by_code.ts`
 - `server/src/application/commands/set_my_project_character.ts`
+- `server/src/application/project-membership/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -822,11 +893,19 @@ Saga-Berechtigungen, Bindings und Bundles
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/saga-governance/get_my_saga_permissions/index.ts`
+- `server/src/application/saga-governance/list_saga_bindings/index.ts`
+- `server/src/application/saga-governance/list_saga_member_permission_state/index.ts`
+- `server/src/application/saga-governance/set_saga_member_bundle/index.ts`
+- `server/src/application/saga-governance/set_saga_binding_reveal/index.ts`
+- `server/src/modules/saga/index.ts`
+- `server/src/modules/permissions/index.ts`
 - `server/src/application/commands/get_my_saga_permissions.ts`
 - `server/src/application/commands/list_saga_bindings.ts`
 - `server/src/application/commands/list_saga_member_permission_state.ts`
 - `server/src/application/commands/set_saga_member_bundle.ts`
 - `server/src/application/commands/set_saga_binding_reveal.ts`
+- `server/src/application/saga-governance/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -872,10 +951,16 @@ Saga-Übersicht, Lore und Outcome-Übernahme
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/saga-projections/get_saga_overview/index.ts`
+- `server/src/application/saga-projections/get_saga_lore_timeline/index.ts`
+- `server/src/application/saga-projections/promote_session_outcome_to_saga/index.ts`
+- `server/src/application/saga-projections/promote_session_outcome_to_world/index.ts`
+- `server/src/modules/saga/index.ts`
 - `server/src/application/commands/get_saga_overview.ts`
 - `server/src/application/commands/get_saga_lore_timeline.ts`
 - `server/src/application/commands/promote_session_outcome_to_saga.ts`
 - `server/src/application/commands/promote_session_outcome_to_world.ts`
+- `server/src/application/saga-projections/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -956,11 +1041,18 @@ NPC-Instanzen und Controller-Zuordnung
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/npc-instances/assign_npc_creature_controller/index.ts`
+- `server/src/application/npc-instances/clear_npc_creature_instance_temp_controllers_for_session/index.ts`
+- `server/src/application/npc-instances/spawn_npc_creature_instance/index.ts`
+- `server/src/application/npc-instances/update_npc_creature_instance_runtime/index.ts`
+- `server/src/application/npc-instances/remove_npc_creature_instance/index.ts`
+- `server/src/modules/npc-creature/index.ts`
 - `server/src/application/commands/assign_npc_creature_controller.ts`
 - `server/src/application/commands/clear_npc_creature_instance_temp_controllers_for_session.ts`
 - `server/src/application/commands/spawn_npc_creature_instance.ts`
 - `server/src/application/commands/update_npc_creature_instance_runtime.ts`
 - `server/src/application/commands/remove_npc_creature_instance.ts`
+- `server/src/application/npc-instances/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 
@@ -1016,7 +1108,10 @@ Marketplace-Downloadzähler und Fallback
 
 **Vorgeschlagene Zielmodule:**
 
+- `server/src/application/marketplace-count/increment_marketplace_downloads/index.ts`
+- `server/src/modules/marketplace/index.ts`
 - `server/src/application/commands/increment_marketplace_downloads.ts`
+- `server/src/application/marketplace-count/__tests__`
 
 **Quellpfade einschließlich transitiver Definitionen/Decoder:**
 

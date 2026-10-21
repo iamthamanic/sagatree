@@ -11,7 +11,7 @@ Saga-Versionen und native Katalogprojektion: get_native_saga_definition_by_slug,
 
 ## Goal
 
-Saga-Versionen und native Katalogprojektion: get_native_saga_definition_by_slug, get_saga_definition_version als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_native_saga_definition_by_slug.ts, server/src/application/commands/get_saga_definition_version.ts.
+Saga-Versionen und native Katalogprojektion: get_native_saga_definition_by_slug, get_saga_definition_version als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/saga-version-read/get_native_saga_definition_by_slug/index.ts, server/src/application/saga-version-read/get_saga_definition_version/index.ts, server/src/modules/saga/index.ts, server/src/application/commands/get_native_saga_definition_by_slug.ts, server/src/application/commands/get_saga_definition_version.ts, server/src/application/saga-version-read/__tests__.
 
 ## Non-Goals
 
@@ -29,12 +29,12 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/saga/
 
 ### Nachher und Verhalten
 
-Saga-Versionen und native Katalogprojektion: get_native_saga_definition_by_slug, get_saga_definition_version als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/commands/get_native_saga_definition_by_slug.ts, server/src/application/commands/get_saga_definition_version.ts.
+Saga-Versionen und native Katalogprojektion: get_native_saga_definition_by_slug, get_saga_definition_version als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren. Zielpfade: server/src/application/saga-version-read/get_native_saga_definition_by_slug/index.ts, server/src/application/saga-version-read/get_saga_definition_version/index.ts, server/src/modules/saga/index.ts, server/src/application/commands/get_native_saga_definition_by_slug.ts, server/src/application/commands/get_saga_definition_version.ts, server/src/application/saga-version-read/__tests__.
 
 ## Scope
 
 - Quellpfade: `src/domains/saga/contracts/saga-definition.ts`, `src/infrastructure/saga/saga-definition-service.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/004_project_membership_security.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/064_saga_editor_v1.sql`, `supabase/migrations/072_dornhain_seed_and_character_rls.sql`, `supabase/migrations/073_sagatree_schema_rename_compat.sql`, `supabase/migrations/085_fix_function_bodies_sagatree.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`
-- Änderbare Zielpfade: `server/src/application/commands/get_native_saga_definition_by_slug.ts`, `server/src/application/commands/get_saga_definition_version.ts`
+- Änderbare Zielpfade: `server/src/application/saga-version-read/get_native_saga_definition_by_slug/index.ts`, `server/src/application/saga-version-read/get_saga_definition_version/index.ts`, `server/src/modules/saga/index.ts`, `server/src/application/commands/get_native_saga_definition_by_slug.ts`, `server/src/application/commands/get_saga_definition_version.ts`, `server/src/application/saga-version-read/__tests__`
 - Quellverträge: `.qa/intake/rpc-contracts/get_native_saga_definition_by_slug.md`, `.qa/intake/rpc-contracts/get_saga_definition_version.md`
 
 ## Security & Data
