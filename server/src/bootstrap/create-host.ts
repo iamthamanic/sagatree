@@ -89,7 +89,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const pingLogPath = join(config.dataDir, 'ping-log.jsonl');
 
     const identity = createIdentityPorts(actorId);
-    const permissions = createPermissionsPorts();
+    const permissions = createPermissionsPorts(db);
     createWorldPorts();
     createProjectPorts();
     const ops = createOpsPorts({
