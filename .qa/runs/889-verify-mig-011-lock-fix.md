@@ -1,6 +1,6 @@
 # Verify Ticket — PR #889 / MIG-011 follow-up (MERGE-889 WAIT)
 
-- HEAD: `20b5c25e30ed477b4b81e86b878e1e2dedc4555b` (code tip; docs commit may follow as proof-only descendant)
+- HEAD: `cb1ac7b125fbb25d957ada6281930cd7d89d23cd` (code tip; docs commit may follow as proof-only descendant)
 - Date: 2026-10-21
 - Verdict: **PASS** (local)
 

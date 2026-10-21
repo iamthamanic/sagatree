@@ -1,6 +1,6 @@
 # Review Ticket — PR #889 (MERGE-889 WAIT head)
 
-- HEAD: `20b5c25e30ed477b4b81e86b878e1e2dedc4555b`
+- HEAD: `cb1ac7b125fbb25d957ada6281930cd7d89d23cd`
 - Date: 2026-10-21
 - Verdict: **ACCEPT** (with Info notes; no Critical/High open)
 
