@@ -26,8 +26,8 @@ Updated: 2026-10-21 (MERGE-884 ALLOW-KNOWN-RED + GATE-04 APPROVED implementation
 ## Continuation
 
 1. ~~#789 MIG-010~~ done  
-2. ~~Record GATE-04~~ done (this package)  
-3. **Start #790 MIG-011** under `@ecc-runner-loop`
+2. ~~Record GATE-04~~ done (this package / PR #886 → `00b07b78`)  
+3. **#790 MIG-011** in progress — SQLite schema bootstrap + migration runner
 
 ## Safety
 
