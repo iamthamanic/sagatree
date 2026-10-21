@@ -4,7 +4,16 @@
  * HTTP error boundary, identity fail-closed, privilege-independent data-dir deny.
  * Location: scripts/mig-010-host-skeleton.self-test.mjs
  */
-import { mkdtempSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
+import {
+  mkdtempSync,
+  rmSync,
+  writeFileSync,
+  existsSync,
+  readFileSync,
+  chmodSync,
+  accessSync,
+  constants,
+} from 'node:fs';
 import { createServer } from 'node:http';
 import { createConnection } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -110,6 +119,50 @@ assert(
   'forced unwritable error must use DATA_DIR_NOT_WRITABLE message',
 );
 rmSync(writableProbe, { recursive: true, force: true });
+
+// Deterministic data-dir failure C: real accessSync(..., W_OK) denial on an existing directory.
+// mkdirSync is a no-op on an existing dir; only the W_OK check fails for non-root on mode 0500.
+// Root: chmod does not deny write — document NOT RUN (do not fake PASS).
+const euid = typeof process.geteuid === 'function' ? process.geteuid() : null;
+let realWokPermissionTest = 'NOT RUN';
+let realWokPermissionReason = 'unknown';
+if (euid === 0) {
+  realWokPermissionTest = 'NOT RUN';
+  realWokPermissionReason =
+    'process euid=0; mode 0500 directories remain writable — no unprivileged test context available';
+} else {
+  const roExistingDir = mkdtempSync(join(tmpdir(), 'mig010-wok-'));
+  assert(existsSync(roExistingDir), 'W_OK probe directory must already exist before createHost');
+  chmodSync(roExistingDir, 0o500);
+  let preAccessDenied = false;
+  try {
+    accessSync(roExistingDir, constants.W_OK);
+  } catch {
+    preAccessDenied = true;
+  }
+  assert(
+    preAccessDenied,
+    'precondition: accessSync(W_OK) must fail on mode 0500 for non-root before createHost',
+  );
+  const wokDenied = createHost({
+    SAGATREE_DATA_DIR: roExistingDir,
+    SAGATREE_PORT: '8792',
+    SAGATREE_HOST: '127.0.0.1',
+  });
+  assert(
+    'error' in wokDenied && wokDenied.code === 1,
+    'real W_OK denial must fail createHost with exit code 1',
+  );
+  assert(
+    String(wokDenied.error).includes('not writable'),
+    'real W_OK denial must surface DATA_DIR_NOT_WRITABLE message',
+  );
+  chmodSync(roExistingDir, 0o700);
+  rmSync(roExistingDir, { recursive: true, force: true });
+  realWokPermissionTest = 'PASS';
+  realWokPermissionReason =
+    'existing mode-0500 directory: mkdirSync no-op, accessSync(W_OK) denied, createHost DATA_DIR_NOT_WRITABLE';
+}
 
 // AC3: shutdown rejects mutations; prior data retained
 const host3 = createHost({
@@ -249,17 +302,18 @@ assert(!mainOut.stdout.includes(SECRET_MARKER) && !mainOut.stderr.includes(SECRE
 assert(!mainOut.stderr.includes('not-json'), 'main must not print raw identity file contents');
 rmSync(corruptDir, { recursive: true, force: true });
 
-// --- Regression 3 note: privilege independence of data-dir deny ---
-// The regular-file-as-data-dir case above does not use chmod and fails under root and non-root.
-assert(typeof process.getuid !== 'function' || true, 'data-dir deny path is chmod-independent');
-
 rmSync(dataDir, { recursive: true, force: true });
 console.log(
   JSON.stringify({
     ok: true,
     message: 'MIG-010 host skeleton self-test passed.',
     uid: typeof process.getuid === 'function' ? process.getuid() : null,
-    euid: typeof process.geteuid === 'function' ? process.geteuid() : null,
-    dataDirDeny: 'regular-file-as-path (chmod-independent)',
+    euid,
+    dataDirDeny: {
+      regularFileAsPath: 'PASS',
+      forceUnwritableHook: 'PASS',
+      realAccessSyncWok: realWokPermissionTest,
+      realAccessSyncWokReason: realWokPermissionReason,
+    },
   }),
 );

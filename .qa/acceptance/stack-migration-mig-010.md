@@ -9,7 +9,7 @@ Implementation acceptance: **hardening in review** (HTTP boundary, identity fail
 | AC / finding | Proof |
 | --- | --- |
 | Readiness only after init; same data dir after restart | `scripts/mig-010-host-skeleton.self-test.mjs` AC1 |
-| Invalid config / busy port / data-dir deny → exit + redacted cause | self-test AC2 — data-dir deny uses **regular file as path** (chmod-independent; root run NOT RUN locally without passwordless sudo) |
+| Invalid config / busy port / data-dir deny → exit + redacted cause | self-test AC2 — (A) regular file as path; (B) force-unwritable hook; (C) **real `accessSync(W_OK)`** on existing mode-0500 dir under non-root (PASS euid=501); root → NOT RUN |
 | Shutdown rejects mutations; confirmed data retained | self-test AC3 |
 | HTTP invalid request-target → 400; host stays healthy | self-test Regression 1 (raw `GET http://[`) |
 | Unexpected handler error → 500, no promise rejection, no secret leak | self-test Regression 1 (throwing health use-case) |
