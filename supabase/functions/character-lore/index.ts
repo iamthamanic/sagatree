@@ -6,10 +6,10 @@ import {
 } from '../_shared/character-lore-prompt.ts';
 import {
   generateCharacterLore,
-  resolveCharacterLoreProviderConfig,
 } from '../_shared/character-lore-provider.ts';
 import { consumePersistentCharacterLoreRateLimit } from '../_shared/character-lore-rate-limit.ts';
 import { canUseWorldLoreReference } from '../_shared/character-lore-access.ts';
+import { resolveLlmProviderForUser } from '../_shared/ollama-llm-resolve.ts';
 import {
   corsHeaders,
   handleOptions,
@@ -439,11 +439,20 @@ serve(async (request: Request) => {
     return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);
   }
 
-  const providerConfig = resolveCharacterLoreProviderConfig();
+  const providerConfig = await resolveLlmProviderForUser(
+    supabaseConfig.serviceRoleKey
+      ? {
+          url: supabaseConfig.url,
+          serviceRoleKey: supabaseConfig.serviceRoleKey,
+        }
+      : null,
+    userId,
+  );
   if (!providerConfig) {
     return jsonResponse(request, {
       status: 'not-configured',
-      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',
+      message:
+        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',
     });
   }
 

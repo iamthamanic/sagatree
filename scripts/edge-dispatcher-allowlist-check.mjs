@@ -46,6 +46,7 @@ for (const name of [
   'item-model3d',
   'session-recap',
   'ai-provider-credentials',
+  'ollama-settings',
 ]) {
   if (!allowSrc.includes(`'${name}'`)) {
     fail(`allowlist must include hardened mount ${name}`);
