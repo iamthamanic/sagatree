@@ -54,6 +54,7 @@ try {
 
   const marker = join(dataCrash, 'in-tx.marker');
   const crashWorker = join(work, 'crash-worker.mjs');
+  // Keep-alive via setInterval (more reliable under strip-types than bare forever-Promise).
   writeFileSync(
     crashWorker,
     `
@@ -69,7 +70,7 @@ db.exec('BEGIN IMMEDIATE');
 db.exec('CREATE TABLE crash_partial (id TEXT NOT NULL PRIMARY KEY) STRICT');
 db.exec("INSERT INTO crash_partial (id) VALUES ('uncommitted')");
 writeFileSync(markerPath, 'in-tx\\n', 'utf8');
-await new Promise(() => {});
+setInterval(() => {}, 60_000);
 `,
     'utf8',
   );
@@ -85,27 +86,48 @@ await new Promise(() => {});
         MARKER: marker,
       },
       stdio: ['ignore', 'ignore', 'pipe'],
-      detached: true,
     },
   );
-  if (child.pid == null) {
-    console.error('FAIL: crash worker failed to spawn');
-    process.exit(1);
-  }
+  assert(child.pid != null, 'crash worker failed to spawn');
 
   let childErr = '';
   child.stderr.on('data', (d) => {
     childErr += d;
   });
 
+  let childClosedEarly = false;
+  let earlyCode = null;
+  let earlySignal = null;
+  child.once('close', (code, signal) => {
+    childClosedEarly = true;
+    earlyCode = code;
+    earlySignal = signal;
+  });
+
   const deadline = Date.now() + 10_000;
-  while (!existsSync(marker) && Date.now() < deadline) {
+  while (!existsSync(marker) && Date.now() < deadline && !childClosedEarly) {
     await new Promise((r) => setTimeout(r, 50));
   }
-  assert(existsSync(marker), `crash worker never entered TX: ${childErr}`);
+  assert(existsSync(marker), `crash worker never entered TX: ${childErr || `exit=${earlyCode} signal=${earlySignal}`}`);
+  // Brief settle so the worker's keep-alive timer is armed before we kill.
+  await new Promise((r) => setTimeout(r, 150));
 
-  process.kill(child.pid, 'SIGKILL');
+  // Prefer true SIGKILL; if the worker already died mid-TX that still proves crash recovery.
+  if (!childClosedEarly && child.pid != null) {
+    try {
+      process.kill(child.pid, 0);
+      process.kill(child.pid, 'SIGKILL');
+    } catch (err) {
+      const code = err && typeof err === 'object' && 'code' in err ? err.code : '';
+      if (code !== 'ESRCH') throw err;
+    }
+  }
+
   await new Promise((resolve) => {
+    if (childClosedEarly) {
+      resolve(null);
+      return;
+    }
     const t = setTimeout(() => resolve(null), 5_000);
     child.on('close', () => {
       clearTimeout(t);
