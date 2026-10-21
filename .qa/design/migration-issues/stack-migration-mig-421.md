@@ -77,12 +77,20 @@ session-recap: Authenticated account must equal projects.gm_user_id for sessions
 - Dann: Non-ended session400, missing session404, eighth-thousand-and-first byte413; quota7 returns429.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-session-recap.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für session-recap und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session-recap ausführt
+- Dann: Provider/persistence failure returns generic500 and never publishes stale or partial generated text.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-session-recap.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json`
+
 ## Acceptance
 
 - [ ] Distinct owner O and project GM G: only G can generate a recap for an ended session; active member/player/foreign X denied.
 - [ ] POST with client highlights/prompt/worldState/summaryText rejects400, and GM-only highlight sentinel never reaches provider.
 - [ ] Successful response coincides with persisted summary_status=draft; publication remains a separate RPC decision.
 - [ ] Non-ended session400, missing session404, eighth-thousand-and-first byte413; quota7 returns429.
+- [ ] Provider/persistence failure returns generic500 and never publishes stale or partial generated text.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

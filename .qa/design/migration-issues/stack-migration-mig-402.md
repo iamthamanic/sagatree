@@ -70,24 +70,72 @@ ai-provider-credentials: After dispatcher JWT validation, GET /auth/v1/user auth
 
 ### Fall 3
 
+- Gegeben: Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt
+- Dann: Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json`
+
+### Fall 4
+
+- Gegeben: Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt
+- Dann: Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json`
+
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt
+- Dann: Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json`
+
+### Fall 6
+
 - Gegeben: Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures
 - Wenn: Der Nachfolger den dokumentierten Fall für ollama-settings ausführt
 - Dann: Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
 
-### Fall 4
+### Fall 7
 
 - Gegeben: Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures
 - Wenn: Der Nachfolger den dokumentierten Fall für ollama-settings ausführt
 - Dann: Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
 
+### Fall 8
+
+- Gegeben: Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ollama-settings ausführt
+- Dann: Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
+
+### Fall 9
+
+- Gegeben: Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ollama-settings ausführt
+- Dann: Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
+
+### Fall 10
+
+- Gegeben: Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ollama-settings ausführt
+- Dann: Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
+
 ## Acceptance
 
 - [ ] Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.
 - [ ] List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.
+- [ ] Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.
+- [ ] Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.
+- [ ] Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone.
 - [ ] Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.
 - [ ] Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.
+- [ ] Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.
+- [ ] Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.
+- [ ] Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

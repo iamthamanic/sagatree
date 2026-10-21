@@ -77,12 +77,140 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Dann: Contract fixture for archive_world_node_subtree: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 7
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 8
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 9
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 10
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 11
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 12
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 13
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 14
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 15
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 16
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 17
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 18
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 19
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
+### Fall 20
+
+- Gegeben: Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für world ausführt
+- Dann: Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-world.json`
+
 ## Acceptance
 
 - [ ] Create world/node/maps; edit/rename/reparent/duplicate/archive/delete with consequence preview and reload into DB-backed tree.
 - [ ] Player sees only explicitly revealed map/place projection for the selected saga; owner without GM privileges follows actual per-RPC policy.
 - [ ] Map pin upload uses storage bucket (not a table); every17 RPC dependency and profile CRUD transport ready before facade cutover.
 - [ ] Contract fixture for archive_world_node_subtree: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

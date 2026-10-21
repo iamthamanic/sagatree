@@ -75,12 +75,20 @@ main: Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny ev
 - Dann: JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-main.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-main.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für main und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für main ausführt
+- Dann: Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-main.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-main.json`
+
 ## Acceptance
 
 - [ ] Every one of15 unmounted workers, main, _shared,unknown and traversal returns404 before JWT/worker creation for GET/POST/OPTIONS.
 - [ ] Both supported URL prefixes reach same allowlisted worker with intact suffix/query/method/body.
 - [ ] Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.
 - [ ] JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.
+- [ ] Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

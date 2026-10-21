@@ -12,8 +12,9 @@ export const featureSlug = (id) => `stack-migration-${id.toLowerCase()}`;
 const evidenceRoot = '.qa/evidence/stack-migration-prep';
 const contractRoot = '.qa/design/migration-issues';
 
+/** Every inventoried requiredTest becomes a binding assertion — no bullet-count truncation. */
 function checksForTests(name, tests, sources) {
-  return tests.slice(0, 4).map((test) => ({ given: `Der eingefrorene Quellvertrag für ${name} und isolierte positive/negative Fixtures`, when: `Der Nachfolger den dokumentierten Fall für ${name} ausführt`, then: test, sourceRefs: sources }));
+  return (tests ?? []).map((test) => ({ given: `Der eingefrorene Quellvertrag für ${name} und isolierte positive/negative Fixtures`, when: `Der Nachfolger den dokumentierten Fall für ${name} ausführt`, then: test, sourceRefs: sources }));
 }
 
 export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInventory, splits }) {
@@ -95,16 +96,15 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
             : 'Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.';
         return `${entry.function}: ${behavior}`;
       });
-      // Keep 2..4 assertions / 3..5 acceptance even when multiple Edge workers share one issue identity.
-      const perEdgeCap = edges.length > 1 ? 2 : 4;
+      // Co-owned Edge workers (e.g. MIG-402 + ollama-settings): preserve ALL requiredTests from EVERY sibling.
       const coOwnedAssertions = edges.flatMap((entry) => checksForTests(
         entry.function,
-        (entry.requiredTests ?? []).slice(0, perEdgeCap),
+        entry.requiredTests ?? [],
         [
           `.qa/intake/edge-infra-contracts/edge-${entry.function}.md`,
           entry.sourceContract,
         ].filter(Boolean),
-      )).slice(0, 4);
+      ));
       definition = {
         intent: behaviorParts.join(' '),
         sources: unique(edges.flatMap((entry) => entry.verification?.sourceFiles?.map((file) => file.path) ?? entry.files)),

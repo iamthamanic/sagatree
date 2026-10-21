@@ -7,11 +7,11 @@ Task
 
 ## Intent
 
-Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen.
+Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.
 
 ## Goal
 
-Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen. Zielpfade: server/src/persistence, server/migrations.
+Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen. Zielpfade: server/src/persistence, server/migrations, server/src/modules.
 
 ## Non-Goals
 
@@ -25,21 +25,21 @@ Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`.
 
 ### Vorher
 
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations, scripts/apply-migrations.sh. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
+Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations, scripts/apply-migrations.sh, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
 
 ### Nachher und Verhalten
 
-Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen. Zielpfade: server/src/persistence, server/migrations.
+Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen. Zielpfade: server/src/persistence, server/migrations, server/src/modules.
 
 ## Scope
 
-- Quellpfade: `supabase/migrations`, `scripts/apply-migrations.sh`
-- Änderbare Zielpfade: `server/src/persistence`, `server/migrations`
-- Quellverträge: `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quellpfade: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+- Änderbare Zielpfade: `server/src/persistence`, `server/migrations`, `server/src/modules`
+- Quellverträge: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ## Security & Data
 
-Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades.
+Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades. Tabellenfamilien bleiben dem owning module aus dem Host-Modulvertrag zugeordnet.
 
 ## Edge Cases
 
@@ -48,27 +48,35 @@ Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte
 - Gegeben: Leere Datenbank und ein freigegebener geordneter Schema-Stand
 - Wenn: der Migrationsrunner zweimal startet
 - Dann: Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 2
 
 - Gegeben: Ein absichtlich fehlerhafter Migrationsschritt
 - Wenn: das Upgrade abbricht
 - Dann: Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 3
 
 - Gegeben: Ein Datenbestand mit UUIDs, Zeitstempeln, JSON und Membership-FKs
 - Wenn: der Integritätscheck läuft
 - Dann: Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.
-- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`
+- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
+
+### Fall 4
+
+- Gegeben: Zwei Domänenmodule mit getrennten Tabellenfamilien
+- Wenn: Persistenzcode landet unter server/
+- Dann: Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.
+- Quelle: `supabase/migrations`, `scripts/apply-migrations.sh`, `docs/architecture/host-modular-monolith.md`
 
 ## Acceptance
 
 - [ ] Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.
 - [ ] Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.
 - [ ] Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.
+- [ ] Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

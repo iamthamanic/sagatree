@@ -71,12 +71,92 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Dann: Contract fixture for create_project_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for ensure_native_starter_project: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for get_my_saga_permissions: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 7
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for get_saga_lore_timeline: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 8
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for get_saga_overview: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 9
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for join_project_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 10
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for list_saga_bindings: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 11
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for list_saga_member_permission_state: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 12
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for set_my_project_character: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 13
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for set_saga_binding_reveal: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
+### Fall 14
+
+- Gegeben: Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für project ausführt
+- Dann: Contract fixture for set_saga_member_bundle: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-project.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-project.json`
+
 ## Acceptance
 
 - [ ] Create project/session,join by code,assign own eligible character and reload overview.
 - [ ] All11 RPC dependencies must be available before facade swap, including permission bundles and reveal bindings.
 - [ ] Wrong GM/member/cross-owner requests denied; reveal/permission changes alter player projection only as specified.
 - [ ] Contract fixture for create_project_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for ensure_native_starter_project: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_my_saga_permissions: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_saga_lore_timeline: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_saga_overview: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for join_project_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for list_saga_bindings: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for list_saga_member_permission_state: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for set_my_project_character: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for set_saga_binding_reveal: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for set_saga_member_bundle: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

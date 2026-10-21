@@ -83,12 +83,28 @@ item-model3d: Authenticate /auth/v1/user. Definition must be active: personal.ow
 - Dann: Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für item-model3d und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für item-model3d ausführt
+- Dann: Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Quellvertrag für item-model3d und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für item-model3d ausführt
+- Dann: Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
+
 ## Acceptance
 
 - [ ] Personal owner and world-profile owner can upload valid GLB<=50MiB; distinct GM/member/foreign user403, archived definition403; no unauthorized storage/provider call.
 - [ ] generate consumes 2/60s per user; request3429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.
 - [ ] Each action returns its exact documented union; model3d uses model3d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.
 - [ ] Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.
+- [ ] Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.
+- [ ] Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

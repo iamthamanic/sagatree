@@ -76,12 +76,20 @@ character-avatar-meshy: Authenticate via /auth/v1/user; jobs are read by owner_u
 - Dann: Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für character-avatar-meshy und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für character-avatar-meshy ausführt
+- Dann: Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json`
+
 ## Acceptance
 
 - [ ] Owner start/poll/retry works without project membership; account X jobId returns404 and cannot sign owner storage path.
 - [ ] Text8..500, nonce1..80,4MiB image and settings enums enforced; unsupported provider rejects400.
 - [ ] Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.
 - [ ] Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.
+- [ ] Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

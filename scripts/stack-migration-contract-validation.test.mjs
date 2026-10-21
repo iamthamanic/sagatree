@@ -223,3 +223,39 @@ test('publication binds labels, title, repository, issue number and content toge
   ];
   for (const mutate of mutations) { const value = structuredClone(base); mutate(value); assert.throws(() => validatePublicationEntry(value)); }
 });
+
+test('MIG-402/#818 preserves every requiredTest from both co-owned Edge contracts (no bullet-count truncation)', () => {
+  const { intake } = buildMigrationPlan({
+    previous: original.intake,
+    registry: original.registry,
+    rpcInventory: original.rpcInventory,
+    edgeInventory: original.edgeInventory,
+    splits: read('.qa/intake/rpc-contracts/split-groups.json'),
+  });
+  const mig402 = intake.issues.find((entry) => entry.localId === 'MIG-402');
+  assert.ok(mig402, 'MIG-402 must exist');
+  const creds = original.edgeInventory.edges.find((entry) => entry.function === 'ai-provider-credentials');
+  const ollama = original.edgeInventory.edges.find((entry) => entry.function === 'ollama-settings');
+  assert.equal(creds.implementationIssue, 818);
+  assert.equal(ollama.implementationIssue, 818);
+  const missing = [...creds.requiredTests, ...ollama.requiredTests].filter((test) => !mig402.acceptance.includes(test));
+  assert.deepEqual(missing, [], `truncated requiredTests on MIG-402: ${missing.map((t) => t.slice(0, 60)).join(' | ')}`);
+  assert.ok(mig402.acceptance.length >= creds.requiredTests.length + ollama.requiredTests.length + 1);
+  const markers = [/429/, /rate|quota/i, /503|encryption|encrypt/i, /storage|persist/i, /apiKey|secret_ciphertext|hasApiKey/i];
+  for (const marker of markers) {
+    assert.ok(mig402.acceptance.some((line) => marker.test(line)), `MIG-402 acceptance must retain ${marker}`);
+  }
+  // Simulated truncation regression: capping co-owned tests must fail validation coverage.
+  const input = clone();
+  const target = issue(input, 'MIG-402');
+  const kept = [...creds.requiredTests.slice(0, 2), ...ollama.requiredTests.slice(0, 2)];
+  target.assertions = kept.map((then) => ({
+    given: 'truncated fixture',
+    when: 'truncated case',
+    then,
+    sourceRefs: ['.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md'],
+  }));
+  target.acceptance = [...kept, 'Touched files: zero type escape hatches (typed-strict / Boy Scout).'];
+  target.contractSections.tests = [...target.acceptance];
+  rejects(input, /MIG-402: missing binding Edge requiredTest/);
+});

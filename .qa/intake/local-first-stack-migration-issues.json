@@ -995,7 +995,8 @@
       "before": {
         "paths": [
           "src/lib/supabase.ts",
-          "docs/architektur-sqlite-based.md"
+          "docs/architektur-sqlite-based.md",
+          "docs/architecture/host-modular-monolith.md"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
@@ -1003,17 +1004,21 @@
       "after": {
         "paths": [
           "server/src/bootstrap",
-          "server/src/config"
+          "server/src/config",
+          "server/src/modules",
+          "server/src/application"
         ],
-        "behavior": "Einen konfigurierbaren lokalen Node-Host mit ehrlicher Readiness und geordnetem Lebenszyklus bereitstellen.",
+        "behavior": "Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen.",
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
-      "behavior": "Einen konfigurierbaren lokalen Node-Host mit ehrlicher Readiness und geordnetem Lebenszyklus bereitstellen.",
-      "security": "Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration. Health-Ausgaben enthalten keine Tokens, Schlüssel oder Dateiinhalte.",
+      "behavior": "Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen.",
+      "security": "Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration. Health-Ausgaben enthalten keine Tokens, Schlüssel oder Dateiinhalte. Modulgrenzen und Repository-Ownership aus docs/architecture/host-modular-monolith.md sind verbindlich; ORM-Wahl (GATE-01) ersetzt sie nicht.",
       "scope": {
         "mayChange": [
           "server/src/bootstrap",
-          "server/src/config"
+          "server/src/config",
+          "server/src/modules",
+          "server/src/application"
         ],
         "mustNotChange": [
           "production data",
@@ -1029,6 +1034,7 @@
         "Der Host meldet Readiness erst nach erfolgreicher Initialisierung und verwendet nach Neustart dasselbe Datenverzeichnis.",
         "Der Prozess endet mit Fehlercode und einer redigierten Ursache; er meldet nicht fälschlich gesund und weicht nicht still auf ein neues Verzeichnis aus.",
         "Neue Mutationen werden abgewiesen, bereits bestätigte Daten bleiben erhalten und Listener/DB-Ressourcen werden geschlossen.",
+        "server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -1038,7 +1044,8 @@
           "then": "Der Host meldet Readiness erst nach erfolgreicher Initialisierung und verwendet nach Neustart dasselbe Datenverzeichnis.",
           "sourceRefs": [
             "src/lib/supabase.ts",
-            "docs/architektur-sqlite-based.md"
+            "docs/architektur-sqlite-based.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1047,7 +1054,8 @@
           "then": "Der Prozess endet mit Fehlercode und einer redigierten Ursache; er meldet nicht fälschlich gesund und weicht nicht still auf ein neues Verzeichnis aus.",
           "sourceRefs": [
             "src/lib/supabase.ts",
-            "docs/architektur-sqlite-based.md"
+            "docs/architektur-sqlite-based.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1056,7 +1064,18 @@
           "then": "Neue Mutationen werden abgewiesen, bereits bestätigte Daten bleiben erhalten und Listener/DB-Ressourcen werden geschlossen.",
           "sourceRefs": [
             "src/lib/supabase.ts",
-            "docs/architektur-sqlite-based.md"
+            "docs/architektur-sqlite-based.md",
+            "docs/architecture/host-modular-monolith.md"
+          ]
+        },
+        {
+          "given": "Der verbindliche Host-Modulvertrag und die Repository-Architekturregeln",
+          "when": "MIG-010 den Composition-Root und die Modul-DAG verdrahtet",
+          "then": "server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.",
+          "sourceRefs": [
+            "src/lib/supabase.ts",
+            "docs/architektur-sqlite-based.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         }
       ],
@@ -1067,14 +1086,15 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/lib/supabase.ts, docs/architektur-sqlite-based.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
-        "nachher": "Einen konfigurierbaren lokalen Node-Host mit ehrlicher Readiness und geordnetem Lebenszyklus bereitstellen. Zielpfade: server/src/bootstrap, server/src/config.",
-        "verhalten": "Einen konfigurierbaren lokalen Node-Host mit ehrlicher Readiness und geordnetem Lebenszyklus bereitstellen.",
-        "sicherheit": "Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration. Health-Ausgaben enthalten keine Tokens, Schlüssel oder Dateiinhalte.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/lib/supabase.ts, docs/architektur-sqlite-based.md, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "nachher": "Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen. Zielpfade: server/src/bootstrap, server/src/config, server/src/modules, server/src/application.",
+        "verhalten": "Einen konfigurierbaren lokalen Node-Host als Modular Monolith mit ehrlicher Readiness, geordnetem Lebenszyklus und zentralem Composition-Root bereitstellen.",
+        "sicherheit": "Standard-Listener bleibt Loopback; Remote-Bind benötigt explizite Konfiguration. Health-Ausgaben enthalten keine Tokens, Schlüssel oder Dateiinhalte. Modulgrenzen und Repository-Ownership aus docs/architecture/host-modular-monolith.md sind verbindlich; ORM-Wahl (GATE-01) ersetzt sie nicht.",
         "tests": [
           "Der Host meldet Readiness erst nach erfolgreicher Initialisierung und verwendet nach Neustart dasselbe Datenverzeichnis.",
           "Der Prozess endet mit Fehlercode und einer redigierten Ursache; er meldet nicht fälschlich gesund und weicht nicht still auf ein neues Verzeichnis aus.",
           "Neue Mutationen werden abgewiesen, bereits bestätigte Daten bleiben erhalten und Listener/DB-Ressourcen werden geschlossen.",
+          "server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; Modul-Boundary-Checks laufen zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -1114,7 +1134,8 @@
       "before": {
         "paths": [
           "supabase/migrations",
-          "scripts/apply-migrations.sh"
+          "scripts/apply-migrations.sh",
+          "docs/architecture/host-modular-monolith.md"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
@@ -1122,17 +1143,19 @@
       "after": {
         "paths": [
           "server/src/persistence",
-          "server/migrations"
+          "server/migrations",
+          "server/src/modules"
         ],
-        "behavior": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen.",
+        "behavior": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.",
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
-      "behavior": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen.",
-      "security": "Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades.",
+      "behavior": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.",
+      "security": "Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades. Tabellenfamilien bleiben dem owning module aus dem Host-Modulvertrag zugeordnet.",
       "scope": {
         "mayChange": [
           "server/src/persistence",
-          "server/migrations"
+          "server/migrations",
+          "server/src/modules"
         ],
         "mustNotChange": [
           "production data",
@@ -1148,6 +1171,7 @@
         "Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.",
         "Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.",
         "Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.",
+        "Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -1157,7 +1181,8 @@
           "then": "Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.",
           "sourceRefs": [
             "supabase/migrations",
-            "scripts/apply-migrations.sh"
+            "scripts/apply-migrations.sh",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1166,7 +1191,8 @@
           "then": "Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.",
           "sourceRefs": [
             "supabase/migrations",
-            "scripts/apply-migrations.sh"
+            "scripts/apply-migrations.sh",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1175,7 +1201,18 @@
           "then": "Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.",
           "sourceRefs": [
             "supabase/migrations",
-            "scripts/apply-migrations.sh"
+            "scripts/apply-migrations.sh",
+            "docs/architecture/host-modular-monolith.md"
+          ]
+        },
+        {
+          "given": "Zwei Domänenmodule mit getrennten Tabellenfamilien",
+          "when": "Persistenzcode landet unter server/",
+          "then": "Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.",
+          "sourceRefs": [
+            "supabase/migrations",
+            "scripts/apply-migrations.sh",
+            "docs/architecture/host-modular-monolith.md"
           ]
         }
       ],
@@ -1186,14 +1223,15 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations, scripts/apply-migrations.sh. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
-        "nachher": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen. Zielpfade: server/src/persistence, server/migrations.",
-        "verhalten": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung aufbauen.",
-        "sicherheit": "Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations, scripts/apply-migrations.sh, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "nachher": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen. Zielpfade: server/src/persistence, server/migrations, server/src/modules.",
+        "verhalten": "Den freigegebenen SQLite-Schemakatalog mit atomarem Migrationsjournal und Fremdschlüsselprüfung im Host-Persistenzmodul aufbauen.",
+        "sicherheit": "Schema-Upgrades dürfen keine Owner-/Membership-Zuordnung verlieren. Dateirechte und DB-Lock verhindern konkurrierende nicht koordinierte Upgrades. Tabellenfamilien bleiben dem owning module aus dem Host-Modulvertrag zugeordnet.",
         "tests": [
           "Tabellen, Indizes, Constraints und Journal entstehen genau einmal; foreign_keys ist für jede Verbindung aktiviert und schema_version bleibt beim zweiten Lauf unverändert.",
           "Schema und Journal rollen gemeinsam zurück; der nächste Start meldet denselben fehlgeschlagenen Schritt statt ein teilweise migriertes Schema als bereit auszugeben.",
           "Die dokumentierten Postgres→SQLite-Abbildungen erhalten Identitäten und Null-Semantik; orphaned Memberships und ungültige Fremdschlüssel lassen das Gate scheitern.",
+          "Jede Tabelle gehört genau einem Modul laut host-modular-monolith; fremde Module importieren keine privaten persistence-Pfade und schreiben nicht über Roh-SQL in fremde Aggregate.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -1233,22 +1271,25 @@
         "paths": [
           "supabase/migrations/015_inventory_item_definitions.sql",
           "supabase/migrations",
-          "docs/ops/negative-authz-suite.md"
+          "docs/ops/negative-authz-suite.md",
+          "docs/architecture/host-modular-monolith.md"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
       },
       "after": {
         "paths": [
+          "server/src/modules/permissions",
           "server/src/permissions"
         ],
-        "behavior": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen mit deny-by-default abbilden.",
+        "behavior": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permissions-Moduls mit deny-by-default abbilden.",
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
-      "behavior": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen mit deny-by-default abbilden.",
-      "security": "Identität, Welt-Owner, Projekt-GM und aktive Membership werden unabhängig geprüft. Legacy-Berechtigungsdefekte bekommen eine explizite sichere Abweichung und keinen Paritätsbonus.",
+      "behavior": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permissions-Moduls mit deny-by-default abbilden.",
+      "security": "Identität, Welt-Owner, Projekt-GM und aktive Membership werden unabhängig geprüft. Legacy-Berechtigungsdefekte bekommen eine explizite sichere Abweichung und keinen Paritätsbonus. permissions ist der einzige Policy-Einstieg für Host-Mutationen.",
       "scope": {
         "mayChange": [
+          "server/src/modules/permissions",
           "server/src/permissions"
         ],
         "mustNotChange": [
@@ -1265,6 +1306,7 @@
         "Owner-only Weltoperationen erlauben O und verweigern G; GM-only Sessionoperationen erlauben G und verweigern O ohne GM-Rolle; Spieler sehen ausschließlich ihre erlaubte Projektion.",
         "Alle vier Fälle werden ohne Mutation und ohne Offenlegung privater Ressourcendaten abgewiesen.",
         "Jeder Einstieg erfordert denselben geprüften Actor und dieselbe Policy; ein Callsite-Scan und ein direkter Bypass-Negativtest weisen keinen offenen Alternativpfad aus.",
+        "Der Aufruf geht über modules/permissions public API; ORM-/SQL-Bypässe in persistence bleiben zusätzliche High-Findings bis Import-Boundary-CI greift und ersetzen keine Modul-Boundary-Prüfung.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -1275,7 +1317,8 @@
           "sourceRefs": [
             "supabase/migrations/015_inventory_item_definitions.sql",
             "supabase/migrations",
-            "docs/ops/negative-authz-suite.md"
+            "docs/ops/negative-authz-suite.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1285,7 +1328,8 @@
           "sourceRefs": [
             "supabase/migrations/015_inventory_item_definitions.sql",
             "supabase/migrations",
-            "docs/ops/negative-authz-suite.md"
+            "docs/ops/negative-authz-suite.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1295,7 +1339,19 @@
           "sourceRefs": [
             "supabase/migrations/015_inventory_item_definitions.sql",
             "supabase/migrations",
-            "docs/ops/negative-authz-suite.md"
+            "docs/ops/negative-authz-suite.md",
+            "docs/architecture/host-modular-monolith.md"
+          ]
+        },
+        {
+          "given": "Ein Domänenmodul oder Use-Case",
+          "when": "eine geschützte Mutation ausführt",
+          "then": "Der Aufruf geht über modules/permissions public API; ORM-/SQL-Bypässe in persistence bleiben zusätzliche High-Findings bis Import-Boundary-CI greift und ersetzen keine Modul-Boundary-Prüfung.",
+          "sourceRefs": [
+            "supabase/migrations/015_inventory_item_definitions.sql",
+            "supabase/migrations",
+            "docs/ops/negative-authz-suite.md",
+            "docs/architecture/host-modular-monolith.md"
           ]
         }
       ],
@@ -1306,14 +1362,15 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations/015_inventory_item_definitions.sql, supabase/migrations, docs/ops/negative-authz-suite.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
-        "nachher": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen mit deny-by-default abbilden. Zielpfade: server/src/permissions.",
-        "verhalten": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen mit deny-by-default abbilden.",
-        "sicherheit": "Identität, Welt-Owner, Projekt-GM und aktive Membership werden unabhängig geprüft. Legacy-Berechtigungsdefekte bekommen eine explizite sichere Abweichung und keinen Paritätsbonus.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/migrations/015_inventory_item_definitions.sql, supabase/migrations, docs/ops/negative-authz-suite.md, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "nachher": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permissions-Moduls mit deny-by-default abbilden. Zielpfade: server/src/modules/permissions, server/src/permissions.",
+        "verhalten": "RLS-/SECURITY-DEFINER-Regeln als explizite Policy-Service-Operationen des permissions-Moduls mit deny-by-default abbilden.",
+        "sicherheit": "Identität, Welt-Owner, Projekt-GM und aktive Membership werden unabhängig geprüft. Legacy-Berechtigungsdefekte bekommen eine explizite sichere Abweichung und keinen Paritätsbonus. permissions ist der einzige Policy-Einstieg für Host-Mutationen.",
         "tests": [
           "Owner-only Weltoperationen erlauben O und verweigern G; GM-only Sessionoperationen erlauben G und verweigern O ohne GM-Rolle; Spieler sehen ausschließlich ihre erlaubte Projektion.",
           "Alle vier Fälle werden ohne Mutation und ohne Offenlegung privater Ressourcendaten abgewiesen.",
           "Jeder Einstieg erfordert denselben geprüften Actor und dieselbe Policy; ein Callsite-Scan und ein direkter Bypass-Negativtest weisen keinen offenen Alternativpfad aus.",
+          "Der Aufruf geht über modules/permissions public API; ORM-/SQL-Bypässe in persistence bleiben zusätzliche High-Findings bis Import-Boundary-CI greift und ersetzen keine Modul-Boundary-Prüfung.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -1351,23 +1408,26 @@
       "before": {
         "paths": [
           "src/infrastructure/world",
-          "src/domains/world"
+          "src/domains/world",
+          "docs/architecture/host-modular-monolith.md"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
       },
       "after": {
         "paths": [
+          "server/src/modules/world",
           "server/src/repositories/world",
           "src/infrastructure/world"
         ],
-        "behavior": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren.",
+        "behavior": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren.",
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
-      "behavior": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren.",
-      "security": "Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen.",
+      "behavior": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren.",
+      "security": "Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen. world-Ownership und öffentliche Read-Ports folgen dem Host-Modulvertrag.",
       "scope": {
         "mayChange": [
+          "server/src/modules/world",
           "server/src/repositories/world",
           "src/infrastructure/world"
         ],
@@ -1385,6 +1445,7 @@
         "IDs, Nullwerte, Sortierung und fachliche Fehler bleiben im Vergleich zur Quellbaseline gleich; HTTP/ORM-Typen gelangen nicht in src/domains.",
         "Die Query gibt weder die Welt noch private Attribute zurück; ein leeres Filterargument erweitert keine Owner-Grenze.",
         "Die Query liefert den gespeicherten Stand und keine nur im Arbeitsspeicher gehaltene Ersatzantwort.",
+        "Kein Cross-Module-Import von world/internal oder world/persistence; Joins entstehen im Use-Case über DTOs, nicht über fremde Tabellenmaps.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -1394,7 +1455,8 @@
           "then": "IDs, Nullwerte, Sortierung und fachliche Fehler bleiben im Vergleich zur Quellbaseline gleich; HTTP/ORM-Typen gelangen nicht in src/domains.",
           "sourceRefs": [
             "src/infrastructure/world",
-            "src/domains/world"
+            "src/domains/world",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1403,7 +1465,8 @@
           "then": "Die Query gibt weder die Welt noch private Attribute zurück; ein leeres Filterargument erweitert keine Owner-Grenze.",
           "sourceRefs": [
             "src/infrastructure/world",
-            "src/domains/world"
+            "src/domains/world",
+            "docs/architecture/host-modular-monolith.md"
           ]
         },
         {
@@ -1412,7 +1475,18 @@
           "then": "Die Query liefert den gespeicherten Stand und keine nur im Arbeitsspeicher gehaltene Ersatzantwort.",
           "sourceRefs": [
             "src/infrastructure/world",
-            "src/domains/world"
+            "src/domains/world",
+            "docs/architecture/host-modular-monolith.md"
+          ]
+        },
+        {
+          "given": "Ein session- oder character-Use-Case benötigt Weltdaten",
+          "when": "er liest über den öffentlichen world-Read-Port",
+          "then": "Kein Cross-Module-Import von world/internal oder world/persistence; Joins entstehen im Use-Case über DTOs, nicht über fremde Tabellenmaps.",
+          "sourceRefs": [
+            "src/infrastructure/world",
+            "src/domains/world",
+            "docs/architecture/host-modular-monolith.md"
           ]
         }
       ],
@@ -1423,14 +1497,15 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/world, src/domains/world. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
-        "nachher": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren. Zielpfade: server/src/repositories/world, src/infrastructure/world.",
-        "verhalten": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren.",
-        "sicherheit": "Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/world, src/domains/world, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "nachher": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren. Zielpfade: server/src/modules/world, server/src/repositories/world, src/infrastructure/world.",
+        "verhalten": "Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren.",
+        "sicherheit": "Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen. world-Ownership und öffentliche Read-Ports folgen dem Host-Modulvertrag.",
         "tests": [
           "IDs, Nullwerte, Sortierung und fachliche Fehler bleiben im Vergleich zur Quellbaseline gleich; HTTP/ORM-Typen gelangen nicht in src/domains.",
           "Die Query gibt weder die Welt noch private Attribute zurück; ein leeres Filterargument erweitert keine Owner-Grenze.",
           "Die Query liefert den gespeicherten Stand und keine nur im Arbeitsspeicher gehaltene Ersatzantwort.",
+          "Kein Cross-Module-Import von world/internal oder world/persistence; Joins entstehen im Use-Case über DTOs, nicht über fremde Tabellenmaps.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8221,8 +8296,14 @@
       "acceptance": [
         "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
         "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+        "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
+        "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
+        "Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone.",
         "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
         "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+        "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
+        "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
+        "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8245,6 +8326,33 @@
           ]
         },
         {
+          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
+          "then": "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
+          "then": "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
+          "then": "Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
+          ]
+        },
+        {
           "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
           "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
           "then": "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
@@ -8257,6 +8365,33 @@
           "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
           "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
           "then": "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
+          "then": "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
+          "then": "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
+          "then": "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.",
           "sourceRefs": [
             ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
@@ -8280,8 +8415,14 @@
         "tests": [
           "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
           "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+          "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
+          "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
+          "Inject refresh persistence failure: record current ignored PATCH behavior and require explicit successor error contract; never claim key refresh was durably stored from response alone.",
           "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
           "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+          "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
+          "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
+          "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8641,6 +8782,7 @@
         "Text8..500, nonce1..80,4MiB image and settings enums enforced; unsupported provider rejects400.",
         "Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.",
         "Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.",
+        "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8679,6 +8821,15 @@
             ".qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für character-avatar-meshy und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für character-avatar-meshy ausführt",
+          "then": "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json"
+          ]
         }
       ],
       "verification": {
@@ -8700,6 +8851,7 @@
           "Text8..500, nonce1..80,4MiB image and settings enums enforced; unsupported provider rejects400.",
           "Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.",
           "Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.",
+          "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8793,6 +8945,7 @@
         "128001-byte body rejected; parser truncates/clamps each documented field and rejects ruleset/UUID enum violations.",
         "Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.",
         "Seventh request inside default window returns429; missing persistent store returns503 before provider use.",
+        "Generated story is nonempty and <=12000, and errors do not return provider/API secrets.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8831,6 +8984,15 @@
             ".qa/intake/edge-infra-contracts/edge-character-lore.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für character-lore und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für character-lore ausführt",
+          "then": "Generated story is nonempty and <=12000, and errors do not return provider/API secrets.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-character-lore.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json"
+          ]
         }
       ],
       "verification": {
@@ -8851,6 +9013,7 @@
           "128001-byte body rejected; parser truncates/clamps each documented field and rejects ruleset/UUID enum violations.",
           "Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.",
           "Seventh request inside default window returns429; missing persistent store returns503 before provider use.",
+          "Generated story is nonempty and <=12000, and errors do not return provider/API secrets.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9309,6 +9472,8 @@
         "generate consumes 2/60s per user; request3429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
         "Each action returns its exact documented union; model3d uses model3d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
         "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+        "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+        "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9347,6 +9512,24 @@
             ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für item-model3d und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für item-model3d ausführt",
+          "then": "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für item-model3d und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für item-model3d ausführt",
+          "then": "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
+          ]
         }
       ],
       "verification": {
@@ -9369,6 +9552,8 @@
           "generate consumes 2/60s per user; request3429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
           "Each action returns its exact documented union; model3d uses model3d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
           "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+          "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+          "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9464,6 +9649,8 @@
         "generate consumes 4/60s per user; request5429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
         "Each action returns its exact documented union; assetKey uses thumbnail2d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
         "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+        "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+        "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9502,6 +9689,24 @@
             ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für item-thumbnail und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für item-thumbnail ausführt",
+          "then": "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für item-thumbnail und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für item-thumbnail ausführt",
+          "then": "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
+          ]
         }
       ],
       "verification": {
@@ -9523,6 +9728,8 @@
           "generate consumes 4/60s per user; request5429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
           "Each action returns its exact documented union; assetKey uses thumbnail2d:, undefined fields omitted, signed URL lifetime604800s, latest-job null when absent.",
           "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
+          "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
+          "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9730,6 +9937,7 @@
         "Foreign-user path, traversal and backslash cannot cause storage fetch; inline bytes override storagePath when both present.",
         "Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.",
         "Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.",
+        "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9768,6 +9976,15 @@
             ".qa/intake/edge-infra-contracts/edge-look-reference-analysis.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für look-reference-analysis und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für look-reference-analysis ausführt",
+          "then": "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-look-reference-analysis.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json"
+          ]
         }
       ],
       "verification": {
@@ -9788,6 +10005,7 @@
           "Foreign-user path, traversal and backslash cannot cause storage fetch; inline bytes override storagePath when both present.",
           "Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.",
           "Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.",
+          "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10599,6 +10817,7 @@
         "Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.",
         "No project_members row403 even if legacy session_players fixture exists; inactive member403.",
         "Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.",
+        "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10637,6 +10856,15 @@
             ".qa/intake/edge-infra-contracts/edge-session-media-token.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session-media-token und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session-media-token ausführt",
+          "then": "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-session-media-token.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json"
+          ]
         }
       ],
       "verification": {
@@ -10657,6 +10885,7 @@
           "Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.",
           "No project_members row403 even if legacy session_players fixture exists; inactive member403.",
           "Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.",
+          "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10751,6 +10980,7 @@
         "POST with client highlights/prompt/worldState/summaryText rejects400, and GM-only highlight sentinel never reaches provider.",
         "Successful response coincides with persisted summary_status=draft; publication remains a separate RPC decision.",
         "Non-ended session400, missing session404, eighth-thousand-and-first byte413; quota7 returns429.",
+        "Provider/persistence failure returns generic500 and never publishes stale or partial generated text.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10789,6 +11019,15 @@
             ".qa/intake/edge-infra-contracts/edge-session-recap.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session-recap und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session-recap ausführt",
+          "then": "Provider/persistence failure returns generic500 and never publishes stale or partial generated text.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-session-recap.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json"
+          ]
         }
       ],
       "verification": {
@@ -10807,6 +11046,7 @@
           "POST with client highlights/prompt/worldState/summaryText rejects400, and GM-only highlight sentinel never reaches provider.",
           "Successful response coincides with persisted summary_status=draft; publication remains a separate RPC decision.",
           "Non-ended session400, missing session404, eighth-thousand-and-first byte413; quota7 returns429.",
+          "Provider/persistence failure returns generic500 and never publishes stale or partial generated text.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10894,6 +11134,7 @@
         "Both supported URL prefixes reach same allowlisted worker with intact suffix/query/method/body.",
         "Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.",
         "JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.",
+        "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10932,6 +11173,15 @@
             ".qa/intake/edge-infra-contracts/edge-main.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-main.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für main und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für main ausführt",
+          "then": "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-main.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-main.json"
+          ]
         }
       ],
       "verification": {
@@ -10952,6 +11202,7 @@
           "Both supported URL prefixes reach same allowlisted worker with intact suffix/query/method/body.",
           "Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.",
           "JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.",
+          "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -12579,6 +12830,9 @@
         "Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.",
         "Contract fixture for assign_npc_creature_controller: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -12617,6 +12871,33 @@
             ".qa/intake/edge-infra-contracts/infra-npc-creature.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für npc-creature ausführt",
+          "then": "Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-npc-creature.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für npc-creature ausführt",
+          "then": "Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-npc-creature.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für npc-creature ausführt",
+          "then": "Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-npc-creature.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json"
+          ]
         }
       ],
       "verification": {
@@ -12635,6 +12916,9 @@
           "Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.",
           "Contract fixture for assign_npc_creature_controller: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -12725,6 +13009,16 @@
         "All11 RPC dependencies must be available before facade swap, including permission bundles and reveal bindings.",
         "Wrong GM/member/cross-owner requests denied; reveal/permission changes alter player projection only as specified.",
         "Contract fixture for create_project_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for ensure_native_starter_project: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_my_saga_permissions: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_saga_lore_timeline: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_saga_overview: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for join_project_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for list_saga_bindings: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for list_saga_member_permission_state: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for set_my_project_character: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for set_saga_binding_reveal: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for set_saga_member_bundle: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -12763,6 +13057,96 @@
             ".qa/intake/edge-infra-contracts/infra-project.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for ensure_native_starter_project: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for get_my_saga_permissions: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for get_saga_lore_timeline: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for get_saga_overview: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for join_project_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for list_saga_bindings: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for list_saga_member_permission_state: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for set_my_project_character: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for set_saga_binding_reveal: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für project und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für project ausführt",
+          "then": "Contract fixture for set_saga_member_bundle: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-project.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json"
+          ]
         }
       ],
       "verification": {
@@ -12781,6 +13165,16 @@
           "All11 RPC dependencies must be available before facade swap, including permission bundles and reveal bindings.",
           "Wrong GM/member/cross-owner requests denied; reveal/permission changes alter player projection only as specified.",
           "Contract fixture for create_project_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for ensure_native_starter_project: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_my_saga_permissions: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_saga_lore_timeline: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_saga_overview: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for join_project_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for list_saga_bindings: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for list_saga_member_permission_state: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for set_my_project_character: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for set_saga_binding_reveal: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for set_saga_member_bundle: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -12976,6 +13370,16 @@
         "Duplicate saga playthrough and promote allowed session outcomes retain side effects and deny foreign owner/GM.",
         "All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available.",
         "Contract fixture for copy_native_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for create_project_from_saga_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for create_user_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for duplicate_saga_playthrough: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_native_saga_definition_by_slug: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_saga_definition_editor: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for promote_session_outcome_to_saga: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for promote_session_outcome_to_world: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for publish_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for save_saga_definition_draft: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -13014,6 +13418,96 @@
             ".qa/intake/edge-infra-contracts/infra-saga.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for create_project_from_saga_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for create_user_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for duplicate_saga_playthrough: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for get_native_saga_definition_by_slug: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for get_saga_definition_editor: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for get_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for promote_session_outcome_to_saga: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for promote_session_outcome_to_world: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for publish_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für saga und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für saga ausführt",
+          "then": "Contract fixture for save_saga_definition_draft: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-saga.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-saga.json"
+          ]
         }
       ],
       "verification": {
@@ -13032,6 +13526,16 @@
           "Duplicate saga playthrough and promote allowed session outcomes retain side effects and deny foreign owner/GM.",
           "All11 RPCs, including promote_session_outcome_to_saga and promote_session_outcome_to_world through the typed callPromote helper, must be mapped and available.",
           "Contract fixture for copy_native_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for create_project_from_saga_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for create_user_saga_definition: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for duplicate_saga_playthrough: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_native_saga_definition_by_slug: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_saga_definition_editor: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for promote_session_outcome_to_saga: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for promote_session_outcome_to_world: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for publish_saga_definition_version: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for save_saga_definition_draft: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -13140,6 +13644,18 @@
         "Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.",
         "Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.",
         "Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.",
+        "Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -13178,6 +13694,114 @@
             ".qa/intake/edge-infra-contracts/infra-session.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für session ausführt",
+          "then": "Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
         }
       ],
       "verification": {
@@ -13200,6 +13824,18 @@
           "Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.",
           "Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.",
           "Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.",
+          "Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -13529,6 +14165,22 @@
         "Player sees only explicitly revealed map/place projection for the selected saga; owner without GM privileges follows actual per-RPC policy.",
         "Map pin upload uses storage bucket (not a table); every17 RPC dependency and profile CRUD transport ready before facade cutover.",
         "Contract fixture for archive_world_node_subtree: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -13567,6 +14219,150 @@
             ".qa/intake/edge-infra-contracts/infra-world.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für world und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für world ausführt",
+          "then": "Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json"
+          ]
         }
       ],
       "verification": {
@@ -13585,6 +14381,22 @@
           "Player sees only explicitly revealed map/place projection for the selected saga; owner without GM privileges follows actual per-RPC policy.",
           "Map pin upload uses storage bucket (not a table); every17 RPC dependency and profile CRUD transport ready before facade cutover.",
           "Contract fixture for archive_world_node_subtree: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for create_world_node_with_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for delete_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for duplicate_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for ensure_world_atlas_root: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for get_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for list_world_atlas_maps: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for list_world_place_map_links: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for list_world_places: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for preview_world_node_consequences: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for rename_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for reparent_world_node: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for save_world_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for upsert_world_atlas_map: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for upsert_world_place: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Contract fixture for upsert_world_place_map_link: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [

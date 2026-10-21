@@ -81,12 +81,20 @@ character-lore: Authenticate via /auth/v1/user. Optional projectId requires proj
 - Dann: Seventh request inside default window returns429; missing persistent store returns503 before provider use.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-character-lore.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für character-lore und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für character-lore ausführt
+- Dann: Generated story is nonempty and <=12000, and errors do not return provider/API secrets.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-character-lore.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json`
+
 ## Acceptance
 
 - [ ] An owner direct-world request and an active member request to their GM-owned project world generate; unrelated private-world and mismatched project/world requests fail before provider context inclusion.
 - [ ] 128001-byte body rejected; parser truncates/clamps each documented field and rejects ruleset/UUID enum violations.
 - [ ] Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.
 - [ ] Seventh request inside default window returns429; missing persistent store returns503 before provider use.
+- [ ] Generated story is nonempty and <=12000, and errors do not return provider/API secrets.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

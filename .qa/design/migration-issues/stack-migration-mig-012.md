@@ -7,11 +7,11 @@ Task
 
 ## Intent
 
-Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren.
+Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren.
 
 ## Goal
 
-Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren. Zielpfade: server/src/repositories/world, src/infrastructure/world.
+Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren. Zielpfade: server/src/modules/world, server/src/repositories/world, src/infrastructure/world.
 
 ## Non-Goals
 
@@ -25,21 +25,21 @@ Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`.
 
 ### Vorher
 
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/world, src/domains/world. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
+Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/world, src/domains/world, docs/architecture/host-modular-monolith.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
 
 ### Nachher und Verhalten
 
-Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen etablieren. Zielpfade: server/src/repositories/world, src/infrastructure/world.
+Einen transportfreien Repository-Port anhand autorisierter Welt-Leseoperationen im world-Modul etablieren. Zielpfade: server/src/modules/world, server/src/repositories/world, src/infrastructure/world.
 
 ## Scope
 
-- Quellpfade: `src/infrastructure/world`, `src/domains/world`
-- Änderbare Zielpfade: `server/src/repositories/world`, `src/infrastructure/world`
-- Quellverträge: `src/infrastructure/world`, `src/domains/world`
+- Quellpfade: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
+- Änderbare Zielpfade: `server/src/modules/world`, `server/src/repositories/world`, `src/infrastructure/world`
+- Quellverträge: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
 
 ## Security & Data
 
-Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen.
+Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Projektberechtigung wird vor der Projektion abgewiesen. world-Ownership und öffentliche Read-Ports folgen dem Host-Modulvertrag.
 
 ## Edge Cases
 
@@ -48,27 +48,35 @@ Ein Repository-Aufruf erhält einen geprüften Actor-Kontext; fehlende Owner-/Pr
 - Gegeben: Bestehende Welt-Repository-Aufrufer und der neue Host-Adapter
 - Wenn: dieselben autorisierten Weltabfragen ausgeführt werden
 - Dann: IDs, Nullwerte, Sortierung und fachliche Fehler bleiben im Vergleich zur Quellbaseline gleich; HTTP/ORM-Typen gelangen nicht in src/domains.
-- Quelle: `src/infrastructure/world`, `src/domains/world`
+- Quelle: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 2
 
 - Gegeben: X kennt die Welt-ID von O
 - Wenn: X dieselbe Query über den Host ausführt
 - Dann: Die Query gibt weder die Welt noch private Attribute zurück; ein leeres Filterargument erweitert keine Owner-Grenze.
-- Quelle: `src/infrastructure/world`, `src/domains/world`
+- Quelle: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
 
 ### Fall 3
 
 - Gegeben: Persistierte Weltänderung und ein Host-Neustart
 - Wenn: der Adapter erneut liest
 - Dann: Die Query liefert den gespeicherten Stand und keine nur im Arbeitsspeicher gehaltene Ersatzantwort.
-- Quelle: `src/infrastructure/world`, `src/domains/world`
+- Quelle: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
+
+### Fall 4
+
+- Gegeben: Ein session- oder character-Use-Case benötigt Weltdaten
+- Wenn: er liest über den öffentlichen world-Read-Port
+- Dann: Kein Cross-Module-Import von world/internal oder world/persistence; Joins entstehen im Use-Case über DTOs, nicht über fremde Tabellenmaps.
+- Quelle: `src/infrastructure/world`, `src/domains/world`, `docs/architecture/host-modular-monolith.md`
 
 ## Acceptance
 
 - [ ] IDs, Nullwerte, Sortierung und fachliche Fehler bleiben im Vergleich zur Quellbaseline gleich; HTTP/ORM-Typen gelangen nicht in src/domains.
 - [ ] Die Query gibt weder die Welt noch private Attribute zurück; ein leeres Filterargument erweitert keine Owner-Grenze.
 - [ ] Die Query liefert den gespeicherten Stand und keine nur im Arbeitsspeicher gehaltene Ersatzantwort.
+- [ ] Kein Cross-Module-Import von world/internal oder world/persistence; Joins entstehen im Use-Case über DTOs, nicht über fremde Tabellenmaps.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

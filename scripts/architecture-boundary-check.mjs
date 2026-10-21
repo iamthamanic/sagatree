@@ -35,6 +35,16 @@ export const ALLOWED_SRC_CODE_ROOTS = new Set([
 /** Composition-root TS/JS files allowed directly under src/ (not feature dumping). */
 export const ALLOWED_SRC_TOP_LEVEL_FILES = new Set(['App.tsx', 'main.tsx']);
 
+/**
+ * Registered non-src host package roots (Epic #773 modular monolith).
+ * Presence is required; layout rules apply once TypeScript appears under them.
+ * See docs/architecture/host-modular-monolith.md.
+ */
+export const REGISTERED_HOST_PACKAGE_ROOTS = new Set(['server']);
+
+const SERVER_PRIVATE_SEGMENTS = /(?:^|\/)(?:internal|persistence)(?:\/|$)/;
+const SERVER_PRIVATE_IMPORT = /(?:^|[\\/])server\/src\/modules\/[^/]+\/(?:internal|persistence)(?:\/|$)/;
+
 const IMPORT_PATH_RULES = {
   domains: [
     { label: 'React', test: (p) => /^react(?:\/|$)/.test(p) },
@@ -344,6 +354,85 @@ function directoryContainsSource(dir) {
 }
 
 /**
+ * Ensure registered host package roots exist and enforce modular-monolith
+ * import rules once server/src TypeScript is present.
+ * Module-boundary checks are ADDITIONAL to future ORM/client import bans.
+ */
+export function checkRegisteredHostPackages(rootDir = root) {
+  const violations = [];
+  for (const name of REGISTERED_HOST_PACKAGE_ROOTS) {
+    const abs = join(rootDir, name);
+    if (!existsSync(abs)) {
+      violations.push({
+        file: name,
+        rule: 'registered host package root missing (host modular monolith)',
+        scope: 'host-package-registry',
+      });
+      continue;
+    }
+    const readme = join(abs, 'README.md');
+    if (!existsSync(readme)) {
+      violations.push({
+        file: `${name}/README.md`,
+        rule: 'registered host package requires README anchoring the module contract',
+        scope: 'host-package-registry',
+      });
+    } else {
+      const text = readFileSync(readme, 'utf8');
+      if (!text.includes('host-modular-monolith')) {
+        violations.push({
+          file: `${name}/README.md`,
+          rule: 'host package README must reference docs/architecture/host-modular-monolith.md',
+          scope: 'host-package-registry',
+        });
+      }
+    }
+  }
+
+  const serverSrc = join(rootDir, 'server', 'src');
+  if (!existsSync(serverSrc)) return violations;
+
+  const serverFiles = walkFiles(serverSrc).filter((file) => SOURCE_EXT.test(file));
+  for (const file of serverFiles) {
+    const rel = relative(rootDir, file).replace(/\\/g, '/');
+    const content = readFileSync(file, 'utf8');
+    const moduleMatch = rel.match(/^server\/src\/modules\/([^/]+)\//);
+    const fromModule = moduleMatch?.[1] ?? null;
+    for (const importPath of extractImportPaths(content)) {
+      const normalized = importPath.replace(/\\/g, '/');
+      if (SERVER_PRIVATE_IMPORT.test(normalized) || /modules\/[^/]+\/(?:internal|persistence)/.test(normalized)) {
+        const targetModule = normalized.match(/modules\/([^/]+)\//)?.[1];
+        if (targetModule && fromModule && targetModule === fromModule && SERVER_PRIVATE_SEGMENTS.test(rel)) {
+          continue; // same-module private import ok
+        }
+        if (targetModule && fromModule && targetModule === fromModule) {
+          continue;
+        }
+        if (rel.startsWith('server/src/bootstrap/') || rel.startsWith('server/src/http/')) {
+          continue; // composition roots may wire privates
+        }
+        violations.push({
+          file: rel,
+          rule: `cross-module private import (${normalized})`,
+          scope: 'host-module-boundary',
+        });
+      }
+      if (fromModule && /(?:^|[\\/])server\/src\/modules\/([^/]+)\//.test(normalized)) {
+        const targetModule = normalized.match(/modules\/([^/]+)\//)?.[1];
+        if (targetModule && targetModule !== fromModule && /\/(?:internal|persistence)(?:\/|$)/.test(normalized)) {
+          violations.push({
+            file: rel,
+            rule: `module ${fromModule} imports private path of ${targetModule}`,
+            scope: 'host-module-boundary',
+          });
+        }
+      }
+    }
+  }
+  return violations;
+}
+
+/**
  * Reject unknown src/* dumping grounds: non-allowlisted directories with TS/JS,
  * and non-allowlisted top-level source files (e.g. src/NewCharacterService.ts).
  */
@@ -524,6 +613,8 @@ export function runArchitectureBoundaryCheck(options = {}) {
   let legacyCurrent = [];
   let legacyBaseline = [];
   let legacyRemoved = 0;
+
+  violations.push(...checkRegisteredHostPackages(rootDir));
 
   if (!skipLegacyFreeze) {
     violations.push(...checkEradicatedLegacyRoots(rootDir));

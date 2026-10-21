@@ -75,12 +75,20 @@ session-media-token: /auth/v1/user identity -> sessions.project_id -> project_me
 - Dann: Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für session-media-token und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session-media-token ausführt
+- Dann: Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
+
 ## Acceptance
 
 - [ ] Distinct active player/GM/viewer accounts receive only server-derived room/identity/grants; foreign account403 and caller-supplied role/capabilities/room ignored.
 - [ ] Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.
 - [ ] No project_members row403 even if legacy session_players fixture exists; inactive member403.
 - [ ] Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.
+- [ ] Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

@@ -77,12 +77,108 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Dann: Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 7
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 8
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 9
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 10
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 11
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 12
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 13
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 14
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 15
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 16
+
+- Gegeben: Der eingefrorene Quellvertrag für session und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für session ausführt
+- Dann: Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
 ## Acceptance
 
 - [ ] All12 exact RPC variants and2 Edge invokes preserve argument/error/decoder contracts; wrong user/GM/foreign session cannot mutate runtime.
 - [ ] Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.
 - [ ] Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.
 - [ ] Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.
+- [ ] Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

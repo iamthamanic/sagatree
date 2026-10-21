@@ -71,12 +71,36 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Dann: Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
+- Dann: Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
+- Dann: Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
+
+### Fall 7
+
+- Gegeben: Der eingefrorene Quellvertrag für npc-creature und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für npc-creature ausführt
+- Dann: Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-npc-creature.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json`
+
 ## Acceptance
 
 - [ ] Create/read/update allowed definitions; spawn/update/remove session instance through documented RPC and reload.
 - [ ] Assign/revoke controller and clear only session-scoped temporary controllers; wrong owner/player mutation denied.
 - [ ] Contract fixture for assign_npc_creature_controller: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - [ ] Contract fixture for clear_npc_creature_instance_temp_controllers_for_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for remove_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for spawn_npc_creature_instance: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Contract fixture for update_npc_creature_instance_runtime: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

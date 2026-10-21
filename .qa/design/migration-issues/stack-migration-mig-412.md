@@ -75,12 +75,20 @@ look-reference-analysis: Authenticated user; storage references must normalize t
 - Dann: Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-look-reference-analysis.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Quellvertrag für look-reference-analysis und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für look-reference-analysis ausführt
+- Dann: Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-look-reference-analysis.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json`
+
 ## Acceptance
 
 - [ ] 1 and10 valid images accepted; 0/11 images, duplicate IDs, unsupported MIME, invalid weights and absent bytes/storage rejected400.
 - [ ] Foreign-user path, traversal and backslash cannot cause storage fetch; inline bytes override storagePath when both present.
 - [ ] Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.
 - [ ] Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.
+- [ ] Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers

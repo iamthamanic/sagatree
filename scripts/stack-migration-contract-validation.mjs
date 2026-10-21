@@ -103,12 +103,13 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     }
     if (!same(issue.contractSections?.abhaengigkeiten, issue.dependsOn)) error(`${id}: dependency copies disagree`);
     if (!same(issue.contractSections?.tests, issue.acceptance)) error(`${id}: acceptance and contract tests disagree`);
-    if (!strings(issue.acceptance) || issue.acceptance.length < 3 || issue.acceptance.length > 5) error(`${id}: acceptance must have 3..5 nonempty entries`);
+    // Minimum counts only — never truncate inventoried requiredTests to fit a bullet-count cap.
+    if (!strings(issue.acceptance) || issue.acceptance.length < 3) error(`${id}: acceptance must have at least 3 nonempty entries`);
     const substantive = array(issue.acceptance).filter((value) => text(value) && !GENERIC.test(value));
     if (substantive.length < 2) error(`${id}: acceptance contains insufficient operation-specific criteria`);
     if (!array(issue.acceptance).some((value) => value === 'Touched files: zero type escape hatches (typed-strict / Boy Scout).')) error(`${id}: missing typed-strict acceptance`);
     if (PLACEHOLDER.test(JSON.stringify(issue))) error(`${id}: unresolved placeholder or guessed contract`);
-    if (!Array.isArray(issue.assertions) || issue.assertions.length < 2 || issue.assertions.length > 4) error(`${id}: requires 2..4 explicit behavior assertions`);
+    if (!Array.isArray(issue.assertions) || issue.assertions.length < 2) error(`${id}: requires at least 2 explicit behavior assertions`);
     for (const [index, assertion] of array(issue.assertions).entries()) {
       if (!plain(assertion) || !text(assertion.given) || !text(assertion.when) || !text(assertion.then)) error(`${id}: assertion ${index + 1} requires given/when/then`);
       if (!strings(assertion?.sourceRefs)) error(`${id}: assertion ${index + 1} has no source reference`);
@@ -204,6 +205,27 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
         for (const dep of unionHard) if (!array(owner.dependsOn).includes(dep)) error(`${owner.localId}: missing inventoried prerequisite ${dep}`);
         if (!setEqual(array(owner.integrationWith), [...unionPeers])) error(`${owner.localId}: integration peer inventory drift`);
         if (!setEqual(array(owner.ownedPrerequisites), [...unionOwned])) error(`${owner.localId}: owned internal prerequisite inventory drift`);
+      }
+      // Binding coverage: every inventoried Edge/Infra requiredTest must appear on the owning issue acceptance.
+      for (const [issueNumber, siblings] of edgeRowsByIssue) {
+        const owner = issues.find((issue) => issue.githubIssue === issueNumber);
+        if (!owner) continue;
+        for (const sibling of siblings) {
+          for (const required of array(sibling.requiredTests)) {
+            if (!array(owner.acceptance).includes(required)) {
+              error(`${owner.localId}: missing binding Edge requiredTest from ${sibling.function}: ${required.slice(0, 80)}`);
+            }
+          }
+        }
+      }
+      for (const row of infraRows) {
+        const owner = issues.find((issue) => issue.githubIssue === row.implementationIssue);
+        if (!owner) continue;
+        for (const required of array(row.requiredTests)) {
+          if (!array(owner.acceptance).includes(required)) {
+            error(`${owner.localId}: missing binding Infrastructure requiredTest from ${row.area}: ${required.slice(0, 80)}`);
+          }
+        }
       }
     } catch (cause) { error(`Dependency resolution failed: ${cause.message}`); }
   }
