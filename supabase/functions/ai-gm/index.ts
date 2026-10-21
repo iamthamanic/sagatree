@@ -5,6 +5,8 @@ import {
 } from '../_shared/cors.ts';
 import { consumePersistentAiGmRateLimit } from '../_shared/ai-gm-rate-limit.ts';
 import { assertSessionMemberAccess } from '../_shared/session-membership-gate.ts';
+import { resolveLlmProviderForUser } from '../_shared/ollama-llm-resolve.ts';
+import type { CharacterLoreProviderConfig } from '../_shared/character-lore-provider.ts';
 
 const CORS_OPTS: CorsOptions = {
   missingOriginPolicy: 'configured-or-star',
@@ -104,6 +106,55 @@ const AI_BASE_URL = (
 const AI_API_KEY = (Deno.env.get("CHARACTER_AI_API_KEY") || "").trim()
 const LOREKEEPER_URL = Deno.env.get("LOREKEEPER_URL") || "http://localhost:9998/functions/v1/lorekeeper"
 const SESSIONS_URL = Deno.env.get("SESSIONS_URL") || "http://localhost:9998/functions/v1/sessions"
+
+function envFallbackProvider(): CharacterLoreProviderConfig {
+  if (AI_PROVIDER === 'openai-compatible' && AI_BASE_URL && AI_API_KEY) {
+    return {
+      provider: 'openai-compatible',
+      baseUrl: AI_BASE_URL,
+      model: AI_MODEL || OLLAMA_MODEL,
+      apiKey: AI_API_KEY,
+    }
+  }
+  return {
+    provider: 'ollama',
+    baseUrl: AI_BASE_URL || OLLAMA_HOST,
+    model: AI_MODEL || OLLAMA_MODEL,
+  }
+}
+
+async function resolveOptionalUserId(req: Request): Promise<string | null> {
+  const authorization = req.headers.get('Authorization')?.trim()
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  if (!authorization?.startsWith('Bearer ') || !anonKey || !url) return null
+  try {
+    const response = await fetch(`${url.replace(/\/+$/, '')}/auth/v1/user`, {
+      headers: { Authorization: authorization, apikey: anonKey },
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!response.ok) return null
+    const body: unknown = await response.json()
+    return body && typeof body === 'object' && typeof (body as { id?: unknown }).id === 'string'
+      ? (body as { id: string }).id
+      : null
+  } catch {
+    return null
+  }
+}
+
+async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderConfig> {
+  const userId = await resolveOptionalUserId(req)
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  const resolved = await resolveLlmProviderForUser(
+    userId && serviceRoleKey && url
+      ? { url: url.replace(/\/+$/, ''), serviceRoleKey }
+      : null,
+    userId,
+  )
+  return resolved ?? envFallbackProvider()
+}
 
 // System prompts by tone (KISS: Keep It Simple)
 const SYSTEM_PROMPTS: Record<string, string> = {
@@ -383,21 +434,22 @@ async function updateSessionWorldState(sessionId: string, worldState: Partial<Wo
 async function* generateOpenAiCompatibleNarrative(
   prompt: string,
   stream: boolean,
+  provider: CharacterLoreProviderConfig,
 ): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {
-  if (!AI_BASE_URL || !AI_API_KEY) {
+  if (!provider.baseUrl || !provider.apiKey) {
     throw new Error(
-      "openai-compatible requires CHARACTER_AI_BASE_URL and CHARACTER_AI_API_KEY",
+      "openai-compatible requires base URL and API key (Settings → AI → Organize or CHARACTER_AI_*)",
     )
   }
 
-  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
+  const response = await fetch(`${provider.baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${AI_API_KEY}`,
+      Authorization: `Bearer ${provider.apiKey}`,
     },
     body: JSON.stringify({
-      model: AI_MODEL,
+      model: provider.model,
       stream,
       temperature: 0.85,
       messages: [
@@ -462,19 +514,20 @@ async function* generateOpenAiCompatibleNarrative(
 
 async function* generateNarrative(
   prompt: string,
-  stream: boolean = true
+  stream: boolean = true,
+  provider: CharacterLoreProviderConfig = envFallbackProvider(),
 ): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {
-  if (AI_PROVIDER === "openai-compatible") {
-    yield* generateOpenAiCompatibleNarrative(prompt, stream)
+  if (provider.provider === "openai-compatible") {
+    yield* generateOpenAiCompatibleNarrative(prompt, stream, provider)
     return
   }
 
-  const ollamaHost = AI_BASE_URL || OLLAMA_HOST
+  const ollamaHost = provider.baseUrl || OLLAMA_HOST
   const response = await fetch(`${ollamaHost}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: AI_MODEL || OLLAMA_MODEL,
+      model: provider.model || OLLAMA_MODEL,
       prompt,
       stream,
     }),
@@ -664,6 +717,7 @@ serve(async (req: Request) => {
       
       // Build prompt
       const prompt = buildPrompt(request)
+      const provider = await resolveGmProvider(req)
       
       // Generate narrative
       if (stream) {
@@ -673,7 +727,7 @@ serve(async (req: Request) => {
         const readableStream = new ReadableStream({
           async start(controller) {
             try {
-              for await (const chunk of generateNarrative(prompt, true)) {
+              for await (const chunk of generateNarrative(prompt, true, provider)) {
                 if (chunk.type === 'narrative' && chunk.content) {
                   fullNarrative += chunk.content
                   controller.enqueue(encoder.encode(JSON.stringify({
@@ -720,7 +774,7 @@ serve(async (req: Request) => {
         // Non-streaming
         let fullNarrative = ''
         
-        for await (const chunk of generateNarrative(prompt, false)) {
+        for await (const chunk of generateNarrative(prompt, false, provider)) {
           if (chunk.type === 'narrative' && chunk.content) {
             fullNarrative = chunk.content
           }

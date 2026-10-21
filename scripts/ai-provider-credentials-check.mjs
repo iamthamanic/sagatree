@@ -58,8 +58,10 @@ check(!/msy_[A-Za-z0-9]{8,}/.test(clientSvc), 'client service has no hardcoded m
 
 const panel = read('src/app/profile/AiProviderCredentialsPanel.tsx');
 check(panel.includes('aiProviderCredentialsService'), 'settings panel uses infrastructure service');
-check(panel.includes('Hinzugefügt'), 'panel shows added_at copy');
 check(panel.includes('Credits'), 'panel shows credits copy');
+const editDialog = read('src/app/profile/AiProviderCredentialsEditDialog.tsx');
+check(editDialog.includes('Hinzugefügt'), 'edit dialog shows added_at copy');
+check(panel.includes('AiProviderCredentialsEditDialog'), 'panel opens credentials edit dialog');
 
 const profile = read('src/app/profile/Profile.tsx');
 check(profile.includes('AiProviderCredentialsPanel'), 'Profile mounts provider panel');
