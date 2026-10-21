@@ -5,14 +5,17 @@
 - Call sites:
   - `src/infrastructure/world/world-atlas-service.ts`
 
-### Parameters (guess from SQL — verify)
+### Parameters (verified against `supabase/migrations/105_atlas_worldbuilder_player_projection.sql`)
 ```
 p_world_profile_id UUID
+p_player_view BOOLEAN DEFAULT false
+p_saga_public_id TEXT DEFAULT NULL
 ```
+The player view requires a resolved Saga project; missing/invalid saga scope must fail closed and never return a private atlas catalog.
 
-### Returns (guess): `JSONB`
+### Returns (verified): `JSONB`
 
-### Tables (guess): jsonb_array_elements, public, v_layers, v_row, v_rows
+### Source relations and guards: `world_atlas_maps`, `atlas_wb_resolve_saga_project`, `atlas_wb_party_revealed_map_ids`, `current_user_can_read_world_profile`, `current_user_can_edit_world_profile`. Verify all dependent tables and policies before the port.
 
 ## NACHHER
 - Module: `server/src/application/commands/list_world_atlas_maps.ts`
