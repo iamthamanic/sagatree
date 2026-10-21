@@ -4,7 +4,10 @@
  * Location: src/app/character/inventory/InventoryEquipmentPanel.tsx
  */
 import { useState, type Dispatch, type DragEvent, type ReactNode, type SetStateAction } from 'react';
-import { CircleHelp, MoreHorizontal } from 'lucide-react';
+import {
+  Question,
+  DotsThree
+} from '@phosphor-icons/react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -229,7 +232,7 @@ function EquipmentSlotTile({
                 aria-label={`${EQUIPMENT_SLOT_LABELS[slot]} Aktionen`}
                 onClick={(event) => event.stopPropagation()}
               >
-                <MoreHorizontal className="h-3.5 w-3.5" />
+                <DotsThree className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -259,7 +262,7 @@ function EquipmentSlotTile({
               data-equipment-slot-help={slot}
               onClick={(event) => event.stopPropagation()}
             >
-              <CircleHelp className="pointer-events-none size-3" />
+              <Question className="pointer-events-none size-3" />
             </button>
           </TooltipTrigger>
           <TooltipContent

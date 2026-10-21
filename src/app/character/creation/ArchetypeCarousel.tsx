@@ -2,7 +2,11 @@
  * ArchetypeCarousel — Swipebare Archetyp-Auswahl mit Icon und Kernfähigkeit, analog zum Spezies-Karussell.
  * Location: src/app/character/creation/ArchetypeCarousel.tsx
  */
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CaretDown,
+  CaretLeft,
+  CaretRight
+} from '@phosphor-icons/react';
 import { sagaTreeArchetypeOptions, type SagaTreeArchetypeKey } from '../../../domains/rules/sagatree/character-creation';
 import { ArchetypeIcon } from './ArchetypeIcon';
 import { RuleHelp } from '../shared/RuleHelp';
@@ -128,7 +132,7 @@ export function ArchetypeCarousel({ selectedArchetype, onSelect, labelledBy = 'a
                             <Collapsible defaultOpen={false}>
                               <CollapsibleTrigger className="group flex w-full items-center justify-between gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-left transition-colors hover:bg-primary/10">
                                 <span className="text-sm font-semibold">{ability.name}</span>
-                                <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                                <CaretDown className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <article className="mt-1.5 space-y-2 rounded-lg border border-primary/30 bg-primary/5 p-3">
@@ -156,10 +160,10 @@ export function ArchetypeCarousel({ selectedArchetype, onSelect, labelledBy = 'a
       {options.length > 1 && (
         <div className={navClass}>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} left-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:left-2 md:h-11 md:w-11`} onClick={scrollPrev} aria-label="Vorheriger Archetyp">
-            <ChevronLeft className="size-5" />
+            <CaretLeft className="size-5" />
           </Button>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} right-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:right-2 md:h-11 md:w-11`} onClick={scrollNext} aria-label="Nächster Archetyp">
-            <ChevronRight className="size-5" />
+            <CaretRight className="size-5" />
           </Button>
         </div>
       )}

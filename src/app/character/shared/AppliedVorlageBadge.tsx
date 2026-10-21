@@ -2,7 +2,9 @@
  * AppliedVorlageBadge — Badge for the create-flow Vorlage that seeded CharacterEditor
  * (system starttemplate or user preset). Location: src/app/character/shared/AppliedVorlageBadge.tsx
  */
-import { Bookmark } from 'lucide-react';
+import {
+  Bookmark
+} from '@phosphor-icons/react';
 import type { SagaTreeStartingTemplateKey } from '../../../domains/rules/sagatree/starting-templates';
 import { Badge } from '../../../shared/ui/badge';
 import { StartingTemplateIcon } from '../creation/StartingTemplateIcon';

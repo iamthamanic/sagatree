@@ -1,9 +1,13 @@
 /**
  * AttributeSkillNode — Centered skill card under the attribute carousel
- * (BackgroundSkillNode visual language: icon, name, CircleHelp attribute hint).
+ * (BackgroundSkillNode visual language: icon, name, Question attribute hint).
  * Location: src/app/character/progression/AttributeSkillNode.tsx
  */
-import { CircleHelp, Minus, Plus } from 'lucide-react';
+import {
+  Question,
+  Minus,
+  Plus
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../shared/ui/tooltip';
@@ -105,7 +109,7 @@ export function AttributeSkillNode({
                     onClick={(event) => event.stopPropagation()}
                     onPointerDown={(event) => event.stopPropagation()}
                   >
-                    <CircleHelp className="pointer-events-none size-3.5" />
+                    <Question className="pointer-events-none size-3.5" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" sideOffset={6} className="max-w-[280px] px-3 py-2 text-left text-xs leading-relaxed">

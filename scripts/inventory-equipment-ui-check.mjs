@@ -87,7 +87,7 @@ section('4 · Labels & Wortlaut');
 requireMatch(labels, /EQUIPMENT_SLOT_LABELS/, 'EQUIPMENT_SLOT_LABELS');
 requireMatch(labels, /EQUIPMENT_SLOT_HELP/, 'Slot help tooltips');
 requireMatch(labels, /Helm|Stirnband/, 'Head help examples');
-requireMatch(equipment, /CircleHelp|data-equipment-slot-help/, 'Slot help trigger');
+requireMatch(equipment, /Question|data-equipment-slot-help/, 'Slot help trigger');
 requireMatch(labels, /Kopfbedeckung/, 'Category hint Kopf');
 requireMatch(labels, /Schuhe \/ Fußschutz/, 'Category hint Füße');
 requireMatch(labels, /feet:\s*'Füße'/, 'Label Füße');

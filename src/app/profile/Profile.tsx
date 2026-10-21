@@ -14,18 +14,18 @@ import {
   User,
   Bell,
   Palette,
-  Volume2,
-  Languages,
-  LogOut,
-  Sparkles,
-  ImageIcon,
-  Box,
-  Video,
-  AudioLines,
-  AlertTriangle,
+  SpeakerHigh,
+  Translate,
+  SignOut,
+  Sparkle,
+  Image,
+  Cube,
+  VideoCamera,
+  Waveform,
+  Warning,
   Check,
-  Copy,
-} from 'lucide-react';
+  Copy
+} from '@phosphor-icons/react';
 import { useAuth } from '../../lib/auth-context';
 import { useTheme } from '../../lib/theme-provider';
 import { toast } from 'sonner';
@@ -140,15 +140,15 @@ export function Profile() {
               Benachrichtigungen
             </TabsTrigger>
             <TabsTrigger value="audio-video" className="gap-1.5" data-settings-tab="audio-video">
-              <Volume2 className="size-3.5" aria-hidden="true" />
-              Audio & Video
+              <SpeakerHigh className="size-3.5" aria-hidden="true" />
+              Audio & VideoCamera
             </TabsTrigger>
             <TabsTrigger value="language" className="gap-1.5" data-settings-tab="language">
-              <Languages className="size-3.5" aria-hidden="true" />
+              <Translate className="size-3.5" aria-hidden="true" />
               Sprache
             </TabsTrigger>
             <TabsTrigger value="ai" className="gap-1.5" data-settings-tab="ai" data-settings-tab-ai>
-              <Sparkles className="size-3.5" aria-hidden="true" />
+              <Sparkle className="size-3.5" aria-hidden="true" />
               AI
             </TabsTrigger>
             <TabsTrigger
@@ -156,7 +156,7 @@ export function Profile() {
               className="gap-1.5 text-destructive"
               data-settings-tab="danger"
             >
-              <AlertTriangle className="size-3.5" aria-hidden="true" />
+              <Warning className="size-3.5" aria-hidden="true" />
               Gefahrenbereich
             </TabsTrigger>
           </TabsList>
@@ -218,7 +218,7 @@ export function Profile() {
                   className="w-full"
                   data-profile-sign-out
                 >
-                  <LogOut className="mr-2 size-4" />
+                  <SignOut className="mr-2 size-4" />
                   Abmelden
                 </Button>
               </CardContent>
@@ -318,8 +318,8 @@ export function Profile() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                  <Volume2 className="size-5" />
-                  Audio & Video
+                  <SpeakerHigh className="size-5" />
+                  Audio & VideoCamera
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
                   Einstellungen für Sessions
@@ -363,7 +363,7 @@ export function Profile() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                  <Languages className="size-5" />
+                  <Translate className="size-5" />
                   Sprache
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">App-Sprache ändern</CardDescription>
@@ -394,11 +394,11 @@ export function Profile() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                  <Sparkles className="size-5" />
+                  <Sparkle className="size-5" />
                   AI
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
-                  Präferenzen für generative Medien (Bild, 3D, Video, Audio)
+                  Präferenzen für generative Medien (Bild, 3D, VideoCamera, Audio)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -410,19 +410,19 @@ export function Profile() {
                 >
                   <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
                     <TabsTrigger value="bild" className="gap-1.5" data-settings-ai-tab="bild">
-                      <ImageIcon className="size-3.5" aria-hidden="true" />
+                      <Image className="size-3.5" aria-hidden="true" />
                       Bild
                     </TabsTrigger>
                     <TabsTrigger value="3d" className="gap-1.5" data-settings-ai-tab="3d">
-                      <Box className="size-3.5" aria-hidden="true" />
+                      <Cube className="size-3.5" aria-hidden="true" />
                       3D
                     </TabsTrigger>
                     <TabsTrigger value="video" className="gap-1.5" data-settings-ai-tab="video">
-                      <Video className="size-3.5" aria-hidden="true" />
-                      Video
+                      <VideoCamera className="size-3.5" aria-hidden="true" />
+                      VideoCamera
                     </TabsTrigger>
                     <TabsTrigger value="audio" className="gap-1.5" data-settings-ai-tab="audio">
-                      <AudioLines className="size-3.5" aria-hidden="true" />
+                      <Waveform className="size-3.5" aria-hidden="true" />
                       Audio
                     </TabsTrigger>
                   </TabsList>
@@ -443,7 +443,7 @@ export function Profile() {
 
                   <TabsContent value="video" className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Provider für KI-Video.
+                      Provider für KI-VideoCamera.
                     </p>
                     <AiProviderCredentialsPanel tab="video" />
                   </TabsContent>

@@ -6,7 +6,9 @@
  * Location: src/app/character/inventory/InventoryItemActions.tsx
  */
 import { useState } from 'react';
-import { MoreHorizontal } from 'lucide-react';
+import {
+  DotsThree
+} from '@phosphor-icons/react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -423,7 +425,7 @@ export function InventoryItemActions({
               setActionsSheetOpen(true);
             }}
           >
-            <MoreHorizontal className="h-5 w-5" />
+            <DotsThree className="h-5 w-5" />
           </Button>
           <Sheet open={actionsSheetOpen} onOpenChange={setActionsSheetOpen}>
             <SheetContent
@@ -455,7 +457,7 @@ export function InventoryItemActions({
               data-inventory-item-actions-trigger
               onClick={(event) => event.stopPropagation()}
             >
-              <MoreHorizontal className="h-4 w-4" />
+              <DotsThree className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>

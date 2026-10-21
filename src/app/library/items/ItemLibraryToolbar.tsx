@@ -2,7 +2,9 @@
  * ItemLibraryToolbar — result count + Liste/Grid/Karussell + primary create CTA (#138).
  * Location: src/app/library/items/ItemLibraryToolbar.tsx
  */
-import { Plus } from 'lucide-react';
+import {
+  Plus
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { LibraryViewModeToggle } from '../LibraryViewModeToggle';
 import type { LibraryViewMode } from '../useLibraryViewMode';

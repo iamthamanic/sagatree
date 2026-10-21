@@ -9,7 +9,9 @@
  * Location: src/app/character/assistant/CharacterAssistantButton.tsx
  */
 import { useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import {
+  Sparkle
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { CharacterAssistantDrawer } from './CharacterAssistantDrawer';
 
@@ -25,7 +27,7 @@ export function CharacterAssistantButton() {
         aria-label="Assistent öffnen"
         aria-haspopup="dialog"
       >
-        <Sparkles className="mr-2 h-4 w-4" />
+        <Sparkle className="mr-2 h-4 w-4" />
         Assistant
       </Button>
       <CharacterAssistantDrawer open={open} onOpenChange={setOpen} />

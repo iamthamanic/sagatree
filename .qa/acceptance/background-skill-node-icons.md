@@ -4,12 +4,12 @@
 
 ## Intent
 
-Hintergrund-Skill-Nodes und der Spezialisierungs-Select zeigen dieselbe Lucide-Fertigkeitsikone wie die übrigen Skill-Selects/Carousels (`SkillIcon`), damit Überzeugen & Co. visuell konsistent sind.
+Hintergrund-Skill-Nodes und der Spezialisierungs-Select zeigen dieselbe Phosphor-Fertigkeitsikone wie die übrigen Skill-Selects/Carousels (`SkillIcon`), damit Überzeugen & Co. visuell konsistent sind.
 
 ## Preconditions
 
 - Branch `feat/background-skill-points-in-nodes` with `BackgroundSkillNode` and specialization Select already present.
-- Existing `SkillIcon` maps every `SagaTreeSkillKey` via Lucide.
+- Existing `SkillIcon` maps every `SagaTreeSkillKey` via Phosphor.
 
 ## Happy Path
 
@@ -30,10 +30,10 @@ Hintergrund-Skill-Nodes und der Spezialisierungs-Select zeigen dieselbe Lucide-F
 
 ## Security Coverage
 
-- F-03: Icons are Lucide components keyed by skill; suggestion names remain text — no HTML injection.
+- F-03: Icons are Phosphor components keyed by skill; suggestion names remain text — no HTML injection.
 - No new endpoints, storage, or auth paths.
 
 ## Implementation Notes
 
-- Reused: `src/app/character/progression/SkillIcon.tsx` (Lucide `SKILL_ICONS` map).
+- Reused: `src/app/character/progression/SkillIcon.tsx` (Phosphor `SKILL_ICONS` map).
 - Touched: `CharacterBackgroundPanel.tsx`, `progression/index.ts` (re-export).

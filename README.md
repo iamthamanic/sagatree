@@ -300,6 +300,7 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
+- **2026-10-21** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
 - **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
 - **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)
 - **2026-10-17** — Donalu-Weltworkspace: Places + Map-Links (`WO-9FFK6`), Orte-Panel, Dungeon Confirm/`manualDirty`, Player-Reveal-RPC; Hybrid 2D/3D Atlas
@@ -309,8 +310,6 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 - **2026-10-14** — Bibliothek: ⋮-Menüs (Copy Public-ID / Duplizieren), Liste·Grid·Karussell für alle Tabs, WO-/LK-Public-IDs, SagaTree-Native-Badge
 - **2026-10-13** — Bibliothek: Slash-Routen (`/library/player-characters`, `/library/sagas`, …); Karussell-Karten breiter + portrait-/cover-sichere Bildframes
 - **2026-10-12** — Saga-Workspace: Lobby direkt nach Create mit großem Join-Code; Bibliothek-Tab Sagas; Spieler-Charaktere + Lore; local `player` Demo-Login (`074`)
-- **2026-10-11** — Backend-Audit: Variant A (Supabase-Stack optimieren); Realtime/`SECRET_KEY_BASE` & Footprint dokumentiert
-- **2026-10-10** — Adaptive Content-Width: Journey/Session Join folgt Main-Pane (`AdaptiveJourneyColumn`, AU-CONTENT-WIDTH)
 
 ---
 

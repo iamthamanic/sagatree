@@ -1,5 +1,5 @@
 /**
- * StartingTemplateIcon — Lucide icon per SagaTree Level-1 starttemplate key.
+ * StartingTemplateIcon — Phosphor icon per SagaTree Level-1 starttemplate key.
  * Location: src/app/character/creation/StartingTemplateIcon.tsx
  */
 import {
@@ -8,23 +8,23 @@ import {
   Cpu,
   Crosshair,
   Eye,
-  HeartPulse,
+  Heartbeat,
   Megaphone,
-  Sparkles,
-  VenetianMask,
+  Sparkle,
+  MaskHappy,
   Wrench,
-  type LucideIcon,
-} from 'lucide-react';
+  type Icon
+} from '@phosphor-icons/react';
 import type { SagaTreeStartingTemplateKey } from '../../../domains/rules/sagatree/starting-templates';
 
-const STARTING_TEMPLATE_ICONS: Record<SagaTreeStartingTemplateKey, LucideIcon> = {
+const STARTING_TEMPLATE_ICONS: Record<SagaTreeStartingTemplateKey, Icon> = {
   berserker: Axe,
   vanguard: Crosshair,
-  mage: Sparkles,
+  mage: Sparkle,
   technomancer: Cpu,
-  medicus: HeartPulse,
+  medicus: Heartbeat,
   mystic: Eye,
-  assassin: VenetianMask,
+  assassin: MaskHappy,
   mechanom: Wrench,
   mentalist: Brain,
   herald: Megaphone,

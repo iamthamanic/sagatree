@@ -6,7 +6,11 @@
  * Location: src/app/character/inventory/CharacterInventoryV2Panel.tsx
  */
 import { useEffect, useRef, useState } from 'react';
-import { ArrowDownAZ, CircleHelp, Plus } from 'lucide-react';
+import {
+  SortAscending,
+  Question,
+  Plus
+} from '@phosphor-icons/react';
 import { toast } from 'sonner@2.0.3';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
@@ -342,7 +346,7 @@ export function CharacterInventoryV2Panel({
             onClick={handleSort}
             aria-label="Inventar sortieren"
           >
-            <ArrowDownAZ className="h-4 w-4" />
+            <SortAscending className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-[14rem] text-xs leading-snug">
@@ -379,7 +383,7 @@ export function CharacterInventoryV2Panel({
               className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               aria-label="Hilfe: Inventar"
             >
-              <CircleHelp className="pointer-events-none size-3.5" />
+              <Question className="pointer-events-none size-3.5" />
             </button>
           </TooltipTrigger>
           <TooltipContent

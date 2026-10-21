@@ -4,7 +4,9 @@
  * Location: src/app/character/creation/SpeciesTraitOptionItem.tsx
  */
 import * as SelectPrimitive from '@radix-ui/react-select@2.1.6';
-import { CheckIcon } from 'lucide-react';
+import {
+  Check
+} from '@phosphor-icons/react';
 import { cn } from '../../../shared/ui/utils';
 import type { SagaTreeSpeciesTraitOption } from '../../../domains/rules/sagatree/species-trait-options';
 
@@ -32,7 +34,7 @@ export function SpeciesTraitOptionItem({ option, disabled = false }: SpeciesTrai
       </div>
       <span className="absolute right-2 top-2.5 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <Check className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
     </SelectPrimitive.Item>

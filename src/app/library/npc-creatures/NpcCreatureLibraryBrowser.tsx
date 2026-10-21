@@ -7,17 +7,17 @@
 import { useCallback, useState } from 'react';
 import {
   Copy,
-  CopyPlus,
-  Edit,
-  Loader2,
+  CopySimple,
+  PencilSimple,
+  CircleNotch,
   Plus,
-  RefreshCw,
-  Search,
-  Trash2,
+  ArrowsClockwise,
+  MagnifyingGlass,
+  Trash,
   UserPlus,
   Users,
-  Swords,
-} from 'lucide-react';
+  Sword
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import {
   buildNpcCreatureIconPublicSrc,
@@ -366,7 +366,7 @@ export function NpcCreatureLibraryBrowser({
                 aria-label={`${definition.name} bearbeiten`}
                 data-npc-library-edit
               >
-                <Edit className="mr-1 size-3" aria-hidden="true" />
+                <PencilSimple className="mr-1 size-3" aria-hidden="true" />
                 <span className="text-xs">Bearbeiten</span>
               </Button>
             ) : null}
@@ -379,7 +379,7 @@ export function NpcCreatureLibraryBrowser({
   return (
     <div className="space-y-4" data-npc-library-browser>
       <div className="relative">
-        <Search
+        <MagnifyingGlass
           className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
           aria-hidden="true"
         />
@@ -414,7 +414,7 @@ export function NpcCreatureLibraryBrowser({
             className="h-11 min-h-11"
             onClick={library.refresh}
           >
-            <RefreshCw className="mr-2 size-4" aria-hidden="true" />
+            <ArrowsClockwise className="mr-2 size-4" aria-hidden="true" />
             Erneut versuchen
           </Button>
         </div>
@@ -425,7 +425,7 @@ export function NpcCreatureLibraryBrowser({
           aria-label="NPCs und Kreaturen werden geladen"
           data-npc-library-loading
         >
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          <CircleNotch className="size-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
         <EntityBrowser
@@ -506,7 +506,7 @@ export function NpcCreatureLibraryBrowser({
               {
                 id: 'duplicate',
                 label: 'NPC duplizieren',
-                icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+                icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
                 onSelect: () => void handleDuplicateNpc(npcMenuRecord),
               },
             ];
@@ -514,7 +514,7 @@ export function NpcCreatureLibraryBrowser({
               items.push({
                 id: 'spawn',
                 label: 'Zum Abenteuer hinzufügen',
-                icon: <Swords className="size-4 shrink-0" aria-hidden="true" />,
+                icon: <Sword className="size-4 shrink-0" aria-hidden="true" />,
                 onSelect: () => handleSpawnInstance(definition),
               });
             }
@@ -547,7 +547,7 @@ export function NpcCreatureLibraryBrowser({
               items.push({
                 id: 'archive',
                 label: 'NPC archivieren',
-                icon: <Trash2 className="size-4 shrink-0" aria-hidden="true" />,
+                icon: <Trash className="size-4 shrink-0" aria-hidden="true" />,
                 destructive: true,
                 separatorBefore: true,
                 onSelect: () => void handleArchiveNpc(npcMenuRecord),

@@ -3,7 +3,9 @@
  * Location: src/app/character/progression/SkillSelectField.tsx
  */
 import * as SelectPrimitive from '@radix-ui/react-select@2.1.6';
-import { CheckIcon } from 'lucide-react@0.487.0';
+import {
+  Check
+} from '@phosphor-icons/react';
 import {
   Select,
   SelectContent,
@@ -51,7 +53,7 @@ function SkillSelectOption({
     >
       <span className="absolute right-2 top-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <Check className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText asChild>

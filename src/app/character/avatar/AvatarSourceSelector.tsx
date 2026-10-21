@@ -6,7 +6,9 @@
  * Long summaries live in a help tooltip next to the title (keeps cards compact).
  */
 
-import { CircleHelp } from 'lucide-react';
+import {
+  Question
+} from '@phosphor-icons/react';
 import {
   AVATAR_SOURCE_OPTIONS,
   describeAvatarSourceCapabilities,
@@ -82,7 +84,7 @@ export function AvatarSourceSelector({
                         event.stopPropagation();
                       }}
                     >
-                      <CircleHelp className="pointer-events-none size-3.5" aria-hidden />
+                      <Question className="pointer-events-none size-3.5" aria-hidden />
                     </span>
                   </TooltipTrigger>
                   <TooltipContent

@@ -6,7 +6,11 @@
  * Location: src/app/world/item-catalog/WorldItemCatalogSection.tsx
  */
 import { useEffect, useState } from 'react';
-import { Archive, Plus, RotateCcw } from 'lucide-react';
+import {
+  Archive,
+  Plus,
+  ArrowCounterClockwise
+} from '@phosphor-icons/react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -332,7 +336,7 @@ export function WorldItemCatalogSection({ worldProfileId }: WorldItemCatalogSect
                       disabled={busy}
                       onClick={() => void handleRestore(record)}
                     >
-                      <RotateCcw className="mr-1 h-3.5 w-3.5" />
+                      <ArrowCounterClockwise className="mr-1 h-3.5 w-3.5" />
                       Wieder aktivieren
                     </Button>
                   )}

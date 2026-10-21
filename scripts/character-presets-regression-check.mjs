@@ -94,7 +94,7 @@ requireMatch(startingTemplatePicker, /SagaTree-Starttemplates/, 'system starttem
 requireMatch(startingTemplatePicker, /listSagaTreeStartingTemplates/, 'catalog list in picker');
 requireMatch(startingTemplatePicker, /StartingTemplateIcon/, 'starttemplate icon per row');
 requireMatch(startingTemplatePicker, /summaryDe/, 'starttemplate playstyle tooltip');
-requireMatch(startingTemplatePicker, /CircleHelp/, 'starttemplate help trigger');
+requireMatch(startingTemplatePicker, /Question/, 'starttemplate help trigger');
 requireMatch(bootstrap, /kind: 'starting-template'/, 'bootstrap union includes starting-template');
 
 requireMatch(editor, /value="settings"/, 'Einstellungen editor tab');

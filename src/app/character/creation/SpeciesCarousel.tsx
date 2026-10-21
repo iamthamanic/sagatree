@@ -2,7 +2,10 @@
  * SpeciesCarousel — Swipebare Spezies-Auswahl mit Skizzen, angelehnt an ProjectCarousel (Scriptony).
  * Location: src/app/character/creation/SpeciesCarousel.tsx
  */
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CaretLeft,
+  CaretRight
+} from '@phosphor-icons/react';
 import { sagaTreeRaceOptions } from '../../../domains/rules/sagatree/character-creation';
 import { RuleHelp } from '../shared/RuleHelp';
 import { SpeciesBannerFlag } from './SpeciesBannerFlag';
@@ -189,7 +192,7 @@ export function SpeciesCarousel({ selectedRace, onSelect, labelledBy = 'species-
             onClick={scrollPrev}
             aria-label="Vorherige Spezies"
           >
-            <ChevronLeft className="size-5" />
+            <CaretLeft className="size-5" />
           </Button>
           <Button
             type="button"
@@ -199,7 +202,7 @@ export function SpeciesCarousel({ selectedRace, onSelect, labelledBy = 'species-
             onClick={scrollNext}
             aria-label="Nächste Spezies"
           >
-            <ChevronRight className="size-5" />
+            <CaretRight className="size-5" />
           </Button>
         </div>
       )}

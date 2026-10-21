@@ -7,7 +7,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../shared/ui/card';
 import { Button } from '../../shared/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../shared/ui/tabs';
-import { Volume2 } from 'lucide-react';
+import {
+  SpeakerHigh
+} from '@phosphor-icons/react';
 import { useAuth } from '../../lib/auth-context';
 import { useProjectSummaries } from '../project';
 import { AdventureNpcCreatureInstancesPanel } from './AdventureNpcCreatureInstancesPanel';
@@ -279,7 +281,7 @@ export function GamemasterPanel({
                     title={GM_DEFERRED_CONTROL_HINT_DE}
                     data-gm-sound-deferred={sound}
                   >
-                    <Volume2 className="w-4 h-4" />
+                    <SpeakerHigh className="w-4 h-4" />
                     <span className="text-xs md:text-sm">{sound}</span>
                   </Button>
                 ))}

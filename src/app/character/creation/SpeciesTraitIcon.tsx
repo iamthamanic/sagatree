@@ -1,35 +1,35 @@
 /**
- * SpeciesTraitIcon — Lucide icon for each SagaTree species trait option.
+ * SpeciesTraitIcon — Phosphor icon for each SagaTree species trait option.
  * Location: src/app/character/creation/SpeciesTraitIcon.tsx
  */
 import {
-  Activity,
+  Pulse,
   Bird,
   Dna,
   Ear,
   Eye,
   Fish,
   Flame,
-  Mountain,
+  Mountains,
   Moon,
   Shield,
-  ShieldHalf,
-  Swords,
-  Trees,
+  ShieldCheck,
+  Sword,
+  Tree,
   Waves,
-  type LucideIcon,
-} from 'lucide-react';
+  type Icon
+} from '@phosphor-icons/react';
 import type { SagaTreeSpeciesTraitKey } from '../../../domains/rules/sagatree/character-creation';
 
-const SPECIES_TRAIT_ICONS: Record<SagaTreeSpeciesTraitKey, LucideIcon> = {
+const SPECIES_TRAIT_ICONS: Record<SagaTreeSpeciesTraitKey, Icon> = {
   'sharpened-sense': Ear,
-  'natural-weapon': Swords,
-  'narrow-resistance': ShieldHalf,
-  'environment-adaptation': Trees,
-  'enduring-organism': Activity,
+  'natural-weapon': Sword,
+  'narrow-resistance': ShieldCheck,
+  'environment-adaptation': Tree,
+  'enduring-organism': Pulse,
   'low-rest-need': Moon,
   'natural-protection': Shield,
-  'enhanced-climbing': Mountain,
+  'enhanced-climbing': Mountains,
   'enhanced-swimming': Waves,
   amphibious: Fish,
   'enhanced-sight': Eye,

@@ -5,7 +5,9 @@
  * GM with saga.members.set_bundle assigns Gamemaster / Spieler bundles.
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { useAuth } from '../../lib/auth-context';
 import {
   bundleLabelDe,
@@ -103,7 +105,7 @@ export function SagaPermissionSettings({ sagaPublicId }: SagaPermissionSettingsP
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground" data-saga-rechte-loading>
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotch className="size-4 animate-spin" aria-hidden />
         Rechte werden geladen…
       </div>
     );

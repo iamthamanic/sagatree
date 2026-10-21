@@ -6,7 +6,12 @@
  * Location: src/app/library/items/ItemLibraryBrowser.tsx
  */
 import { useState } from 'react';
-import { Package, Plus, RefreshCw, Search } from 'lucide-react';
+import {
+  Package,
+  Plus,
+  ArrowsClockwise,
+  MagnifyingGlass
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import type { ItemDefinition } from '../../../domains/items';
 import {
@@ -72,7 +77,7 @@ export function ItemLibraryBrowser({
   return (
     <div className="space-y-4" data-item-library-browser>
       <div className="relative">
-        <Search
+        <MagnifyingGlass
           className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
           aria-hidden="true"
         />
@@ -134,7 +139,7 @@ export function ItemLibraryBrowser({
         >
           <p className="text-sm text-destructive">{library.error}</p>
           <Button type="button" variant="outline" size="sm" onClick={library.refresh}>
-            <RefreshCw className="mr-2 size-4" aria-hidden="true" />
+            <ArrowsClockwise className="mr-2 size-4" aria-hidden="true" />
             Erneut versuchen
           </Button>
         </div>

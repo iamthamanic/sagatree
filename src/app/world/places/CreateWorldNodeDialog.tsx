@@ -3,7 +3,9 @@
  * Location: src/app/world/places/CreateWorldNodeDialog.tsx
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import {
   BUILDING_SUBTYPES,
   COUNTRY_SUBTYPES,
@@ -237,7 +239,7 @@ export function CreateWorldNodeDialog({
       >
         {busy ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+            <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden />
             Wird angelegt…
           </>
         ) : (

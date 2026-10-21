@@ -4,7 +4,11 @@
  * Location: src/app/project/overview/SagaEnsembleStrip.tsx
  */
 import { useMemo, useState, type ReactNode } from 'react';
-import { Leaf, Link2, Search } from 'lucide-react';
+import {
+  Leaf,
+  Link,
+  MagnifyingGlass
+} from '@phosphor-icons/react';
 import {
   ensembleMemberSearchHaystack,
   type EnsembleCharacterIdentityVm,
@@ -170,7 +174,7 @@ function LinkedAvatars(props: {
       </Avatar>
 
       {/*
-        Bond chip: account ↔ character. Primary pill + Link2 sits above the frames
+        Bond chip: account ↔ character. Primary pill + Link sits above the frames
         so the binding reads as intentional UI chrome, not a lost hairline.
       */}
       <span
@@ -185,7 +189,7 @@ function LinkedAvatars(props: {
           aria-hidden
           className="relative flex size-6 items-center justify-center rounded-full border border-primary/55 bg-card text-primary ring-2 ring-background shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_40%,transparent)]"
         >
-          <Link2 className="size-3 stroke-[2.5]" />
+          <Link className="size-3 stroke-[2.5]" />
         </span>
       </span>
 
@@ -265,7 +269,7 @@ export function SagaEnsembleStrip({
           </div>
         </div>
         <div className="relative min-w-0">
-          <Search
+          <MagnifyingGlass
             className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />

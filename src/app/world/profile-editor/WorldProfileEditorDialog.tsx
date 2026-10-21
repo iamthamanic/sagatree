@@ -3,7 +3,9 @@
  * Location: src/app/world/profile-editor/WorldProfileEditorDialog.tsx
  */
 import { useEffect, useState } from 'react';
-import { Puzzle } from 'lucide-react';
+import {
+  PuzzlePiece
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../shared/ui/card';
@@ -122,7 +124,7 @@ export function WorldProfileEditorDialog({
           <div className="space-y-3">
             <div>
               <div className="flex items-center gap-2">
-                <Puzzle className="h-4 w-4 text-primary" />
+                <PuzzlePiece className="h-4 w-4 text-primary" />
                 <h3 className="font-semibold">Module</h3>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">

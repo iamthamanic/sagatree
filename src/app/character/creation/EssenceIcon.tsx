@@ -1,23 +1,23 @@
 /**
- * EssenceIcon — Lucide icon for each SagaTree primary essence option.
+ * EssenceIcon — Phosphor icon for each SagaTree primary essence option.
  * Location: src/app/character/creation/EssenceIcon.tsx
  */
 import {
   Brain,
-  CircuitBoard,
+  Circuitry,
   Ghost,
-  Link2,
-  PersonStanding,
-  type LucideIcon,
-} from 'lucide-react';
+  Link,
+  PersonSimple,
+  type Icon
+} from '@phosphor-icons/react';
 import type { SagaTreeEssenceKey } from '../../../domains/rules/sagatree/character-creation';
 
-const ESSENCE_ICONS: Record<SagaTreeEssenceKey, LucideIcon> = {
-  physical: PersonStanding,
+const ESSENCE_ICONS: Record<SagaTreeEssenceKey, Icon> = {
+  physical: PersonSimple,
   mental: Brain,
   spiritual: Ghost,
-  bound: Link2,
-  technological: CircuitBoard,
+  bound: Link,
+  technological: Circuitry,
 };
 
 type EssenceIconProps = {

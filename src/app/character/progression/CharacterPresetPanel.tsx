@@ -3,7 +3,12 @@
  * Location: src/app/character/progression/CharacterPresetPanel.tsx
  */
 import { useEffect, useState } from 'react';
-import { Copy, Loader2, Pencil, Trash2 } from 'lucide-react';
+import {
+  Copy,
+  CircleNotch,
+  PencilSimple,
+  Trash
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
@@ -184,7 +189,7 @@ export function CharacterPresetPanel({
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <CircleNotch className="h-4 w-4 animate-spin" />
         Lade Preset…
       </div>
     );
@@ -229,7 +234,7 @@ export function CharacterPresetPanel({
               <>
                 <p className="text-base font-medium">{preset.displayName}</p>
                 <Button type="button" size="sm" variant="ghost" onClick={() => setRenaming(true)} aria-label="Preset umbenennen">
-                  <Pencil className="h-4 w-4" />
+                  <PencilSimple className="h-4 w-4" />
                 </Button>
               </>
             )}
@@ -248,7 +253,7 @@ export function CharacterPresetPanel({
               Duplizieren
             </Button>
             <Button type="button" variant="destructive" onClick={() => void handleDelete()} disabled={busy}>
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash className="mr-2 h-4 w-4" />
               Löschen
             </Button>
           </div>

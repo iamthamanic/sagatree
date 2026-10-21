@@ -7,15 +7,15 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ChevronDown,
-  ChevronRight,
-  Download,
-  Loader2,
-  Map as MapIcon,
+  CaretDown,
+  CaretRight,
+  DownloadSimple,
+  CircleNotch,
+  MapTrifold as MapIcon,
   Plus,
-  Save,
-  Upload,
-} from 'lucide-react';
+  FloppyDisk,
+  UploadSimple
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
 import { Label } from '../../../shared/ui/label';
@@ -404,7 +404,7 @@ export function WorldAtlasWorkbench({
             disabled={editor.saving || !editor.map}
             onClick={() => fileRef.current?.click()}
           >
-            <Upload className="size-4" aria-hidden />
+            <UploadSimple className="size-4" aria-hidden />
             .map importieren
           </Button>
           {editor.map?.azgaarMapStoragePath ? (
@@ -423,7 +423,7 @@ export function WorldAtlasWorkbench({
                   });
               }}
             >
-              <Download className="size-4" aria-hidden />
+              <DownloadSimple className="size-4" aria-hidden />
               .map herunterladen
             </Button>
           ) : null}
@@ -508,9 +508,9 @@ export function WorldAtlasWorkbench({
               }}
             >
               {editor.saving ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <CircleNotch className="size-4 animate-spin" aria-hidden />
               ) : (
-                <Save className="size-4" aria-hidden />
+                <FloppyDisk className="size-4" aria-hidden />
               )}
               Speichern
             </Button>
@@ -531,9 +531,9 @@ export function WorldAtlasWorkbench({
               }}
             >
               {editor.saving ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <CircleNotch className="size-4 animate-spin" aria-hidden />
               ) : (
-                <Save className="size-4" aria-hidden />
+                <FloppyDisk className="size-4" aria-hidden />
               )}
               Speichern
             </Button>
@@ -560,9 +560,9 @@ export function WorldAtlasWorkbench({
             }}
           >
             {editor.saving ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
+              <CircleNotch className="size-4 animate-spin" aria-hidden />
             ) : (
-              <Save className="size-4" aria-hidden />
+              <FloppyDisk className="size-4" aria-hidden />
             )}
             Speichern
           </Button>
@@ -607,7 +607,7 @@ export function WorldAtlasWorkbench({
               }}
             >
               {editor.saving ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <CircleNotch className="size-4 animate-spin" aria-hidden />
               ) : (
                 'Erneut speichern'
               )}
@@ -645,7 +645,7 @@ export function WorldAtlasWorkbench({
               }}
             >
               {editor.loading ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
+                <CircleNotch className="size-4 animate-spin" aria-hidden />
               ) : null}
               API verbinden
             </Button>
@@ -661,7 +661,7 @@ export function WorldAtlasWorkbench({
         >
           {editor.breadcrumb.map((crumb, index) => (
             <span key={crumb.id} className="inline-flex items-center gap-1">
-              {index > 0 ? <ChevronRight className="size-3.5 shrink-0" aria-hidden /> : null}
+              {index > 0 ? <CaretRight className="size-3.5 shrink-0" aria-hidden /> : null}
               <button
                 type="button"
                 className="min-h-11 rounded px-1 text-foreground underline-offset-2 hover:underline"
@@ -860,7 +860,7 @@ export function WorldAtlasWorkbench({
                       onClick={() => setMapsRailExpanded((v) => !v)}
                     >
                       <MapIcon className="size-4" aria-hidden />
-                      <ChevronDown
+                      <CaretDown
                         className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
                           mapsRailExpanded ? 'rotate-180' : 'rotate-0'
                         }`}

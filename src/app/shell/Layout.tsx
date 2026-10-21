@@ -8,15 +8,15 @@
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import {
-  BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  LogOut,
-  Settings,
-  ShoppingBag,
-  User,
-} from 'lucide-react';
+  Books,
+  CaretLeft,
+  CaretRight,
+  Chalkboard,
+  SignOut,
+  Gear,
+  Storefront,
+  User
+} from '@phosphor-icons/react';
 import { useAuth } from '../../lib/auth-context';
 import { toast } from 'sonner';
 import { Badge } from '../../shared/ui/badge';
@@ -132,19 +132,19 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
 
   // Editors are reached via Bibliothek (create/edit), not as top-level nav
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
-    { id: 'library', label: 'Bibliothek', icon: BookOpen },
-    { id: 'marketplace', label: 'Marktplatz', icon: ShoppingBag },
+    { id: 'dashboard', label: 'Dashboard', icon: Chalkboard },
+    { id: 'library', label: 'Bibliothek', icon: Books },
+    { id: 'marketplace', label: 'Marktplatz', icon: Storefront },
   ];
 
   const mobileNavItems = [
-    { id: 'dashboard', label: 'Home', icon: Home },
-    { id: 'library', label: 'Bibliothek', icon: BookOpen },
-    { id: 'marketplace', label: 'Markt', icon: ShoppingBag },
+    { id: 'dashboard', label: 'Home', icon: Chalkboard },
+    { id: 'library', label: 'Bibliothek', icon: Books },
+    { id: 'marketplace', label: 'Markt', icon: Storefront },
     { id: 'profile', label: 'Profil', icon: User },
   ];
 
-  const CollapseIcon = sidebarCollapsed ? ChevronRight : ChevronLeft;
+  const CollapseIcon = sidebarCollapsed ? CaretRight : CaretLeft;
 
   return (
     <div
@@ -183,7 +183,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                 aria-label={sidebarCollapsed ? 'Sidebar ausklappen' : 'Sidebar einklappen'}
                 aria-expanded={!sidebarCollapsed}
               >
-                <CollapseIcon className="w-5 h-5" />
+                <CollapseIcon className="w-5 h-5" size={20} weight="regular" aria-hidden />
               </button>
             </div>
           </div>
@@ -204,11 +204,16 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                       sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'
                     } ${
                       isActive
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                        : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                        ? 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground'
+                        : 'text-sidebar-foreground hover:bg-accent/10 hover:text-accent'
                     }`}
                   >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    <Icon
+                      className="w-5 h-5 flex-shrink-0"
+                      size={20}
+                      weight="regular"
+                      aria-hidden
+                    />
                     {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
                   </button>
                 );
@@ -227,7 +232,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   sidebarCollapsed ? 'justify-center px-2 py-3' : 'flex-1 gap-3 px-4 py-3'
                 }`}
               >
-                <LogOut className="w-5 h-5 flex-shrink-0" />
+                <SignOut className="w-5 h-5 flex-shrink-0" size={20} weight="regular" aria-hidden />
                 {!sidebarCollapsed && <span>Abmelden</span>}
               </button>
               {displayName ? (
@@ -266,13 +271,18 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   sidebarCollapsed ? 'flex justify-center px-2 py-3' : 'p-3'
                 } ${
                   currentView === 'profile'
-                    ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                    ? 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground'
+                    : 'text-sidebar-foreground hover:bg-accent/10 hover:text-accent'
                 }`}
                 title="Einstellungen"
                 aria-label="Einstellungen"
               >
-                <Settings className="w-5 h-5" />
+                <Gear
+                  className="w-5 h-5"
+                  size={20}
+                  weight="regular"
+                  aria-hidden
+                />
               </button>
             </div>
           </div>
@@ -326,7 +336,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   className="p-2 hover:bg-muted rounded-lg transition-colors"
                   title="Einstellungen"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Gear className="w-5 h-5" />
                 </button>
                 <button
                   type="button"
@@ -334,7 +344,7 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors"
                   title="Abmelden"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <SignOut className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -361,11 +371,16 @@ export function Layout({ children, currentView, onNavigate }: LayoutProps) {
                   onClick={() => onNavigate(item.id)}
                   className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted'
+                      ? 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground'
+                      : 'text-muted-foreground hover:bg-accent/10 hover:text-accent'
                   }`}
                 >
-                  <Icon className="w-5 h-5 mb-1" />
+                  <Icon
+                    className="w-5 h-5 mb-1"
+                    size={20}
+                    weight="regular"
+                    aria-hidden
+                  />
                   <span className="text-xs">{item.label}</span>
                 </button>
               );

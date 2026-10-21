@@ -3,7 +3,9 @@
  * Location: src/app/library/npc-creatures/NpcCreatureSpawnInstanceDialog.tsx
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import type { NpcCreatureDefinition, NpcCreatureInstanceKind } from '../../../domains/npc-creature';
 import type { ProjectMemberDto, ProjectSummaryVm } from '../../../domains/project/contracts/project.types';
@@ -185,7 +187,7 @@ export function NpcCreatureSpawnInstanceDialog({
 
           {loadingMembers ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
               Mitglieder werden geladen…
             </div>
           ) : null}
@@ -210,7 +212,7 @@ export function NpcCreatureSpawnInstanceDialog({
           >
             {saving ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />
+                <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden="true" />
                 Wird hinzugefügt…
               </>
             ) : (

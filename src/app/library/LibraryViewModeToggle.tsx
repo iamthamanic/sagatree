@@ -2,7 +2,10 @@
  * LibraryViewModeToggle — Liste / Grid / Karussell control for all Library tabs.
  * Location: src/app/library/LibraryViewModeToggle.tsx
  */
-import { LayoutGrid, List } from 'lucide-react';
+import {
+  SquaresFour,
+  List
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import { cn } from '../../shared/ui/utils';
 import type { LibraryViewMode } from './useLibraryViewMode';
@@ -69,7 +72,7 @@ export function LibraryViewModeToggle({
         onClick={() => onViewModeChange('grid')}
         className={cn(btn, viewMode === 'grid' && 'bg-background shadow-sm')}
       >
-        <LayoutGrid className="size-4" aria-hidden="true" />
+        <SquaresFour className="size-4" aria-hidden="true" />
       </Button>
       <Button
         type="button"

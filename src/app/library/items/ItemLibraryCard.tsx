@@ -5,7 +5,11 @@
  * Location: src/app/library/items/ItemLibraryCard.tsx
  */
 import { useCallback, useState } from 'react';
-import { Archive, Copy, CopyPlus } from 'lucide-react';
+import {
+  Archive,
+  Copy,
+  CopySimple
+} from '@phosphor-icons/react';
 import type { ItemDefinition } from '../../../domains/items';
 import {
   librarySourceFromOrigin,
@@ -203,7 +207,7 @@ export function ItemLibraryCard({
                   {
                     id: 'duplicate',
                     label: 'Item duplizieren',
-                    icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+                    icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
                     onSelect: onDuplicate,
                   },
                 ]

@@ -7,7 +7,10 @@
  */
 
 import { useRef, useState, type DragEvent, type ChangeEvent } from 'react';
-import { ExternalLink, Upload } from 'lucide-react';
+import {
+  ArrowSquareOut,
+  UploadSimple
+} from '@phosphor-icons/react';
 import {
   AVATAR_IMPORT_GLB_SPEC_HELP_HREF,
   AVATAR_IMPORT_GLB_SPEC_HELP_LABEL_DE,
@@ -160,7 +163,7 @@ export function AvatarImportPanel({
             data-avatar-import-cta
             className="min-h-11"
           >
-            <Upload className="mr-2 h-4 w-4" aria-hidden />
+            <UploadSimple className="mr-2 h-4 w-4" aria-hidden />
             3D-Modell importieren
           </Button>
           <input
@@ -177,7 +180,7 @@ export function AvatarImportPanel({
             className="inline-flex min-h-11 items-center gap-1 text-xs text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             data-avatar-import-glb-help
           >
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            <ArrowSquareOut className="h-3.5 w-3.5" aria-hidden />
             {AVATAR_IMPORT_GLB_SPEC_HELP_LABEL_DE}
           </a>
         </div>

@@ -36,9 +36,68 @@ Testflächen: Phone, Tablet, Desktop **und** schmale Main-Panes (Cursor/IDE Spli
 
 ---
 
+## 0b. Iconography (Phosphor)
+
+Canonical rules: [`src/THEME_GUIDE.md`](../src/THEME_GUIDE.md) § Iconography. Package: `@phosphor-icons/react`.
+
+### Sidebar / Hauptnavigation
+
+```tsx
+import { House, Books, Storefront } from '@phosphor-icons/react';
+
+<button
+  className={
+    isActive
+      ? 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground'
+      : 'text-sidebar-foreground hover:bg-accent/10 hover:text-accent'
+  }
+>
+  <Books size={20} weight="regular" className="shrink-0" aria-hidden />
+</button>
+```
+
+Active = Cyan Primary-Surface + `currentColor` (Weight bleibt `regular`, kein `fill`). Hover = Gold/Amber (`accent`), analog zu `Button`. Icon-only: `aria-label` am Button.
+
+### Icon-Button (Action)
+
+```tsx
+import { Gear } from '@phosphor-icons/react';
+import { Button } from '@/shared/ui/button';
+
+<Button type="button" variant="ghost" size="icon" aria-label="Einstellungen">
+  <Gear size={20} weight="regular" aria-hidden />
+</Button>
+```
+
+### Dashboard-Feature-Karte
+
+```tsx
+import { UserPlus } from '@phosphor-icons/react';
+
+<UserPlus size={32} weight="regular" className="size-8" aria-hidden />
+```
+
+Dashboard-Karten: `regular` (kein Duotone/Fill). Duotone nur gezielt auf groesseren Feature-Illustrationen.
+
+### Status / Loading
+
+```tsx
+import { CircleNotch, WarningCircle } from '@phosphor-icons/react';
+
+<CircleNotch className="size-4 animate-spin" aria-hidden />
+<WarningCircle size={16} weight="fill" className="text-destructive" aria-hidden />
+```
+
+### RPG-spezifische Symbole
+
+- System-UI → Phosphor.
+- Spielwelt (Waffen, Magie, Kreaturen): bestehende Custom-SVGs (z. B. `AttributeD20Icon`) beibehalten; game-icons.net nur lokal + CC-BY-3.0 Attribution.
+
+---
+
 ## 1. AttributeD20Icon
 
-**Datei:** `src/components/AttributeD20Icon.tsx`
+**Datei:** `src/shared/ui/AttributeD20Icon.tsx`
 
 **Wann verwenden:** Visuelles Attribut-Symbol auf Attribut-Bonus-Karten im Charakter-Editor (d20 + Attributbonus).
 
@@ -166,8 +225,8 @@ const { setApi, current, handleCardClick, scrollPrev, scrollNext } = useCarousel
 
 **Besonderheiten:**
 
-- Lucide-Icons pro Framework (`BACKGROUND_FRAMEWORK_ICON_BY_ID`)
-- Custom-Karte: gestrichelter Rand, `PencilLine`-Icon
+- Phosphor-Icons pro Framework (`BACKGROUND_FRAMEWORK_ICON_BY_ID`)
+- Custom-Karte: gestrichelter Rand, `PencilSimpleLine`-Icon
 - `selectOnCenterClick: true` — Center-Klick bestätigt Auswahl (Embla schluckt oft reinen Center-Click)
 - Badge „Gewählt“ nur wenn zentriert **und** ausgewählt
 - Skill-Pool-Badges nur auf Center-Slide sichtbar

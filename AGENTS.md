@@ -171,6 +171,18 @@ Canonical doc: [`docs/navigation-public-ids.md`](docs/navigation-public-ids.md).
 - Code/data when needed: `JetBrains Mono`
 - Do not introduce serif fonts in product UI.
 
+### Iconography (Phosphor)
+
+Canonical visual rules: [`src/THEME_GUIDE.md`](src/THEME_GUIDE.md) § Iconography. Implementation patterns: [`docs/ui-styleguide.md`](docs/ui-styleguide.md).
+
+- **`@phosphor-icons/react` is mandatory** for general UI icons (chrome, navigation, buttons, forms, status).
+- **Do not add `lucide-react`** or reintroduce Lucide imports.
+- Follow weight/size defaults: sidebar always `regular` at 20px (active = Cyan primary surface + `currentColor`, not fill); actions/forms 16–20px `regular`; dashboard feature cards `regular` 24–32px.
+- Colors via `currentColor` / theme tokens (Cyan active, Gold hover, Danger destructive) — no arbitrary icon colors.
+- **RPG / play-world icons** may stay as custom SVGs or local game-icons.net assets (CC-BY-3.0 attribution); do not blindly replace them with Phosphor.
+- Before creating a new icon, check existing Phosphor icons and repo assets first. Exceptions need a technical or design rationale.
+- Prefer explicit named imports; no full-library namespace imports. No new icon abstraction layer unless shared logic is truly reused.
+
 ### Spacing
 
 - Base unit: `4px`

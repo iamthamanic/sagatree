@@ -6,7 +6,13 @@
  * Internal domain remains project-service / projects table.
  */
 import { useState } from 'react';
-import { ArrowLeft, Check, Copy, LogIn, Plus } from 'lucide-react';
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  SignIn,
+  Plus
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../shared/ui/card';
 import { Button } from '../../shared/ui/button';
@@ -138,7 +144,7 @@ export function ProjectJoin({ onBack, onNavigate }: ProjectJoinProps) {
               className="min-h-11 w-full"
               data-saga-join-submit
             >
-              <LogIn className="mr-2 size-4" />
+              <SignIn className="mr-2 size-4" />
               {isJoining ? 'Trete bei…' : 'Beitreten'}
             </Button>
           </CardContent>

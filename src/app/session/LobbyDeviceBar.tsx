@@ -1,11 +1,18 @@
 /**
- * LobbyDeviceBar — Meet-style Cam/Live + Mic controls in the Am Tisch character row.
+ * LobbyDeviceBar — Meet-style Cam/Live + Microphone controls in the Am Tisch character row.
  * Location: src/app/session/LobbyDeviceBar.tsx
  *
  * Camera/mic only after gesture via useLobbyMediaPreview. Compact preview when active.
  */
 import { useEffect, useRef, type ReactNode } from 'react';
-import { Camera, ChevronDown, Mic, MicOff, UserRound, VideoOff } from 'lucide-react';
+import {
+  Camera,
+  CaretDown,
+  Microphone,
+  MicrophoneSlash,
+  UserCircle,
+  VideoCameraSlash
+} from '@phosphor-icons/react';
 import { cn } from '../../shared/ui/utils';
 import {
   DropdownMenu,
@@ -145,7 +152,7 @@ export function LobbyDeviceBar({
     videoMode !== 'profile' &&
     media.cameraStatus === 'idle' &&
     media.microphoneStatus === 'idle'
-      ? 'Cam oder Mic tippen — der Browser fragt dann nach Kamera- und Mikrofon-Zugriff. Ohne Klick gibt es keine Geräte-Liste.'
+      ? 'Cam oder Microphone tippen — der Browser fragt dann nach Kamera- und Mikrofon-Zugriff. Ohne Klick gibt es keine Geräte-Liste.'
       : null;
   const cameraHint =
     videoMode === 'camera' && cameraFailed
@@ -273,7 +280,7 @@ export function LobbyDeviceBar({
             data-session-lobby-mode-liveact
             data-session-lobby-probe-liveact
           >
-            <UserRound className="size-3.5 shrink-0" aria-hidden />
+            <UserCircle className="size-3.5 shrink-0" aria-hidden />
             Live
           </button>
           <button
@@ -327,12 +334,12 @@ export function LobbyDeviceBar({
             >
               {videoMode === 'camera' ? (
                 cameraIconOff ? (
-                  <VideoOff className="size-4" aria-hidden />
+                  <VideoCameraSlash className="size-4" aria-hidden />
                 ) : (
                   <Camera className="size-4" aria-hidden />
                 )
               ) : (
-                <UserRound className="size-4" aria-hidden />
+                <UserCircle className="size-4" aria-hidden />
               )}
             </button>
             <DropdownMenu onOpenChange={openCameraMenu}>
@@ -348,7 +355,7 @@ export function LobbyDeviceBar({
                     videoMode === 'liveact' ? true : undefined
                   }
                 >
-                  <ChevronDown className="size-3.5" aria-hidden />
+                  <CaretDown className="size-3.5" aria-hidden />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="min-w-[12rem]">
@@ -420,9 +427,9 @@ export function LobbyDeviceBar({
             data-lobby-mic-status={media.microphoneStatus}
           >
             {micIconOff ? (
-              <MicOff className="size-4" aria-hidden />
+              <MicrophoneSlash className="size-4" aria-hidden />
             ) : (
-              <Mic className="size-4" aria-hidden />
+              <Microphone className="size-4" aria-hidden />
             )}
           </button>
           <DropdownMenu onOpenChange={openMicMenu}>
@@ -433,7 +440,7 @@ export function LobbyDeviceBar({
                 aria-label="Mikrofon wählen"
                 data-session-lobby-mic-select
               >
-                <ChevronDown className="size-3.5" aria-hidden />
+                <CaretDown className="size-3.5" aria-hidden />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-[12rem]">

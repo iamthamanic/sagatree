@@ -6,7 +6,11 @@
  * Orte/Lore bindings stay in a side Sheet for reveal control.
  */
 import { useEffect, useState } from 'react';
-import { Loader2, Map as MapIcon, MapPin } from 'lucide-react';
+import {
+  CircleNotch,
+  MapTrifold as MapIcon,
+  MapPin
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import {
   Sheet,
@@ -159,7 +163,7 @@ export function SagaWorldAtlasPanel({
         data-saga-world-atlas-loading
         aria-busy="true"
       >
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotch className="size-4 animate-spin" aria-hidden />
         Weltkarte wird geladen…
       </div>
     );

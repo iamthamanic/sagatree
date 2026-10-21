@@ -14,7 +14,12 @@ import {
 } from '../../domains/ai-providers';
 import { aiProviderCredentialsService } from '../../infrastructure/ai/ai-provider-credentials-service';
 import { toast } from 'sonner';
-import { KeyRound, Loader2, RefreshCw, Trash2 } from 'lucide-react';
+import {
+  Key,
+  CircleNotch,
+  ArrowsClockwise,
+  Trash
+} from '@phosphor-icons/react';
 
 type AiSubTab = 'bild' | '3d' | 'video' | 'audio';
 
@@ -124,7 +129,7 @@ export function AiProviderCredentialsPanel({ tab }: AiProviderCredentialsPanelPr
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground" data-ai-providers-loading>
-        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+        <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
         Provider werden geladen…
       </div>
     );
@@ -153,7 +158,7 @@ export function AiProviderCredentialsPanel({ tab }: AiProviderCredentialsPanelPr
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <p className="flex items-center gap-2 text-sm font-medium md:text-base">
-                  <KeyRound className="size-4 text-primary" aria-hidden="true" />
+                  <Key className="size-4 text-primary" aria-hidden="true" />
                   {provider.displayName}
                 </p>
                 <p className="text-xs text-muted-foreground md:text-sm">
@@ -200,7 +205,7 @@ export function AiProviderCredentialsPanel({ tab }: AiProviderCredentialsPanelPr
                 >
                   {busy ? (
                     <>
-                      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
                       Prüfen…
                     </>
                   ) : (
@@ -228,7 +233,7 @@ export function AiProviderCredentialsPanel({ tab }: AiProviderCredentialsPanelPr
                       disabled={busy}
                       onClick={() => void handleRefresh(provider.providerId)}
                     >
-                      <RefreshCw className={`size-4 ${busy ? 'animate-spin' : ''}`} aria-hidden="true" />
+                      <ArrowsClockwise className={`size-4 ${busy ? 'animate-spin' : ''}`} aria-hidden="true" />
                       Credits aktualisieren
                     </Button>
                     <Button
@@ -238,7 +243,7 @@ export function AiProviderCredentialsPanel({ tab }: AiProviderCredentialsPanelPr
                       disabled={busy}
                       onClick={() => void handleDelete(provider.providerId, provider.displayName)}
                     >
-                      <Trash2 className="size-4" aria-hidden="true" />
+                      <Trash className="size-4" aria-hidden="true" />
                       Key entfernen
                     </Button>
                   </div>

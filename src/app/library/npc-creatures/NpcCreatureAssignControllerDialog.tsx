@@ -3,7 +3,9 @@
  * Location: src/app/library/npc-creatures/NpcCreatureAssignControllerDialog.tsx
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import type { NpcCreatureDefinition } from '../../../domains/npc-creature';
 import type { ProjectMemberDto } from '../../../domains/project/contracts/project.types';
@@ -173,7 +175,7 @@ export function NpcCreatureAssignControllerDialog({
               <Label htmlFor="npc-assign-controller">Kontrolle</Label>
               {loadingMembers ? (
                 <div className="flex h-11 items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
                   Mitglieder werden geladen…
                 </div>
               ) : (

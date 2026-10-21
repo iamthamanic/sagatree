@@ -4,7 +4,12 @@
  * Location: src/app/character/creation/CharacterBackgroundPanel.tsx
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Check, CircleHelp, Minus, Plus } from 'lucide-react';
+import {
+  Check,
+  Question,
+  Minus,
+  Plus
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
@@ -43,7 +48,7 @@ import { RuleHelp } from '../shared/RuleHelp';
 import { SkillIcon, SkillSelectField } from '../progression';
 
 /**
- * BackgroundSkillAttributeHint — Plain short-label + CircleHelp tooltip (same pattern as
+ * BackgroundSkillAttributeHint — Plain short-label + Question tooltip (same pattern as
  * SpecializationSelectOptionHelp / CharacterEditor). Explains the default Check attribute
  * (not background/pool points). Location: CharacterBackgroundPanel.tsx
  */
@@ -71,7 +76,7 @@ function BackgroundSkillAttributeHint({
             onClick={(event) => event.stopPropagation()}
             onPointerDown={(event) => event.stopPropagation()}
           >
-            <CircleHelp className="pointer-events-none size-3.5" />
+            <Question className="pointer-events-none size-3.5" />
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={6} className="max-w-[280px] px-3 py-2 text-left text-xs leading-relaxed">
@@ -84,7 +89,7 @@ function BackgroundSkillAttributeHint({
 }
 
 /**
- * SpecializationSelectOptionHelp — CircleHelp + shadcn Tooltip portal inside a Radix SelectItem.
+ * SpecializationSelectOptionHelp — Question + shadcn Tooltip portal inside a Radix SelectItem.
  * Native `title` is unreliable on Select options; wrapping SelectTrigger in Tooltip breaks open/E2E.
  * Pattern matches CharacterEditor attribute-option help. Location: CharacterBackgroundPanel.tsx
  */
@@ -102,7 +107,7 @@ function SpecializationSelectOptionHelp({ label, description }: { label: string;
             event.stopPropagation();
           }}
         >
-          <CircleHelp className="pointer-events-none size-3.5" />
+          <Question className="pointer-events-none size-3.5" />
         </button>
       </TooltipTrigger>
       <TooltipContent side="right" sideOffset={8} className="max-w-[280px] px-3 py-2 text-left text-xs leading-relaxed">
@@ -302,7 +307,7 @@ function BackgroundSkillNode({
                       aria-label={`${selectValue} erklären`}
                       className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-primary hover:bg-primary/10"
                     >
-                      <CircleHelp className="size-3.5" />
+                      <Question className="size-3.5" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="top" sideOffset={6} className="max-w-[280px] px-3 py-2 text-left text-xs leading-relaxed">

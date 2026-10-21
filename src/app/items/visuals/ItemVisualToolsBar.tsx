@@ -3,7 +3,12 @@
  * Location: src/app/items/visuals/ItemVisualToolsBar.tsx
  */
 import type { ReactElement } from 'react';
-import { ArrowRight, Eye, Sparkles, Upload } from 'lucide-react';
+import {
+  ArrowRight,
+  Eye,
+  Sparkle,
+  UploadSimple
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import {
   Tooltip,
@@ -81,7 +86,7 @@ export function ItemVisualToolsBar({
             data-item-visual-upload
             onClick={onUploadClick}
           >
-            <Upload className="size-3.5" aria-hidden="true" />
+            <UploadSimple className="size-3.5" aria-hidden="true" />
           </Button>,
         )}
 
@@ -165,7 +170,7 @@ export function ItemVisualToolsBar({
             disabled={!tools.canMeshyGenerate2d}
             onClick={tools.handleMeshyGenerate2d}
           >
-            <Sparkles className="size-3.5" aria-hidden="true" />
+            <Sparkle className="size-3.5" aria-hidden="true" />
           </Button>,
         )}
     </div>

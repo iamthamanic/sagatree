@@ -3,7 +3,10 @@
  * Location: src/app/session/SessionInviteShareButton.tsx
  */
 import { useState } from 'react';
-import { Check, Link2 } from 'lucide-react';
+import {
+  Check,
+  Link
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '../../shared/ui/button';
 import { buildSessionInviteAbsoluteUrl } from '../../domains/session/contracts/session-invite';
@@ -76,7 +79,7 @@ export function SessionInviteShareButton({
       onClick={() => void handleCopy()}
       data-session-invite-copy
     >
-      {copied ? <Check className="mr-2 size-4" /> : <Link2 className="mr-2 size-4" />}
+      {copied ? <Check className="mr-2 size-4" /> : <Link className="mr-2 size-4" />}
       {busy ? 'Erzeuge Link…' : label}
     </Button>
   );

@@ -2,7 +2,9 @@
  * RulesetsTest — Vertical-slice screen listing official rulesets (catalog smoke UI).
  * Location: src/app/rulesets/RulesetsTest.tsx
  */
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../shared/ui/card';
 import { useOfficialRulesets } from './hooks/useRulesets';
 
@@ -12,7 +14,7 @@ export function RulesetsTest() {
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
