@@ -20,7 +20,7 @@ Updated: 2026-10-21 (correction order — truncate fix, host architecture, reope
 | Field | Value |
 | --- | --- |
 | URL | https://github.com/iamthamanic/sagatree/pull/860 |
-| Head SHA | `89c82566b299148d4c98ef2c558d4984d498ddf6` — bind merge template to **this** SHA + named checks below |
+| Head SHA | `0f96f54f24b769d59e92b234c2d127741af0de7e` (correction content `89c82566…`; tip adds SHA-binding docs) — bind merge template to **PR head** + named checks below |
 | Draft → Ready | Ready for review; **merge blocked** by human `MERGE-860: WAIT` |
 | Merged? | **No** |
 
