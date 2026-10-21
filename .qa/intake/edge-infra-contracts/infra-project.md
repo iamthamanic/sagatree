@@ -12,7 +12,7 @@
 
 ## NACHHER
 - src/infrastructure/project/** → HTTP/client to server/src/application/project/
-- Depends: GATE-01, RPC:create_project_session, RPC:ensure_native_starter_project, RPC:get_my_saga_permissions, RPC:get_saga_lore_timeline, RPC:get_saga_overview
+- Depends: GATE-01, RPC:create_project_session, RPC:ensure_native_starter_project, RPC:get_my_saga_permissions, RPC:get_saga_lore_timeline, RPC:get_saga_overview, RPC:join_project_by_code, RPC:list_saga_bindings, RPC:list_saga_member_permission_state, RPC:set_my_project_character, RPC:set_saga_binding_reveal, RPC:set_saga_member_bundle
 - Status: SPEC — blocked on GATE-01 + linked RPC/Edge contracts; adapter must not invent elevated origins
 
 ## TESTS
