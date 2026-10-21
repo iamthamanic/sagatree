@@ -4,11 +4,26 @@
  */
 import { createHost } from './create-host.ts';
 
+function redact(message: string): string {
+  return message.replace(/(?:token|key|secret|password)=[^\s]+/gi, '$1=[redacted]');
+}
+
+function failStart(error: string, code = 1): never {
+  console.error(JSON.stringify({ ready: false, error: redact(error) }));
+  process.exit(code);
+}
+
 async function main(): Promise<void> {
-  const host = createHost(process.env);
+  let host: ReturnType<typeof createHost>;
+  try {
+    host = createHost(process.env);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    failStart(message);
+  }
+
   if ('error' in host) {
-    console.error(JSON.stringify({ ready: false, error: host.error }));
-    process.exit(host.code);
+    failStart(host.error, host.code);
   }
 
   const shutdown = async (signal: string) => {
@@ -17,7 +32,8 @@ async function main(): Promise<void> {
       await host.stop();
       process.exit(0);
     } catch (err) {
-      console.error(JSON.stringify({ event: 'shutdown-error', error: String(err) }));
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(JSON.stringify({ event: 'shutdown-error', error: redact(message) }));
       process.exit(1);
     }
   };
@@ -29,9 +45,7 @@ async function main(): Promise<void> {
     await host.start();
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const code = /EADDRINUSE/.test(message) ? 1 : 1;
-    console.error(JSON.stringify({ ready: false, error: message.replace(/(token|key|secret|password)=[^\s]+/gi, '$1=[redacted]') }));
-    process.exit(code);
+    failStart(message);
   }
 
   console.log(
@@ -45,4 +59,7 @@ async function main(): Promise<void> {
   );
 }
 
-void main();
+void main().catch((err) => {
+  const message = err instanceof Error ? err.message : String(err);
+  failStart(message);
+});

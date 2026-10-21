@@ -54,5 +54,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): HostConfig | C
     };
   }
 
+  // Test-only: exercise the post-mkdir writability failure path without chmod/root assumptions.
+  if (env.SAGATREE_TEST_FORCE_DATA_DIR_UNWRITABLE === '1') {
+    return {
+      code: 'DATA_DIR_NOT_WRITABLE',
+      message: redacted(`Data directory is not writable: ${dataDir}`),
+    };
+  }
+
   return { host, port, dataDir, mode: 'solo' };
 }
