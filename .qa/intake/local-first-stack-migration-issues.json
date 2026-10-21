@@ -3,8 +3,8 @@
     "generatedAt": "2026-10-20",
     "baselineSha": "4bc40a3142811f23f528b17698abc6d674d2ee75",
     "sourceDoc": "docs/architektur-sqlite-based.md",
-    "githubIssuesPublished": false,
-    "note": "Draft specs only — do not publish to GitHub without freigabe",
+    "githubIssuesPublished": true,
+    "note": "GitHub issues published; implementation remains agent-blocked pending verified contracts, live integration tests and human-approved architecture gates.",
     "reviewRemediation": {
       "pr771CodexP1_cutoverDeps": "MIG-700 dependsOn expanded to all wave MIG-* + GATEs + ATLAS-LIVE-E2E",
       "pr771CodexP2_storageDistinctACs": true,
@@ -25,7 +25,7 @@
       "prepIssue": 775,
       "ciEnabled": false
     },
-    "githubIssueMapPartial": true,
+    "githubIssueMapPartial": false,
     "githubIssueMappedCount": 72
   },
   "coverage": {
