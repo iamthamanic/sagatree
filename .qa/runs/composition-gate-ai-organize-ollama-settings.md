@@ -1,7 +1,8 @@
 # Composition Gate — ai-organize-ollama-settings
 
-- HEAD_SHA: WORKTREE (base HEAD d70318c35564c71a9a9be088f9a7453db08beee0)
-- Date: 2026-10-12
+- HEAD_SHA: a80496fd6b72db58caf31adeef59da409c37aa14
+- BASE_SHA: 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248
+- Date: 2026-10-21
 - Verdict: CLEAR
 - Diff scope (AI tab): profile Organize/BYOK list UX + `ollama-settings` Edge + Lore/Recap/ai-gm resolve + shared list hook
 
