@@ -4,8 +4,12 @@
  *
  * Exclusive write authority for each migration step is SQLite BEGIN IMMEDIATE
  * (GATE-04 single-writer). Schema version is re-read inside the transaction so
- * concurrent hosts cannot double-apply. Legacy schema-upgrade.lock files are
- * ignored (not authoritative) and removed best-effort when present.
+ * concurrent hosts cannot double-apply.
+ *
+ * Legacy `schema-upgrade.lock` (pre-BEGIN-IMMEDIATE file lock) is never used as
+ * an authority and is never auto-deleted: an old host may still hold it while
+ * migrating. Presence → fail-closed. Operators remove it only via the documented
+ * recovery helper after verifying the old host is stopped.
  */
 import { readdirSync, readFileSync, writeFileSync, existsSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
@@ -24,26 +28,53 @@ export type MigrateResult =
   | { ok: false; error: string; failedStep: MigrationFailure | null; schemaVersion: number };
 
 const FAILURE_FILE = 'migration-failure.json';
-const LEGACY_LOCK_FILE = 'schema-upgrade.lock';
+export const LEGACY_SCHEMA_UPGRADE_LOCK_FILE = 'schema-upgrade.lock';
 const MIGRATION_FILE_RE = /^(\d{4})_(.+)\.sql$/;
+
+export const LEGACY_LOCK_PRESENT_ERROR =
+  'legacy schema-upgrade.lock present — refuse migrate until old host is stopped and lock cleared via clearLegacySchemaUpgradeLockAfterVerifiedStandstill';
 
 function failurePath(dataDir: string): string {
   return join(dataDir, FAILURE_FILE);
 }
 
+export function legacySchemaUpgradeLockPath(dataDir: string): string {
+  return join(dataDir, LEGACY_SCHEMA_UPGRADE_LOCK_FILE);
+}
+
+export function legacySchemaUpgradeLockPresent(dataDir: string): boolean {
+  return existsSync(legacySchemaUpgradeLockPath(dataDir));
+}
+
 /**
- * Pre-MIG-011 follow-up hosts may still have a file lock. It is not used for
- * exclusion anymore — remove best-effort so operators are not confused.
- * Failures to unlink are ignored (never fail-open into migration).
+ * Operator recovery only. Call after verifying no old host process still uses
+ * this data directory (stopped / no open DB handle). Does not inspect PIDs —
+ * confirmation is an explicit caller argument so automated migrate never
+ * deletes a lock that may still be held.
  */
-export function discardLegacySchemaUpgradeLockFile(dataDir: string): void {
-  const lockPath = join(dataDir, LEGACY_LOCK_FILE);
-  if (!existsSync(lockPath)) return;
+export function clearLegacySchemaUpgradeLockAfterVerifiedStandstill(
+  dataDir: string,
+  confirmation: { readonly oldHostVerifiedStopped: true },
+): { ok: true } | { ok: false; error: string } {
+  if (confirmation.oldHostVerifiedStopped !== true) {
+    return { ok: false, error: 'old host standstill not confirmed' };
+  }
+  const lockPath = legacySchemaUpgradeLockPath(dataDir);
+  if (!existsSync(lockPath)) return { ok: true };
   try {
     unlinkSync(lockPath);
-  } catch {
-    /* ignore — leftover file is non-authoritative */
+    return { ok: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { ok: false, error: `failed to clear legacy lock: ${message}` };
   }
+}
+
+/** @deprecated Use clearLegacySchemaUpgradeLockAfterVerifiedStandstill — auto-discard is unsafe. */
+export function discardLegacySchemaUpgradeLockFile(_dataDir: string): void {
+  throw new Error(
+    'discardLegacySchemaUpgradeLockFile removed: use clearLegacySchemaUpgradeLockAfterVerifiedStandstill after verified old-host standstill',
+  );
 }
 
 export function readMigrationFailure(dataDir: string): MigrationFailure | null {
@@ -129,7 +160,16 @@ export function runMigrations(options: {
   dataDir: string;
   migrationsDir: string;
 }): MigrateResult {
-  discardLegacySchemaUpgradeLockFile(options.dataDir);
+  // Fail-closed: a legacy lock may mean an old host is mid-upgrade (file lock
+  // only; it does not coordinate with BEGIN IMMEDIATE). Never auto-delete.
+  if (legacySchemaUpgradeLockPresent(options.dataDir)) {
+    return {
+      ok: false,
+      error: LEGACY_LOCK_PRESENT_ERROR,
+      failedStep: readMigrationFailure(options.dataDir),
+      schemaVersion: readSchemaVersion(options.db),
+    };
+  }
 
   if (!foreignKeysEnabled(options.db)) {
     return {

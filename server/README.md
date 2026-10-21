@@ -34,6 +34,8 @@ Default bind is loopback only. Remote bind requires `SAGATREE_ALLOW_REMOTE_BIND=
 ## Persistence (MIG-011)
 
 - Driver: Node `node:sqlite` with GATE-04 PRAGMAs (`WAL`, `synchronous=FULL`, `busy_timeout=250`, `foreign_keys=ON`)
+- Upgrade exclusivity: SQLite `BEGIN IMMEDIATE` per migration step; `schema_version` re-read inside the transaction (no PID/file lock authority)
+- Legacy `schema-upgrade.lock`: **fail-closed** if present (may mean an old host is mid-upgrade). Never auto-deleted. Clear only via `clearLegacySchemaUpgradeLockAfterVerifiedStandstill({ oldHostVerifiedStopped: true })` after the old host is confirmed stopped
 - Journal: `schema_migrations` (owned by `ops`); failed steps recorded in `migration-failure.json` beside the DB
 - Bootstrap catalog tables: `worlds` (`world`), `projects` + `project_members` (`project`)
 - Drizzle repository adapters remain follow-on under GATE-01 (MIG-012+); Policy Service is MIG-013

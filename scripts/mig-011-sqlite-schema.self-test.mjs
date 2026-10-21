@@ -43,7 +43,8 @@ const {
   foreignKeysEnabled,
   TABLE_OWNERSHIP,
   owningModuleForTable,
-  discardLegacySchemaUpgradeLockFile,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
 } = await import(persistenceUrl);
 
 const catalogMigrations = join(root, 'server/migrations');
@@ -160,18 +161,139 @@ try {
   assert(goodIntegrity.ok, `good integrity: ${goodIntegrity.ok ? '' : goodIntegrity.errors.join('; ')}`);
   bootGood.db.close();
 
-  // --- Legacy schema-upgrade.lock is non-authoritative and discarded ---
+  // --- Legacy schema-upgrade.lock: fail-closed (no auto-delete); operator recovery ---
   const dataLegacy = join(work, 'data-legacy');
   mkdirSync(dataLegacy);
   const legacyLock = join(dataLegacy, 'schema-upgrade.lock');
-  writeFileSync(legacyLock, '{not-json-and-pid-1-noise', 'utf8');
-  writeFileSync(join(dataLegacy, 'schema-upgrade.lock.bak'), JSON.stringify({ pid: 1 }), 'utf8');
-  discardLegacySchemaUpgradeLockFile(dataLegacy);
-  assert(!existsSync(legacyLock), 'legacy lock file removed best-effort');
-  const bootLegacy = bootstrapHostPersistence({ dataDir: dataLegacy, migrationsDir: catalogMigrations });
-  assert(bootLegacy.ok, `bootstrap with prior legacy lock: ${bootLegacy.ok ? '' : bootLegacy.error}`);
-  assert(bootLegacy.schemaVersion === 1, 'legacy lock must not block migrate');
-  bootLegacy.db.close();
+  writeFileSync(legacyLock, 'held-by-old-host\n', 'utf8');
+  assert(legacySchemaUpgradeLockPresent(dataLegacy), 'legacy lock detected');
+  const bootWhileLegacy = bootstrapHostPersistence({ dataDir: dataLegacy, migrationsDir: catalogMigrations });
+  assert(!bootWhileLegacy.ok, 'migrate must fail-closed while legacy lock present');
+  assert(
+    String(bootWhileLegacy.error).includes('legacy schema-upgrade.lock'),
+    `legacy fail error got ${bootWhileLegacy.error}`,
+  );
+  assert(existsSync(legacyLock), 'legacy lock must remain (no auto-delete)');
+
+  // Old+new concurrency: old host holds legacy lock + reserved write TX (pre-check version outside TX).
+  // New host refuses on lock presence — never steals the lock from a live old upgrader.
+  const dataOldNew = join(work, 'data-old-new');
+  mkdirSync(dataOldNew);
+  // Seed v1 without lock, then simulate old host re-locking for a follow-on step.
+  const seedOldNew = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(seedOldNew.ok, 'seed old-new');
+  seedOldNew.db.close();
+  writeFileSync(join(dataOldNew, 'schema-upgrade.lock'), 'old-runner-active\n', 'utf8');
+  const oldConn = openHostDatabase(join(dataOldNew, 'host.sqlite'));
+  assert(oldConn.ok, 'old host reopen');
+  // Old pattern: read version outside TX, then BEGIN (still holds reserved lock).
+  const oldVersionOutside = readSchemaVersion(oldConn.db);
+  assert(oldVersionOutside === 1, 'old host sees v1');
+  oldConn.db.exec('BEGIN IMMEDIATE');
+  const newWhileOld = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(!newWhileOld.ok, 'new host must fail-closed while old lock file present');
+  assert(String(newWhileOld.error).includes('legacy schema-upgrade.lock'), newWhileOld.error);
+  oldConn.db.exec('ROLLBACK');
+  oldConn.db.close();
+  // Without verified standstill, clear must not be callable as auto-path — require explicit flag.
+  const cleared = clearLegacySchemaUpgradeLockAfterVerifiedStandstill(dataOldNew, {
+    oldHostVerifiedStopped: true,
+  });
+  assert(cleared.ok, `operator clear: ${cleared.ok ? '' : cleared.error}`);
+  assert(!existsSync(join(dataOldNew, 'schema-upgrade.lock')), 'lock removed only after verified standstill');
+  const bootAfterClear = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(bootAfterClear.ok, `bootstrap after verified clear: ${bootAfterClear.ok ? '' : bootAfterClear.error}`);
+  assert(bootAfterClear.schemaVersion === 1, 'schema intact after old+new sequence');
+  bootAfterClear.db.close();
+
+  // --- Real process crash (SIGKILL) mid-migration TX ---
+  if (process.platform === 'win32') {
+    console.log('SKIP: SIGKILL crash-recovery (POSIX only)');
+  } else {
+    const dataCrash = join(work, 'data-crash');
+    const migCrash = join(work, 'migrations-crash');
+    mkdirSync(dataCrash);
+    mkdirSync(migCrash);
+    for (const name of readdirSync(catalogMigrations)) {
+      copyFileSync(join(catalogMigrations, name), join(migCrash, name));
+    }
+    // Seed catalog v1 first
+    const seedCrash = bootstrapHostPersistence({ dataDir: dataCrash, migrationsDir: migCrash });
+    assert(seedCrash.ok, 'crash seed');
+    seedCrash.db.close();
+
+    const marker = join(dataCrash, 'in-tx.marker');
+    const crashWorker = join(work, 'crash-worker.mjs');
+    writeFileSync(
+      crashWorker,
+      `
+import { writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+const persistenceUrl = process.env.P_URL;
+const dbPath = process.env.DB_PATH;
+const markerPath = process.env.MARKER;
+const { openHostDatabase } = await import(persistenceUrl);
+const opened = openHostDatabase(dbPath);
+if (!opened.ok) { console.error(opened.error); process.exit(2); }
+const db = opened.db;
+db.exec('BEGIN IMMEDIATE');
+db.exec('CREATE TABLE crash_partial (id TEXT NOT NULL PRIMARY KEY) STRICT');
+db.exec("INSERT INTO crash_partial (id) VALUES ('uncommitted')");
+writeFileSync(markerPath, 'in-tx\\n', 'utf8');
+// Hold forever until SIGKILL — never COMMIT
+await new Promise(() => {});
+`,
+      'utf8',
+    );
+
+    const { spawn } = await import('node:child_process');
+    const child = spawn(
+      process.execPath,
+      ['--experimental-strip-types', crashWorker],
+      {
+        env: {
+          ...process.env,
+          P_URL: persistenceUrl,
+          DB_PATH: join(dataCrash, 'host.sqlite'),
+          MARKER: marker,
+        },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    );
+    let childErr = '';
+    child.stderr.on('data', (d) => {
+      childErr += d;
+    });
+
+    const deadline = Date.now() + 10_000;
+    while (!existsSync(marker) && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    assert(existsSync(marker), `crash worker never entered TX: ${childErr}`);
+    child.kill('SIGKILL');
+    await new Promise((resolve) => child.on('close', resolve));
+
+    const afterCrash = openHostDatabase(join(dataCrash, 'host.sqlite'));
+    assert(afterCrash.ok, 'reopen after SIGKILL');
+    const partial = afterCrash.db
+      .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
+      .get();
+    assert(!partial, 'uncommitted crash_partial must roll back after SIGKILL');
+    assert(readSchemaVersion(afterCrash.db) === 1, 'committed v1 must survive SIGKILL');
+    const journalAfterCrash = afterCrash.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
+    assert(journalAfterCrash === 1, `no duplicate journal after crash, got ${journalAfterCrash}`);
+    afterCrash.db.close();
+
+    // Restart migrate: still consistent (v1 only); constraint-fail path still works separately
+    const restartCrash = bootstrapHostPersistence({ dataDir: dataCrash, migrationsDir: migCrash });
+    assert(restartCrash.ok, `restart after SIGKILL: ${restartCrash.ok ? '' : restartCrash.error}`);
+    assert(restartCrash.schemaVersion === 1, 'schema version stable after crash recovery');
+    const stillNoPartial = restartCrash.db
+      .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
+      .get();
+    assert(!stillNoPartial, 'partial table must stay absent after restart');
+    restartCrash.db.close();
+  }
 
   // --- duplicate migration version must fail closed (not skip) ---
   const migDup = join(work, 'migrations-dup');

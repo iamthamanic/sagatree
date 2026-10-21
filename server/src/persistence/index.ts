@@ -10,7 +10,10 @@ import {
   listMigrationFiles,
   readMigrationFailure,
   readSchemaVersion,
-  discardLegacySchemaUpgradeLockFile,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
+  LEGACY_LOCK_PRESENT_ERROR,
+  LEGACY_SCHEMA_UPGRADE_LOCK_FILE,
   type MigrateResult,
 } from './migration-runner.ts';
 import { runIntegrityCheck, type IntegrityResult } from './integrity-check.ts';
@@ -25,7 +28,10 @@ export {
   listMigrationFiles,
   readMigrationFailure,
   readSchemaVersion,
-  discardLegacySchemaUpgradeLockFile,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
+  LEGACY_LOCK_PRESENT_ERROR,
+  LEGACY_SCHEMA_UPGRADE_LOCK_FILE,
   runIntegrityCheck,
   TABLE_OWNERSHIP,
   assertUniqueTableOwnership,
