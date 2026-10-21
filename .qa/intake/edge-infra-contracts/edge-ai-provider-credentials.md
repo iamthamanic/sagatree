@@ -882,7 +882,7 @@ async function validateProviderApiKey(
 | `supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
 | `supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370` |
+| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
 | `supabase/functions/ai-provider-credentials/index.ts` | `45d9f64a6065e45866512849eb41a33f347c6dc8c9fe8d0d876ed8030f101cf0` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |

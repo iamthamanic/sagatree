@@ -39,7 +39,7 @@ character-avatar-meshy: Den aktuell eingebundenen Worker mit denselben validiert
 
 ## Security & Data
 
-Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+character-avatar-meshy: Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ### Bekannte Legacy-Defekte / offene Verifikation
 

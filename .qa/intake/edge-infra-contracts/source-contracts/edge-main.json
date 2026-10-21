@@ -5,7 +5,7 @@
   "sourceFiles": [
     {
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-      "sha256": "8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370"
+      "sha256": "6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27"
     },
     {
       "path": "supabase/functions/_shared/edge-jwt-gate.ts",
@@ -388,39 +388,39 @@
       "name": "EDGE_DISPATCHER_ALLOWLIST",
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
       "line": 10,
-      "endLine": 19,
-      "text": "EDGE_DISPATCHER_ALLOWLIST = [\n  'ai-provider-credentials',\n  'character-avatar-meshy',\n  'character-lore',\n  'item-model3d',\n  'item-thumbnail',\n  'look-reference-analysis',\n  'session-media-token',\n  'session-recap',\n] as const"
+      "endLine": 20,
+      "text": "EDGE_DISPATCHER_ALLOWLIST = [\n  'ai-provider-credentials',\n  'character-avatar-meshy',\n  'character-lore',\n  'item-model3d',\n  'item-thumbnail',\n  'look-reference-analysis',\n  'ollama-settings',\n  'session-media-token',\n  'session-recap',\n] as const"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "EdgeDispatcherAllowedName",
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-      "line": 21,
-      "endLine": 21,
+      "line": 22,
+      "endLine": 22,
       "text": "export type EdgeDispatcherAllowedName = (typeof EDGE_DISPATCHER_ALLOWLIST)[number];"
     },
     {
       "kind": "VariableDeclaration",
       "name": "ALLOWED",
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-      "line": 23,
-      "endLine": 23,
+      "line": 24,
+      "endLine": 24,
       "text": "ALLOWED = new Set<string>(EDGE_DISPATCHER_ALLOWLIST)"
     },
     {
       "kind": "VariableDeclaration",
       "name": "EDGE_DISPATCHER_BLOCKED",
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-      "line": 26,
-      "endLine": 26,
+      "line": 27,
+      "endLine": 27,
       "text": "EDGE_DISPATCHER_BLOCKED = new Set(['main', '_shared'])"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isEdgeDispatcherAllowed",
       "path": "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-      "line": 28,
-      "endLine": 32,
+      "line": 29,
+      "endLine": 33,
       "text": "export function isEdgeDispatcherAllowed(serviceName: string): boolean {\n  if (!serviceName || serviceName.includes('..')) return false;\n  if (EDGE_DISPATCHER_BLOCKED.has(serviceName)) return false;\n  return ALLOWED.has(serviceName);\n}"
     },
     {

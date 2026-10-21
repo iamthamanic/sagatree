@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `faec67ea5b9fc8d593fb142f3117162634b72cc5f03731bf5684b28303087109`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `f9a713a4ec8aadd75fa73d60a7cf81733ea39457429532a6c9bbb43314f6b621`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -61,6 +61,7 @@ Auth10s, service fetch15s, quota10s, provider60s. SESSION_RECAP_AI_* overrides C
 - `CHARACTER_AI_MODEL`
 - `CHARACTER_AI_PROVIDER`
 - `CHARACTER_AI_RATE_LIMIT_PER_MINUTE`
+- `CREDENTIALS_ENCRYPTION_KEY`
 - `OLLAMA_HOST`
 - `OLLAMA_MODEL`
 - `SESSION_RECAP_AI_ALLOWED_ORIGIN`
@@ -77,9 +78,10 @@ Explicit abort call sites (dynamic values resolve in the linked helper declarati
 
 - `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
 - `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
 - `supabase/functions/_shared/session-recap-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:96` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:119` — `AbortSignal.timeout(15_000)`
+- `supabase/functions/session-recap/index.ts:100` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/session-recap/index.ts:123` — `AbortSignal.timeout(15_000)`
 
 ## Exact environment defaults and configuration resolution
 
@@ -152,6 +154,165 @@ function readConfiguredOrigin(envKeys: string[]): string {
 }
 ```
 
+### envDefaultModel
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+
+```ts
+export function envDefaultModel(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): string {
+  return (envGet('CHARACTER_AI_MODEL') || envGet('OLLAMA_MODEL') || '').trim();
+}
+```
+
+### buildEnvSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+
+```ts
+export function buildEnvSettingsView(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): OllamaSettingsView {
+  const envConfig = resolveCharacterLoreProviderConfig();
+  const localDefault = defaultLocalOllamaBase(envGet);
+  const useCloud =
+    envConfig?.provider === 'openai-compatible' &&
+    trimTrailingSlash(envConfig.baseUrl).toLowerCase().includes('ollama.com');
+  return {
+    useCloud,
+    baseUrl: envConfig?.baseUrl ?? (useCloud ? OLLAMA_CLOUD_OPENAI_BASE : localDefault),
+    model: envConfig?.model ?? envDefaultModel(envGet),
+    hasApiKey: Boolean(envConfig?.apiKey),
+    keyHint: null,
+    status: envConfig ? 'active' : null,
+    updatedAt: null,
+    source: 'env',
+    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,
+    localDefaultUrl: localDefault,
+  };
+}
+```
+
+### loadOllamaSettingsForUser
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+
+```ts
+export async function loadOllamaSettingsForUser(
+  config: SupabaseServiceConfig,
+  userId: string,
+): Promise<OllamaSettingsStored | null> {
+  const url =
+    `${config.url}/rest/v1/user_ai_provider_credentials` +
+    `?user_id=eq.${encodeURIComponent(userId)}` +
+    `&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}` +
+    `&status=eq.active` +
+    `&select=secret_ciphertext,key_hint,status,meta,updated_at,added_at` +
+    `&limit=1`;
+
+  const response = await fetch(url, {
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+    },
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!response.ok) {
+    throw new Error(`ollama prefs lookup failed: ${response.status}`);
+  }
+
+  const body: unknown = await response.json();
+  if (!Array.isArray(body) || body.length === 0 || !isRecord(body[0])) return null;
+
+  const row = body[0];
+  const meta = isRecord(row.meta) ? row.meta : {};
+  const useCloud = meta.useCloud === true;
+  const baseUrl =
+    typeof meta.baseUrl === 'string' && meta.baseUrl.trim()
+      ? meta.baseUrl.trim()
+      : useCloud
+        ? OLLAMA_CLOUD_OPENAI_BASE
+        : defaultLocalOllamaBase();
+  const model = typeof meta.model === 'string' ? meta.model.trim() : '';
+  const secretCiphertext =
+    typeof row.secret_ciphertext === 'string' ? row.secret_ciphertext : '';
+  if (!secretCiphertext) return null;
+
+  const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));
+  if (!encKey) {
+    throw new Error('CREDENTIALS_ENCRYPTION_KEY missing');
+  }
+
+  let apiKey = '';
+  try {
+    apiKey = await decryptProviderSecret(secretCiphertext, encKey);
+  } catch {
+    throw new Error('OLLAMA_SECRET_DECRYPT');
+  }
+
+  return {
+    useCloud,
+    baseUrl,
+    model,
+    apiKey,
+    keyHint: typeof row.key_hint === 'string' ? row.key_hint : '••••',
+    status: typeof row.status === 'string' ? row.status : 'active',
+    updatedAt:
+      typeof row.updated_at === 'string'
+        ? row.updated_at
+        : typeof row.added_at === 'string'
+          ? row.added_at
+          : null,
+    secretCiphertext,
+  };
+}
+```
+
+### toSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+
+```ts
+export function toSettingsView(
+  stored: OllamaSettingsStored | null,
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): OllamaSettingsView {
+  const envView = buildEnvSettingsView(envGet);
+  if (!stored) return envView;
+  return {
+    useCloud: stored.useCloud,
+    baseUrl: stored.baseUrl,
+    model: stored.model,
+    hasApiKey: stored.apiKey.trim().length > 0,
+    keyHint: stored.apiKey.trim().length > 0 ? stored.keyHint : null,
+    status: stored.status,
+    updatedAt: stored.updatedAt,
+    source: 'user',
+    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,
+    localDefaultUrl: envView.localDefaultUrl,
+  };
+}
+```
+
+### defaultLocalOllamaBase
+
+`supabase/functions/_shared/ollama-url-policy.ts:127`
+
+```ts
+export function defaultLocalOllamaBase(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): string {
+  const fromEnv = (
+    envGet('CHARACTER_AI_BASE_URL') ||
+    envGet('OLLAMA_HOST') ||
+    'http://ollama:11434'
+  ).trim();
+  const safe = assertSafeOllamaBaseUrl(fromEnv);
+  return safe.ok ? safe.baseUrl : 'http://ollama:11434';
+}
+```
+
 ### resolveSessionRecapProviderConfig
 
 `supabase/functions/_shared/session-recap-provider.ts:17`
@@ -210,7 +371,7 @@ export function resolveSessionRecapProviderConfig(): CharacterLoreProviderConfig
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:27`
+`supabase/functions/session-recap/index.ts:31`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -221,7 +382,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:33`
+`supabase/functions/session-recap/index.ts:37`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -229,7 +390,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### getRateLimit
 
-`supabase/functions/session-recap/index.ts:61`
+`supabase/functions/session-recap/index.ts:65`
 
 ```ts
 function getRateLimit(): number {
@@ -247,7 +408,7 @@ function getRateLimit(): number {
 
 ### getSupabaseConfig
 
-`supabase/functions/session-recap/index.ts:73`
+`supabase/functions/session-recap/index.ts:77`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -271,11 +432,13 @@ function getSupabaseConfig(): SupabaseConfig | null {
 |---|---|---|---|
 | http-host | `authenticated HTTP transport` | #795 |  |
 | auth | `account identity` | #793 |  |
+| edge | `ai-provider-credentials` | #818 |  |
 | rpc | `sagatree_upsert_session_recap` | #814 | internal helper used by recap service |
 | internal-rpc | `consume_session_recap_rate_limit` | #837 | quota prerequisite owned by this Edge port |
 | table | `projects` | #791 | Policy #792 |
 | table | `session_recaps` | #791 | Policy #792 |
 | table | `sessions` | #791 | Policy #792 |
+| table | `user_ai_provider_credentials` | #791 | Policy #792 |
 
 ## CORS transport
 
@@ -336,7 +499,7 @@ async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
 
 ### session-recap:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-recap/index.ts:140`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-recap/index.ts:144`.
 
 
 ```ts
@@ -444,12 +607,34 @@ serve(async (request: Request) => {
     );
   }
 
-  const providerConfig = resolveSessionRecapProviderConfig();
+  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;
+  try {
+    if (supabaseConfig.serviceRoleKey) {
+      const stored = await loadOllamaSettingsForUser(
+        {
+          url: supabaseConfig.url,
+          serviceRoleKey: supabaseConfig.serviceRoleKey,
+        },
+        userId,
+      );
+      if (stored) {
+        providerConfig = prefsToProviderConfig(stored);
+      }
+    }
+  } catch (error) {
+    console.error(
+      'session-recap ollama prefs:',
+      error instanceof Error ? error.message : 'unknown',
+    );
+  }
+  if (!providerConfig) {
+    providerConfig = resolveSessionRecapProviderConfig();
+  }
   if (!providerConfig) {
     return jsonResponse(request, {
       status: 'not-configured',
       message:
-        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell in der Server-Umgebung.',
+        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',
     });
   }
 
@@ -718,6 +903,63 @@ export type CorsOptions = {
 };
 ```
 
+### OllamaSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+
+```ts
+export interface OllamaSettingsView {
+  useCloud: boolean;
+  baseUrl: string;
+  model: string;
+  hasApiKey: boolean;
+  keyHint: string | null;
+  status: string | null;
+  updatedAt: string | null;
+  source: 'user' | 'env';
+  cloudDefaultUrl: string;
+  localDefaultUrl: string;
+}
+```
+
+### OllamaSettingsStored
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+
+```ts
+export interface OllamaSettingsStored {
+  useCloud: boolean;
+  baseUrl: string;
+  model: string;
+  apiKey: string;
+  keyHint: string;
+  status: string;
+  updatedAt: string | null;
+  secretCiphertext: string;
+}
+```
+
+### SupabaseServiceConfig
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+
+```ts
+export interface SupabaseServiceConfig {
+  url: string;
+  serviceRoleKey: string;
+}
+```
+
+### SafeUrlResult
+
+`supabase/functions/_shared/ollama-url-policy.ts:68`
+
+```ts
+export type SafeUrlResult =
+  | { ok: true; baseUrl: string }
+  | { ok: false; message: string };
+```
+
 ### SessionRecapPromptLine
 
 `supabase/functions/_shared/session-recap-prompt.ts:6`
@@ -770,7 +1012,7 @@ type FetchLike = (
 
 ### JsonRecord
 
-`supabase/functions/session-recap/index.ts:25`
+`supabase/functions/session-recap/index.ts:29`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -778,7 +1020,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/session-recap/index.ts:37`
+`supabase/functions/session-recap/index.ts:41`
 
 ```ts
 interface SupabaseConfig {
@@ -790,6 +1032,47 @@ interface SupabaseConfig {
 
 
 ## Exact validation, defaults and helper behavior
+
+### parseCredentialsEncryptionKey
+
+`supabase/functions/_shared/ai-provider-crypto.ts:25`
+
+```ts
+export function parseCredentialsEncryptionKey(
+  raw: string | undefined,
+): Uint8Array | null {
+  const trimmed = raw?.trim() ?? '';
+  if (!trimmed) return null;
+
+  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+    const out = new Uint8Array(32);
+    for (let i = 0; i < 32; i += 1) {
+      out[i] = Number.parseInt(trimmed.slice(i * 2, i * 2 + 2), 16);
+    }
+    return out;
+  }
+
+  try {
+    const decoded = base64UrlToBytes(trimmed);
+    if (decoded.byteLength === 32) return decoded;
+  } catch {
+    // fall through
+  }
+
+  try {
+    const binary = atob(trimmed);
+    if (binary.length === 32) {
+      const out = new Uint8Array(32);
+      for (let i = 0; i < 32; i += 1) out[i] = binary.charCodeAt(i);
+      return out;
+    }
+  } catch {
+    // fall through
+  }
+
+  return null;
+}
+```
 
 ### buildCharacterLorePrompt
 
@@ -857,6 +1140,21 @@ DEFAULT_CORS_ALLOW_HEADERS =
   'authorization, x-client-info, apikey, content-type'
 ```
 
+### parseIpv4
+
+`supabase/functions/_shared/ollama-url-policy.ts:25`
+
+```ts
+function parseIpv4(host: string): [number, number, number, number] | null {
+  if (!isIpv4(host)) return null;
+  const parts = host.split('.').map((p) => Number.parseInt(p, 10));
+  if (parts.length !== 4 || parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) {
+    return null;
+  }
+  return [parts[0], parts[1], parts[2], parts[3]];
+}
+```
+
 ### buildSessionRecapPrompt
 
 `supabase/functions/_shared/session-recap-prompt.ts:33`
@@ -897,7 +1195,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_session_recap_rate_limit'
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:27`
+`supabase/functions/session-recap/index.ts:31`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -908,7 +1206,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/session-recap/index.ts:32`
+`supabase/functions/session-recap/index.ts:36`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -916,7 +1214,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:33`
+`supabase/functions/session-recap/index.ts:37`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -924,7 +1222,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### MAX_SUMMARY_LENGTH
 
-`supabase/functions/session-recap/index.ts:34`
+`supabase/functions/session-recap/index.ts:38`
 
 ```ts
 MAX_SUMMARY_LENGTH = 4_000
@@ -932,7 +1230,7 @@ MAX_SUMMARY_LENGTH = 4_000
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/session-recap/index.ts:35`
+`supabase/functions/session-recap/index.ts:39`
 
 ```ts
 MAX_REQUEST_BYTES = 8_000
@@ -940,7 +1238,7 @@ MAX_REQUEST_BYTES = 8_000
 
 ### parseHighlightLines
 
-`supabase/functions/session-recap/index.ts:123`
+`supabase/functions/session-recap/index.ts:127`
 
 ```ts
 function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
@@ -967,14 +1265,17 @@ function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
 | Path | SHA-256 |
 |---|---|
 | `src/infrastructure/session/session-recap-ai-service.ts` | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
+| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
 | `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370` |
+| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
 | `supabase/functions/_shared/session-recap-prompt.ts` | `47a57972e45abe456517d714b0e128288167fdeffb6a98c22f258507249dd00d` |
 | `supabase/functions/_shared/session-recap-provider.ts` | `01f140b2bc6a9f13fa53681a16304c38fe71e74d8167d7ce8487fc31e6a32d80` |
 | `supabase/functions/_shared/session-recap-rate-limit.ts` | `bd67b9f9969d139c784b1febee3d59cac29b029c0df010764f60779ba443501b` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/session-recap/index.ts` | `a5f4a9015a5ba6c39891582efdf0f0bfdfd9a7aad368814cb6803251a93d9d47` |
+| `supabase/functions/session-recap/index.ts` | `96e46b0b4fcbb1fbccf2925fe69cf3a6a55d5ac467494e5244f054e9390f1d01` |
 

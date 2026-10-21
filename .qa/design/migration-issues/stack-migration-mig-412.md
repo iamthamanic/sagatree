@@ -39,7 +39,7 @@ look-reference-analysis: Den aktuell eingebundenen Worker mit denselben validier
 
 ## Security & Data
 
-Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+look-reference-analysis: Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ### Bekannte Legacy-Defekte / offene Verifikation
 

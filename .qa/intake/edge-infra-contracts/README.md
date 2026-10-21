@@ -1,6 +1,6 @@
 # Edge and infrastructure contracts (PREP-05 #778)
 
-**24 Edge entries = 8 allowlisted workers + 15 unmounted workers + 1 dispatcher. 13 infrastructure areas. 57 distinct called RPC names.**
+**25 Edge entries = 9 allowlisted workers + 15 unmounted workers + 1 dispatcher. 13 infrastructure areas. 57 distinct called RPC names.**
 
 Status is **SPEC with current-branch source verification**. This is neither live-backend evidence nor a passed successor parity suite. GATE-01/02/03/04/05 statuses are unchanged.
 
@@ -33,6 +33,7 @@ Every source snapshot includes complete operation branches/types/helper bodies; 
 | [marketplace](edge-marketplace.md) | legacy-unmounted | #831 | 0 | none |
 | [media](edge-media.md) | legacy-unmounted | #832 | 0 | none |
 | [npcs](edge-npcs.md) | legacy-unmounted | #833 | 0 | none |
+| [ollama-settings](edge-ollama-settings.md) | allowlisted-worker | #818 | 1 | persistent-rpc 8/60s |
 | [quests](edge-quests.md) | legacy-unmounted | #834 | 0 | none |
 | [rulesets](edge-rulesets.md) | legacy-unmounted | #835 | 0 | none |
 | [session-media-token](edge-session-media-token.md) | allowlisted-worker | #836 | 1 | none |
@@ -45,7 +46,7 @@ Every source snapshot includes complete operation branches/types/helper bodies; 
 
 | Contract | RPCs | Tables | Storage buckets | Edge names | Implementation |
 |---|---|---|---|---|---|
-| [ai](infra-ai.md) | 0 | 0 | 0 | 1 | #800 |
+| [ai](infra-ai.md) | 0 | 0 | 0 | 2 | #800 |
 | [character](infra-character.md) | 0 | 9 | 2 | 2 | #801 |
 | [inventory](infra-inventory.md) | 0 | 5 | 0 | 2 | #802 |
 | [look](infra-look.md) | 0 | 2 | 0 | 1 | #803 |

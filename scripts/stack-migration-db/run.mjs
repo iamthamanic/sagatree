@@ -3,7 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCluster } from './cluster.mjs';
 import { bootstrapSupabase, applyRepositoryMigrations, exportCatalog } from './bootstrap.mjs';
-import { seedFixtures, fixture } from './fixtures.mjs';
+import { seedFixtures, fixture, computeSemanticChecksum } from './fixtures.mjs';
 import { runProbes } from './probes.mjs';
 import { sourceEvidence } from './evidence.mjs';
 
@@ -39,6 +39,8 @@ try {
   console.log(`Applied ${report.migrations.length} repository migrations; exported ${catalog.functions.length} functions.`);
   await seedFixtures(client);
   await writeFile(join(output, 'fixture.json'), JSON.stringify(fixture, null, 2) + '\n');
+  report.semantic = await computeSemanticChecksum(client);
+  await writeFile(join(output, 'semantic-checksum.json'), JSON.stringify(report.semantic, null, 2) + '\n');
   await client.end();
   client = null;
   const passed = await runProbes(cluster, report, {

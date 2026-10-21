@@ -4,6 +4,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 const dir = '.qa/intake/edge-infra-contracts';
+// Frozen historical freeze for Epic #773 prep; per-run verification uses live source SHA-256.
 const baselineSha = '3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248';
 const sha256 = (x) => createHash('sha256').update(x).digest('hex');
 const read = (path) => JSON.parse(readFileSync(path, 'utf8'));
@@ -16,6 +17,51 @@ const issue = (id) => {
   if (!found?.githubIssue) throw new Error(`Missing implementation issue ${id}`);
   return found.githubIssue;
 };
+/** Fixed Edge→issue identities. Index order must never rebind published MIG-401..424. */
+const EDGE_FUNCTION_ISSUE = {
+  'ai-gm': 'MIG-401',
+  'ai-provider-credentials': 'MIG-402',
+  // #879 added ollama-settings; no new GH identity — co-owned with MIG-402 until human allocates a dedicated ticket.
+  'ollama-settings': 'MIG-402',
+  bestiary: 'MIG-403',
+  'character-avatar-meshy': 'MIG-404',
+  'character-lore': 'MIG-405',
+  characters: 'MIG-406',
+  'dm-tools': 'MIG-407',
+  export: 'MIG-408',
+  'item-model3d': 'MIG-409',
+  'item-thumbnail': 'MIG-410',
+  items: 'MIG-411',
+  'look-reference-analysis': 'MIG-412',
+  lorekeeper: 'MIG-413',
+  main: 'MIG-414',
+  marketplace: 'MIG-415',
+  media: 'MIG-416',
+  npcs: 'MIG-417',
+  quests: 'MIG-418',
+  rulesets: 'MIG-419',
+  'session-media-token': 'MIG-420',
+  'session-recap': 'MIG-421',
+  sessions: 'MIG-422',
+  spellbook: 'MIG-423',
+  world: 'MIG-424',
+};
+/** Fixed Infra→issue identities for MIG-301..313. */
+const INFRA_AREA_ISSUE = {
+  ai: 'MIG-301',
+  character: 'MIG-302',
+  inventory: 'MIG-303',
+  look: 'MIG-304',
+  marketplace: 'MIG-305',
+  media: 'MIG-306',
+  'npc-creature': 'MIG-307',
+  project: 'MIG-308',
+  rulesets: 'MIG-309',
+  saga: 'MIG-310',
+  session: 'MIG-311',
+  'user-profile': 'MIG-312',
+  world: 'MIG-313',
+};
 const snapshots = readdirSync(`${dir}/source-contracts`).sort().map((name) => {
   const path = `${dir}/source-contracts/${name}`;
   return { data: read(path), path, sha256: sha256(readFileSync(path)) };
@@ -26,9 +72,17 @@ const main = edgeSnapshots.find((x) => x.data.function === 'main').data;
 const allowlist = main.declarations.find((d) => d.name === 'EDGE_DISPATCHER_ALLOWLIST');
 if (!allowlist) throw new Error('Dispatcher allowlist evidence missing');
 const allowed = [...allowlist.text.matchAll(/'([a-z][a-z0-9-]+)'/g)].map((m) => m[1]).sort();
-if (allowed.length !== 8) throw new Error(`Review changed dispatcher allowlist (${allowed.length})`);
-const edgeIssue = new Map(edgeSnapshots.map((x, i) => [x.data.function, issue(`MIG-${401 + i}`)]));
-const infraIssue = new Map(infraSnapshots.map((x, i) => [x.data.area, issue(`MIG-${301 + i}`)]));
+if (allowed.length !== 9) throw new Error(`Review changed dispatcher allowlist (${allowed.length}); expected 9 including ollama-settings`);
+const edgeIssue = new Map(edgeSnapshots.map((x) => {
+  const localId = EDGE_FUNCTION_ISSUE[x.data.function];
+  if (!localId) throw new Error(`Unmapped Edge function identity: ${x.data.function}`);
+  return [x.data.function, issue(localId)];
+}));
+const infraIssue = new Map(infraSnapshots.map((x) => {
+  const localId = INFRA_AREA_ISSUE[x.data.area];
+  if (!localId) throw new Error(`Unmapped infrastructure area identity: ${x.data.area}`);
+  return [x.data.area, issue(localId)];
+}));
 const rpcGroups = new Map();
 for (const group of groups) for (const name of group.rpcNames) {
   if (rpcGroups.has(name)) throw new Error(`Duplicate primary RPC binding ${name}`);
@@ -61,8 +115,10 @@ const edges = edgeSnapshots.map(({ data: s, path, sha256: snapshotSha }) => {
     ...s.handler.flatMap((h) => [...h.text.matchAll(/\b(?:req|request)\.method\s*(?:===|!==)\s*['"]([A-Z]+)['"]/g)].map((x) => x[1]))]);
   const deps = [commonDependency('http-host', 'authenticated HTTP transport', issue('MIG-020'))];
   if (exposure.kind !== 'legacy-unmounted') deps.push(commonDependency('auth', 'account identity', issue('MIG-014')));
-  if (s.environment.includes('CREDENTIALS_ENCRYPTION_KEY') && name !== 'ai-provider-credentials') {
-    deps.push(commonDependency('edge', 'ai-provider-credentials', edgeIssue.get('ai-provider-credentials')));
+  // Co-owned workers on MIG-402 must not invent a self-edge dependency.
+  const credentialsIssue = edgeIssue.get('ai-provider-credentials');
+  if (s.environment.includes('CREDENTIALS_ENCRYPTION_KEY') && edgeIssue.get(name) !== credentialsIssue) {
+    deps.push(commonDependency('edge', 'ai-provider-credentials', credentialsIssue));
   }
   if (name === 'session-recap') deps.push(commonDependency('rpc', 'sagatree_upsert_session_recap', 814, { scope: 'internal helper used by recap service' }));
   if (m.rateLimits.rpc) deps.push(commonDependency('internal-rpc', m.rateLimits.rpc, edgeIssue.get(name), { scope: 'quota prerequisite owned by this Edge port' }));
@@ -206,7 +262,10 @@ for (const i of infrastructure) {
 }
 
 let readme = '# Edge and infrastructure contracts (PREP-05 #778)\n\n';
-readme += '**24 Edge entries = 8 allowlisted workers + 15 unmounted workers + 1 dispatcher. 13 infrastructure areas. 57 distinct called RPC names.**\n\n';
+const allowlistedCount = edges.filter((e) => e.exposure.kind === 'allowlisted-worker').length;
+const unmountedCount = edges.filter((e) => e.exposure.kind === 'legacy-unmounted').length;
+const dispatcherCount = edges.filter((e) => e.exposure.kind === 'dispatcher').length;
+readme += `**${edges.length} Edge entries = ${allowlistedCount} allowlisted workers + ${unmountedCount} unmounted workers + ${dispatcherCount} dispatcher. ${infrastructure.length} infrastructure areas. 57 distinct called RPC names.**\n\n`;
 readme += 'Status is **SPEC with current-branch source verification**. This is neither live-backend evidence nor a passed successor parity suite. GATE-01/02/03/04/05 statuses are unchanged.\n\n';
 readme += section('Reproduce and review', 'Run `node scripts/stack-migration-edge-source-contracts.mjs` and `node scripts/stack-migration-edge-contracts.mjs` to check snapshots/rendering. A deliberate reviewed update uses `--write` on the source extractor, edits `semantics.json`, then uses `--write` on the renderer. Both default commands fail on drift. Source code is parsed, never executed.\n\n`inventory.json` is schema v2. Each contract contains source SHA-256 paths, exact AST snapshot reference/hash, its own acceptance/negative tests and implementation issue. RPC primary binding comes from `../rpc-contracts/split-groups.json`, which is an exclusive 57-name partition.\n\nEvery source snapshot includes complete operation branches/types/helper bodies; infrastructure snapshots include full query chains, caller argument objects, decoders/error handling and imported type declarations. Dynamic finite RPC unions and class-field table constants are resolved. Auth, storage and realtime are separate from table counts.');
 readme += section('Edge entries', '| Contract | Exposure | Implementation | Client caller files | Quota |\n|---|---|---|---|---|\n' + edges.map((e) => `| [${e.function}](edge-${e.function}.md) | ${e.exposure.kind} | #${e.implementationIssue} | ${e.callSites.length} | ${e.rateLimits.kind}${e.rateLimits.defaultLimit ? ` ${e.rateLimits.defaultLimit}/${e.rateLimits.windowSeconds}s` : ''} |`).join('\n'));

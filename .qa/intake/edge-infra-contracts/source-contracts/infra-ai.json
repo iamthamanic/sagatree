@@ -6,6 +6,10 @@
     {
       "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
       "sha256": "2d8233ab5816f88afd6b20db580e87d6f8d8b447a28e0f02d02d7c7425249d50"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "sha256": "e7b2dede5b175b22e3b3218f10e2c897deb2135dcac131dcefc1e87796891a91"
     }
   ],
   "supportingSourceFiles": [
@@ -15,7 +19,11 @@
     },
     {
       "path": "src/domains/ai-providers/index.ts",
-      "sha256": "dbbb48cd0daaae1c9796fee4530955eb9278b73b4aaa516688d0a4b5299b4604"
+      "sha256": "460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05"
+    },
+    {
+      "path": "src/domains/ai-providers/ollama-settings.ts",
+      "sha256": "f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c"
     },
     {
       "path": "src/lib/supabase.ts",
@@ -62,6 +70,22 @@
       "line": 16,
       "endLine": 28,
       "text": "export interface AiProviderCredentialView {\n  providerId: string;\n  displayName: string;\n  modalities: readonly AiModality[];\n  auth: AiProviderAuthKind;\n  docsUrl: string | null;\n  configured: boolean;\n  keyHint: string | null;\n  status: AiProviderCredentialStatus | null;\n  addedAt: string | null;\n  lastValidatedAt: string | null;\n  meta: AiProviderCredentialMeta;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "OllamaSettingsView",
+      "path": "src/domains/ai-providers/ollama-settings.ts",
+      "line": 8,
+      "endLine": 19,
+      "text": "export interface OllamaSettingsView {\n  useCloud: boolean;\n  baseUrl: string;\n  model: string;\n  hasApiKey: boolean;\n  keyHint: string | null;\n  status: string | null;\n  updatedAt: string | null;\n  source: 'user' | 'env';\n  cloudDefaultUrl: string;\n  localDefaultUrl: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "OllamaSettingsUpsertInput",
+      "path": "src/domains/ai-providers/ollama-settings.ts",
+      "line": 21,
+      "endLine": 26,
+      "text": "export interface OllamaSettingsUpsertInput {\n  useCloud: boolean;\n  baseUrl: string;\n  model: string;\n  apiKey?: string;\n}"
     }
   ],
   "calls": [
@@ -84,6 +108,26 @@
         "endLine": 63,
         "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
       }
+    },
+    {
+      "kind": "edge",
+      "name": "ollama-settings",
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 52,
+      "endLine": 52,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.functions.invoke('ollama-settings', { body })",
+      "chain": "supabase.functions.invoke('ollama-settings', { body })",
+      "arguments": [
+        "'ollama-settings'",
+        "{ body }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/ai/ollama-settings-service.ts",
+        "line": 51,
+        "endLine": 58,
+        "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ollama-settings', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Ollama-Einstellungen nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+      }
     }
   ],
   "imports": [
@@ -102,6 +146,30 @@
       "module": "../../domains/ai-providers",
       "resolvedPath": "src/domains/ai-providers/index.ts",
       "expression": "import type {\n  AiModality,\n  AiProviderAuthKind,\n  AiProviderCredentialStatus,\n  AiProviderCredentialView,\n} from '../../domains/ai-providers';"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 7,
+      "endLine": 10,
+      "module": "../../domains/ai-providers/ollama-settings",
+      "resolvedPath": "src/domains/ai-providers/ollama-settings.ts",
+      "expression": "import type {\n  OllamaSettingsUpsertInput,\n  OllamaSettingsView,\n} from '../../domains/ai-providers/ollama-settings';"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 11,
+      "endLine": 11,
+      "module": "../../domains/ai-providers/ollama-settings",
+      "resolvedPath": "src/domains/ai-providers/ollama-settings.ts",
+      "expression": "import { OLLAMA_CLOUD_OPENAI_BASE } from '../../domains/ai-providers/ollama-settings';"
     }
   ],
   "publicDeclarations": [
@@ -110,6 +178,12 @@
       "line": 143,
       "endLine": 143,
       "text": "export const aiProviderCredentialsService = new AiProviderCredentialsService();"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 161,
+      "endLine": 161,
+      "text": "export const ollamaSettingsService = new OllamaSettingsService();"
     }
   ],
   "operationDeclarations": [
@@ -224,6 +298,97 @@
       "endLine": 140,
       "name": "delete",
       "text": "async delete(providerId: string): Promise<void> {\n    const response = await invoke({ action: 'delete', providerId });\n    if (response.status !== 'ok') throw new Error(response.message);\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 17,
+      "endLine": 19,
+      "name": "isRecord",
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 21,
+      "endLine": 34,
+      "name": "parseResponse",
+      "text": "function parseResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Ungültige Serverantwort.' };\n  }\n  if (value.status === 'ok') return value as FunctionResponse;\n  if (value.status === 'error' && typeof value.message === 'string') {\n    return {\n      status: 'error',\n      message: value.message,\n      code: typeof value.code === 'string' ? value.code : undefined,\n    };\n  }\n  return { status: 'error', message: 'Ungültige Serverantwort.' };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 36,
+      "endLine": 38,
+      "name": "hasResponseContext",
+      "text": "function hasResponseContext(error: unknown): error is { context: Response } {\n  return isRecord(error) && error.context instanceof Response;\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 40,
+      "endLine": 49,
+      "name": "getFunctionErrorMessage",
+      "text": "async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {\n  if (!hasResponseContext(error)) return undefined;\n  try {\n    const body: unknown = await error.context.clone().json();\n    const parsed = parseResponse(body);\n    return parsed.status === 'ok' ? undefined : parsed.message;\n  } catch {\n    return undefined;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 51,
+      "endLine": 58,
+      "name": "invoke",
+      "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ollama-settings', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Ollama-Einstellungen nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 60,
+      "endLine": 81,
+      "name": "parseSettings",
+      "text": "function parseSettings(value: unknown): OllamaSettingsView | null {\n  if (!isRecord(value)) return null;\n  if (typeof value.baseUrl !== 'string') return null;\n  return {\n    useCloud: value.useCloud === true,\n    baseUrl: value.baseUrl,\n    model: typeof value.model === 'string' ? value.model : '',\n    hasApiKey: value.hasApiKey === true,\n    keyHint: typeof value.keyHint === 'string' ? value.keyHint : null,\n    status: typeof value.status === 'string' ? value.status : null,\n    updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null,\n    source: value.source === 'user' ? 'user' : 'env',\n    cloudDefaultUrl:\n      typeof value.cloudDefaultUrl === 'string'\n        ? value.cloudDefaultUrl\n        : OLLAMA_CLOUD_OPENAI_BASE,\n    localDefaultUrl:\n      typeof value.localDefaultUrl === 'string'\n        ? value.localDefaultUrl\n        : 'http://ollama:11434',\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 83,
+      "endLine": 86,
+      "name": "parseModels",
+      "text": "function parseModels(value: unknown): string[] {\n  if (!Array.isArray(value)) return [];\n  return value.filter((m): m is string => typeof m === 'string' && m.trim().length > 0);\n}"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 85,
+      "endLine": 85,
+      "name": "callback",
+      "text": "(m): m is string => typeof m === 'string' && m.trim().length > 0"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 89,
+      "endLine": 95,
+      "name": "get",
+      "text": "async get(): Promise<OllamaSettingsView> {\n    const response = await invoke({ action: 'get' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Einstellungen unvollständig.');\n    return settings;\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 97,
+      "endLine": 112,
+      "name": "upsert",
+      "text": "async upsert(input: OllamaSettingsUpsertInput): Promise<{\n    settings: OllamaSettingsView;\n    models: string[];\n  }> {\n    const response = await invoke({\n      action: 'upsert',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      model: input.model,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Speicher-Antwort unvollständig.');\n    return { settings, models: parseModels(response.models) };\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 114,
+      "endLine": 135,
+      "name": "test",
+      "text": "async test(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    model?: string;\n    apiKey?: string;\n  }): Promise<{ message: string; models: string[] }> {\n    const response = await invoke({\n      action: 'test',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.model ? { model: input.model } : {}),\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return {\n      message:\n        typeof response.message === 'string'\n          ? response.message\n          : 'Verbindung OK.',\n      models: parseModels(response.models),\n    };\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 137,
+      "endLine": 150,
+      "name": "listModels",
+      "text": "async listModels(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    apiKey?: string;\n  }): Promise<string[]> {\n    const response = await invoke({\n      action: 'listModels',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return parseModels(response.models);\n  }"
+    },
+    {
+      "path": "src/infrastructure/ai/ollama-settings-service.ts",
+      "line": 152,
+      "endLine": 158,
+      "name": "clear",
+      "text": "async clear(): Promise<OllamaSettingsView> {\n    const response = await invoke({ action: 'clear' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Reset-Antwort unvollständig.');\n    return settings;\n  }"
     }
   ]
 }

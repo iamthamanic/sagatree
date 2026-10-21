@@ -718,7 +718,7 @@ function parseReferences(value: unknown): ParsedRef[] {
 |---|---|
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370` |
+| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
 | `supabase/functions/_shared/look-reference-analysis-image.ts` | `30aadc256afc844ea12b0cd73aa461c810ebfbbf1185006c7881a433976c2357` |
 | `supabase/functions/_shared/look-reference-analysis-provider.ts` | `04e4290f93d9c47e76a77c816c8934d19774a6a7e9682885fdcff493c69714bb` |

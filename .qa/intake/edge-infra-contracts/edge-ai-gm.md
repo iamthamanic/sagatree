@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-ai-gm.json](source-contracts/edge-ai-gm.json) (SHA-256 `5443b014ff9c4dc766ca05f9ac554655eb471367558d3d62810b0cb8d4d6237a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-ai-gm.json](source-contracts/edge-ai-gm.json) (SHA-256 `df1b52d58f8829e11f1051565443b4034f4addc5f92ebc1f2312e9d544ae1f57`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -58,6 +58,7 @@ Provider and internal service requests lack universal explicit timeouts; streami
 - `CHARACTER_AI_BASE_URL`
 - `CHARACTER_AI_MODEL`
 - `CHARACTER_AI_PROVIDER`
+- `CREDENTIALS_ENCRYPTION_KEY`
 - `LOREKEEPER_URL`
 - `OLLAMA_HOST`
 - `OLLAMA_MODEL`
@@ -69,8 +70,50 @@ Provider and internal service requests lack universal explicit timeouts; streami
 Explicit abort call sites (dynamic values resolve in the linked helper declaration):
 
 - `supabase/functions/_shared/ai-gm-rate-limit.ts:52` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/_shared/character-lore-provider.ts:82` — `AbortSignal.timeout(60_000)`
+- `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
+- `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/ai-gm/index.ts:134` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
+
+### resolveCharacterLoreProviderConfig
+
+`supabase/functions/_shared/character-lore-provider.ts:16`
+
+```ts
+export function resolveCharacterLoreProviderConfig(): CharacterLoreProviderConfig | null {
+  const providerValue = (Deno.env.get('CHARACTER_AI_PROVIDER') || 'ollama').trim();
+  if (providerValue !== 'openai-compatible' && providerValue !== 'ollama') return null;
+
+  const model = (Deno.env.get('CHARACTER_AI_MODEL') || Deno.env.get('OLLAMA_MODEL') || '').trim();
+  if (!model) return null;
+
+  if (providerValue === 'openai-compatible') {
+    const baseUrl = (Deno.env.get('CHARACTER_AI_BASE_URL') || '').trim();
+    const apiKey = (Deno.env.get('CHARACTER_AI_API_KEY') || '').trim();
+    if (!baseUrl || !apiKey) return null;
+    return {
+      provider: providerValue,
+      baseUrl: trimTrailingSlash(baseUrl),
+      model,
+      apiKey,
+    };
+  }
+
+  const baseUrl = (
+    Deno.env.get('CHARACTER_AI_BASE_URL') ||
+    Deno.env.get('OLLAMA_HOST') ||
+    'http://ollama:11434'
+  ).trim();
+
+  return {
+    provider: providerValue,
+    baseUrl: trimTrailingSlash(baseUrl),
+    model,
+  };
+}
+```
 
 ### DEFAULT_CORS_METHODS
 
@@ -103,6 +146,165 @@ function readConfiguredOrigin(envKeys: string[]): string {
 }
 ```
 
+### envDefaultModel
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:58`
+
+```ts
+export function envDefaultModel(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): string {
+  return (envGet('CHARACTER_AI_MODEL') || envGet('OLLAMA_MODEL') || '').trim();
+}
+```
+
+### buildEnvSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:64`
+
+```ts
+export function buildEnvSettingsView(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): OllamaSettingsView {
+  const envConfig = resolveCharacterLoreProviderConfig();
+  const localDefault = defaultLocalOllamaBase(envGet);
+  const useCloud =
+    envConfig?.provider === 'openai-compatible' &&
+    trimTrailingSlash(envConfig.baseUrl).toLowerCase().includes('ollama.com');
+  return {
+    useCloud,
+    baseUrl: envConfig?.baseUrl ?? (useCloud ? OLLAMA_CLOUD_OPENAI_BASE : localDefault),
+    model: envConfig?.model ?? envDefaultModel(envGet),
+    hasApiKey: Boolean(envConfig?.apiKey),
+    keyHint: null,
+    status: envConfig ? 'active' : null,
+    updatedAt: null,
+    source: 'env',
+    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,
+    localDefaultUrl: localDefault,
+  };
+}
+```
+
+### loadOllamaSettingsForUser
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:117`
+
+```ts
+export async function loadOllamaSettingsForUser(
+  config: SupabaseServiceConfig,
+  userId: string,
+): Promise<OllamaSettingsStored | null> {
+  const url =
+    `${config.url}/rest/v1/user_ai_provider_credentials` +
+    `?user_id=eq.${encodeURIComponent(userId)}` +
+    `&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}` +
+    `&status=eq.active` +
+    `&select=secret_ciphertext,key_hint,status,meta,updated_at,added_at` +
+    `&limit=1`;
+
+  const response = await fetch(url, {
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+    },
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!response.ok) {
+    throw new Error(`ollama prefs lookup failed: ${response.status}`);
+  }
+
+  const body: unknown = await response.json();
+  if (!Array.isArray(body) || body.length === 0 || !isRecord(body[0])) return null;
+
+  const row = body[0];
+  const meta = isRecord(row.meta) ? row.meta : {};
+  const useCloud = meta.useCloud === true;
+  const baseUrl =
+    typeof meta.baseUrl === 'string' && meta.baseUrl.trim()
+      ? meta.baseUrl.trim()
+      : useCloud
+        ? OLLAMA_CLOUD_OPENAI_BASE
+        : defaultLocalOllamaBase();
+  const model = typeof meta.model === 'string' ? meta.model.trim() : '';
+  const secretCiphertext =
+    typeof row.secret_ciphertext === 'string' ? row.secret_ciphertext : '';
+  if (!secretCiphertext) return null;
+
+  const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));
+  if (!encKey) {
+    throw new Error('CREDENTIALS_ENCRYPTION_KEY missing');
+  }
+
+  let apiKey = '';
+  try {
+    apiKey = await decryptProviderSecret(secretCiphertext, encKey);
+  } catch {
+    throw new Error('OLLAMA_SECRET_DECRYPT');
+  }
+
+  return {
+    useCloud,
+    baseUrl,
+    model,
+    apiKey,
+    keyHint: typeof row.key_hint === 'string' ? row.key_hint : '••••',
+    status: typeof row.status === 'string' ? row.status : 'active',
+    updatedAt:
+      typeof row.updated_at === 'string'
+        ? row.updated_at
+        : typeof row.added_at === 'string'
+          ? row.added_at
+          : null,
+    secretCiphertext,
+  };
+}
+```
+
+### toSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:186`
+
+```ts
+export function toSettingsView(
+  stored: OllamaSettingsStored | null,
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): OllamaSettingsView {
+  const envView = buildEnvSettingsView(envGet);
+  if (!stored) return envView;
+  return {
+    useCloud: stored.useCloud,
+    baseUrl: stored.baseUrl,
+    model: stored.model,
+    hasApiKey: stored.apiKey.trim().length > 0,
+    keyHint: stored.apiKey.trim().length > 0 ? stored.keyHint : null,
+    status: stored.status,
+    updatedAt: stored.updatedAt,
+    source: 'user',
+    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,
+    localDefaultUrl: envView.localDefaultUrl,
+  };
+}
+```
+
+### defaultLocalOllamaBase
+
+`supabase/functions/_shared/ollama-url-policy.ts:127`
+
+```ts
+export function defaultLocalOllamaBase(
+  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),
+): string {
+  const fromEnv = (
+    envGet('CHARACTER_AI_BASE_URL') ||
+    envGet('OLLAMA_HOST') ||
+    'http://ollama:11434'
+  ).trim();
+  const safe = assertSafeOllamaBaseUrl(fromEnv);
+  return safe.ok ? safe.baseUrl : 'http://ollama:11434';
+}
+```
+
 ### restBase
 
 `supabase/functions/_shared/session-membership-gate.ts:9`
@@ -131,7 +333,7 @@ function anonKey(env: { get(key: string): string | undefined } = Deno.env): stri
 
 ### CORS_OPTS
 
-`supabase/functions/ai-gm/index.ts:9`
+`supabase/functions/ai-gm/index.ts:11`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -143,7 +345,7 @@ CORS_OPTS: CorsOptions = {
 
 ### OLLAMA_HOST
 
-`supabase/functions/ai-gm/index.ts:87`
+`supabase/functions/ai-gm/index.ts:89`
 
 ```ts
 OLLAMA_HOST = Deno.env.get("OLLAMA_HOST") || "http://ollama:11434"
@@ -151,7 +353,7 @@ OLLAMA_HOST = Deno.env.get("OLLAMA_HOST") || "http://ollama:11434"
 
 ### OLLAMA_MODEL
 
-`supabase/functions/ai-gm/index.ts:88`
+`supabase/functions/ai-gm/index.ts:90`
 
 ```ts
 OLLAMA_MODEL = Deno.env.get("OLLAMA_MODEL") || "llama3.2"
@@ -159,7 +361,7 @@ OLLAMA_MODEL = Deno.env.get("OLLAMA_MODEL") || "llama3.2"
 
 ### DEFAULT_AI_GM_RATE_LIMIT
 
-`supabase/functions/ai-gm/index.ts:91`
+`supabase/functions/ai-gm/index.ts:93`
 
 ```ts
 DEFAULT_AI_GM_RATE_LIMIT = 12
@@ -167,7 +369,7 @@ DEFAULT_AI_GM_RATE_LIMIT = 12
 
 ### AI_PROVIDER
 
-`supabase/functions/ai-gm/index.ts:93`
+`supabase/functions/ai-gm/index.ts:95`
 
 ```ts
 AI_PROVIDER = (Deno.env.get("CHARACTER_AI_PROVIDER") || "ollama").trim()
@@ -175,7 +377,7 @@ AI_PROVIDER = (Deno.env.get("CHARACTER_AI_PROVIDER") || "ollama").trim()
 
 ### AI_MODEL
 
-`supabase/functions/ai-gm/index.ts:94`
+`supabase/functions/ai-gm/index.ts:96`
 
 ```ts
 AI_MODEL = (
@@ -187,7 +389,7 @@ AI_MODEL = (
 
 ### AI_BASE_URL
 
-`supabase/functions/ai-gm/index.ts:99`
+`supabase/functions/ai-gm/index.ts:101`
 
 ```ts
 AI_BASE_URL = (
@@ -199,7 +401,7 @@ AI_BASE_URL = (
 
 ### AI_API_KEY
 
-`supabase/functions/ai-gm/index.ts:104`
+`supabase/functions/ai-gm/index.ts:106`
 
 ```ts
 AI_API_KEY = (Deno.env.get("CHARACTER_AI_API_KEY") || "").trim()
@@ -207,7 +409,7 @@ AI_API_KEY = (Deno.env.get("CHARACTER_AI_API_KEY") || "").trim()
 
 ### LOREKEEPER_URL
 
-`supabase/functions/ai-gm/index.ts:105`
+`supabase/functions/ai-gm/index.ts:107`
 
 ```ts
 LOREKEEPER_URL = Deno.env.get("LOREKEEPER_URL") || "http://localhost:9998/functions/v1/lorekeeper"
@@ -215,15 +417,60 @@ LOREKEEPER_URL = Deno.env.get("LOREKEEPER_URL") || "http://localhost:9998/functi
 
 ### SESSIONS_URL
 
-`supabase/functions/ai-gm/index.ts:106`
+`supabase/functions/ai-gm/index.ts:108`
 
 ```ts
 SESSIONS_URL = Deno.env.get("SESSIONS_URL") || "http://localhost:9998/functions/v1/sessions"
 ```
 
+### resolveOptionalUserId
+
+`supabase/functions/ai-gm/index.ts:126`
+
+```ts
+async function resolveOptionalUserId(req: Request): Promise<string | null> {
+  const authorization = req.headers.get('Authorization')?.trim()
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  if (!authorization?.startsWith('Bearer ') || !anonKey || !url) return null
+  try {
+    const response = await fetch(`${url.replace(/\/+$/, '')}/auth/v1/user`, {
+      headers: { Authorization: authorization, apikey: anonKey },
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!response.ok) return null
+    const body: unknown = await response.json()
+    return body && typeof body === 'object' && typeof (body as { id?: unknown }).id === 'string'
+      ? (body as { id: string }).id
+      : null
+  } catch {
+    return null
+  }
+}
+```
+
+### resolveGmProvider
+
+`supabase/functions/ai-gm/index.ts:146`
+
+```ts
+async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderConfig> {
+  const userId = await resolveOptionalUserId(req)
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  const resolved = await resolveLlmProviderForUser(
+    userId && serviceRoleKey && url
+      ? { url: url.replace(/\/+$/, ''), serviceRoleKey }
+      : null,
+    userId,
+  )
+  return resolved ?? envFallbackProvider()
+}
+```
+
 ### getAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:120`
+`supabase/functions/ai-gm/index.ts:171`
 
 ```ts
 function getAiGmRateLimit(): number {
@@ -235,7 +482,7 @@ function getAiGmRateLimit(): number {
 
 ### getSupabaseServiceConfig
 
-`supabase/functions/ai-gm/index.ts:126`
+`supabase/functions/ai-gm/index.ts:177`
 
 ```ts
 function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anonKey: string } | null {
@@ -257,9 +504,11 @@ function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anon
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
 | http-host | `authenticated HTTP transport` | #795 |  |
+| edge | `ai-provider-credentials` | #818 |  |
 | internal-rpc | `consume_ai_gm_rate_limit` | #817 | quota prerequisite owned by this Edge port |
 | table | `project_members` | #791 | Policy #792 |
 | table | `sessions` | #791 | Policy #792 |
+| table | `user_ai_provider_credentials` | #791 | Policy #792 |
 
 ## CORS transport
 
@@ -293,7 +542,7 @@ No src/infrastructure caller in the reviewed branch. This does not authorize add
 
 ### ai-gm:1
 
-Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `supabase/functions/ai-gm/index.ts:608`.
+Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `supabase/functions/ai-gm/index.ts:661`.
 
 
 ```ts
@@ -311,7 +560,7 @@ Predicate: `req.method === "GET" && req.url.endsWith('/health')`. Source: `supab
 
 ### ai-gm:2
 
-Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:620`.
+Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:673`.
 
 
 ```ts
@@ -362,6 +611,7 @@ Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:6
       
       // Build prompt
       const prompt = buildPrompt(request)
+      const provider = await resolveGmProvider(req)
       
       // Generate narrative
       if (stream) {
@@ -371,7 +621,7 @@ Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:6
         const readableStream = new ReadableStream({
           async start(controller) {
             try {
-              for await (const chunk of generateNarrative(prompt, true)) {
+              for await (const chunk of generateNarrative(prompt, true, provider)) {
                 if (chunk.type === 'narrative' && chunk.content) {
                   fullNarrative += chunk.content
                   controller.enqueue(encoder.encode(JSON.stringify({
@@ -418,7 +668,7 @@ Predicate: `req.method === "POST"`. Source: `supabase/functions/ai-gm/index.ts:6
         // Non-streaming
         let fullNarrative = ''
         
-        for await (const chunk of generateNarrative(prompt, false)) {
+        for await (const chunk of generateNarrative(prompt, false, provider)) {
           if (chunk.type === 'narrative' && chunk.content) {
             fullNarrative = chunk.content
           }
@@ -483,6 +733,116 @@ type FetchLike = (
 ) => Promise<Response>;
 ```
 
+### CharacterLoreRuleset
+
+`supabase/functions/_shared/character-lore-prompt.ts:1`
+
+```ts
+export type CharacterLoreRuleset = 'sagatree-core' | 'dnd-5.5e';
+```
+
+### CharacterLorePromptContext
+
+`supabase/functions/_shared/character-lore-prompt.ts:3`
+
+```ts
+export interface CharacterLorePromptContext {
+  ruleset: CharacterLoreRuleset;
+  name: string;
+  description: string;
+  characterClass: string;
+  raceOrSpecies: string;
+  setting?: string;
+  essenceProfile?: string;
+  dndBackground?: string;
+  level: number;
+  attributes: {
+    strength: number;
+    dexterity: number;
+    constitution: number;
+    intelligence: number;
+    wisdom: number;
+    charisma: number;
+  };
+  abilities: Array<{
+    name: string;
+    description: string;
+    type: 'combat' | 'magic' | 'skill';
+    cost: number;
+    effect: string;
+  }>;
+  inventory: Array<{
+    name: string;
+    description: string;
+    type: 'weapon' | 'armor' | 'consumable' | 'misc';
+    quantity: number;
+  }>;
+  appearance: {
+    bodySize: number;
+    height: number;
+    face: string;
+    hairStyle: string;
+    hairColor: string;
+    skinTone: string;
+    clothing: string;
+    accessory?: string;
+  };
+  traits: {
+    personality: string[];
+    ideals: string[];
+    bonds: string[];
+    flaws: string[];
+  };
+}
+```
+
+### CharacterLoreReferenceContext
+
+`supabase/functions/_shared/character-lore-prompt.ts:52`
+
+```ts
+export interface CharacterLoreReferenceContext {
+  projectName?: string;
+  projectDescription?: string;
+  worldName?: string;
+  worldSettingType?: string;
+  worldLore?: string;
+}
+```
+
+### CharacterLorePrompt
+
+`supabase/functions/_shared/character-lore-prompt.ts:60`
+
+```ts
+export interface CharacterLorePrompt {
+  version: string;
+  system: string;
+  user: string;
+}
+```
+
+### CharacterLoreProviderName
+
+`supabase/functions/_shared/character-lore-provider.ts:3`
+
+```ts
+export type CharacterLoreProviderName = 'openai-compatible' | 'ollama';
+```
+
+### CharacterLoreProviderConfig
+
+`supabase/functions/_shared/character-lore-provider.ts:5`
+
+```ts
+export interface CharacterLoreProviderConfig {
+  provider: CharacterLoreProviderName;
+  baseUrl: string;
+  model: string;
+  apiKey?: string;
+}
+```
+
 ### CorsOptions
 
 `supabase/functions/_shared/cors.ts:13`
@@ -510,9 +870,66 @@ export type CorsOptions = {
 };
 ```
 
+### OllamaSettingsView
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:21`
+
+```ts
+export interface OllamaSettingsView {
+  useCloud: boolean;
+  baseUrl: string;
+  model: string;
+  hasApiKey: boolean;
+  keyHint: string | null;
+  status: string | null;
+  updatedAt: string | null;
+  source: 'user' | 'env';
+  cloudDefaultUrl: string;
+  localDefaultUrl: string;
+}
+```
+
+### OllamaSettingsStored
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:34`
+
+```ts
+export interface OllamaSettingsStored {
+  useCloud: boolean;
+  baseUrl: string;
+  model: string;
+  apiKey: string;
+  keyHint: string;
+  status: string;
+  updatedAt: string | null;
+  secretCiphertext: string;
+}
+```
+
+### SupabaseServiceConfig
+
+`supabase/functions/_shared/ollama-llm-resolve.ts:45`
+
+```ts
+export interface SupabaseServiceConfig {
+  url: string;
+  serviceRoleKey: string;
+}
+```
+
+### SafeUrlResult
+
+`supabase/functions/_shared/ollama-url-policy.ts:68`
+
+```ts
+export type SafeUrlResult =
+  | { ok: true; baseUrl: string }
+  | { ok: false; message: string };
+```
+
 ### Character
 
-`supabase/functions/ai-gm/index.ts:25`
+`supabase/functions/ai-gm/index.ts:27`
 
 ```ts
 interface Character {
@@ -531,7 +948,7 @@ interface Character {
 
 ### NPC
 
-`supabase/functions/ai-gm/index.ts:38`
+`supabase/functions/ai-gm/index.ts:40`
 
 ```ts
 interface NPC {
@@ -546,7 +963,7 @@ interface NPC {
 
 ### WorldState
 
-`supabase/functions/ai-gm/index.ts:47`
+`supabase/functions/ai-gm/index.ts:49`
 
 ```ts
 interface WorldState {
@@ -561,7 +978,7 @@ interface WorldState {
 
 ### SessionContext
 
-`supabase/functions/ai-gm/index.ts:56`
+`supabase/functions/ai-gm/index.ts:58`
 
 ```ts
 interface SessionContext {
@@ -577,7 +994,7 @@ interface SessionContext {
 
 ### GMRequest
 
-`supabase/functions/ai-gm/index.ts:66`
+`supabase/functions/ai-gm/index.ts:68`
 
 ```ts
 interface GMRequest {
@@ -592,7 +1009,7 @@ interface GMRequest {
 
 ### GMResponse
 
-`supabase/functions/ai-gm/index.ts:75`
+`supabase/functions/ai-gm/index.ts:77`
 
 ```ts
 interface GMResponse {
@@ -607,9 +1024,76 @@ interface GMResponse {
 
 ## Exact validation, defaults and helper behavior
 
+### envFallbackProvider
+
+`supabase/functions/ai-gm/index.ts:110`
+
+```ts
+function envFallbackProvider(): CharacterLoreProviderConfig {
+  if (AI_PROVIDER === 'openai-compatible' && AI_BASE_URL && AI_API_KEY) {
+    return {
+      provider: 'openai-compatible',
+      baseUrl: AI_BASE_URL,
+      model: AI_MODEL || OLLAMA_MODEL,
+      apiKey: AI_API_KEY,
+    }
+  }
+  return {
+    provider: 'ollama',
+    baseUrl: AI_BASE_URL || OLLAMA_HOST,
+    model: AI_MODEL || OLLAMA_MODEL,
+  }
+}
+```
+
+### resolveOptionalUserId
+
+`supabase/functions/ai-gm/index.ts:126`
+
+```ts
+async function resolveOptionalUserId(req: Request): Promise<string | null> {
+  const authorization = req.headers.get('Authorization')?.trim()
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  if (!authorization?.startsWith('Bearer ') || !anonKey || !url) return null
+  try {
+    const response = await fetch(`${url.replace(/\/+$/, '')}/auth/v1/user`, {
+      headers: { Authorization: authorization, apikey: anonKey },
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!response.ok) return null
+    const body: unknown = await response.json()
+    return body && typeof body === 'object' && typeof (body as { id?: unknown }).id === 'string'
+      ? (body as { id: string }).id
+      : null
+  } catch {
+    return null
+  }
+}
+```
+
+### resolveGmProvider
+
+`supabase/functions/ai-gm/index.ts:146`
+
+```ts
+async function resolveGmProvider(req: Request): Promise<CharacterLoreProviderConfig> {
+  const userId = await resolveOptionalUserId(req)
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim()
+  const url = Deno.env.get('SUPABASE_URL')?.trim()
+  const resolved = await resolveLlmProviderForUser(
+    userId && serviceRoleKey && url
+      ? { url: url.replace(/\/+$/, ''), serviceRoleKey }
+      : null,
+    userId,
+  )
+  return resolved ?? envFallbackProvider()
+}
+```
+
 ### getAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:120`
+`supabase/functions/ai-gm/index.ts:171`
 
 ```ts
 function getAiGmRateLimit(): number {
@@ -621,7 +1105,7 @@ function getAiGmRateLimit(): number {
 
 ### getSupabaseServiceConfig
 
-`supabase/functions/ai-gm/index.ts:126`
+`supabase/functions/ai-gm/index.ts:177`
 
 ```ts
 function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anonKey: string } | null {
@@ -639,7 +1123,7 @@ function getSupabaseServiceConfig(): { url: string; serviceRoleKey: string; anon
 
 ### resolveCallerUserId
 
-`supabase/functions/ai-gm/index.ts:139`
+`supabase/functions/ai-gm/index.ts:190`
 
 ```ts
 async function resolveCallerUserId(req: Request): Promise<string | null> {
@@ -662,7 +1146,7 @@ async function resolveCallerUserId(req: Request): Promise<string | null> {
 
 ### enforceAiGmRateLimit
 
-`supabase/functions/ai-gm/index.ts:156`
+`supabase/functions/ai-gm/index.ts:207`
 
 ```ts
 async function enforceAiGmRateLimit(req: Request, headers: HeadersInit): Promise<Response | null> {
@@ -722,7 +1206,7 @@ async function enforceAiGmRateLimit(req: Request, headers: HeadersInit): Promise
 
 ### validateRequest
 
-`supabase/functions/ai-gm/index.ts:210`
+`supabase/functions/ai-gm/index.ts:261`
 
 ```ts
 function validateRequest(body: unknown): { valid: boolean; error?: string } {
@@ -750,7 +1234,7 @@ function validateRequest(body: unknown): { valid: boolean; error?: string } {
 
 ### buildCharacterSection
 
-`supabase/functions/ai-gm/index.ts:232`
+`supabase/functions/ai-gm/index.ts:283`
 
 ```ts
 function buildCharacterSection(characters: Character[]): string {
@@ -769,7 +1253,7 @@ function buildCharacterSection(characters: Character[]): string {
 
 ### buildNPCSection
 
-`supabase/functions/ai-gm/index.ts:245`
+`supabase/functions/ai-gm/index.ts:296`
 
 ```ts
 function buildNPCSection(npcs: NPC[]): string {
@@ -789,7 +1273,7 @@ function buildNPCSection(npcs: NPC[]): string {
 
 ### buildWorldSection
 
-`supabase/functions/ai-gm/index.ts:259`
+`supabase/functions/ai-gm/index.ts:310`
 
 ```ts
 function buildWorldSection(worldState: WorldState): string {
@@ -813,7 +1297,7 @@ function buildWorldSection(worldState: WorldState): string {
 
 ### buildRecentEventsSection
 
-`supabase/functions/ai-gm/index.ts:277`
+`supabase/functions/ai-gm/index.ts:328`
 
 ```ts
 function buildRecentEventsSection(events: string[]): string {
@@ -825,7 +1309,7 @@ function buildRecentEventsSection(events: string[]): string {
 
 ### buildPrompt
 
-`supabase/functions/ai-gm/index.ts:283`
+`supabase/functions/ai-gm/index.ts:334`
 
 ```ts
 function buildPrompt(request: GMRequest): string {
@@ -879,7 +1363,7 @@ ${request.action}
 
 ### getNPCContext
 
-`supabase/functions/ai-gm/index.ts:335`
+`supabase/functions/ai-gm/index.ts:386`
 
 ```ts
 async function getNPCContext(npcId: string): Promise<NPC | null> {
@@ -901,7 +1385,7 @@ async function getNPCContext(npcId: string): Promise<NPC | null> {
 
 ### updateNPCMemory
 
-`supabase/functions/ai-gm/index.ts:351`
+`supabase/functions/ai-gm/index.ts:402`
 
 ```ts
 async function updateNPCMemory(npcId: string, memory: string): Promise<void> {
@@ -919,7 +1403,7 @@ async function updateNPCMemory(npcId: string, memory: string): Promise<void> {
 
 ### updateSessionWorldState
 
-`supabase/functions/ai-gm/index.ts:367`
+`supabase/functions/ai-gm/index.ts:418`
 
 ```ts
 async function updateSessionWorldState(sessionId: string, worldState: Partial<WorldState>): Promise<void> {
@@ -937,27 +1421,28 @@ async function updateSessionWorldState(sessionId: string, worldState: Partial<Wo
 
 ### generateOpenAiCompatibleNarrative
 
-`supabase/functions/ai-gm/index.ts:383`
+`supabase/functions/ai-gm/index.ts:434`
 
 ```ts
 async function* generateOpenAiCompatibleNarrative(
   prompt: string,
   stream: boolean,
+  provider: CharacterLoreProviderConfig,
 ): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {
-  if (!AI_BASE_URL || !AI_API_KEY) {
+  if (!provider.baseUrl || !provider.apiKey) {
     throw new Error(
-      "openai-compatible requires CHARACTER_AI_BASE_URL and CHARACTER_AI_API_KEY",
+      "openai-compatible requires base URL and API key (Settings → AI → Organize or CHARACTER_AI_*)",
     )
   }
 
-  const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
+  const response = await fetch(`${provider.baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${AI_API_KEY}`,
+      Authorization: `Bearer ${provider.apiKey}`,
     },
     body: JSON.stringify({
-      model: AI_MODEL,
+      model: provider.model,
       stream,
       temperature: 0.85,
       messages: [
@@ -1023,24 +1508,25 @@ async function* generateOpenAiCompatibleNarrative(
 
 ### generateNarrative
 
-`supabase/functions/ai-gm/index.ts:463`
+`supabase/functions/ai-gm/index.ts:515`
 
 ```ts
 async function* generateNarrative(
   prompt: string,
-  stream: boolean = true
+  stream: boolean = true,
+  provider: CharacterLoreProviderConfig = envFallbackProvider(),
 ): AsyncGenerator<{ type: string; content?: string; done?: boolean }> {
-  if (AI_PROVIDER === "openai-compatible") {
-    yield* generateOpenAiCompatibleNarrative(prompt, stream)
+  if (provider.provider === "openai-compatible") {
+    yield* generateOpenAiCompatibleNarrative(prompt, stream, provider)
     return
   }
 
-  const ollamaHost = AI_BASE_URL || OLLAMA_HOST
+  const ollamaHost = provider.baseUrl || OLLAMA_HOST
   const response = await fetch(`${ollamaHost}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: AI_MODEL || OLLAMA_MODEL,
+      model: provider.model || OLLAMA_MODEL,
       prompt,
       stream,
     }),
@@ -1092,7 +1578,7 @@ async function* generateNarrative(
 
 ### extractWorldStateUpdates
 
-`supabase/functions/ai-gm/index.ts:530`
+`supabase/functions/ai-gm/index.ts:583`
 
 ```ts
 function extractWorldStateUpdates(narrative: string): Partial<WorldState> | null {
@@ -1116,7 +1602,7 @@ function extractWorldStateUpdates(narrative: string): Partial<WorldState> | null
 
 ### extractDiceRollRequests
 
-`supabase/functions/ai-gm/index.ts:548`
+`supabase/functions/ai-gm/index.ts:601`
 
 ```ts
 function extractDiceRollRequests(narrative: string): Array<{ type: string; dc?: number; description: string }> {
@@ -1157,7 +1643,7 @@ function extractDiceRollRequests(narrative: string): Array<{ type: string; dc?: 
 
 ### extractCombatInitiated
 
-`supabase/functions/ai-gm/index.ts:583`
+`supabase/functions/ai-gm/index.ts:636`
 
 ```ts
 function extractCombatInitiated(narrative: string): boolean {
@@ -1180,10 +1666,15 @@ function extractCombatInitiated(narrative: string): boolean {
 | Path | SHA-256 |
 |---|---|
 | `supabase/functions/_shared/ai-gm-rate-limit.ts` | `050346396b229912655843940ecde2fbc2111a571ddc85d12b2149e3d2bc9f61` |
+| `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
+| `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
+| `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
-| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `8fab25a3d5e0d2324cba6143517aed98c7f635423b789406a0da4e9bd1f51370` |
+| `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
+| `supabase/functions/_shared/ollama-llm-resolve.ts` | `e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3` |
+| `supabase/functions/_shared/ollama-url-policy.ts` | `864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1` |
 | `supabase/functions/_shared/session-membership-gate.ts` | `53e3c57da9e037c49582d6f5781b52198a74a2c0aabf758467caa7bc2aee7cac` |
-| `supabase/functions/ai-gm/index.ts` | `ab8d64dbe9361417307396cd2c940a07e400b4ac1680193dc65397225a3844c1` |
+| `supabase/functions/ai-gm/index.ts` | `74d6b822589478b537e300b9364bc2668e795655e95a292f2494689265c22880` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

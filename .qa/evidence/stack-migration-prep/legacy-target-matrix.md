@@ -79,9 +79,9 @@ Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellverifikation ist keine B
 | upsert_world_place | [Quellvertrag](../../intake/rpc-contracts/upsert_world_place.md) | RPC-WORLD-PLACES #863 | source-verified |
 | upsert_world_place_map_link | [Quellvertrag](../../intake/rpc-contracts/upsert_world_place_map_link.md) | RPC-WORLD-PLACES #863 | source-verified |
 
-## 24 Edge-Verzeichnisse
+## 25 Edge-Verzeichnisse
 
-Erreichbarkeit: acht erlaubte Worker, 15 nicht eingebundene Legacy-Worker und main als Dispatcher. Ein vorhandener Legacy-Handler ist keine Aktivierungsfreigabe.
+Erreichbarkeit: 9 erlaubte Worker, 15 nicht eingebundene Legacy-Worker und 1 Dispatcher. Ein vorhandener Legacy-Handler ist keine Aktivierungsfreigabe. Nach #879 ist `ollama-settings` allowlisted und vorläufig mit MIG-402/#818 mitgebunden (keine neue Issue-Identität).
 
 | Funktion | Beleg | Nachfolger-Ticket | Aktuelle Einbindung |
 | --- | --- | --- | --- |
@@ -102,6 +102,7 @@ Erreichbarkeit: acht erlaubte Worker, 15 nicht eingebundene Legacy-Worker und ma
 | marketplace | [Quellvertrag](../../intake/edge-infra-contracts/edge-marketplace.md) | #831 | legacy-unmounted |
 | media | [Quellvertrag](../../intake/edge-infra-contracts/edge-media.md) | #832 | legacy-unmounted |
 | npcs | [Quellvertrag](../../intake/edge-infra-contracts/edge-npcs.md) | #833 | legacy-unmounted |
+| ollama-settings | [Quellvertrag](../../intake/edge-infra-contracts/edge-ollama-settings.md) | #818 | allowlisted-worker |
 | quests | [Quellvertrag](../../intake/edge-infra-contracts/edge-quests.md) | #834 | legacy-unmounted |
 | rulesets | [Quellvertrag](../../intake/edge-infra-contracts/edge-rulesets.md) | #835 | legacy-unmounted |
 | session-media-token | [Quellvertrag](../../intake/edge-infra-contracts/edge-session-media-token.md) | #836 | allowlisted-worker |
@@ -116,7 +117,7 @@ Vollständige Abhängigkeiten einschließlich dynamischer Imports, SDK-Aufrufe u
 
 | Bereich | Beleg | Nachfolger-Ticket | Quellabhängigkeiten |
 | --- | --- | --- | --- |
-| ai | [Quellvertrag](../../intake/edge-infra-contracts/infra-ai.md) | #800 | 0 RPC / 0 Tabellen / 1 Edge-Aufrufe |
+| ai | [Quellvertrag](../../intake/edge-infra-contracts/infra-ai.md) | #800 | 0 RPC / 0 Tabellen / 2 Edge-Aufrufe |
 | character | [Quellvertrag](../../intake/edge-infra-contracts/infra-character.md) | #801 | 0 RPC / 9 Tabellen / 2 Edge-Aufrufe |
 | inventory | [Quellvertrag](../../intake/edge-infra-contracts/infra-inventory.md) | #802 | 0 RPC / 5 Tabellen / 2 Edge-Aufrufe |
 | look | [Quellvertrag](../../intake/edge-infra-contracts/infra-look.md) | #803 | 0 RPC / 2 Tabellen / 1 Edge-Aufrufe |

@@ -25,7 +25,7 @@ Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`.
 
 ### Vorher
 
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/character/character-lore-service.ts, supabase/functions/_shared/character-lore-access.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/character-lore-rate-limit.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/character-lore/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-character-lore.md, .qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json.
+Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/character/character-lore-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-access.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/character-lore-rate-limit.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/character-lore/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-character-lore.md, .qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json.
 
 ### Nachher und Verhalten
 
@@ -33,7 +33,7 @@ character-lore: Den aktuell eingebundenen Worker mit denselben validierten Opera
 
 ## Scope
 
-- Quellpfade: `src/infrastructure/character/character-lore-service.ts`, `supabase/functions/_shared/character-lore-access.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/character-lore-rate-limit.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/character-lore/index.ts`, `supabase/functions/main/index.ts`
+- Quellpfade: `src/infrastructure/character/character-lore-service.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-access.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/character-lore-rate-limit.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/ollama-llm-resolve.ts`, `supabase/functions/_shared/ollama-url-policy.ts`, `supabase/functions/character-lore/index.ts`, `supabase/functions/main/index.ts`
 - Änderbare Zielpfade: `server/src/application/character-lore/`
 - Quellverträge: `.qa/intake/edge-infra-contracts/edge-character-lore.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json`
 
@@ -45,7 +45,7 @@ Diese internen Helper gehören zum Implementierungsumfang dieses Tickets. Ihre s
 
 ## Security & Data
 
-Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+character-lore: Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ### Bekannte Legacy-Defekte / offene Verifikation
 
@@ -94,6 +94,7 @@ Authenticate via /auth/v1/user. Optional projectId requires project GM or active
 - Depends on #795 (MIG-020)
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
+- Depends on #818 (MIG-402)
 - Depends on #791 (MIG-012)
 
 Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.

@@ -4,6 +4,10 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "sha256": "45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532"
+    },
+    {
       "path": "supabase/functions/_shared/character-lore-access.ts",
       "sha256": "922adb04eb27314f8194a7f189b1b143970945d82ab0219480ea08d44181c70f"
     },
@@ -24,8 +28,16 @@
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
     {
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "sha256": "e2874b05f38eac54d99abfca1b239138b4f95fece2011224f359bcfda9be99b3"
+    },
+    {
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "sha256": "864eddb8138fabb9964a92dd948746829d8b09de5f741642b61fb2eb792c4fc1"
+    },
+    {
       "path": "supabase/functions/character-lore/index.ts",
-      "sha256": "144531e3f695d210a8667a9dd9ecca92f8f5720cf92583c9c7e82def7183bcec"
+      "sha256": "b59beaa65854952a7daabe90446da276dbdb1095ba04fb5136cc86b27cffff00"
     }
   ],
   "operations": [
@@ -34,7 +46,7 @@
       "condition": "Complete handler with ordered method/auth/body guards",
       "path": "supabase/functions/character-lore/index.ts",
       "line": 373,
-      "endLine": 483,
+      "endLine": 492,
       "requestReads": [],
       "returns": [
         {
@@ -99,20 +111,20 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 444,
-          "endLine": 447,
-          "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    })"
+          "line": 452,
+          "endLine": 456,
+          "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 466,
-          "endLine": 472,
+          "line": 475,
+          "endLine": 481,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 478,
-          "endLine": 481,
+          "line": 487,
+          "endLine": 490,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
         }
       ],
@@ -120,10 +132,10 @@
         {
           "path": "supabase/functions/character-lore/index.ts",
           "line": 373,
-          "endLine": 483,
+          "endLine": 492,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = resolveCharacterLoreProviderConfig();\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
           ]
         },
         {
@@ -352,24 +364,27 @@
         {
           "path": "supabase/functions/character-lore/index.ts",
           "line": 442,
-          "endLine": 442,
-          "expression": "resolveCharacterLoreProviderConfig",
-          "arguments": []
-        },
-        {
-          "path": "supabase/functions/character-lore/index.ts",
-          "line": 444,
-          "endLine": 447,
-          "expression": "jsonResponse",
+          "endLine": 450,
+          "expression": "resolveLlmProviderForUser",
           "arguments": [
-            "request",
-            "{\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    }"
+            "supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null",
+            "userId"
           ]
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 451,
-          "endLine": 455,
+          "line": 452,
+          "endLine": 456,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 460,
+          "endLine": 464,
           "expression": "getAuthorizedReferenceContext",
           "arguments": [
             "userId",
@@ -379,8 +394,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 456,
-          "endLine": 460,
+          "line": 465,
+          "endLine": 469,
           "expression": "buildCharacterLorePrompt",
           "arguments": [
             "parsed.context",
@@ -390,8 +405,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 461,
-          "endLine": 461,
+          "line": 470,
+          "endLine": 470,
           "expression": "generateCharacterLore",
           "arguments": [
             "providerConfig",
@@ -400,8 +415,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 466,
-          "endLine": 472,
+          "line": 475,
+          "endLine": 481,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -410,8 +425,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 474,
-          "endLine": 477,
+          "line": 483,
+          "endLine": 486,
           "expression": "console.error",
           "arguments": [
             "'Character lore generation failed:'",
@@ -420,8 +435,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 478,
-          "endLine": 481,
+          "line": 487,
+          "endLine": 490,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -430,7 +445,7 @@
           ]
         }
       ],
-      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = resolveCharacterLoreProviderConfig();\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});"
+      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});"
     }
   ],
   "responseSites": [
@@ -496,20 +511,20 @@
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 444,
-      "endLine": 447,
-      "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    })"
+      "line": 452,
+      "endLine": 456,
+      "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 466,
-      "endLine": 472,
+      "line": 475,
+      "endLine": 481,
       "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 478,
-      "endLine": 481,
+      "line": 487,
+      "endLine": 490,
       "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
     }
   ],
@@ -520,6 +535,7 @@
     "CHARACTER_AI_MODEL",
     "CHARACTER_AI_PROVIDER",
     "CHARACTER_AI_RATE_LIMIT_PER_MINUTE",
+    "CREDENTIALS_ENCRYPTION_KEY",
     "OLLAMA_HOST",
     "OLLAMA_MODEL",
     "SUPABASE_ANON_KEY",
@@ -543,6 +559,12 @@
       "path": "supabase/functions/_shared/character-lore-rate-limit.ts",
       "line": 45,
       "endLine": 45,
+      "expression": "AbortSignal.timeout(10_000)"
+    },
+    {
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 134,
+      "endLine": 134,
       "expression": "AbortSignal.timeout(10_000)"
     },
     {
@@ -578,6 +600,12 @@
       "expression": "fetchImpl(`${config.url.replace(/\\/+$/, '')}${RATE_LIMIT_RPC}`, {\n    method: 'POST',\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      'Content-Type': 'application/json',\n      Accept: 'application/json',\n    },\n    body: JSON.stringify({\n      p_user_id: userId,\n      p_limit: config.limit,\n      p_window_seconds: config.windowSeconds,\n    }),\n    signal: AbortSignal.timeout(10_000),\n  })"
     },
     {
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 129,
+      "endLine": 135,
+      "expression": "fetch(url, {\n    headers: {\n      apikey: config.serviceRoleKey,\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n    },\n    signal: AbortSignal.timeout(10_000),\n  })"
+    },
+    {
       "path": "supabase/functions/character-lore/index.ts",
       "line": 238,
       "endLine": 245,
@@ -594,8 +622,8 @@
     {
       "path": "supabase/functions/character-lore/index.ts",
       "line": 373,
-      "endLine": 483,
-      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = resolveCharacterLoreProviderConfig();\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});",
+      "endLine": 492,
+      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});",
       "requestReads": [],
       "returns": [
         {
@@ -660,20 +688,20 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 444,
-          "endLine": 447,
-          "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    })"
+          "line": 452,
+          "endLine": 456,
+          "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 466,
-          "endLine": 472,
+          "line": 475,
+          "endLine": 481,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 478,
-          "endLine": 481,
+          "line": 487,
+          "endLine": 490,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
         }
       ],
@@ -681,10 +709,10 @@
         {
           "path": "supabase/functions/character-lore/index.ts",
           "line": 373,
-          "endLine": 483,
+          "endLine": 492,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = resolveCharacterLoreProviderConfig();\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
           ]
         },
         {
@@ -913,24 +941,27 @@
         {
           "path": "supabase/functions/character-lore/index.ts",
           "line": 442,
-          "endLine": 442,
-          "expression": "resolveCharacterLoreProviderConfig",
-          "arguments": []
-        },
-        {
-          "path": "supabase/functions/character-lore/index.ts",
-          "line": 444,
-          "endLine": 447,
-          "expression": "jsonResponse",
+          "endLine": 450,
+          "expression": "resolveLlmProviderForUser",
           "arguments": [
-            "request",
-            "{\n      status: 'not-configured',\n      message: 'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key in der Server-Umgebung.',\n    }"
+            "supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null",
+            "userId"
           ]
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 451,
-          "endLine": 455,
+          "line": 452,
+          "endLine": 456,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    }"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 460,
+          "endLine": 464,
           "expression": "getAuthorizedReferenceContext",
           "arguments": [
             "userId",
@@ -940,8 +971,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 456,
-          "endLine": 460,
+          "line": 465,
+          "endLine": 469,
           "expression": "buildCharacterLorePrompt",
           "arguments": [
             "parsed.context",
@@ -951,8 +982,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 461,
-          "endLine": 461,
+          "line": 470,
+          "endLine": 470,
           "expression": "generateCharacterLore",
           "arguments": [
             "providerConfig",
@@ -961,8 +992,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 466,
-          "endLine": 472,
+          "line": 475,
+          "endLine": 481,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -971,8 +1002,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 474,
-          "endLine": 477,
+          "line": 483,
+          "endLine": 486,
           "expression": "console.error",
           "arguments": [
             "'Character lore generation failed:'",
@@ -981,8 +1012,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 478,
-          "endLine": 481,
+          "line": 487,
+          "endLine": 490,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -994,6 +1025,70 @@
     }
   ],
   "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "PREFIX",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 6,
+      "endLine": 6,
+      "text": "PREFIX = 'v1'"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "bytesToBase64Url",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 8,
+      "endLine": 12,
+      "text": "function bytesToBase64Url(bytes: Uint8Array): string {\n  let binary = '';\n  for (const b of bytes) binary += String.fromCharCode(b);\n  return btoa(binary).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "base64UrlToBytes",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 14,
+      "endLine": 22,
+      "text": "function base64UrlToBytes(value: string): Uint8Array {\n  const padded = value.replace(/-/g, '+').replace(/_/g, '/');\n  const padLen = (4 - (padded.length % 4)) % 4;\n  const withPad = padded + '='.repeat(padLen);\n  const binary = atob(withPad);\n  const out = new Uint8Array(binary.length);\n  for (let i = 0; i < binary.length; i += 1) out[i] = binary.charCodeAt(i);\n  return out;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "parseCredentialsEncryptionKey",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 25,
+      "endLine": 58,
+      "text": "export function parseCredentialsEncryptionKey(\n  raw: string | undefined,\n): Uint8Array | null {\n  const trimmed = raw?.trim() ?? '';\n  if (!trimmed) return null;\n\n  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {\n    const out = new Uint8Array(32);\n    for (let i = 0; i < 32; i += 1) {\n      out[i] = Number.parseInt(trimmed.slice(i * 2, i * 2 + 2), 16);\n    }\n    return out;\n  }\n\n  try {\n    const decoded = base64UrlToBytes(trimmed);\n    if (decoded.byteLength === 32) return decoded;\n  } catch {\n    // fall through\n  }\n\n  try {\n    const binary = atob(trimmed);\n    if (binary.length === 32) {\n      const out = new Uint8Array(32);\n      for (let i = 0; i < 32; i += 1) out[i] = binary.charCodeAt(i);\n      return out;\n    }\n  } catch {\n    // fall through\n  }\n\n  return null;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "importAesKey",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 60,
+      "endLine": 66,
+      "text": "async function importAesKey(rawKey: Uint8Array): Promise<CryptoKey> {\n  const keyBytes = new Uint8Array(rawKey);\n  return crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, [\n    'encrypt',\n    'decrypt',\n  ]);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "encryptProviderSecret",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 68,
+      "endLine": 78,
+      "text": "export async function encryptProviderSecret(\n  plaintext: string,\n  rawKey: Uint8Array,\n): Promise<string> {\n  const key = await importAesKey(rawKey);\n  const iv = crypto.getRandomValues(new Uint8Array(12));\n  const encoded = new TextEncoder().encode(plaintext);\n  const cipherBuf = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);\n  const cipher = new Uint8Array(cipherBuf);\n  return `${PREFIX}.${bytesToBase64Url(iv)}.${bytesToBase64Url(cipher)}`;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "decryptProviderSecret",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 80,
+      "endLine": 93,
+      "text": "export async function decryptProviderSecret(\n  ciphertext: string,\n  rawKey: Uint8Array,\n): Promise<string> {\n  const parts = ciphertext.split('.');\n  if (parts.length !== 3 || parts[0] !== PREFIX) {\n    throw new Error('CIPHER_FORMAT');\n  }\n  const iv = new Uint8Array(base64UrlToBytes(parts[1]));\n  const data = new Uint8Array(base64UrlToBytes(parts[2]));\n  const key = await importAesKey(rawKey);\n  const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);\n  return new TextDecoder().decode(plainBuf);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildKeyHint",
+      "path": "supabase/functions/_shared/ai-provider-crypto.ts",
+      "line": 95,
+      "endLine": 99,
+      "text": "export function buildKeyHint(apiKey: string): string {\n  const trimmed = apiKey.trim();\n  const tail = trimmed.slice(-4);\n  return `••••${tail}`;\n}"
+    },
     {
       "kind": "InterfaceDeclaration",
       "name": "CharacterLoreWorldGrant",
@@ -1241,6 +1336,222 @@
       "line": 110,
       "endLine": 120,
       "text": "export function jsonResponse(\n  request: Request,\n  body: unknown,\n  status = 200,\n  opts?: CorsOptions,\n): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: corsHeaders(request, opts),\n  });\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "OllamaSettingsView",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 21,
+      "endLine": 32,
+      "text": "export interface OllamaSettingsView {\n  useCloud: boolean;\n  baseUrl: string;\n  model: string;\n  hasApiKey: boolean;\n  keyHint: string | null;\n  status: string | null;\n  updatedAt: string | null;\n  source: 'user' | 'env';\n  cloudDefaultUrl: string;\n  localDefaultUrl: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "OllamaSettingsStored",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 34,
+      "endLine": 43,
+      "text": "export interface OllamaSettingsStored {\n  useCloud: boolean;\n  baseUrl: string;\n  model: string;\n  apiKey: string;\n  keyHint: string;\n  status: string;\n  updatedAt: string | null;\n  secretCiphertext: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "SupabaseServiceConfig",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 45,
+      "endLine": 48,
+      "text": "export interface SupabaseServiceConfig {\n  url: string;\n  serviceRoleKey: string;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isRecord",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 50,
+      "endLine": 52,
+      "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "trimTrailingSlash",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 54,
+      "endLine": 56,
+      "text": "function trimTrailingSlash(value: string): string {\n  return value.replace(/\\/+$/, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "envDefaultModel",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 58,
+      "endLine": 62,
+      "text": "export function envDefaultModel(\n  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),\n): string {\n  return (envGet('CHARACTER_AI_MODEL') || envGet('OLLAMA_MODEL') || '').trim();\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "buildEnvSettingsView",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 64,
+      "endLine": 84,
+      "text": "export function buildEnvSettingsView(\n  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),\n): OllamaSettingsView {\n  const envConfig = resolveCharacterLoreProviderConfig();\n  const localDefault = defaultLocalOllamaBase(envGet);\n  const useCloud =\n    envConfig?.provider === 'openai-compatible' &&\n    trimTrailingSlash(envConfig.baseUrl).toLowerCase().includes('ollama.com');\n  return {\n    useCloud,\n    baseUrl: envConfig?.baseUrl ?? (useCloud ? OLLAMA_CLOUD_OPENAI_BASE : localDefault),\n    model: envConfig?.model ?? envDefaultModel(envGet),\n    hasApiKey: Boolean(envConfig?.apiKey),\n    keyHint: null,\n    status: envConfig ? 'active' : null,\n    updatedAt: null,\n    source: 'env',\n    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,\n    localDefaultUrl: localDefault,\n  };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "prefsToProviderConfig",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 86,
+      "endLine": 115,
+      "text": "export function prefsToProviderConfig(stored: {\n  useCloud: boolean;\n  baseUrl: string;\n  model: string;\n  apiKey: string;\n}): CharacterLoreProviderConfig | null {\n  const model = stored.model.trim();\n  if (!model) return null;\n\n  const safe = assertSafeOllamaBaseUrl(stored.baseUrl);\n  if (!safe.ok) return null;\n\n  if (stored.useCloud) {\n    const apiKey = stored.apiKey.trim();\n    if (!apiKey) return null;\n    return {\n      provider: 'openai-compatible',\n      baseUrl: safe.baseUrl,\n      model,\n      apiKey,\n    };\n  }\n\n  return {\n    provider: 'ollama',\n    baseUrl: toOllamaNativeBase(safe.baseUrl),\n    model,\n    ...(stored.apiKey.trim() ? { apiKey: stored.apiKey.trim() } : {}),\n  };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "loadOllamaSettingsForUser",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 117,
+      "endLine": 184,
+      "text": "export async function loadOllamaSettingsForUser(\n  config: SupabaseServiceConfig,\n  userId: string,\n): Promise<OllamaSettingsStored | null> {\n  const url =\n    `${config.url}/rest/v1/user_ai_provider_credentials` +\n    `?user_id=eq.${encodeURIComponent(userId)}` +\n    `&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}` +\n    `&status=eq.active` +\n    `&select=secret_ciphertext,key_hint,status,meta,updated_at,added_at` +\n    `&limit=1`;\n\n  const response = await fetch(url, {\n    headers: {\n      apikey: config.serviceRoleKey,\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n    },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) {\n    throw new Error(`ollama prefs lookup failed: ${response.status}`);\n  }\n\n  const body: unknown = await response.json();\n  if (!Array.isArray(body) || body.length === 0 || !isRecord(body[0])) return null;\n\n  const row = body[0];\n  const meta = isRecord(row.meta) ? row.meta : {};\n  const useCloud = meta.useCloud === true;\n  const baseUrl =\n    typeof meta.baseUrl === 'string' && meta.baseUrl.trim()\n      ? meta.baseUrl.trim()\n      : useCloud\n        ? OLLAMA_CLOUD_OPENAI_BASE\n        : defaultLocalOllamaBase();\n  const model = typeof meta.model === 'string' ? meta.model.trim() : '';\n  const secretCiphertext =\n    typeof row.secret_ciphertext === 'string' ? row.secret_ciphertext : '';\n  if (!secretCiphertext) return null;\n\n  const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));\n  if (!encKey) {\n    throw new Error('CREDENTIALS_ENCRYPTION_KEY missing');\n  }\n\n  let apiKey = '';\n  try {\n    apiKey = await decryptProviderSecret(secretCiphertext, encKey);\n  } catch {\n    throw new Error('OLLAMA_SECRET_DECRYPT');\n  }\n\n  return {\n    useCloud,\n    baseUrl,\n    model,\n    apiKey,\n    keyHint: typeof row.key_hint === 'string' ? row.key_hint : '••••',\n    status: typeof row.status === 'string' ? row.status : 'active',\n    updatedAt:\n      typeof row.updated_at === 'string'\n        ? row.updated_at\n        : typeof row.added_at === 'string'\n          ? row.added_at\n          : null,\n    secretCiphertext,\n  };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "toSettingsView",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 186,
+      "endLine": 204,
+      "text": "export function toSettingsView(\n  stored: OllamaSettingsStored | null,\n  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),\n): OllamaSettingsView {\n  const envView = buildEnvSettingsView(envGet);\n  if (!stored) return envView;\n  return {\n    useCloud: stored.useCloud,\n    baseUrl: stored.baseUrl,\n    model: stored.model,\n    hasApiKey: stored.apiKey.trim().length > 0,\n    keyHint: stored.apiKey.trim().length > 0 ? stored.keyHint : null,\n    status: stored.status,\n    updatedAt: stored.updatedAt,\n    source: 'user',\n    cloudDefaultUrl: OLLAMA_CLOUD_OPENAI_BASE,\n    localDefaultUrl: envView.localDefaultUrl,\n  };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "resolveLlmProviderForUser",
+      "path": "supabase/functions/_shared/ollama-llm-resolve.ts",
+      "line": 209,
+      "endLine": 229,
+      "text": "export async function resolveLlmProviderForUser(\n  config: SupabaseServiceConfig | null,\n  userId: string | null,\n): Promise<CharacterLoreProviderConfig | null> {\n  if (config && userId) {\n    try {\n      const stored = await loadOllamaSettingsForUser(config, userId);\n      if (stored) {\n        const fromPrefs = prefsToProviderConfig(stored);\n        if (fromPrefs) return fromPrefs;\n      }\n    } catch (error) {\n      console.error(\n        'ollama user prefs resolve failed:',\n        error instanceof Error ? error.message : 'unknown',\n      );\n      // fall through to env\n    }\n  }\n  return resolveCharacterLoreProviderConfig();\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_CLOUD_OPENAI_BASE",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 6,
+      "endLine": 6,
+      "text": "OLLAMA_CLOUD_OPENAI_BASE = 'https://ollama.com/v1'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_CLOUD_TAGS_URL",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 7,
+      "endLine": 7,
+      "text": "OLLAMA_CLOUD_TAGS_URL = 'https://ollama.com/api/tags'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_PROVIDER_ID",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 8,
+      "endLine": 8,
+      "text": "OLLAMA_PROVIDER_ID = 'ollama'"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "OLLAMA_NONE_SECRET",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 9,
+      "endLine": 9,
+      "text": "OLLAMA_NONE_SECRET = ''"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "BLOCKED_HOSTS",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 11,
+      "endLine": 15,
+      "text": "BLOCKED_HOSTS = new Set([\n  'metadata.google.internal',\n  'metadata',\n  '169.254.169.254',\n])"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "trimTrailingSlash",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "function trimTrailingSlash(value: string): string {\n  return value.replace(/\\/+$/, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isIpv4",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 21,
+      "endLine": 23,
+      "text": "function isIpv4(host: string): boolean {\n  return /^\\d{1,3}(\\.\\d{1,3}){3}$/.test(host);\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "parseIpv4",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 25,
+      "endLine": 32,
+      "text": "function parseIpv4(host: string): [number, number, number, number] | null {\n  if (!isIpv4(host)) return null;\n  const parts = host.split('.').map((p) => Number.parseInt(p, 10));\n  if (parts.length !== 4 || parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) {\n    return null;\n  }\n  return [parts[0], parts[1], parts[2], parts[3]];\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isPrivateOrLoopbackIpv4",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 34,
+      "endLine": 44,
+      "text": "function isPrivateOrLoopbackIpv4(host: string): boolean {\n  const ip = parseIpv4(host);\n  if (!ip) return false;\n  const [a, b] = ip;\n  if (a === 10) return true;\n  if (a === 127) return true;\n  if (a === 192 && b === 168) return true;\n  if (a === 172 && b >= 16 && b <= 31) return true;\n  if (a === 169 && b === 254) return false; // link-local / cloud metadata range\n  return false;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isBlockedHost",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 46,
+      "endLine": 54,
+      "text": "function isBlockedHost(hostname: string): boolean {\n  const host = hostname.toLowerCase().replace(/^\\[|\\]$/g, '');\n  if (BLOCKED_HOSTS.has(host)) return true;\n  if (host === '0.0.0.0' || host === '::' || host === '[::]') return true;\n  if (host.endsWith('.internal') && host.includes('metadata')) return true;\n  const ip = parseIpv4(host);\n  if (ip && ip[0] === 169 && ip[1] === 254) return true;\n  return false;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "isLocalOrPrivateHost",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 56,
+      "endLine": 66,
+      "text": "function isLocalOrPrivateHost(hostname: string): boolean {\n  const host = hostname.toLowerCase().replace(/^\\[|\\]$/g, '');\n  if (host === 'localhost' || host === '::1' || host === '[::1]') return true;\n  if (isPrivateOrLoopbackIpv4(host)) return true;\n  // Docker / compose service names (single label, no public TLD)\n  if (/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/i.test(host) && !host.includes('.')) {\n    return true;\n  }\n  if (host.endsWith('.local') || host.endsWith('.localhost')) return true;\n  return false;\n}"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "SafeUrlResult",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 68,
+      "endLine": 70,
+      "text": "export type SafeUrlResult =\n  | { ok: true; baseUrl: string }\n  | { ok: false; message: string };"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "assertSafeOllamaBaseUrl",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 76,
+      "endLine": 114,
+      "text": "export function assertSafeOllamaBaseUrl(raw: string): SafeUrlResult {\n  const trimmed = raw.trim();\n  if (!trimmed) {\n    return { ok: false, message: 'Base-URL fehlt.' };\n  }\n  if (trimmed.length > 500) {\n    return { ok: false, message: 'Base-URL ist zu lang.' };\n  }\n\n  let parsed: URL;\n  try {\n    parsed = new URL(trimmed);\n  } catch {\n    return { ok: false, message: 'Base-URL ist ungültig.' };\n  }\n\n  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {\n    return { ok: false, message: 'Nur http(s) Base-URLs sind erlaubt.' };\n  }\n  if (parsed.username || parsed.password) {\n    return { ok: false, message: 'Base-URL darf keine Credentials enthalten.' };\n  }\n  if (parsed.hash) {\n    return { ok: false, message: 'Base-URL darf keinen Hash enthalten.' };\n  }\n\n  const hostname = parsed.hostname;\n  if (!hostname || isBlockedHost(hostname)) {\n    return { ok: false, message: 'Diese Base-URL ist nicht erlaubt.' };\n  }\n\n  const local = isLocalOrPrivateHost(hostname);\n  if (!local && parsed.protocol !== 'https:') {\n    return { ok: false, message: 'Öffentliche Hosts benötigen https.' };\n  }\n\n  const normalized = trimTrailingSlash(`${parsed.origin}${parsed.pathname}`);\n  return { ok: true, baseUrl: normalized };\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "toOllamaNativeBase",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 117,
+      "endLine": 120,
+      "text": "export function toOllamaNativeBase(baseUrl: string): string {\n  const trimmed = trimTrailingSlash(baseUrl);\n  return trimmed.replace(/\\/v1$/i, '');\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "resolveTagsUrl",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 122,
+      "endLine": 125,
+      "text": "export function resolveTagsUrl(useCloud: boolean, baseUrl: string): string {\n  if (useCloud) return OLLAMA_CLOUD_TAGS_URL;\n  return `${toOllamaNativeBase(baseUrl)}/api/tags`;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "defaultLocalOllamaBase",
+      "path": "supabase/functions/_shared/ollama-url-policy.ts",
+      "line": 127,
+      "endLine": 137,
+      "text": "export function defaultLocalOllamaBase(\n  envGet: (key: string) => string | undefined = (k) => Deno.env.get(k),\n): string {\n  const fromEnv = (\n    envGet('CHARACTER_AI_BASE_URL') ||\n    envGet('OLLAMA_HOST') ||\n    'http://ollama:11434'\n  ).trim();\n  const safe = assertSafeOllamaBaseUrl(fromEnv);\n  return safe.ok ? safe.baseUrl : 'http://ollama:11434';\n}"
     },
     {
       "kind": "TypeAliasDeclaration",

@@ -44,8 +44,8 @@
     "RPC-WORLD-RESTRUCTURE",
     "RPC-WORLD-DESTRUCTIVE",
     "MIG-350",
-    "MIG-401",
     "MIG-402",
+    "MIG-401",
     "MIG-403",
     "MIG-404",
     "MIG-405",
@@ -984,8 +984,8 @@
       ]
     },
     {
-      "localId": "MIG-401",
-      "githubIssue": 817,
+      "localId": "MIG-402",
+      "githubIssue": 818,
       "order": 43,
       "wave": 3,
       "status": "blocked",
@@ -993,19 +993,20 @@
         795,
         792,
         793,
-        791
+        791,
+        841
       ],
       "runnerBlock": true,
       "labels": [
-        "P1",
+        "P2",
         "migration-wave-3-edge-services",
         "migration-order-043",
         "agent-blocked"
       ]
     },
     {
-      "localId": "MIG-402",
-      "githubIssue": 818,
+      "localId": "MIG-401",
+      "githubIssue": 817,
       "order": 44,
       "wave": 3,
       "status": "blocked",
@@ -1013,11 +1014,12 @@
         795,
         792,
         793,
+        818,
         791
       ],
       "runnerBlock": true,
       "labels": [
-        "P2",
+        "P1",
         "migration-wave-3-edge-services",
         "migration-order-044",
         "agent-blocked"
@@ -1074,6 +1076,7 @@
         795,
         792,
         793,
+        818,
         791
       ],
       "runnerBlock": true,
@@ -1371,6 +1374,7 @@
         795,
         792,
         793,
+        818,
         870,
         791
       ],
@@ -1810,8 +1814,8 @@
         814,
         815,
         813,
-        817,
         818,
+        817,
         819,
         820,
         821,
@@ -1909,8 +1913,8 @@
         814,
         815,
         813,
-        817,
         818,
+        817,
         819,
         820,
         821,
@@ -2043,8 +2047,8 @@
         814,
         815,
         813,
-        817,
         818,
+        817,
         819,
         820,
         821,

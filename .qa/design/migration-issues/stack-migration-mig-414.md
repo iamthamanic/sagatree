@@ -39,7 +39,7 @@ main: Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreic
 
 ## Security & Data
 
-Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {"kind":"dispatcher","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve exact dispatch boundary until host cutover."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+main: Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {"kind":"dispatcher","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve exact dispatch boundary until host cutover."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ### Bekannte Legacy-Defekte / offene Verifikation
 

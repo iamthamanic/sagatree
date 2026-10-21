@@ -25,7 +25,7 @@ Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`.
 
 ### Vorher
 
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.
+Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/domains/ai-providers/ollama-settings.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/infrastructure/ai/ollama-settings-service.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.
 
 ### Nachher und Verhalten
 
@@ -33,7 +33,7 @@ src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transpor
 
 ## Scope
 
-- Quellpfade: `src/domains/ai-providers/contracts.ts`, `src/domains/ai-providers/index.ts`, `src/infrastructure/ai/ai-provider-credentials-service.ts`, `src/lib/supabase.ts`
+- Quellpfade: `src/domains/ai-providers/contracts.ts`, `src/domains/ai-providers/index.ts`, `src/domains/ai-providers/ollama-settings.ts`, `src/infrastructure/ai/ai-provider-credentials-service.ts`, `src/infrastructure/ai/ollama-settings-service.ts`, `src/lib/supabase.ts`
 - Änderbare Zielpfade: 
 - Quellverträge: `.qa/intake/edge-infra-contracts/infra-ai.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-ai.json`
 
@@ -54,12 +54,20 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 
 - Gegeben: Der eingefrorene Quellvertrag für ai und isolierte positive/negative Fixtures
 - Wenn: Der Nachfolger den dokumentierten Fall für ai ausführt
+- Dann: Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-ai.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-ai.json`
+
+### Fall 3
+
+- Gegeben: Der eingefrorene Quellvertrag für ai und isolierte positive/negative Fixtures
+- Wenn: Der Nachfolger den dokumentierten Fall für ai ausführt
 - Dann: Foreign account cannot list or mutate owner credentials; missing session fails before invoke.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-ai.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-ai.json`
 
 ## Acceptance
 
 - [ ] List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.
+- [ ] Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.
 - [ ] Foreign account cannot list or mutate owner credentials; missing session fails before invoke.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 

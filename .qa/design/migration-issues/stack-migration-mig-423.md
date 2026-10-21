@@ -39,7 +39,7 @@ spellbook: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host b
 
 ## Security & Data
 
-Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {"kind":"legacy-unmounted","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve external 404; no automatic host route or public activation."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+spellbook: Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {"kind":"legacy-unmounted","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve external 404; no automatic host route or public activation."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ### Bekannte Legacy-Defekte / offene Verifikation
 

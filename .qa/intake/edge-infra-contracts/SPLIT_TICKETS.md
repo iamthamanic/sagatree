@@ -23,6 +23,7 @@ One exact parent ticket exists for every Edge entry and every infrastructure are
 | [marketplace](edge-marketplace.md) | #831 | Preserve external 404; no automatic host route or public activation. |
 | [media](edge-media.md) | #832 | Preserve external 404; no automatic host route or public activation. |
 | [npcs](edge-npcs.md) | #833 | Preserve external 404; no automatic host route or public activation. |
+| [ollama-settings](edge-ollama-settings.md) | #818 | Current branch mount; a successor cutover still requires gates and contract tests. |
 | [quests](edge-quests.md) | #834 | Preserve external 404; no automatic host route or public activation. |
 | [rulesets](edge-rulesets.md) | #835 | Preserve external 404; no automatic host route or public activation. |
 | [session-media-token](edge-session-media-token.md) | #836 | Current branch mount; a successor cutover still requires gates and contract tests. |
@@ -38,6 +39,7 @@ One exact parent ticket exists for every Edge entry and every infrastructure are
 | Kind | Contract dependency | Implementation issue | Additional policy/group |
 |---|---|---|---|
 | edge | `ai-provider-credentials` | #818 |  |
+| edge | `ollama-settings` | #818 |  |
 | auth | `authenticated account/session transport` | #793 |  |
 
 ### character — #801

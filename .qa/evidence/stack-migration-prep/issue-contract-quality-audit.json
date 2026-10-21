@@ -13,7 +13,7 @@
   "architectureApproved": 0,
   "sourceInventory": {
     "rpc": 57,
-    "edge": 24,
+    "edge": 25,
     "infrastructure": 13
   },
   "issuesWithExplicitSourceDefects": [
@@ -28,8 +28,8 @@
     "RPC-ATLAS-MAPS",
     "RPC-WORLD-PLACES",
     "RPC-WORLD-DESTRUCTIVE",
-    "MIG-401",
     "MIG-402",
+    "MIG-401",
     "MIG-403",
     "MIG-404",
     "MIG-405",

@@ -600,32 +600,32 @@
       "payloadSha256": "59206d402a468b87b65f1cbb6275301660a00096d1e27a02225d716fd3b881b9"
     },
     {
-      "localId": "MIG-401",
-      "issueNumber": 817,
-      "title": "MIG-401: Port Edge Function `ai-gm` to Node host service/adapter",
-      "labels": [
-        "P1",
-        "migration-wave-3-edge-services",
-        "migration-order-043",
-        "agent-blocked"
-      ],
-      "bodyFile": ".qa/design/migration-issues/stack-migration-mig-401.md",
-      "sha256": "e88c195cf28f4c1c40947479d0c2f71a4fed5f99068d8a47b2ccdcb37719a5a1",
-      "payloadSha256": "a260ee13253bf7dd62f89a028f720087295ec4445d46f0b6c7e966b6f2885dc9"
-    },
-    {
       "localId": "MIG-402",
       "issueNumber": 818,
       "title": "MIG-402: Port Edge Function `ai-provider-credentials` to Node host service/adapter",
       "labels": [
         "P2",
         "migration-wave-3-edge-services",
-        "migration-order-044",
+        "migration-order-043",
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-402.md",
-      "sha256": "c22299e7704e5bb2bf4b540fb5663d5dcd310d8296cec03e01b2305953711ea1",
-      "payloadSha256": "d1fc02f9250e3fa81f3296d830c41d0e33080088ac8a6e6de0fddad68f2ff43f"
+      "sha256": "8e1a49dc47ef97e8da4426e358792822c87ee59257f7b3c84089cfbda58c2d55",
+      "payloadSha256": "a0fa29591ddda3e47b63b28f63204ccce2a6dbcdca086b69154be3f1e9a7a6fc"
+    },
+    {
+      "localId": "MIG-401",
+      "issueNumber": 817,
+      "title": "MIG-401: Port Edge Function `ai-gm` to Node host service/adapter",
+      "labels": [
+        "P1",
+        "migration-wave-3-edge-services",
+        "migration-order-044",
+        "agent-blocked"
+      ],
+      "bodyFile": ".qa/design/migration-issues/stack-migration-mig-401.md",
+      "sha256": "de7bc33c8298236c1ba3d2778a2b92d0b9ef00f6294fb7438e6431899a56849c",
+      "payloadSha256": "cf87f7adbaa3121b9db97d1a835e42abfed169b130f44f3b00e958fe66332f1d"
     },
     {
       "localId": "MIG-403",
@@ -638,8 +638,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-403.md",
-      "sha256": "7df731ba4a449593bfc2d8634b285d926fecf985abb0eb97ee0b9d211c2d2c4a",
-      "payloadSha256": "6143169d3fdd19f254d1258bff7ed437cf81a913fc99f8315712b1e86ca44f17"
+      "sha256": "5baed6fba33b0446d78a0790d9004a70c46cd9ee4ee5bab43800d515d7e0a64a",
+      "payloadSha256": "b64b030811d2ba21f53e263026ce3fab587c657707ae27f7502a8c070c0fd5e1"
     },
     {
       "localId": "MIG-404",
@@ -652,8 +652,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-404.md",
-      "sha256": "885b301997e972c373cac810ba5d43519437ac1672a6b7f961882798135e2438",
-      "payloadSha256": "cdd4ecb03382a36219b422d4b1532f0e99009aa4b1a9c0e2c4bbfe0425158c50"
+      "sha256": "d4f47920c1a4799718d75c2d09305b0fea32fc3a68f6a6168a50b459a22264f0",
+      "payloadSha256": "a0cbde29bf8a69ef420841539a0aa530ab761a24c6e199a74f8917c162bda0e0"
     },
     {
       "localId": "MIG-405",
@@ -666,8 +666,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-405.md",
-      "sha256": "1dd2f6f174227a117e9582a8b354e9cb67256c7f2093d5a4f2b6d098083efad8",
-      "payloadSha256": "ef6a2e3656993ed834812734207e85d9ef4134699b3330795279e0b06cccd325"
+      "sha256": "10a4af30a5864d2fe550a158213305273cd5fc1f1d4259d44ad9e8744ca63f4d",
+      "payloadSha256": "2936d51854a76162aef664ffd6e17752c3c132b82597331b6b15ad2326e01741"
     },
     {
       "localId": "MIG-406",
@@ -680,8 +680,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-406.md",
-      "sha256": "7fa7d4db1676bc13f69cdb901cdc24d4691a85b9f23d9cfa512c017803b4ebd8",
-      "payloadSha256": "a71a703db148bd5cf663821949d7a9061b6dce3360bd615e0b0e4f9c42dd927e"
+      "sha256": "ed57e40dbfca93649217d8bf0f7972cf90bc89815ec9bcb9e616b4a71452d652",
+      "payloadSha256": "dda0fe2a55dc87d6592e4836744e50efa7d37804c4c752eb48b1e28b5bd94865"
     },
     {
       "localId": "MIG-407",
@@ -694,8 +694,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-407.md",
-      "sha256": "c715c2343d7afb689657a6f2e3576ea57605a5cdb4d961220fde18561231e7bc",
-      "payloadSha256": "cde97ce3f8edf0545ec1fc76cb0acb4c229e71ab906b60f6f907a005feb51a98"
+      "sha256": "e01153478b63f54643b82ea6f2bea01ce3d37ce6a05731fccf74d7f55791a66d",
+      "payloadSha256": "e1017345b835c228039cbe8329af679049aab63745f22bd8e07ca3dfc9458387"
     },
     {
       "localId": "MIG-408",
@@ -708,8 +708,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-408.md",
-      "sha256": "6a0a513f6caf31f9f85ca06af57fe07f7affdf3fcc302224e760ddacb4154743",
-      "payloadSha256": "181de299e30c879b836e64c192daf7db0ab7309aeee2c0e0e049fb510f462e41"
+      "sha256": "cb51ce745e4e7b0200160cb78ff95ec13019eda1dcfd5f1e2870492eddc8f344",
+      "payloadSha256": "9da96f4ab45ef98a17c4a73f699e7eb6a5f64908516d5358e9e05beb25e2917d"
     },
     {
       "localId": "MIG-409",
@@ -722,8 +722,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-409.md",
-      "sha256": "28d9fab6dcb9b169c08b174efe6c64799e854b4804e2a109f2a9174e9f7ef82e",
-      "payloadSha256": "986d1369c170027e89363fe56cd5b06bb385421c5fe4ee36c780412e5d585abc"
+      "sha256": "a05e5f7dc4b6d226b4603b218a509fb4f6353af1e4812eab07f717760925ac41",
+      "payloadSha256": "01a7dbdcb391359935956864ffe000c415fbe5e9359e623356298ce8da4740bc"
     },
     {
       "localId": "MIG-410",
@@ -736,8 +736,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-410.md",
-      "sha256": "34b52f48ee00a69a896642857ef7e7711b5a5fa3da3c28b69878e9ea9dfab572",
-      "payloadSha256": "4b401c433c3125f0e2d4c3de7f350f3aabd3014aa5258015e5db091d25447718"
+      "sha256": "cd9f32010b7e2f10cb65e28c4c8cf92bab688772c2eb98924a74f62f979214ba",
+      "payloadSha256": "02e72a127753de3501a57fc1575cccd995492d5233c7b0b261dea256c3515f57"
     },
     {
       "localId": "MIG-411",
@@ -750,8 +750,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-411.md",
-      "sha256": "72c13eacff47cb5efb97b54a9a8f0534483a63abcc459638a4c6af8165bf7685",
-      "payloadSha256": "5bbece8a021b97df335770b99db3cb000cc397204717fb8ab0a705638deddcff"
+      "sha256": "055dd5a553f814a44d2ad7393562d19980e2d06613a11b06572707c1ac9a5805",
+      "payloadSha256": "5af6ee47b73eabe7aef744af66494b410fb2a55a6235995c287b39ba02e7d5e9"
     },
     {
       "localId": "MIG-412",
@@ -764,8 +764,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-412.md",
-      "sha256": "4c0fa0d09b2cf6f856830188e69187b7590da6057142fd7983904d8fe8734295",
-      "payloadSha256": "578df652dc8eb84fa47e2365b4ba13e996ef9faf397d597179feef948cdf3148"
+      "sha256": "8bacee54226348d9f956ba5dece8df00c22f5649804c41dfee17c5a2ba4e760f",
+      "payloadSha256": "362f1ffbaf2be658d3ac1f256a65cac8e4051595a178056d7c24a1189ae23acc"
     },
     {
       "localId": "MIG-413",
@@ -778,8 +778,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-413.md",
-      "sha256": "eb4c2102175b13cd14b3ec42afc071544de29b67d414ce4fceda2d1d4d1e57f8",
-      "payloadSha256": "25b3006e389bb013e2fa3dc361bd310f5c065709cc46d4ba6048b0e82db1984b"
+      "sha256": "359bd59b3477a7e40a57a0a69aaa358ca2ace02a631e8517909b42940026c744",
+      "payloadSha256": "fdd427e27974dc9591a0a77aa66f99969d0e41bd4c8b926bdc0f43b49f4a7146"
     },
     {
       "localId": "MIG-415",
@@ -792,8 +792,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-415.md",
-      "sha256": "9da2a458dfcc12f518bd7cc803aac72e771024e8351e674eec6a45ce97c0c7ce",
-      "payloadSha256": "e53a18eb245354eecf9a5bbdd18263894aa8f2dea04f63fe3a3dfa62d032bf9a"
+      "sha256": "cf275116c5fe2b11d62023b3e03def6146c11041d51e186607a72730f9026a9d",
+      "payloadSha256": "5223f9bd1d39c0390543e7627024186b3f614d06063241e29703a71856bc0201"
     },
     {
       "localId": "MIG-416",
@@ -806,8 +806,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-416.md",
-      "sha256": "e7b85ee0a168d744ab91ff6e59e5435edac0ae87e6549f4079edceffd9ac471b",
-      "payloadSha256": "e593d9ad7478d7c44f4720234d7e77aed4135f43191a501902c3c51f70ff5ee6"
+      "sha256": "9583c9ecadb16c451a4e70973c6c6d047255d1434d90bae8a49a7d60e2d7a1ee",
+      "payloadSha256": "d1d292eeadca01584f3271a7dd91dc456b47edbfa0ff1688659939e009a0cff4"
     },
     {
       "localId": "MIG-417",
@@ -820,8 +820,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-417.md",
-      "sha256": "5f4f57fbfab43a2d9e730314f14b3e16793d0543e18d02213f69617ae27e9e84",
-      "payloadSha256": "be448f8bc18bb0d9b79dd42c06ff58642a9f7389c203e9359386527a0debe23c"
+      "sha256": "8b70140b719bf3f786b781225a7ca23c23889a868614b3ea194d01cf9a7e5f0a",
+      "payloadSha256": "febb359273798e3503d46abe17aee5f630b3707ee5c8534434757307ef565a26"
     },
     {
       "localId": "MIG-418",
@@ -834,8 +834,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-418.md",
-      "sha256": "15052ca01e3efa61d8bb87594c0685a8b7bdc0e77598e5e7cb242d5f19ac0df6",
-      "payloadSha256": "d836fe3665211294c6804346b87947cb95604262ad0124f6099d305b04305d1c"
+      "sha256": "5e4e1b5e2cd5c7fe5d76057722d18d16863700fad204d8d5f2eebd80ed96a2cc",
+      "payloadSha256": "1babc74d04fce393cb129c42169964c9d7399dffa2a88094e911c7ad2db9c839"
     },
     {
       "localId": "MIG-419",
@@ -848,8 +848,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-419.md",
-      "sha256": "0680681bc4cdbc04e6190e46c9130bec9927dd94ff157de7f66f7bede2a76dfb",
-      "payloadSha256": "1fb893b1c3a68223f8f84ebd19330e1fb81090d64cee5e02eff2d486ad1345af"
+      "sha256": "f14162eee93436eb61a7c3142ae48c7c79d94d5a74b14beed374c2bb66a73a45",
+      "payloadSha256": "0debcd9e0405db67beffee5644e2b7a50d3e713afcf4dca9457f22e9bf49418d"
     },
     {
       "localId": "MIG-420",
@@ -862,8 +862,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-420.md",
-      "sha256": "e69ca7733fb533f4805f850cdfe43e4e21dcfb18e68975a1d32633f206b6cabb",
-      "payloadSha256": "ece114f9e1b792182ecdbfac8cd28561505ba5a9786966692c2471221e2e6304"
+      "sha256": "ff52b75ea6a811b8d484ac7a922bee81c517f84300b5c70d7160931ae372d637",
+      "payloadSha256": "1a0e8c9fb9e8124634d5e2ffd4facf598cbdaf3be082d7b8e39e2c6f77bb6efc"
     },
     {
       "localId": "MIG-421",
@@ -876,8 +876,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-421.md",
-      "sha256": "8129d01f42f3c207388ffe09d90133e2331901b373649847fb747da1d7326a75",
-      "payloadSha256": "5117c6575bc99a38193f209aedfdbaa0b26b0cab0a2938f7396dc5a6858fc732"
+      "sha256": "c699a3ea79a64be11cddd6624fc4dd3b9b82383bd09b0a2deb7389b04c04b53a",
+      "payloadSha256": "034c93b4ab78b27f9ea7c917b15aca57725da304ed9f73768d98932267de1449"
     },
     {
       "localId": "MIG-414",
@@ -890,8 +890,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-414.md",
-      "sha256": "0b21fe8ee9fbafdb68528f135b7716db9a8b0af97adc7e012fa23b4f3c75d74c",
-      "payloadSha256": "908e8b84635dcf2e6b41f4982aaf7841c82c9ae3ad260b4a30264e37ff1ca0a5"
+      "sha256": "2878a997e53cf0ae6864f5fc19f1506da26e767c13c6cd083187b455bf9fb5a7",
+      "payloadSha256": "7f15c08b46b37a90f2a66cf379164ae769dd9be32c5a8900c4aa9f42706d838d"
     },
     {
       "localId": "MIG-422",
@@ -904,8 +904,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-422.md",
-      "sha256": "b8c65aa0d3714b8f8b08330c88b6e295cfd3747c10755d13c45bf43080319af2",
-      "payloadSha256": "dc607ffc939757c32416158194e78b44347d5bf6b7a4da934f8cd139fd2267be"
+      "sha256": "ef737987fc9fdb2019b5b2530163b00455105c025ca908f4c8d8463c5b329233",
+      "payloadSha256": "e6285ab5e65537f1465bf099b19ec0b9524325b02365ca842fc74620322b6c8c"
     },
     {
       "localId": "MIG-423",
@@ -918,8 +918,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-423.md",
-      "sha256": "d8ae2cb3d8eb2de31d87daef05abe5d65af25f44961ba142c62b0dbcbe3b6a85",
-      "payloadSha256": "b8eb7d735fb80bff533a2426ae83455b1abad8c74c07b190cba55e59807eb22d"
+      "sha256": "603ca553dc01950bd1e9f0b12f7d87e0f9b61df2e52abb2ea242f679d29287d6",
+      "payloadSha256": "ee1e1dcfa13765ade344f13a3a7ee32353a45ecd309935c4c2a850af0e8916bf"
     },
     {
       "localId": "MIG-424",
@@ -932,8 +932,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-424.md",
-      "sha256": "647136c3659a62ba057ecfa17d71831f9c1d5efba4f903de17e53ad5e9c44602",
-      "payloadSha256": "1eba03fb7e6b0661a7ffde4349011f9f9f468e6536c5a7f05f46a072283af78c"
+      "sha256": "669a03de12d5e3cfdceed74389c41188e5e7f75817e4e2daf35bd7da31674d0b",
+      "payloadSha256": "324cffc777eaac1aedaa53e9469dba6677d92a259694acf02bf7540aa1c20fb7"
     },
     {
       "localId": "MIG-301",
@@ -946,8 +946,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-301.md",
-      "sha256": "28daf372e60a04c3103985590e7633b3978fe7094cb3f7f030f70d34eb5d838d",
-      "payloadSha256": "41d4c76d1ab98bafbe26b5f6946848a8a4a9b451baba321f0a56446c726bf4f2"
+      "sha256": "534746003c84804ad8ec29edbb8f73b71d71d0b93c820ecd0253792979a50b74",
+      "payloadSha256": "d97a1231ba1a5001716c87aa03dda66f87696c2ec1711446b33e53a553954637"
     },
     {
       "localId": "MIG-302",
@@ -1156,8 +1156,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-600.md",
-      "sha256": "e6fea43e4b59911f92f90d76b64914c194627c5073e9ebc9a7f62649815df366",
-      "payloadSha256": "c39ae242cf7cba622dbd09942424665a07729035b6da5193edac9081f407fdf4"
+      "sha256": "0fb7b83227529d20d59c4ac624d95e3143b2a34f4111e6ce739440eab981368b",
+      "payloadSha256": "75e5b75b7bebc720ad49ecd26845d19e54834194d660a67bd2c577708bdeb595"
     },
     {
       "localId": "MIG-601",
@@ -1184,8 +1184,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-602.md",
-      "sha256": "9d6c0612e2cdf18bb8922beb85c91f0d53e193b9bf3a7e22f9667fbdc22a13a2",
-      "payloadSha256": "a12f80a8675c303a7a533da4b5308da98b86792744352411d0a06b37ccd1539e"
+      "sha256": "7019689e05bac8092a1b68e4315cbd80dfb4c26bf85780ddd7f6708334696911",
+      "payloadSha256": "3aa5536d75953d008e5a0f5891bd26c15f0afcde60da5eb3a6fb713fbdb00532"
     },
     {
       "localId": "MIG-603",
@@ -1228,8 +1228,8 @@
         "agent-blocked"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-700.md",
-      "sha256": "dc4fca617ccf27bf8680c85e7a1dadd74f857fe91c76699147acab5dfe2a4686",
-      "payloadSha256": "225c1f2d7c0014ac2537a7f699c5cf32b17f4cf0089505726fecaa1e53e2cee9"
+      "sha256": "397ac0a9bd1d35628d4df43a09854d67cbc12e42217bd9c1255e9081a13d85b3",
+      "payloadSha256": "0bc93d06035aeec42eceb9a3f703980a478dd5dde8e7cfdc5551d94d1a9f8f2f"
     },
     {
       "localId": "MIG-701",

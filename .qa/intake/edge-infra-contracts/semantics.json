@@ -1,7 +1,59 @@
 {
   "schemaVersion": 2,
-  "verificationScope": "Repository source at main 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; no deployed-backend or successor parity claimed.",
+  "verificationScope": "Repository source freeze 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248 plus later main #879 ollama-settings; no deployed-backend or successor parity claimed.",
   "edges": {
+    "ollama-settings": {
+      "purpose": "Account-scoped Organize (Ollama LLM) preferences: get/upsert/test/listModels for cloud or local endpoints; secrets never returned.",
+      "authz": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every read/write filters user_id = that userId. No project/session membership is required. Custom base URLs must pass SSRF allowlist checks; plaintext API keys are accepted only on write and stored encrypted.",
+      "payloadContract": {
+        "transport": "POST JSON; OPTIONS 204; other methods 405",
+        "get": "{action:'get'}",
+        "upsert": "{action:'upsert',useCloud:boolean,baseUrl?:string,model?:string,apiKey?:string,clearApiKey?:boolean}",
+        "test": "{action:'test',useCloud:boolean,baseUrl?:string,apiKey?:string}",
+        "listModels": "{action:'listModels',useCloud:boolean,baseUrl?:string,apiKey?:string}"
+      },
+      "successContract": {
+        "getUpsert": "{status:'ok',settings:{useCloud,baseUrl,model,hasApiKey,keyHint,status,updatedAt,source,cloudDefaultUrl,localDefaultUrl}}; never apiKey/ciphertext",
+        "test": "{status:'ok',reachable:boolean,message?:string,models?:string[]}",
+        "listModels": "{status:'ok',models:string[]}"
+      },
+      "rateLimits": {
+        "kind": "persistent-rpc",
+        "rpc": "consume_ai_provider_credential_rate_limit",
+        "scope": "authenticated userId",
+        "defaultLimit": 8,
+        "maxConfiguredLimit": 60,
+        "windowSeconds": 60,
+        "env": "AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE",
+        "chargedActions": [
+          "upsert",
+          "test",
+          "listModels"
+        ],
+        "failure": "non-ok RPC or result != true returns 429"
+      },
+      "sideEffects": [
+        "upsert encrypts optional API key with CREDENTIALS_ENCRYPTION_KEY and persists user_ai_provider_credentials / ollama preference row for the caller only",
+        "test and listModels may call the configured Ollama /api/tags endpoint from the server with AbortSignal timeout",
+        "get decrypts only to derive hasApiKey/keyHint; plaintext is never returned"
+      ],
+      "failureSemantics": [
+        "400 malformed JSON, missing action, invalid URL/model/key shape",
+        "401 missing/invalid user; 405 non-POST; 429 quota; 500 config/persistence/unexpected",
+        "503 missing encryption key on get/upsert paths that require decrypt/encrypt"
+      ],
+      "transportSemantics": "Auth 10s, service 20s, Ollama tags 20s. Shared CORS opts with AI provider origins. No automatic retry.",
+      "requiredTests": [
+        "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
+        "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+        "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
+        "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
+        "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials."
+      ],
+      "knownGaps": [
+        "No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities."
+      ]
+    },
     "ai-provider-credentials": {
       "purpose": "Manage the authenticated account's encrypted BYOK keys; no project/session membership is required.",
       "authz": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted.",
@@ -947,10 +999,11 @@
   },
   "infrastructure": {
     "ai": {
-      "behavior": "Public facade manages current account BYOK catalog and list/upsert/refresh/delete actions; providers validated through parse layer, no project membership precondition.",
-      "security": "User access token only to ai-provider-credentials; no API key persisted in browser facade or returned as credential metadata.",
+      "behavior": "Public facade manages current account BYOK catalog (ai-provider-credentials) and Organize Ollama prefs (ollama-settings get/upsert/test/listModels); providers validated through parse layer, no project membership precondition.",
+      "security": "User access token only to ai-provider-credentials and ollama-settings; no API key persisted in browser facade or returned as credential/settings metadata.",
       "tests": [
         "List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.",
+        "Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.",
         "Foreign account cannot list or mutate owner credentials; missing session fails before invoke."
       ]
     },

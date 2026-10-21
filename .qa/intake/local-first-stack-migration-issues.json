@@ -18,7 +18,7 @@
   },
   "coverage": {
     "legacyMigrations": 106,
-    "legacyEdgeFunctions": 24,
+    "legacyEdgeFunctions": 25,
     "legacyFrontendRpcs": 57,
     "originalLiteralFrontendRpcs": 55,
     "infraAreas": 13,
@@ -84,8 +84,8 @@
     "RPC-WORLD-RESTRUCTURE",
     "RPC-WORLD-DESTRUCTIVE",
     "MIG-350",
-    "MIG-401",
     "MIG-402",
+    "MIG-401",
     "MIG-403",
     "MIG-404",
     "MIG-405",
@@ -8147,6 +8147,163 @@
       ]
     },
     {
+      "localId": "MIG-402",
+      "githubIssue": 818,
+      "title": "Port Edge Function `ai-provider-credentials` to Node host service/adapter",
+      "priority": "P2",
+      "kind": "implementation",
+      "status": "blocked",
+      "featureSlug": "stack-migration-mig-402",
+      "designFile": ".qa/design/migration-issues/stack-migration-mig-402.md",
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "sourceContracts": [
+        ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+        ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json",
+        ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+        ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+      ],
+      "integrationWith": [],
+      "ownedPrerequisites": [
+        "consume_ai_provider_credential_rate_limit"
+      ],
+      "before": {
+        "paths": [
+          "src/infrastructure/ai/ai-provider-credentials-service.ts",
+          "supabase/functions/_shared/ai-provider-crypto.ts",
+          "supabase/functions/_shared/ai-provider-meshy.ts",
+          "supabase/functions/_shared/ai-provider-registry.ts",
+          "supabase/functions/_shared/cors.ts",
+          "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
+          "supabase/functions/_shared/edge-jwt-gate.ts",
+          "supabase/functions/ai-provider-credentials/index.ts",
+          "supabase/functions/main/index.ts",
+          "src/infrastructure/ai/ollama-settings-service.ts",
+          "supabase/functions/_shared/character-lore-prompt.ts",
+          "supabase/functions/_shared/character-lore-provider.ts",
+          "supabase/functions/_shared/ollama-llm-resolve.ts",
+          "supabase/functions/_shared/ollama-url-policy.ts",
+          "supabase/functions/ollama-settings/index.ts"
+        ],
+        "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
+        "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
+      },
+      "after": {
+        "paths": [
+          "server/src/application/ai-provider-credentials/",
+          "server/src/application/ollama-settings/"
+        ],
+        "behavior": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. ollama-settings: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
+        "architecture": "Concrete libraries remain subject to GATE decisions."
+      },
+      "behavior": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. ollama-settings: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
+      "security": "ai-provider-credentials: After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. ollama-settings: After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every read/write filters user_id = that userId. No project/session membership is required. Custom base URLs must pass SSRF allowlist checks; plaintext API keys are accepted only on write and stored encrypted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "scope": {
+        "mayChange": [
+          "server/src/application/ai-provider-credentials/",
+          "server/src/application/ollama-settings/"
+        ],
+        "mustNotChange": [
+          "production data",
+          "unrelated product flows"
+        ],
+        "nonGoals": [
+          "Unapproved framework choice",
+          "Production cutover",
+          "Silent retirement of an operation"
+        ]
+      },
+      "acceptance": [
+        "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
+        "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+        "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
+        "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+        "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
+      ],
+      "assertions": [
+        {
+          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
+          "then": "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
+          "then": "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
+          "then": "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ollama-settings und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ollama-settings ausführt",
+          "then": "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        }
+      ],
+      "verification": {
+        "sourceStatus": "source-verified",
+        "implementationStatus": "not-accepted",
+        "blockers": [
+          "Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
+          "No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities."
+        ],
+        "approvalRequired": null
+      },
+      "contractSections": {
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/ai/ai-provider-credentials-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/ai-provider-meshy.ts, supabase/functions/_shared/ai-provider-registry.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/ai-provider-credentials/index.ts, supabase/functions/main/index.ts, src/infrastructure/ai/ollama-settings-service.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/ollama-settings/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json, .qa/intake/edge-infra-contracts/edge-ollama-settings.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json.",
+        "nachher": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. ollama-settings: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/ai-provider-credentials/, server/src/application/ollama-settings/.",
+        "verhalten": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. ollama-settings: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
+        "sicherheit": "ai-provider-credentials: After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. ollama-settings: After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every read/write filters user_id = that userId. No project/session membership is required. Custom base URLs must pass SSRF allowlist checks; plaintext API keys are accepted only on write and stored encrypted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "tests": [
+          "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
+          "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
+          "Account O can get/upsert/test/listModels its Ollama prefs without project membership; account X never reads or mutates O's row.",
+          "Responses never include apiKey or secret_ciphertext; only hasApiKey/keyHint and rounded status fields.",
+          "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
+        ],
+        "abhaengigkeiten": [
+          "MIG-020",
+          "MIG-013",
+          "MIG-014",
+          "MIG-012",
+          "MIG-500"
+        ],
+        "grenzen": "Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag."
+      },
+      "order": 43,
+      "waveNumber": 3,
+      "wave": "migration-wave-3-edge-services",
+      "labels": [
+        "P2",
+        "migration-wave-3-edge-services",
+        "migration-order-043",
+        "agent-blocked"
+      ]
+    },
+    {
       "localId": "MIG-401",
       "githubIssue": 817,
       "title": "Port Edge Function `ai-gm` to Node host service/adapter",
@@ -8159,6 +8316,7 @@
         "MIG-020",
         "MIG-013",
         "MIG-014",
+        "MIG-402",
         "MIG-012"
       ],
       "sourceContracts": [
@@ -8172,9 +8330,14 @@
       "before": {
         "paths": [
           "supabase/functions/_shared/ai-gm-rate-limit.ts",
+          "supabase/functions/_shared/ai-provider-crypto.ts",
+          "supabase/functions/_shared/character-lore-prompt.ts",
+          "supabase/functions/_shared/character-lore-provider.ts",
           "supabase/functions/_shared/cors.ts",
           "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
           "supabase/functions/_shared/edge-jwt-gate.ts",
+          "supabase/functions/_shared/ollama-llm-resolve.ts",
+          "supabase/functions/_shared/ollama-url-policy.ts",
           "supabase/functions/_shared/session-membership-gate.ts",
           "supabase/functions/ai-gm/index.ts",
           "supabase/functions/main/index.ts"
@@ -8188,7 +8351,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "ai-gm: External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -8255,10 +8418,10 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/ai-gm-rate-limit.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/session-membership-gate.ts, supabase/functions/ai-gm/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-ai-gm.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/ai-gm-rate-limit.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/_shared/session-membership-gate.ts, supabase/functions/ai-gm/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-ai-gm.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json.",
         "nachher": "ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "ai-gm: External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Dispatcher requests for ai-gm return404 for valid/invalid/no JWT, without creating worker.",
           "Any future enablement requires separate reviewed GM/player projection and explicit replacement for blocked lorekeeper/sessions fan-out.",
@@ -8270,150 +8433,7 @@
           "MIG-020",
           "MIG-013",
           "MIG-014",
-          "MIG-012"
-        ],
-        "grenzen": "Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag."
-      },
-      "order": 43,
-      "waveNumber": 3,
-      "wave": "migration-wave-3-edge-services",
-      "labels": [
-        "P1",
-        "migration-wave-3-edge-services",
-        "migration-order-043",
-        "agent-blocked"
-      ]
-    },
-    {
-      "localId": "MIG-402",
-      "githubIssue": 818,
-      "title": "Port Edge Function `ai-provider-credentials` to Node host service/adapter",
-      "priority": "P2",
-      "kind": "implementation",
-      "status": "blocked",
-      "featureSlug": "stack-migration-mig-402",
-      "designFile": ".qa/design/migration-issues/stack-migration-mig-402.md",
-      "dependsOn": [
-        "MIG-020",
-        "MIG-013",
-        "MIG-014",
-        "MIG-012"
-      ],
-      "sourceContracts": [
-        ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
-        ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
-      ],
-      "integrationWith": [],
-      "ownedPrerequisites": [
-        "consume_ai_provider_credential_rate_limit"
-      ],
-      "before": {
-        "paths": [
-          "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "supabase/functions/_shared/ai-provider-crypto.ts",
-          "supabase/functions/_shared/ai-provider-meshy.ts",
-          "supabase/functions/_shared/ai-provider-registry.ts",
-          "supabase/functions/_shared/cors.ts",
-          "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
-          "supabase/functions/_shared/edge-jwt-gate.ts",
-          "supabase/functions/ai-provider-credentials/index.ts",
-          "supabase/functions/main/index.ts"
-        ],
-        "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
-        "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
-      },
-      "after": {
-        "paths": [
-          "server/src/application/ai-provider-credentials/"
-        ],
-        "behavior": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "architecture": "Concrete libraries remain subject to GATE decisions."
-      },
-      "behavior": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
-      "scope": {
-        "mayChange": [
-          "server/src/application/ai-provider-credentials/"
-        ],
-        "mustNotChange": [
-          "production data",
-          "unrelated product flows"
-        ],
-        "nonGoals": [
-          "Unapproved framework choice",
-          "Production cutover",
-          "Silent retirement of an operation"
-        ]
-      },
-      "acceptance": [
-        "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
-        "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
-        "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
-        "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
-        "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
-      ],
-      "assertions": [
-        {
-          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
-          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
-          "then": "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
-          "sourceRefs": [
-            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
-            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
-          ]
-        },
-        {
-          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
-          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
-          "then": "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
-          "sourceRefs": [
-            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
-            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
-          ]
-        },
-        {
-          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
-          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
-          "then": "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
-          "sourceRefs": [
-            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
-            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
-          ]
-        },
-        {
-          "given": "Der eingefrorene Quellvertrag für ai-provider-credentials und isolierte positive/negative Fixtures",
-          "when": "Der Nachfolger den dokumentierten Fall für ai-provider-credentials ausführt",
-          "then": "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
-          "sourceRefs": [
-            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
-            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json"
-          ]
-        }
-      ],
-      "verification": {
-        "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
-        "blockers": [
-          "Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption."
-        ],
-        "approvalRequired": null
-      },
-      "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/ai/ai-provider-credentials-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/ai-provider-meshy.ts, supabase/functions/_shared/ai-provider-registry.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/ai-provider-credentials/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json.",
-        "nachher": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/ai-provider-credentials/.",
-        "verhalten": "ai-provider-credentials: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "After dispatcher JWT validation, GET /auth/v1/user authenticates the end-user. Every credential read/update/delete filters user_id = that userId; inserts set it server-side. Meshy is the only catalog provider. No owner from request is trusted. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
-        "tests": [
-          "Account O can list/upsert/refresh/delete its Meshy key without project membership; account X never sees or modifies O's key.",
-          "List/upsert/refresh responses omit apiKey and secret_ciphertext; only rounded nonnegative credits are exposed.",
-          "Ninth upsert/refresh inside the default 60s window returns 429, list/delete do not consume quota; store failure must not call Meshy.",
-          "Missing encryption key yields 503, rejected key yields 400; upsert preserves added_at and delete of absent own row succeeds.",
-          "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
-        ],
-        "abhaengigkeiten": [
-          "MIG-020",
-          "MIG-013",
-          "MIG-014",
+          "MIG-402",
           "MIG-012"
         ],
         "grenzen": "Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag."
@@ -8422,7 +8442,7 @@
       "waveNumber": 3,
       "wave": "migration-wave-3-edge-services",
       "labels": [
-        "P2",
+        "P1",
         "migration-wave-3-edge-services",
         "migration-order-044",
         "agent-blocked"
@@ -8465,7 +8485,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "bestiary: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies bestiary with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "bestiary: Dispatcher denies bestiary with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -8525,7 +8545,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/bestiary/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-bestiary.md, .qa/intake/edge-infra-contracts/source-contracts/edge-bestiary.json.",
         "nachher": "bestiary: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "bestiary: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies bestiary with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "bestiary: Dispatcher denies bestiary with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "All bestiary paths remain dispatcher404 without Map initialization.",
           "Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.",
@@ -8601,7 +8621,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "character-avatar-meshy: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "character-avatar-meshy: Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/character-avatar-meshy/"
@@ -8674,7 +8694,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/character/avatar/character-avatar-meshy-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/ai-provider-resolve-meshy.ts, supabase/functions/_shared/avatar-3d-generation.ts, supabase/functions/_shared/avatar-meshy-rate-limit.ts, supabase/functions/_shared/avatar-meshy-remesh.ts, supabase/functions/_shared/avatar-meshy-rigging.ts, supabase/functions/_shared/avatar-meshy-text-to-3d.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/item-model3d-glb.ts, supabase/functions/_shared/item-model3d-meshy.ts, supabase/functions/character-avatar-meshy/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md, .qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json.",
         "nachher": "character-avatar-meshy: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/character-avatar-meshy/.",
         "verhalten": "character-avatar-meshy: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "character-avatar-meshy: Authenticate via /auth/v1/user; jobs are read by owner_user_id. Optional characterId resolves only caller-owned character, otherwise null. Keys resolved from caller BYOK credential. Storage read/sign requires normalized caller userId/ prefix. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Owner start/poll/retry works without project membership; account X jobId returns404 and cannot sign owner storage path.",
           "Text8..500, nonce1..80,4MiB image and settings enums enforced; unsupported provider rejects400.",
@@ -8715,6 +8735,7 @@
         "MIG-020",
         "MIG-013",
         "MIG-014",
+        "MIG-402",
         "MIG-012"
       ],
       "sourceContracts": [
@@ -8728,6 +8749,7 @@
       "before": {
         "paths": [
           "src/infrastructure/character/character-lore-service.ts",
+          "supabase/functions/_shared/ai-provider-crypto.ts",
           "supabase/functions/_shared/character-lore-access.ts",
           "supabase/functions/_shared/character-lore-prompt.ts",
           "supabase/functions/_shared/character-lore-provider.ts",
@@ -8735,6 +8757,8 @@
           "supabase/functions/_shared/cors.ts",
           "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
           "supabase/functions/_shared/edge-jwt-gate.ts",
+          "supabase/functions/_shared/ollama-llm-resolve.ts",
+          "supabase/functions/_shared/ollama-url-policy.ts",
           "supabase/functions/character-lore/index.ts",
           "supabase/functions/main/index.ts"
         ],
@@ -8749,7 +8773,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "character-lore: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "character-lore: Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/character-lore/"
@@ -8818,10 +8842,10 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/character/character-lore-service.ts, supabase/functions/_shared/character-lore-access.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/character-lore-rate-limit.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/character-lore/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-character-lore.md, .qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/character/character-lore-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-access.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/character-lore-rate-limit.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/character-lore/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-character-lore.md, .qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json.",
         "nachher": "character-lore: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/character-lore/.",
         "verhalten": "character-lore: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "character-lore: Authenticate via /auth/v1/user. Optional projectId requires project GM or active project_members; optional worldId must match project.world_id when both supplied. World lore is allowed if public or creator_user_id equals project GM (project-linked) / caller (direct reference). This is not a blanket GM-only endpoint. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "An owner direct-world request and an active member request to their GM-owned project world generate; unrelated private-world and mismatched project/world requests fail before provider context inclusion.",
           "128001-byte body rejected; parser truncates/clamps each documented field and rejects ruleset/UUID enum violations.",
@@ -8833,6 +8857,7 @@
           "MIG-020",
           "MIG-013",
           "MIG-014",
+          "MIG-402",
           "MIG-012"
         ],
         "grenzen": "Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag."
@@ -8884,7 +8909,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "characters: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies characters with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "characters: Dispatcher denies characters with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -8945,7 +8970,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/characters/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-characters.md, .qa/intake/edge-infra-contracts/source-contracts/edge-characters.json.",
         "nachher": "characters: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "characters: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies characters with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "characters: Dispatcher denies characters with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "All characters methods stay dispatcher404, including cross-owner body and import payload.",
           "Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.",
@@ -9006,7 +9031,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "dm-tools: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies dm-tools with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "dm-tools: Dispatcher denies dm-tools with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -9066,7 +9091,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/dm-tools/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-dm-tools.md, .qa/intake/edge-infra-contracts/source-contracts/edge-dm-tools.json.",
         "nachher": "dm-tools: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "dm-tools: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies dm-tools with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "dm-tools: Dispatcher denies dm-tools with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "dm-tools all routes remain404 at dispatcher, including dice and health.",
           "Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.",
@@ -9128,7 +9153,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "export: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies export with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "export: Dispatcher denies export with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -9188,7 +9213,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/export/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-export.md, .qa/intake/edge-infra-contracts/source-contracts/edge-export.json.",
         "nachher": "export: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "export: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies export with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "export: Dispatcher denies export with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "export/import routes remain dispatcher404.",
           "Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.",
@@ -9264,7 +9289,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "item-model3d: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "item-model3d: Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/item-model3d/"
@@ -9338,7 +9363,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/inventory/item-model3d-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/ai-provider-resolve-meshy.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/item-model3d-glb.ts, supabase/functions/_shared/item-model3d-meshy.ts, supabase/functions/_shared/item-model3d-rate-limit.ts, supabase/functions/_shared/item-thumbnail-image.ts, supabase/functions/item-model3d/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-item-model3d.md, .qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json.",
         "nachher": "item-model3d: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/item-model3d/.",
         "verhalten": "item-model3d: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "item-model3d: Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Personal owner and world-profile owner can upload valid GLB<=50MiB; distinct GM/member/foreign user403, archived definition403; no unauthorized storage/provider call.",
           "generate consumes 2/60s per user; request3429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
@@ -9419,7 +9444,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "item-thumbnail: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "item-thumbnail: Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/item-thumbnail/"
@@ -9492,7 +9517,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/inventory/item-thumbnail-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/ai-provider-resolve-meshy.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/item-thumbnail-image.ts, supabase/functions/_shared/item-thumbnail-meshy.ts, supabase/functions/_shared/item-thumbnail-prompt.ts, supabase/functions/_shared/item-thumbnail-rate-limit.ts, supabase/functions/_shared/media-server-optimize-proof.ts, supabase/functions/_shared/media-server-raster-optimize.ts, supabase/functions/item-thumbnail/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-item-thumbnail.md, .qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json.",
         "nachher": "item-thumbnail: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/item-thumbnail/.",
         "verhalten": "item-thumbnail: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "item-thumbnail: Authenticate /auth/v1/user. Definition must be active: personal.owner_user_id===caller, or world_profiles.owner_user_id===caller for world scope. Project membership/GM role is insufficient. status/latest-job filter owner_user_id. resolve allows asset owner or referenced world-profile owner. remove clears pointer but only deletes physical asset owned by caller. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Personal owner and world-profile owner can upload valid PNG/JPEG/WebP<=10MiB; distinct GM/member/foreign user403, archived definition403; no unauthorized storage/provider call.",
           "generate consumes 4/60s per user; request5429, unavailable quota store500 and no paid provider create; config/upload/status/resolve/remove/latest do not charge generation quota.",
@@ -9557,7 +9582,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "items: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies items with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "items: Dispatcher denies items with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -9617,7 +9642,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/items/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-items.md, .qa/intake/edge-infra-contracts/source-contracts/edge-items.json.",
         "nachher": "items: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "items: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies items with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "items: Dispatcher denies items with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "items worker remains404 for list/create/generate.",
           "Isolated fixture pins Item defaults, rarity/type filters and generated range behavior; invalid nested data records current lack of validation.",
@@ -9685,7 +9710,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "look-reference-analysis: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "look-reference-analysis: Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/look-reference-analysis/"
@@ -9757,7 +9782,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/look/look-reference-analysis-service.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/look-reference-analysis-image.ts, supabase/functions/_shared/look-reference-analysis-provider.ts, supabase/functions/_shared/look-reference-analysis-rate-limit.ts, supabase/functions/look-reference-analysis/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-look-reference-analysis.md, .qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json.",
         "nachher": "look-reference-analysis: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/look-reference-analysis/.",
         "verhalten": "look-reference-analysis: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "look-reference-analysis: Authenticated user; storage references must normalize to caller userId/ prefix and contain neither '..' nor backslash. Arbitrary URI is metadata only: image bytes come from inline base64 or the configured storage bucket. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "1 and10 valid images accepted; 0/11 images, duplicate IDs, unsupported MIME, invalid weights and absent bytes/storage rejected400.",
           "Foreign-user path, traversal and backslash cannot cause storage fetch; inline bytes override storagePath when both present.",
@@ -9820,7 +9845,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "lorekeeper: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies lorekeeper with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "lorekeeper: Dispatcher denies lorekeeper with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -9880,7 +9905,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/lorekeeper/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-lorekeeper.md, .qa/intake/edge-infra-contracts/source-contracts/edge-lorekeeper.json.",
         "nachher": "lorekeeper: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "lorekeeper: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies lorekeeper with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "lorekeeper: Dispatcher denies lorekeeper with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Graph,context,NPC and consistency routes remain dispatcher404.",
           "Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.",
@@ -9941,7 +9966,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "marketplace: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies marketplace with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "marketplace: Dispatcher denies marketplace with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -10001,7 +10026,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/marketplace/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-marketplace.md, .qa/intake/edge-infra-contracts/source-contracts/edge-marketplace.json.",
         "nachher": "marketplace: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "marketplace: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies marketplace with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "marketplace: Dispatcher denies marketplace with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "marketplace worker stays404 including download/rate.",
           "Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.",
@@ -10063,7 +10088,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "media: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies media with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "media: Dispatcher denies media with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -10123,7 +10148,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/media/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-media.md, .qa/intake/edge-infra-contracts/source-contracts/edge-media.json.",
         "nachher": "media: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "media: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies media with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "media: Dispatcher denies media with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "media worker stays404.",
           "Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.",
@@ -10185,7 +10210,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "npcs: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies npcs with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "npcs: Dispatcher denies npcs with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -10245,7 +10270,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/npcs/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-npcs.md, .qa/intake/edge-infra-contracts/source-contracts/edge-npcs.json.",
         "nachher": "npcs: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "npcs: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies npcs with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "npcs: Dispatcher denies npcs with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "npcs worker all CRUD/social/export/generator paths remain404.",
           "Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.",
@@ -10306,7 +10331,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "quests: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies quests with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "quests: Dispatcher denies quests with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -10366,7 +10391,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/quests/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-quests.md, .qa/intake/edge-infra-contracts/source-contracts/edge-quests.json.",
         "nachher": "quests: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "quests: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies quests with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "quests: Dispatcher denies quests with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "quests worker all routes remain404.",
           "Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.",
@@ -10427,7 +10452,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "rulesets: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies rulesets with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "rulesets: Dispatcher denies rulesets with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -10487,7 +10512,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/rulesets/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-rulesets.md, .qa/intake/edge-infra-contracts/source-contracts/edge-rulesets.json.",
         "nachher": "rulesets: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "rulesets: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies rulesets with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "rulesets: Dispatcher denies rulesets with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "rulesets and supplemental routes stay dispatcher404.",
           "Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.",
@@ -10554,7 +10579,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "session-media-token: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "/auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "session-media-token: /auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/session-media-token/"
@@ -10626,7 +10651,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/media/media-token-client.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/session-media-token.ts, supabase/functions/main/index.ts, supabase/functions/session-media-token/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-media-token.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json.",
         "nachher": "session-media-token: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/session-media-token/.",
         "verhalten": "session-media-token: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "/auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "session-media-token: /auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Distinct active player/GM/viewer accounts receive only server-derived room/identity/grants; foreign account403 and caller-supplied role/capabilities/room ignored.",
           "Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.",
@@ -10666,6 +10691,7 @@
         "MIG-020",
         "MIG-013",
         "MIG-014",
+        "MIG-402",
         "RPC-SESSION-RECAP",
         "MIG-012"
       ],
@@ -10680,11 +10706,14 @@
       "before": {
         "paths": [
           "src/infrastructure/session/session-recap-ai-service.ts",
+          "supabase/functions/_shared/ai-provider-crypto.ts",
           "supabase/functions/_shared/character-lore-prompt.ts",
           "supabase/functions/_shared/character-lore-provider.ts",
           "supabase/functions/_shared/cors.ts",
           "supabase/functions/_shared/edge-dispatcher-allowlist.ts",
           "supabase/functions/_shared/edge-jwt-gate.ts",
+          "supabase/functions/_shared/ollama-llm-resolve.ts",
+          "supabase/functions/_shared/ollama-url-policy.ts",
           "supabase/functions/_shared/session-recap-prompt.ts",
           "supabase/functions/_shared/session-recap-provider.ts",
           "supabase/functions/_shared/session-recap-rate-limit.ts",
@@ -10702,7 +10731,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "session-recap: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-      "security": "Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "session-recap: Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/application/session-recap/"
@@ -10769,10 +10798,10 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/session-recap-ai-service.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/session-recap-prompt.ts, supabase/functions/_shared/session-recap-provider.ts, supabase/functions/_shared/session-recap-rate-limit.ts, supabase/functions/main/index.ts, supabase/functions/session-recap/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-recap.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/session-recap-ai-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/_shared/session-recap-prompt.ts, supabase/functions/_shared/session-recap-provider.ts, supabase/functions/_shared/session-recap-rate-limit.ts, supabase/functions/main/index.ts, supabase/functions/session-recap/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-recap.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json.",
         "nachher": "session-recap: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/session-recap/.",
         "verhalten": "session-recap: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.",
-        "sicherheit": "Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "session-recap: Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {\"kind\":\"allowlisted-worker\",\"dispatcherAllowed\":true,\"publicActivationAuthorized\":false,\"decision\":\"Current branch mount; a successor cutover still requires gates and contract tests.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Distinct owner O and project GM G: only G can generate a recap for an ended session; active member/player/foreign X denied.",
           "POST with client highlights/prompt/worldState/summaryText rejects400, and GM-only highlight sentinel never reaches provider.",
@@ -10784,6 +10813,7 @@
           "MIG-020",
           "MIG-013",
           "MIG-014",
+          "MIG-402",
           "RPC-SESSION-RECAP",
           "MIG-012"
         ],
@@ -10844,7 +10874,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "main: Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreichbar machen.",
-      "security": "Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {\"kind\":\"dispatcher\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve exact dispatch boundary until host cutover.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "main: Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {\"kind\":\"dispatcher\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve exact dispatch boundary until host cutover.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [
           "server/src/http/route-registry.ts"
@@ -10916,7 +10946,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-main.md, .qa/intake/edge-infra-contracts/source-contracts/edge-main.json.",
         "nachher": "main: Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreichbar machen. Zielpfade: server/src/http/route-registry.ts.",
         "verhalten": "main: Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreichbar machen.",
-        "sicherheit": "Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {\"kind\":\"dispatcher\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve exact dispatch boundary until host cutover.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "main: Resolve /functions/v1/<name>/suffix or /<name>/suffix; no name400. Deny every name outside the explicit eight-worker allowlist and reserved main/_shared, including traversal, with404 BEFORE JWT and worker creation. Allowed non-OPTIONS verifies HS256 with JWT_SECRET unless VERIFY_JWT=false|0|no; allowed worker authenticates end-user separately. Dispatcher-Status: {\"kind\":\"dispatcher\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve exact dispatch boundary until host cutover.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "Every one of15 unmounted workers, main, _shared,unknown and traversal returns404 before JWT/worker creation for GET/POST/OPTIONS.",
           "Both supported URL prefixes reach same allowlisted worker with intact suffix/query/method/body.",
@@ -10986,7 +11016,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "sessions: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies sessions with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "sessions: Dispatcher denies sessions with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -11046,7 +11076,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/sessions/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-sessions.md, .qa/intake/edge-infra-contracts/source-contracts/edge-sessions.json.",
         "nachher": "sessions: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "sessions: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies sessions with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "sessions: Dispatcher denies sessions with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "All sessions methods,including world-state and import, remain dispatcher404.",
           "Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.",
@@ -11107,7 +11137,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "spellbook: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "spellbook: Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -11167,7 +11197,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/spellbook/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-spellbook.md, .qa/intake/edge-infra-contracts/source-contracts/edge-spellbook.json.",
         "nachher": "spellbook: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "spellbook: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "spellbook: Dispatcher denies spellbook404 before JWT/worker creation. Isolated historical worker has no identity, owner or role authorization; characterId in path is trusted. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "All spellbook routes remain dispatcher404.",
           "Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.",
@@ -11228,7 +11258,7 @@
         "architecture": "Concrete libraries remain subject to GATE decisions."
       },
       "behavior": "world: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-      "security": "Dispatcher denies world with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+      "security": "world: Dispatcher denies world with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
       "scope": {
         "mayChange": [],
         "mustNotChange": [
@@ -11288,7 +11318,7 @@
         "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/main/index.ts, supabase/functions/world/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-world.md, .qa/intake/edge-infra-contracts/source-contracts/edge-world.json.",
         "nachher": "world: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .",
         "verhalten": "world: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.",
-        "sicherheit": "Dispatcher denies world with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
+        "sicherheit": "world: Dispatcher denies world with404 before JWT check/worker creation. Historical worker itself has no end-user authentication or owner/GM/member authorization. Do not expose it or invent RLS for its local Maps. Dispatcher-Status: {\"kind\":\"legacy-unmounted\",\"dispatcherAllowed\":false,\"publicActivationAuthorized\":false,\"decision\":\"Preserve external 404; no automatic host route or public activation.\"}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.",
         "tests": [
           "world routes remain dispatcher404,including settings and clock writes.",
           "Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.",
@@ -11338,7 +11368,9 @@
         "paths": [
           "src/domains/ai-providers/contracts.ts",
           "src/domains/ai-providers/index.ts",
+          "src/domains/ai-providers/ollama-settings.ts",
           "src/infrastructure/ai/ai-provider-credentials-service.ts",
+          "src/infrastructure/ai/ollama-settings-service.ts",
           "src/lib/supabase.ts"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
@@ -11365,6 +11397,7 @@
       },
       "acceptance": [
         "List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.",
+        "Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.",
         "Foreign account cannot list or mutate owner credentials; missing session fails before invoke.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
@@ -11373,6 +11406,15 @@
           "given": "Der eingefrorene Quellvertrag für ai und isolierte positive/negative Fixtures",
           "when": "Der Nachfolger den dokumentierten Fall für ai ausführt",
           "then": "List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-ai.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Quellvertrag für ai und isolierte positive/negative Fixtures",
+          "when": "Der Nachfolger den dokumentierten Fall für ai ausführt",
+          "then": "Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.",
           "sourceRefs": [
             ".qa/intake/edge-infra-contracts/infra-ai.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json"
@@ -11395,12 +11437,13 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/domains/ai-providers/ollama-settings.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/infrastructure/ai/ollama-settings-service.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.",
         "nachher": "src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .",
         "verhalten": "src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.",
         "sicherheit": "Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.",
         "tests": [
           "List/add/refresh/delete preserve typed public credential view and expose provider errors without key leakage.",
+          "Ollama Organize get/upsert/test/listModels preserve typed settings view without apiKey leakage; foreign account cannot mutate owner prefs.",
           "Foreign account cannot list or mutate owner credentials; missing session fails before invoke.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
@@ -13823,8 +13866,8 @@
         "MIG-351",
         "MIG-352",
         "MIG-350",
-        "MIG-401",
         "MIG-402",
+        "MIG-401",
         "MIG-403",
         "MIG-404",
         "MIG-405",
@@ -13978,8 +14021,8 @@
           "MIG-351",
           "MIG-352",
           "MIG-350",
-          "MIG-401",
           "MIG-402",
+          "MIG-401",
           "MIG-403",
           "MIG-404",
           "MIG-405",
@@ -14186,8 +14229,8 @@
         "MIG-351",
         "MIG-352",
         "MIG-350",
-        "MIG-401",
         "MIG-402",
+        "MIG-401",
         "MIG-403",
         "MIG-404",
         "MIG-405",
@@ -14344,8 +14387,8 @@
           "MIG-351",
           "MIG-352",
           "MIG-350",
-          "MIG-401",
           "MIG-402",
+          "MIG-401",
           "MIG-403",
           "MIG-404",
           "MIG-405",
@@ -14688,8 +14731,8 @@
         "MIG-351",
         "MIG-352",
         "MIG-350",
-        "MIG-401",
         "MIG-402",
+        "MIG-401",
         "MIG-403",
         "MIG-404",
         "MIG-405",
@@ -14863,8 +14906,8 @@
           "MIG-351",
           "MIG-352",
           "MIG-350",
-          "MIG-401",
           "MIG-402",
+          "MIG-401",
           "MIG-403",
           "MIG-404",
           "MIG-405",

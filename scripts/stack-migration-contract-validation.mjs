@@ -156,7 +156,8 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   const rpcRows = rpcInventory?.rpcs;
   const edgeRows = edgeInventory?.edges;
   const infraRows = edgeInventory?.infrastructure;
-  for (const [kind, rows, count, name] of [['RPC', rpcRows, 57, 'rpc'], ['Edge', edgeRows, 24, 'function'], ['Infrastructure', infraRows, 13, 'area']]) {
+  // Edge count tracks live supabase/functions/* (includes #879 ollama-settings → 25).
+  for (const [kind, rows, count, name] of [['RPC', rpcRows, 57, 'rpc'], ['Edge', edgeRows, 25, 'function'], ['Infrastructure', infraRows, 13, 'area']]) {
     if (!Array.isArray(rows) || rows.length !== count || new Set((rows ?? []).map((row) => row[name])).size !== count) { error(`${kind}: inventory coverage must be exactly ${count} distinct entries`); continue; }
     for (const row of rows) {
       if (!text(row[name]) || !strings(row.requiredTests)) error(`${kind} ${row[name]}: missing operation-specific tests`);
@@ -180,13 +181,29 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   if (Array.isArray(edgeRows) && Array.isArray(infraRows)) {
     try {
       const resolveDependencies = dependencyResolver({ issues, rpcGroups: issues.filter((issue) => issue.localId.startsWith('RPC-')), edgeInventory });
+      // Co-owned Edge rows (e.g. MIG-402 + ollama-settings after #879) must be covered by the union on the issue.
+      const edgeRowsByIssue = new Map();
+      for (const row of edgeRows) {
+        const list = edgeRowsByIssue.get(row.implementationIssue) ?? [];
+        list.push(row);
+        edgeRowsByIssue.set(row.implementationIssue, list);
+      }
       for (const row of [...edgeRows, ...infraRows]) {
         const owner = issues.find((issue) => issue.githubIssue === row.implementationIssue);
         if (!owner) { error(`Unmapped Edge/Infrastructure implementation issue #${row.implementationIssue}`); continue; }
-        const declared = resolveDependencies(row, owner.localId);
-        for (const dep of declared.dependsOn) if (!array(owner.dependsOn).includes(dep)) error(`${owner.localId}: missing inventoried prerequisite ${dep}`);
-        if (!setEqual(array(owner.integrationWith), declared.integrationWith)) error(`${owner.localId}: integration peer inventory drift`);
-        if (!setEqual(array(owner.ownedPrerequisites), declared.ownedPrerequisites)) error(`${owner.localId}: owned internal prerequisite inventory drift`);
+        const siblings = edgeRowsByIssue.get(row.implementationIssue) ?? [row];
+        const unionPeers = new Set();
+        const unionOwned = new Set();
+        const unionHard = new Set();
+        for (const sibling of (row.function ? siblings : [row])) {
+          const declared = resolveDependencies(sibling, owner.localId);
+          for (const dep of declared.dependsOn) unionHard.add(dep);
+          for (const peer of declared.integrationWith) unionPeers.add(peer);
+          for (const owned of declared.ownedPrerequisites) unionOwned.add(owned);
+        }
+        for (const dep of unionHard) if (!array(owner.dependsOn).includes(dep)) error(`${owner.localId}: missing inventoried prerequisite ${dep}`);
+        if (!setEqual(array(owner.integrationWith), [...unionPeers])) error(`${owner.localId}: integration peer inventory drift`);
+        if (!setEqual(array(owner.ownedPrerequisites), [...unionOwned])) error(`${owner.localId}: owned internal prerequisite inventory drift`);
       }
     } catch (cause) { error(`Dependency resolution failed: ${cause.message}`); }
   }

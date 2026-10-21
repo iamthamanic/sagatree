@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 
 const id = (suffix) => `a7700000-0000-4000-8000-${String(suffix).padStart(12, '0')}`;
 export const fixture = {
@@ -136,4 +136,91 @@ export async function seedFixtures(client) {
     await client.query('COMMIT');
   } catch (error) { await client.query('ROLLBACK'); throw error; }
   return { ...fixture, password };
+}
+
+/**
+ * Deterministic semantic fingerprint of the synthetic fixture graph.
+ * Omits auth password hashes and volatile timestamps so two fresh seeds match.
+ */
+export async function computeSemanticChecksum(client) {
+  const { rows } = await client.query(`
+    SELECT jsonb_build_object(
+      'actors', (SELECT jsonb_agg(jsonb_build_object('id', id, 'email', email) ORDER BY id)
+                 FROM auth.users WHERE id = ANY($1::uuid[])),
+      'memberships', (SELECT jsonb_agg(jsonb_build_object(
+                        'project_id', m.project_id, 'user_id', m.user_id, 'role', m.role, 'status', m.status,
+                        'bundle_id', b.bundle_id) ORDER BY m.project_id, m.user_id)
+                      FROM public.project_members m
+                      LEFT JOIN public.project_member_saga_bundles b ON b.member_id = m.id
+                      WHERE m.project_id = ANY($2::uuid[])),
+      'worlds', (SELECT jsonb_agg(jsonb_build_object(
+                   'id', id, 'public_id', public_id, 'owner_user_id', owner_user_id, 'name', name)
+                   ORDER BY id)
+                 FROM public.world_profiles WHERE id = ANY($3::uuid[])),
+      'projects', (SELECT jsonb_agg(jsonb_build_object(
+                     'id', id, 'public_id', public_id, 'gm_user_id', gm_user_id,
+                     'world_profile_id', world_profile_id, 'code', code, 'name', name) ORDER BY id)
+                   FROM public.projects WHERE id = ANY($2::uuid[])),
+      'sessions', (SELECT jsonb_agg(jsonb_build_object(
+                     'id', id, 'public_id', public_id, 'project_id', project_id,
+                     'session_number', session_number, 'name', name, 'status', status, 'code', code,
+                     'world_state', world_state) ORDER BY id)
+                   FROM public.sessions WHERE id = ANY($4::uuid[])),
+      'session_players', (SELECT jsonb_agg(jsonb_build_object(
+                            'session_id', session_id, 'user_id', user_id, 'character_id', character_id)
+                            ORDER BY session_id, user_id)
+                          FROM public.session_players WHERE session_id = ANY($4::uuid[])),
+      'characters', (SELECT jsonb_agg(jsonb_build_object(
+                       'id', id, 'public_id', public_id, 'owner_user_id', owner_user_id,
+                       'project_id', project_id, 'name', name, 'inventory_v2', inventory_v2,
+                       'inventory_schema_version', inventory_schema_version) ORDER BY id)
+                     FROM public.characters WHERE id = ANY($5::uuid[])),
+      'maps', (SELECT jsonb_agg(jsonb_build_object(
+                 'id', id, 'world_profile_id', world_profile_id, 'parent_map_id', parent_map_id,
+                 'title', title, 'layers', layers, 'generator_meta', generator_meta) ORDER BY id)
+               FROM public.world_atlas_maps WHERE id = ANY($6::uuid[])),
+      'places', (SELECT jsonb_agg(jsonb_build_object(
+                   'id', id, 'world_profile_id', world_profile_id, 'kind', kind, 'name', name, 'status', status)
+                   ORDER BY id)
+                 FROM public.world_places WHERE id = ANY($7::uuid[])),
+      'place_map_links', (SELECT jsonb_agg(jsonb_build_object(
+                            'world_profile_id', world_profile_id, 'place_id', place_id,
+                            'map_id', map_id, 'usage', usage) ORDER BY place_id, map_id)
+                          FROM public.world_place_map_links
+                          WHERE world_profile_id = ANY($3::uuid[])),
+      'bindings', (SELECT jsonb_agg(jsonb_build_object(
+                     'id', id, 'project_id', project_id, 'asset_kind', asset_kind, 'asset_id', asset_id,
+                     'world_place_id', world_place_id, 'reveal', reveal, 'label', label) ORDER BY id)
+                   FROM public.saga_asset_bindings WHERE id = ANY($8::uuid[])),
+      'fixed_ids', $9::jsonb
+    ) AS payload
+  `, [
+    Object.values(fixture.actors),
+    [fixture.project, fixture.foreignProject, fixture.otherSagaProject],
+    [fixture.world, fixture.foreignWorld, fixture.ownerOnlyWorld],
+    [fixture.session, fixture.secondSession, fixture.foreignSession],
+    [fixture.player1Character, fixture.player2Character],
+    [fixture.rootMap, fixture.secretMap, fixture.foreignMap],
+    [fixture.place, fixture.secretPlace],
+    [
+      fixture.locationBinding, fixture.secretBinding, fixture.publicNpcBinding,
+      fixture.secretNpcBinding, fixture.otherSagaBinding,
+    ],
+    JSON.stringify({
+      worldPublicId: fixture.worldPublicId,
+      sagaPublicId: fixture.sagaPublicId,
+      foreignSagaPublicId: fixture.foreignSagaPublicId,
+      otherSagaPublicId: fixture.otherSagaPublicId,
+      secretTitle: fixture.secretTitle,
+      publicTitle: fixture.publicTitle,
+      actors: fixture.actors,
+    }),
+  ]);
+  const payload = rows[0]?.payload ?? {};
+  const canonical = JSON.stringify(payload);
+  return {
+    algorithm: 'sha256',
+    sha256: createHash('sha256').update(canonical).digest('hex'),
+    payloadByteLength: Buffer.byteLength(canonical),
+  };
 }

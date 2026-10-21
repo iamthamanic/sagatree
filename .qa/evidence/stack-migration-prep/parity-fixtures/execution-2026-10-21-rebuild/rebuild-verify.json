@@ -1,0 +1,1932 @@
+{
+  "startedAt": "2026-10-21T11:13:44.640Z",
+  "mode": "dual-fixture-rebuild",
+  "securityParityApproved": false,
+  "acceptance": "MIG-001 Fall 2 — two independent seeds produce identical semantic checksums",
+  "status": "passed",
+  "rebuilds": [
+    {
+      "label": "rebuild-1",
+      "startedAt": "2026-10-21T11:13:44.641Z",
+      "status": "passed",
+      "securityParityApproved": false,
+      "source": {
+        "repositoryHead": "c1e6dd0843898d9e2d8251815a0fa19cc12e8d12",
+        "node": "v22.22.3",
+        "platform": "darwin-arm64",
+        "harnessSources": [
+          {
+            "path": "scripts/stack-migration-db/atlas-product.spec.ts",
+            "sha256": "dcc51c51a2febaf79c39735471fa300f893957e35893a1a9fae9ed4edae1637a"
+          },
+          {
+            "path": "scripts/stack-migration-db/bootstrap.mjs",
+            "sha256": "a95a2f6f8afbf58194f267fdbbe2dd90e9d4d7b30ca139e2963a30c14f0bead7"
+          },
+          {
+            "path": "scripts/stack-migration-db/canary.mjs",
+            "sha256": "3cae349311941f07ff4fb166868e3ec5715ea077b7f6dd7e3a2a08b0d3f4a04c"
+          },
+          {
+            "path": "scripts/stack-migration-db/cluster.mjs",
+            "sha256": "14ddbe194b0fce90c0285201986637ed9c52de4828483b06c65ec4e96ee2c25c"
+          },
+          {
+            "path": "scripts/stack-migration-db/evidence.mjs",
+            "sha256": "3c7870427458a5bb5d6351e84f559a0c925f5849362d94155d4429537e517758"
+          },
+          {
+            "path": "scripts/stack-migration-db/fixtures.mjs",
+            "sha256": "bfe960a7e36613cf95efbcb291c96edb01397e513f557df7b09884b664378970"
+          },
+          {
+            "path": "scripts/stack-migration-db/package-lock.json",
+            "sha256": "02c13222021b5aef4958610ce210a1dff3e1f59cfc6938a7127d4d05c51d9004"
+          },
+          {
+            "path": "scripts/stack-migration-db/package.json",
+            "sha256": "a88563347c1638583102c0ea025ea881917423d4884bf181b62b1e1c9e61c184"
+          },
+          {
+            "path": "scripts/stack-migration-db/probes.mjs",
+            "sha256": "e4ca427f071097be227190a644a3efa10a61c457bf54de1708b462618e70c3b6"
+          },
+          {
+            "path": "scripts/stack-migration-db/product-playwright.config.ts",
+            "sha256": "0ee7b18f5b853b3b6482f86a7dd0efbc58976edfbdb557dc3a25947c0590bffc"
+          },
+          {
+            "path": "scripts/stack-migration-db/product-run.mjs",
+            "sha256": "039352fb0f5f29ec8e6a8ced3ea95f871a5fff4ac7c75664d378f366dc81db91"
+          },
+          {
+            "path": "scripts/stack-migration-db/provision-browser.py",
+            "sha256": "83fb6f826df3b9b949b1ef8b88dc206fa673bc028bc7e9055eed784deb40753e"
+          },
+          {
+            "path": "scripts/stack-migration-db/provision-tools.py",
+            "sha256": "e1e824b0b866a93696b0ad7739847a1e6530e1032f1cbc4a2161ba19cb5ef196"
+          },
+          {
+            "path": "scripts/stack-migration-db/rebuild-verify.mjs",
+            "sha256": "7b3cc48536206e44f68478195229611edff396d9defdeedcb4e305c72284b3e6"
+          },
+          {
+            "path": "scripts/stack-migration-db/run.mjs",
+            "sha256": "33916837c7585d7f45ec77c364b34c25f0125167c04488b370cf0253fa7a2d4f"
+          },
+          {
+            "path": "scripts/stack-migration-db/services.mjs",
+            "sha256": "7bd2045bc1ae732609a1107fa636a2b475f73b84279f9b7a7f7156baf1cfe5e8"
+          }
+        ],
+        "scope": "Repository HEAD identifies the checkout; hashes identify the executed working-tree harness and each SQL source separately."
+      },
+      "postgres": "PostgreSQL 15.18 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+      "platformSources": [
+        {
+          "bundle": "supabase-bootstrap",
+          "repository": "https://github.com/supabase/postgres",
+          "ref": "15.1.0.147",
+          "commit": "a3938dc906010ce197c240d0052b3eda9ecac339",
+          "applied": [
+            {
+              "path": "migrations/db/init-scripts/00000000000000-initial-schema.sql",
+              "sha256": "2c7c4f4235d431e042e388efe599e9f4db259fcf2bfb07cbd31b3f5273a69401"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000001-auth-schema.sql",
+              "sha256": "65a4a55ba3248716eb4946a8677be41c94bc90eafaa22c0eb95b09908f96fa4f"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000002-storage-schema.sql",
+              "sha256": "587ac737db8102bfedcf7da342f0cab1e073297fc5ccbc6c6ca103f30c56e2b6"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000003-post-setup.sql",
+              "sha256": "bfec6b91b703bf2227d8d30d00516145730040e198e601c83dce780e833d091a"
+            }
+          ]
+        },
+        {
+          "bundle": "gotrue-migrations",
+          "repository": "https://github.com/supabase/auth",
+          "ref": "v2.143.0",
+          "commit": "269895f3257b5d95fda992f48ab6569d87f01a82",
+          "applied": [
+            {
+              "path": "migrations/00_init_auth_schema.up.sql",
+              "sha256": "4c3ab2565f2836d8fa0a54fd9d153facaee0c4c6258fa0a794c93446ddc10f71"
+            },
+            {
+              "path": "migrations/20210710035447_alter_users.up.sql",
+              "sha256": "b87f889d4839b7e092f186ad244f3f5294ab5c0f50ef2feb40cab1307be8c9cd"
+            },
+            {
+              "path": "migrations/20210722035447_adds_confirmed_at.up.sql",
+              "sha256": "32499502e5d57594d2373e6f00d7b436a9b275c85b889680913f00d6ebc3ae73"
+            },
+            {
+              "path": "migrations/20210730183235_add_email_change_confirmed.up.sql",
+              "sha256": "88da41a1dbae8077a26a4811c4d80b925162e5423c803467d3bff78407b4d995"
+            },
+            {
+              "path": "migrations/20210909172000_create_identities_table.up.sql",
+              "sha256": "4c2d6a94d34d34f98f1fa83537a0068f4813e49a19cfc2fd4e9199e5a941cc84"
+            },
+            {
+              "path": "migrations/20210927181326_add_refresh_token_parent.up.sql",
+              "sha256": "73fb1d320fb85e231e322d0da6184adcda838c755a2b3f1e0894c249a59ba4e3"
+            },
+            {
+              "path": "migrations/20211122151130_create_user_id_idx.up.sql",
+              "sha256": "0fbc4d8b62329aa444ea5820eef86e32a57a709964a2c65bc0463083b7130b02"
+            },
+            {
+              "path": "migrations/20211124214934_update_auth_functions.up.sql",
+              "sha256": "abf8d29849e04db2b6a84ea9c8c58daafdabdd3e3520051efb9ec362f4679992"
+            },
+            {
+              "path": "migrations/20211202183645_update_auth_uid.up.sql",
+              "sha256": "a70a3afa97c67fbb31aacbea496da0d01b9a809dc4b861f3187cb7e3ba5fda2d"
+            },
+            {
+              "path": "migrations/20220114185221_update_user_idx.up.sql",
+              "sha256": "89eb7cb7f44efcbf48ed854faca0347dea80cebff1693a8dc532d581729de0cd"
+            },
+            {
+              "path": "migrations/20220114185340_add_banned_until.up.sql",
+              "sha256": "8aea70090fdeeafc4bbf206a799551e3f7bce0e6749d8c7cc8033e983e750e38"
+            },
+            {
+              "path": "migrations/20220224000811_update_auth_functions.up.sql",
+              "sha256": "5b72022d73e64a8e474d2122ac42f299bb7ce4d59755cdcc78e72abfe5d47dc0"
+            },
+            {
+              "path": "migrations/20220323170000_add_user_reauthentication.up.sql",
+              "sha256": "5fb66f473dd37e7141c5165254a6706cae3d2cab3632b92fb0f8f7cb58f7655d"
+            },
+            {
+              "path": "migrations/20220429102000_add_unique_idx.up.sql",
+              "sha256": "4f9ce72459f72a601c4901eed0d4f5b9e9731c31f8d643736a118739c29538ee"
+            },
+            {
+              "path": "migrations/20220531120530_add_auth_jwt_function.up.sql",
+              "sha256": "91d2d5e47f19e65a63ec411f6cbb18755ec1792cb4249694dc261ef59cc78a10"
+            },
+            {
+              "path": "migrations/20220614074223_add_ip_address_to_audit_log.postgres.up.sql",
+              "sha256": "0e2cbe2fc509b97f27803c04e723215c3944a7f84c043dd8f7cd7118c199a5dc"
+            },
+            {
+              "path": "migrations/20220811173540_add_sessions_table.up.sql",
+              "sha256": "840c19639d972143bc3fc05a16e77da45c076edcba229c94b019a2db1f0eb192"
+            },
+            {
+              "path": "migrations/20221003041349_add_mfa_schema.up.sql",
+              "sha256": "058ab23f8e55fd3ebd353f5367b9308ce88a95d0fe604b754337941095c5f3ce"
+            },
+            {
+              "path": "migrations/20221003041400_add_aal_and_factor_id_to_sessions.up.sql",
+              "sha256": "cea7d73fd31f39a0134ee4aaa16e5ff4af953cbc3f5e3321af38776bcda4943f"
+            },
+            {
+              "path": "migrations/20221011041400_add_mfa_indexes.up.sql",
+              "sha256": "32ab5cd482674c98fd5926e7c0995fc216d2cc2b1ff77554b6c45b4bd758dd6f"
+            },
+            {
+              "path": "migrations/20221020193600_add_sessions_user_id_index.up.sql",
+              "sha256": "7b33e11e8092ea07d2f4e899558b46e0a5573f0c43a56532f1f640c2c7eb7802"
+            },
+            {
+              "path": "migrations/20221021073300_add_refresh_tokens_session_id_revoked_index.up.sql",
+              "sha256": "63887b7bd3045561c4930575d4fa324fc9090630193989a9736dd84328d1ec55"
+            },
+            {
+              "path": "migrations/20221021082433_add_saml.up.sql",
+              "sha256": "af0bbfdb64dd32f512712f45b44e0dce4e9af8ce7874e01c3a804f95eeb3a387"
+            },
+            {
+              "path": "migrations/20221027105023_add_identities_user_id_idx.up.sql",
+              "sha256": "1e7c07b825b2ee8bdfe8fee06588525b97f3771efc6c365c7057c0f7abfbd30a"
+            },
+            {
+              "path": "migrations/20221114143122_add_session_not_after_column.up.sql",
+              "sha256": "7bf30a94308028f0c8140166e9a6f3d77356daa1147e5740a27cc983e39b854c"
+            },
+            {
+              "path": "migrations/20221114143410_remove_parent_foreign_key_refresh_tokens.up.sql",
+              "sha256": "5e804d7c82e0e6dca6f72e2350951e87714f6890fe63c2388dcbfa9aea687f2f"
+            },
+            {
+              "path": "migrations/20221125140132_backfill_email_identity.up.sql",
+              "sha256": "60cfea2750a2c79c0d69bb3a08edee0efb830c12212cac0ffdb5d44937c2839d"
+            },
+            {
+              "path": "migrations/20221208132122_backfill_email_last_sign_in_at.up.sql",
+              "sha256": "462f871362dcffdd87d70bf79941f779e7137afce4039cf7b8bfe60d74e14e34"
+            },
+            {
+              "path": "migrations/20221215195500_modify_users_email_unique_index.up.sql",
+              "sha256": "0a2cdcd4101a418ec7b482800327fc90238b498db01a657dbbeefdba8b8f3866"
+            },
+            {
+              "path": "migrations/20221215195800_add_identities_email_column.up.sql",
+              "sha256": "3ddff50750549b790eecbeac2194966ca98354564f4fba537cda70d96b575d39"
+            },
+            {
+              "path": "migrations/20221215195900_remove_sso_sessions.up.sql",
+              "sha256": "f79ad2aaaa4f748836595a9ef10b3df0234e53032c339f0c74e3181271af1801"
+            },
+            {
+              "path": "migrations/20230116124310_alter_phone_type.up.sql",
+              "sha256": "7d6fd7f428bd6633ab622ff1d933feb9bbe0904224eced052aae82fac2ef36a5"
+            },
+            {
+              "path": "migrations/20230116124412_add_deleted_at.up.sql",
+              "sha256": "144a735e50373686e04d0cd3d46b997262162dda14965870342f65cd0b5a7845"
+            },
+            {
+              "path": "migrations/20230131181311_backfill_invite_identities.up.sql",
+              "sha256": "f88443609f6d15d3d1bff00e69a6c7a455fa331cb30747c8448d5e219729a2df"
+            },
+            {
+              "path": "migrations/20230322519590_add_flow_state_table.up.sql",
+              "sha256": "55445d9e1f10d46e6edaf4718fca5be01d031e038a4a141c2eedb591f5936af7"
+            },
+            {
+              "path": "migrations/20230402418590_add_authentication_method_to_flow_state_table.up.sql",
+              "sha256": "8f10e836a25f85ccdac620c36f871effc84e7d6020bd38fd002ddd119847fd84"
+            },
+            {
+              "path": "migrations/20230411005111_remove_duplicate_idx.up.sql",
+              "sha256": "cc1b7b8a172693abafa64d0273240fa8181fdf5dde565e15b94adb38ec40c2e9"
+            },
+            {
+              "path": "migrations/20230508135423_add_cleanup_indexes.up.sql",
+              "sha256": "89d4747491836d2bc33cc340029624d88ed9cf7e32574c3a9fbbe2431a27b5c8"
+            },
+            {
+              "path": "migrations/20230523124323_add_mfa_challenge_cleanup_index.up.sql",
+              "sha256": "af534c2184d12d00bef8fbd8b593f5a4c8b3297854bd205fb4e3bcdba9d6ca56"
+            },
+            {
+              "path": "migrations/20230818113222_add_flow_state_to_relay_state.up.sql",
+              "sha256": "cc6587385b84deba61c31e0749eb8064f9cdf5aa6db5239713fa31966de4f2dd"
+            },
+            {
+              "path": "migrations/20230914180801_add_mfa_factors_user_id_idx.up.sql",
+              "sha256": "844c575a40f9609987638bb29716deaaad3b9c1c1e8c399204d870018f867684"
+            },
+            {
+              "path": "migrations/20231027141322_add_session_refresh_columns.up.sql",
+              "sha256": "d4aa51107599c755003464121d4c0d99e617543bfee9a816fd76df0b399aafe0"
+            },
+            {
+              "path": "migrations/20231114161723_add_sessions_tag.up.sql",
+              "sha256": "e32711d98cd7c3f5920ca2a79df9c597433dac1b7e8b56df7b0becb96319d147"
+            },
+            {
+              "path": "migrations/20231117164230_add_id_pkey_identities.up.sql",
+              "sha256": "8822b2807b672d38b212618193efdb6fc2cf787e564a495940c1a8844155d7b0"
+            },
+            {
+              "path": "migrations/20240115144230_remove_ip_address_from_saml_relay_state.sql",
+              "sha256": "9e104ca8b63695f6427ff057b5b7801ef7e4cc3baf32d4289e61b0015128d651"
+            }
+          ]
+        },
+        {
+          "bundle": "storage-migrations",
+          "repository": "https://github.com/supabase/storage",
+          "ref": "v0.40.4",
+          "commit": "7ae3410509f168cd15de5a31e9526a95750011e8",
+          "applied": [
+            {
+              "path": "migrations/tenant/0001-initialmigration.sql",
+              "sha256": "822ae07d4783158bc1912bb623e5107cc9002d519e1143a9c200ed6ee18b6d0f"
+            },
+            {
+              "path": "migrations/tenant/0002-pathtoken-column.sql",
+              "sha256": "e548ff09ba423e065d28c09aa405398dbdd76521f72680302d090fa393c00907"
+            },
+            {
+              "path": "migrations/tenant/0003-add-migrations-rls.sql",
+              "sha256": "05b32aad858e4644202e6ac43413cfee30e61d7e9ad51c42b082cfb21235c7bd"
+            },
+            {
+              "path": "migrations/tenant/0004-add-size-functions.sql",
+              "sha256": "38179ee1f8acbab3a5045caf3b7fde793f7204dee348188482c92de8b0d7fbb7"
+            },
+            {
+              "path": "migrations/tenant/0005-change-column-name-in-get-size.sql",
+              "sha256": "228d7ec4e3d2fa51e49e951a2c1e991d8f5f633233c81617aaf9dabf55f12756"
+            },
+            {
+              "path": "migrations/tenant/0006-add-rls-to-buckets.sql",
+              "sha256": "c87aa8ea3c6509171728880538cc26e7233896a8f927af3bc5b351a1706610e3"
+            },
+            {
+              "path": "migrations/tenant/0007-add-public-to-buckets.sql",
+              "sha256": "6e19c6c3ef041698f54a139e4054704e02ecd2a12a7c6a532a0d8a937c2a30da"
+            },
+            {
+              "path": "migrations/tenant/0008-fix-search-function.sql",
+              "sha256": "841c3ee6ed4885bc59f55db8d6eec293c6188a670d049737552c03a0ba714dc9"
+            },
+            {
+              "path": "migrations/tenant/0009-search-files-search-function.sql",
+              "sha256": "e67cbc799bbdbcebd33a60e90e684ac43032db032b9bb34f25438577b259b0ac"
+            },
+            {
+              "path": "migrations/tenant/0010-add-trigger-to-auto-update-updated_at-column.sql",
+              "sha256": "fe5e88b5801fd2b62999331bdcc38faac97cece1197ddd517b46c95f3c006318"
+            },
+            {
+              "path": "migrations/tenant/0011-add-automatic-avif-detection-flag.sql",
+              "sha256": "e92fc9d89ccd4b6bea1e5147dd30a9f41d802c2b69746d1c4772fd47297b0dc2"
+            },
+            {
+              "path": "migrations/tenant/0012-add-bucket-custom-limits.sql",
+              "sha256": "c84e2dfd60a3a08fadf46a5681c3092d375bd22e6d3772a1a04ba26a2b25a790"
+            },
+            {
+              "path": "migrations/tenant/0013-use-bytes-for-max-size.sql",
+              "sha256": "252a2b54842b121b28deb3e3a1999eba247fe46416017a71b0670cf5cedf9e06"
+            },
+            {
+              "path": "migrations/tenant/0014-add-can-insert-object-function.sql",
+              "sha256": "572c4c802fce193ed5d63eba166922b5469d863d1eae460dd06cdcb1594bab9a"
+            },
+            {
+              "path": "migrations/tenant/0015-add-version.sql",
+              "sha256": "a4c7a068bb3212a015879859f3c7b8e1ed92998a671fbf3a9bdfd827cf5e0e67"
+            },
+            {
+              "path": "migrations/tenant/0016-drop-owner-foreign-key.sql",
+              "sha256": "00edfd4aefba445959c977fd1a510bd7900dcf9679bbc24615d43ad9768dd0da"
+            }
+          ]
+        }
+      ],
+      "migrationOrder": "All supabase/migrations/*.sql in lexicographic filename order",
+      "migrationsMissingFromApplyScript": [
+        "080_item_thumbnail_webp.sql",
+        "082_dornhain_pregen_full_sheets.sql",
+        "108_atlas_worldbuilder_migration_apply.sql"
+      ],
+      "migrations": [
+        {
+          "path": "supabase/migrations/001_initial.sql",
+          "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/002_character_trait_arrays.sql",
+          "sha256": "74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/003_character_lore_rate_limits.sql",
+          "sha256": "2dd19137edfcfd0987a340b7ade98288eee990bca21252dfcda7900eb5f7a77a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/004_project_membership_security.sql",
+          "sha256": "c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/005_character_ruleset_metadata.sql",
+          "sha256": "02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/006_character_portrait_storage.sql",
+          "sha256": "da223b2583b2b985b8773337458307f4c6d6d2dfa36067c127e086cb2f690a41",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/007_sagadrive_character_profile.sql",
+          "sha256": "c64e0659f2a2006fed326a55f4521a8be21de8dffd44d0b46bd057475b5b9dff",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/008_world_profiles.sql",
+          "sha256": "94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/009_character_adventure_arcs.sql",
+          "sha256": "c961a5f58d73ea0c554e4ad939af2353510d63585c514e9b04428ede22a89f2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/010_characters_v3_columns.sql",
+          "sha256": "b1e054d6ba6678f1974c82f5a660ab6b01e34a64f9ac0f62f00f10b42f9cfc8c",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/011_seed_local_admin.sql",
+          "sha256": "87dae7ffeddce109a3373bafac5c4209d55e18cd02fd387a4ef8cf0416531251",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/012_character_presets.sql",
+          "sha256": "d87c2ecc96d814244e35c5c63d1ccc43d872ac406f57db06af6b3df83aeb2625",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/013_character_presets_rls_hardening.sql",
+          "sha256": "63c0ed69f1f8a20b3061118ac3bac38e3dc8086b4e28f0b1b8150fb00a590dad",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/014_character_abilities_emotion_profiles.sql",
+          "sha256": "e34e71c2edb5ec44dd665cbd32927c3d69fa56d2cf0bdf4bf72e5b65bbd08e87",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/015_inventory_item_definitions.sql",
+          "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/016_character_inventory_v2.sql",
+          "sha256": "22eba40df1a0e9f4033e32a2c74a316ebafbc551d46748edba2b3e260b18778f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/017_item_thumbnail_assets.sql",
+          "sha256": "b1cb83b8e57a645a15103dd18ba79027e35a6839017407c9da782f84d035e6ef",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/018_item_model3d_assets.sql",
+          "sha256": "0dc6b638154fa475cf83570365ffc0748b9674e29598384e4cf6691fea3b6596",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/019_world_profiles_read_for_adventure.sql",
+          "sha256": "fb3f7956d105413e1c779b891317eb8f6c199968f6eb23d8e2b72d7dc7b1bb10",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/020_user_ai_provider_credentials.sql",
+          "sha256": "5d5a30f45cd7b84dbff95878c16cad1817b5aa9c03c75745e632a273eb1306e9",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/021_npc_creature_definitions.sql",
+          "sha256": "a1442859d0aadfd61af053c4799f8fa1ee147933b988be7c54a6515a0e5783fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/022_npc_creature_controller_assignments.sql",
+          "sha256": "cc020b1d34e84b53bfd26fd2256963d3f2602eabfe369672b67c01b865966da8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "sha256": "36720ac8bf2973fae37ef3ab2fd5d8be7397d48ca1cb133b9a6e09a0d1b48008",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/024_character_avatar_import.sql",
+          "sha256": "6e929de2bb0074d96b6374c5b32ba3d1bb7ece49fb2650f8bea36f27be817055",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/025_character_avatar_export.sql",
+          "sha256": "a540ceeb82180e2b23063f67e4d694743d25854de5560d23768fb997ca67de6a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/026_character_avatar_meshy_jobs.sql",
+          "sha256": "905ea6c9b961fa0d1e48964f24ae4d26b156825979a4e70dd62868848bf1b2da",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/027_character_avatar_meshy_generation_mode.sql",
+          "sha256": "71ab0ddb245f76499a52aa4bac7ca964475501ab6899e6fe6c78dc4ab85c24b5",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/028_character_avatar_meshy_glb_budget.sql",
+          "sha256": "a264c8e797d1b14c94755711ae61f7c153c5b856fe93421420d806cd82e9d3aa",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/029_character_sheet_status.sql",
+          "sha256": "faa2b4446d078e83ed00d5894ef297e5fb7322c65481873fc6fa85983fa5ccf8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/030_character_avatar_meshy_rig_task.sql",
+          "sha256": "c4a345f7ad35115fea97d361665373e701936e64c62a3afbf31b8bdb70994385",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql",
+          "sha256": "fa8aa4a7ebf58566e271dbca0445e682cac38aa913ad03c115f9ae380afd3941",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
+          "sha256": "fd866217f4b6ebcd23cff6a8b346b0937ba6b3d8a472b440876c914e6154fc28",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/033_character_avatar_generation_settings.sql",
+          "sha256": "ee9eeb92bfe4a816d34633ad74bca277a4b9850d4eb38611801b3f799174bc5f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/034_character_avatars_150mb.sql",
+          "sha256": "f8ba395f3b894e7a5a4d8fde455336922177445af307de8e541ec476f5e31b96",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/035_guard_sheet_status_complete.sql",
+          "sha256": "83fb25c63ed30121f2748c3c4fb270df60b9770fe4e5731c9065eb4991c7e5e2",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/036_character_avatar_artifacts.sql",
+          "sha256": "962b05845594226610d2df7fc499f701eec089cc3f0f899a70fc2987d41a6f3e",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/037_character_avatar_analysis_result.sql",
+          "sha256": "0e35ede3ec08935f6fa2e95da1eca334b233bb0e3e682b3fbd1857551d4dbaac",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/038_character_avatar_body_profile.sql",
+          "sha256": "707afde6916007741d25cef45251bc65355c70fe84ba4006c05e22444c665efe",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
+          "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "sha256": "0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/042_session_shared_rolls.sql",
+          "sha256": "ba87cf0ed1b75250d07333cfe3b5a26a54db069bd96dc5835e9f4069128ca906",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/043_session_shared_scene_presentation.sql",
+          "sha256": "0e96dece1e2e76bfdc15ca674c57f39c02d3132ae82d2d46f97087b264c605fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/044_session_combat_encounter.sql",
+          "sha256": "e1168e2c35a90d3de3c9be1f796026dc289c21803e9590951e72391576505c35",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/045_character_avatar_meshy_pending_glb.sql",
+          "sha256": "a4b1c7108a66f677a33f2ed93c45393f67e28732946d5a1c1585b71d6a61d55b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/046_look_profiles.sql",
+          "sha256": "fd88d270538c2e6839540de7a8542e63410463ea1b081a670850134c2979aa2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/047_session_program_presentation.sql",
+          "sha256": "98fd05e6d1ae794db77b46eb910fadacffdc760246cda412404c1246eaf0110e",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/048_session_knowledge_reveals.sql",
+          "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/049_session_death_lifecycle.sql",
+          "sha256": "4bd6e5dcde665d7a6c5f08034662a9e1646cff7a5acd6a6328f11d4226456be2",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/051_session_director_runtime.sql",
+          "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/052_projects_look_settings.sql",
+          "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/053_sessions_look_override.sql",
+          "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/054_characters_personal_look_override.sql",
+          "sha256": "6c1d6292c25753b03f235fe68719f8cd9e32be53af846466fa8c221097a3bceb",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/055_session_invites.sql",
+          "sha256": "a1fd37ae48b1fdf84ef179902575a579603f0f3df6b9848785795e4a59d13e61",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+          "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/060_saga_overview.sql",
+          "sha256": "426d83d2aa74cb7538f2e6a71f0b654c423f31cf9dfafcf4f66c62908f9966b3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "sha256": "a2bc1eed25dcd62ebcf06a444a4fcef963552bada5e1b0427fedc2b01dbe4bfd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/065_saga_simulation_ops.sql",
+          "sha256": "a7fa13ff4d2868abd79f26593690f8907d2e2982e54023a027ec6f8f29f97ba9",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/066_saga_between_sessions_bote.sql",
+          "sha256": "c55f1f4ab96ba5b53c89c7cb620d86f476a1c35217a0c9976a7d5b83caed73f8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/067_ensure_native_starter_project.sql",
+          "sha256": "c53b69e574c607775767513a80bf0badf52aeee31582ff2ee0887ff16039ced3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/068_world_maps.sql",
+          "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/069_party_location_overview.sql",
+          "sha256": "568558d8d8776bb2a3ef38a78f870ff3df8d28db274fe35a6b4d5aa85da019a6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/070_saga_promote_session_outcomes.sql",
+          "sha256": "1b9498004ab77efbc59a5ff7bbd1676275da6d44b30d7afe6861b68a4f4fdcb7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/071_restore_authenticated_project_session_writes.sql",
+          "sha256": "707ede7d50dfa1d27992f7951422b87bc7f5abcc6ece2930a8a224161f470861",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
+          "sha256": "29174c7ab1b49e3ff1cb9040a8d539ffa7aa1b559730bef57c260b9898a5840a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/073_sagatree_schema_rename_compat.sql",
+          "sha256": "f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/074_seed_local_player.sql",
+          "sha256": "cdc502ef8319552f89c9826bb84b70d6b31193e1498e77ac46e5411c35a92e33",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "sha256": "1352ed1aa5bba73e5f25d4fffc1798789b689240874b18ebd856042455aeb632",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/076_dornhain_full_catalog_seed.sql",
+          "sha256": "90378ec8d1f8d0b2d81619289609b952898a8db9bd9975d8deb9c1d007e0c418",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/077_dornhain_default_all_accounts.sql",
+          "sha256": "abfe499679448a551c28815144519c5cfc14e47211c7aaddd5b40bc1baa17e15",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/079_drop_sagadrive_aliases.sql",
+          "sha256": "bb8d1160118231cb724d0e01fbe5b66ba20dde397b67e052e03d8a1a9f2e6dd0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/080_item_thumbnail_webp.sql",
+          "sha256": "b1ac258e8d6a6953face6e0a7350882b2a82e11d2dde918c0137feeaa31a8c42",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/080_rename_local_auth_emails_sagatree.sql",
+          "sha256": "4a736639cb74cc53b8b9de94b108a72a0b23145c3620a89f595bcabbb4870c76",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/081_user_profiles_and_avatars.sql",
+          "sha256": "61a8b00923e26af7fbb3be9638cd6644ab0483fed33793da70075d70582a61eb",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/082_dornhain_pregen_full_sheets.sql",
+          "sha256": "93237176f65a3945291b5cc96cf7bd748b690fc5f8c78eeed1f00d4175cbab99",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/082_duplicate_saga_playthrough.sql",
+          "sha256": "fcab51b99d8c672e0d77372a037446602613905e44634e8dd788bf76c7e79f28",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/083_world_profiles_public_id.sql",
+          "sha256": "38b33710dcf628e7b834810e7dfd4dfacc97a0d23cc8673d76d96e2330bf6081",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/084_look_profiles_public_id.sql",
+          "sha256": "1dcc8707454b4968ae783f102ae45aeb2300ee8ebb5e25e3559c003d5802b396",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/085_fix_function_bodies_sagatree.sql",
+          "sha256": "36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/086_rls_rulesets_world_graphs.sql",
+          "sha256": "6f42605e57134b2bd11622383e41c59112442bace5ef8fb8f4b9733a1674511b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/087_ai_gm_rate_limits.sql",
+          "sha256": "0a9a24a5cf27178775b9270b7c9ad4d2e355d49d837006490200ac6ec8ba30ed",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/088_gm_earthspirit_presence_character.sql",
+          "sha256": "3fe397289929cb1a16b0cfb203a93ebd3f0fba652319d684d02922cec04c2f6a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/089_gm_presence_character_type.sql",
+          "sha256": "f66c1286947dd3119ac4cfac01736a3948e1cb35648f61837e6a79fd9c519560",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/090_dornhain_basic_world_map.sql",
+          "sha256": "ebcda6b58bfd7629b868cd80ac018fbc8a9f3ab8a36d4c141f1344d9b7ead741",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/091_saga_overview_world_profile_id.sql",
+          "sha256": "9cbda2bc6b50e312ecd4d848bd52d85e93bc34e5b2571ed97219c145056d3c10",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+          "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
+          "sha256": "ee626a51f06984449a2fa4abd98db18d83626f0d432f46c7b63b32b401c57904",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "sha256": "1a329c3ee211351e2630d810ff94ad23ef9ae7424bec0f58ab0acefdbb19b058",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/095_donalu_world_places.sql",
+          "sha256": "797acda3420a38b709aeeffb289ef8dfee980ba9241f44c168c157cc5c85390f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/096_donalu_place_map_link_rpc.sql",
+          "sha256": "612ff70eba98246ee09fe90f8c80f0e6dbeab570b866ab4041cf01bb43286db6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+          "sha256": "e454cfc056a397eeb5ba13b13be6f6cf7a229efa241b27867b5d2e2ad0fd9c9f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/098_dornhain_unified_atlas_starter.sql",
+          "sha256": "e3da9995b29bf7491030dd9943d612bb3366f13bf7123d0efbc5ceecbc387407",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/099_dornhain_unified_world_map_v2.sql",
+          "sha256": "82fed4ae77a47abf9c180c71c5c690c69a85178b0c60c479cea311d4e5aae785",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql",
+          "sha256": "6511fd19f98d221c2844cda88569ce278db562fd3e7974e61174e7b845d0e481",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/101_world_places_select_editor_only.sql",
+          "sha256": "9c64d983108e36ea19d6acef12723ca006ca31a663fd15a3a34db893cfa0abf0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/102_world_atlas_player_redaction_force.sql",
+          "sha256": "a1add570f090c4b8cae03170cf5b73bc7eba6ccc2a0f785d3d1910d0a3178bb3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
+          "sha256": "84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "sha256": "faefcc47bcddd1647c38971b4efbdb5a3cd064c76cbaca5f02a644ebe9e31f90",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
+          "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/107_atlas_worldbuilder_migration_gate.sql",
+          "sha256": "cf753cc7ac7f6d7ee221c3ca47b46c81e9b6fa0270d4b5438e372cd0d7e592b0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
+          "sha256": "e0d35e8a469efa708da70b3a2c27c08e1b3988ec1ebacdd761fb8629c9001726",
+          "status": "passed"
+        }
+      ],
+      "catalog": {
+        "functions": 177,
+        "policies": 144,
+        "relations": 59,
+        "columns": 541,
+        "constraints": 287
+      },
+      "fixtureIds": {
+        "actors": {
+          "owner": "a7700000-0000-4000-8000-000000000001",
+          "gm": "a7700000-0000-4000-8000-000000000002",
+          "player1": "a7700000-0000-4000-8000-000000000003",
+          "player2": "a7700000-0000-4000-8000-000000000004",
+          "outsider": "a7700000-0000-4000-8000-000000000005",
+          "otherGm": "a7700000-0000-4000-8000-000000000006"
+        },
+        "world": "a7700000-0000-4000-8000-000000000101",
+        "foreignWorld": "a7700000-0000-4000-8000-000000000102",
+        "ownerOnlyWorld": "a7700000-0000-4000-8000-000000000103",
+        "project": "a7700000-0000-4000-8000-000000000201",
+        "foreignProject": "a7700000-0000-4000-8000-000000000202",
+        "otherSagaProject": "a7700000-0000-4000-8000-000000000203",
+        "session": "a7700000-0000-4000-8000-000000000301",
+        "secondSession": "a7700000-0000-4000-8000-000000000302",
+        "foreignSession": "a7700000-0000-4000-8000-000000000303",
+        "player1Character": "a7700000-0000-4000-8000-000000000401",
+        "player2Character": "a7700000-0000-4000-8000-000000000402",
+        "rootMap": "a7700000-0000-4000-8000-000000000501",
+        "secretMap": "a7700000-0000-4000-8000-000000000502",
+        "foreignMap": "a7700000-0000-4000-8000-000000000503",
+        "place": "a7700000-0000-4000-8000-000000000601",
+        "secretPlace": "a7700000-0000-4000-8000-000000000602",
+        "locationBinding": "a7700000-0000-4000-8000-000000000701",
+        "secretBinding": "a7700000-0000-4000-8000-000000000702",
+        "publicNpcBinding": "a7700000-0000-4000-8000-000000000703",
+        "secretNpcBinding": "a7700000-0000-4000-8000-000000000704",
+        "otherSagaBinding": "a7700000-0000-4000-8000-000000000705",
+        "worldPublicId": "WO-FX234",
+        "sagaPublicId": "SA-FX234",
+        "foreignSagaPublicId": "SA-FX235",
+        "otherSagaPublicId": "SA-FX236",
+        "secretTitle": "Fixture secret vault",
+        "publicTitle": "Fixture coast"
+      },
+      "semantic": {
+        "algorithm": "sha256",
+        "sha256": "0a4295dbd16f61977ddb0eb282c5630d36df99de9371bfdc28fd3c2b5b99141d",
+        "payloadByteLength": 9006
+      },
+      "finishedAt": "2026-10-21T11:13:52.584Z"
+    },
+    {
+      "label": "rebuild-2",
+      "startedAt": "2026-10-21T11:13:52.584Z",
+      "status": "passed",
+      "securityParityApproved": false,
+      "source": {
+        "repositoryHead": "c1e6dd0843898d9e2d8251815a0fa19cc12e8d12",
+        "node": "v22.22.3",
+        "platform": "darwin-arm64",
+        "harnessSources": [
+          {
+            "path": "scripts/stack-migration-db/atlas-product.spec.ts",
+            "sha256": "dcc51c51a2febaf79c39735471fa300f893957e35893a1a9fae9ed4edae1637a"
+          },
+          {
+            "path": "scripts/stack-migration-db/bootstrap.mjs",
+            "sha256": "a95a2f6f8afbf58194f267fdbbe2dd90e9d4d7b30ca139e2963a30c14f0bead7"
+          },
+          {
+            "path": "scripts/stack-migration-db/canary.mjs",
+            "sha256": "3cae349311941f07ff4fb166868e3ec5715ea077b7f6dd7e3a2a08b0d3f4a04c"
+          },
+          {
+            "path": "scripts/stack-migration-db/cluster.mjs",
+            "sha256": "14ddbe194b0fce90c0285201986637ed9c52de4828483b06c65ec4e96ee2c25c"
+          },
+          {
+            "path": "scripts/stack-migration-db/evidence.mjs",
+            "sha256": "3c7870427458a5bb5d6351e84f559a0c925f5849362d94155d4429537e517758"
+          },
+          {
+            "path": "scripts/stack-migration-db/fixtures.mjs",
+            "sha256": "bfe960a7e36613cf95efbcb291c96edb01397e513f557df7b09884b664378970"
+          },
+          {
+            "path": "scripts/stack-migration-db/package-lock.json",
+            "sha256": "02c13222021b5aef4958610ce210a1dff3e1f59cfc6938a7127d4d05c51d9004"
+          },
+          {
+            "path": "scripts/stack-migration-db/package.json",
+            "sha256": "a88563347c1638583102c0ea025ea881917423d4884bf181b62b1e1c9e61c184"
+          },
+          {
+            "path": "scripts/stack-migration-db/probes.mjs",
+            "sha256": "e4ca427f071097be227190a644a3efa10a61c457bf54de1708b462618e70c3b6"
+          },
+          {
+            "path": "scripts/stack-migration-db/product-playwright.config.ts",
+            "sha256": "0ee7b18f5b853b3b6482f86a7dd0efbc58976edfbdb557dc3a25947c0590bffc"
+          },
+          {
+            "path": "scripts/stack-migration-db/product-run.mjs",
+            "sha256": "039352fb0f5f29ec8e6a8ced3ea95f871a5fff4ac7c75664d378f366dc81db91"
+          },
+          {
+            "path": "scripts/stack-migration-db/provision-browser.py",
+            "sha256": "83fb6f826df3b9b949b1ef8b88dc206fa673bc028bc7e9055eed784deb40753e"
+          },
+          {
+            "path": "scripts/stack-migration-db/provision-tools.py",
+            "sha256": "e1e824b0b866a93696b0ad7739847a1e6530e1032f1cbc4a2161ba19cb5ef196"
+          },
+          {
+            "path": "scripts/stack-migration-db/rebuild-verify.mjs",
+            "sha256": "7b3cc48536206e44f68478195229611edff396d9defdeedcb4e305c72284b3e6"
+          },
+          {
+            "path": "scripts/stack-migration-db/run.mjs",
+            "sha256": "33916837c7585d7f45ec77c364b34c25f0125167c04488b370cf0253fa7a2d4f"
+          },
+          {
+            "path": "scripts/stack-migration-db/services.mjs",
+            "sha256": "7bd2045bc1ae732609a1107fa636a2b475f73b84279f9b7a7f7156baf1cfe5e8"
+          }
+        ],
+        "scope": "Repository HEAD identifies the checkout; hashes identify the executed working-tree harness and each SQL source separately."
+      },
+      "postgres": "PostgreSQL 15.18 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+      "platformSources": [
+        {
+          "bundle": "supabase-bootstrap",
+          "repository": "https://github.com/supabase/postgres",
+          "ref": "15.1.0.147",
+          "commit": "a3938dc906010ce197c240d0052b3eda9ecac339",
+          "applied": [
+            {
+              "path": "migrations/db/init-scripts/00000000000000-initial-schema.sql",
+              "sha256": "2c7c4f4235d431e042e388efe599e9f4db259fcf2bfb07cbd31b3f5273a69401"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000001-auth-schema.sql",
+              "sha256": "65a4a55ba3248716eb4946a8677be41c94bc90eafaa22c0eb95b09908f96fa4f"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000002-storage-schema.sql",
+              "sha256": "587ac737db8102bfedcf7da342f0cab1e073297fc5ccbc6c6ca103f30c56e2b6"
+            },
+            {
+              "path": "migrations/db/init-scripts/00000000000003-post-setup.sql",
+              "sha256": "bfec6b91b703bf2227d8d30d00516145730040e198e601c83dce780e833d091a"
+            }
+          ]
+        },
+        {
+          "bundle": "gotrue-migrations",
+          "repository": "https://github.com/supabase/auth",
+          "ref": "v2.143.0",
+          "commit": "269895f3257b5d95fda992f48ab6569d87f01a82",
+          "applied": [
+            {
+              "path": "migrations/00_init_auth_schema.up.sql",
+              "sha256": "4c3ab2565f2836d8fa0a54fd9d153facaee0c4c6258fa0a794c93446ddc10f71"
+            },
+            {
+              "path": "migrations/20210710035447_alter_users.up.sql",
+              "sha256": "b87f889d4839b7e092f186ad244f3f5294ab5c0f50ef2feb40cab1307be8c9cd"
+            },
+            {
+              "path": "migrations/20210722035447_adds_confirmed_at.up.sql",
+              "sha256": "32499502e5d57594d2373e6f00d7b436a9b275c85b889680913f00d6ebc3ae73"
+            },
+            {
+              "path": "migrations/20210730183235_add_email_change_confirmed.up.sql",
+              "sha256": "88da41a1dbae8077a26a4811c4d80b925162e5423c803467d3bff78407b4d995"
+            },
+            {
+              "path": "migrations/20210909172000_create_identities_table.up.sql",
+              "sha256": "4c2d6a94d34d34f98f1fa83537a0068f4813e49a19cfc2fd4e9199e5a941cc84"
+            },
+            {
+              "path": "migrations/20210927181326_add_refresh_token_parent.up.sql",
+              "sha256": "73fb1d320fb85e231e322d0da6184adcda838c755a2b3f1e0894c249a59ba4e3"
+            },
+            {
+              "path": "migrations/20211122151130_create_user_id_idx.up.sql",
+              "sha256": "0fbc4d8b62329aa444ea5820eef86e32a57a709964a2c65bc0463083b7130b02"
+            },
+            {
+              "path": "migrations/20211124214934_update_auth_functions.up.sql",
+              "sha256": "abf8d29849e04db2b6a84ea9c8c58daafdabdd3e3520051efb9ec362f4679992"
+            },
+            {
+              "path": "migrations/20211202183645_update_auth_uid.up.sql",
+              "sha256": "a70a3afa97c67fbb31aacbea496da0d01b9a809dc4b861f3187cb7e3ba5fda2d"
+            },
+            {
+              "path": "migrations/20220114185221_update_user_idx.up.sql",
+              "sha256": "89eb7cb7f44efcbf48ed854faca0347dea80cebff1693a8dc532d581729de0cd"
+            },
+            {
+              "path": "migrations/20220114185340_add_banned_until.up.sql",
+              "sha256": "8aea70090fdeeafc4bbf206a799551e3f7bce0e6749d8c7cc8033e983e750e38"
+            },
+            {
+              "path": "migrations/20220224000811_update_auth_functions.up.sql",
+              "sha256": "5b72022d73e64a8e474d2122ac42f299bb7ce4d59755cdcc78e72abfe5d47dc0"
+            },
+            {
+              "path": "migrations/20220323170000_add_user_reauthentication.up.sql",
+              "sha256": "5fb66f473dd37e7141c5165254a6706cae3d2cab3632b92fb0f8f7cb58f7655d"
+            },
+            {
+              "path": "migrations/20220429102000_add_unique_idx.up.sql",
+              "sha256": "4f9ce72459f72a601c4901eed0d4f5b9e9731c31f8d643736a118739c29538ee"
+            },
+            {
+              "path": "migrations/20220531120530_add_auth_jwt_function.up.sql",
+              "sha256": "91d2d5e47f19e65a63ec411f6cbb18755ec1792cb4249694dc261ef59cc78a10"
+            },
+            {
+              "path": "migrations/20220614074223_add_ip_address_to_audit_log.postgres.up.sql",
+              "sha256": "0e2cbe2fc509b97f27803c04e723215c3944a7f84c043dd8f7cd7118c199a5dc"
+            },
+            {
+              "path": "migrations/20220811173540_add_sessions_table.up.sql",
+              "sha256": "840c19639d972143bc3fc05a16e77da45c076edcba229c94b019a2db1f0eb192"
+            },
+            {
+              "path": "migrations/20221003041349_add_mfa_schema.up.sql",
+              "sha256": "058ab23f8e55fd3ebd353f5367b9308ce88a95d0fe604b754337941095c5f3ce"
+            },
+            {
+              "path": "migrations/20221003041400_add_aal_and_factor_id_to_sessions.up.sql",
+              "sha256": "cea7d73fd31f39a0134ee4aaa16e5ff4af953cbc3f5e3321af38776bcda4943f"
+            },
+            {
+              "path": "migrations/20221011041400_add_mfa_indexes.up.sql",
+              "sha256": "32ab5cd482674c98fd5926e7c0995fc216d2cc2b1ff77554b6c45b4bd758dd6f"
+            },
+            {
+              "path": "migrations/20221020193600_add_sessions_user_id_index.up.sql",
+              "sha256": "7b33e11e8092ea07d2f4e899558b46e0a5573f0c43a56532f1f640c2c7eb7802"
+            },
+            {
+              "path": "migrations/20221021073300_add_refresh_tokens_session_id_revoked_index.up.sql",
+              "sha256": "63887b7bd3045561c4930575d4fa324fc9090630193989a9736dd84328d1ec55"
+            },
+            {
+              "path": "migrations/20221021082433_add_saml.up.sql",
+              "sha256": "af0bbfdb64dd32f512712f45b44e0dce4e9af8ce7874e01c3a804f95eeb3a387"
+            },
+            {
+              "path": "migrations/20221027105023_add_identities_user_id_idx.up.sql",
+              "sha256": "1e7c07b825b2ee8bdfe8fee06588525b97f3771efc6c365c7057c0f7abfbd30a"
+            },
+            {
+              "path": "migrations/20221114143122_add_session_not_after_column.up.sql",
+              "sha256": "7bf30a94308028f0c8140166e9a6f3d77356daa1147e5740a27cc983e39b854c"
+            },
+            {
+              "path": "migrations/20221114143410_remove_parent_foreign_key_refresh_tokens.up.sql",
+              "sha256": "5e804d7c82e0e6dca6f72e2350951e87714f6890fe63c2388dcbfa9aea687f2f"
+            },
+            {
+              "path": "migrations/20221125140132_backfill_email_identity.up.sql",
+              "sha256": "60cfea2750a2c79c0d69bb3a08edee0efb830c12212cac0ffdb5d44937c2839d"
+            },
+            {
+              "path": "migrations/20221208132122_backfill_email_last_sign_in_at.up.sql",
+              "sha256": "462f871362dcffdd87d70bf79941f779e7137afce4039cf7b8bfe60d74e14e34"
+            },
+            {
+              "path": "migrations/20221215195500_modify_users_email_unique_index.up.sql",
+              "sha256": "0a2cdcd4101a418ec7b482800327fc90238b498db01a657dbbeefdba8b8f3866"
+            },
+            {
+              "path": "migrations/20221215195800_add_identities_email_column.up.sql",
+              "sha256": "3ddff50750549b790eecbeac2194966ca98354564f4fba537cda70d96b575d39"
+            },
+            {
+              "path": "migrations/20221215195900_remove_sso_sessions.up.sql",
+              "sha256": "f79ad2aaaa4f748836595a9ef10b3df0234e53032c339f0c74e3181271af1801"
+            },
+            {
+              "path": "migrations/20230116124310_alter_phone_type.up.sql",
+              "sha256": "7d6fd7f428bd6633ab622ff1d933feb9bbe0904224eced052aae82fac2ef36a5"
+            },
+            {
+              "path": "migrations/20230116124412_add_deleted_at.up.sql",
+              "sha256": "144a735e50373686e04d0cd3d46b997262162dda14965870342f65cd0b5a7845"
+            },
+            {
+              "path": "migrations/20230131181311_backfill_invite_identities.up.sql",
+              "sha256": "f88443609f6d15d3d1bff00e69a6c7a455fa331cb30747c8448d5e219729a2df"
+            },
+            {
+              "path": "migrations/20230322519590_add_flow_state_table.up.sql",
+              "sha256": "55445d9e1f10d46e6edaf4718fca5be01d031e038a4a141c2eedb591f5936af7"
+            },
+            {
+              "path": "migrations/20230402418590_add_authentication_method_to_flow_state_table.up.sql",
+              "sha256": "8f10e836a25f85ccdac620c36f871effc84e7d6020bd38fd002ddd119847fd84"
+            },
+            {
+              "path": "migrations/20230411005111_remove_duplicate_idx.up.sql",
+              "sha256": "cc1b7b8a172693abafa64d0273240fa8181fdf5dde565e15b94adb38ec40c2e9"
+            },
+            {
+              "path": "migrations/20230508135423_add_cleanup_indexes.up.sql",
+              "sha256": "89d4747491836d2bc33cc340029624d88ed9cf7e32574c3a9fbbe2431a27b5c8"
+            },
+            {
+              "path": "migrations/20230523124323_add_mfa_challenge_cleanup_index.up.sql",
+              "sha256": "af534c2184d12d00bef8fbd8b593f5a4c8b3297854bd205fb4e3bcdba9d6ca56"
+            },
+            {
+              "path": "migrations/20230818113222_add_flow_state_to_relay_state.up.sql",
+              "sha256": "cc6587385b84deba61c31e0749eb8064f9cdf5aa6db5239713fa31966de4f2dd"
+            },
+            {
+              "path": "migrations/20230914180801_add_mfa_factors_user_id_idx.up.sql",
+              "sha256": "844c575a40f9609987638bb29716deaaad3b9c1c1e8c399204d870018f867684"
+            },
+            {
+              "path": "migrations/20231027141322_add_session_refresh_columns.up.sql",
+              "sha256": "d4aa51107599c755003464121d4c0d99e617543bfee9a816fd76df0b399aafe0"
+            },
+            {
+              "path": "migrations/20231114161723_add_sessions_tag.up.sql",
+              "sha256": "e32711d98cd7c3f5920ca2a79df9c597433dac1b7e8b56df7b0becb96319d147"
+            },
+            {
+              "path": "migrations/20231117164230_add_id_pkey_identities.up.sql",
+              "sha256": "8822b2807b672d38b212618193efdb6fc2cf787e564a495940c1a8844155d7b0"
+            },
+            {
+              "path": "migrations/20240115144230_remove_ip_address_from_saml_relay_state.sql",
+              "sha256": "9e104ca8b63695f6427ff057b5b7801ef7e4cc3baf32d4289e61b0015128d651"
+            }
+          ]
+        },
+        {
+          "bundle": "storage-migrations",
+          "repository": "https://github.com/supabase/storage",
+          "ref": "v0.40.4",
+          "commit": "7ae3410509f168cd15de5a31e9526a95750011e8",
+          "applied": [
+            {
+              "path": "migrations/tenant/0001-initialmigration.sql",
+              "sha256": "822ae07d4783158bc1912bb623e5107cc9002d519e1143a9c200ed6ee18b6d0f"
+            },
+            {
+              "path": "migrations/tenant/0002-pathtoken-column.sql",
+              "sha256": "e548ff09ba423e065d28c09aa405398dbdd76521f72680302d090fa393c00907"
+            },
+            {
+              "path": "migrations/tenant/0003-add-migrations-rls.sql",
+              "sha256": "05b32aad858e4644202e6ac43413cfee30e61d7e9ad51c42b082cfb21235c7bd"
+            },
+            {
+              "path": "migrations/tenant/0004-add-size-functions.sql",
+              "sha256": "38179ee1f8acbab3a5045caf3b7fde793f7204dee348188482c92de8b0d7fbb7"
+            },
+            {
+              "path": "migrations/tenant/0005-change-column-name-in-get-size.sql",
+              "sha256": "228d7ec4e3d2fa51e49e951a2c1e991d8f5f633233c81617aaf9dabf55f12756"
+            },
+            {
+              "path": "migrations/tenant/0006-add-rls-to-buckets.sql",
+              "sha256": "c87aa8ea3c6509171728880538cc26e7233896a8f927af3bc5b351a1706610e3"
+            },
+            {
+              "path": "migrations/tenant/0007-add-public-to-buckets.sql",
+              "sha256": "6e19c6c3ef041698f54a139e4054704e02ecd2a12a7c6a532a0d8a937c2a30da"
+            },
+            {
+              "path": "migrations/tenant/0008-fix-search-function.sql",
+              "sha256": "841c3ee6ed4885bc59f55db8d6eec293c6188a670d049737552c03a0ba714dc9"
+            },
+            {
+              "path": "migrations/tenant/0009-search-files-search-function.sql",
+              "sha256": "e67cbc799bbdbcebd33a60e90e684ac43032db032b9bb34f25438577b259b0ac"
+            },
+            {
+              "path": "migrations/tenant/0010-add-trigger-to-auto-update-updated_at-column.sql",
+              "sha256": "fe5e88b5801fd2b62999331bdcc38faac97cece1197ddd517b46c95f3c006318"
+            },
+            {
+              "path": "migrations/tenant/0011-add-automatic-avif-detection-flag.sql",
+              "sha256": "e92fc9d89ccd4b6bea1e5147dd30a9f41d802c2b69746d1c4772fd47297b0dc2"
+            },
+            {
+              "path": "migrations/tenant/0012-add-bucket-custom-limits.sql",
+              "sha256": "c84e2dfd60a3a08fadf46a5681c3092d375bd22e6d3772a1a04ba26a2b25a790"
+            },
+            {
+              "path": "migrations/tenant/0013-use-bytes-for-max-size.sql",
+              "sha256": "252a2b54842b121b28deb3e3a1999eba247fe46416017a71b0670cf5cedf9e06"
+            },
+            {
+              "path": "migrations/tenant/0014-add-can-insert-object-function.sql",
+              "sha256": "572c4c802fce193ed5d63eba166922b5469d863d1eae460dd06cdcb1594bab9a"
+            },
+            {
+              "path": "migrations/tenant/0015-add-version.sql",
+              "sha256": "a4c7a068bb3212a015879859f3c7b8e1ed92998a671fbf3a9bdfd827cf5e0e67"
+            },
+            {
+              "path": "migrations/tenant/0016-drop-owner-foreign-key.sql",
+              "sha256": "00edfd4aefba445959c977fd1a510bd7900dcf9679bbc24615d43ad9768dd0da"
+            }
+          ]
+        }
+      ],
+      "migrationOrder": "All supabase/migrations/*.sql in lexicographic filename order",
+      "migrationsMissingFromApplyScript": [
+        "080_item_thumbnail_webp.sql",
+        "082_dornhain_pregen_full_sheets.sql",
+        "108_atlas_worldbuilder_migration_apply.sql"
+      ],
+      "migrations": [
+        {
+          "path": "supabase/migrations/001_initial.sql",
+          "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/002_character_trait_arrays.sql",
+          "sha256": "74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/003_character_lore_rate_limits.sql",
+          "sha256": "2dd19137edfcfd0987a340b7ade98288eee990bca21252dfcda7900eb5f7a77a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/004_project_membership_security.sql",
+          "sha256": "c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/005_character_ruleset_metadata.sql",
+          "sha256": "02874b854874e5d89ad6b697563d545f5d2b72735afe763d6927e574b2ba49ca",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/006_character_portrait_storage.sql",
+          "sha256": "da223b2583b2b985b8773337458307f4c6d6d2dfa36067c127e086cb2f690a41",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/007_sagadrive_character_profile.sql",
+          "sha256": "c64e0659f2a2006fed326a55f4521a8be21de8dffd44d0b46bd057475b5b9dff",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/008_world_profiles.sql",
+          "sha256": "94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/009_character_adventure_arcs.sql",
+          "sha256": "c961a5f58d73ea0c554e4ad939af2353510d63585c514e9b04428ede22a89f2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/010_characters_v3_columns.sql",
+          "sha256": "b1e054d6ba6678f1974c82f5a660ab6b01e34a64f9ac0f62f00f10b42f9cfc8c",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/011_seed_local_admin.sql",
+          "sha256": "87dae7ffeddce109a3373bafac5c4209d55e18cd02fd387a4ef8cf0416531251",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/012_character_presets.sql",
+          "sha256": "d87c2ecc96d814244e35c5c63d1ccc43d872ac406f57db06af6b3df83aeb2625",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/013_character_presets_rls_hardening.sql",
+          "sha256": "63c0ed69f1f8a20b3061118ac3bac38e3dc8086b4e28f0b1b8150fb00a590dad",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/014_character_abilities_emotion_profiles.sql",
+          "sha256": "e34e71c2edb5ec44dd665cbd32927c3d69fa56d2cf0bdf4bf72e5b65bbd08e87",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/015_inventory_item_definitions.sql",
+          "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/016_character_inventory_v2.sql",
+          "sha256": "22eba40df1a0e9f4033e32a2c74a316ebafbc551d46748edba2b3e260b18778f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/017_item_thumbnail_assets.sql",
+          "sha256": "b1cb83b8e57a645a15103dd18ba79027e35a6839017407c9da782f84d035e6ef",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/018_item_model3d_assets.sql",
+          "sha256": "0dc6b638154fa475cf83570365ffc0748b9674e29598384e4cf6691fea3b6596",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/019_world_profiles_read_for_adventure.sql",
+          "sha256": "fb3f7956d105413e1c779b891317eb8f6c199968f6eb23d8e2b72d7dc7b1bb10",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/020_user_ai_provider_credentials.sql",
+          "sha256": "5d5a30f45cd7b84dbff95878c16cad1817b5aa9c03c75745e632a273eb1306e9",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/021_npc_creature_definitions.sql",
+          "sha256": "a1442859d0aadfd61af053c4799f8fa1ee147933b988be7c54a6515a0e5783fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/022_npc_creature_controller_assignments.sql",
+          "sha256": "cc020b1d34e84b53bfd26fd2256963d3f2602eabfe369672b67c01b865966da8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/023_npc_creature_instances.sql",
+          "sha256": "36720ac8bf2973fae37ef3ab2fd5d8be7397d48ca1cb133b9a6e09a0d1b48008",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/024_character_avatar_import.sql",
+          "sha256": "6e929de2bb0074d96b6374c5b32ba3d1bb7ece49fb2650f8bea36f27be817055",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/025_character_avatar_export.sql",
+          "sha256": "a540ceeb82180e2b23063f67e4d694743d25854de5560d23768fb997ca67de6a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/026_character_avatar_meshy_jobs.sql",
+          "sha256": "905ea6c9b961fa0d1e48964f24ae4d26b156825979a4e70dd62868848bf1b2da",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/027_character_avatar_meshy_generation_mode.sql",
+          "sha256": "71ab0ddb245f76499a52aa4bac7ca964475501ab6899e6fe6c78dc4ab85c24b5",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/028_character_avatar_meshy_glb_budget.sql",
+          "sha256": "a264c8e797d1b14c94755711ae61f7c153c5b856fe93421420d806cd82e9d3aa",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/029_character_sheet_status.sql",
+          "sha256": "faa2b4446d078e83ed00d5894ef297e5fb7322c65481873fc6fa85983fa5ccf8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/030_character_avatar_meshy_rig_task.sql",
+          "sha256": "c4a345f7ad35115fea97d361665373e701936e64c62a3afbf31b8bdb70994385",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/031_character_avatar_meshy_jobs_no_client_write.sql",
+          "sha256": "fa8aa4a7ebf58566e271dbca0445e682cac38aa913ad03c115f9ae380afd3941",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/032_incomplete_sheet_blocks_adventure_join.sql",
+          "sha256": "fd866217f4b6ebcd23cff6a8b346b0937ba6b3d8a472b440876c914e6154fc28",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/033_character_avatar_generation_settings.sql",
+          "sha256": "ee9eeb92bfe4a816d34633ad74bca277a4b9850d4eb38611801b3f799174bc5f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/034_character_avatars_150mb.sql",
+          "sha256": "f8ba395f3b894e7a5a4d8fde455336922177445af307de8e541ec476f5e31b96",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/035_guard_sheet_status_complete.sql",
+          "sha256": "83fb25c63ed30121f2748c3c4fb270df60b9770fe4e5731c9065eb4991c7e5e2",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/036_character_avatar_artifacts.sql",
+          "sha256": "962b05845594226610d2df7fc499f701eec089cc3f0f899a70fc2987d41a6f3e",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/037_character_avatar_analysis_result.sql",
+          "sha256": "0e35ede3ec08935f6fa2e95da1eca334b233bb0e3e682b3fbd1857551d4dbaac",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/038_character_avatar_body_profile.sql",
+          "sha256": "707afde6916007741d25cef45251bc65355c70fe84ba4006c05e22444c665efe",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
+          "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/040_session_join_code_security.sql",
+          "sha256": "0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/041_session_runtime_state.sql",
+          "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/042_session_shared_rolls.sql",
+          "sha256": "ba87cf0ed1b75250d07333cfe3b5a26a54db069bd96dc5835e9f4069128ca906",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/043_session_shared_scene_presentation.sql",
+          "sha256": "0e96dece1e2e76bfdc15ca674c57f39c02d3132ae82d2d46f97087b264c605fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/044_session_combat_encounter.sql",
+          "sha256": "e1168e2c35a90d3de3c9be1f796026dc289c21803e9590951e72391576505c35",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/045_character_avatar_meshy_pending_glb.sql",
+          "sha256": "a4b1c7108a66f677a33f2ed93c45393f67e28732946d5a1c1585b71d6a61d55b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/046_look_profiles.sql",
+          "sha256": "fd88d270538c2e6839540de7a8542e63410463ea1b081a670850134c2979aa2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/047_session_program_presentation.sql",
+          "sha256": "98fd05e6d1ae794db77b46eb910fadacffdc760246cda412404c1246eaf0110e",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/048_session_knowledge_reveals.sql",
+          "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/049_session_death_lifecycle.sql",
+          "sha256": "4bd6e5dcde665d7a6c5f08034662a9e1646cff7a5acd6a6328f11d4226456be2",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/051_session_director_runtime.sql",
+          "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/052_projects_look_settings.sql",
+          "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/053_sessions_look_override.sql",
+          "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/054_characters_personal_look_override.sql",
+          "sha256": "6c1d6292c25753b03f235fe68719f8cd9e32be53af846466fa8c221097a3bceb",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/055_session_invites.sql",
+          "sha256": "a1fd37ae48b1fdf84ef179902575a579603f0f3df6b9848785795e4a59d13e61",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+          "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/060_saga_overview.sql",
+          "sha256": "426d83d2aa74cb7538f2e6a71f0b654c423f31cf9dfafcf4f66c62908f9966b3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/061_session_recaps_and_handover.sql",
+          "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/062_session_recap_ai_summary.sql",
+          "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/064_saga_editor_v1.sql",
+          "sha256": "a2bc1eed25dcd62ebcf06a444a4fcef963552bada5e1b0427fedc2b01dbe4bfd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/065_saga_simulation_ops.sql",
+          "sha256": "a7fa13ff4d2868abd79f26593690f8907d2e2982e54023a027ec6f8f29f97ba9",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/066_saga_between_sessions_bote.sql",
+          "sha256": "c55f1f4ab96ba5b53c89c7cb620d86f476a1c35217a0c9976a7d5b83caed73f8",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/067_ensure_native_starter_project.sql",
+          "sha256": "c53b69e574c607775767513a80bf0badf52aeee31582ff2ee0887ff16039ced3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/068_world_maps.sql",
+          "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/069_party_location_overview.sql",
+          "sha256": "568558d8d8776bb2a3ef38a78f870ff3df8d28db274fe35a6b4d5aa85da019a6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/070_saga_promote_session_outcomes.sql",
+          "sha256": "1b9498004ab77efbc59a5ff7bbd1676275da6d44b30d7afe6861b68a4f4fdcb7",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/071_restore_authenticated_project_session_writes.sql",
+          "sha256": "707ede7d50dfa1d27992f7951422b87bc7f5abcc6ece2930a8a224161f470861",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
+          "sha256": "29174c7ab1b49e3ff1cb9040a8d539ffa7aa1b559730bef57c260b9898a5840a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/073_sagatree_schema_rename_compat.sql",
+          "sha256": "f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/074_seed_local_player.sql",
+          "sha256": "cdc502ef8319552f89c9826bb84b70d6b31193e1498e77ac46e5411c35a92e33",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/075_saga_permission_grants.sql",
+          "sha256": "1352ed1aa5bba73e5f25d4fffc1798789b689240874b18ebd856042455aeb632",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/076_dornhain_full_catalog_seed.sql",
+          "sha256": "90378ec8d1f8d0b2d81619289609b952898a8db9bd9975d8deb9c1d007e0c418",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/077_dornhain_default_all_accounts.sql",
+          "sha256": "abfe499679448a551c28815144519c5cfc14e47211c7aaddd5b40bc1baa17e15",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/079_drop_sagadrive_aliases.sql",
+          "sha256": "bb8d1160118231cb724d0e01fbe5b66ba20dde397b67e052e03d8a1a9f2e6dd0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/080_item_thumbnail_webp.sql",
+          "sha256": "b1ac258e8d6a6953face6e0a7350882b2a82e11d2dde918c0137feeaa31a8c42",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/080_rename_local_auth_emails_sagatree.sql",
+          "sha256": "4a736639cb74cc53b8b9de94b108a72a0b23145c3620a89f595bcabbb4870c76",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/081_user_profiles_and_avatars.sql",
+          "sha256": "61a8b00923e26af7fbb3be9638cd6644ab0483fed33793da70075d70582a61eb",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/082_dornhain_pregen_full_sheets.sql",
+          "sha256": "93237176f65a3945291b5cc96cf7bd748b690fc5f8c78eeed1f00d4175cbab99",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/082_duplicate_saga_playthrough.sql",
+          "sha256": "fcab51b99d8c672e0d77372a037446602613905e44634e8dd788bf76c7e79f28",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/083_world_profiles_public_id.sql",
+          "sha256": "38b33710dcf628e7b834810e7dfd4dfacc97a0d23cc8673d76d96e2330bf6081",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/084_look_profiles_public_id.sql",
+          "sha256": "1dcc8707454b4968ae783f102ae45aeb2300ee8ebb5e25e3559c003d5802b396",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/085_fix_function_bodies_sagatree.sql",
+          "sha256": "36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/086_rls_rulesets_world_graphs.sql",
+          "sha256": "6f42605e57134b2bd11622383e41c59112442bace5ef8fb8f4b9733a1674511b",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/087_ai_gm_rate_limits.sql",
+          "sha256": "0a9a24a5cf27178775b9270b7c9ad4d2e355d49d837006490200ac6ec8ba30ed",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/088_gm_earthspirit_presence_character.sql",
+          "sha256": "3fe397289929cb1a16b0cfb203a93ebd3f0fba652319d684d02922cec04c2f6a",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/089_gm_presence_character_type.sql",
+          "sha256": "f66c1286947dd3119ac4cfac01736a3948e1cb35648f61837e6a79fd9c519560",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/090_dornhain_basic_world_map.sql",
+          "sha256": "ebcda6b58bfd7629b868cd80ac018fbc8a9f3ab8a36d4c141f1344d9b7ead741",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/091_saga_overview_world_profile_id.sql",
+          "sha256": "9cbda2bc6b50e312ecd4d848bd52d85e93bc34e5b2571ed97219c145056d3c10",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+          "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
+          "sha256": "ee626a51f06984449a2fa4abd98db18d83626f0d432f46c7b63b32b401c57904",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/094_world_atlas.sql",
+          "sha256": "1a329c3ee211351e2630d810ff94ad23ef9ae7424bec0f58ab0acefdbb19b058",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/095_donalu_world_places.sql",
+          "sha256": "797acda3420a38b709aeeffb289ef8dfee980ba9241f44c168c157cc5c85390f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/096_donalu_place_map_link_rpc.sql",
+          "sha256": "612ff70eba98246ee09fe90f8c80f0e6dbeab570b866ab4041cf01bb43286db6",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/097_donalu_player_place_projection.sql",
+          "sha256": "e454cfc056a397eeb5ba13b13be6f6cf7a229efa241b27867b5d2e2ad0fd9c9f",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/098_dornhain_unified_atlas_starter.sql",
+          "sha256": "e3da9995b29bf7491030dd9943d612bb3366f13bf7123d0efbc5ceecbc387407",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/099_dornhain_unified_world_map_v2.sql",
+          "sha256": "82fed4ae77a47abf9c180c71c5c690c69a85178b0c60c479cea311d4e5aae785",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/100_dornhain_unified_ocean_blank_v3.sql",
+          "sha256": "6511fd19f98d221c2844cda88569ce278db562fd3e7974e61174e7b845d0e481",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/101_world_places_select_editor_only.sql",
+          "sha256": "9c64d983108e36ea19d6acef12723ca006ca31a663fd15a3a34db893cfa0abf0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/102_world_atlas_player_redaction_force.sql",
+          "sha256": "a1add570f090c4b8cae03170cf5b73bc7eba6ccc2a0f785d3d1910d0a3178bb3",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
+          "sha256": "84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+          "sha256": "faefcc47bcddd1647c38971b4efbdb5a3cd064c76cbaca5f02a644ebe9e31f90",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+          "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
+          "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/107_atlas_worldbuilder_migration_gate.sql",
+          "sha256": "cf753cc7ac7f6d7ee221c3ca47b46c81e9b6fa0270d4b5438e372cd0d7e592b0",
+          "status": "passed"
+        },
+        {
+          "path": "supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
+          "sha256": "e0d35e8a469efa708da70b3a2c27c08e1b3988ec1ebacdd761fb8629c9001726",
+          "status": "passed"
+        }
+      ],
+      "catalog": {
+        "functions": 177,
+        "policies": 144,
+        "relations": 59,
+        "columns": 541,
+        "constraints": 287
+      },
+      "fixtureIds": {
+        "actors": {
+          "owner": "a7700000-0000-4000-8000-000000000001",
+          "gm": "a7700000-0000-4000-8000-000000000002",
+          "player1": "a7700000-0000-4000-8000-000000000003",
+          "player2": "a7700000-0000-4000-8000-000000000004",
+          "outsider": "a7700000-0000-4000-8000-000000000005",
+          "otherGm": "a7700000-0000-4000-8000-000000000006"
+        },
+        "world": "a7700000-0000-4000-8000-000000000101",
+        "foreignWorld": "a7700000-0000-4000-8000-000000000102",
+        "ownerOnlyWorld": "a7700000-0000-4000-8000-000000000103",
+        "project": "a7700000-0000-4000-8000-000000000201",
+        "foreignProject": "a7700000-0000-4000-8000-000000000202",
+        "otherSagaProject": "a7700000-0000-4000-8000-000000000203",
+        "session": "a7700000-0000-4000-8000-000000000301",
+        "secondSession": "a7700000-0000-4000-8000-000000000302",
+        "foreignSession": "a7700000-0000-4000-8000-000000000303",
+        "player1Character": "a7700000-0000-4000-8000-000000000401",
+        "player2Character": "a7700000-0000-4000-8000-000000000402",
+        "rootMap": "a7700000-0000-4000-8000-000000000501",
+        "secretMap": "a7700000-0000-4000-8000-000000000502",
+        "foreignMap": "a7700000-0000-4000-8000-000000000503",
+        "place": "a7700000-0000-4000-8000-000000000601",
+        "secretPlace": "a7700000-0000-4000-8000-000000000602",
+        "locationBinding": "a7700000-0000-4000-8000-000000000701",
+        "secretBinding": "a7700000-0000-4000-8000-000000000702",
+        "publicNpcBinding": "a7700000-0000-4000-8000-000000000703",
+        "secretNpcBinding": "a7700000-0000-4000-8000-000000000704",
+        "otherSagaBinding": "a7700000-0000-4000-8000-000000000705",
+        "worldPublicId": "WO-FX234",
+        "sagaPublicId": "SA-FX234",
+        "foreignSagaPublicId": "SA-FX235",
+        "otherSagaPublicId": "SA-FX236",
+        "secretTitle": "Fixture secret vault",
+        "publicTitle": "Fixture coast"
+      },
+      "semantic": {
+        "algorithm": "sha256",
+        "sha256": "0a4295dbd16f61977ddb0eb282c5630d36df99de9371bfdc28fd3c2b5b99141d",
+        "payloadByteLength": 9006
+      },
+      "finishedAt": "2026-10-21T11:13:53.833Z"
+    }
+  ],
+  "identical": true,
+  "semanticChecksum": "0a4295dbd16f61977ddb0eb282c5630d36df99de9371bfdc28fd3c2b5b99141d",
+  "migrationCount": 106,
+  "migrationsMissingFromApplyScript": [
+    "080_item_thumbnail_webp.sql",
+    "082_dornhain_pregen_full_sheets.sql",
+    "108_atlas_worldbuilder_migration_apply.sql"
+  ],
+  "catalog": {
+    "functions": 177,
+    "policies": 144,
+    "relations": 59,
+    "columns": 541,
+    "constraints": 287
+  },
+  "repositoryHead": "c1e6dd0843898d9e2d8251815a0fa19cc12e8d12",
+  "finishedAt": "2026-10-21T11:13:53.833Z"
+}

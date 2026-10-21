@@ -21,7 +21,12 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   const original = previous.issues.filter((issue) => !issue.localId.startsWith('RPC-'));
   const byNumber = new Map(original.map((issue) => [issue.githubIssue, issue.localId]));
   const rpcByName = new Map(rpcInventory.rpcs.map((row) => [row.rpc, row]));
-  const edgeByNumber = new Map(edgeInventory.edges.map((row) => [row.implementationIssue, row]));
+  const edgesByNumber = new Map();
+  for (const row of edgeInventory.edges) {
+    const list = edgesByNumber.get(row.implementationIssue) ?? [];
+    list.push(row);
+    edgesByNumber.set(row.implementationIssue, list);
+  }
   const infraByNumber = new Map(edgeInventory.infrastructure.map((row) => [row.implementationIssue, row]));
   const all = [...original, ...splits.groups.map((group) => ({ localId: group.id, githubIssue: registry.issues[group.id], title: group.title, priority: 'P1', dependsOn: [] }))];
   if (all.length !== 90 || new Set(all.map((issue) => issue.localId)).size !== 90 || all.some((issue) => migrationIssueIdentities[issue.localId] !== issue.githubIssue)) throw new Error('Intake or split groups omit or replace a reviewed migration identity');
@@ -29,7 +34,8 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   const issues = all.map((old) => {
     const id = old.localId;
     const manual = planContracts[id];
-    const edge = edgeByNumber.get(old.githubIssue);
+    const edges = edgesByNumber.get(old.githubIssue) ?? [];
+    const edge = edges[0];
     const infra = infraByNumber.get(old.githubIssue);
     const group = splits.groups.find((entry) => entry.id === id);
     const ownedGroups = splits.groups.filter((entry) => entry.parentIssue === old.githubIssue);
@@ -74,23 +80,57 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
         ],
       };
       dependsOn = ownedGroups.map((entry) => entry.id);
-    } else if (edge) {
-      sourceContracts = [`.qa/intake/edge-infra-contracts/edge-${edge.function}.md`, edge.sourceContract].filter(Boolean);
-      blockers = (edge.legacyDefects ?? []).map(text);
-      const behavior = edge.exposure?.dispatcherAllowed ? 'Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.' : edge.exposure?.kind === 'dispatcher' ? 'Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreichbar machen.' : 'Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.';
+    } else if (edges.length) {
+      sourceContracts = unique(edges.flatMap((entry) => [
+        `.qa/intake/edge-infra-contracts/edge-${entry.function}.md`,
+        entry.sourceContract,
+      ].filter(Boolean)));
+      blockers = edges.flatMap((entry) => (entry.legacyDefects ?? []).map(text));
+      const names = edges.map((entry) => entry.function).sort();
+      const behaviorParts = edges.map((entry) => {
+        const behavior = entry.exposure?.dispatcherAllowed
+          ? 'Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen.'
+          : entry.exposure?.kind === 'dispatcher'
+            ? 'Nur die aktuell eingebundenen Worker über den zentralen Dispatcher erreichbar machen.'
+            : 'Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert.';
+        return `${entry.function}: ${behavior}`;
+      });
+      // Keep 2..4 assertions / 3..5 acceptance even when multiple Edge workers share one issue identity.
+      const perEdgeCap = edges.length > 1 ? 2 : 4;
+      const coOwnedAssertions = edges.flatMap((entry) => checksForTests(
+        entry.function,
+        (entry.requiredTests ?? []).slice(0, perEdgeCap),
+        [
+          `.qa/intake/edge-infra-contracts/edge-${entry.function}.md`,
+          entry.sourceContract,
+        ].filter(Boolean),
+      )).slice(0, 4);
       definition = {
-        intent: `${edge.function}: ${behavior}`,
-        sources: edge.verification?.sourceFiles?.map((entry) => entry.path) ?? edge.files,
-        targets: [edge.proposedService],
-        security: `${text(edge.authz)} Dispatcher-Status: ${text(edge.exposure)}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.`,
-        assertions: checksForTests(edge.function, edge.requiredTests, sourceContracts),
+        intent: behaviorParts.join(' '),
+        sources: unique(edges.flatMap((entry) => entry.verification?.sourceFiles?.map((file) => file.path) ?? entry.files)),
+        targets: unique(edges.map((entry) => entry.proposedService).filter(Boolean)),
+        security: edges.map((entry) => `${entry.function}: ${text(entry.authz)} Dispatcher-Status: ${text(entry.exposure)}.`).join(' ')
+          + ' Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.',
+        assertions: coOwnedAssertions,
       };
-      const declared = resolveDependencies(edge, id);
-      ownedPrerequisites = declared.ownedPrerequisites;
-      dependsOn = unique(['MIG-020', 'MIG-013', 'MIG-014', ...declared.dependsOn]);
-      if (/media|avatar|item-|look-reference|export/.test(edge.function)) dependsOn.push('MIG-500');
-      if (['character-avatar-meshy', 'item-model3d', 'item-thumbnail'].includes(edge.function)) dependsOn.push('MIG-402');
-      if (edge.function === 'main') dependsOn.push(...edgeInventory.edges.filter((entry) => entry.exposure?.dispatcherAllowed && entry.function !== 'main').map((entry) => byNumber.get(entry.implementationIssue)));
+      ownedPrerequisites = [];
+      dependsOn = ['MIG-020', 'MIG-013', 'MIG-014'];
+      for (const entry of edges) {
+        const declared = resolveDependencies(entry, id);
+        ownedPrerequisites = unique([...ownedPrerequisites, ...declared.ownedPrerequisites]);
+        dependsOn = unique([...dependsOn, ...declared.dependsOn]);
+        if (/media|avatar|item-|look-reference|export|ollama-settings/.test(entry.function)) dependsOn.push('MIG-500');
+        if (['character-avatar-meshy', 'item-model3d', 'item-thumbnail'].includes(entry.function)) dependsOn.push('MIG-402');
+        if (entry.function === 'main') {
+          dependsOn.push(...edgeInventory.edges
+            .filter((row) => row.exposure?.dispatcherAllowed && row.function !== 'main')
+            .map((row) => byNumber.get(row.implementationIssue)));
+        }
+      }
+      // Keep titles stable for the original 24 single-function tickets; co-owned extras stay in contracts.
+      if (names.length > 1 && !String(old.title).includes(names.join('+'))) {
+        // Title remains the published GitHub title; body/intent lists every co-owned function.
+      }
     } else if (infra) {
       sourceContracts = [`.qa/intake/edge-infra-contracts/infra-${infra.area}.md`, infra.sourceContract].filter(Boolean);
       blockers = (infra.legacyDefects ?? []).map(text);
@@ -111,7 +151,13 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
 
     const slug = featureSlug(id);
     const acceptance = [...definition.assertions.map((entry) => entry.then), typedStrictAcceptance];
-    const inventoryStates = rpcNames ? rpcNames.map((rpc) => rpcByName.get(rpc)?.verification?.status) : edge ? [edge.verification?.status] : infra ? [infra.verification?.status] : [];
+    const inventoryStates = rpcNames
+      ? rpcNames.map((rpc) => rpcByName.get(rpc)?.verification?.status)
+      : edges.length
+        ? edges.map((entry) => entry.verification?.status)
+        : infra
+          ? [infra.verification?.status]
+          : [];
     const sourceStatus = inventoryStates.some((state) => state !== 'source-verified') ? 'source-blocked' : sourceContracts.length ? 'source-verified' : 'specified';
     const status = id.startsWith('GATE-') ? 'needs-design' : 'blocked';
     const priority = old.priority ?? 'P1';

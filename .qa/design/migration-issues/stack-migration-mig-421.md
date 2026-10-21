@@ -25,7 +25,7 @@ Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`.
 
 ### Vorher
 
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/session-recap-ai-service.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/session-recap-prompt.ts, supabase/functions/_shared/session-recap-provider.ts, supabase/functions/_shared/session-recap-rate-limit.ts, supabase/functions/main/index.ts, supabase/functions/session-recap/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-recap.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json.
+Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/session-recap-ai-service.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/_shared/session-recap-prompt.ts, supabase/functions/_shared/session-recap-provider.ts, supabase/functions/_shared/session-recap-rate-limit.ts, supabase/functions/main/index.ts, supabase/functions/session-recap/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-recap.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json.
 
 ### Nachher und Verhalten
 
@@ -33,7 +33,7 @@ session-recap: Den aktuell eingebundenen Worker mit denselben validierten Operat
 
 ## Scope
 
-- Quellpfade: `src/infrastructure/session/session-recap-ai-service.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/session-recap-prompt.ts`, `supabase/functions/_shared/session-recap-provider.ts`, `supabase/functions/_shared/session-recap-rate-limit.ts`, `supabase/functions/main/index.ts`, `supabase/functions/session-recap/index.ts`
+- Quellpfade: `src/infrastructure/session/session-recap-ai-service.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/ollama-llm-resolve.ts`, `supabase/functions/_shared/ollama-url-policy.ts`, `supabase/functions/_shared/session-recap-prompt.ts`, `supabase/functions/_shared/session-recap-provider.ts`, `supabase/functions/_shared/session-recap-rate-limit.ts`, `supabase/functions/main/index.ts`, `supabase/functions/session-recap/index.ts`
 - Änderbare Zielpfade: `server/src/application/session-recap/`
 - Quellverträge: `.qa/intake/edge-infra-contracts/edge-session-recap.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-recap.json`
 
@@ -45,7 +45,7 @@ Diese internen Helper gehören zum Implementierungsumfang dieses Tickets. Ihre s
 
 ## Security & Data
 
-Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+session-recap: Authenticated account must equal projects.gm_user_id for sessions.project_id. A project owner/member/GM label alone is not substituted for that equality. Session must be completed or cancelled. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
 
 ## Edge Cases
 
@@ -90,6 +90,7 @@ Authenticated account must equal projects.gm_user_id for sessions.project_id. A 
 - Depends on #795 (MIG-020)
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
+- Depends on #818 (MIG-402)
 - Depends on #870 (RPC-SESSION-RECAP)
 - Depends on #791 (MIG-012)
 
