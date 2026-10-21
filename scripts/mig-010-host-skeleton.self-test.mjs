@@ -81,7 +81,7 @@ try {
 assert(busyFailed, 'busy port must fail start');
 await new Promise((resolve) => blocker.close(resolve));
 
-// Deterministic data-dir failure: path is an existing regular file (mkdir fails as root and non-root).
+// Deterministic data-dir failure A: path is an existing regular file (mkdir fails as root and non-root).
 const fileAsDataDir = join(tmpdir(), `mig010-not-a-dir-${Date.now()}`);
 writeFileSync(fileAsDataDir, 'not-a-directory\n');
 const unwritable = createHost({
@@ -93,6 +93,23 @@ assert(
   'data dir that is a regular file must fail config (privilege-independent)',
 );
 rmSync(fileAsDataDir, { force: true });
+
+// Deterministic data-dir failure B: post-mkdir writability path (test hook, no chmod).
+const writableProbe = mkdtempSync(join(tmpdir(), 'mig010-wprobe-'));
+const forceUnwritable = createHost({
+  SAGATREE_DATA_DIR: writableProbe,
+  SAGATREE_PORT: '8791',
+  SAGATREE_TEST_FORCE_DATA_DIR_UNWRITABLE: '1',
+});
+assert(
+  'error' in forceUnwritable && forceUnwritable.code === 1,
+  'forced data-dir unwritable path must fail after mkdir/access probe',
+);
+assert(
+  String(forceUnwritable.error).includes('not writable'),
+  'forced unwritable error must use DATA_DIR_NOT_WRITABLE message',
+);
+rmSync(writableProbe, { recursive: true, force: true });
 
 // AC3: shutdown rejects mutations; prior data retained
 const host3 = createHost({
