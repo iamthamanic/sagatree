@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
   "gate": "GATE-04",
-  "runAt": "2026-10-21T08:20:22.881Z",
+  "runAt": "2026-10-21T17:04:57.551Z",
   "status": "PASS",
-  "node": "v24.19.0",
-  "sqlite": "3.53.3",
-  "os": "linux",
-  "architecture": "x64",
-  "kernel": "6.18.55",
-  "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+  "node": "v22.22.3",
+  "sqlite": "3.51.3",
+  "os": "darwin",
+  "architecture": "arm64",
+  "kernel": "25.3.0",
+  "cpuModel": "Apple M4 Pro",
   "filesystemScope": "Ephemeral local temporary directory on this execution host; filesystem type, mount durability and host fsync guarantees were not qualified.",
   "measurements": {
     "load": {
-      "elapsedMs": 1059.552,
-      "committedCommandsPerSecond": 943.795,
+      "elapsedMs": 297.873,
+      "committedCommandsPerSecond": 3357.13,
       "logicalLatencyMs": {
-        "p50": 11.358,
-        "p95": 22.497,
-        "max": 38.702
+        "p50": 3.211,
+        "p95": 6.043,
+        "max": 9.715
       },
       "note": "IPC fixture including conflict responses and explicit snapshot resync; 50 deterministic rounds, not a production saturation benchmark."
     },
-    "busyWaitMs": 252.866
+    "busyWaitMs": 278.985
   },
-  "deterministicReportSha256": "d609c8e11417c6cedcda9e292a3a5e871ef8a57e49d3c69dbccca0e005ce8560"
+  "deterministicReportSha256": "b1656349f178dad43a5f964383b50ae292f0b5f037dfc882e538b428189dd2ea"
 }

@@ -58,9 +58,8 @@ varying measurements are excluded from deterministic equality and are not an SLA
 - Node 22.13 API compatibility was checked against primary documentation. An
   execution on Node 22 and other operating systems/filesystems is **NOT RUN**.
 
-No gate approval, ADR approval, migration unblock or product-code change is
-contained in this evidence.
+Fixture `report.approval` stays NOT APPROVED; human ADR-ST-08 is the architecture decision. This evidence package does not claim production cutover.
 
 ## Additional CI-runtime execution — 2026-10-21
 
-The same frozen Gate-04 scripts were subsequently executed with official Node v22.23.3 and SQLite 3.51.3 on Linux x64. All nine mandatory rows and all 18 cases passed again, including 1000 committed logical commands. The versioned runtime archive was checked against its published SHA-256. The separate `node22-compatibility.json` in the evidence directory records the command, result and matching source fingerprints. This adds a real Node-22 execution to the earlier Node-24 observations; other operating systems and production workloads remain untested. Architecture approval remains NOT APPROVED.
+The same frozen Gate-04 scripts were subsequently executed with official Node v22.23.3 and SQLite 3.51.3 on Linux x64. All nine mandatory rows and all 18 cases passed again, including 1000 committed logical commands. The versioned runtime archive was checked against its published SHA-256. The separate `node22-compatibility.json` in the evidence directory records the command, result and matching source fingerprints. This adds a real Node-22 execution to the earlier Node-24 observations; other operating systems and production workloads remain untested. Architecture freigabe is recorded in ADR-ST-08 (implementation only); fixture report.approval remains NOT APPROVED by design.
