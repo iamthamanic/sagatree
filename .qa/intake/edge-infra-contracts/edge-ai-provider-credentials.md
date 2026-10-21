@@ -4,10 +4,10 @@
 - Path: `supabase/functions/ai-provider-credentials/`
   - `supabase/functions/ai-provider-credentials/index.ts`
 - Methods: OPTIONS, POST
-- Authz: JWT/membership required
+- Authz: JWT-authenticated userId; database operations scoped to the credential owner (`user_id = authenticated userId`); **no project/session membership prerequisite**
 - Shared: `ai-provider-crypto.ts`, `ai-provider-meshy.ts`, `ai-provider-registry.ts`, `cors.ts`
 - Secrets/env: `AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE`, `CREDENTIALS_ENCRYPTION_KEY`, `MESHY_API_BASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`
-- Rate limits: rate-limit logic present in source — extract exact limits before port
+- Rate limits: `consume_ai_provider_credential_rate_limit` RPC scoped to authenticated userId; resolve precise quota from current SQL/env before port
 - Side effects: Document DB/storage/provider writes from source before coding
 - Call sites:
   - `src/infrastructure/ai/ai-provider-credentials-service.ts`
@@ -44,7 +44,7 @@
 
 ## GRENZEN
 - No unsupervised choice of HTTP framework (GATE-03)
-- No dropping membership/rate-limit/secret checks
+- No adding invented project/session membership checks; preserve owner-user JWT scope, rate limits, encryption and secret redaction
 - No production LiveKit/AI credentials in CI fixtures
 - Do not mark GATE APPROVED from this ticket
 
