@@ -2,7 +2,7 @@
 
 - **Status:** CLEAR
 - **Branch:** chore/phosphor-icon-migration-pr
-- **HEAD_SHA:** (pending merge commit — refreshed after commit)
+- **HEAD_SHA:** `2e39a2dbaeb8de415ee1e2bcc5549860933cf6cf`
 - **Base:** origin/main (includes #879 AI Organize)
 - **Scope:** Lucide → `@phosphor-icons/react` across `src/app/**` + `src/shared/ui/**`; Dashboard Saga-erstellen = BookBookmark + Plus; docs (THEME_GUIDE, ui-styleguide, AGENTS, README Recent changes)
 - **Conflict resolution:** Profile + AI BYOK panels kept main UX (#879), icons mapped to Phosphor
