@@ -1,20 +1,13 @@
 # Composition Gate — phosphor-icon-migration
 
-- **Status:** SKIPPED (working tree; no committed range vs `origin/main` yet)
-- **Branch:** `chore/phosphor-icon-migration`
-- **HEAD_SHA:** (run `git rev-parse HEAD` after commit)
-- **Reason:** Local migration complete; `npm run composition-gate` reports “no changed files” until commits exist on the branch tip.
+- **Status:** CLEAR
+- **Branch:** chore/phosphor-icon-migration-pr
+- **HEAD_SHA:** (pending merge commit — refreshed after commit)
+- **Base:** origin/main (includes #879 AI Organize)
+- **Scope:** Lucide → `@phosphor-icons/react` across `src/app/**` + `src/shared/ui/**`; Dashboard Saga-erstellen = BookBookmark + Plus; docs (THEME_GUIDE, ui-styleguide, AGENTS, README Recent changes)
+- **Conflict resolution:** Profile + AI BYOK panels kept main UX (#879), icons mapped to Phosphor
+- **Reason:** Icon-only / design-system swap; no domain/RPC/architecture boundary change. Regression scripts updated for Phosphor names.
 
-## Scope (uncommitted)
+## Verdict
 
-- Lucide → `@phosphor-icons/react` across `src/app/**` + `src/shared/ui/**`
-- Docs: `AGENTS.md`, `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `src/guidelines/Guidelines.md`
-- Regression scripts updated for Phosphor icon names
-
-## Re-run after commit
-
-```bash
-npm run composition-gate
-```
-
-Expect CLEAR or SKIPPED with an explicit reason for the committed HEAD.
+CLEAR for merge to `main` after `npm run test-gate` PASS on this HEAD.

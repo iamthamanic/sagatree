@@ -15,10 +15,11 @@ Deno.test('allowlist includes hardened surfaces from #668', () => {
     'item-model3d',
     'session-recap',
     'ai-provider-credentials',
+    'ollama-settings',
   ] as const) {
     assertEquals(isEdgeDispatcherAllowed(name), true, name);
   }
-  assertEquals(EDGE_DISPATCHER_ALLOWLIST.length >= 5, true);
+  assertEquals(EDGE_DISPATCHER_ALLOWLIST.length >= 6, true);
 });
 
 Deno.test('legacy unauthenticated workers are denied', () => {
