@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-010 (#789)
 
-- **HEAD_SHA:** WILL_STAMP
+- **HEAD_SHA:** `7de86b9cfba1001942f88f87f196032a0cc37106`
 - **Verdict:** CLEAR
 
 ## Scope
@@ -18,3 +18,5 @@ Host modular monolith skeleton: `server/src/{bootstrap,config,modules,applicatio
 ## Non-claims
 
 No GATE-02..05, no production cutover.
+
+`HEAD_SHA` is the implementation commit that introduced the host skeleton; subsequent chore commits only refresh this proof file.
