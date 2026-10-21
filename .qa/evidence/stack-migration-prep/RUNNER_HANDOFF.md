@@ -16,8 +16,8 @@ Updated: 2026-10-21 (post-#782/#783 follow-up)
 | Field | Value |
 | --- | --- |
 | URL | https://github.com/iamthamanic/sagatree/pull/860 |
-| Head SHA | `95455813` (push may advance with this handoff commit) |
-| Draft → Ready | Agent undrafts when prep PASS checks are green (see below) |
+| Head SHA | `f0b9e9d9` |
+| Draft → Ready | **Ready for review** (undrafted); merge still blocked on human MERGE-860 reply |
 | Merged? | **No** — waiting human `MERGE-860: ALLOW-KNOWN-RED` (or WAIT / REQUIRE-REVIEW-FIRST) |
 
 ### Prep PASS vs known-red (do not greenwash)
