@@ -176,15 +176,30 @@ test('architecture approvals are checked while every ticket is blocked', () => {
   const input = clone();
   input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'agent', actor: 'test-agent', sourceUrl: 'not-a-url', evidenceFile: 'nonexistent' };
   rejects(input, /GATE-01: missing explicit human architecture approval/);
-  rejects(input, /architecture approval is not authorized/);
 });
 
-test('a local human claim cannot change preparation authorization', () => {
+test('a malformed human claim is rejected even when architecture approval is authorized', () => {
   const input = clone();
-  input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-123', evidenceFile: 'AGENTS.md' };
-  rejects(input, /architecture approval is not authorized/);
+  // Missing issuecomment hash → invalid sourceUrl
+  input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784', evidenceFile: 'AGENTS.md' };
+  rejects(input, /GATE-01: missing explicit human architecture approval/);
+  // Existing comment URL but nonexistent evidence file
+  input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-123', evidenceFile: 'nonexistent-adr.md' };
+  rejects(input, /GATE-01: missing explicit human architecture approval/);
   setStatus(input, 'MIG-001', 'ready');
   rejects(input, /runner execution is not authorized/);
+});
+
+test('human GATE-01 APPROVED with verifiable comment URL and ADR evidence is accepted', () => {
+  const input = clone();
+  input.approvals.decisions['GATE-01'] = {
+    status: 'APPROVED',
+    actorType: 'human',
+    actor: 'iamthamanic',
+    sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552',
+    evidenceFile: 'docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md',
+  };
+  assert.deepEqual(errors(input), []);
 });
 
 test('nonexistent completion evidence and unrelated existing prose are not acceptance', () => {

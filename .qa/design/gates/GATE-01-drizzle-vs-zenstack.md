@@ -1,8 +1,8 @@
 # GATE-01 — Drizzle + Policy Service vs ZenStack 3
 
-> **Status:** SPEC only — not APPROVED  
-> **GitHub:** #784 (PoC execution) · Prep criteria: #776  
-> **Blocks:** MIG-011..013, wave-1 host persistence/authz
+> **Status:** **APPROVED — Drizzle + SagaTree Policy Service** (human, 2026-10-21)  
+> **GitHub:** #784 · ADR: [`docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`](../architecture/ADR-ST-05-gate-01-drizzle-policy.md) · Source: https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552  
+> **Prep criteria:** #776 · **Does not waive:** host modular monolith (`docs/architecture/host-modular-monolith.md`)
 
 ## Variants
 
@@ -52,11 +52,12 @@
 3. Migration path for 50+ tables plausible (notes).  
 4. License/ops constraints acceptable.
 
-## On APPROVED
+## On APPROVED (done)
 
-- Record ADR-ST-05 = chosen variant.  
-- Unblock MIG-011, MIG-012, MIG-013 labels only after ADR file lands.
+- ADR-ST-05 recorded: Drizzle + SagaTree Policy Service.
+- `architecture-approvals.json` cites the human #784 comment.
+- MIG-010/#789 may start under explicit runner freigabe; MIG-011..013 still need their other gate deps (e.g. GATE-04 for MIG-011).
 
-## Explicit non-decision
+## Explicit non-approvals
 
-Agents must not mark GATE-01 APPROVED. PoC may recommend A or B with evidence only.
+GATE-02..05 and production cutover are **not** approved by GATE-01. Agents must not invent further GATE APPROVED statuses.

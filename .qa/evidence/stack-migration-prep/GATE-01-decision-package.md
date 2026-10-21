@@ -1,11 +1,12 @@
 # GATE-01 / #784 — Human ORM decision package
 
-**Status:** Decision package ready — **NOT APPROVED by agent**  
-**Issue:** [#784](https://github.com/iamthamanic/sagatree/issues/784)  
+**Status:** **APPROVED — Drizzle + SagaTree Policy Service** (human, 2026-10-21)  
+**Issue:** [#784](https://github.com/iamthamanic/sagatree/issues/784) · [comment](https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552)  
+**ADR:** [`docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`](../../../docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md)  
 **Evidence:** `pocs/gate-01/`, `pocs/GATE01_REVIEW.md`, `closeout/dependency-audit.md`  
-**Unlocks on APPROVED:** **MIG-010 / #789** (Node host foundation). Persistence ports MIG-011..013 also depend on this choice (+ GATE-04 for SQLite journal on #790).
+**Unlocks:** **MIG-010 / #789** under explicit runner freigabe. Persistence ports MIG-011..013 also depend on this choice (+ GATE-04 for SQLite journal on #790).
 
-**Important (correction order 2026-10-21):** Choosing Drizzle or ZenStack does **not** substitute for the binding **host modular monolith** contract in `docs/architecture/host-modular-monolith.md` (module ownership, public APIs, repository ownership, dependency DAG, central bootstrap, use-case map). Import-boundary CI against direct Drizzle/client access remains an **additional** requirement beside domain module-boundary checks. No GATE-01 self-approval from MERGE-860: WAIT or from this package.
+**Important:** Choosing Drizzle does **not** substitute for the binding **host modular monolith** contract in `docs/architecture/host-modular-monolith.md`. Import-boundary CI against direct Drizzle/client access remains an **additional** requirement beside domain module-boundary checks. GATE-02..05 and production cutover remain **not** approved.
 
 ---
 
