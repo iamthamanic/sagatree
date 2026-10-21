@@ -1,30 +1,28 @@
-# Composition Gate — stack-migration-mig-010 (#789)
+# Composition Gate — stack-migration-mig-010 (#789 hardening)
 
-- HEAD_SHA: 7de86b9cfba1001942f88f87f196032a0cc37106
-- BASE_SHA: cb6a7f7a2c241f8f951649447f17e7476e1a931e
+- HEAD_SHA: 741bfd8768062232c362926059bff3c22af3b1e7
+- BASE_SHA: 741bfd8768062232c362926059bff3c22af3b1e7
 - Date: 2026-10-21
 - Verdict: CLEAR
 
 ## Event
 
-Operator starts the local Node host in solo mode with `SAGATREE_DATA_DIR`; after listen succeeds the host exposes `/health` readiness and accepts a single `/v1/ping` mutation into the data directory; SIGTERM rejects further mutations while retaining confirmed identity/ping files.
+Hardening of the solo Node host HTTP and bootstrap error boundaries: invalid request-targets and unexpected handler failures return controlled JSON statuses; corrupt host-identity fails start without readiness or secret leakage; data-dir deny uses a regular-file path (chmod-independent).
 
 ## Hop chain
 
-1. Producer: `server/src/bootstrap/main.ts` → `createHost` (config + identity/permissions/ops factories)
-2. Use-case: `application/health` reads ops health projection (no secrets)
-3. HTTP: `http/route-registry.ts` authorizes via permissions, serves `/health` and `/v1/ping`
-4. Persistence stub: append-only `ping-log.jsonl` + `host-identity.json` under the configured data dir (no ORM yet)
-
-Cardinality: one host process ↔ one data dir fingerprint; one solo actor id per data dir; one ping line per accepted POST.
+1. Producer: raw HTTP client / bootstrap `main.ts`
+2. `http/route-registry.ts` parses URL + catches handler errors → 400/500
+3. `bootstrap/create-host.ts` identity load fail-closed → no ready
+4. Consumer: `/health` remains available after controlled HTTP errors
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| N-actors | One solo actor per data dir; second process on same dir reuses identity fingerprint | `host-identity.json` rewritten only when missing; fingerprint is SHA of dataDir path | pass |
-| Invalid/missing | Missing/unwritable data dir, bad port, or busy bind → process exit ≠ ready | `loadConfig` fail-closed; `listen` EADDRINUSE rejects start; health never reported ready | pass |
-| Two consumers / crash | Shutdown rejects new pings; prior confirmed ping lines remain; second start does not invent a new data dir | `acceptMutations=false` before close; ping-log + identity retained on restart | pass |
+| N-actors | One host process; malformed request does not fan out or crash listeners | Single connection 400; subsequent health 200 | pass |
+| Invalid/missing | Corrupt identity / file-as-data-dir → exit 1, ready false, redacted | createHost/main never echo file body or secret markers | pass |
+| Two consumers / crash | Handler throw during health → 500; host continues serving | Promise does not reject; next health succeeds | pass |
 
 ## Flags
 
@@ -34,4 +32,4 @@ Cardinality: one host process ↔ one data dir fingerprint; one solo actor id pe
 
 ## Non-claims
 
-GATE-02..05 and production cutover are not approved. Drizzle schema lands in successors under ADR-ST-05.
+No GATE-02..05 / cutover. No ORM schema.

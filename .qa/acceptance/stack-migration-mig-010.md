@@ -1,18 +1,20 @@
-# Acceptance — MIG-010 / #789 Node host skeleton
+# Acceptance — MIG-010 / #789 Node host skeleton (+ hardening)
 
 ## Status
 
-Implementation acceptance: **ready for review** (local self-test PASS).
+Implementation acceptance: **hardening in review** (HTTP boundary, identity fail-closed, privilege-independent data-dir deny).
 
 ## Evidence
 
-| AC | Proof |
+| AC / finding | Proof |
 | --- | --- |
-| Readiness only after init; same data dir after restart | `scripts/mig-010-host-skeleton.self-test.mjs` (AC1) |
-| Invalid config / busy port / unwritable dir → exit code + redacted cause | self-test AC2 |
-| Shutdown rejects mutations; confirmed data retained | self-test AC3 (`/v1/ping` + ping-log + identity file) |
-| `server/` registered; bootstrap wires identity/permissions/ops; public APIs; `checkRegisteredHostPackages` | live `server/src/**` + `npm run test-gate` architecture-boundary (+ self-test regressions already on main) |
-| No type escape hatches | TypeScript under `server/src` uses explicit types; no `any` / `as unknown as` |
+| Readiness only after init; same data dir after restart | `scripts/mig-010-host-skeleton.self-test.mjs` AC1 |
+| Invalid config / busy port / data-dir deny → exit + redacted cause | self-test AC2 — data-dir deny uses **regular file as path** (chmod-independent; root run NOT RUN locally without passwordless sudo) |
+| Shutdown rejects mutations; confirmed data retained | self-test AC3 |
+| HTTP invalid request-target → 400; host stays healthy | self-test Regression 1 (raw `GET http://[`) |
+| Unexpected handler error → 500, no promise rejection, no secret leak | self-test Regression 1 (throwing health use-case) |
+| Corrupt identity with secret marker → exit 1, ready:false, no marker/raw leak | self-test Regression 2 (`createHost` + `main.ts` spawn) |
+| Module boundaries | `checkRegisteredHostPackages` via architecture-boundary-check |
 
 ## Composition Gate
 
@@ -20,4 +22,4 @@ See `.qa/runs/composition-gate-stack-migration-mig-010.md`.
 
 ## Non-claims
 
-GATE-02..05 and production cutover are **not** approved by this ticket.
+GATE-02..05 and production cutover are **not** approved by this ticket. GATE-04 is a separate human decision.
