@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "AWAITING_EXPLICIT_PUBLICATION_AUTHORIZATION",
+  "status": "AUTHORIZED_ISSUE_CONTRACTS_SYNCHRONIZED_SOURCE_PUBLISHED",
   "repository": "iamthamanic/sagatree",
   "visibility": "public",
   "contentIncludes": "Canonical migration contracts, preparation code, isolated execution evidence and documented security findings",
@@ -9,7 +9,7 @@
     "number": 860,
     "title": "docs(qa): remediate migration contract security gaps and validator",
     "bodyFile": ".qa/evidence/stack-migration-prep/closeout/pr860-body.md",
-    "bodySha256": "0793046e02c80ba2fb0b398f4c0199a8e353079590dfb0d1646fde7ce17e09b1",
+    "bodySha256": "61adb46b7dcdbf71612523e8b1c7089c1fcffcf5c8466078eaf849ff838c5f36",
     "expectedHead": "839a8c256f53fc7f3be3375efd127ae07524458f",
     "keepDraft": true
   },
@@ -17,7 +17,7 @@
     "number": 773,
     "title": "Epic: SagaTree Local-First Stack-Migration (inkl. Vorbereitung, Gates, Cutover)",
     "bodyFile": ".qa/evidence/stack-migration-prep/closeout/epic773-body.md",
-    "bodySha256": "11481f5195cd5006b59270adb34469877dd03c5e3209a5dbc533fd84d5e42af3",
+    "bodySha256": "ad513017a446fec54f4f36978f72a30751f49d7cf16fda61400fa4eb967b7334",
     "expectedPreviousBodySha256": "9efb3c26d74dfb2da540da9a46a5663fd8a06521b6eca485183a62fa41ceae55",
     "labels": [
       "P0",
@@ -28,8 +28,47 @@
   "issueUpdates": {
     "manifest": ".qa/evidence/stack-migration-prep/issue-publish-plan.json",
     "manifestSha256": "e5b8756f3f65a6b523a932e1d63c0495790b8a421c5030440c32cd815a420e8e",
-    "verifiedAlready": 41,
-    "pending": 49,
-    "receipt": ".qa/evidence/stack-migration-prep/github-contract-sync.json"
-  }
+    "verifiedAlready": 90,
+    "pending": 0,
+    "receipt": ".qa/evidence/stack-migration-prep/github-contract-sync.json",
+    "lastVerifiedAt": "2026-10-21T09:55:52.305Z"
+  },
+  "historicalPreflight": {
+    "previousStatus": "AWAITING_EXPLICIT_PUBLICATION_AUTHORIZATION",
+    "pullRequestExpectedHead": "839a8c256f53fc7f3be3375efd127ae07524458f",
+    "epicExpectedPreviousBodySha256": "9efb3c26d74dfb2da540da9a46a5663fd8a06521b6eca485183a62fa41ceae55",
+    "issueUpdates": {
+      "manifest": ".qa/evidence/stack-migration-prep/issue-publish-plan.json",
+      "manifestSha256": "e5b8756f3f65a6b523a932e1d63c0495790b8a421c5030440c32cd815a420e8e",
+      "verifiedAlready": 41,
+      "pending": 49,
+      "receipt": ".qa/evidence/stack-migration-prep/github-contract-sync.json"
+    },
+    "meaning": "Original preauthorization snapshots; retained expected-head/body fields are historical, never a fresh write lease."
+  },
+  "explicitPublicationAuthorization": {
+    "source": "current user message",
+    "observedAt": "2026-10-21T09:47:54.611Z",
+    "repository": "iamthamanic/sagatree",
+    "visibility": "public",
+    "scope": "Publish the reviewed preparation package including documented security findings; update Draft PR #860 and Epic #773; synchronize remaining 49 canonical issue contracts.",
+    "runnerExecution": false,
+    "architectureApproval": false,
+    "merge": false,
+    "productionChange": false
+  },
+  "sourcePublication": {
+    "commit": "fee2545806a152bd3c7160e8ee8f47cd8c89c8a1",
+    "tree": "132f7333e905ad9a9d544f3c55821de7c7c98056",
+    "url": "https://github.com/iamthamanic/sagatree/commit/fee2545806a152bd3c7160e8ee8f47cd8c89c8a1",
+    "meaning": "Actual published reviewed source commit supplied by the publisher after remote verification; subsequent status-only updates are evidenced separately."
+  },
+  "finalPublicationReceipt": ".qa/evidence/stack-migration-prep/closeout/publication-final.json",
+  "metadataPublicationMeaning": "PR/Epic bodies are prepared here; their actual final remote state is established only by the separate final publication receipt.",
+  "originalReviewPackage": {
+    "path": ".qa/evidence/stack-migration-prep/review-package/sagatree-pr860-review.zip",
+    "sha256": "d2c78139c88faed528543ee40fc6d052ae13d6b8518074f589f35bbc6b5bc110",
+    "meaning": "Immutable historical preauthorization review snapshot, created at 41/90 synchronized; not the current synchronization status."
+  },
+  "preparedAt": "2026-10-21T09:58:33.635345+00:00"
 }

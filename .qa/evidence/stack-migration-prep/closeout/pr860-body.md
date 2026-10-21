@@ -30,4 +30,10 @@ Der GATE-01-Vollaudit bleibt wegen der Generator-Abhängigkeiten zusätzlich rot
 
 Dieser PR bleibt **Draft**. Keine Architekturentscheidung, kein Runner-Start, kein Cutover und keine Release-Freigabe. Die ersten konkreten Abnahmen sind #782 und #783; nach menschlichem GATE-01-Beschluss #784 kann der neue Node-Host #789 beginnen. Der Auth-Befund sperrt die späteren Auth-Tickets, nicht diesen ersten Host-Grundaufbau.
 
-Nachweise: `.qa/evidence/stack-migration-prep/`, Anleitung: `docs/stack-migration-preparation.md`, Startfolge: `.qa/evidence/stack-migration-prep/START_SEQUENCE.md`. Die genaue, separat verifizierte GitHub-Synchronisation steht in `github-contract-sync.json`; aus der Existenz dieses Entwurfs folgt keine vollständig abgeschlossene Publikation.
+Nachweise: `.qa/evidence/stack-migration-prep/`, Anleitung: `docs/stack-migration-preparation.md`, Startfolge: `.qa/evidence/stack-migration-prep/START_SEQUENCE.md`.
+
+## Veröffentlichungsstand
+
+Nach ausdrücklicher Nutzerfreigabe für das öffentliche Repository einschließlich dokumentierter Sicherheitsbefunde sind **alle 90 kanonischen Issue-Verträge synchronisiert und verifiziert; 0 stehen aus**. Die genaue Synchronisation und die frühere, inzwischen durch diese Autorisierung aufgelöste Freigabeablehnung bleiben in `github-contract-sync.json` nachvollziehbar. Das unveränderte geprüfte Quellpaket ist unter [Commit `fee2545806a152bd3c7160e8ee8f47cd8c89c8a1`](https://github.com/iamthamanic/sagatree/commit/fee2545806a152bd3c7160e8ee8f47cd8c89c8a1) veröffentlicht; sein Git-Baum ist `132f7333e905ad9a9d544f3c55821de7c7c98056`.
+
+Das ursprüngliche Review-ZIP ist ein unveränderter historischer Snapshot vor dieser Freigabe und Synchronisation. Der abschließende Publikationsnachweis `closeout/publication-final.json` dokumentiert den tatsächlich sichtbaren Code-, PR- und Epic-Stand. Alle 90 Kindtickets bleiben blocked/needs-design; die Veröffentlichung ist keine Implementierungs-, Architektur-, Merge- oder Runner-Freigabe.

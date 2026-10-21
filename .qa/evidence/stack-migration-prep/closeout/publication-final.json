@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "status": "PUBLISHED_AND_VERIFIED",
+  "observedAt": "2026-10-21T09:59:41.016Z",
+  "repository": "iamthamanic/sagatree",
+  "visibility": "public",
+  "approvedScope": "Preparation code, canonical migration contracts, isolated execution evidence and documented security findings; Draft PR #860 and Epic #773 updates",
+  "sourcePublication": {
+    "commit": "fee2545806a152bd3c7160e8ee8f47cd8c89c8a1",
+    "tree": "132f7333e905ad9a9d544f3c55821de7c7c98056",
+    "parent": "839a8c256f53fc7f3be3375efd127ae07524458f",
+    "branch": "docs/mig-773-contract-remediation-20261021",
+    "reviewedIndexTreeExactMatch": true,
+    "remoteVerifiedAt": "2026-10-21T09:58:33.293Z"
+  },
+  "originalReviewPackage": {
+    "sha256": "d2c78139c88faed528543ee40fc6d052ae13d6b8518074f589f35bbc6b5bc110",
+    "indexedFileCount": 471,
+    "meaning": "Immutable preauthorization snapshot; its 41/49 synchronization status is historical. Current canonical contract receipt is authoritative."
+  },
+  "issueContracts": {
+    "verifiedCount": 90,
+    "pendingCount": 0,
+    "newUpdates": 49,
+    "allOpen": true,
+    "agentBlockedCount": 90,
+    "agentReadyCount": 0,
+    "agentInProgressCount": 0,
+    "agentDoneCount": 0,
+    "manifestSha256": "e5b8756f3f65a6b523a932e1d63c0495790b8a421c5030440c32cd815a420e8e",
+    "receiptPath": ".qa/evidence/stack-migration-prep/github-contract-sync.json",
+    "receiptSha256": "9b6aab40d587aed38d05319ad24d9226fba91a9b7392d0c329c7ccd4b6de2b5c",
+    "verification": "Fresh GitHub readback of all 90 exact identities, titles, bodies and complete label sets after all 49 writes",
+    "verifiedAt": "2026-10-21T09:55:52.305Z"
+  },
+  "pullRequest": {
+    "number": 860,
+    "url": "https://github.com/iamthamanic/sagatree/pull/860",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "title": "docs(qa): remediate migration contract security gaps and validator",
+    "bodySha256": "61adb46b7dcdbf71612523e8b1c7089c1fcffcf5c8466078eaf849ff838c5f36",
+    "headAtMetadataVerification": "fee2545806a152bd3c7160e8ee8f47cd8c89c8a1",
+    "baseAtMetadataVerification": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
+    "bodyExactMatch": true
+  },
+  "epic": {
+    "number": 773,
+    "url": "https://github.com/iamthamanic/sagatree/issues/773",
+    "state": "open",
+    "title": "Epic: SagaTree Local-First Stack-Migration (inkl. Vorbereitung, Gates, Cutover)",
+    "bodySha256": "ad513017a446fec54f4f36978f72a30751f49d7cf16fda61400fa4eb967b7334",
+    "labels": [
+      "P0",
+      "Architecture",
+      "feature"
+    ],
+    "bodyExactMatch": true
+  },
+  "executionBoundaries": {
+    "runnerActivated": false,
+    "architectureApproved": false,
+    "issueAcceptedOrClosed": false,
+    "merged": false,
+    "productionChanged": false,
+    "cutoverAuthorized": false
+  },
+  "validationMeaning": "The published source tree exactly matches the already tested and reviewed index. Documented failing SQL, browser, auth and development-tool audit criteria remain open. Publication grants no release or architecture approval.",
+  "capturePoint": "Captured after source branch publication and fresh issue/PR/Epic verification, before committing this receipt and the accompanying status-only documentation updates. headAtMetadataVerification is the observed source commit, not a self-reference to the later receipt commit."
+}

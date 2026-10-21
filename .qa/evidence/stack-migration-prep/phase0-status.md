@@ -7,9 +7,13 @@ Remediation branch: `docs/mig-773-contract-remediation-20261021`; PR #860.
 
 The 71 migration issues #782–#852 and Atlas #770 already existed. Eighteen RPC child issues #861–#878 now partition all 57 frontend RPC names exactly once. The canonical graph therefore contains 90 issues. Historical preparation issues are separately retained in `published-issue-registry.json.preparationIssues`.
 
-All 90 issues remain blocked or needs-design for automatic execution. Automatic approval review rejected applying `agent-ready` to #782 because that persistent label could activate the runner. The authorized source repair, isolated tests and PoC evidence continue without activating it.
+All 90 issues remain blocked or needs-design for automatic execution. The earlier rejection of applying `agent-ready` to #782 remains a valid execution boundary; the explicit publication authorization does not activate the runner. No issue has been marked done or architecture-approved by this preparation publication.
 
-The canonical body/title/blocked-label synchronization is **partial: 41/90 verified, 49 pending**. Automatic approval review rejected the next update (#813), requiring explicit visible authorization to publish the remaining contracts, code and evidence including security findings to public `iamthamanic/sagatree`, PR #860 and Epic #773. No further GitHub writes were attempted after that rejection; the new local code/evidence has not been pushed. See `github-contract-sync.json` for both rejection events, the separately accepted #866 retry and exact verified payload hashes.
+The canonical body/title/blocked-label synchronization is **complete: 90/90 verified, 0 pending**. Automatic approval review previously rejected the next update (#813) for insufficient explicit visible public-destination/content authorization. The user subsequently explicitly authorized this preparation package including documented security findings in public `iamthamanic/sagatree`, Draft PR #860, Epic #773 and the remaining 49 contracts. That publication blocker is resolved. `github-contract-sync.json` retains the rejection history, separately accepted #866 retry, explicit authorization and exact verified payload hashes.
+
+The reviewed source package is published at [fee2545806a152bd3c7160e8ee8f47cd8c89c8a1](https://github.com/iamthamanic/sagatree/commit/fee2545806a152bd3c7160e8ee8f47cd8c89c8a1), tree `132f7333e905ad9a9d544f3c55821de7c7c98056`. The final remote PR/Epic metadata result is recorded separately in `closeout/publication-final.json`; the existence of a prepared metadata body is not proof that its update has completed.
+
+The immutable review ZIP remains the historical preauthorization snapshot with 41/90 synchronized at its creation. Its SHA-256 is `d2c78139c88faed528543ee40fc6d052ae13d6b8518074f589f35bbc6b5bc110`. Current publication receipts supersede its historical status, without altering its reviewed source bytes or old snapshots.
 
 ## Evidence and limits
 
