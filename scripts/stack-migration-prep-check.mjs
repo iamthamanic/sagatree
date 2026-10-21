@@ -57,8 +57,8 @@ const doc = JSON.parse(
   readFileSync(join(root, '.qa/intake/local-first-stack-migration-issues.json'), 'utf8'),
 );
 
-if (doc.meta?.githubIssuesPublished === true) {
-  fail('githubIssuesPublished must stay false until freigabe');
+if (doc.meta?.githubIssuesPublished !== true) {
+  fail('GitHub migration issues are already published: githubIssuesPublished must be true');
 }
 
 const issues = doc.issues;
@@ -151,7 +151,7 @@ for (const gateRel of [
   }
 }
 const g04 = readFileSync(join(root, '.qa/design/gates/GATE-04-sqlite-revision-idempotency.md'), 'utf8');
-if (!/expectedRevision|idempotency/i.test(g04) || !/concurrent/i.test(g04)) {
+if (!/expectedRevision/i.test(g04) || !/idempotency/i.test(g04) || !/concurrent/i.test(g04) || !/session_events/i.test(g04) || !/PRIMARY KEY\(session_id, idempotency_key\)/i.test(g04)) {
   fail('GATE-04 must cover revision, idempotency, concurrency');
 }
 const g02 = readFileSync(join(root, '.qa/design/gates/GATE-02-better-auth-colyseus.md'), 'utf8');
@@ -209,7 +209,7 @@ for (const needle of ['session-media-token', 'ai-gm', 'LiveKit', 'SPEC only']) {
 const PATH_RE = /`[^`]+`|\.ts\b|\.sql\b|\.yml\b|\.github\b|src\/|supabase\/|server\/|docs\/|\.qa\//;
 const SECURITY_RE = /auth|rls|owner|gm|secret|deny|forbidden|membership|privilege/i;
 const TEST_RE = /test|negative|parity|reload|revision|idempot|unauthorized|403|401/i;
-const GENERIC_ACC_RE = /escape hatch|production migration remains not approved|touched files:\s*zero/i;
+const GENERIC_ACC_RE = /escape hatch|production migration remains not approved|touched files:\s*zero/gi;
 
 for (const issue of issues) {
   const before = typeof issue.before === 'string' ? issue.before : JSON.stringify(issue.before ?? '');
@@ -229,8 +229,10 @@ for (const issue of issues) {
   if (genericHits >= 2 && !PATH_RE.test(acc)) {
     fail(`${issue.localId} acceptance is generic boilerplate without path-specific checks`);
   }
-  if (!issue.contractSections?.vorher || !issue.contractSections?.nachher || !issue.contractSections?.tests) {
-    fail(`${issue.localId} missing contractSections (vorher/nachher/tests)`);
+  for (const key of ['vorher', 'nachher', 'verhalten', 'sicherheit', 'tests', 'abhaengigkeiten', 'grenzen']) {
+    if (!issue.contractSections?.[key] || (Array.isArray(issue.contractSections[key]) && !issue.contractSections[key].length)) {
+      fail(`${issue.localId} missing contractSections.${key}`);
+    }
   }
   const gateDeps = (issue.dependsOn || []).filter((d) => /^GATE-0\d$/.test(d));
   if (gateDeps.length && (issue.status === 'ready' || (issue.labels || []).includes('agent-ready'))) {
@@ -239,9 +241,14 @@ for (const issue of issues) {
 }
 
 const mapped = issues.filter((i) => typeof i.githubIssue === 'number').length;
-if (mapped < 60) {
-  fail(`expected ≥60 issues mapped to githubIssue (got ${mapped})`);
+if (mapped !== issues.length) {
+  fail(`all issues must map to githubIssue (got ${mapped}/${issues.length})`);
 }
+const ghIssueMap = JSON.parse(readFileSync(join(root, '.qa/evidence/stack-migration-prep/github-issue-map.json'), 'utf8'));
+for (const issue of issues) {
+  if (ghIssueMap[issue.localId] !== issue.githubIssue) fail(`${issue.localId} githubIssue mismatches issue-map`);
+}
+if (new Set(issues.map((i) => i.githubIssue)).size !== issues.length) fail('duplicate GitHub issue number');
 
 
 const depPlan = JSON.parse(
