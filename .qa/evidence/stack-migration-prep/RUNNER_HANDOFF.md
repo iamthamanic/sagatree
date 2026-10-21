@@ -3,38 +3,35 @@
 `paused: false`  
 Updated: 2026-10-21 (execution agent)
 
-## Last completed work
+## Completed
 
-| Item | Status |
+| Item | Result |
 | --- | --- |
-| Draft PR [#860](https://github.com/iamthamanic/sagatree/pull/860) | Open draft; branch updated with main `#879` + MIG-001 evidence + Edge 25 inventory refresh |
-| MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | Evidence AC filled: dual rebuild identical semantic checksum; baseline.md mapped; security suite remains intentionally red as findings |
-| MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | In progress via inventory refresh: Edge **25** (added `ollama-settings` from #879), Infra 13, RPC 57; `ollama-settings` co-bound to MIG-402/#818 (no new GH identity); prep-check PASS locally |
-| Architecture approvals | All GATE-01..05 **UNDECIDED** / deferred — agent did **not** invent APPROVED |
+| [#782](https://github.com/iamthamanic/sagatree/issues/782) MIG-001 | **Closed** — dual rebuild checksum `0a4295db…99141d`; baseline.md AC-mapped; SQL 16/25 + Atlas 1/3 remain documented findings |
+| [#783](https://github.com/iamthamanic/sagatree/issues/783) MIG-002 | **Closed** — inventory Edge **25** / Infra 13 / RPC 57; `ollama-settings` co-bound `#818`; prep-check PASS |
+| Draft PR [#860](https://github.com/iamthamanic/sagatree/pull/860) | Head `ea9c7a7f` (main `#879` merged in); still **Draft** |
 
-## Key check results
+## Merge SHA / PR
 
-- `PATH=…/rpc-parser-venv/bin:$PATH npm run check:stack-migration-prep` → **PASS** (90 contracts, RPC=57, Edge=25, Infra=13; execution-blocked=90; architecture-approved=0)
-- Dual fixture rebuild → **PASS** checksum `0a4295dbd16f61977ddb0eb282c5630d36df99de9371bfdc28fd3c2b5b99141d`
-- Isolated SQL baseline suite → **16 PASS / 9 FAIL** (documented; not security acceptance)
-- RLS canary → **PASS**
-- Atlas product browser → **1 PASS / 2 FAIL**
-- GATE-02 cookie A → **FAIL** (JS-readable tokens) — blocks later auth tickets, not first host foundation after GATE-01
+- Branch: `docs/mig-773-contract-remediation-20261021`
+- Latest push: `ea9c7a7f`
+- Not yet merged to `main` (Draft; baseline CI jobs intentionally red on known product defects)
 
-## Next executable ticket
+## Next
 
-1. Finish MIG-002/#783 closeout (matrix/docs sync, issue comment, remove only #783 agent-blocked when AC proven).
-2. Close/merge PR #860 via normal review once required checks understood (baseline jobs stay red by design for known defects — do not greenwash).
-3. Then GATE-01/#784 **decision package for human** (ORM/auth) — unlocks MIG-010/#789.
-4. Do **not** start `@ecc-runner-loop` implementation wave until prep PR merged + required GATE approvals present.
+1. **Human/reviewer**: merge policy for #860 — Quality Gates green; Stack-migration baseline/Atlas/GATE-02 jobs stay red by design until product/auth defects fixed. Do **not** soften assertions.
+2. After #860 merges → prepare **GATE-01/#784 decision package** (ORM) for human APPROVED — unlocks MIG-010/#789.
+3. Do **not** invent architecture APPROVED; GATE-02/03/05 do not block first host foundation after GATE-01.
+4. `@ecc-runner-loop` for #773 only after prep PR merged + required GATE approvals.
 
-## Human decisions still required
+## Human decision needed next (after #860 merge)
 
-- **GATE-01/#784** ORM + permission model (Drizzle vs ZenStack) — recommendation deferred until #782+#783 accepted and decision package prepared.
-- **GATE-02/#785** Auth cookie A FAIL must be resolved before MIG-014/015.
-- Dedicated GH identity for `ollama-settings` (currently co-owned under #818) — optional; registry stays 90.
+**GATE-01/#784 — Drizzle+policy vs ZenStack 3**
+
+- Both candidates: 42 PASS each on Node 22/24 in documented PoC scope (not product migration proof).
+- Open findings: ZenStack field-policy preview status; Drizzle needs mandatory policy/import encapsulation; GATE-01 full npm audit still red on generator High advisories (runtime-only 0).
+- Recommendation: defer formal pick until reviewer reads `pocs/GATE01_REVIEW.md` + `pocs/gate-01/report.md`; agent will not mark APPROVED.
 
 ## Safety
 
-- No production data migration, no prod cutover, no Supabase shutdown.
-- Main workspace foreign uncommitted files left untouched; work in isolated worktree.
+No prod data migration, cutover, or Supabase shutdown. Architecture registry remains UNDECIDED.
