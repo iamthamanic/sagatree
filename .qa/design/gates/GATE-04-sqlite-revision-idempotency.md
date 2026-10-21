@@ -15,8 +15,8 @@ Reference contracts:
 ## Reproducible setup
 
 1. `server/poc/gate-04/` with table `session_runtime(session_id PK, revision INT, state_json, updated_at)`.  
-2. Table `command_idempotency(session_id, idempotency_key PK, result_json)`.  
-3. API: `applyCommand({ sessionId, expectedRevision, idempotencyKey, op })` in a single SQLite transaction.  
+2. Table `command_idempotency(session_id, idempotency_key, result_json, PRIMARY KEY(session_id, idempotency_key))`. The same key may exist in separate sessions and must never replay another session's result.  
+3. Table `session_events(session_id, event_sequence, revision, payload_json, PRIMARY KEY(session_id, event_sequence))`. API: `applyCommand({ sessionId, expectedRevision, idempotencyKey, op })` changes state, revision, event append and idempotency result **atomically in one SQLite transaction**.  
 4. Actors: 1 writer queue + 5 concurrent clients (Promise.all / worker threads).
 
 ## Metrics / PASS criteria
@@ -30,6 +30,8 @@ Reference contracts:
 | 5 | Crash mid-transaction (kill -9 after BEGIN) | Recovered DB consistent (no half apply) |
 | 6 | WAL checkpoint + restart | State+revision identical |
 | 7 | 20 clients × 50 cmds | Zero lost commits; throughput logged |
+| 8 | Atomic `session_events` append | Committed state/revision has exactly one corresponding event; rollback/crash leaves neither partial event nor partial state |
+| 9 | Same idempotency key in two sessions | Both commands succeed independently; no cross-session replay or information leak |
 
 ## Negative tests
 
@@ -39,7 +41,7 @@ Reference contracts:
 
 ## Decision criteria
 
-1. Rows 1–6 PASS mandatory.  
+1. Rows 1–9 PASS mandatory.  
 2. Document busy_timeout / retry policy.  
 3. Confirm single-writer sufficiency for target concurrency or escalate needs-human.
 
