@@ -1,78 +1,104 @@
-# Dependency enforcement plan (PREP-07 #780)
+# Migration: verbindliche Reihenfolge
 
-Topo issues: **72**. Wave labels: migration-wave-0..7. Order labels: migration-order-001..
+Stand: 2026-10-21. 90 veröffentlichte Issues: 71 bestehende Migrationstickets, Atlas #770 und 18 RPC-Untertickets.
 
-| order | localId | GH | wave | agent-blocked | deps |
-|---|---|---|---|---|---|
-| 001 | `MIG-001` | #782 | 0 | False | — |
-| 002 | `ATLAS-LIVE-E2E` | #770 | 0 | True | — |
-| 003 | `MIG-002` | #783 | 0 | False | #782 |
-| 004 | `GATE-01` | #784 | 0 | True | #782, #783 |
-| 005 | `GATE-02` | #785 | 0 | True | #782, #783 |
-| 006 | `GATE-03` | #786 | 0 | True | #782, #783 |
-| 007 | `GATE-04` | #787 | 0 | True | #782, #783 |
-| 008 | `GATE-05` | #788 | 0 | True | #782, #783 |
-| 009 | `MIG-010` | #789 | 1 | True | #782, #783, #784 |
-| 010 | `MIG-011` | #790 | 1 | True | #782, #783, #784 |
-| 011 | `MIG-012` | #791 | 1 | True | #782, #783, #784 |
-| 012 | `MIG-013` | #792 | 1 | True | #782, #783, #784 |
-| 013 | `MIG-014` | #793 | 1 | True | #782, #783, #785 |
-| 014 | `MIG-015` | #794 | 1 | True | #782, #783, #785 |
-| 015 | `MIG-503` | #844 | 5 | True | #790, #783 |
-| 016 | `MIG-500` | #841 | 5 | True | #792, #790 |
-| 017 | `MIG-020` | #795 | 2 | True | #789, #792, #793, #786 |
-| 018 | `MIG-021` | #796 | 2 | True | #789, #792, #793, #786 |
-| 019 | `MIG-022` | #797 | 2 | True | #789, #792, #793, #787 |
-| 020 | `MIG-023` | #798 | 2 | True | #789, #792, #793, #785 |
-| 021 | `MIG-024` | #799 | 2 | True | #789, #792, #793, #784 |
-| 022 | `MIG-501` | #842 | 5 | True | #841 |
-| 023 | `MIG-502` | #843 | 5 | True | #841, #792 |
-| 024 | `MIG-301` | #800 | 3 | True | #791, #792, #795 |
-| 025 | `MIG-302` | #801 | 3 | True | #791, #792, #795 |
-| 026 | `MIG-303` | #802 | 3 | True | #791, #792, #795 |
-| 027 | `MIG-304` | #803 | 3 | True | #791, #792, #795 |
-| 028 | `MIG-305` | #804 | 3 | True | #791, #792, #795 |
-| 029 | `MIG-306` | #805 | 3 | True | #791, #792, #795 |
-| 030 | `MIG-307` | #806 | 3 | True | #791, #792, #795 |
-| 031 | `MIG-308` | #807 | 3 | True | #791, #792, #795 |
-| 032 | `MIG-309` | #808 | 3 | True | #791, #792, #795 |
-| 033 | `MIG-310` | #809 | 3 | True | #791, #792, #795 |
-| 034 | `MIG-311` | #810 | 3 | True | #791, #792, #795 |
-| 035 | `MIG-312` | #811 | 3 | True | #791, #792, #795 |
-| 036 | `MIG-313` | #812 | 3 | True | #791, #792, #795 |
-| 037 | `MIG-401` | #817 | 4 | True | #795, #792, #793 |
-| 038 | `MIG-402` | #818 | 4 | True | #795, #792, #793 |
-| 039 | `MIG-403` | #819 | 4 | True | #795, #792, #793 |
-| 040 | `MIG-404` | #820 | 4 | True | #795, #792, #793 |
-| 041 | `MIG-405` | #821 | 4 | True | #795, #792, #793 |
-| 042 | `MIG-406` | #822 | 4 | True | #795, #792, #793 |
-| 043 | `MIG-407` | #823 | 4 | True | #795, #792, #793 |
-| 044 | `MIG-408` | #824 | 4 | True | #795, #792, #793 |
-| 045 | `MIG-409` | #825 | 4 | True | #795, #792, #793 |
-| 046 | `MIG-410` | #826 | 4 | True | #795, #792, #793 |
-| 047 | `MIG-411` | #827 | 4 | True | #795, #792, #793 |
-| 048 | `MIG-412` | #828 | 4 | True | #795, #792, #793 |
-| 049 | `MIG-413` | #829 | 4 | True | #795, #792, #793 |
-| 050 | `MIG-414` | #830 | 4 | True | #795, #792, #793 |
-| 051 | `MIG-415` | #831 | 4 | True | #795, #792, #793 |
-| 052 | `MIG-416` | #832 | 4 | True | #795, #792, #793 |
-| 053 | `MIG-417` | #833 | 4 | True | #795, #792, #793 |
-| 054 | `MIG-418` | #834 | 4 | True | #795, #792, #793 |
-| 055 | `MIG-419` | #835 | 4 | True | #795, #792, #793 |
-| 056 | `MIG-420` | #836 | 4 | True | #795, #792, #793 |
-| 057 | `MIG-421` | #837 | 4 | True | #795, #792, #793 |
-| 058 | `MIG-422` | #838 | 4 | True | #795, #792, #793 |
-| 059 | `MIG-423` | #839 | 4 | True | #795, #792, #793 |
-| 060 | `MIG-424` | #840 | 4 | True | #795, #792, #793 |
-| 061 | `MIG-350` | #813 | 3 | True | #797, #792 |
-| 062 | `MIG-351` | #814 | 3 | True | #797, #792 |
-| 063 | `MIG-352` | #815 | 3 | True | #797, #792 |
-| 064 | `MIG-353` | #816 | 3 | True | #797, #792 |
-| 065 | `MIG-600` | #845 | 6 | True | #799, #841 |
-| 066 | `MIG-601` | #846 | 6 | True | #799, #841 |
-| 067 | `MIG-602` | #847 | 6 | True | #799, #841 |
-| 068 | `MIG-603` | #848 | 6 | True | #799, #841 |
-| 069 | `MIG-703` | #852 | 7 | True | #788, #847 |
-| 070 | `MIG-700` | #849 | 7 | True | #770, #784, #785, #786, #787, #782, #783, #789, #790, #791, #792, #793, #794, #795, #796, #797, #798, #799, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #813, #814, #815, #816, #817, #818, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #830, #831, #832, #833, #834, #835, #836, #837, #838, #839, #840, #841, #842, #843, #844, #845, #846, #847, #848 |
-| 071 | `MIG-701` | #850 | 7 | True | #849 |
-| 072 | `MIG-702` | #851 | 7 | True | #850, #770 |
+Status ist die Ausführungsberechtigung im Plan, nicht automatisch der GitHub-open/closed-Status. Ready setzt abgeschlossene transitive Vorgänger mit Nachweisen und gegebenenfalls menschliche Architekturfreigaben voraus.
+
+## Abhängigkeitsarten
+
+RPC-, Edge-, Tabellen-/Policy-, Asset- und Realtime-Nachfolger sind harte Vorgänger. Gegenseitige Adapterimporte (insbesondere character/inventory/look) sind Integrationsbeziehungen: MIG-012 fixiert die Ports, die Adapter erhalten ihre Signaturen, und MIG-600 prüft sie gemeinsam. Sie werden vollständig als integrationWith erfasst; ein gegenseitiges Startverbot wäre ein künstlicher Zyklus.
+
+GATE-05 wartet auf MIG-602 und MIG-603 und blockiert ausschließlich MIG-703. MIG-700 hängt an allen Issues der Wellen 0–6. MIG-702 behält Atlas #770 und das Beobachtungsfenster als direkte Sperren.
+
+| Reihenfolge | Welle | Issue | Ausführung | Vorgänger |
+| --- | --- | --- | --- | --- |
+| 1 | 0 | MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | blocked | — |
+| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | blocked | #782 |
+| 3 | 0 | MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | blocked | #782 |
+| 4 | 0 | GATE-01 [#784](https://github.com/iamthamanic/sagatree/issues/784) | needs-design | #782, #783 |
+| 5 | 0 | GATE-02 [#785](https://github.com/iamthamanic/sagatree/issues/785) | needs-design | #782, #783 |
+| 6 | 0 | GATE-03 [#786](https://github.com/iamthamanic/sagatree/issues/786) | needs-design | #782, #783 |
+| 7 | 0 | GATE-04 [#787](https://github.com/iamthamanic/sagatree/issues/787) | needs-design | #782, #783 |
+| 8 | 1 | MIG-010 [#789](https://github.com/iamthamanic/sagatree/issues/789) | blocked | #782, #783, #784 |
+| 9 | 1 | MIG-011 [#790](https://github.com/iamthamanic/sagatree/issues/790) | blocked | #789, #784, #787 |
+| 10 | 1 | MIG-013 [#792](https://github.com/iamthamanic/sagatree/issues/792) | blocked | #790, #784 |
+| 11 | 1 | MIG-012 [#791](https://github.com/iamthamanic/sagatree/issues/791) | blocked | #790, #792 |
+| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | blocked | #789, #790, #792, #785 |
+| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | blocked | #789, #790, #792, #785 |
+| 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | blocked | #790, #792 |
+| 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | blocked | #789, #792, #793, #786 |
+| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | blocked | #790, #792, #793, #787 |
+| 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | blocked | #795, #797, #785 |
+| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | blocked | #792, #797, #784 |
+| 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | blocked | #795, #797, #799, #785, #786 |
+| 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | blocked | #790, #783 |
+| 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | blocked | #795, #792, #797, #799, #784, #785, #787, #871 |
+| 24 | 2 | RPC-SAGA-PROVISION [#873](https://github.com/iamthamanic/sagatree/issues/873) | blocked | #795, #792, #797, #799, #784, #785, #787, #872 |
+| 25 | 2 | RPC-PROJECT-MEMBERSHIP [#874](https://github.com/iamthamanic/sagatree/issues/874) | blocked | #795, #792, #797, #799, #784, #785, #787, #873 |
+| 26 | 2 | RPC-SAGA-GOVERNANCE [#875](https://github.com/iamthamanic/sagatree/issues/875) | blocked | #795, #792, #797, #799, #784, #785, #787, #874 |
+| 27 | 2 | RPC-SESSION-RUNTIME [#867](https://github.com/iamthamanic/sagatree/issues/867) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 28 | 2 | RPC-SESSION-LIFECYCLE [#868](https://github.com/iamthamanic/sagatree/issues/868) | blocked | #795, #792, #797, #799, #784, #785, #787, #867 |
+| 29 | 2 | RPC-NPC-INSTANCES [#877](https://github.com/iamthamanic/sagatree/issues/877) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 30 | 2 | MIG-353 [#816](https://github.com/iamthamanic/sagatree/issues/816) | blocked | #877, #878 |
+| 31 | 2 | RPC-SESSION-ACCESS [#869](https://github.com/iamthamanic/sagatree/issues/869) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 32 | 2 | RPC-SESSION-RECAP [#870](https://github.com/iamthamanic/sagatree/issues/870) | blocked | #795, #792, #797, #799, #784, #785, #787, #868 |
+| 33 | 2 | MIG-351 [#814](https://github.com/iamthamanic/sagatree/issues/814) | blocked | #867, #868, #869, #870 |
+| 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | blocked | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
+| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | blocked | #871, #872, #873, #874, #875, #876 |
+| 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | blocked | #795, #792, #797, #799, #784, #785, #787 |
+| 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | blocked | #795, #792, #797, #799, #784, #785, #787, #861 |
+| 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | blocked | #795, #792, #797, #799, #784, #785, #787, #862 |
+| 39 | 2 | RPC-WORLD-CREATE [#864](https://github.com/iamthamanic/sagatree/issues/864) | blocked | #795, #792, #797, #799, #784, #785, #787, #863 |
+| 40 | 2 | RPC-WORLD-RESTRUCTURE [#865](https://github.com/iamthamanic/sagatree/issues/865) | blocked | #795, #792, #797, #799, #784, #785, #787, #864 |
+| 41 | 2 | RPC-WORLD-DESTRUCTIVE [#866](https://github.com/iamthamanic/sagatree/issues/866) | blocked | #795, #792, #797, #799, #784, #785, #787, #865 |
+| 42 | 2 | MIG-350 [#813](https://github.com/iamthamanic/sagatree/issues/813) | blocked | #861, #862, #863, #864, #865, #866 |
+| 43 | 3 | MIG-402 [#818](https://github.com/iamthamanic/sagatree/issues/818) | blocked | #795, #792, #793, #791, #841 |
+| 44 | 3 | MIG-401 [#817](https://github.com/iamthamanic/sagatree/issues/817) | blocked | #795, #792, #793, #818, #791 |
+| 45 | 3 | MIG-403 [#819](https://github.com/iamthamanic/sagatree/issues/819) | blocked | #795, #792, #793 |
+| 46 | 3 | MIG-404 [#820](https://github.com/iamthamanic/sagatree/issues/820) | blocked | #795, #792, #793, #818, #791, #841 |
+| 47 | 3 | MIG-405 [#821](https://github.com/iamthamanic/sagatree/issues/821) | blocked | #795, #792, #793, #818, #791 |
+| 48 | 3 | MIG-406 [#822](https://github.com/iamthamanic/sagatree/issues/822) | blocked | #795, #792, #793 |
+| 49 | 3 | MIG-407 [#823](https://github.com/iamthamanic/sagatree/issues/823) | blocked | #795, #792, #793 |
+| 50 | 3 | MIG-408 [#824](https://github.com/iamthamanic/sagatree/issues/824) | blocked | #795, #792, #793, #841 |
+| 51 | 3 | MIG-409 [#825](https://github.com/iamthamanic/sagatree/issues/825) | blocked | #795, #792, #793, #818, #791, #841 |
+| 52 | 3 | MIG-410 [#826](https://github.com/iamthamanic/sagatree/issues/826) | blocked | #795, #792, #793, #818, #791, #841 |
+| 53 | 3 | MIG-411 [#827](https://github.com/iamthamanic/sagatree/issues/827) | blocked | #795, #792, #793 |
+| 54 | 3 | MIG-412 [#828](https://github.com/iamthamanic/sagatree/issues/828) | blocked | #795, #792, #793, #841 |
+| 55 | 3 | MIG-413 [#829](https://github.com/iamthamanic/sagatree/issues/829) | blocked | #795, #792, #793 |
+| 56 | 3 | MIG-415 [#831](https://github.com/iamthamanic/sagatree/issues/831) | blocked | #795, #792, #793 |
+| 57 | 3 | MIG-416 [#832](https://github.com/iamthamanic/sagatree/issues/832) | blocked | #795, #792, #793, #841 |
+| 58 | 3 | MIG-417 [#833](https://github.com/iamthamanic/sagatree/issues/833) | blocked | #795, #792, #793 |
+| 59 | 3 | MIG-418 [#834](https://github.com/iamthamanic/sagatree/issues/834) | blocked | #795, #792, #793 |
+| 60 | 3 | MIG-419 [#835](https://github.com/iamthamanic/sagatree/issues/835) | blocked | #795, #792, #793 |
+| 61 | 3 | MIG-420 [#836](https://github.com/iamthamanic/sagatree/issues/836) | blocked | #795, #792, #793, #791, #841 |
+| 62 | 3 | MIG-421 [#837](https://github.com/iamthamanic/sagatree/issues/837) | blocked | #795, #792, #793, #818, #870, #791 |
+| 63 | 3 | MIG-414 [#830](https://github.com/iamthamanic/sagatree/issues/830) | blocked | #795, #792, #793, #818, #820, #821, #825, #826, #828, #836, #837 |
+| 64 | 3 | MIG-422 [#838](https://github.com/iamthamanic/sagatree/issues/838) | blocked | #795, #792, #793 |
+| 65 | 3 | MIG-423 [#839](https://github.com/iamthamanic/sagatree/issues/839) | blocked | #795, #792, #793 |
+| 66 | 3 | MIG-424 [#840](https://github.com/iamthamanic/sagatree/issues/840) | blocked | #795, #792, #793 |
+| 67 | 4 | MIG-301 [#800](https://github.com/iamthamanic/sagatree/issues/800) | blocked | #791, #792, #795, #818, #793 |
+| 68 | 4 | MIG-302 [#801](https://github.com/iamthamanic/sagatree/issues/801) | blocked | #791, #792, #795, #820, #821, #841, #793 |
+| 69 | 4 | MIG-303 [#802](https://github.com/iamthamanic/sagatree/issues/802) | blocked | #791, #792, #795, #825, #826, #793 |
+| 70 | 4 | MIG-304 [#803](https://github.com/iamthamanic/sagatree/issues/803) | blocked | #791, #792, #795, #828, #793 |
+| 71 | 4 | MIG-305 [#804](https://github.com/iamthamanic/sagatree/issues/804) | blocked | #791, #792, #795, #878, #793 |
+| 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | blocked | #791, #792, #795 |
+| 73 | 4 | MIG-307 [#806](https://github.com/iamthamanic/sagatree/issues/806) | blocked | #791, #792, #795, #877, #793 |
+| 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | blocked | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
+| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | blocked | #791, #792, #795, #793 |
+| 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | blocked | #791, #792, #795, #871, #873, #872, #876, #793 |
+| 77 | 4 | MIG-311 [#810](https://github.com/iamthamanic/sagatree/issues/810) | blocked | #791, #792, #795, #867, #868, #869, #870, #836, #837, #796, #793 |
+| 78 | 4 | MIG-312 [#811](https://github.com/iamthamanic/sagatree/issues/811) | blocked | #791, #792, #795, #841, #793 |
+| 79 | 4 | MIG-313 [#812](https://github.com/iamthamanic/sagatree/issues/812) | blocked | #791, #792, #795, #866, #864, #865, #862, #861, #863, #841, #793 |
+| 80 | 5 | MIG-501 [#842](https://github.com/iamthamanic/sagatree/issues/842) | blocked | #841, #795 |
+| 81 | 5 | MIG-502 [#843](https://github.com/iamthamanic/sagatree/issues/843) | blocked | #841, #844, #795 |
+| 82 | 6 | MIG-600 [#845](https://github.com/iamthamanic/sagatree/issues/845) | blocked | #796, #798, #799, #841, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 83 | 6 | MIG-601 [#846](https://github.com/iamthamanic/sagatree/issues/846) | blocked | #789, #793, #794, #841, #830 |
+| 84 | 6 | MIG-602 [#847](https://github.com/iamthamanic/sagatree/issues/847) | blocked | #845, #846, #770, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 85 | 6 | MIG-603 [#848](https://github.com/iamthamanic/sagatree/issues/848) | blocked | #843, #844, #846 |
+| 86 | 7 | GATE-05 [#788](https://github.com/iamthamanic/sagatree/issues/788) | needs-design | #847, #848 |
+| 87 | 7 | MIG-700 [#849](https://github.com/iamthamanic/sagatree/issues/849) | blocked | #782, #770, #783, #784, #785, #786, #787, #789, #790, #792, #791, #793, #794, #841, #795, #797, #798, #799, #796, #844, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #842, #843, #845, #846, #847, #848, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 88 | 7 | MIG-701 [#850](https://github.com/iamthamanic/sagatree/issues/850) | blocked | #849 |
+| 89 | 7 | MIG-702 [#851](https://github.com/iamthamanic/sagatree/issues/851) | blocked | #849, #850, #770, #848 |
+| 90 | 7 | MIG-703 [#852](https://github.com/iamthamanic/sagatree/issues/852) | blocked | #788, #847, #848 |

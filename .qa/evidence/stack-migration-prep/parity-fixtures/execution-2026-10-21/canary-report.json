@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "meaning": "The actual SQL/RLS test passes on the clean fixture and fails on the intentionally opened policy.",
+  "securityParityApproved": false,
+  "clean": {
+    "code": 0,
+    "result": {
+      "id": "PAR-10",
+      "name": "Real world-profile RLS denies foreign-owner reads (regression canary)",
+      "severity": "High",
+      "status": "passed",
+      "details": null,
+      "durationMs": 17
+    }
+  },
+  "regression": {
+    "code": 1,
+    "result": {
+      "id": "PAR-10",
+      "name": "Real world-profile RLS denies foreign-owner reads (regression canary)",
+      "severity": "High",
+      "status": "failed",
+      "error": "PAR-10 detected an actual RLS policy allowing a foreign owner\n\n1 !== 0\n",
+      "errorCode": "ERR_ASSERTION",
+      "sqlstate": null,
+      "durationMs": 18
+    }
+  }
+}

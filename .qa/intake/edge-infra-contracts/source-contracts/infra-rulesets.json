@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "area": "rulesets",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "sha256": "edc092742690e6c376d1a9e8b6c4900672dc79f0f4754773c0953f87a91e1d4d"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/rules/ruleset-catalog/index.ts",
+      "sha256": "c2f52133fdeaa82ca586670b79ce0144063cc852a2a5ca8b5b6b44369fc0e21e"
+    },
+    {
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "sha256": "1b76d37fc3c90d29d3f719644e6915a66462d7b55c4c6cec07a0caadfdf1512d"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "Ruleset",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 5,
+      "endLine": 41,
+      "text": "export interface Ruleset {\n  id: string;\n  creator_user_id: string | null;\n  name: string;\n  description: string | null;\n  version: string | null;\n\n  attributes_config: {\n    primary: string[];\n    derived: string[];\n  };\n  skills_config: Array<{\n    name: string;\n    ability: string;\n  }>;\n  classes_config: Array<{\n    name: string;\n    hit_die: string;\n  }>;\n  races_config: Array<{\n    name: string;\n    speed: number;\n    size: string;\n  }>;\n  combat_rules: Record<string, unknown>;\n  dice_rules: Record<string, unknown>;\n  level_progression: Record<string, unknown>;\n\n  is_official: boolean;\n  is_public: boolean;\n  is_marketplace_item: boolean;\n  downloads_count: number;\n  rating: number | null;\n\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 43,
+      "endLine": 54,
+      "text": "export interface CreateRulesetDTO {\n  name: string;\n  description?: string;\n  version?: string;\n  attributes_config: Ruleset['attributes_config'];\n  skills_config?: Ruleset['skills_config'];\n  classes_config?: Ruleset['classes_config'];\n  races_config?: Ruleset['races_config'];\n  combat_rules?: Record<string, unknown>;\n  dice_rules?: Record<string, unknown>;\n  is_public?: boolean;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateRulesetDTO",
+      "path": "src/domains/rules/ruleset-catalog/types.ts",
+      "line": 56,
+      "endLine": 58,
+      "text": "export interface UpdateRulesetDTO extends Partial<CreateRulesetDTO> {\n  id: string;\n}"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 10,
+      "endLine": 11,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('rulesets')",
+      "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name')",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 9,
+        "endLine": 18,
+        "text": "async getAll(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 21,
+      "endLine": 22,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('rulesets')",
+      "chain": "supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name')",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 20,
+        "endLine": 29,
+        "text": "async getOfficial(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 32,
+      "endLine": 32,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from('rulesets')",
+      "chain": "supabase.from('rulesets').select('*').eq('id', id).single()",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 31,
+        "endLine": 36,
+        "text": "async getById(id: string): Promise<Ruleset | null> {\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 39,
+      "endLine": 40,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('rulesets')",
+      "chain": "supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single()",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 38,
+        "endLine": 51,
+        "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 55,
+      "endLine": 56,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('rulesets')",
+      "chain": "supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single()",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 53,
+        "endLine": 67,
+        "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "rulesets",
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 70,
+      "endLine": 70,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.from('rulesets')",
+      "chain": "supabase.from('rulesets').delete().eq('id', id)",
+      "arguments": [
+        "'rulesets'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/rulesets/ruleset-service.ts",
+        "line": 69,
+        "endLine": 73,
+        "text": "async delete(id: string): Promise<void> {\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 6,
+      "endLine": 6,
+      "module": "../../domains/rules/ruleset-catalog",
+      "resolvedPath": "src/domains/rules/ruleset-catalog/index.ts",
+      "expression": "import type { CreateRulesetDTO, Ruleset, UpdateRulesetDTO } from '../../domains/rules/ruleset-catalog';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 8,
+      "endLine": 74,
+      "text": "export const rulesetService = {\n  async getAll(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  async getOfficial(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  async getById(id: string): Promise<Ruleset | null> {\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  async delete(id: string): Promise<void> {\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  },\n};"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 9,
+      "endLine": 18,
+      "name": "getAll",
+      "text": "async getAll(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .order('is_official', { ascending: false })\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 20,
+      "endLine": 29,
+      "name": "getOfficial",
+      "text": "async getOfficial(): Promise<Ruleset[]> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .select('*')\n      .eq('is_official', true)\n      .order('name');\n\n    if (error) throw error;\n    return data || [];\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 31,
+      "endLine": 36,
+      "name": "getById",
+      "text": "async getById(id: string): Promise<Ruleset | null> {\n    const { data, error } = await supabase.from('rulesets').select('*').eq('id', id).single();\n\n    if (error) throw error;\n    return data;\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 38,
+      "endLine": 51,
+      "name": "create",
+      "text": "async create(dto: CreateRulesetDTO): Promise<Ruleset> {\n    const { data, error } = await supabase\n      .from('rulesets')\n      .insert({\n        ...dto,\n        is_official: false,\n        is_marketplace_item: false,\n      })\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 53,
+      "endLine": 67,
+      "name": "update",
+      "text": "async update(dto: UpdateRulesetDTO): Promise<Ruleset> {\n    const { id, ...updates } = dto;\n    const { data, error } = await supabase\n      .from('rulesets')\n      .update({\n        ...updates,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+    },
+    {
+      "path": "src/infrastructure/rulesets/ruleset-service.ts",
+      "line": 69,
+      "endLine": 73,
+      "name": "delete",
+      "text": "async delete(id: string): Promise<void> {\n    const { error } = await supabase.from('rulesets').delete().eq('id', id);\n\n    if (error) throw error;\n  }"
+    }
+  ]
+}

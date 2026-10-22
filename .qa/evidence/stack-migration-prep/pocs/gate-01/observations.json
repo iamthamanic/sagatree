@@ -1,0 +1,2252 @@
+{
+  "startedAt": "2026-10-21T09:04:46.771Z",
+  "completedAt": "2026-10-21T09:05:01.712Z",
+  "variants": [
+    {
+      "variant": "drizzle",
+      "passed": 42,
+      "failed": 0,
+      "results": [
+        {
+          "id": "P1_PROJECTION",
+          "description": "P1 sees public + own A reveal; hidden titles/bodies/layers and GM-only notes absent",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 4.505509999999958
+        },
+        {
+          "id": "P2_PROJECTION",
+          "description": "P2 does not inherit P1 reveal in saga A",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 0.8542630000001736
+        },
+        {
+          "id": "P2_SAGA_B",
+          "description": "P2 reveal in B authorizes B only; membership and reveal are checked in the same saga",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 0.8423750000001746
+        },
+        {
+          "id": "P1_WRONG_SAGA_REVEAL",
+          "description": "P1 has a B reveal but no B membership: reject saga B",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.615690000000086
+        },
+        {
+          "id": "P1_CORRUPT_FOREIGN_REVEAL",
+          "description": "An inconsistent A reveal for a W2 map does not cross the project world",
+          "status": "PASS",
+          "observation": {
+            "mode": "filtered",
+            "value": null
+          },
+          "durationMs": 0.8716779999999744
+        },
+        {
+          "id": "G_FULL_VIEW",
+          "description": "G can read W1 full view; O has no GM membership",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "hidden",
+              "worldId": "W1",
+              "title": "UNREVEALED_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "UNREVEALED_BODY",
+              "layers": "UNREVEALED_LAYER",
+              "gmNotes": "GM_NOTES_HIDDEN"
+            },
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": "GM_NOTES_P1"
+            },
+            {
+              "id": "perf",
+              "worldId": "W1",
+              "title": "PERF",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "PERF_BODY",
+              "layers": "PERF_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": "GM_NOTES_PUBLIC"
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": "GM_NOTES_OTHER"
+            }
+          ],
+          "durationMs": 0.5793169999999463
+        },
+        {
+          "id": "O_FULL_VIEW",
+          "description": "O can read W1 full view; O has no GM membership",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "hidden",
+              "worldId": "W1",
+              "title": "UNREVEALED_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "UNREVEALED_BODY",
+              "layers": "UNREVEALED_LAYER",
+              "gmNotes": "GM_NOTES_HIDDEN"
+            },
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": "GM_NOTES_P1"
+            },
+            {
+              "id": "perf",
+              "worldId": "W1",
+              "title": "PERF",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "PERF_BODY",
+              "layers": "PERF_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": "GM_NOTES_PUBLIC"
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": "GM_NOTES_OTHER"
+            }
+          ],
+          "durationMs": 0.47276899999997113
+        },
+        {
+          "id": "X_CROSS_OWNER_GET",
+          "description": "X cannot get a W1 map through saga A",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.39192000000002736
+        },
+        {
+          "id": "X_OWN_SAGA_WRONG_WORLD",
+          "description": "X valid own saga still cannot get a W1 map",
+          "status": "PASS",
+          "observation": {
+            "mode": "filtered",
+            "value": null
+          },
+          "durationMs": 0.5851350000000366
+        },
+        {
+          "id": "UNKNOWN_SAGA",
+          "description": "An unknown saga fails closed",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.2843000000000302
+        },
+        {
+          "id": "MISSING_SAGA",
+          "description": "An absent saga does not select an arbitrary project for a player",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.11989699999980985
+        },
+        {
+          "id": "INACTIVE_MEMBER",
+          "description": "Inactive membership does not authorize reads",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.43913900000006834
+        },
+        {
+          "id": "MISSING_ACTOR_READ",
+          "description": "Missing authenticated actor yields no map data",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.12331299999982548
+        },
+        {
+          "id": "OWNER_WRITE",
+          "description": "World owner O edits without a GM assignment",
+          "status": "PASS",
+          "observation": {
+            "id": "public",
+            "title": "OWNER_EDIT",
+            "revision": 1
+          },
+          "durationMs": 3.882629000000179
+        },
+        {
+          "id": "G_MAP_WRITE_DENIED",
+          "description": "G cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 1.0755389999999352
+        },
+        {
+          "id": "P1_MAP_WRITE_DENIED",
+          "description": "P1 cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.7260029999999915
+        },
+        {
+          "id": "P2_MAP_WRITE_DENIED",
+          "description": "P2 cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8479640000000472
+        },
+        {
+          "id": "X_MAP_WRITE_DENIED",
+          "description": "X cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.6953780000001188
+        },
+        {
+          "id": "INACTIVE_MAP_WRITE_DENIED",
+          "description": "INACTIVE cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.9896229999999377
+        },
+        {
+          "id": "MISSING_ACTOR_WRITE",
+          "description": "Unauthenticated writes fail before any map or receipt mutation",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.6097609999999349
+        },
+        {
+          "id": "FORGED_OWNER_FIELDS",
+          "description": "Client owner_user_id/world_id cannot move ownership or attach the map to W2",
+          "status": "PASS",
+          "observation": {
+            "result": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "worlds": [
+              {
+                "id": "W1",
+                "owner_user_id": "O"
+              },
+              {
+                "id": "W2",
+                "owner_user_id": "X"
+              }
+            ]
+          },
+          "durationMs": 2.855690999999979
+        },
+        {
+          "id": "FORGED_OWNER_NO_ESCALATION",
+          "description": "X cannot gain a world write by submitting owner O in the payload",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.9321379999998953
+        },
+        {
+          "id": "STALE_REVISION",
+          "description": "Stale expectedRevision conflicts without changes to title, revision or receipt ledger",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "CONFLICT",
+            "code": "CONFLICT"
+          },
+          "durationMs": 3.3517340000000786
+        },
+        {
+          "id": "NEGATIVE_REVISION",
+          "description": "Negative expectedRevision has no legacy revision-bypass semantics in the successor PoC",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "INVALID_INPUT",
+            "code": "INVALID_INPUT"
+          },
+          "durationMs": 0.5768229999998766
+        },
+        {
+          "id": "TRANSACTION_ROLLBACK",
+          "description": "Failure after map update rolls back title/revision and prevents receipt insertion",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "INJECTED_FAILURE",
+            "code": "INJECTED_FAILURE"
+          },
+          "durationMs": 1.1224189999998089
+        },
+        {
+          "id": "IDEMPOTENT_REPLAY",
+          "description": "Same actor/map/key/payload replays one committed mutation and one receipt",
+          "status": "PASS",
+          "observation": {
+            "first": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "replay": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "receiptCount": 1
+          },
+          "durationMs": 3.9430489999999736
+        },
+        {
+          "id": "IDEMPOTENCY_PAYLOAD_MISMATCH",
+          "description": "Reusing a key with a different request fails without a second mutation",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "IDEMPOTENCY_MISMATCH",
+            "code": "IDEMPOTENCY_MISMATCH"
+          },
+          "durationMs": 2.858194999999796
+        },
+        {
+          "id": "REPLAY_AFTER_OWNER_REVOKED",
+          "description": "A stored receipt does not preserve authorization after world ownership changes",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 2.9287899999999354
+        },
+        {
+          "id": "REOPEN_AND_REPLAY",
+          "description": "Closing and reopening the real database preserves revision and idempotent replay",
+          "status": "PASS",
+          "observation": {
+            "first": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "replay": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            }
+          },
+          "durationMs": 4.1233250000000226
+        },
+        {
+          "id": "COMPETING_REVISIONS",
+          "description": "Two queued writes from revision 0 yield exactly one commit and one conflict",
+          "status": "PASS",
+          "observation": [
+            {
+              "status": "fulfilled",
+              "value": {
+                "id": "public",
+                "title": "FIRST",
+                "revision": 1
+              }
+            },
+            {
+              "status": "rejected",
+              "reason": {
+                "name": "CommandError",
+                "message": "CONFLICT",
+                "code": "CONFLICT"
+              }
+            }
+          ],
+          "durationMs": 3.06182600000011
+        },
+        {
+          "id": "QUEUED_DUPLICATE_KEY",
+          "description": "Two queued identical requests return the same result and create one receipt",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            }
+          ],
+          "durationMs": 2.1668540000000576
+        },
+        {
+          "id": "GM_SESSION_STATUS",
+          "description": "G changes their project session status without world ownership",
+          "status": "PASS",
+          "observation": {
+            "id": "S-A",
+            "projectId": "A",
+            "status": "active",
+            "revision": 1
+          },
+          "durationMs": 2.1220470000002933
+        },
+        {
+          "id": "O_SESSION_STATUS_DENIED",
+          "description": "O cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8545030000000224
+        },
+        {
+          "id": "P1_SESSION_STATUS_DENIED",
+          "description": "P1 cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8870210000000043
+        },
+        {
+          "id": "P2_SESSION_STATUS_DENIED",
+          "description": "P2 cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.7138450000002194
+        },
+        {
+          "id": "X_SESSION_STATUS_DENIED",
+          "description": "X cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8239579999999478
+        },
+        {
+          "id": "INACTIVE_SESSION_STATUS_DENIED",
+          "description": "INACTIVE cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8691349999999147
+        },
+        {
+          "id": "GM_FOREIGN_SESSION",
+          "description": "G cannot mutate the session in X project",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 1.0782140000001164
+        },
+        {
+          "id": "MISSING_ACTOR_SESSION",
+          "description": "Unauthenticated session status changes fail without mutation",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.6048949999999422
+        },
+        {
+          "id": "GM_UNKNOWN_SAGA_SESSION",
+          "description": "An unknown saga does not grant the GM a session operation in a different context",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.8216050000000905
+        },
+        {
+          "id": "APPLICATION_CAPABILITIES",
+          "description": "App receives no SQL/query-builder/driver/policy-client capability",
+          "status": "PASS",
+          "observation": [
+            "getMap",
+            "listMaps",
+            "setSessionStatus",
+            "updateMapTitle"
+          ],
+          "durationMs": 0.0901929999999993
+        },
+        {
+          "id": "SEQUENTIAL_100_WRITES",
+          "description": "100 sequential owner transactions preserve every increment and receipt",
+          "status": "PASS",
+          "observation": {
+            "final": {
+              "id": "perf",
+              "title": "PERF_99",
+              "revision": 100
+            },
+            "receiptCount": 100,
+            "latencyMs": {
+              "n": 100,
+              "min": 0.5849550000002637,
+              "median": 0.8405720000000656,
+              "p95": 1.2894360000000233,
+              "max": 3.7558130000002166,
+              "samples": [
+                1.759270000000015,
+                0.8744729999998526,
+                0.8405720000000656,
+                0.9164949999999408,
+                1.0274389999999585,
+                0.7288570000000618,
+                1.2507289999998648,
+                0.8691750000002685,
+                0.7121820000002117,
+                0.7055729999997311,
+                0.799731999999949,
+                0.6719029999999293,
+                0.7012770000001183,
+                0.885609999999815,
+                0.7821159999998599,
+                0.7018580000003567,
+                0.6843309999999292,
+                0.6989539999999579,
+                0.6563300000002528,
+                0.6659549999999399,
+                0.6987830000002759,
+                0.6646519999999327,
+                0.817960000000312,
+                0.7282969999996567,
+                0.8910969999997178,
+                0.8844080000003487,
+                0.7427270000002864,
+                0.664241999999831,
+                0.903765999999905,
+                0.8468920000000253,
+                0.9703639999997904,
+                0.8140730000000076,
+                0.5870279999999184,
+                0.7162590000002638,
+                0.8954340000000229,
+                0.7262439999999515,
+                0.5849550000002637,
+                0.7809339999998883,
+                0.6910519999996723,
+                0.6074579999999514,
+                0.6918530000002647,
+                3.7558130000002166,
+                0.8396109999998771,
+                0.7662319999999454,
+                0.6639310000000478,
+                0.7347569999997177,
+                0.6263760000001639,
+                0.8465609999998378,
+                0.9134699999999611,
+                0.9488930000002256,
+                0.8435669999998936,
+                1.0050860000001194,
+                0.9253280000002633,
+                0.7817159999999603,
+                0.8029069999997773,
+                0.8567670000002181,
+                0.992837999999665,
+                0.9306849999998121,
+                0.9620020000002114,
+                0.9155840000003082,
+                1.0678090000001248,
+                1.1216990000002625,
+                0.9375460000001112,
+                0.991385000000264,
+                0.863046000000395,
+                0.9392480000001342,
+                1.4688219999998182,
+                0.9808900000002723,
+                1.3383380000000216,
+                1.2894360000000233,
+                0.9471499999999651,
+                0.8869909999998526,
+                0.8305879999998069,
+                0.8333219999999528,
+                0.9315870000000359,
+                0.9296850000000632,
+                1.1291689999998198,
+                0.847772999999961,
+                0.7194230000000061,
+                2.713702000000012,
+                0.7944940000002134,
+                0.7803840000001401,
+                0.8164269999997487,
+                0.8362659999997959,
+                0.9241260000003422,
+                1.1523529999999482,
+                1.0698419999998805,
+                0.873250999999982,
+                0.8025660000002972,
+                0.8616139999999177,
+                0.9388179999996282,
+                0.8277130000001307,
+                0.8307279999999082,
+                0.7752869999999348,
+                0.7875939999998991,
+                0.7799629999999524,
+                0.8945020000001023,
+                0.9696839999996882,
+                0.7831679999999324,
+                0.7265540000003057
+              ]
+            }
+          },
+          "durationMs": 91.94293100000004
+        }
+      ],
+      "writes": {
+        "n": 100,
+        "min": 0.5849550000002637,
+        "median": 0.8405720000000656,
+        "p95": 1.2894360000000233,
+        "max": 3.7558130000002166,
+        "samples": [
+          1.759270000000015,
+          0.8744729999998526,
+          0.8405720000000656,
+          0.9164949999999408,
+          1.0274389999999585,
+          0.7288570000000618,
+          1.2507289999998648,
+          0.8691750000002685,
+          0.7121820000002117,
+          0.7055729999997311,
+          0.799731999999949,
+          0.6719029999999293,
+          0.7012770000001183,
+          0.885609999999815,
+          0.7821159999998599,
+          0.7018580000003567,
+          0.6843309999999292,
+          0.6989539999999579,
+          0.6563300000002528,
+          0.6659549999999399,
+          0.6987830000002759,
+          0.6646519999999327,
+          0.817960000000312,
+          0.7282969999996567,
+          0.8910969999997178,
+          0.8844080000003487,
+          0.7427270000002864,
+          0.664241999999831,
+          0.903765999999905,
+          0.8468920000000253,
+          0.9703639999997904,
+          0.8140730000000076,
+          0.5870279999999184,
+          0.7162590000002638,
+          0.8954340000000229,
+          0.7262439999999515,
+          0.5849550000002637,
+          0.7809339999998883,
+          0.6910519999996723,
+          0.6074579999999514,
+          0.6918530000002647,
+          3.7558130000002166,
+          0.8396109999998771,
+          0.7662319999999454,
+          0.6639310000000478,
+          0.7347569999997177,
+          0.6263760000001639,
+          0.8465609999998378,
+          0.9134699999999611,
+          0.9488930000002256,
+          0.8435669999998936,
+          1.0050860000001194,
+          0.9253280000002633,
+          0.7817159999999603,
+          0.8029069999997773,
+          0.8567670000002181,
+          0.992837999999665,
+          0.9306849999998121,
+          0.9620020000002114,
+          0.9155840000003082,
+          1.0678090000001248,
+          1.1216990000002625,
+          0.9375460000001112,
+          0.991385000000264,
+          0.863046000000395,
+          0.9392480000001342,
+          1.4688219999998182,
+          0.9808900000002723,
+          1.3383380000000216,
+          1.2894360000000233,
+          0.9471499999999651,
+          0.8869909999998526,
+          0.8305879999998069,
+          0.8333219999999528,
+          0.9315870000000359,
+          0.9296850000000632,
+          1.1291689999998198,
+          0.847772999999961,
+          0.7194230000000061,
+          2.713702000000012,
+          0.7944940000002134,
+          0.7803840000001401,
+          0.8164269999997487,
+          0.8362659999997959,
+          0.9241260000003422,
+          1.1523529999999482,
+          1.0698419999998805,
+          0.873250999999982,
+          0.8025660000002972,
+          0.8616139999999177,
+          0.9388179999996282,
+          0.8277130000001307,
+          0.8307279999999082,
+          0.7752869999999348,
+          0.7875939999998991,
+          0.7799629999999524,
+          0.8945020000001023,
+          0.9696839999996882,
+          0.7831679999999324,
+          0.7265540000003057
+        ]
+      },
+      "coldStarts": {
+        "processWallMs": {
+          "n": 10,
+          "min": 561.6164700000008,
+          "median": 581.8353909999996,
+          "p95": 714.0600770000001,
+          "max": 714.0600770000001,
+          "samples": [
+            607.9094069999996,
+            602.914593,
+            652.1300239999996,
+            562.7052750000003,
+            714.0600770000001,
+            575.6836069999999,
+            597.9656370000002,
+            581.8353909999996,
+            561.6164700000008,
+            579.2814399999997
+          ]
+        },
+        "observations": [
+          {
+            "processWallMs": 607.9094069999996,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 451.230314,
+              "openAndFirstAuthorizedReadMs": 10.662662999999952,
+              "totalInsideProcessMs": 461.892977,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 602.914593,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 435.572953,
+              "openAndFirstAuthorizedReadMs": 7.482450999999969,
+              "totalInsideProcessMs": 443.05540399999995,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 652.1300239999996,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 483.564921,
+              "openAndFirstAuthorizedReadMs": 9.155324999999948,
+              "totalInsideProcessMs": 492.720246,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 562.7052750000003,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 400.37888,
+              "openAndFirstAuthorizedReadMs": 8.917112000000088,
+              "totalInsideProcessMs": 409.29599200000007,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 714.0600770000001,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 548.728112,
+              "openAndFirstAuthorizedReadMs": 7.032586999999921,
+              "totalInsideProcessMs": 555.7606989999999,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 575.6836069999999,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 421.071305,
+              "openAndFirstAuthorizedReadMs": 7.285459999999944,
+              "totalInsideProcessMs": 428.35676499999994,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 597.9656370000002,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 429.61556499999995,
+              "openAndFirstAuthorizedReadMs": 7.886989000000085,
+              "totalInsideProcessMs": 437.50255400000003,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 581.8353909999996,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 428.557352,
+              "openAndFirstAuthorizedReadMs": 7.467329000000063,
+              "totalInsideProcessMs": 436.02468100000004,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 561.6164700000008,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 413.511784,
+              "openAndFirstAuthorizedReadMs": 9.650045999999975,
+              "totalInsideProcessMs": 423.16182999999995,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 579.2814399999997,
+            "observation": {
+              "variant": "drizzle",
+              "importMs": 428.137271,
+              "openAndFirstAuthorizedReadMs": 8.30564800000002,
+              "totalInsideProcessMs": 436.442919,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "variant": "zenstack",
+      "passed": 42,
+      "failed": 0,
+      "results": [
+        {
+          "id": "P1_PROJECTION",
+          "description": "P1 sees public + own A reveal; hidden titles/bodies/layers and GM-only notes absent",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 38.08714599999985
+        },
+        {
+          "id": "P2_PROJECTION",
+          "description": "P2 does not inherit P1 reveal in saga A",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 13.259711999999126
+        },
+        {
+          "id": "P2_SAGA_B",
+          "description": "P2 reveal in B authorizes B only; membership and reveal are checked in the same saga",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": null
+            }
+          ],
+          "durationMs": 30.316742999999406
+        },
+        {
+          "id": "P1_WRONG_SAGA_REVEAL",
+          "description": "P1 has a B reveal but no B membership: reject saga B",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 5.610955000000104
+        },
+        {
+          "id": "P1_CORRUPT_FOREIGN_REVEAL",
+          "description": "An inconsistent A reveal for a W2 map does not cross the project world",
+          "status": "PASS",
+          "observation": {
+            "mode": "filtered",
+            "value": null
+          },
+          "durationMs": 9.210586000001058
+        },
+        {
+          "id": "G_FULL_VIEW",
+          "description": "G can read W1 full view; O has no GM membership",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "hidden",
+              "worldId": "W1",
+              "title": "UNREVEALED_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "UNREVEALED_BODY",
+              "layers": "UNREVEALED_LAYER",
+              "gmNotes": "GM_NOTES_HIDDEN"
+            },
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": "GM_NOTES_P1"
+            },
+            {
+              "id": "perf",
+              "worldId": "W1",
+              "title": "PERF",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "PERF_BODY",
+              "layers": "PERF_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": "GM_NOTES_PUBLIC"
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": "GM_NOTES_OTHER"
+            }
+          ],
+          "durationMs": 15.355330000000322
+        },
+        {
+          "id": "O_FULL_VIEW",
+          "description": "O can read W1 full view; O has no GM membership",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "hidden",
+              "worldId": "W1",
+              "title": "UNREVEALED_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "UNREVEALED_BODY",
+              "layers": "UNREVEALED_LAYER",
+              "gmNotes": "GM_NOTES_HIDDEN"
+            },
+            {
+              "id": "p1",
+              "worldId": "W1",
+              "title": "P1_REVEAL_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "P1_REVEAL_BODY",
+              "layers": "P1_REVEAL_LAYER",
+              "gmNotes": "GM_NOTES_P1"
+            },
+            {
+              "id": "perf",
+              "worldId": "W1",
+              "title": "PERF",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "PERF_BODY",
+              "layers": "PERF_LAYER",
+              "gmNotes": null
+            },
+            {
+              "id": "public",
+              "worldId": "W1",
+              "title": "PUBLIC_TITLE",
+              "revision": 0,
+              "gmOnly": false,
+              "body": "PUBLIC_BODY",
+              "layers": "PUBLIC_LAYER",
+              "gmNotes": "GM_NOTES_PUBLIC"
+            },
+            {
+              "id": "wrong-saga",
+              "worldId": "W1",
+              "title": "OTHER_SAGA_TITLE",
+              "revision": 0,
+              "gmOnly": true,
+              "body": "OTHER_SAGA_BODY",
+              "layers": "OTHER_SAGA_LAYER",
+              "gmNotes": "GM_NOTES_OTHER"
+            }
+          ],
+          "durationMs": 9.068755999998757
+        },
+        {
+          "id": "X_CROSS_OWNER_GET",
+          "description": "X cannot get a W1 map through saga A",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 3.328810999999405
+        },
+        {
+          "id": "X_OWN_SAGA_WRONG_WORLD",
+          "description": "X valid own saga still cannot get a W1 map",
+          "status": "PASS",
+          "observation": {
+            "mode": "filtered",
+            "value": null
+          },
+          "durationMs": 9.63202000000092
+        },
+        {
+          "id": "UNKNOWN_SAGA",
+          "description": "An unknown saga fails closed",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 5.994692999998733
+        },
+        {
+          "id": "MISSING_SAGA",
+          "description": "An absent saga does not select an arbitrary project for a player",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 0.16904000000067754
+        },
+        {
+          "id": "INACTIVE_MEMBER",
+          "description": "Inactive membership does not authorize reads",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 5.387504000000263
+        },
+        {
+          "id": "MISSING_ACTOR_READ",
+          "description": "Missing authenticated actor yields no map data",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 4.525440000001254
+        },
+        {
+          "id": "OWNER_WRITE",
+          "description": "World owner O edits without a GM assignment",
+          "status": "PASS",
+          "observation": {
+            "id": "public",
+            "title": "OWNER_EDIT",
+            "revision": 1
+          },
+          "durationMs": 32.44515499999943
+        },
+        {
+          "id": "G_MAP_WRITE_DENIED",
+          "description": "G cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 14.83022400000118
+        },
+        {
+          "id": "P1_MAP_WRITE_DENIED",
+          "description": "P1 cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 18.227736000000732
+        },
+        {
+          "id": "P2_MAP_WRITE_DENIED",
+          "description": "P2 cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 6.060600000000704
+        },
+        {
+          "id": "X_MAP_WRITE_DENIED",
+          "description": "X cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 7.686143000000811
+        },
+        {
+          "id": "INACTIVE_MAP_WRITE_DENIED",
+          "description": "INACTIVE cannot edit O-owned maps",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 6.641378000000259
+        },
+        {
+          "id": "MISSING_ACTOR_WRITE",
+          "description": "Unauthenticated writes fail before any map or receipt mutation",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 5.9905759999983275
+        },
+        {
+          "id": "FORGED_OWNER_FIELDS",
+          "description": "Client owner_user_id/world_id cannot move ownership or attach the map to W2",
+          "status": "PASS",
+          "observation": {
+            "result": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "worlds": [
+              {
+                "id": "W1",
+                "owner_user_id": "O"
+              },
+              {
+                "id": "W2",
+                "owner_user_id": "X"
+              }
+            ]
+          },
+          "durationMs": 16.263662999999724
+        },
+        {
+          "id": "FORGED_OWNER_NO_ESCALATION",
+          "description": "X cannot gain a world write by submitting owner O in the payload",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 7.284104000000298
+        },
+        {
+          "id": "STALE_REVISION",
+          "description": "Stale expectedRevision conflicts without changes to title, revision or receipt ledger",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "CONFLICT",
+            "code": "CONFLICT"
+          },
+          "durationMs": 23.11884199999986
+        },
+        {
+          "id": "NEGATIVE_REVISION",
+          "description": "Negative expectedRevision has no legacy revision-bypass semantics in the successor PoC",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "INVALID_INPUT",
+            "code": "INVALID_INPUT"
+          },
+          "durationMs": 0.587018000000171
+        },
+        {
+          "id": "TRANSACTION_ROLLBACK",
+          "description": "Failure after map update rolls back title/revision and prevents receipt insertion",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "INJECTED_FAILURE",
+            "code": "INJECTED_FAILURE"
+          },
+          "durationMs": 13.055861000000732
+        },
+        {
+          "id": "IDEMPOTENT_REPLAY",
+          "description": "Same actor/map/key/payload replays one committed mutation and one receipt",
+          "status": "PASS",
+          "observation": {
+            "first": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "replay": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "receiptCount": 1
+          },
+          "durationMs": 22.866783999999825
+        },
+        {
+          "id": "IDEMPOTENCY_PAYLOAD_MISMATCH",
+          "description": "Reusing a key with a different request fails without a second mutation",
+          "status": "PASS",
+          "observation": {
+            "name": "CommandError",
+            "message": "IDEMPOTENCY_MISMATCH",
+            "code": "IDEMPOTENCY_MISMATCH"
+          },
+          "durationMs": 18.3306790000006
+        },
+        {
+          "id": "REPLAY_AFTER_OWNER_REVOKED",
+          "description": "A stored receipt does not preserve authorization after world ownership changes",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "CommandError",
+            "message": "DENIED",
+            "code": "DENIED"
+          },
+          "durationMs": 22.701590999999098
+        },
+        {
+          "id": "REOPEN_AND_REPLAY",
+          "description": "Closing and reopening the real database preserves revision and idempotent replay",
+          "status": "PASS",
+          "observation": {
+            "first": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            "replay": {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            }
+          },
+          "durationMs": 16.98829400000068
+        },
+        {
+          "id": "COMPETING_REVISIONS",
+          "description": "Two queued writes from revision 0 yield exactly one commit and one conflict",
+          "status": "PASS",
+          "observation": [
+            {
+              "status": "fulfilled",
+              "value": {
+                "id": "public",
+                "title": "FIRST",
+                "revision": 1
+              }
+            },
+            {
+              "status": "rejected",
+              "reason": {
+                "name": "CommandError",
+                "message": "CONFLICT",
+                "code": "CONFLICT"
+              }
+            }
+          ],
+          "durationMs": 17.791801999999734
+        },
+        {
+          "id": "QUEUED_DUPLICATE_KEY",
+          "description": "Two queued identical requests return the same result and create one receipt",
+          "status": "PASS",
+          "observation": [
+            {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            },
+            {
+              "id": "public",
+              "title": "OWNER_EDIT",
+              "revision": 1
+            }
+          ],
+          "durationMs": 18.029443000001265
+        },
+        {
+          "id": "GM_SESSION_STATUS",
+          "description": "G changes their project session status without world ownership",
+          "status": "PASS",
+          "observation": {
+            "id": "S-A",
+            "projectId": "A",
+            "status": "active",
+            "revision": 1
+          },
+          "durationMs": 4.808397999999215
+        },
+        {
+          "id": "O_SESSION_STATUS_DENIED",
+          "description": "O cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 3.596928000000844
+        },
+        {
+          "id": "P1_SESSION_STATUS_DENIED",
+          "description": "P1 cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 2.6056920000009995
+        },
+        {
+          "id": "P2_SESSION_STATUS_DENIED",
+          "description": "P2 cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 2.785407999999734
+        },
+        {
+          "id": "X_SESSION_STATUS_DENIED",
+          "description": "X cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 2.7010929999996733
+        },
+        {
+          "id": "INACTIVE_SESSION_STATUS_DENIED",
+          "description": "INACTIVE cannot exercise G-only session authority",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 3.6081539999995584
+        },
+        {
+          "id": "GM_FOREIGN_SESSION",
+          "description": "G cannot mutate the session in X project",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 3.0087079999993875
+        },
+        {
+          "id": "MISSING_ACTOR_SESSION",
+          "description": "Unauthenticated session status changes fail without mutation",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 2.2584090000000288
+        },
+        {
+          "id": "GM_UNKNOWN_SAGA_SESSION",
+          "description": "An unknown saga does not grant the GM a session operation in a different context",
+          "status": "PASS",
+          "observation": {
+            "mode": "rejected",
+            "name": "Error",
+            "message": "Record not found",
+            "reason": "not-found"
+          },
+          "durationMs": 2.918524000000616
+        },
+        {
+          "id": "APPLICATION_CAPABILITIES",
+          "description": "App receives no SQL/query-builder/driver/policy-client capability",
+          "status": "PASS",
+          "observation": [
+            "getMap",
+            "listMaps",
+            "setSessionStatus",
+            "updateMapTitle"
+          ],
+          "durationMs": 0.023465000000214786
+        },
+        {
+          "id": "SEQUENTIAL_100_WRITES",
+          "description": "100 sequential owner transactions preserve every increment and receipt",
+          "status": "PASS",
+          "observation": {
+            "final": {
+              "id": "perf",
+              "title": "PERF_99",
+              "revision": 100
+            },
+            "receiptCount": 100,
+            "latencyMs": {
+              "n": 100,
+              "min": 3.7853570000006584,
+              "median": 4.75330699999904,
+              "p95": 6.401443999999174,
+              "max": 17.549383999999918,
+              "samples": [
+                11.884819999999308,
+                17.549383999999918,
+                5.989473999999973,
+                4.968435000000682,
+                4.936547999999675,
+                5.118666999998823,
+                4.528585000000021,
+                4.800606999999218,
+                4.993841999999859,
+                4.814136999999391,
+                5.114110999998957,
+                5.284362999998848,
+                5.1123179999995045,
+                5.481854000001476,
+                5.211735000000772,
+                5.260898000000452,
+                6.4255890000004,
+                7.604181999999128,
+                5.76534299999912,
+                5.803970000000845,
+                5.50334599999951,
+                5.450307999999495,
+                5.334396000000197,
+                5.436376999999993,
+                5.942033999999694,
+                7.4730579999995825,
+                4.510958999999275,
+                4.423490000001038,
+                5.09151699999893,
+                4.391401999999289,
+                4.360547000000224,
+                4.306856999999582,
+                4.439914000000499,
+                4.6632239999999,
+                6.401443999999174,
+                4.327617999999347,
+                4.402528999999049,
+                4.278995999999097,
+                4.333271000001332,
+                5.139798000000155,
+                5.081492999999682,
+                5.788636999999653,
+                5.076705000001311,
+                5.803539999998975,
+                5.378822000000582,
+                5.480122000000847,
+                5.349428000001353,
+                5.47364700000071,
+                6.040599999998449,
+                5.299294000000373,
+                5.583909999999378,
+                5.193447999999989,
+                5.105918000001111,
+                6.223040000000765,
+                4.75330699999904,
+                5.705213999999614,
+                4.5870709999999235,
+                4.406333999999333,
+                4.464218999999503,
+                4.774157999998351,
+                4.4291379999995115,
+                4.463227999998708,
+                5.182912000000215,
+                4.779484999999113,
+                4.269883000000846,
+                5.605346999998801,
+                4.644806999998764,
+                4.450539999999819,
+                4.521795000000566,
+                4.251355000000331,
+                4.190985000001092,
+                4.435577000000194,
+                4.156694999999672,
+                3.995926999999938,
+                4.086280999999872,
+                4.358463000000484,
+                4.611247000000731,
+                4.977028000001155,
+                4.167772000000696,
+                4.354597999999896,
+                4.236834000001181,
+                4.219277000000147,
+                5.611194999999498,
+                4.2473489999993035,
+                4.114752999999837,
+                4.129324999999881,
+                3.979913999999553,
+                3.987805999999182,
+                4.348818999998912,
+                3.8682879999996658,
+                3.8658049999994546,
+                4.13991999999962,
+                3.9712110000000393,
+                4.122223999998823,
+                4.824851999999737,
+                3.9029300000001967,
+                3.972251999999571,
+                3.826347000000169,
+                3.7853570000006584,
+                3.909540000000561
+              ]
+            }
+          },
+          "durationMs": 506.20304999999826
+        }
+      ],
+      "writes": {
+        "n": 100,
+        "min": 3.7853570000006584,
+        "median": 4.75330699999904,
+        "p95": 6.401443999999174,
+        "max": 17.549383999999918,
+        "samples": [
+          11.884819999999308,
+          17.549383999999918,
+          5.989473999999973,
+          4.968435000000682,
+          4.936547999999675,
+          5.118666999998823,
+          4.528585000000021,
+          4.800606999999218,
+          4.993841999999859,
+          4.814136999999391,
+          5.114110999998957,
+          5.284362999998848,
+          5.1123179999995045,
+          5.481854000001476,
+          5.211735000000772,
+          5.260898000000452,
+          6.4255890000004,
+          7.604181999999128,
+          5.76534299999912,
+          5.803970000000845,
+          5.50334599999951,
+          5.450307999999495,
+          5.334396000000197,
+          5.436376999999993,
+          5.942033999999694,
+          7.4730579999995825,
+          4.510958999999275,
+          4.423490000001038,
+          5.09151699999893,
+          4.391401999999289,
+          4.360547000000224,
+          4.306856999999582,
+          4.439914000000499,
+          4.6632239999999,
+          6.401443999999174,
+          4.327617999999347,
+          4.402528999999049,
+          4.278995999999097,
+          4.333271000001332,
+          5.139798000000155,
+          5.081492999999682,
+          5.788636999999653,
+          5.076705000001311,
+          5.803539999998975,
+          5.378822000000582,
+          5.480122000000847,
+          5.349428000001353,
+          5.47364700000071,
+          6.040599999998449,
+          5.299294000000373,
+          5.583909999999378,
+          5.193447999999989,
+          5.105918000001111,
+          6.223040000000765,
+          4.75330699999904,
+          5.705213999999614,
+          4.5870709999999235,
+          4.406333999999333,
+          4.464218999999503,
+          4.774157999998351,
+          4.4291379999995115,
+          4.463227999998708,
+          5.182912000000215,
+          4.779484999999113,
+          4.269883000000846,
+          5.605346999998801,
+          4.644806999998764,
+          4.450539999999819,
+          4.521795000000566,
+          4.251355000000331,
+          4.190985000001092,
+          4.435577000000194,
+          4.156694999999672,
+          3.995926999999938,
+          4.086280999999872,
+          4.358463000000484,
+          4.611247000000731,
+          4.977028000001155,
+          4.167772000000696,
+          4.354597999999896,
+          4.236834000001181,
+          4.219277000000147,
+          5.611194999999498,
+          4.2473489999993035,
+          4.114752999999837,
+          4.129324999999881,
+          3.979913999999553,
+          3.987805999999182,
+          4.348818999998912,
+          3.8682879999996658,
+          3.8658049999994546,
+          4.13991999999962,
+          3.9712110000000393,
+          4.122223999998823,
+          4.824851999999737,
+          3.9029300000001967,
+          3.972251999999571,
+          3.826347000000169,
+          3.7853570000006584,
+          3.909540000000561
+        ]
+      },
+      "coldStarts": {
+        "processWallMs": {
+          "n": 10,
+          "min": 596.4141789999994,
+          "median": 658.7486059999992,
+          "p95": 752.7963810000001,
+          "max": 752.7963810000001,
+          "samples": [
+            658.7486059999992,
+            663.5660429999989,
+            669.1375489999991,
+            596.4141789999994,
+            659.2101979999989,
+            627.459053999999,
+            621.7151830000003,
+            648.3308499999985,
+            752.7963810000001,
+            670.9536350000017
+          ]
+        },
+        "observations": [
+          {
+            "processWallMs": 658.7486059999992,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 464.070373,
+              "openAndFirstAuthorizedReadMs": 46.79086900000004,
+              "totalInsideProcessMs": 510.86124200000006,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 663.5660429999989,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 482.19355100000007,
+              "openAndFirstAuthorizedReadMs": 40.359474999999975,
+              "totalInsideProcessMs": 522.553026,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 669.1375489999991,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 487.73962,
+              "openAndFirstAuthorizedReadMs": 40.506752000000006,
+              "totalInsideProcessMs": 528.2463720000001,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 596.4141789999994,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 417.76341,
+              "openAndFirstAuthorizedReadMs": 42.331020999999964,
+              "totalInsideProcessMs": 460.094431,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 659.2101979999989,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 469.11745599999995,
+              "openAndFirstAuthorizedReadMs": 45.479834000000096,
+              "totalInsideProcessMs": 514.59729,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 627.459053999999,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 444.57506299999994,
+              "openAndFirstAuthorizedReadMs": 41.51123800000005,
+              "totalInsideProcessMs": 486.086301,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 621.7151830000003,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 442.375441,
+              "openAndFirstAuthorizedReadMs": 42.89512400000001,
+              "totalInsideProcessMs": 485.27056500000003,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 648.3308499999985,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 462.88902700000006,
+              "openAndFirstAuthorizedReadMs": 44.65353399999992,
+              "totalInsideProcessMs": 507.542561,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 752.7963810000001,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 538.5129909999999,
+              "openAndFirstAuthorizedReadMs": 55.33156900000006,
+              "totalInsideProcessMs": 593.84456,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          },
+          {
+            "processWallMs": 670.9536350000017,
+            "observation": {
+              "variant": "zenstack",
+              "importMs": 482.43544399999996,
+              "openAndFirstAuthorizedReadMs": 40.995716000000016,
+              "totalInsideProcessMs": 523.43116,
+              "ids": [
+                "p1",
+                "public"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "directZenstackEngine": {
+    "directRows": [
+      {
+        "id": "p1",
+        "worldId": "W1",
+        "title": "P1_REVEAL_TITLE",
+        "revision": 0,
+        "gmOnly": true,
+        "body": "P1_REVEAL_BODY",
+        "layers": "P1_REVEAL_LAYER",
+        "gmNotes": null
+      },
+      {
+        "id": "public",
+        "worldId": "W1",
+        "title": "PUBLIC_TITLE",
+        "revision": 0,
+        "gmOnly": false,
+        "body": "PUBLIC_BODY",
+        "layers": "PUBLIC_LAYER",
+        "gmNotes": null
+      }
+    ],
+    "queryBuilderRows": [
+      {
+        "id": "p1",
+        "worldId": "W1",
+        "title": "P1_REVEAL_TITLE",
+        "revision": 0,
+        "gmOnly": 1,
+        "body": "P1_REVEAL_BODY",
+        "layers": "P1_REVEAL_LAYER",
+        "gmNotes": null
+      },
+      {
+        "id": "public",
+        "worldId": "W1",
+        "title": "PUBLIC_TITLE",
+        "revision": 0,
+        "gmOnly": 0,
+        "body": "PUBLIC_BODY",
+        "layers": "PUBLIC_LAYER",
+        "gmNotes": null
+      }
+    ],
+    "gmWrite": {
+      "reason": "not-found",
+      "message": "Record not found"
+    },
+    "forgedWorldWrite": {
+      "reason": "rejected-by-policy",
+      "message": "some rows cannot be updated due to field policies"
+    },
+    "rawRead": {
+      "reason": "rejected-by-policy",
+      "message": "non-CRUD queries are not allowed"
+    },
+    "rawWrite": {
+      "reason": "rejected-by-policy",
+      "message": "non-CRUD queries are not allowed"
+    },
+    "anonymousRows": [],
+    "source": "Actual @zenstackhq/plugin-policy 3.9.8, generated schema, no application PolicyService involved"
+  },
+  "drizzleRawCapability": {
+    "observedRawRows": [
+      {
+        "id": "foreign",
+        "title": "FOREIGN_TITLE"
+      },
+      {
+        "id": "hidden",
+        "title": "UNREVEALED_TITLE"
+      },
+      {
+        "id": "p1",
+        "title": "P1_REVEAL_TITLE"
+      },
+      {
+        "id": "perf",
+        "title": "PERF"
+      },
+      {
+        "id": "public",
+        "title": "PUBLIC_TITLE"
+      },
+      {
+        "id": "wrong-saga",
+        "title": "OTHER_SAGA_TITLE"
+      }
+    ],
+    "rawWriteRowsInsideRolledBackTransaction": 1,
+    "enforcement": "The real raw Drizzle client has no access policy; application facade/import boundary must prevent this capability from entering app code.",
+    "applicationAccess": "Test-only composition-root probe; not exported by ApplicationPort"
+  },
+  "domainBoundary": {
+    "method": "TypeScript AST imports, exports, require and dynamic imports",
+    "checkedFiles": 345,
+    "productDomainFileCount": 344,
+    "productDomainTreeSha256": "d24433c1e6d3199c9ede2ef7138f67ede2e1e420b825b089afb2ab2ea918e71a",
+    "forbidden": []
+  },
+  "applicationImportBoundary": {
+    "checkedFiles": 1,
+    "attackAttempts": [
+      {
+        "source": "import { drizzle } from 'drizzle-orm/better-sqlite3';",
+        "rejected": [
+          "drizzle-orm/better-sqlite3"
+        ]
+      },
+      {
+        "source": "import { ZenStackClient } from '@zenstackhq/orm';",
+        "rejected": [
+          "@zenstackhq/orm"
+        ]
+      },
+      {
+        "source": "import SQLite from 'better-sqlite3';",
+        "rejected": [
+          "better-sqlite3"
+        ]
+      },
+      {
+        "source": "import { openPolicyClient } from '../zenstack/engine.js';",
+        "rejected": [
+          "../zenstack/engine.js"
+        ]
+      },
+      {
+        "source": "const db = await import('../drizzle/adapter.js');",
+        "rejected": [
+          "../drizzle/adapter.js"
+        ]
+      },
+      {
+        "source": "const db = await import(request.module);",
+        "rejected": [
+          "[unresolved dynamic import]"
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "node": "v24.19.0",
+    "nodeAbi": "137",
+    "platform": "linux",
+    "architecture": "x64",
+    "release": "6.18.55",
+    "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+    "availableParallelism": 8
+  }
+}

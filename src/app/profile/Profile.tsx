@@ -143,7 +143,7 @@ export function Profile() {
             </TabsTrigger>
             <TabsTrigger value="audio-video" className="gap-1.5" data-settings-tab="audio-video">
               <SpeakerHigh className="size-3.5" aria-hidden="true" />
-              Audio & VideoCamera
+              Audio & Video
             </TabsTrigger>
             <TabsTrigger value="language" className="gap-1.5" data-settings-tab="language">
               <Translate className="size-3.5" aria-hidden="true" />
@@ -321,7 +321,7 @@ export function Profile() {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base md:text-lg">
                   <SpeakerHigh className="size-5" />
-                  Audio & VideoCamera
+                  Audio & Video
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
                   Einstellungen für Sessions
@@ -425,7 +425,7 @@ export function Profile() {
                     </TabsTrigger>
                     <TabsTrigger value="video" className="gap-1.5" data-settings-ai-tab="video">
                       <VideoCamera className="size-3.5" aria-hidden="true" />
-                      VideoCamera
+                      Video
                     </TabsTrigger>
                     <TabsTrigger value="audio" className="gap-1.5" data-settings-ai-tab="audio">
                       <Waveform className="size-3.5" aria-hidden="true" />
@@ -453,7 +453,7 @@ export function Profile() {
 
                   <TabsContent value="video" className="space-y-4">
                     <p className="text-sm text-muted-foreground">
-                      Provider für KI-VideoCamera.
+                      Provider für KI-Video.
                     </p>
                     <AiProviderCredentialsPanel tab="video" />
                   </TabsContent>

@@ -392,6 +392,54 @@ function checkStackMigrationPrep() {
   });
 }
 
+function checkMig010HostSkeleton() {
+  console.log('MIG-010 host skeleton (#789): readiness / data-dir / shutdown self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-010-host-skeleton.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
+function checkMig011SqliteSchema() {
+  console.log('MIG-011 SQLite schema (#790): migration journal / FK integrity self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-011-sqlite-schema.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
+function checkMig013PolicyService() {
+  console.log('MIG-013 Policy Service (#792): deny-by-default matrix self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-013-policy-service.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
+function checkMig012WorldReadPort() {
+  console.log('MIG-012 world read port (#791): policy-guarded SQLite adapter self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-012-world-read-port.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2503,6 +2551,10 @@ checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
+checkMig010HostSkeleton();
+checkMig011SqliteSchema();
+checkMig013PolicyService();
+checkMig012WorldReadPort();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

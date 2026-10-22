@@ -7,6 +7,8 @@
 
 ## 1. Entscheidung und Nichtziele
 
+**Host-Modulvertrag (verbindlich für Epic #773):** Der Node-Host ist ein **Modular Monolith** mit vertikalen Use-Cases, Domänenmodulen, öffentlicher Modul-API vs. privater Persistenz und zentralem Composition-Root. Details und Inventar-Mapping: [`docs/architecture/host-modular-monolith.md`](architecture/host-modular-monolith.md). Erste technische Verankerung: MIG-010/#789. ORM-Wahl (GATE-01) ersetzt diesen Vertrag nicht.
+
 **Zielbild:** SagaTree ist eine Open-Source-, self-hosted- und perspektivisch local-first TTRPG-Plattform mit **einer** geteilten, UI- und Datenbank-unabhängigen Domain-/Rules-Engine. Solo/Puppeteer, GM-gehostete Sitzungen auf Desktop/LAN und dauerhaft gehostete Spielrunden auf einem VPS nutzen dieselben fachlichen Verträge. Ein optionaler zentraler Hub erleichtert Einladungen, Erreichbarkeit oder Hosting, ist aber **keine Voraussetzung** für lokales Spiel oder LAN-Sessions.
 
 **Vorgesehene Standardumsetzung:** React/Vite weiterverwenden; TypeScript-Backend mit Node.js + Hono, SQLite + Drizzle, Better Auth für remote erreichbare Host-Instanzen, zugriffskontrollierter lokaler Storage, WebSocket-Kommandos und -Events; optionale Ollama-/RAG-Adapter. Das ist eine **austauschbare Referenzimplementierung**, kein Auftrag, alle Bibliotheken sofort zu installieren.

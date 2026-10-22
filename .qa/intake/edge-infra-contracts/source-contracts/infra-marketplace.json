@@ -1,0 +1,418 @@
+{
+  "schemaVersion": 1,
+  "area": "marketplace",
+  "evidenceKind": "exact-typescript-ast-source",
+  "sourceFiles": [
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "sha256": "84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000"
+    }
+  ],
+  "supportingSourceFiles": [
+    {
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
+    },
+    {
+      "path": "src/lib/supabase.ts",
+      "sha256": "a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f"
+    }
+  ],
+  "importedTypeDeclarations": [
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "MarketplaceItemType",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 3,
+      "endLine": 3,
+      "text": "export type MarketplaceItemType = 'world' | 'adventure' | 'character' | 'item' | 'ruleset';"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceItem",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 5,
+      "endLine": 20,
+      "text": "export interface MarketplaceItem {\n  id: string;\n  type: MarketplaceItemType;\n  title: string;\n  description: string | null;\n  author_id: string;\n  author_name?: string; // Joined from users table\n  data: Record<string, unknown>; // Item-specific data (flexible JSONB)\n  rating: number;\n  downloads: number;\n  price: number; // 0.00 = free\n  image_url: string | null;\n  tags: string[];\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "CreateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 22,
+      "endLine": 30,
+      "text": "export interface CreateMarketplaceItemDTO {\n  type: MarketplaceItemType;\n  title: string;\n  description?: string;\n  data: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "UpdateMarketplaceItemDTO",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 32,
+      "endLine": 39,
+      "text": "export interface UpdateMarketplaceItemDTO {\n  title?: string;\n  description?: string;\n  data?: Record<string, unknown>;\n  price?: number;\n  image_url?: string;\n  tags?: string[];\n}"
+    },
+    {
+      "kind": "InterfaceDeclaration",
+      "name": "MarketplaceFilters",
+      "path": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "line": 41,
+      "endLine": 49,
+      "text": "export interface MarketplaceFilters {\n  type?: MarketplaceItemType | 'all';\n  searchQuery?: string;\n  minRating?: number;\n  maxPrice?: number;\n  tags?: string[];\n  sortBy?: 'downloads' | 'rating' | 'created_at' | 'price';\n  sortOrder?: 'asc' | 'desc';\n}"
+    }
+  ],
+  "calls": [
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 20,
+      "endLine": 21,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .select('*')",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 16,
+        "endLine": 60,
+        "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 67,
+      "endLine": 68,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single()",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 65,
+        "endLine": 83,
+        "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 91,
+      "endLine": 92,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .gte('rating', 3.5) // Only well-rated items\n      .order('downloads', { ascending: false })\n      .limit(6)",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 88,
+        "endLine": 124,
+        "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    // Get top items based on a combination of downloads and rating\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .gte('rating', 3.5) // Only well-rated items\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    // If we don't have enough high-rated items, get top downloads instead\n    if (!data || data.length < 6) {\n      const { data: fallbackData, error: fallbackError } = await supabase\n        .from('marketplace_items')\n        .select('*')\n        .order('downloads', { ascending: false })\n        .limit(6);\n\n      if (fallbackError) {\n        console.error('Error fetching fallback items:', fallbackError);\n        return data || [];\n      }\n\n      return fallbackData || [];\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 105,
+      "endLine": 106,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from('marketplace_items')",
+      "chain": "supabase\n        .from('marketplace_items')\n        .select('*')\n        .order('downloads', { ascending: false })\n        .limit(6)",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 88,
+        "endLine": 124,
+        "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    // Get top items based on a combination of downloads and rating\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .gte('rating', 3.5) // Only well-rated items\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    // If we don't have enough high-rated items, get top downloads instead\n    if (!data || data.length < 6) {\n      const { data: fallbackData, error: fallbackError } = await supabase\n        .from('marketplace_items')\n        .select('*')\n        .order('downloads', { ascending: false })\n        .limit(6);\n\n      if (fallbackError) {\n        console.error('Error fetching fallback items:', fallbackError);\n        return data || [];\n      }\n\n      return fallbackData || [];\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "auth",
+      "name": null,
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 133,
+      "endLine": 133,
+      "resolution": "dynamic-expression",
+      "expression": "supabase.auth.getUser()",
+      "chain": "supabase.auth.getUser()",
+      "arguments": [],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 129,
+        "endLine": 166,
+        "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data: { user } } = await supabase.auth.getUser();\n    \n    if (!user) {\n      throw new Error('User must be authenticated to create marketplace items');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: dto.type,\n        title: dto.title,\n        description: dto.description || null,\n        author_id: user.id,\n        data: dto.data,\n        price: dto.price || 0,\n        image_url: dto.image_url || null,\n        tags: dto.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 139,
+      "endLine": 140,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .insert({\n        type: dto.type,\n        title: dto.title,\n        description: dto.description || null,\n        author_id: user.id,\n        data: dto.data,\n        price: dto.price || 0,\n        image_url: dto.image_url || null,\n        tags: dto.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single()",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 129,
+        "endLine": 166,
+        "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data: { user } } = await supabase.auth.getUser();\n    \n    if (!user) {\n      throw new Error('User must be authenticated to create marketplace items');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: dto.type,\n        title: dto.title,\n        description: dto.description || null,\n        author_id: user.id,\n        data: dto.data,\n        price: dto.price || 0,\n        image_url: dto.image_url || null,\n        tags: dto.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 176,
+      "endLine": 177,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .update({\n        ...dto,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single()",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 171,
+        "endLine": 196,
+        "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...dto,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 203,
+      "endLine": 204,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 201,
+        "endLine": 218,
+        "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const { error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+      }
+    },
+    {
+      "kind": "rpc",
+      "name": "increment_marketplace_downloads",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 225,
+      "endLine": 227,
+      "resolution": "literal-or-constant",
+      "expression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
+      "chain": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
+      "arguments": [
+        "'increment_marketplace_downloads'",
+        "{\n      item_id: id,\n    }"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 223,
+        "endLine": 247,
+        "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 231,
+      "endLine": 232,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n        .from('marketplace_items')",
+      "chain": "supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single()",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 223,
+        "endLine": 247,
+        "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 238,
+      "endLine": 239,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n          .from('marketplace_items')",
+      "chain": "supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id)",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 223,
+        "endLine": 247,
+        "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+      }
+    },
+    {
+      "kind": "table",
+      "name": "marketplace_items",
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 254,
+      "endLine": 255,
+      "resolution": "literal-or-constant",
+      "expression": "supabase\n      .from('marketplace_items')",
+      "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false })",
+      "arguments": [
+        "'marketplace_items'"
+      ],
+      "enclosingOperation": {
+        "path": "src/infrastructure/marketplace/marketplace-service.ts",
+        "line": 252,
+        "endLine": 270,
+        "text": "export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false });\n\n    if (error) {\n      console.error('Error fetching author items:', error);\n      throw new Error(`Failed to fetch author items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getItemsByAuthor:', error);\n    throw error;\n  }\n}"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 5,
+      "endLine": 5,
+      "module": "../../lib/supabase",
+      "resolvedPath": "src/lib/supabase.ts",
+      "expression": "import { supabase } from '../../lib/supabase';"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 6,
+      "endLine": 11,
+      "module": "../../domains/marketplace/contracts/marketplace.types",
+      "resolvedPath": "src/domains/marketplace/contracts/marketplace.types.ts",
+      "expression": "import type {\n  MarketplaceItem,\n  CreateMarketplaceItemDTO,\n  UpdateMarketplaceItemDTO,\n  MarketplaceFilters,\n} from '../../domains/marketplace/contracts/marketplace.types';"
+    }
+  ],
+  "publicDeclarations": [
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 16,
+      "endLine": 60,
+      "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 65,
+      "endLine": 83,
+      "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 88,
+      "endLine": 124,
+      "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    // Get top items based on a combination of downloads and rating\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .gte('rating', 3.5) // Only well-rated items\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    // If we don't have enough high-rated items, get top downloads instead\n    if (!data || data.length < 6) {\n      const { data: fallbackData, error: fallbackError } = await supabase\n        .from('marketplace_items')\n        .select('*')\n        .order('downloads', { ascending: false })\n        .limit(6);\n\n      if (fallbackError) {\n        console.error('Error fetching fallback items:', fallbackError);\n        return data || [];\n      }\n\n      return fallbackData || [];\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 129,
+      "endLine": 166,
+      "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data: { user } } = await supabase.auth.getUser();\n    \n    if (!user) {\n      throw new Error('User must be authenticated to create marketplace items');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: dto.type,\n        title: dto.title,\n        description: dto.description || null,\n        author_id: user.id,\n        data: dto.data,\n        price: dto.price || 0,\n        image_url: dto.image_url || null,\n        tags: dto.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 171,
+      "endLine": 196,
+      "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...dto,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 201,
+      "endLine": 218,
+      "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const { error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 223,
+      "endLine": 247,
+      "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 252,
+      "endLine": 270,
+      "text": "export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false });\n\n    if (error) {\n      console.error('Error fetching author items:', error);\n      throw new Error(`Failed to fetch author items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getItemsByAuthor:', error);\n    throw error;\n  }\n}"
+    }
+  ],
+  "operationDeclarations": [
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 16,
+      "endLine": 60,
+      "name": "getMarketplaceItems",
+      "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 65,
+      "endLine": 83,
+      "name": "getMarketplaceItemById",
+      "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 88,
+      "endLine": 124,
+      "name": "getFeaturedItems",
+      "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    // Get top items based on a combination of downloads and rating\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .gte('rating', 3.5) // Only well-rated items\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    // If we don't have enough high-rated items, get top downloads instead\n    if (!data || data.length < 6) {\n      const { data: fallbackData, error: fallbackError } = await supabase\n        .from('marketplace_items')\n        .select('*')\n        .order('downloads', { ascending: false })\n        .limit(6);\n\n      if (fallbackError) {\n        console.error('Error fetching fallback items:', fallbackError);\n        return data || [];\n      }\n\n      return fallbackData || [];\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 129,
+      "endLine": 166,
+      "name": "createMarketplaceItem",
+      "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data: { user } } = await supabase.auth.getUser();\n    \n    if (!user) {\n      throw new Error('User must be authenticated to create marketplace items');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: dto.type,\n        title: dto.title,\n        description: dto.description || null,\n        author_id: user.id,\n        data: dto.data,\n        price: dto.price || 0,\n        image_url: dto.image_url || null,\n        tags: dto.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 171,
+      "endLine": 196,
+      "name": "updateMarketplaceItem",
+      "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...dto,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 201,
+      "endLine": 218,
+      "name": "deleteMarketplaceItem",
+      "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const { error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 223,
+      "endLine": 247,
+      "name": "incrementDownloads",
+      "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
+    },
+    {
+      "path": "src/infrastructure/marketplace/marketplace-service.ts",
+      "line": 252,
+      "endLine": 270,
+      "name": "getItemsByAuthor",
+      "text": "export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false });\n\n    if (error) {\n      console.error('Error fetching author items:', error);\n      throw new Error(`Failed to fetch author items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getItemsByAuthor:', error);\n    throw error;\n  }\n}"
+    }
+  ]
+}

@@ -73,7 +73,9 @@ src/
 
 **#94 is the only architecture.** `src/modules/**` and `src/components/**` are eradicated (#164/#175). Recreating them fails `architecture-boundary-check` (wired into `npm run test-gate`). Historical freeze baseline: `.qa/architecture/legacy-freeze-baseline.json`.
 
-**Boundary enforcement:** `scripts/architecture-boundary-check.mjs` — layer import rules + legacy eradication gate.
+**Host modular monolith (Epic #773):** top-level `server/` is a registered host package. Binding contract: `docs/architecture/host-modular-monolith.md` (vertical use-cases, domain modules, public APIs vs private persistence, central bootstrap). First technical enforcement: MIG-010/#789. ORM choice (GATE-01) does not replace module-boundary rules; Drizzle/client import bans are additional.
+
+**Boundary enforcement:** `scripts/architecture-boundary-check.mjs` — layer import rules + legacy eradication gate + registered `server/` host package / module-boundary checks.
 
 **Edge CORS:** Edge Functions MUST use `supabase/functions/_shared/cors.ts` (`corsHeaders` / `handleOptions`). Do not set `Access-Control-Allow-Origin` locally — `scripts/edge-cors-shared-check.mjs` (in `test-gate`) enforces this (dispatcher `main` exempt).
 

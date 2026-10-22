@@ -1,9 +1,9 @@
 # Local-first Stack Migration — Design Lock (Prep)
 
 > **Status:** PREP / NOT STARTED  
-> **Baseline SHA:** `4bc40a3142811f23f528b17698abc6d674d2ee75`  
+> **Baseline SHA:** `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`  
 > **Authority:** [`docs/architektur-sqlite-based.md`](../../docs/architektur-sqlite-based.md), `AGENTS.md`, `src/ARCHITECTURE.md`  
-> **Hard stop:** Do **not** publish GitHub migration issues or start the migration runner without explicit freigabe.
+> **Authorization:** The migration contracts are published and their remediation is authorized. This authorizes source verification, isolated test infrastructure, issue synchronization and PoC evidence. The unrestricted migration runner, human architecture decisions and production cutover remain separate gates.
 
 ## 1. Product invariant
 
@@ -54,14 +54,14 @@ Until GATE issues are human-APPROVED, dependent issues remain `needs-design` / `
 
 ## 4. Wave plan
 
-0. Evidence lock, architecture, PoCs (GATE-*)  
-1. Node host, SQLite, auth, permissions  
-2. API, realtime, session persistence  
-3. Characters, inventory, world atlas, game systems  
-4. Storage, media, functions, AI  
+0. Evidence lock, source inventory, isolated baseline and GATE-01–04 PoCs  
+1. Node host, SQLite, auth, permissions and protected asset foundation  
+2. API, realtime, session persistence, 18 RPC ports and migration dry-run tooling  
+3. Edge/AI/media service contracts and allowlisted dispatcher  
+4. The 13 infrastructure adapter ports, after their real RPC/Edge/storage dependencies  
 5. Export/import/restore  
 6. Security, quality, install, Docker  
-7. Tauri, controlled cutover, Supabase shutdown  
+7. Controlled cutover/observation/shutdown; deferred desktop GATE-05 after browser-host CI and ops, then MIG-703  
 
 Details: `.qa/intake/local-first-stack-migration-issues.json`.
 
@@ -77,7 +77,7 @@ Epic #746/#755 closed with optional live E2E. That is **insufficient** for migra
 | Prep wiring | PREP-02 **#775** |
 | Cutover lock | `MIG-700` / `MIG-702` `dependsOn` includes `ATLAS-LIVE-E2E` |
 
-Contract mocks / skipped live tests are **not** release proof. CI enablement waits on ATLAS-CI-* freigabe in the atlas gate doc.
+Contract mocks / skipped live tests are **not** release proof. The isolated CI implementation is authorized. Acceptance still requires the real browser/persistence/negative paths and a failing regression canary; no production credentials or skipped substitute qualify.
 
 ## 5b. Prep contract packs (specification only)
 
@@ -95,3 +95,11 @@ These packs do **not** APPROVE technology choices. Implementation successors sta
 - Enabling Atlas live CI with production credentials  
 - Selecting libraries without GATE PoC results + human APPROVED  
 - Removing Supabase before #770 CLOSED green  
+
+## 7. Verified inventory and readiness
+
+The current plan contains 90 issues: 71 original migration issues, Atlas #770 and 18 RPC children #861–#878. The AST inventory contains 57 frontend RPC names (including two typed dynamic outcome-promotion calls), 24 Edge directories (8 allowlisted workers, 15 unmounted workers, 1 dispatcher) and 13 infrastructure areas.
+
+Source verification, isolated PostgreSQL execution, successor implementation acceptance and human architecture approval are distinct. The isolated legacy database has reproduced permission and runtime defects; these are blockers, not behavior to silently preserve. The four original RPC cluster issues coordinate exclusive child ownership and no longer duplicate implementation.
+
+All migration tickets remain locked for automatic execution. The approval review rejected applying agent-ready because it could activate the runner; authorized preparation and isolated tests proceed without that label. Successors require completed transitive predecessors and evidence. Cyclic adapter imports are recorded as integration peers with frozen ports and a joint MIG-600 gate, rather than mutually impossible start conditions.

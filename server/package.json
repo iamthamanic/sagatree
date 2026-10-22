@@ -1,0 +1,13 @@
+{
+  "name": "@sagatree/host",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node --experimental-strip-types src/bootstrap/main.ts",
+    "self-test": "node --experimental-strip-types ../scripts/mig-010-host-skeleton.self-test.mjs && node --experimental-strip-types ../scripts/mig-011-sqlite-schema.self-test.mjs"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-21",
+  "scope": "Repeat the complete Gate-04 fixture under the CI Node-22 runtime; not architecture approval",
+  "command": "node scripts/stack-migration-pocs/gate-04/check.mjs --check",
+  "exitCode": 0,
+  "runtimeArchive": {
+    "url": "https://nodejs.org/dist/v22.23.3/node-v22.23.3-linux-x64.tar.xz",
+    "sha256": "df450af89261115ef9f9e3830c3eeb2cc9213b63c720b1af623cb5dcbe2e02de"
+  },
+  "result": {
+    "gate": "GATE-04",
+    "status": "PASS",
+    "mode": "--check",
+    "mandatoryRows": [
+      "1:PASS",
+      "2:PASS",
+      "3:PASS",
+      "4:PASS",
+      "5:PASS",
+      "6:PASS",
+      "7:PASS",
+      "8:PASS",
+      "9:PASS"
+    ],
+    "cases": 18,
+    "approval": "NOT APPROVED",
+    "node": "v22.23.3",
+    "sqlite": "3.51.3",
+    "load": {
+      "elapsedMs": 979.854,
+      "committedCommandsPerSecond": 1020.56,
+      "logicalLatencyMs": {
+        "p50": 10.839,
+        "p95": 19.391,
+        "max": 25.762
+      },
+      "note": "IPC fixture including conflict responses and explicit snapshot resync; 50 deterministic rounds, not a production saturation benchmark."
+    }
+  },
+  "sources": [
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/check.mjs",
+      "sha256": "620c1a2276279a58a56afee64820677683e70cb9232d4b01272f786c7e8fb7f1"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/store.mjs",
+      "sha256": "ae02afc23fc56a1c9af5c91202a5fcd1cfb9fc0884394162f647fdafb05a3c44"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/writer.mjs",
+      "sha256": "d8b7ca4fdfcb99b1b565a93a3625f3b361c77378477fd3f7261bb2bc0f2f50e5"
+    },
+    {
+      "path": ".qa/design/gates/GATE-04-sqlite-revision-idempotency.md",
+      "sha256": "638a69310fe668d87709c615870324671b47ce0881a936ac54a7696a29b31e84"
+    },
+    {
+      "path": ".qa/design/player-test-realtime-runtime-state.md",
+      "sha256": "e4383815a92b52afea8295113c8201a39ebce7aa6fcba070fbad91294b9f61a9"
+    },
+    {
+      "path": "supabase/migrations/051_session_director_runtime.sql",
+      "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+    },
+    {
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
+    }
+  ]
+}

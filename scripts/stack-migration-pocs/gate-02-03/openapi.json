@@ -1,0 +1,23 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "GATE-03 isolated command surface", "version": "0.0.0", "description": "Fixture only. Writes require exact Origin and Host. Safe whoami/snapshot HTTP reads also accept absent Origin with exact Host and Sec-Fetch-Site:same-origin, as exercised in real Chromium. Better Auth /api/auth/*, Colyseus /matchmake/* and test-only /__poc/browser plus /__poc/colyseus-browser.js are separate surfaces. The real browser test falsifies credential isolation in the combined cookie/bearer/JWT profile; no architecture approval or automatic schema generation is claimed." },
+  "security": [{ "sessionCookie": [] }, { "bearerJwt": [] }],
+  "paths": {
+    "/health": { "get": { "operationId": "health", "security": [], "responses": { "200": { "description": "Process health, no user authority" } } } },
+    "/api/whoami": { "get": { "operationId": "whoami", "responses": { "200": { "description": "Authenticated role and credential kind" }, "401": { "$ref": "#/components/responses/Denied" }, "403": { "$ref": "#/components/responses/Denied" } } } },
+    "/api/snapshot": { "get": { "operationId": "getSnapshot", "parameters": [{ "name": "sessionId", "in": "query", "required": true, "schema": { "const": "demo" } }], "responses": { "200": { "description": "Current fixture snapshot", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Snapshot" } } } }, "401": { "$ref": "#/components/responses/Denied" }, "403": { "$ref": "#/components/responses/Denied" } } } },
+    "/api/ping-session": { "post": { "operationId": "pingSession", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Command" } } } }, "responses": { "200": { "description": "Command acknowledgement", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ack" } } } }, "400": { "$ref": "#/components/responses/Denied" }, "401": { "$ref": "#/components/responses/Denied" }, "403": { "$ref": "#/components/responses/Denied" } } } },
+    "/api/gm-command": { "post": { "operationId": "gmOnly", "description": "Same command contract, requires current host-admin policy role.", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Command" } } } }, "responses": { "200": { "description": "Command acknowledgement", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ack" } } } }, "401": { "$ref": "#/components/responses/Denied" }, "403": { "$ref": "#/components/responses/Denied" } } } },
+    "/api/failure": { "get": { "operationId": "injectedHttpFailure", "security": [], "description": "Test-only caught exception used to inspect socket survival.", "responses": { "500": { "$ref": "#/components/responses/Denied" } } } }
+  },
+  "components": {
+    "securitySchemes": { "sessionCookie": { "type": "apiKey", "in": "cookie", "name": "better-auth.session_token" }, "bearerJwt": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "responses": { "Denied": { "description": "Stable code, no credential or internal exception leakage", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Failure" } } } } },
+    "schemas": {
+      "Command": { "type": "object", "required": ["sessionId", "commandId"], "properties": { "sessionId": { "const": "demo" }, "commandId": { "type": "string", "minLength": 1, "maxLength": 128 } } },
+      "Ack": { "type": "object", "required": ["ok", "sessionId", "commandId", "revision"], "properties": { "ok": { "const": true }, "sessionId": { "const": "demo" }, "commandId": { "type": "string" }, "revision": { "type": "integer", "minimum": 1 } } },
+      "Snapshot": { "type": "object", "required": ["ok", "sessionId", "revision", "value"], "properties": { "ok": { "const": true }, "sessionId": { "const": "demo" }, "revision": { "type": "integer", "minimum": 0 }, "value": { "type": "integer", "minimum": 0 } } },
+      "Failure": { "type": "object", "required": ["ok", "error"], "properties": { "ok": { "const": false }, "error": { "type": "object", "required": ["code"], "properties": { "code": { "type": "string" } } } } }
+    }
+  }
+}

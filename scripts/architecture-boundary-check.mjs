@@ -35,6 +35,26 @@ export const ALLOWED_SRC_CODE_ROOTS = new Set([
 /** Composition-root TS/JS files allowed directly under src/ (not feature dumping). */
 export const ALLOWED_SRC_TOP_LEVEL_FILES = new Set(['App.tsx', 'main.tsx']);
 
+/**
+ * Registered non-src host package roots (Epic #773 modular monolith).
+ * Presence is required; layout rules apply once TypeScript appears under them.
+ * See docs/architecture/host-modular-monolith.md.
+ */
+export const REGISTERED_HOST_PACKAGE_ROOTS = new Set(['server']);
+
+/**
+ * Composition entries that may wire private module constructors once at start.
+ * Documented in docs/architecture/host-modular-monolith.md §3 / §7.
+ * Do NOT blanket-allow all of server/src/http/**.
+ */
+export const SERVER_COMPOSITION_ENTRY_RELS = [
+  /^server\/src\/bootstrap\//,
+  /^server\/src\/http\/route-registry(?:\.[cm]?[jt]sx?)?$/,
+];
+
+const SERVER_MODULE_PATH_RE = /^server\/src\/modules\/([^/]+)(?:\/(.*))?$/;
+const SERVER_PRIVATE_SEGMENT_RE = /(?:^|\/)(?:internal|persistence)(?:\/|$)/;
+
 const IMPORT_PATH_RULES = {
   domains: [
     { label: 'React', test: (p) => /^react(?:\/|$)/.test(p) },
@@ -344,6 +364,187 @@ function directoryContainsSource(dir) {
 }
 
 /**
+ * Resolve a host (server/) import to a repo-relative path under server/ when possible.
+ * Supports relative imports and documented aliases `#server/` and bare `server/`.
+ * `@/` maps to frontend src/ and is intentionally ignored here.
+ */
+export function resolveServerImport(fromRelPath, importPath, rootDir = root) {
+  const normalized = importPath.replace(/\\/g, '/');
+  const fromAbs = join(rootDir, fromRelPath);
+
+  let candidate;
+  if (normalized.startsWith('.')) {
+    candidate = normalize(join(dirname(fromAbs), normalized)).replace(/\\/g, '/');
+  } else if (normalized.startsWith('#server/')) {
+    candidate = join(rootDir, 'server', normalized.slice('#server/'.length)).replace(/\\/g, '/');
+  } else if (normalized.startsWith('server/')) {
+    candidate = join(rootDir, normalized).replace(/\\/g, '/');
+  } else if (normalized.startsWith('@/')) {
+    return null;
+  } else {
+    return null;
+  }
+
+  const rootNorm = rootDir.replace(/\\/g, '/').replace(/\/$/, '');
+  let rel = candidate.startsWith(`${rootNorm}/`)
+    ? candidate.slice(rootNorm.length + 1)
+    : candidate.replace(/^\/+/, '');
+  rel = rel.replace(/\\/g, '/').replace(/\.(?:js|jsx|mjs|cjs|ts|tsx)$/, '');
+
+  if (!SOURCE_EXT.test(candidate)) {
+    const base = join(rootDir, rel);
+    for (const ext of ['.ts', '.tsx', '.js', '.mjs', '.jsx', '/index.ts', '/index.js']) {
+      const tryPath = base + ext;
+      if (existsSync(tryPath)) {
+        return relative(rootDir, tryPath).replace(/\\/g, '/').replace(/\.(?:js|jsx|mjs|cjs|ts|tsx)$/, '');
+      }
+    }
+  }
+  return rel;
+}
+
+/** Module id for a repo-relative server path, or null if outside modules/. */
+export function getServerModuleId(relPath) {
+  const match = relPath.replace(/\\/g, '/').match(SERVER_MODULE_PATH_RE);
+  return match?.[1] ?? null;
+}
+
+/** True when the resolved path points at a module's private internal/persistence tree. */
+export function isServerModulePrivatePath(relPath) {
+  const match = relPath.replace(/\\/g, '/').match(SERVER_MODULE_PATH_RE);
+  if (!match) return false;
+  const rest = match[2] ?? '';
+  return SERVER_PRIVATE_SEGMENT_RE.test(rest);
+}
+
+/** True when the path is a module public barrel (…/modules/<id> or …/index). */
+export function isServerModulePublicBarrel(relPath) {
+  const normalized = relPath.replace(/\\/g, '/').replace(/\.(?:js|jsx|mjs|cjs|ts|tsx)$/, '');
+  return /^server\/src\/modules\/[^/]+(?:\/index)?$/.test(normalized);
+}
+
+export function isServerCompositionEntry(relPath) {
+  const normalized = relPath.replace(/\\/g, '/');
+  return SERVER_COMPOSITION_ENTRY_RELS.some((re) => re.test(normalized));
+}
+
+/**
+ * Detect cycles in a directed adjacency map (module id → Set of imported module ids).
+ */
+export function findDirectedCycles(adjacency) {
+  const nodes = [...adjacency.keys()].sort();
+  const cycles = [];
+  const visiting = new Set();
+  const visited = new Set();
+  const stack = [];
+
+  function dfs(node) {
+    if (visited.has(node)) return;
+    if (visiting.has(node)) {
+      const start = stack.indexOf(node);
+      if (start >= 0) cycles.push([...stack.slice(start), node]);
+      return;
+    }
+    visiting.add(node);
+    stack.push(node);
+    for (const child of [...(adjacency.get(node) ?? [])].sort()) dfs(child);
+    stack.pop();
+    visiting.delete(node);
+    visited.add(node);
+  }
+
+  for (const node of nodes) dfs(node);
+  return cycles;
+}
+
+/**
+ * Ensure registered host package roots exist and enforce modular-monolith
+ * import rules once server/src TypeScript is present.
+ * Module-boundary checks are ADDITIONAL to future ORM/client import bans.
+ */
+export function checkRegisteredHostPackages(rootDir = root) {
+  const violations = [];
+  for (const name of REGISTERED_HOST_PACKAGE_ROOTS) {
+    const abs = join(rootDir, name);
+    if (!existsSync(abs)) {
+      violations.push({
+        file: name,
+        rule: 'registered host package root missing (host modular monolith)',
+        scope: 'host-package-registry',
+      });
+      continue;
+    }
+    const readme = join(abs, 'README.md');
+    if (!existsSync(readme)) {
+      violations.push({
+        file: `${name}/README.md`,
+        rule: 'registered host package requires README anchoring the module contract',
+        scope: 'host-package-registry',
+      });
+    } else {
+      const text = readFileSync(readme, 'utf8');
+      if (!text.includes('host-modular-monolith')) {
+        violations.push({
+          file: `${name}/README.md`,
+          rule: 'host package README must reference docs/architecture/host-modular-monolith.md',
+          scope: 'host-package-registry',
+        });
+      }
+    }
+  }
+
+  const serverSrc = join(rootDir, 'server', 'src');
+  if (!existsSync(serverSrc)) return violations;
+
+  const serverFiles = walkFiles(serverSrc).filter((file) => SOURCE_EXT.test(file));
+  /** @type {Map<string, Set<string>>} */
+  const moduleDeps = new Map();
+
+  for (const file of serverFiles) {
+    const rel = relative(rootDir, file).replace(/\\/g, '/');
+    const content = readFileSync(file, 'utf8');
+    const fromModule = getServerModuleId(rel);
+    if (fromModule && !moduleDeps.has(fromModule)) moduleDeps.set(fromModule, new Set());
+
+    for (const importPath of extractImportPaths(content)) {
+      const resolved = resolveServerImport(rel, importPath, rootDir);
+      if (!resolved || !resolved.startsWith('server/')) continue;
+
+      const targetModule = getServerModuleId(resolved);
+      const targetPrivate = isServerModulePrivatePath(resolved);
+      const composition = isServerCompositionEntry(rel);
+
+      if (targetPrivate) {
+        const sameModule = Boolean(fromModule && targetModule && fromModule === targetModule);
+        if (sameModule || composition) continue;
+        violations.push({
+          file: rel,
+          rule: targetModule && fromModule && targetModule !== fromModule
+            ? `module ${fromModule} imports private path of ${targetModule} (${importPath} → ${resolved})`
+            : `forbidden private module import (${importPath} → ${resolved})`,
+          scope: 'host-module-boundary',
+        });
+        continue;
+      }
+
+      if (fromModule && targetModule && fromModule !== targetModule) {
+        moduleDeps.get(fromModule).add(targetModule);
+      }
+    }
+  }
+
+  for (const cycle of findDirectedCycles(moduleDeps)) {
+    violations.push({
+      file: `server/src/modules/${cycle[0]}`,
+      rule: `forbidden module dependency cycle: ${cycle.join(' → ')}`,
+      scope: 'host-module-boundary',
+    });
+  }
+
+  return violations;
+}
+
+/**
  * Reject unknown src/* dumping grounds: non-allowlisted directories with TS/JS,
  * and non-allowlisted top-level source files (e.g. src/NewCharacterService.ts).
  */
@@ -524,6 +725,8 @@ export function runArchitectureBoundaryCheck(options = {}) {
   let legacyCurrent = [];
   let legacyBaseline = [];
   let legacyRemoved = 0;
+
+  violations.push(...checkRegisteredHostPackages(rootDir));
 
   if (!skipLegacyFreeze) {
     violations.push(...checkEradicatedLegacyRoots(rootDir));

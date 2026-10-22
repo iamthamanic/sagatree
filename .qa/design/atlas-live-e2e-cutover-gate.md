@@ -21,7 +21,7 @@ Local draft id: `ATLAS-LIVE-E2E` in `.qa/intake/local-first-stack-migration-issu
 | Nav | DB-backed tree (`data-atlas-nav-source=db`); no demo SoT |
 | Tools | Registry chrome (`#tools[data-atlas-tool-source=registry]`) |
 | Persist | Create/edit map or place via real RPCs; reload proves DB state |
-| Player view | Second identity cannot see GM-only / unrevealed maps/titles |
+| Player view | Player identity cannot see GM-only / unrevealed maps/titles **and after an explicit reveal/publish by GM, player must fetch and observe the published map/place via the real backend** |
 | Cross-owner | Third identity denied at API/DB (401/empty), not only UI hide |
 | Regression | Temporary intentional fail makes the **required** job red; then revert |
 | Production | No production Donalu writes; `PRODUCTION_GATE.md` remains NOT migrated |
@@ -42,7 +42,7 @@ Proposed job name: `Atlas Live Product E2E` in `.github/workflows/verify.yml` (o
 
 ```text
 needs: test-gate
-if: secrets present OR explicit workflow_dispatch with test stack
+Unconditional required job on supported release/main paths; credential preflight FAILS explicitly if isolated-test-stack credentials or fixtures are missing (never skip the required job)
 env:
   E2E_ATLAS_PRODUCT=1
   VITE_SUPABASE_URL=<test>
@@ -54,7 +54,7 @@ steps:
   - upload evidence under .qa/evidence/atlas-followup-real-product-e2e/live/
 ```
 
-**Required for cutover:** job is **required** on `main` / release PRs once secrets freigabe lands. Until then, cutover issues stay blocked.
+**Required for cutover:** job is **required** on `main` / release PRs once isolated test infrastructure is approved, and **fails closed if credentials/fixture unavailable**. Until then, cutover issues stay blocked.
 
 ## 5. BLOCKED / NEEDS DECISION (do not invent)
 
@@ -62,7 +62,7 @@ steps:
 | --- | --- | --- |
 | ATLAS-CI-01 | Isolated CI DB: ephemeral docker-supabase in Actions vs always-on test project | Prefer always-on **test** project with reset seed for speed; document restore |
 | ATLAS-CI-02 | Which secrets names + who rotates them | Separate from prod; never reuse `VITE_SUPABASE_*` prod values |
-| ATLAS-CI-03 | Make job required in branch protection before/after first green | After one proven green live run on `main` |
+| ATLAS-CI-03 | Configure unconditional required job in branch protection; missing credentials fail the job rather than skipping it | First green isolated run required before cutover |
 | ATLAS-CI-04 | Seed ownership of WO-9FFK6-like fixture vs new synthetic WO- | New synthetic public id avoids prod collision |
 
 Until ATLAS-CI-01..03 are human-approved, **#770 remains OPEN** and migration cutover remains blocked. Prep issue #775 can still merge as **specification + dependency wiring**.
@@ -81,3 +81,12 @@ Until ATLAS-CI-01..03 are human-approved, **#770 remains OPEN** and migration cu
 - Green Browser E2E that skips the live test  
 - Contract-mode `data-atlas-nav-source=db` alone  
 - Marker files / screenshots without DB assertions  
+
+
+## Executed isolated product evidence — 2026-10-21
+
+The isolated backend implementation is now concrete: PostgreSQL15.18 with all106 unchanged repository migrations, official GoTrue2.143.0 and PostgREST12.0.1 binaries, synthetic actors, and the actual Vite product in Chromium. Full evidence is in `.qa/evidence/stack-migration-prep/parity-fixtures/execution-2026-10-21/`.
+
+The browser suite is **1/3 PASS, 2/3 FAIL, zero skipped/flaky**. Owner map rendering and a real rename persist through reload. The tools button is then blocked by the top-view overlay. Both players authenticate and receive correct real API visibility before/after GM reveal, but player1 cannot render the revealed map through the UI because sagaPublicId is lost between WorldAtlasWorkbench and useWorldAtlasEditor. Cross-owner browser/API access is denied correctly.
+
+Issue #770 therefore remains open and blocks cutover. The new workflow runs the product suite without optional environment skips. Existing deployment credentials are unnecessary. Further editor operations and the two observed UI failures still require complete evidence; successful SQL or API calls alone do not satisfy the product journey.

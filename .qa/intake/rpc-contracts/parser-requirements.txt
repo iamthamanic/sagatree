@@ -1,0 +1,2 @@
+# libpg_query with PostgreSQL 17 SQL and PL/pgSQL parsers; extraction only.
+pglast==7.21

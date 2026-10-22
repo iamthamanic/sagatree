@@ -247,10 +247,13 @@ Self-Host: [`README_SELFHOST.md`](README_SELFHOST.md) · Deploy: [`src/supabase/
 
 Auf Push / PR gegen `main`:
 
+Die Quellvertragsprüfung benötigt zusätzlich Python 3 und den exakt gepinnten PostgreSQL-Parser: `python3 -m pip install -r .qa/intake/rpc-contracts/parser-requirements.txt`. Einrichtung, isolierte Datenbank-/Browsertests und bekannte Grenzen: [Migrationsvorbereitung](docs/stack-migration-preparation.md).
+
 ```bash
 npm run test-gate          # Lint, Typecheck, Build, Deno, Contracts, Secrets-Scan, Architecture
 npm run composition-gate   # Semantische Multi-Hop-Proofs
 npm run test:e2e           # Playwright (Chromium)
+npm run check:stack-migration-prep  # RPC-/Edge-Quellen, 90 Issue-Verträge und Negativtests
 ```
 
 Lokal:
@@ -300,7 +303,8 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
-- **2026-10-21** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
+- **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
+- **2026-10-21** — Migrationsvorbereitung: geprüfte RPC-/Edge-Verträge, gesperrter 90-Ticket-Plan und echte isolierte SQL-/Atlas-Prüfungen mit offen ausgewiesenen Altfehlern ([#773](https://github.com/iamthamanic/sagatree/issues/773), [Prüfanleitung](docs/stack-migration-preparation.md))
 - **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
 - **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)
 - **2026-10-17** — Donalu-Weltworkspace: Places + Map-Links (`WO-9FFK6`), Orte-Panel, Dungeon Confirm/`manualDirty`, Player-Reveal-RPC; Hybrid 2D/3D Atlas

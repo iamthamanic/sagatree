@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-04",
+  "status": "PASS",
+  "approval": "NOT APPROVED",
+  "scope": "Executed storage-semantics fixture; not deployed-product parity or a technology approval.",
+  "policy": {
+    "busyTimeoutMs": 250,
+    "maxStateBytes": 4096,
+    "maxKeyBytes": 128,
+    "journalMode": "wal",
+    "synchronous": "FULL",
+    "automaticDatabaseRetries": 0
+  },
+  "criteria": [
+    {
+      "row": "1",
+      "cases": [
+        "R1"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "2",
+      "cases": [
+        "R2"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "3",
+      "cases": [
+        "R3",
+        "N-concurrent-replay"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "4",
+      "cases": [
+        "R4"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "5",
+      "cases": [
+        "R5-after-begin",
+        "R5-after-state-write",
+        "R5-before-commit",
+        "R5-after-commit",
+        "R5-before-broadcast"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "6",
+      "cases": [
+        "R6"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "7",
+      "cases": [
+        "R7"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "8",
+      "cases": [
+        "R1",
+        "R8",
+        "R5-after-begin",
+        "R5-after-state-write",
+        "R5-before-commit",
+        "R5-after-commit",
+        "R5-before-broadcast",
+        "CANARY"
+      ],
+      "status": "PASS"
+    },
+    {
+      "row": "9",
+      "cases": [
+        "R9"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "cases": [
+    {
+      "id": "R1",
+      "title": "Atomic happy path increments revision exactly once",
+      "status": "PASS",
+      "evidence": {
+        "revision": 1,
+        "value": 3,
+        "events": 1,
+        "idempotency": 1
+      }
+    },
+    {
+      "id": "R2",
+      "title": "Stale and future revisions leave every persisted row unchanged",
+      "status": "PASS",
+      "evidence": {
+        "conflicts": 2,
+        "persistedChangesFromConflicts": 0
+      }
+    },
+    {
+      "id": "R3",
+      "title": "Stored replay is stable and bound to authenticated actor plus canonical operation",
+      "status": "PASS",
+      "evidence": {
+        "savedReplayRevision": 1,
+        "currentRevision": 2,
+        "changedPayloadDenied": true,
+        "changedActorDenied": true,
+        "revokedActorReplayDenied": true,
+        "canonicalPropertyOrderStable": true
+      }
+    },
+    {
+      "id": "R4",
+      "title": "Five concurrent conflicting clients produce exactly one winner",
+      "status": "PASS",
+      "evidence": {
+        "clients": 5,
+        "winners": 1,
+        "conflicts": 4,
+        "events": 1,
+        "peakOutstandingRequests": 5
+      }
+    },
+    {
+      "id": "N-concurrent-replay",
+      "title": "Twenty simultaneous deliveries of one key commit once",
+      "status": "PASS",
+      "evidence": {
+        "deliveries": 20,
+        "commits": 1,
+        "stableResults": 20
+      }
+    },
+    {
+      "id": "R5-after-begin",
+      "title": "Real SIGKILL at after-begin, reopen, retry and reconnect",
+      "status": "PASS",
+      "evidence": {
+        "signal": "SIGKILL",
+        "revisionBeforeRetry": 0,
+        "responseReceivedBeforeKill": false,
+        "broadcastsBeforeKill": 0,
+        "revisionAfterRetry": 1,
+        "eventsAfterRetry": 1,
+        "idempotencyAfterRetry": 1,
+        "recoveredEventsAfterCursor": 1,
+        "duplicateEventsAfterCursorAdvance": 0
+      }
+    },
+    {
+      "id": "R5-after-state-write",
+      "title": "Real SIGKILL at after-state-write, reopen, retry and reconnect",
+      "status": "PASS",
+      "evidence": {
+        "signal": "SIGKILL",
+        "revisionBeforeRetry": 0,
+        "responseReceivedBeforeKill": false,
+        "broadcastsBeforeKill": 0,
+        "revisionAfterRetry": 1,
+        "eventsAfterRetry": 1,
+        "idempotencyAfterRetry": 1,
+        "recoveredEventsAfterCursor": 1,
+        "duplicateEventsAfterCursorAdvance": 0
+      }
+    },
+    {
+      "id": "R5-before-commit",
+      "title": "Real SIGKILL at before-commit, reopen, retry and reconnect",
+      "status": "PASS",
+      "evidence": {
+        "signal": "SIGKILL",
+        "revisionBeforeRetry": 0,
+        "responseReceivedBeforeKill": false,
+        "broadcastsBeforeKill": 0,
+        "revisionAfterRetry": 1,
+        "eventsAfterRetry": 1,
+        "idempotencyAfterRetry": 1,
+        "recoveredEventsAfterCursor": 1,
+        "duplicateEventsAfterCursorAdvance": 0
+      }
+    },
+    {
+      "id": "R5-after-commit",
+      "title": "Real SIGKILL at after-commit, reopen, retry and reconnect",
+      "status": "PASS",
+      "evidence": {
+        "signal": "SIGKILL",
+        "revisionBeforeRetry": 1,
+        "responseReceivedBeforeKill": false,
+        "broadcastsBeforeKill": 0,
+        "revisionAfterRetry": 1,
+        "eventsAfterRetry": 1,
+        "idempotencyAfterRetry": 1,
+        "recoveredEventsAfterCursor": 1,
+        "duplicateEventsAfterCursorAdvance": 0
+      }
+    },
+    {
+      "id": "R5-before-broadcast",
+      "title": "Real SIGKILL at before-broadcast, reopen, retry and reconnect",
+      "status": "PASS",
+      "evidence": {
+        "signal": "SIGKILL",
+        "revisionBeforeRetry": 1,
+        "responseReceivedBeforeKill": true,
+        "broadcastsBeforeKill": 0,
+        "revisionAfterRetry": 1,
+        "eventsAfterRetry": 1,
+        "idempotencyAfterRetry": 1,
+        "recoveredEventsAfterCursor": 1,
+        "duplicateEventsAfterCursorAdvance": 0
+      }
+    },
+    {
+      "id": "R6",
+      "title": "WAL readers, checkpoint busy state, truncation and restart preserve the snapshot",
+      "status": "PASS",
+      "evidence": {
+        "readerSnapshotRevisionDuringWrites": 0,
+        "committedRevisionDuringReader": 5,
+        "pinnedReaderCheckpointBusy": 1,
+        "releasedReaderCheckpointBusy": 0,
+        "truncatedWalBytes": 0,
+        "restartSnapshotIdentical": true,
+        "reconnectEventSequences": [
+          3,
+          4,
+          5
+        ],
+        "nextRevisionAfterRestart": 6
+      }
+    },
+    {
+      "id": "R7",
+      "title": "20 clients × 50 logical commands with stale/current/future revisions lose zero commits",
+      "status": "PASS",
+      "evidence": {
+        "clients": 20,
+        "commandsPerClient": 50,
+        "logicalCommands": 1000,
+        "writeAttempts": 1950,
+        "initialConflicts": 950,
+        "successfulResyncRetries": 950,
+        "committedRevisions": 1000,
+        "events": 1000,
+        "idempotencyRows": 1000,
+        "lostCommits": 0,
+        "extraReplayProbes": 20,
+        "peakOutstandingRequests": 20,
+        "finalStateValue": 0,
+        "ledgerSha256": "4936c6835f6c58565570e1658575df5e83590b7d98e10a1c90105c39456107e4"
+      }
+    },
+    {
+      "id": "R8",
+      "title": "Injected failures after event/idempotency writes roll back all four effects",
+      "status": "PASS",
+      "evidence": {
+        "injectedFailures": 2,
+        "leakedStateChanges": 0,
+        "leakedEvents": 0,
+        "leakedIdempotencyResults": 0,
+        "successfulRevisionAfterRollback": 1
+      }
+    },
+    {
+      "id": "R9",
+      "title": "Composite session/key scope prevents cross-session replay and leakage",
+      "status": "PASS",
+      "evidence": {
+        "sameActorSameKeyIndependentSessions": 2,
+        "independentlyCommittedPrivateSession": 1,
+        "foreignSessionReplayDenied": true,
+        "foreignSnapshotDenied": true,
+        "nonexistentSessionIndistinguishable": true
+      }
+    },
+    {
+      "id": "N-auth",
+      "title": "Empty/invalid auth, reader, outsider and actor forgery deny before write transaction",
+      "status": "PASS",
+      "evidence": {
+        "deniedRequests": 7,
+        "transactionsBegun": 0,
+        "persistedChanges": 0
+      }
+    },
+    {
+      "id": "N-validation",
+      "title": "Required keys, UTF-8 byte limit and safe revision types are enforced",
+      "status": "PASS",
+      "evidence": {
+        "invalidKeysRejected": 4,
+        "invalidRevisionsRejected": 4,
+        "oversizedStatesRejected": 2,
+        "exactStateLimitAcceptedBytes": 4096
+      }
+    },
+    {
+      "id": "N-busy",
+      "title": "A competing SQLite writer returns bounded busy without partial changes, then retry commits once",
+      "status": "PASS",
+      "evidence": {
+        "configuredBusyTimeoutMs": 250,
+        "automaticRetries": 0,
+        "failedAttemptPersistedChanges": 0,
+        "successfulExplicitRetryRevisions": 1
+      }
+    },
+    {
+      "id": "CANARY",
+      "title": "Crash canary detects durable state without event and idempotency",
+      "status": "PASS",
+      "evidence": {
+        "negativeControlDetected": true,
+        "signal": "SIGKILL",
+        "durableRevision": 1,
+        "durableEvents": 0,
+        "durableIdempotencyResults": 0,
+        "detectedViolations": [
+          "event-count-does-not-match-revision",
+          "idempotency-count-does-not-match-revision",
+          "runtime-does-not-match-committed-events"
+        ]
+      }
+    }
+  ],
+  "notRun": [
+    {
+      "id": "production-command-parity",
+      "status": "NOT RUN",
+      "reason": "Fixture adjust operation is not the 15-kind SagaTree RPC or its gameplay resolvers; live Postgres comparison requires the migration command ports."
+    },
+    {
+      "id": "target-concurrency-capacity-decision",
+      "status": "NOT RUN",
+      "reason": "20×50 local workload passed when R7 is PASS, but target state sizes, throughput/latency SLO, hardware, long-running contention and session mix are unspecified. Human GATE review must decide sufficiency."
+    },
+    {
+      "id": "power-loss-durability",
+      "status": "NOT RUN",
+      "reason": "SIGKILL proves process-crash recovery; no kernel, host-power, disk-full, fsync-failure or faulty-storage simulation."
+    },
+    {
+      "id": "production-auth-and-realtime",
+      "status": "NOT RUN",
+      "reason": "Server-owned fixture tokens/memberships and IPC notifications exercise the boundary; OIDC, service policy parity, sockets, backpressure, event retention and an atomic subscribe/catch-up protocol are separate gates."
+    },
+    {
+      "id": "platform-matrix",
+      "status": "NOT RUN",
+      "reason": "Evidence records the exact executed host/runtime. Other OS, filesystem and Node versions require their own execution; Node 22.13 API compatibility is documentation-checked only."
+    }
+  ],
+  "contractDecisionsRequired": [
+    "Require a nonempty idempotency key versus the legacy optional key.",
+    "Persist/replay the original result versus legacy current-snapshot replay.",
+    "Bind replay to authenticated actor and canonical operation; changed expectedRevision alone is accepted as retry metadata.",
+    "Keep append-only audit events authoritative for reconnect, without claiming full event sourcing or guaranteed delivery of a live notification."
+  ],
+  "sources": [
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/check.mjs",
+      "sha256": "620c1a2276279a58a56afee64820677683e70cb9232d4b01272f786c7e8fb7f1"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/store.mjs",
+      "sha256": "ae02afc23fc56a1c9af5c91202a5fcd1cfb9fc0884394162f647fdafb05a3c44"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-04/writer.mjs",
+      "sha256": "d8b7ca4fdfcb99b1b565a93a3625f3b361c77378477fd3f7261bb2bc0f2f50e5"
+    },
+    {
+      "path": ".qa/design/gates/GATE-04-sqlite-revision-idempotency.md",
+      "sha256": "638a69310fe668d87709c615870324671b47ce0881a936ac54a7696a29b31e84"
+    },
+    {
+      "path": ".qa/design/player-test-realtime-runtime-state.md",
+      "sha256": "e4383815a92b52afea8295113c8201a39ebce7aa6fcba070fbad91294b9f61a9"
+    },
+    {
+      "path": "supabase/migrations/051_session_director_runtime.sql",
+      "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+    },
+    {
+      "path": "src/domains/session/contracts/session-runtime.ts",
+      "sha256": "c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2"
+    }
+  ],
+  "primaryDocumentation": [
+    "https://nodejs.org/download/release/v22.13.0/docs/api/sqlite.html",
+    "https://www.sqlite.org/lang_transaction.html",
+    "https://www.sqlite.org/wal.html",
+    "https://www.sqlite.org/pragma.html#pragma_busy_timeout",
+    "https://www.sqlite.org/pragma.html#pragma_synchronous"
+  ]
+}

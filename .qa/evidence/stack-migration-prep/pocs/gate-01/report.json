@@ -1,0 +1,678 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-01",
+  "status": "EXECUTED_SCOPE_PASS",
+  "architectureApproval": "NOT_APPROVED",
+  "implementationUnblocked": false,
+  "observedAt": "2026-10-21T09:05:01.712Z",
+  "method": "Two independent real ORM implementations over identically seeded file-backed SQLite; generated ZenStack PolicyPlugin engine; shared black-box port tests; direct engine and raw-capability probes.",
+  "sourceFiles": [
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/README.md",
+      "sha256": "9639d7899d96b7d6f2116565bb8daccab069bde0e211e358dbbe6a7042629536"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/application/commands.ts",
+      "sha256": "074cb3c9f13ae3dc6cf5f2a0174460332679f7bc2e4f20093c363a400fe16668"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/boundary.ts",
+      "sha256": "f81b8b74f586fcd6869e6dfb43d7210f03f0b95a8ee3c42a10b2e97c7162c99b"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/cold-start.ts",
+      "sha256": "2702ffac75ce8bffbe8741fea1cad78d86e04c6937063037e6610772616a2510"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/domain/contracts.ts",
+      "sha256": "0abcdff62bff30b992535999304d51723fced4c3d88e9c7887d7641289bd1d90"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/drizzle/adapter.ts",
+      "sha256": "944c4fe1feb47e3481818ac2b6817836f2e5eda7e2a4953a279e7658d7f8e946"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/drizzle/policy-service.ts",
+      "sha256": "3d61a3c00d7ec7f9c9d4a4e5f3acc4104f8000950f7d49da3354d6ce75763ae1"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/drizzle/schema.ts",
+      "sha256": "78f382335c0630b8ec262a4f10172daa0a7ea1b4b48dc011e846217ab926feee"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/engine-probes.ts",
+      "sha256": "92da7ca0c6cf200397e7c29eb9a85625f3dfd0675fd70efc58cbd547e8fcfec8"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/fixture.ts",
+      "sha256": "62063faf815a0ecf61c405d54ff6ae0e83fc20d47bd4b6a544b28dcb04d0df82"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/package-lock.json",
+      "sha256": "45df754dd1e23f10341d7bde2cf2a9cf2c45382a846cb62b39a879dcf4f108b1"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/package.json",
+      "sha256": "84753e4548bdafb29d0c4bbacc408c1ea8a4cd3c50ea3f0f823629f1c92e6c86"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/provision-node22.py",
+      "sha256": "89856c3ec8bf16b4b1a8664a66c06f8a05c025a2fddd05d5da7c92f35bd6b82b"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/render-report.mjs",
+      "sha256": "4a5454ff0336cccf90359eeeefbd3fa7fba860328d021fd26b543c821ec2f344"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/run-node22.py",
+      "sha256": "2fa6f9db3cfc2476a53fb5dba888eadd1178c52684a9f394abeb3ae40d65e011"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/run.ts",
+      "sha256": "0fb15af9922c9726c22018055e77fc00c46bd325dc4a5e42120b9246ad5c2eb4"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/sources.json",
+      "sha256": "c4ad31a59a538419a77d911a21ab4a7f5d479861efe0de884e1f3d09977fc60a"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/tsconfig.json",
+      "sha256": "18541817553d89cbea15b317079a3c597a88cdb448438fb10eef2ecc35a92c30"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/verify.mjs",
+      "sha256": "6b0fc36ba7684ef8bce1f01b678866e3d520db0dfe122275e9dfd183803eb2f2"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/verify.test.mjs",
+      "sha256": "367fac7f2cb8444b4dab68285db7eea996bce123504dfa0cdafc73558f2dd356"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/adapter.ts",
+      "sha256": "99774aefc6a6a914b59ea1c7289411bf40847cd73a22e0ff923207bf4ec2bffa"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/engine.ts",
+      "sha256": "e75e07d936c52eecc2e5cb67d540283e83e7f3289d6c221354adda9ba11155ed"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/input.ts",
+      "sha256": "9d64ad54a7ba7d1ce30999b480f158fd946aaad05a326c93f3d6fd8a23228aa4"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/models.ts",
+      "sha256": "8d29b27b05ad9293d7c4b640864646c3c7876def933f33810e5b3603718ba853"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/schema.ts",
+      "sha256": "7e15bb7c88da7546a0dddc7c4199032964c641e8471f6cdaa7972960446c4892"
+    },
+    {
+      "path": "scripts/stack-migration-pocs/gate-01/zenstack/schema.zmodel",
+      "sha256": "3efcea31e80363f95f83e9519a49e5c6e424a4e7b54780db11d23d45a5da856e"
+    },
+    {
+      "path": "supabase/migrations/015_inventory_item_definitions.sql",
+      "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7"
+    },
+    {
+      "path": "supabase/migrations/040_session_join_code_security.sql",
+      "sha256": "0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389"
+    },
+    {
+      "path": "supabase/migrations/094_world_atlas.sql",
+      "sha256": "1a329c3ee211351e2630d810ff94ad23ef9ae7424bec0f58ab0acefdbb19b058"
+    },
+    {
+      "path": "supabase/migrations/104_atlas_worldbuilder_mutations.sql",
+      "sha256": "faefcc47bcddd1647c38971b4efbdb5a3cd064c76cbaca5f02a644ebe9e31f90"
+    },
+    {
+      "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
+      "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+    },
+    {
+      "path": ".qa/design/gates/GATE-01-drizzle-vs-zenstack.md",
+      "sha256": "8aadeb6402a280af24c3e6fc5084d70f5e781fbc52d8ffca6b547f4082b57678"
+    }
+  ],
+  "evidenceFiles": [
+    {
+      "path": ".qa/evidence/stack-migration-prep/pocs/gate-01/observations.json",
+      "sha256": "fc450337bc9577516e739bfbecebf9614d1c58bee71f32bdb3064a1c4466e8d1"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "@zenstackhq/cli",
+      "version": "3.9.8",
+      "license": "MIT"
+    },
+    {
+      "name": "@zenstackhq/orm",
+      "version": "3.9.8",
+      "license": "MIT"
+    },
+    {
+      "name": "@zenstackhq/plugin-policy",
+      "version": "3.9.8",
+      "license": "MIT"
+    },
+    {
+      "name": "drizzle-orm",
+      "version": "0.45.4",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "better-sqlite3",
+      "version": "12.5.0",
+      "license": "MIT"
+    },
+    {
+      "name": "typescript",
+      "version": "5.9.3",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "tsx",
+      "version": "4.21.0",
+      "license": "MIT"
+    }
+  ],
+  "lockfile": {
+    "sha256": "45df754dd1e23f10341d7bde2cf2a9cf2c45382a846cb62b39a879dcf4f108b1",
+    "lockfilePresent": true
+  },
+  "nativeDriverSha256": "9aed3bea8ca4e2f51b5d21972e3a1d33b56ef46db414f24605b942e5d50aafda",
+  "runtime": {
+    "node": "v24.19.0",
+    "nodeAbi": "137",
+    "platform": "linux",
+    "architecture": "x64",
+    "release": "6.18.55",
+    "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+    "availableParallelism": 8
+  },
+  "candidateResults": [
+    {
+      "candidate": "drizzle",
+      "passed": 42,
+      "failed": 0,
+      "warmWriteLatencyMs": {
+        "n": 100,
+        "min": 0.5849550000002637,
+        "median": 0.8405720000000656,
+        "p95": 1.2894360000000233,
+        "max": 3.7558130000002166,
+        "samples": [
+          1.759270000000015,
+          0.8744729999998526,
+          0.8405720000000656,
+          0.9164949999999408,
+          1.0274389999999585,
+          0.7288570000000618,
+          1.2507289999998648,
+          0.8691750000002685,
+          0.7121820000002117,
+          0.7055729999997311,
+          0.799731999999949,
+          0.6719029999999293,
+          0.7012770000001183,
+          0.885609999999815,
+          0.7821159999998599,
+          0.7018580000003567,
+          0.6843309999999292,
+          0.6989539999999579,
+          0.6563300000002528,
+          0.6659549999999399,
+          0.6987830000002759,
+          0.6646519999999327,
+          0.817960000000312,
+          0.7282969999996567,
+          0.8910969999997178,
+          0.8844080000003487,
+          0.7427270000002864,
+          0.664241999999831,
+          0.903765999999905,
+          0.8468920000000253,
+          0.9703639999997904,
+          0.8140730000000076,
+          0.5870279999999184,
+          0.7162590000002638,
+          0.8954340000000229,
+          0.7262439999999515,
+          0.5849550000002637,
+          0.7809339999998883,
+          0.6910519999996723,
+          0.6074579999999514,
+          0.6918530000002647,
+          3.7558130000002166,
+          0.8396109999998771,
+          0.7662319999999454,
+          0.6639310000000478,
+          0.7347569999997177,
+          0.6263760000001639,
+          0.8465609999998378,
+          0.9134699999999611,
+          0.9488930000002256,
+          0.8435669999998936,
+          1.0050860000001194,
+          0.9253280000002633,
+          0.7817159999999603,
+          0.8029069999997773,
+          0.8567670000002181,
+          0.992837999999665,
+          0.9306849999998121,
+          0.9620020000002114,
+          0.9155840000003082,
+          1.0678090000001248,
+          1.1216990000002625,
+          0.9375460000001112,
+          0.991385000000264,
+          0.863046000000395,
+          0.9392480000001342,
+          1.4688219999998182,
+          0.9808900000002723,
+          1.3383380000000216,
+          1.2894360000000233,
+          0.9471499999999651,
+          0.8869909999998526,
+          0.8305879999998069,
+          0.8333219999999528,
+          0.9315870000000359,
+          0.9296850000000632,
+          1.1291689999998198,
+          0.847772999999961,
+          0.7194230000000061,
+          2.713702000000012,
+          0.7944940000002134,
+          0.7803840000001401,
+          0.8164269999997487,
+          0.8362659999997959,
+          0.9241260000003422,
+          1.1523529999999482,
+          1.0698419999998805,
+          0.873250999999982,
+          0.8025660000002972,
+          0.8616139999999177,
+          0.9388179999996282,
+          0.8277130000001307,
+          0.8307279999999082,
+          0.7752869999999348,
+          0.7875939999998991,
+          0.7799629999999524,
+          0.8945020000001023,
+          0.9696839999996882,
+          0.7831679999999324,
+          0.7265540000003057
+        ]
+      },
+      "coldProcessWallMs": {
+        "n": 10,
+        "min": 561.6164700000008,
+        "median": 581.8353909999996,
+        "p95": 714.0600770000001,
+        "max": 714.0600770000001,
+        "samples": [
+          607.9094069999996,
+          602.914593,
+          652.1300239999996,
+          562.7052750000003,
+          714.0600770000001,
+          575.6836069999999,
+          597.9656370000002,
+          581.8353909999996,
+          561.6164700000008,
+          579.2814399999997
+        ]
+      }
+    },
+    {
+      "candidate": "zenstack",
+      "passed": 42,
+      "failed": 0,
+      "warmWriteLatencyMs": {
+        "n": 100,
+        "min": 3.7853570000006584,
+        "median": 4.75330699999904,
+        "p95": 6.401443999999174,
+        "max": 17.549383999999918,
+        "samples": [
+          11.884819999999308,
+          17.549383999999918,
+          5.989473999999973,
+          4.968435000000682,
+          4.936547999999675,
+          5.118666999998823,
+          4.528585000000021,
+          4.800606999999218,
+          4.993841999999859,
+          4.814136999999391,
+          5.114110999998957,
+          5.284362999998848,
+          5.1123179999995045,
+          5.481854000001476,
+          5.211735000000772,
+          5.260898000000452,
+          6.4255890000004,
+          7.604181999999128,
+          5.76534299999912,
+          5.803970000000845,
+          5.50334599999951,
+          5.450307999999495,
+          5.334396000000197,
+          5.436376999999993,
+          5.942033999999694,
+          7.4730579999995825,
+          4.510958999999275,
+          4.423490000001038,
+          5.09151699999893,
+          4.391401999999289,
+          4.360547000000224,
+          4.306856999999582,
+          4.439914000000499,
+          4.6632239999999,
+          6.401443999999174,
+          4.327617999999347,
+          4.402528999999049,
+          4.278995999999097,
+          4.333271000001332,
+          5.139798000000155,
+          5.081492999999682,
+          5.788636999999653,
+          5.076705000001311,
+          5.803539999998975,
+          5.378822000000582,
+          5.480122000000847,
+          5.349428000001353,
+          5.47364700000071,
+          6.040599999998449,
+          5.299294000000373,
+          5.583909999999378,
+          5.193447999999989,
+          5.105918000001111,
+          6.223040000000765,
+          4.75330699999904,
+          5.705213999999614,
+          4.5870709999999235,
+          4.406333999999333,
+          4.464218999999503,
+          4.774157999998351,
+          4.4291379999995115,
+          4.463227999998708,
+          5.182912000000215,
+          4.779484999999113,
+          4.269883000000846,
+          5.605346999998801,
+          4.644806999998764,
+          4.450539999999819,
+          4.521795000000566,
+          4.251355000000331,
+          4.190985000001092,
+          4.435577000000194,
+          4.156694999999672,
+          3.995926999999938,
+          4.086280999999872,
+          4.358463000000484,
+          4.611247000000731,
+          4.977028000001155,
+          4.167772000000696,
+          4.354597999999896,
+          4.236834000001181,
+          4.219277000000147,
+          5.611194999999498,
+          4.2473489999993035,
+          4.114752999999837,
+          4.129324999999881,
+          3.979913999999553,
+          3.987805999999182,
+          4.348818999998912,
+          3.8682879999996658,
+          3.8658049999994546,
+          4.13991999999962,
+          3.9712110000000393,
+          4.122223999998823,
+          4.824851999999737,
+          3.9029300000001967,
+          3.972251999999571,
+          3.826347000000169,
+          3.7853570000006584,
+          3.909540000000561
+        ]
+      },
+      "coldProcessWallMs": {
+        "n": 10,
+        "min": 596.4141789999994,
+        "median": 658.7486059999992,
+        "p95": 752.7963810000001,
+        "max": 752.7963810000001,
+        "samples": [
+          658.7486059999992,
+          663.5660429999989,
+          669.1375489999991,
+          596.4141789999994,
+          659.2101979999989,
+          627.459053999999,
+          621.7151830000003,
+          648.3308499999985,
+          752.7963810000001,
+          670.9536350000017
+        ]
+      }
+    }
+  ],
+  "codeSize": {
+    "method": "Physical and nonblank/noncomment LOC; generated TypeScript separated; no bundle-size or human-authoring-time claim",
+    "files": [
+      {
+        "file": "drizzle/schema.ts",
+        "physicalLines": 33,
+        "nonBlankNonCommentLines": 32
+      },
+      {
+        "file": "drizzle/policy-service.ts",
+        "physicalLines": 71,
+        "nonBlankNonCommentLines": 63
+      },
+      {
+        "file": "drizzle/adapter.ts",
+        "physicalLines": 60,
+        "nonBlankNonCommentLines": 59
+      },
+      {
+        "file": "zenstack/schema.zmodel",
+        "physicalLines": 106,
+        "nonBlankNonCommentLines": 97
+      },
+      {
+        "file": "zenstack/engine.ts",
+        "physicalLines": 23,
+        "nonBlankNonCommentLines": 22
+      },
+      {
+        "file": "zenstack/adapter.ts",
+        "physicalLines": 56,
+        "nonBlankNonCommentLines": 54
+      },
+      {
+        "file": "zenstack/schema.ts",
+        "physicalLines": 406,
+        "nonBlankNonCommentLines": 399
+      },
+      {
+        "file": "zenstack/models.ts",
+        "physicalLines": 17,
+        "nonBlankNonCommentLines": 10
+      },
+      {
+        "file": "zenstack/input.ts",
+        "physicalLines": 185,
+        "nonBlankNonCommentLines": 178
+      },
+      {
+        "file": "domain/contracts.ts",
+        "physicalLines": 50,
+        "nonBlankNonCommentLines": 49
+      },
+      {
+        "file": "application/commands.ts",
+        "physicalLines": 11,
+        "nonBlankNonCommentLines": 9
+      },
+      {
+        "file": "boundary.ts",
+        "physicalLines": 51,
+        "nonBlankNonCommentLines": 47
+      }
+    ],
+    "authoredDrizzleLoc": 154,
+    "authoredZenstackLoc": 173,
+    "generatedZenstackLoc": 587
+  },
+  "gateRows": [
+    {
+      "row": 1,
+      "scope": "P1/P2 list/get projection, exact saga/player reveal and null GM notes",
+      "tests": [
+        "P1_PROJECTION",
+        "P2_PROJECTION",
+        "P2_SAGA_B",
+        "P1_WRONG_SAGA_REVEAL",
+        "P1_CORRUPT_FOREIGN_REVEAL"
+      ]
+    },
+    {
+      "row": 2,
+      "scope": "X cannot read W1 through A or own X saga",
+      "tests": [
+        "X_CROSS_OWNER_GET",
+        "X_OWN_SAGA_WRONG_WORLD"
+      ]
+    },
+    {
+      "row": 3,
+      "scope": "O owner without GM can edit; G/P1/P2/X cannot",
+      "tests": [
+        "OWNER_WRITE",
+        "G_MAP_WRITE_DENIED",
+        "P1_MAP_WRITE_DENIED",
+        "P2_MAP_WRITE_DENIED",
+        "X_MAP_WRITE_DENIED"
+      ]
+    },
+    {
+      "row": 4,
+      "scope": "Stale CAS revision fails atomically",
+      "tests": [
+        "STALE_REVISION",
+        "COMPETING_REVISIONS"
+      ]
+    },
+    {
+      "row": 5,
+      "scope": "AST checked product src/domains and PoC domain contain zero ORM imports",
+      "observation": {
+        "method": "TypeScript AST imports, exports, require and dynamic imports",
+        "checkedFiles": 345,
+        "productDomainFileCount": 344,
+        "productDomainTreeSha256": "d24433c1e6d3199c9ede2ef7138f67ede2e1e420b825b089afb2ab2ea918e71a",
+        "forbidden": []
+      }
+    },
+    {
+      "row": 6,
+      "scope": "10 cold processes and 100 sequential transactional writes; no latency threshold prescribed",
+      "tests": [
+        "SEQUENTIAL_100_WRITES"
+      ]
+    },
+    {
+      "row": 7,
+      "scope": "PoC app facade and executable import allowlist prevent raw client exposure; ZenStack additionally rejects actual raw queries. Raw Drizzle capability remains unsafe if boundary is bypassed.",
+      "tests": [
+        "APPLICATION_CAPABILITIES"
+      ],
+      "residual": "Product CI wiring of this proposed app boundary has NOT RUN; neither candidate is an OS sandbox."
+    },
+    {
+      "row": 8,
+      "scope": "GM status authority remains distinct from world ownership",
+      "tests": [
+        "GM_SESSION_STATUS",
+        "O_SESSION_STATUS_DENIED",
+        "P1_SESSION_STATUS_DENIED",
+        "P2_SESSION_STATUS_DENIED",
+        "X_SESSION_STATUS_DENIED",
+        "GM_FOREIGN_SESSION"
+      ]
+    },
+    {
+      "row": 9,
+      "scope": "No actor, unknown saga, inactive/wrong-project memberships fail closed",
+      "tests": [
+        "MISSING_ACTOR_READ",
+        "MISSING_ACTOR_WRITE",
+        "MISSING_ACTOR_SESSION",
+        "UNKNOWN_SAGA",
+        "GM_UNKNOWN_SAGA_SESSION",
+        "INACTIVE_MEMBER",
+        "P1_WRONG_SAGA_REVEAL"
+      ]
+    }
+  ],
+  "secureTargetChoices": [
+    "Reveal requires the same saga, active membership, player and project world; the observed cross-Saga legacy defect is deliberately rejected.",
+    "A missing saga does not select an arbitrary project; the product null-Saga UI path requires a separate migration contract.",
+    "Negative/null expectedRevision bypass is not implemented; nonnegative integer revision is mandatory.",
+    "Idempotency is actor+map+key scoped, rejects changed payload, records response atomically, and rechecks current authorization on replay.",
+    "Forged ownership/foreign-key payload fields are discarded; only title and server incremented revision can change."
+  ],
+  "notRun": [
+    "Human architecture approval, ADR-ST-05 or migration unblocking",
+    "Port/migration of 50+ product tables, PostgreSQL functions/triggers/RLS, real product payloads and all nested Atlas GeoJSON redactions",
+    "Production auth/JWT/HTTP integration or exposure of SQLite storage; actors are trusted synthetic harness inputs",
+    "Windows/macOS/ARM/mobile/desktop packaging; libSQL and Electron/Tauri adapters",
+    "Concurrent OS-process writers, crash/power-loss durability, database restore and schema upgrade",
+    "Full session lifecycle transition parity, unbounded query workloads, production bundle size",
+    "Controlled human time-to-add-resource measurement, subjective complexity score or total migration effort estimate",
+    "Production application import-boundary CI integration and exhaustive capability-bypass security review"
+  ],
+  "findings": [
+    {
+      "severity": "High",
+      "id": "G01-RAW-DRIZZLE",
+      "status": "boundary-required",
+      "detail": "Actual unguarded Drizzle raw SQL reads all six rows and changes a foreign map inside the rolled-back probe. The application must receive only the guarded port and enforce imports; Drizzle itself has no policy engine."
+    },
+    {
+      "severity": "Medium",
+      "id": "G01-ZEN-FIELD-PREVIEW",
+      "status": "decision-required",
+      "detail": "ZenStack field policies are documented as preview. Real nullable-field redaction and immutable worldId update rejection pass for 3.9.8; upgrade compatibility is not inferred."
+    },
+    {
+      "severity": "Medium",
+      "id": "G01-MIGRATION-SCOPE",
+      "status": "NOT_RUN",
+      "detail": "Seven-table schema and command receipt ledger do not establish the port of 50+ tables or the PostgreSQL RPC/trigger semantics."
+    },
+    {
+      "severity": "Low",
+      "id": "G01-MEASUREMENT-SCOPE",
+      "status": "limited-sample",
+      "detail": "Ten cold processes and 100 sequential writes on this Linux runner are reproducible smoke measurements, not production capacity or cross-platform rankings."
+    },
+    {
+      "severity": "Info",
+      "id": "G01-FIXTURE-AUTH",
+      "status": "NOT_RUN",
+      "detail": "This gate tests authorization using explicitly trusted synthetic actors. Real JWT verification belongs to the separate auth gate."
+    },
+    {
+      "severity": "Info",
+      "id": "G01-DEPENDENCY-INSTALL",
+      "status": "observed",
+      "detail": "npm installed the pinned package set successfully; installation warned about transitive prebuild-install and cuid deprecations. No generated CUID is used in this fixture."
+    }
+  ]
+}

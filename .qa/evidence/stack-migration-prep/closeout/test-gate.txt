@@ -1,0 +1,1431 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> SagaTree@0.1.0 test-gate
+> node scripts/attribute-bonus-regression-check.mjs && node scripts/skill-progression-regression-check.mjs && node scripts/test-gate.mjs
+
+Attribute bonus regression check passed.
+Skill progression self-test passed.
+
+  node_modules/.cache/skill-progression-domain-check/rules.mjs  31.8kb
+
+⚡ Done in 7ms
+
+  node_modules/.cache/skill-progression-domain-check/persistence.mjs  30.5kb
+
+⚡ Done in 4ms
+
+  node_modules/.cache/skill-progression-domain-check/normalize.mjs  64.8kb
+
+⚡ Done in 7ms
+
+  node_modules/.cache/skill-progression-domain-check/preset.mjs  940.6kb
+
+⚡ Done in 37ms
+Skill progression domain behavior check passed.
+Skill progression regression check passed.
+Test Gate: running project checks...
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> SagaTree@0.1.0 checks
+> npm run lint && npm run typecheck && npm run build
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> SagaTree@0.1.0 lint
+> node scripts/lint.mjs
+
+Type-safety lint passed (0 changed TypeScript files).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> SagaTree@0.1.0 typecheck
+> node scripts/typecheck.mjs
+
+Typecheck skipped (no changed TypeScript files).
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> SagaTree@0.1.0 prebuild
+> node scripts/vendor-mediapipe-face-landmarker.mjs
+
+vendor-mediapipe-face-landmarker OK → public/mediapipe/**
+
+> SagaTree@0.1.0 build
+> vite build
+
+vite v6.4.4 building for production...
+transforming...
+[plugin vite:resolve] Module "node:fs" has been externalized for browser compatibility, imported by "/workspace/scratch/feb45e6e10c7/sagatree/node_modules/.deno/@gltf-transform+core@4.5.1/node_modules/@gltf-transform/core/dist/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+[plugin vite:resolve] Module "node:path" has been externalized for browser compatibility, imported by "/workspace/scratch/feb45e6e10c7/sagatree/node_modules/.deno/@gltf-transform+core@4.5.1/node_modules/@gltf-transform/core/dist/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 2624 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /workspace/scratch/feb45e6e10c7/sagatree/src/infrastructure/media/optimizer/index.ts is dynamically imported by /workspace/scratch/feb45e6e10c7/sagatree/src/app/look/create/look-reference-adaption.ts, /workspace/scratch/feb45e6e10c7/sagatree/src/infrastructure/character/character-service.ts, /workspace/scratch/feb45e6e10c7/sagatree/src/infrastructure/inventory/item-thumbnail-service.ts, /workspace/scratch/feb45e6e10c7/sagatree/src/infrastructure/user-profile/user-profile-service.ts, /workspace/scratch/feb45e6e10c7/sagatree/src/infrastructure/world/world-map-service.ts but also statically imported by /workspace/scratch/feb45e6e10c7/sagatree/src/app/media/intake/useMediaOptimizeIntake.ts, dynamic import will not move module into another chunk.
+
+computing gzip size...
+build/index.html                                      1.02 kB │ gzip:   0.44 kB
+build/assets/image.worker-BijeIiKQ.js                 2.62 kB
+build/assets/index-DeFJHKoU.js                       19.82 kB
+build/assets/webp_enc_simd-0PCv9qCn.js               20.16 kB
+build/assets/webp_enc-DIy7VB-T.js                    20.21 kB
+build/assets/cyborg-DFXakmZZ.png                     72.77 kB
+build/assets/equipment-paper-doll-DbbtUNtw.png       77.66 kB
+build/assets/elf-Co8QyTRa.png                        84.41 kB
+build/assets/dwarf-pM7DWtXr.png                      98.74 kB
+build/assets/orc-B02Z7E3N.png                       104.01 kB
+build/assets/human-BNJlLkZs.png                     114.47 kB
+build/assets/webp_dec-C990n7mh.wasm                 137.96 kB │ gzip:  49.49 kB
+build/assets/orc-DTYHWr0T.png                       156.21 kB
+build/assets/alien-JFCeeIx6.png                     173.96 kB
+build/assets/alien-dXZ-UlCF.png                     182.33 kB
+build/assets/human-B_Ol92z9.png                     197.59 kB
+build/assets/elf-CdDQmMmL.png                       212.37 kB
+build/assets/cyborg-DOPga9Ri.png                    223.41 kB
+build/assets/halfling-B8lDU4Uw.png                  261.06 kB
+build/assets/sagatree-logo-oDs17FH4.png             273.50 kB
+build/assets/webp_enc-BpZvKflB.wasm                 281.26 kB │ gzip: 114.97 kB
+build/assets/webp_enc_simd-CFvKQ_80.wasm            345.58 kB │ gzip: 127.98 kB
+build/assets/halfling-QXdcG_oa.png                  355.69 kB
+build/assets/dwarf-CwfPC7r6.png                     409.38 kB
+build/assets/index-B_4PtI2F.css                     225.63 kB │ gzip:  32.33 kB
+build/assets/__vite-browser-external-BIHI7g3E.js      0.03 kB │ gzip:   0.05 kB
+build/assets/useItemThumbnailSrc-BH1aSVzs.js          0.27 kB │ gzip:   0.23 kB
+build/assets/production-ux-integrity-Bo1m24ms.js      0.27 kB │ gzip:   0.21 kB
+build/assets/index-DdSkeZfP.js                        0.44 kB │ gzip:   0.25 kB
+build/assets/index-DflKsuvQ.js                        0.44 kB │ gzip:   0.25 kB
+build/assets/index-C8Z5y97c.js                        0.44 kB │ gzip:   0.26 kB
+build/assets/copyLibraryField-B0URmKFF.js             0.56 kB │ gzip:   0.33 kB
+build/assets/speciesSketches-BEjgEjFo.js              0.59 kB │ gzip:   0.34 kB
+build/assets/useCharacterSummaries-BnJ9Hlfd.js        0.97 kB │ gzip:   0.48 kB
+build/assets/separator-Ccoqhwf9.js                    2.84 kB │ gzip:   1.14 kB
+build/assets/index-BC51ovL4.js                        3.12 kB │ gzip:   1.09 kB
+build/assets/ItemModelPreviewRuntime-D4UqVymn.js      4.82 kB │ gzip:   1.84 kB
+build/assets/index-Sp7OvzbB.js                        6.30 kB │ gzip:   2.45 kB
+build/assets/index-HTMXowHi.js                        7.42 kB │ gzip:   2.80 kB
+build/assets/index-G2vRZbXE.js                       10.87 kB │ gzip:   3.84 kB
+build/assets/PersonalItemFormDialog-UJvVpvzz.js      11.80 kB │ gzip:   3.65 kB
+build/assets/index-CPiX_m-B.js                       12.00 kB │ gzip:   3.69 kB
+build/assets/index-D4CcQfA-.js                       12.72 kB │ gzip:   3.29 kB
+build/assets/index-DnGZTBMU.js                       22.42 kB │ gzip:   6.16 kB
+build/assets/index-yDGT7y6Z.js                       23.33 kB │ gzip:   7.37 kB
+build/assets/root-Da9rlwzJ.js                        27.14 kB │ gzip:   8.14 kB
+build/assets/index-CqZJ2Sk2.js                       27.87 kB │ gzip:   8.49 kB
+build/assets/index-D84HDyt0.js                       38.02 kB │ gzip:   8.53 kB
+build/assets/jsquash-webp-dlEu1HAh.js                41.73 kB │ gzip:  12.88 kB
+build/assets/mediapipe-vision-DXJzsQbt.js           135.74 kB │ gzip:  40.47 kB
+build/assets/root-BboQgzkZ.js                       366.39 kB │ gzip: 106.26 kB
+build/assets/vendor-Cd2ysXQ6.js                     744.36 kB │ gzip: 218.17 kB
+build/assets/three-vrm-B00unjXj.js                  806.58 kB │ gzip: 204.40 kB
+build/assets/index-9I_ZpZlS.js                    1,598.93 kB │ gzip: 449.32 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 11.55s
+Deno Edge Function check skipped (no changed TypeScript files).
+Architecture boundary check (#94): layer and slice import rules...
+Architecture boundary check passed (344 domain, 116 infrastructure, 383 app, 65 shared/ui; legacy eradicated 84/84 baseline paths removed, current=0).
+Architecture boundary self-test passed.
+SagaTree name ban: legacy product name must not reappear...
+sagatree-name-ban-check PASS
+Edge CORS shared helper (#305): _shared/cors + no local Origin literals...
+edge-cors-shared-check PASS (23 functions on shared cors; exempt: main)
+Item domain taxonomy & provenance (#134): ItemDefinition owner, normalize/validate...
+
+  node_modules/.cache/item-domain-taxonomy-check/items.mjs  85.5kb
+
+⚡ Done in 9ms
+
+  node_modules/.cache/item-domain-taxonomy-check/inventory.mjs  142.7kb
+
+⚡ Done in 8ms
+item-domain-taxonomy-check: OK
+SagaTree item rules kernel (#135): load/cost/protection/Traglast/tool contracts...
+
+  node_modules/.cache/sagatree-item-rules-kernel-check/rules-items.mjs  9.9kb
+
+⚡ Done in 4ms
+
+  node_modules/.cache/sagatree-item-rules-kernel-check/inventory.mjs  142.7kb
+
+⚡ Done in 9ms
+sagatree-item-rules-kernel-check: PASS
+Combat create opportunity (#194): Gelegenheit schaffen kernel + docs...
+
+## 1 · core rules §7.4
+OK [core-rules-create-opportunity]: found "**Gelegenheit schaffen:**"
+OK [core-rules-create-opportunity]: found "Bestehende Aktionen und Manöver haben immer Vorrang"
+OK [core-rules-create-opportunity]: found "Der nächste passende Folgecheck erhält Vorteil"
+OK [core-rules-create-opportunity]: found "Zwei passende Folgechecks erhalten Vorteil"
+OK [core-rules-create-opportunity]: found "Es entsteht keine Gelegenheit"
+OK [core-rules-create-opportunity]: found "Die nächste passende Handlung gegen die handelnde Figur erhält Vorteil"
+OK [core-rules-create-opportunity]: found "keinen Schaden"
+OK [core-rules-create-opportunity]: found "Erfolg gegen Preis nach Abschnitt 2.3"
+
+## 2 · structure & purity
+OK [rules barrel]: found "export * from './combat-create-opportunity'"
+OK [2 · structure & purity]: src/domains/rules/sagatree/combat-create-opportunity/index.ts: no React
+OK [2 · structure & purity]: src/domains/rules/sagatree/combat-create-opportunity/index.ts: no Supabase import
+OK [2 · structure & purity]: src/domains/rules/sagatree/combat-create-opportunity/index.ts: no any
+OK [2 · structure & purity]: src/domains/rules/sagatree/combat-create-opportunity/index.ts: no as unknown as
+
+## 3 · eligibility & grades
+
+  ...ache/combat-create-opportunity-check/combat-create-opportunity.mjs  4.8kb
+
+⚡ Done in 3ms
+OK [3 · eligibility & grades]: defined maneuver/action takes precedence
+OK [3 · eligibility & grades]: flavor-only denied
+OK [3 · eligibility & grades]: undeclared follow-up denied
+OK [3 · eligibility & grades]: eligible creative tactical action
+OK [3 · eligibility & grades]: grapple is defined
+OK [3 · eligibility & grades]: create-opportunity not in defined list
+OK [3 · eligibility & grades]: costs hauptaktion
+OK [3 · eligibility & grades]: success → 1 follow-up advantage
+OK [3 · eligibility & grades]: success → no opponent advantage
+OK [3 · eligibility & grades]: success grants first declared
+OK [3 · eligibility & grades]: damage forbidden
+OK [3 · eligibility & grades]: freeCondition forbidden
+OK [3 · eligibility & grades]: forcedMovement forbidden
+OK [3 · eligibility & grades]: actionLoss forbidden
+OK [3 · eligibility & grades]: numericBonus forbidden
+OK [3 · eligibility & grades]: successAtCost forbidden (§2.3)
+OK [3 · eligibility & grades]: crit-success → 2 follow-up advantages
+OK [3 · eligibility & grades]: crit-success grants both declared follow-ups
+OK [3 · eligibility & grades]: failure → no opportunity
+OK [3 · eligibility & grades]: failure → no opponent advantage
+OK [3 · eligibility & grades]: crit-failure → no actor-side grants
+OK [3 · eligibility & grades]: crit-failure → opponent advantage
+OK [3 · eligibility & grades]: crit-failure beneficiary is opponent
+
+## 4 · §2.5 anti-stack + fold
+OK [4 · §2.5 anti-stack + fold]: same opportunity applies once to a check
+OK [4 · §2.5 anti-stack + fold]: duplicate source rejected
+OK [4 · §2.5 anti-stack + fold]: already-applied sourceId skipped
+OK [4 · §2.5 anti-stack + fold]: net advantage after cancel one pair
+OK [4 · §2.5 anti-stack + fold]: advantage uses 2d20 — never 3
+OK [4 · §2.5 anti-stack + fold]: at least one remaining advantage source
+OK [4 · §2.5 anti-stack + fold]: many advantages still single advantage mode
+OK [4 · §2.5 anti-stack + fold]: many advantages never become 3d20
+
+## 5 · report
+OK [5 · report]: wrote /workspace/scratch/feb45e6e10c7/sagatree/.qa/runs/combat-create-opportunity-report.md
+
+combat-create-opportunity-check: PASS
+ItemDefinition persistence lifecycle & security (#136): CRUD/fork/taxonomy roundtrip...
+
+  node_modules/.cache/item-definition-persistence-check/inv.mjs  142.7kb
+
+⚡ Done in 14ms
+
+  node_modules/.cache/item-definition-persistence-check/items.mjs  85.5kb
+
+⚡ Done in 6ms
+item-definition-persistence-check: OK (#136)
+Builtin standard item packs (#137): Fantasy/Sci-Fi/Contemporary 40/40/40 + context packs...
+
+  node_modules/.cache/item-standard-packs-check/items.mjs  85.5kb
+
+⚡ Done in 6ms
+
+  node_modules/.cache/item-standard-packs-check/inventory.mjs  142.7kb
+
+⚡ Done in 14ms
+item-standard-packs-check: OK (#137) — 40/40/40 packs, unique ids, origin=builtin-standard
+Item Epic Library Items browser (#138): slice composition, filters, UI contract...
+item-library-browser-check: OK (#138)
+Item Epic Workbench (#139): create/edit/readonly/fork UI + catalog wiring...
+item-workbench-check: OK
+Item Epic thumbnails + Meshy (#140): upload/generate contract, secrets fail-closed...
+item-thumbnail-assets-check: passed
+Item static SVG icons: Cursor→PNG→VTracer pipeline contract...
+item-icon-assets-check: OK
+NPC/creature static SVG icons: catalog iconKey + public assets...
+npc-creature-icon-assets-check: OK
+Item Epic 3D + Meshy Image-to-3D (#141): GLB upload/generate contract, secrets fail-closed...
+item-model3d-assets-check: passed
+AI provider credentials (BYOK): vault + Meshy validate + prod user-keys-only...
+ok: migration creates credentials table
+ok: migration grants service_role only
+ok: migration rate-limit RPC
+ok: revokes client table access
+ok: grants service_role on credentials
+ok: self-host apply-migrations.sh registers 020
+ok: edge upsert action
+ok: edge validates key
+ok: edge encrypts secret
+ok: edge has no VITE_ secrets
+ok: host keys gated by allow flag
+ok: user key resolver exists
+ok: item-model3d uses user key resolver
+ok: item-model3d config uses user configuration
+ok: item-thumbnail uses user key resolver
+ok: client invokes credentials edge
+ok: client service has no hardcoded meshy key
+ok: settings panel uses infrastructure service
+ok: panel shows added_at copy
+ok: panel shows credits copy
+ok: Profile mounts provider panel
+ok: domain maps settings tabs to modality
+ok: .env.example documents encryption key
+ok: .env.example documents host-key allow flag
+
+ai-provider-credentials-check: all checks passed
+Item Epic world item-catalog module (#142): pack selection + pure resolver...
+
+  node_modules/.cache/item-world-catalog-check/items.mjs  85.5kb
+
+⚡ Done in 5ms
+
+  node_modules/.cache/item-world-catalog-check/inventory.mjs  142.7kb
+
+⚡ Done in 8ms
+item-world-catalog-check: OK
+Item Epic inventory ↔ world catalog wire (#143): add-catalog composition + labels...
+
+  ..._modules/.cache/item-inventory-world-catalog-wire-check/items.mjs  85.5kb
+
+⚡ Done in 5ms
+
+  ...les/.cache/item-inventory-world-catalog-wire-check/inventory.mjs  142.7kb
+
+⚡ Done in 7ms
+item-inventory-world-catalog-wire-check: OK
+Item Epic final acceptance (#144): child gates, docs sync, no VITE Meshy, e2e...
+
+[A · Child gates wired in test-gate.mjs]
+
+[B · Docs: Item Epic terms]
+
+[C · No VITE_*MESHY / NEXT_PUBLIC_*MESHY]
+
+[D · E2E specs exist]
+
+[E · Evidence + composition proof]
+
+[F · Core 36 unchanged]
+
+item-epic-acceptance-check: OK (#144)
+Item Epic routing foundation (#133): History paths, placeholders, no parallel currentView...
+item-routing-foundation-check: OK
+Saga routing + Public ID foundation (#276): IDs, deep links, live role rules...
+saga-routing-public-id-foundation-check: OK
+LookProfile domain (#339): contracts, resolution, capabilities...
+
+  node_modules/.cache/look-profile-domain-check/look.mjs  38.4kb
+
+⚡ Done in 5ms
+look-profile-domain-check: PASS
+Media optimizer contracts (#625): kinds, profiles, budgets, result invariants...
+
+  node_modules/.cache/media-optimizer-contracts-check/media.mjs  7.7kb
+
+⚡ Done in 4ms
+media-optimizer-contracts-check: ok
+Media optimizer facade stubs (#628): kind dispatch, unsupported stubs, codec-free...
+
+  node_modules/.cache/media-optimizer-facade-stubs-check/optimizer.mjs  31.4kb
+
+⚡ Done in 4ms
+media-optimizer-facade-stubs-check: ok
+Media optimizer image engine (#630): WebP budget ladder, policy, jsquash dep...
+
+  node_modules/.cache/media-optimizer-image-engine-check/budget.mjs  3.2kb
+
+⚡ Done in 3ms
+
+  node_modules/.cache/media-optimizer-image-engine-check/policy.mjs  4.4kb
+
+⚡ Done in 4ms
+media-optimizer-image-engine-check: ok
+Media optimizer lazy worker (#632): worker URL, abort, resource limits, chunk...
+
+  node_modules/.cache/media-optimizer-lazy-worker-check/limits.mjs  2.0kb
+
+⚡ Done in 4ms
+media-optimizer-lazy-worker-check: ok
+Media optimizer preview intake (#634): Object URL, race, abort, AU status labels...
+
+  node_modules/.cache/media-optimizer-preview-intake-check/intake.mjs  2.6kb
+
+⚡ Done in 3ms
+media-optimizer-preview-intake-check: OK
+Media optimizer character portrait (#636): intake + canvas + service prepare...
+media-optimizer-character-portrait-check: OK
+Media optimizer user avatar (#682): intake + profile + lobby batch...
+
+  ..._modules/.cache/media-optimizer-user-avatar-check/user-profile.mjs  687b 
+
+⚡ Done in 3ms
+media-optimizer-user-avatar-check: OK
+Media optimizer world pin (#637): map-pin intake + storage path...
+media-optimizer-world-pin-check: OK
+Media optimizer look reference (#639): optimize before Base64 + 12 MiB aggregate...
+media-optimizer-look-reference-check: OK
+Media optimizer item WebP contract (#641): domain/edge/bucket/DB/Meshy...
+media-optimizer-item-webp-contract-check: OK
+Media optimizer item intake (#643): optimize before thumbnail Edge upload...
+media-optimizer-item-intake-check: OK
+Media optimizer server proof (#645): Deno WASM/CPU/RAM feasibility...
+media-optimizer-server-proof-check: OK (decision=deno-adapter)
+Media optimizer provider output (#647): Meshy optimize before Storage...
+media-optimizer-provider-output-check: OK
+Media optimizer golden QA (#649): fixtures, surfaces, lazy WASM...
+
+  node_modules/.cache/media-optimizer-golden-qa-check/policy.mjs  4.4kb
+
+⚡ Done in 4ms
+
+  node_modules/.cache/media-optimizer-golden-qa-check/abort.mjs  31.4kb
+
+⚡ Done in 5ms
+media-optimizer-golden-qa-check: OK
+LookProfile persistence (#340): migration/RLS, draft validation, append-only versions...
+
+  node_modules/.cache/look-profile-persistence-check/look.mjs  38.4kb
+
+⚡ Done in 6ms
+
+  node_modules/.cache/look-profile-persistence-check/persist.mjs  2.7kb
+
+⚡ Done in 4ms
+look-profile-persistence-check: PASS
+Look Library browser (#343): Bibliothek › Looks UI + routes + filter domain...
+look-library-check: OK (#343)
+Look world capability stubs (#346): reserved domains metadata + docs...
+look-world-capability-stubs-check: OK (#346)
+Advanced Look Adaption contract (#355): modes + guides + negotiation...
+advanced-look-contract-check: PASS
+Advanced Look Adaption UX (#356): capability status in Look Editor...
+advanced-look-adaption-ux-check: PASS
+ToonLab compatibility spike (#341): peers, fixtures, BLOCKED decision...
+toonlab-compatibility-spike-check PASS
+verdict=BLOCKED fixtures=2 blockers=3
+Look runtime adapter (#342): provider-neutral apply/restore, host-mtoon, ToonLab stub...
+look-runtime-adapter-check: PASS (#342)
+Look editor workspace (#344): canonical 3-column editor, inspectors, draft round-trip...
+look-editor-workspace-check: OK (#344)
+Look preview stage (#345): modes, cameras, fixtures, LookRuntime compare...
+look-preview-stage-check: OK (#345)
+Saga default Look (#348): project fields, GM settings UI, resolution fallback...
+saga-default-look-check: OK (#348)
+Character Look preview (#347): selector, origin labels, AvatarSurfaceViewer bridge...
+character-look-preview-check: OK (#347)
+Session Look override (#349): session column, GM inherit/override UI, world resolve...
+session-look-override-check: OK (#349)
+World Look preview (#350): Saga world panel, temp preview, apply/reset, return context...
+world-look-preview-check: OK (#350)
+Player character Look override (#351): write gate + resolution ignore when forbidden...
+player-character-look-override-check: OK (#351)
+Basic Look reference analysis (#352): provider-neutral contract + edge path...
+basic-look-reference-analysis-check: OK (#352)
+Basic Look Adaption UX (#353): create chooser, references, reanalyze...
+basic-look-adaption-ux-check: OK (#353)
+Canonical Saga workspace (#489): list/create/join terminology...
+canonical-saga-workspace-check: OK
+Session invite share entry (#490): create/resolve/copy journey...
+session-invite-share-entry-check: OK
+Session lobby preflight (#491): lobby route + media opt-in + enter...
+session-lobby-preflight-check: PASS
+Session lobby media preview (#678): Meet-style cam/mic/LiveAct...
+session-lobby-media-preview-check: OK
+Session prepare/recap (#492): lifecycle screens + status resolution...
+session-prepare-recap-check: PASS
+Production UX integrity (#493): dead controls / demo / deferred CTAs...
+production-ux-integrity-check: PASS
+Character starting templates design V1 (#465): ten Level-1 build contracts...
+character-starting-templates-design-v1-check: OK (#465)
+Character starting templates V1 catalog (#463): domain builds + validators...
+character-starting-templates-v1-check: OK (#463)
+Release readiness contract: IDs, dependencies, flows, milestones...
+Release readiness contract valid: 108 gates, 6 flows.
+Live Session role/capability contract (#362): access, visibility, director...
+
+  ...ules/.cache/live-session-role-capability-contract-check/access.mjs  5.5kb
+
+⚡ Done in 3ms
+live-session-role-capability-contract-check: PASS
+Live Session media plane (#363): domain policy, token edge, degrade...
+
+  node_modules/.cache/live-session-media-plane-check/domain.mjs  2.9kb
+
+⚡ Done in 4ms
+
+  node_modules/.cache/live-session-media-plane-check/access.mjs  5.5kb
+
+⚡ Done in 2ms
+
+  node_modules/.cache/live-session-media-plane-check/memory.mjs  3.4kb
+
+⚡ Done in 4ms
+live-session-media-plane-check: OK (#363)
+LiveAct session transport (#364): network frame + remote consumer + data plane...
+liveact-session-transport-check PASS
+Live Program Output (#365): presentation state + display runtime...
+live-program-output-check PASS
+Live Scene Runtime V2 (#366): reference container + V1 normalize...
+live-scene-runtime-v2-check PASS
+Session Knowledge / Reveals (#367): audience projections + reveal command...
+session-knowledge-reveals-check PASS
+Session entry role routing (#477): canonical Saga→Session live entry...
+session-entry-role-routing-check PASS
+Player join character assignment (#478): picker + membership resolve...
+player-join-character-assignment-check: PASS
+Player Live Screen V2 (#368): Program stage + private rail...
+player-live-screen-v2-check: PASS
+Gamemaster Live Screen V2 (#369): Control Room composition...
+gamemaster-live-screen-v2-check: PASS
+Viewer Live Screen (#370): read-only Program + public context...
+viewer-live-screen-check: PASS
+Generic GM Actions (#371): catalog + palette...
+generic-gm-actions-check: PASS
+Live Inventory Lifecycle (#372): Inventory V2 session ops...
+live-inventory-lifecycle-check: PASS
+Session Death Lifecycle (#373): downed / stabilize / dead...
+session-death-lifecycle-check: PASS
+Adventure Runtime World State (#374): typed playthrough...
+adventure-runtime-world-state-check: PASS
+Director Runtime Cues (#375): automatic mode + override...
+director-runtime-cues-check: PASS
+Director Control Room (#376): Preview/Program UI...
+director-control-room-check: PASS
+Golden Adventure Dornhain (#377): package instantiate...
+golden-adventure-dornhain-check: PASS
+Player-test session security (#296): checking RPCs, no hosted join, lifecycle domain...
+Player-test session security check passed.
+Player-test realtime runtime (#297): checking revision, events, snapshot+subscribe...
+player-test-realtime-runtime-check: OK
+Player-test player panel V1 (#298): checking panel domain, wiring, no CharacterEditor...
+player-test-player-panel-check: OK
+Player-test shared rolls (#299): checking rules kernel probe + authoritative roll RPC...
+player-test-shared-rolls-check: PASS
+Player-test shared scene presentation (#301): checking presentation contract + GM publish path...
+player-test-shared-scene-presentation-check: PASS
+Player-test prepared adventure fixture (#302): checking fixture + SessionJoin + world_profile_id...
+player-test-prepared-adventure-fixture-check: PASS
+Player-test combat encounter V1 (#300): checking encounter contract + authoritative combat RPC...
+player-test-combat-encounter-check: OK
+Player-test multi-user E2E + security (#303): Phase 8 checklist + failure classification...
+player-test-multiuser-e2e-security-check: OK
+Player-test instrumentation & runbook (#304): Phase 9–10 evidence pack + metrics contract...
+player-test-instrumentation-runbook-check: PASS
+Project membership security contract: checking RLS and client write paths...
+Project membership security check passed.
+Local auth emails (@sagatree.local): seeds + rename migration vs app shortcuts...
+Local auth email sagatree check passed.
+Local Admin JWT policy: adopt while wanted / discard after logout...
+local-admin-auth-policy self-test: PASS
+Donalu P0 auth gate: world/atlas JWT assert (no anon RLS)...
+Donalu P0 auth gate check: OK
+Donalu world places: domain + migration + UX + dungeon guard...
+Donalu world places check: OK
+Atlas worldbuilder evidence lock (#713): inventory + restore + goldens...
+atlas-worldbuilder-evidence-check: OK
+Atlas worldbuilder domain (#714): WorldNodeKind hierarchy + legacy map...
+atlas-worldbuilder-domain-check: OK
+Atlas worldbuilder transaction (#715): create-with-maps plan + migration...
+atlas-worldbuilder-transaction-check: OK
+Atlas worldbuilder mutations (#716): rename/reparent/duplicate/archive...
+atlas-worldbuilder-mutations-check: OK
+Atlas worldbuilder player projection (#717): saga-aware maps + storage...
+atlas-worldbuilder-player-projection-check: OK
+Atlas worldbuilder structure bind (#718): primary-map Weltstruktur...
+atlas-worldbuilder-structure-bind-check: OK
+Atlas worldbuilder create dialog (#719): + preview + createNodeWithMaps...
+atlas-worldbuilder-create-dialog-check: OK
+Atlas worldbuilder tool registry (#720): contextual AtlasTool allow-list...
+atlas-worldbuilder-tool-registry-check: OK
+Atlas worldbuilder shared editor (#721): controlled WebGL store...
+atlas-worldbuilder-shared-editor-check: OK
+Atlas worldbuilder canonical 2D↔3D (#749): bidirectional bridge...
+atlas-worldbuilder-canonical-2d3d-check: OK
+Atlas worldbuilder geometry (#722): independent frames + LOD anchors...
+atlas-worldbuilder-geometry-check: OK
+Atlas worldbuilder migration (#723): dry-run + gate...
+atlas-worldbuilder-migration-check: OK
+Atlas worldbuilder real Donalu inventory (#753): world-scoped dry-run...
+atlas-worldbuilder-real-donalu-inventory-check: OK
+Atlas worldbuilder QA (#724): epic closer evidence matrix...
+atlas-worldbuilder-qa-check: OK
+Atlas worldbuilder WebGL DB tree (#747): product nav from WorldNodes...
+atlas-worldbuilder-webgl-db-tree-check: using committed browser proof (no Chromium)
+atlas-worldbuilder-webgl-db-tree-check: ok
+Atlas worldbuilder WebGL tree actions (#748): product nav → RPC mutations...
+atlas-worldbuilder-webgl-tree-actions-check: using committed browser proof (no Chromium)
+atlas-worldbuilder-webgl-tree-actions-check: OK
+Atlas worldbuilder editor durability (#751): persist status + CAS conflict...
+atlas-worldbuilder-editor-durability-check: OK
+Atlas worldbuilder Donalu backfill (#754): staging apply + rollback evidence...
+atlas-worldbuilder-donalu-backfill-check: OK
+Atlas worldbuilder WebGL tool registry (#750): registry chrome + commit gates...
+atlas-worldbuilder-webgl-tool-registry-check: OK
+Atlas worldbuilder grounded drilldown (#752): anchors + unlocated empty...
+atlas-worldbuilder-grounded-drilldown-check: OK
+Atlas follow-up real product E2E (#755): epic #746 closer gate...
+atlas-followup-real-product-e2e-check: OK
+Stack migration prep drafts: inventory/issue graph integrity...
+stack-migration-issue-contracts: verified 101 artifacts for 90 issues
+RPC callers: 57 names, 57 resolved TypeScript call variants, 0 dynamic/unmapped names
+PostgreSQL source comparison: 177 exact function body/signature/default/result/security matches; deployed/product proof: false
+RPC source contracts: 57; effective migration functions including dependencies: 149; parser errors: 0; live database verified: false
+Rendered 57 RPC contracts, README and 18 linked split tickets; all legacy blockers retained.
+Edge/infra exact source contracts: 24 workers/dispatcher, 13 areas; 0 stale.
+Edge/infra contracts: 24 Edge, 13 infrastructure, 57 RPCs; 0 stale.
+✔ the complete published plan validates without an implementation or architecture approval claim (79.076527ms)
+✔ rejects ready through blocked transitive predecessors even if labels and counts agree (142.408751ms)
+✔ rejects empty objects in text sections (old truthiness bypass) (124.23625ms)
+✔ rejects whitespace-only sections (126.252661ms)
+✔ backticks do not turn generic boilerplate into behavioral acceptance (125.396766ms)
+✔ MIG-002 has no special exception for incomplete baseline predecessors (116.99826ms)
+✔ deleting an entire required issue is detected across both identity sets and topology (314.511293ms)
+✔ rejects negative GitHub issue numbers even when all copies agree (124.657643ms)
+✔ rejects a changed source fingerprint instead of trusting source-verified text (149.11748ms)
+✔ rejects missing operation-specific inventory tests (104.408678ms)
+✔ removing the typed dynamic RPC names is a coverage failure (66.93015ms)
+✔ duplicate RPC ownership across legacy coordinators fails (103.144929ms)
+✔ deleting a child ticket cannot leave a falsely complete RPC plan (112.314955ms)
+✔ an agent-authored approval cannot unlock a fully completed ancestor graph (111.644585ms)
+✔ a done label without completion evidence is not completion (118.470536ms)
+✔ desktop PoC cannot be moved before browser CI and operations (119.679203ms)
+✔ shutdown cannot lose Atlas or observation-window guards (107.001631ms)
+✔ cycles fail with explicit diagnostics rather than unbounded recursion (112.268026ms)
+✔ malformed dependency arrays fail closed (106.883136ms)
+✔ nonexistent design and assertion sources fail (254.419733ms)
+✔ coordinated removal of MIG-501 from every mutable inventory cannot redefine coverage (122.728732ms)
+✔ all copies agreeing on a different positive GitHub number cannot redirect publication (106.923616ms)
+✔ architecture approvals are checked while every ticket is blocked (203.282852ms)
+✔ a local human claim cannot change preparation authorization (206.94004ms)
+✔ nonexistent completion evidence and unrelated existing prose are not acceptance (246.463541ms)
+✔ Edge prerequisites retain repository and internal Recap ownership (213.187847ms)
+✔ unknown internal RPC dependencies are not silently filtered from the graph (118.366212ms)
+✔ publication binds labels, title, repository, issue number and content together (9.521416ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3864.740881
+stack-migration-prep-check: PASS (contracts=90, RPC=57, Edge=24, Infra=13; execution-blocked=90; architecture-approved=0)
+Scope: local structure, source-derived RPC/Edge contracts, checked fingerprints and regression tests. This is not deployed-state verification, implementation acceptance, or cutover approval.
+Saga state column privileges (#569): checking REVOKE + safe selects...
+Saga state column privileges check passed.
+SagaTree core workflows (#606): checking live evidence contract...
+✓ sagatree-core-workflows contract OK { realtime: 'BLOCKED_604', checks: 11 }
+Realtime compose boot (#604): checking SECRET_KEY_BASE / Kong /socket wiring...
+ok: compose wires SECRET_KEY_BASE
+ok: compose wires DB_ENC_KEY
+ok: compose wires FLY_APP_NAME
+ok: compose wires SEED_SELF_HOST
+ok: compose default tenant localhost
+ok: .env.example documents SECRET_KEY_BASE
+ok: .env.example documents DB_ENC_KEY
+ok: .env.example tenant localhost
+ok: kong upstream /socket
+ok: kong strip /realtime/v1/
+ok: nginx realtime location
+ok: nginx proxies to /socket/
+ok: seed script create_tenant
+ok: seed script migrate
+ok: checklist forbids volume wipe
+realtime-compose-boot-contract-check: OK
+Compose harden defaults (#605): Kong workers / VERIFY_JWT / loopback binds...
+ok: Kong workers default 1
+ok: VERIFY_JWT default true
+ok: DB bound to loopback
+ok: Edge bound to loopback
+ok: no hard-coded VERIFY_JWT false
+ok: Kong plugins include rate-limiting (#670)
+ok: GoTrue email rate limit env (#670)
+ok: no key-auth plugin on Kong routes
+ok: Kong auth-v1 rate-limiting plugin (#670)
+ok: Kong rate-limiting fail-closed (#670)
+ok: .env.example documents Kong/JWT knobs
+ok: .env.example notes Local Admin DEV-only
+ok: docs forbid volume wipe
+compose-harden-defaults-check: OK
+Negative authz suite (#607): JWT gate + deny evidence contract...
+✓ negative-authz-suite-check OK { checks: 9 }
+Edge dispatcher allowlist (#668): deny-by-default mounts...
+edge-dispatcher-allowlist-check OK
+RLS open tables (#669): rulesets / world_graphs migration contract...
+✓ rls-open-tables-check OK { migration: 'supabase/migrations/086_rls_rulesets_world_graphs.sql' }
+AI GM + auth rate limits (#670): persistent RPC + Kong/GoTrue...
+✓ ai-gm-auth-rate-limit-check OK
+No committed anon JWTs (#672): src must use env only...
+✓ no-committed-anon-jwt-check OK
+Saga overview RPC (#570): checking migration, domain VM, hook, audience safety...
+Saga overview RPC check passed.
+Saga overview hub UI (#571): checking 4 sections + Library primary CTA...
+Saga overview hub UI check passed.
+Saga permission grants (#617): catalog, bundles, reveal, Lore, Settings Rechte...
+Saga permission grants check passed.
+Dornhain full catalog seed (#618): bindings reveal mix + Welt UI...
+Dornhain full catalog seed check passed.
+Dornhain pregen full sheets: race/archetype/essence seed + editor hydrate...
+dornhain-pregen-full-sheets-check: PASS
+Session recap persist + handover (#572): table, hydrate, domain, hook...
+Session recap persist handover check passed.
+Session recap AI summary (#573): edge, rate limit, prompt redaction, hook...
+Session recap AI summary check passed.
+Saga definitions + versions (#574): tables, Dornhain seed, client redaction...
+Saga definitions versions check passed.
+Saga editor v1 (#575): draft RPCs, hook, route, AU markers...
+Saga editor v1 check passed.
+Saga editor v2 (#579): threats, deadlines, rules, factions...
+Saga editor v2 check passed.
+World map Scriptony port (#580): registry, 6 UI, RPCs, soft-cap...
+World map Scriptony port check OK
+World map party position (#581): overview partyLocationRef, GM panel, marker...
+World map party position check OK
+World atlas editor (#702): dual nav, Leaflet/Geoman workbench, migration...
+world-atlas-editor-check: OK (#702 unified canvas)
+Unified atlas dungeon generator (Dungeon Forge MIT extract)...
+{"ok":true,"seed":4242,"rooms":16,"edges":19,"genMs":9.08}
+unified-atlas-dungeon-check: OK
+Atlas settlement presets: Großstadt/Stadt/Dorf seedKeys...
+atlas-settlement-presets self-test: PASS
+Atlas place nav LOD anchors...
+atlas-place-nav self-test: PASS
+Dornhain unified world map (ocean blank v3)...
+dornhain-unified-world-map self-test: PASS
+Atlas prototype LOD layers (HTML v3 port)...
+atlas-prototype-lod self-test: PASS
+Atlas prototype 3D exact embed...
+atlas-prototype-3d-embed self-test: PASS
+Saga promote to world/saga (#582): RPCs, ledger, recap UI...
+Saga promote-to-world check OK
+SagaTree brand Phase A (#589): title, shell, package, smoke...
+SagaTree brand Phase A check OK
+SagaTree brand Phase B: SagaTree Core visible ruleset label...
+SagaTree brand Phase B check OK
+Saga simulation kernel (#576): advanceTime, v1→v2, determinism...
+Saga simulation kernel check passed.
+Saga simulation live ops (#577): batch patch, hook, GM panel...
+Saga simulation live ops check passed.
+Saga between-sessions + Bote (#578): Prepare, Bote, open deadlines...
+Saga between-sessions/bote check OK
+Character editor regression contract: checking persistence, avatar replay, and legacy project status...
+Character editor regression check passed.
+Character presets regression contract: checking create chooser, settings Preset tab, and RLS migration...
+Character presets regression check passed.
+Inventory v2 domain contract (#106): checking slots, stacks, containers, equipment, and quick access...
+
+  node_modules/.cache/inventory-v2-domain-check/inventory.mjs  142.7kb
+
+⚡ Done in 8ms
+Inventory v2 domain check passed (12 Testgruppen, #106).
+Inventory v2 catalog contract (#107): checking world-profile resolution, scope isolation, archive semantics, and RLS...
+
+  node_modules/.cache/inventory-catalog-check/catalog.mjs  142.7kb
+
+⚡ Done in 7ms
+Inventory catalog check passed (7 required tests, #107).
+Inventory v2 Core catalog contract: checking 36 stable definitions, schema, and type coverage...
+
+  node_modules/.cache/inventory-core-catalog-check/catalog.mjs  142.7kb
+
+⚡ Done in 8ms
+Inventory core catalog check passed (36 definitions).
+Inventory v2 legacy migration contract (#109): checking lossless ItemDto[] → v2 migration...
+
+  node_modules/.cache/inventory-legacy-migration-check/inventory.mjs  142.7kb
+
+⚡ Done in 8ms
+Inventory legacy migration check passed (#109).
+Inventory v2 desktop UI contract (#110): checking grid, catalog wiring, and CharacterEditor inventory_v2...
+inventory-desktop-ui-check: OK
+Inventory v2 World catalog authoring UI (#112): checking World editor section, form mode, and scope badges...
+inventory-world-catalog-ui-check: OK
+Inventory v2 equipment UI contract (#111): checking Ausrüstung and containers...
+inventory-equipment-ui-check: OK
+Inventory v2 mobile UX contract (#113): checking Inventar|Ausrüstung segment, grid, and touch targets...
+inventory-mobile-ui-check: OK
+Adaptive shared UI primitives (#482): bands, 8 patterns, AU markers...
+adaptive-shared-ui-primitives-check: OK (#482)
+Mobile UI quality gate (#483): Playwright matrix + adaptive helpers...
+mobile-ui-quality-gate-check: OK (#483)
+Golden Mobile Journeys (#484): AU surfaces, journey IDs, #378 npm entry...
+golden-mobile-journeys-check: PASS (#484)
+Live Session Golden E2E Gate (#378): multi-role scenarios + security + Dornhain/#484 hooks...
+live-session-golden-e2e-gate-check: PASS (#378)
+Inventory v2 E2E integration (#114): child gates, architecture, docs sync, catalog size, inventory_v2 save...
+
+[A · Child gates wired in test-gate.mjs]
+
+[B · Architecture boundaries]
+
+[C · Docs: 13 Inventory-v2 points]
+
+[D · CORE_CATALOG_SIZE / 36]
+
+[E · CharacterEditor inventory_v2]
+
+inventory-e2e-integration-check: OK (#114)
+Background framework regression contract: checking universal catalog and legacy IDs...
+Background framework regression check passed (17 Core frameworks, stackable 2-point allocator, unique icons).
+Avatar runtime regression contract: checking VRM/GLB runtime, URL safety, portrait canvas, and dependencies...
+Avatar runtime regression check passed.
+Avatar trait lifecycle (#13): pure core contracts + dispose/stale-load guards...
+avatar-trait-lifecycle-check: OK
+Avatar modular traits (#4): base/overlay resolve + card picker + allowlist...
+avatar-modular-traits-check PASS
+Avatar custom VRM/GLB import (#5): validation + owner storage + UI states...
+avatar-custom-import-check PASS
+Avatar rig normalization (#6): humanoid contract + aliases + analyzer...
+avatar-rig-normalization-check PASS
+Avatar morph contract (#212): SagaTreeAvatarMorphV1 bounds + migration...
+avatar-morph-contract-check PASS
+Avatar base bodies (#213): morphable humanoid manifest + species presets...
+avatar-base-bodies-check PASS
+Avatar MToon profile (#214): SagaTreeMToonProfileV1 + style applier...
+avatar-mtoon-profile-check PASS
+Avatar body/face editor (#215): morph UI + live apply...
+avatar-body-face-editor-check PASS
+Avatar fit range (#216): AvatarFitRangeV1 compatibility...
+avatar-fit-range-check PASS
+Avatar save export (#7): materialized GLB on Character Save...
+avatar-save-export-check PASS
+Avatar animation retarget (#8): Idle/Walk/Combat/Emote via humanoid rig...
+avatar-animation-retarget-check PASS
+Avatar facial expressions (#11): blink/emotion/viseme VRM API...
+avatar-facial-expressions-check PASS
+Avatar face tracking (#12): local MediaPipe head/eyes/expressions...
+avatar-face-tracking-check PASS
+LiveAct core (#329): provider-neutral contract + engine...
+liveact-core-check OK
+LiveAct viewport UI (#330): permanent gear + camera PiP...
+liveact-viewport-ui-check OK
+LiveAct face diagnostics (#331): overlay + neutral calibration...
+liveact-face-diagnostics-check OK
+LiveAct diagnostics V2 (#397): RAW→APPLIED stage trace...
+liveact-diagnostics-v2-check OK
+LiveAct face anchors V1 (#399): SagaTreeFaceAnchorsV1 mesh bindings...
+liveact-face-anchors-v1-check OK
+LiveAct face mapping authoring (#419): sidecar cache-bust + provenance...
+liveact-face-mapping-authoring-check OK
+Face anchor agent review v1: 5/5 visual + evidence + deterministic gates...
+face-anchor-agent-review-check OK
+LiveAct face mapping manual (#420): Face Setup 21 markers + raycast...
+liveact-face-mapping-manual-check OK
+LiveAct face mapping auto (#421): IMAGE MediaPipe + shared raycast...
+liveact-face-mapping-auto-check OK
+eval median=2.23606797749979 p95=2.23606797749979 max=2.23606797749979 threshold=needs-calibration
+LiveAct face mapping auto capture visibility (#421 P2): hide equipment for MediaPipe...
+liveact-face-mapping-auto-capture-visibility-check PASS
+LiveAct face mapping GT mark vs clipboard (#421 P3)...
+[face-mapping] GT JSON clipboard failed Error: Clipboard denied
+    at Object.writeText (file:///workspace/scratch/feb45e6e10c7/sagatree/scripts/liveact-face-mapping-gt-mark-copy-check.mjs:88:13)
+    at runFaceMappingGtMarkAndCopy (file:///workspace/scratch/feb45e6e10c7/sagatree/.qa/runs/liveact-face-mapping-gt-mark-copy-bundle.mjs?t=1792573779582:24:18)
+    at file:///workspace/scratch/feb45e6e10c7/sagatree/scripts/liveact-face-mapping-gt-mark-copy-check.mjs:81:24
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[face-mapping] GT mark failed Error: freeze failed
+    at Object.mark (file:///workspace/scratch/feb45e6e10c7/sagatree/scripts/liveact-face-mapping-gt-mark-copy-check.mjs:101:13)
+    at runFaceMappingGtMarkAndCopy (file:///workspace/scratch/feb45e6e10c7/sagatree/.qa/runs/liveact-face-mapping-gt-mark-copy-bundle.mjs?t=1792573779582:17:19)
+    at file:///workspace/scratch/feb45e6e10c7/sagatree/scripts/liveact-face-mapping-gt-mark-copy-check.mjs:99:24
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+liveact-face-mapping-gt-mark-copy-check PASS
+LiveAct face anchors character persist: avatar.face_anchors + override...
+liveact-face-anchors-character-persist-check OK
+LiveAct expand drive bind: Setup modal XOR card bindOutput...
+liveact-expand-drive-bind-check OK
+LiveAct Golden Reference VRM (ARKit52) diagnostic path...
+liveact-reference-vrm-golden-avatar-check WARN: binary missing — run node scripts/fetch-liveact-reference-vrm.mjs
+liveact-reference-vrm-golden-avatar-check OK
+Saga Human Canonical V1 PoC: sources, build report, sidecars, runtime isolation...
+saga-human-canonical-v1-check WARN: public/assets/avatars/canonical/saga-human-canonical-v1.vrm not built (gitignored) — run npm run build:saga-human-canonical-v1
+saga-human-canonical-v1-check OK
+LiveAct fidelity: calibration once + range gains, idle ownership, teeth binds...
+[liveact] range calibration skipped { frames: 2457 }
+liveact-fidelity-check: Reference VRM binary not present — asset check skipped
+liveact-fidelity-check OK
+LiveAct face mapping visual guides: binding labels + smooth guides + pulse/detail...
+liveact-face-mapping-visual-guides-check OK
+LiveAct face anchor anatomy QA: SagaTreeFaceAnchorAnatomyQaV1...
+liveact-face-anchor-anatomy-check: m5 PASS {
+  faceH: 0.35802,
+  faceW: 0.11483,
+  mouthGap: 0.7968,
+  eyeOpenL: 1.0421,
+  eyeOpenR: 0.9957,
+  browLiftL: 1.2648,
+  browLiftR: 1.24,
+  eyeSymRel: 0.0445,
+  browSymRel: 0.0197
+}
+liveact-face-anchor-anatomy-check: f5 PASS {
+  faceH: 0.34616,
+  faceW: 0.11584,
+  mouthGap: 0.5786,
+  eyeOpenL: 1.0088,
+  eyeOpenR: 1.0345,
+  browLiftL: 1.2492,
+  browLiftR: 1.1923,
+  eyeSymRel: 0.0249,
+  browSymRel: 0.0456
+}
+liveact-face-anchor-anatomy-check OK
+LiveAct camera overlay metrics (#398): object-cover + HUD...
+liveact-camera-overlay-metrics-check OK
+LiveAct character face overlay (#400): deformed mesh anchors...
+liveact-character-face-overlay-check OK
+LiveAct avatar output (#332): VRM/GLB atomic frame apply...
+liveact-avatar-output-check OK
+LiveAct capability ownership (#381): Input vs Avatar compose...
+liveact-capability-ownership-check OK
+LiveAct face asset contract (#382): core-v1 / full-v1 / gazeMode...
+liveact-face-asset-contract-check OK
+LiveAct face asset validator (#383): Khronos + SagaTree gate...
+liveact-face-asset-validator-check OK
+LiveAct semantic face morph validator (#401): region/side/combination QA...
+liveact-face-semantic-validator-check OK
+LiveAct face functional validator (#422): reviewed GT morph function QA...
+liveact-face-functional-validator-check OK
+LiveAct face functional morph author (#423): GT-aware jawOpen rewrite...
+OK: Milestone 5 supports jaw/blink/brow/smile L+R/pucker
+OK: author contract version present
+OK: authors jawOpen
+OK: affects vertices
+OK: mouth gap increases
+OK: lower moves more than upper
+OK: mouthLower moves
+OK: chin displacement bounded (disconnected chin shell not Euclidean-pulled)
+OK: nose ≈ 0
+OK: forehead = 0
+OK: jawOpen deltas changed
+OK: only jawOpen changed flag
+OK: changedMorphs=[jawOpen]
+OK: deterministic morph hash across runs
+OK: internal rerun hash matches
+OK: all non-jawOpen morph hashes identical
+OK: mouthGapDelta clears Functional jawOpen floor (0.06)
+OK: nose displacement within Functional jawOpen leakage bound
+OK: forehead displacement within Functional jawOpen leakage bound
+OK: authors eyeBlinkLeft
+OK: blinkL affects vertices
+OK: blinkL openDrop >= 0.05
+OK: blinkL openRatio <= 0.65
+OK: blinkL opposite crosstalk <= 0.2
+OK: blinkL leaves jawOpen morph unchanged
+OK: blinkL preserves Milestone-1 jawOpen morph hash
+OK: blinkL only changes eyeBlinkLeft
+OK: authors eyeBlinkRight
+OK: blinkR openDrop >= 0.05
+OK: blinkR openRatio <= 0.65
+OK: blinkR opposite crosstalk <= 0.2
+OK: blinkR preserves Milestone-1 jawOpen morph hash
+OK: blinkR deterministic morph hash
+OK: authors browInnerUp
+OK: brow affects vertices
+OK: brow meanLiftDelta >= 0.03
+OK: left inner brow lifts
+OK: right inner brow lifts
+OK: brow mouth protected
+OK: brow chin protected
+OK: brow nose protected
+OK: brow preserves jawOpen morph hash
+OK: brow preserves eyeBlinkLeft hash
+OK: brow preserves eyeBlinkRight hash
+OK: brow only changes browInnerUp
+OK: brow deterministic morph hash
+OK: authors mouthSmileLeft
+OK: smileL cornerUp >= 0.025
+OK: smileL cornerMotion >= 0.03
+OK: smileL upAdvantage >= 0.015
+OK: smileL preserves jawOpen morph hash
+OK: smileL preserves browInnerUp hash
+OK: smileL preserves eyeBlinkLeft hash
+OK: authors mouthSmileRight
+OK: smileR cornerUp >= 0.025
+OK: smileR cornerMotion >= 0.03
+OK: smileR upAdvantage >= 0.015
+OK: smileR deterministic morph hash
+OK: authors mouthPucker
+OK: pucker affects vertices
+OK: pucker reduces mouth width (widthRatio < 0.96)
+OK: left corner moves inward
+OK: right corner moves inward
+OK: bilateral inward effect
+OK: pucker asymmetry plausible
+OK: corners avoid excessive vertical drift
+OK: pucker nose ≈ 0
+OK: pucker forehead ≈ 0
+OK: pucker browL protected
+OK: pucker eye protected
+OK: pucker preserves jawOpen morph hash
+OK: pucker preserves prior morph hash: jawOpen
+OK: pucker preserves prior morph hash: eyeBlinkLeft
+OK: pucker preserves prior morph hash: eyeBlinkRight
+OK: pucker preserves prior morph hash: browInnerUp
+OK: pucker preserves prior morph hash: mouthSmileLeft
+OK: pucker preserves prior morph hash: mouthSmileRight
+OK: pucker only changes mouthPucker
+OK: all non-pucker morph hashes identical vs smile stack
+OK: pucker deterministic morph hash
+OK: unreviewed GT rejected
+OK: stale topology rejected
+OK: stale candidate SHA rejected
+OK: missing required anchor rejected
+OK: unsupported channel rejected
+OK: missing mouth-corner anchor rejected
+OK: missing lip semantic anchor rejected
+OK: missing brow semantic anchor rejected
+OK: missing input GLB rejected
+OK: wrong/stale triangle binding rejected
+OK: jawOpen surface gate reports restricted allowed surface
+OK: disconnected chest shell inside Euclidean radius gets zero jawOpen delta
+OK: GT-bound mouthLower triangle vertex receives jawOpen delta
+OK: disconnected coherent facial seam accepted
+OK: body-majority shell rejected
+OK: single coincident vertex shell rejected
+OK: GT-far shell rejected
+OK: near tertiary without primary seam rejected / not accepted
+OK: coupling detection deterministic
+OK: author accepts facial secondary
+OK: author asserts no recursive propagation
+OK: seam continuity metric present/pass
+OK: secondary interface moves with primary
+OK: patch falloff reduces distal secondary motion
+OK: body-majority shell stays zero after author
+OK: secondary does not propagate to third component
+OK: meanEdgeLength averages all three triangle edges
+OK: BFS nearestSeed prefers closer seam seed
+OK: BFS nearestSeed from other side
+OK: BFS tie: earlier seed wins when hop-equal
+OK: smile surface gate rejects off-surface Euclidean candidates
+OK: smile writes zero delta on disconnected body shell
+liveact-face-functional-morph-author-check OK
+LiveAct face authoring qtmesh adapter (#384): fake CLI + report gates...
+liveact-face-authoring-qtmesh-check OK
+LiveAct retarget profile (#385): gain/deadZone domain + engine wiring...
+liveact-retarget-profile-check OK
+LiveAct facial fidelity V2 (#403): exclusive gaze + channel table...
+liveact-facial-fidelity-v2-check OK
+Avatar VRM pack (#404): deterministic VRM 1.0 packaging...
+avatar-vrm-pack-check OK
+LiveAct face fidelity E2E (#406): aggregate VRM runtime gate...
+→ scripts/liveact-diagnostics-v2-check.mjs
+liveact-diagnostics-v2-check OK
+→ scripts/liveact-facial-fidelity-v2-check.mjs
+liveact-facial-fidelity-v2-check OK
+→ scripts/liveact-camera-overlay-metrics-check.mjs
+liveact-camera-overlay-metrics-check OK
+→ scripts/liveact-character-face-overlay-check.mjs
+liveact-character-face-overlay-check OK
+→ scripts/liveact-face-human-repro-check.mjs
+liveact-face-human-repro-check: m5 semantic QA V2 pass
+liveact-face-human-repro-check: f5 semantic QA V2 pass
+liveact-face-human-repro-check: m5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check: f5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check OK
+→ scripts/species-template-gender-model-preview-check.mjs
+species-template-gender-model-preview-check PASS
+→ scripts/avatar-vrm-pack-check.mjs
+avatar-vrm-pack-check OK
+→ scripts/liveact-avatar-output-check.mjs
+liveact-avatar-output-check OK
+→ scripts/liveact-retarget-profile-check.mjs
+liveact-retarget-profile-check OK
+liveact-face-fidelity-e2e-check OK
+LiveAct face setup E2E (#424): Face Setup + RAW→APPLIED + identity retarget...
+→ scripts/liveact-face-mapping-authoring-check.mjs
+liveact-face-mapping-authoring-check OK
+→ scripts/liveact-face-mapping-manual-check.mjs
+liveact-face-mapping-manual-check OK
+→ scripts/liveact-face-mapping-auto-check.mjs
+liveact-face-mapping-auto-check OK
+eval median=2.23606797749979 p95=2.23606797749979 max=2.23606797749979 threshold=needs-calibration
+→ scripts/liveact-retarget-profile-check.mjs
+liveact-retarget-profile-check OK
+→ scripts/liveact-facial-fidelity-v2-check.mjs
+liveact-facial-fidelity-v2-check OK
+→ scripts/liveact-diagnostics-v2-check.mjs
+liveact-diagnostics-v2-check OK
+→ scripts/liveact-face-human-repro-check.mjs
+liveact-face-human-repro-check: m5 semantic QA V2 pass
+liveact-face-human-repro-check: f5 semantic QA V2 pass
+liveact-face-human-repro-check: m5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check: f5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check OK
+liveact-face-setup-e2e-check OK — NO RETARGET OVERRIDES REQUIRED
+LiveAct Perfect Fidelity benchmark (#444): contract + capture + motion/speech metrics...
+liveact-perfect-fidelity-benchmark-check OK
+  fixtures: 13
+  V1 baseline PASS=47 MISS=1 NOT_MEASURED=4
+LiveAct dense face features (#445): semantic geometry + face-local normalize + regions...
+liveact-dense-face-features-check OK
+{
+  "invariance": {
+    "tolerance": 0.04,
+    "translationMaxAbs": 9.992007221626409e-16,
+    "scaleMaxAbs": 4.440892098500626e-16,
+    "yawMaxAbs": 2.220446049250313e-16,
+    "pitchMaxAbs": 3.3306690738754696e-16,
+    "rollMaxAbs": 3.3306690738754696e-16
+  },
+  "contour": {
+    "measurable": true,
+    "medianStatus": "MISS",
+    "p95Status": "MISS"
+  },
+  "hash": "ed88c04b4b64"
+}
+LiveAct iris gaze solver (#446): head-local per-eye iris + A/B vs blendshape...
+liveact-iris-gaze-solver-check OK
+{
+  "irisMedian": 0,
+  "blendMedian": 0.8317952606018411,
+  "improvement": 0.8317952606018411,
+  "headRelativeMaxAbs": 6.133926885679639e-16,
+  "irisBeatsBlendshape": true
+}
+LiveAct hybrid mouth/face solver (#447): semantic+dense fusion + A/B vs V1...
+liveact-hybrid-mouth-face-solver-check OK
+{
+  "hybridBeatsV1": true,
+  "activeUnderResponseMedianAbs": 0.18705,
+  "requiredMinimum": 0.05,
+  "cleanNonDegradation": true,
+  "speechCorr": {
+    "v1": 1,
+    "hybrid": 0.9939120464374921
+  },
+  "amplitude": {
+    "v1": 50,
+    "hybrid": 74.45715543960894
+  },
+  "velocity": {
+    "v1": 50,
+    "hybrid": 90.2605144651621
+  },
+  "crossTalkOk": true,
+  "maxNeutralLeak": 0.0035700000000000003
+}
+LiveAct adaptive temporal solver (#448): dt-based per-group policies + A/B vs V1 EMA...
+liveact-adaptive-temporal-solver-check OK
+{
+  "success": true,
+  "headJitter": {
+    "v1": 0.0037798942981191533,
+    "adaptive": 0.0018087636050240184
+  },
+  "lip5HzAmp": 94.69816410123103,
+  "speechAmp": 100.62991903512197,
+  "gazeLag": 0
+}
+LiveAct personal calibration V2 (#449): 20–40s local profile + A/B vs V1 generic...
+liveact-personal-calibration-v2-check OK
+{
+  "success": true,
+  "durationMs": 34500,
+  "improvements": {
+    "neutralBiasReduced": true,
+    "weakChannelNotExploded": true,
+    "asymmetryPreserved": true
+  },
+  "nose": {
+    "v1": 4,
+    "personal": 1,
+    "cap": "weak"
+  },
+  "bias": {
+    "v1": 0,
+    "personal": 0
+  }
+}
+SagaTree Performance Face V2 (#450): Premium contract + compose with Caps V1...
+sagatree-performance-face-v2-check PASS
+LiveAct Perfect Fidelity V2 E2E (#451): dual-avatar Premium gate + contour...
+liveact-perfect-fidelity-v2-e2e-check PASS
+LiveAct face pipeline docs (#386): AUTHORING v1.1 + FACE-AUTHORING...
+liveact-face-pipeline-doc-check OK
+LiveAct face human repro (#387): m5+f5 core-v1 public assets...
+liveact-face-human-repro-check: m5 semantic QA V2 pass
+liveact-face-human-repro-check: f5 semantic QA V2 pass
+liveact-face-human-repro-check: m5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check: f5-face3 structural/anatomy/semantic/functional PASS
+liveact-face-human-repro-check OK
+LiveAct rig debug (#333): SkeletonHelper + capability inspector...
+liveact-rig-debug-check OK
+LiveAct surface migration (#334): editor/player/session shared engine...
+liveact-surface-migration-check OK
+LiveAct hardening (#335): backpressure, privacy, races, E2E contract...
+liveact-hardening-check OK
+Avatar V2 composition contract (#249): orthogonal axes + legacy mapping...
+avatar-v2-composition-contract-check PASS
+Avatar V2 modular GLB contract (#250): extras.sagatree roles/slots...
+avatar-v2-modular-glb-contract-check PASS
+Avatar V2 artifact pipeline (#251): source-neutral materialization...
+avatar-v2-artifact-pipeline-check OK
+Avatar V2 structure analyzer (#252): anatomy/modularity evidence...
+avatar-v2-structure-analyzer-check OK
+Avatar V2 body profile (#253): standard/compact/heavy compatibility...
+avatar-v2-body-profile-check OK
+Avatar V2 asset authoring (#254): provider-neutral publish workflow...
+avatar-v2-asset-authoring-check OK
+Avatar V2 canonical body families (#255): standard/compact/heavy...
+avatar-v2-canonical-body-families-check OK
+Avatar V2 species template pack (#256): seven species on families...
+avatar-v2-species-template-pack-check OK
+Avatar V2 starter wardrobe (#257): 6 wearables × 3 family fits...
+avatar-v2-starter-wardrobe-check OK
+Avatar V2 skinned wearable runtime (#258): family fit + rebind + masks...
+avatar-v2-skinned-wearable-runtime-check OK
+Avatar V2 capability editor (#259): surfaces from capabilities not source...
+avatar-v2-capability-editor-check OK
+Avatar V2 template creator flow (#260): Vorlage anpassen vertical slice...
+avatar-v2-template-creator-flow-check PASS
+Species template gender model preview: Mensch m/w GLB wiring...
+species-template-gender-model-preview-check PASS
+Avatar V2 import original flow (#261): Analyse + Original behalten...
+avatar-v2-import-original-flow-check PASS
+Avatar spike/benchmark promote (#323): production filenames...
+avatar-spike-promote-check: PASS
+Avatar V2 identity transfer (#262/#323): default + degraded conversion plan...
+avatar-v2-identity-transfer-check PASS
+Avatar V2 body conversion flow (#263): Standard/Compact/Heavy transfer...
+avatar-v2-body-conversion-flow-check PASS
+Avatar V2 custom creature rig/capability contract (#264)...
+avatar-v2-custom-creature-contract-check PASS
+Avatar V2 custom rig decision (#265/#323): Meshy/SkinTokens/Import defaults...
+avatar-v2-custom-rig-decision-check PASS
+Avatar V2 custom creature original vertical slice (#266)...
+avatar-v2-custom-creature-flow-check PASS
+Avatar V2 generate UX Editierbar vs Freie Form (#267)...
+avatar-v2-generate-ux-check PASS
+Avatar V2 modular generate decomposition (#268/#323)...
+avatar-v2-generate-decomposition-check PASS
+Avatar V2 modular generate Editierbar vertical slice (#269)...
+avatar-v2-modular-generate-flow-check PASS
+Avatar V2 final acceptance golden matrix (#270)...
+avatar-v2-final-acceptance-check PASS
+Avatar content pack (#217): Fantasy/Sci-Fi curated assets...
+avatar-content-pack-check PASS
+Avatar Meshy generation (#10): prompt job + SSRF + pending #6...
+avatar-meshy-generation-check PASS
+Avatar 3D generation (provider-agnostic): presets + Meshy adapter...
+avatar-3d-generation-check OK
+Avatar source selector (#14): sagatree|import|meshy + legacy...
+avatar-source-selector-check PASS
+Shared avatar surfaces (#9): portrait/compact/full + bounds...
+shared-avatar-surfaces-check PASS
+Avatar equipment visual contract (#158): binding + projection...
+avatar-equipment-visual-contract-check PASS
+Avatar rigid equipment runtime (#159): attach plan + cache...
+avatar-rigid-equipment-runtime-check PASS
+Item avatar fit workbench (#160): defaults + Ausrichtung section...
+item-avatar-fit-workbench-check PASS
+Avatar rigging providers (#161): Meshy + SkinTokens mocks...
+avatar-rigging-providers-check PASS
+Avatar skinned wearables (#162): plan + capability gate...
+avatar-skinned-wearables-check PASS
+Avatar items final acceptance (#163): equip/rig/wearable matrix...
+avatar-items-final-acceptance-check PASS
+Avatar creator final visual/UX acceptance (#218): combo + golden matrix...
+
+[A · Creator pipeline files]
+
+[B · Avatar child gates in test-gate]
+
+[C · 24 reproducible Creator combinations]
+
+[D · Golden references Fantasy + Sci-Fi]
+
+[E · Source / morph / import-meshy capability flows]
+
+[F · Shared surfaces + equipment identity]
+
+[G · Responsive + keyboard / a11y structural]
+
+avatar-creator-final-acceptance-check PASS
+  combos=24 golden=78522b21a4558589/165a4e79c3c5b941
+Avatar asset catalog regression contract: checking race mappings, provenance, licenses, and pinned fallbacks...
+Avatar asset catalog regression check passed.
+Core probability validation (#19): exact A1 matrix over the core probe...
+Core probability validation passed: 1862 probe rows across 266 profiles — report at .qa/runs/validate-core-probability-report.md.
+Combat action economy validation (#22): deterministic C1 scenario play-through...
+Combat action economy validation passed: 10 scenarios across 3 bands (57 probe rows) — report at .qa/runs/validate-combat-action-economy-report.md.
+Damage/healing/dying validation (#23): exact damage & dying curves...
+Damage/healing/dying validation passed: 720 scenario rows across 3 bands — report at .qa/runs/validate-damage-healing-dying-report.md.
+Enemy/encounter/boss validation (#24): seeded C4 encounter simulation...
+Enemy/encounter/boss validation passed: 315 encounter cells + 10 boss scenarios — report at .qa/runs/validate-enemy-encounter-boss-balance-report.md.
+NPC/creature power framework (#195): benchmarks, profiles, roles...
+ok: rules barrel: contains "export * from './npc-creature-power'"
+ok: core §15: contains "### 15.1 Stufe und Machtgrad"
+ok: core §15: contains "### 15.3 Kampfprofile"
+ok: core §15: contains "### 15.4 Kampfrollen"
+ok: core §15: contains "Elite-Impuls"
+ok: core §15: contains "Boss-Impuls"
+ok: core §15: contains "Wendepunkt"
+ok: core §15: contains "Kampfunfähig"
+ok: core §15 removed legacy: forbids "#### Scherge"
+ok: core §15 removed legacy: forbids "zwei Initiativeslots pro Runde"
+ok: core §15 removed legacy: forbids "jeder erfolgreiche Schadenseffekt von mindestens 1 besiegt den Schergen"
+
+  .../.cache/npc-creature-power-framework-check/npc-creature-power.mjs  11.4kb
+
+⚡ Done in 7ms
+ok: 20 level benchmarks
+ok: L1 primary mod — expected 6, got 6
+ok: L1 defense — expected 14, got 14
+ok: L1 HP — expected 18, got 18
+ok: L1 machtgrad — expected "gering", got "gering"
+ok: L2 primary mod — expected 6, got 6
+ok: L2 defense — expected 14, got 14
+ok: L2 HP — expected 18, got 18
+ok: L2 machtgrad — expected "gering", got "gering"
+ok: L3 primary mod — expected 7, got 7
+ok: L3 defense — expected 15, got 15
+ok: L3 HP — expected 18, got 18
+ok: L3 machtgrad — expected "gering", got "gering"
+ok: L4 primary mod — expected 7, got 7
+ok: L4 defense — expected 15, got 15
+ok: L4 HP — expected 18, got 18
+ok: L4 machtgrad — expected "gering", got "gering"
+ok: L5 primary mod — expected 8, got 8
+ok: L5 defense — expected 16, got 16
+ok: L5 HP — expected 20, got 20
+ok: L5 machtgrad — expected "mittel", got "mittel"
+ok: L6 primary mod — expected 8, got 8
+ok: L6 defense — expected 16, got 16
+ok: L6 HP — expected 20, got 20
+ok: L6 machtgrad — expected "mittel", got "mittel"
+ok: L7 primary mod — expected 9, got 9
+ok: L7 defense — expected 17, got 17
+ok: L7 HP — expected 20, got 20
+ok: L7 machtgrad — expected "mittel", got "mittel"
+ok: L8 primary mod — expected 9, got 9
+ok: L8 defense — expected 17, got 17
+ok: L8 HP — expected 20, got 20
+ok: L8 machtgrad — expected "mittel", got "mittel"
+ok: L9 primary mod — expected 10, got 10
+ok: L9 defense — expected 18, got 18
+ok: L9 HP — expected 22, got 22
+ok: L9 machtgrad — expected "hoch", got "hoch"
+ok: L10 primary mod — expected 10, got 10
+ok: L10 defense — expected 18, got 18
+ok: L10 HP — expected 22, got 22
+ok: L10 machtgrad — expected "hoch", got "hoch"
+ok: L11 primary mod — expected 11, got 11
+ok: L11 defense — expected 19, got 19
+ok: L11 HP — expected 22, got 22
+ok: L11 machtgrad — expected "hoch", got "hoch"
+ok: L12 primary mod — expected 11, got 11
+ok: L12 defense — expected 19, got 19
+ok: L12 HP — expected 22, got 22
+ok: L12 machtgrad — expected "hoch", got "hoch"
+ok: L13 primary mod — expected 12, got 12
+ok: L13 defense — expected 20, got 20
+ok: L13 HP — expected 24, got 24
+ok: L13 machtgrad — expected "extrem", got "extrem"
+ok: L14 primary mod — expected 12, got 12
+ok: L14 defense — expected 20, got 20
+ok: L14 HP — expected 24, got 24
+ok: L14 machtgrad — expected "extrem", got "extrem"
+ok: L15 primary mod — expected 13, got 13
+ok: L15 defense — expected 21, got 21
+ok: L15 HP — expected 24, got 24
+ok: L15 machtgrad — expected "extrem", got "extrem"
+ok: L16 primary mod — expected 13, got 13
+ok: L16 defense — expected 21, got 21
+ok: L16 HP — expected 24, got 24
+ok: L16 machtgrad — expected "extrem", got "extrem"
+ok: L17 primary mod — expected 14, got 14
+ok: L17 defense — expected 22, got 22
+ok: L17 HP — expected 26, got 26
+ok: L17 machtgrad — expected "legendaer", got "legendaer"
+ok: L18 primary mod — expected 14, got 14
+ok: L18 defense — expected 22, got 22
+ok: L18 HP — expected 26, got 26
+ok: L18 machtgrad — expected "legendaer", got "legendaer"
+ok: L19 primary mod — expected 15, got 15
+ok: L19 defense — expected 23, got 23
+ok: L19 HP — expected 26, got 26
+ok: L19 machtgrad — expected "legendaer", got "legendaer"
+ok: L20 primary mod — expected 15, got 15
+ok: L20 defense — expected 23, got 23
+ok: L20 HP — expected 26, got 26
+ok: L20 machtgrad — expected "legendaer", got "legendaer"
+ok: machtgrad label 7 — expected "Mittel", got "Mittel"
+ok: machtgrad label 20 — expected "Legendär", got "Legendär"
+ok: Lv7 Mobile Elite HP 20×0.8×1.5 — expected 24, got 24
+ok: Lv7 Mobile Elite DEF 17+1 — expected 18, got 18
+ok: Lv7 Mobile Elite move 9+3 — expected 12, got 12
+ok: Lv7 Mobile Elite primary unchanged by role — expected 9, got 9
+ok: Elite impulse/round — expected 1, got 1
+ok: Elite impulses allowed — expected true, got true
+ok: Lv10 Offensive primary +1 — expected 11, got 11
+ok: Lv10 Offensive DEF -1 — expected 17, got 17
+ok: Lv10 Offensive HP — expected 22, got 22
+ok: Lv10 Offensive damage step +1 — expected "d10+2", got "d10+2"
+ok: Lv18 Tough Boss HP 26×1.2×2.5 — expected 78, got 78
+ok: Lv18 Tough Boss move 9-3 — expected 6, got 6
+ok: Lv18 Tough damage -1 step — expected "d10+2", got "d10+2"
+ok: Boss wendepunkt — expected 1, got 1
+ok: Boss impulses — expected 2, got 2
+ok: Boss min impulse options — expected 2, got 2
+ok: noncombat forces standard role — expected "standard", got "standard"
+ok: noncombat damage defaults to d4+1 — expected "d4+1", got "d4+1"
+ok: noncombat DEF -1 from 19 — expected 18, got 18
+ok: noncombat needs no combat signature — expected false, got false
+ok: noncombat keeps specialty primary at level (no auto combat inflation beyond profile)
+ok: Kampfunfähig blocks impulses — expected false, got false
+ok: combineHealth rounds up once — expected 24, got 24
+ok: impulse below primary — expected "d8+1", got "d8+1"
+ok: rejects invalid level
+npc-creature-power-framework-check: all checks passed
+NPC/creature domain persistence (#196): definitions CRUD contracts + RLS wiring...
+
+  node_modules/.cache/npc-creature-domain-persistence-check/npc.mjs  76.9kb
+
+⚡ Done in 7ms
+npc-creature-domain-persistence-check: OK (#196)
+NPC/creature library browser (#197): tab, EntityBrowser, filters, statblock...
+npc-creature-library-browser-check: OK (#197)
+NPC/creature creator editor (#198): quick create, editor, live statblock...
+npc-creature-creator-editor-check: OK (#198)
+NPC/creature world catalog (#199): packs + pure resolver + world UI...
+
+  node_modules/.cache/npc-creature-world-catalog-check/npc.mjs  76.9kb
+
+⚡ Done in 8ms
+npc-creature-world-catalog-check: OK
+NPC/creature promotion + controller (#200): template/compact/assign wiring...
+npc-creature-promotion-check: OK (#200)
+NPC/creature session instances (#201): spawn/runtime/snapshot isolation...
+npc-creature-session-instances-check: OK (#201)
+Character creation validation (#20): deterministic §17/§13 build audit...
+Character creation validation passed: 6 legal level-1 bases, 3 level-20 progressions, 3/3 §13.3 equivalences, 20 negative paths rejected — report at .qa/runs/validate-character-creation-progression-report.md.
+Powers/essences validation (#25): deterministic §12 power model audit...
+Powers/essences validation passed: 30 powers across 5 essences & ranks I–V, 32 activation rows, 0 findings — report at .qa/runs/validate-powers-essences-ranks-report.md.
+Drive/momentum validation (#26): deterministic §2.10–2.12/§16.3 audit...
+Drive/momentum validation passed: 60 exact reroll rows, 4/4 deactivation variants playable, caps & decay enforced, 0 findings — report at .qa/runs/validate-drive-momentum-report.md.
+World profiles validation (#30): deterministic §4.7/§16 audit...
+World profiles validation passed: 3/3 twenty-field profiles legal, 3 priority cases resolved, 6 cross-setting mappings, negative paths rejected — report at .qa/runs/validate-world-profiles-modules-report.md.
+All core skills validation (#28): deterministic §5 skill catalog & boundaries...
+All-core-skills validation passed: 18/18 skills, 8 boundary groups, Spec/Caps/§3.6 fail-closed, 0 findings — report at .qa/runs/validate-all-core-skills-report.md.
+Noncombat/projects/social validation (#27): deterministic §2.8/§14 E1 scenarios...
+Noncombat/projects/social validation passed: 7/7 scenarios, bounds Ziel3≤7/Ziel5≤11, deadEnds=0, freeNumberBonuses=0, 0 findings — report at .qa/runs/validate-noncombat-projects-social-report.md.
+Conditions/resistances validation (#33): deterministic §9/§6.5 C3 scenarios...
+Conditions/resistances validation passed: 11 conditions, 7/7 combos, 4 resistances, deadEnds=0, 0 findings — report at .qa/runs/validate-conditions-resistances-report.md (md5 c34c020f84e97237cb330f5a10c1675d).
+Travel/chase/vehicles validation (#29): deterministic §10.4/§14.2/§14.10 E2 scenarios...
+validate-travel-chase-vehicles OK — 6/6 scenarios, Findings: 0
+Report: .qa/runs/validate-travel-chase-vehicles-report.md
+Character editor rules UX validation (#21): B1 structural + E2E contract...
+validate-character-editor-rules-ux OK — Findings: 0
+Report: .qa/runs/validate-character-editor-rules-ux-report.md
+Gear/resources/load validation (#32): tools, traits, Traglast, affordability...
+
+  node_modules/.cache/validate-gear-resources-load/rules-items.mjs  9.9kb
+
+⚡ Done in 3ms
+validate-gear-resources-load OK — Findings: 0 (report /workspace/scratch/feb45e6e10c7/sagatree/.qa/runs/validate-gear-resources-load-report.md)
+Analog E2E playtest validation (#31): deterministic Phase G1 paper-play ledger...
+Analog E2E playtest validation passed: 3/3 sessions, 2 world profiles, Drive-off Session C, prior slices clean, 0 findings — report MD5 055611bfbcf47d3c6a9e5dff6e7c0bda at .qa/runs/validate-analog-end-to-end-playtest-report.md.
+Asset license inventory: tracked media must be classified (no uncleared)...
+Asset license inventory OK: 431 files (cleared=0, reserved=9, excluded=214, owner_pending=208, uncleared=0).
+Open-source release ready: false (contributor_rights=pending_owner_attestation; runtime_pending=200).
+NOTE: release blockers remain — see docs/licensing/status.json (merge NEEDS_HUMAN).
+Secrets diff scan passed.
+Dependency audit (blocking high+): critical=0, high=0, moderate=0, low=0.
+Test Gate passed.

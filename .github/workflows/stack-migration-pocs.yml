@@ -1,0 +1,65 @@
+name: Stack migration isolated candidates
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stack-migration-pocs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  data-access-candidates:
+    name: GATE-01 real SQLite policy candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: scripts/stack-migration-pocs/gate-01/package-lock.json
+      - run: npm ci --prefix scripts/stack-migration-pocs/gate-01
+      - run: npm run check --prefix scripts/stack-migration-pocs/gate-01
+      - name: Audit generator and runtime dependencies
+        run: npm audit --prefix scripts/stack-migration-pocs/gate-01 --audit-level=high
+      - name: Upload executed candidate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-01-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .qa/evidence/stack-migration-prep/pocs/gate-01/
+          if-no-files-found: error
+
+  auth-http-realtime-candidates:
+    name: GATE-02 and GATE-03 real browser, auth and transport candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: scripts/stack-migration-pocs/gate-02-03/package-lock.json
+      - run: npm ci --prefix scripts/stack-migration-pocs/gate-02-03 --ignore-scripts
+      - run: npm audit --prefix scripts/stack-migration-pocs/gate-02-03 --audit-level=high
+      - name: Install actual Chromium
+        run: node scripts/stack-migration-pocs/gate-02-03/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Execute candidate assertions and reject failed mandatory criteria
+        shell: bash
+        run: node scripts/stack-migration-pocs/gate-02-03/check.mjs --check 2>&1 | tee /tmp/stack-migration-gate02-03.log
+      - name: Upload candidate reports and execution log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-02-03-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .qa/evidence/stack-migration-prep/pocs/gate-02/
+            .qa/evidence/stack-migration-prep/pocs/gate-03/
+            /tmp/stack-migration-gate02-03.log
+          if-no-files-found: error

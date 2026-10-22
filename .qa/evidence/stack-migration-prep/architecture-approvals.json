@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "note": "Architecture APPROVED entries require a human GitHub issue comment on the gate issue (sourceUrl) plus an evidence file that exists in-repo. GATE-02/03/05 remain undecided/deferred. GATE-04 is implementation freigabe only — not production cutover.",
+  "decisions": {
+    "GATE-01": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED — Drizzle + SagaTree Policy Service",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552",
+      "evidenceFile": "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+      "approvedAt": "2026-10-21T13:48:00Z",
+      "bindingConstraints": [
+        "docs/architecture/host-modular-monolith.md",
+        "policy-protected repository/application ports",
+        "additional import-boundary CI against unguarded Drizzle/DB-client access",
+        "separate world-owner and project-GM authority axes"
+      ],
+      "doesNotApprove": ["GATE-02", "GATE-03", "GATE-04", "GATE-05", "production-cutover"]
+    },
+    "GATE-02": { "status": "UNDECIDED" },
+    "GATE-03": { "status": "UNDECIDED" },
+    "GATE-04": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED — SQLite Single Writer mit atomaren State-/Revision-/Event-/Idempotenz-Transaktionen, begrenzt auf die Implementierungsfreigabe",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/787#issuecomment-6321569847",
+      "evidenceFile": "docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md",
+      "approvedAt": "2026-10-21T16:53:00Z",
+      "bindingConstraints": [
+        "SQLite WAL + synchronous=FULL + coordinated single writer",
+        "busy_timeout 250ms with no automatic database retries",
+        "atomic state/revision/event/idempotency transaction",
+        "mandatory non-empty session-scoped idempotency key bound to actor+canonical op/payload",
+        "authz/membership checked before idempotent result return",
+        "notifications after commit; events enable catch-up",
+        "docs/architecture/host-modular-monolith.md",
+        "ADR-ST-05 GATE-01 Drizzle + SagaTree Policy Service"
+      ],
+      "openCapacityProof": {
+        "status": "NOT RUN",
+        "trackedOn": ["MIG-700/#849", "Epic #773"],
+        "requiredBeforeCutover": [
+          "target hardware",
+          "state sizes",
+          "session mix",
+          "performance goals"
+        ],
+        "note": "Do not invent SLOs; capacity remains open until pre-cutover acceptance."
+      },
+      "doesNotApprove": [
+        "GATE-02",
+        "GATE-03",
+        "GATE-05",
+        "production-cutover",
+        "product-wide-128b-key-4096b-state-limits",
+        "production-capacity-SLOs"
+      ]
+    },
+    "GATE-05": { "status": "DEFERRED_UNTIL_BROWSER_HOST_COMPLETE" }
+  }
+}
