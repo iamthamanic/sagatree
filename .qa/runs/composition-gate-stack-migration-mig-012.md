@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-mig-012 (#791)
 
-- HEAD_SHA: 36f7f7547aab16871baeeb9ab82747951ea23aaa
+- HEAD_SHA: 09264f3808fa4a23e7868d33617feb64c5d93c1f
 - BASE_SHA: 5104e262a969a4f7ac8b0e865824249a96379e65
 - Date: 2026-10-22
 - Verdict: CLEAR
 
 ## Event
 
-Host consumers read worlds only through the public world module read port. Authorization runs via permissions `world.read` before projection. Persistence is a SQLite adapter wired at the composition root; DTOs carry no owner/ORM/HTTP types.
+Host consumers read worlds only through the public world module read port. Authorization runs via permissions `world.read` before projection. Persistence is a SQLite adapter wired at the composition root; DTOs carry no owner/ORM/HTTP types. Infra-world source contract fingerprint refreshed for the new host-world-read contract file.
 
 ## Hop chain
 
