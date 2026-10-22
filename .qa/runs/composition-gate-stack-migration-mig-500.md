@@ -20,11 +20,9 @@ Local protected asset publish/read enters the host via `server/src/assets` compo
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Owner publish+read | allow + checksum match | self-test Fall 1 | pass |
-| Stranger get | not-authorized, no payload | self-test Fall 2 | pass |
-| Traversal / symlink | path-traversal-denied | self-test Fall 2 | pass |
-| Reopen host | durable metadata+bytes | self-test Fall 3 | pass |
-| Incomplete publish | unpublished not visible | self-test | pass |
+| N-actors | Owner vs stranger get distinct publish/read decisions | self-test Fall 1–2 | pass |
+| Invalid/missing | Empty asset id / traversal path / absolute path | deny codes only | pass |
+| Two consumers / crash | Reopen host after publish; incomplete unpublished row | durable owner read; unpublished hidden | pass |
 
 ## Flags
 
