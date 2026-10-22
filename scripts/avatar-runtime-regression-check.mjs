@@ -72,12 +72,12 @@ const devDependencies = packageJson.devDependencies;
 const lockRootDependencies = packageLock.packages?.['']?.dependencies;
 const lockRootDevDependencies = packageLock.packages?.['']?.devDependencies;
 
-requireDependency(dependencies, 'three', '0.183.2', 'package.json must pin three@0.183.2');
+requireDependency(dependencies, 'three', '0.186.1', 'package.json must pin three@0.186.1');
 requireDependency(dependencies, '@pixiv/three-vrm', '3.5.1', 'package.json must pin @pixiv/three-vrm@3.5.1');
-requireDependency(devDependencies, '@types/three', '0.183.1', 'package.json must pin @types/three@0.183.1');
-requireDependency(lockRootDependencies, 'three', '0.183.2', 'package-lock root must match three');
+requireDependency(devDependencies, '@types/three', '0.186.0', 'package.json must pin @types/three@0.186.0');
+requireDependency(lockRootDependencies, 'three', '0.186.1', 'package-lock root must match three');
 requireDependency(lockRootDependencies, '@pixiv/three-vrm', '3.5.1', 'package-lock root must match @pixiv/three-vrm');
-requireDependency(lockRootDevDependencies, '@types/three', '0.183.1', 'package-lock root must match @types/three');
+requireDependency(lockRootDevDependencies, '@types/three', '0.186.0', 'package-lock root must match @types/three');
 
 const forbiddenDirectDependencies = [
   '@solana/web3.js',
