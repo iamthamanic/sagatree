@@ -1,7 +1,7 @@
 # Stack migration runner handoff (Epic #773)
 
 `paused: false`  
-Updated: 2026-10-22 (post MIG-500/#841 → `4eb2ec00`; GATE-02 package PR #897 → `f1acc543`)
+Updated: 2026-10-23 (post MIG-503/#844 → `ba8ac523`; GATE-02 still NOT APPROVED)
 
 ## PR backlog
 
@@ -35,17 +35,18 @@ Updated: 2026-10-22 (post MIG-500/#841 → `4eb2ec00`; GATE-02 package PR #897 �
 | #792 MIG-013 | `19c33a75` |
 | #791 MIG-012 | `10516eee` (PR #893 tip `ad1922b7`) |
 | #841 MIG-500 | `4eb2ec00` (PR #898) |
+| #844 MIG-503 | `ba8ac523` (PR #901) |
 
 ## Next (options — pick one)
 
 | Option | Item | Status |
 | --- | --- | --- |
 | **A — gate** | GATE-02 / #785 human freigabe | Package ready; PoC FAIL on credential isolation until human comment + `architecture-approvals.json` + ADR-ST-06 |
-| **B — deps** | #844 MIG-503 | OPEN — dependency-clear (schema migration / FK validation); blocked on #790, #783 per plan |
+| **B — deps** | #844 MIG-503 | **CLOSED** → `ba8ac523` (PR #901) |
 | **C — blocked auth** | #793 MIG-014, #794 MIG-015 | **agent-blocked** until GATE-02 APPROVED |
 | **D — capacity** | #849 MIG-700 | OPEN — capacity NOT RUN |
 
-**Recommendation:** `paused: false`. No hard-stop for runner unless product chooses GATE-02-only wait. Continue with **B** (#844) or other non-auth dependency-clear work while **A** awaits human decision.
+**Recommendation:** `paused: false`. GATE-02 remains human freigabe only — do **not** approve. Pick next dependency-clear non-auth work (e.g. other wave-2 items not blocked on GATE-02) or wait on **A**.
 
 ## Safety
 
