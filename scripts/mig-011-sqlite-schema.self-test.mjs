@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * mig-011-sqlite-schema.self-test — catalog migrate once, rollback on failure,
- * integrity FK/orphan gate, module ownership.
+ * integrity FK/orphan gate, module ownership, BEGIN IMMEDIATE concurrency.
  * Location: scripts/mig-011-sqlite-schema.self-test.mjs
  */
 import {
@@ -17,6 +17,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 const root = new URL('..', import.meta.url).pathname;
 
@@ -35,12 +36,15 @@ const {
   bootstrapHostPersistence,
   openHostDatabase,
   runMigrations,
+  listMigrationFiles,
   readSchemaVersion,
   readMigrationFailure,
   runIntegrityCheck,
   foreignKeysEnabled,
   TABLE_OWNERSHIP,
   owningModuleForTable,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
 } = await import(persistenceUrl);
 
 const catalogMigrations = join(root, 'server/migrations');
@@ -65,7 +69,7 @@ try {
   assert(journalCount === 1, `journal rows expected 1 got ${journalCount}`);
   boot2.db.close();
 
-  // --- AC2: broken migration rolls back; next start reports same failed step ---
+  // --- AC2: broken migration rolls back; next start reports same failed step (crash mid-migrate) ---
   const dataFail = join(work, 'data-fail');
   const migFail = join(work, 'migrations-fail');
   mkdirSync(dataFail);
@@ -94,12 +98,17 @@ try {
   const failureSidecar = readMigrationFailure(dataFail);
   assert(failureSidecar?.id === '0002_broken', 'sidecar must record 0002_broken');
 
+  // Restart after crash: same failed step, no data loss of applied v1
   const openFail2 = openHostDatabase(join(dataFail, 'host.sqlite'));
   assert(openFail2.ok, 'reopen after failure');
   const secondFail = runMigrations({ db: openFail2.db, dataDir: dataFail, migrationsDir: migFail });
   assert(!secondFail.ok, 'second start must still fail on same broken step');
   assert(secondFail.failedStep?.id === '0002_broken', 'same failed step reported');
   assert(readSchemaVersion(openFail2.db) === 1, 'schema_version still 1');
+  const worldsIntact = openFail2.db
+    .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='worlds'`)
+    .get();
+  assert(!!worldsIntact, 'applied v1 tables must survive crash/rollback of v2');
   openFail2.db.close();
 
   const dataOkHost = join(work, 'data-host');
@@ -122,7 +131,6 @@ try {
   mkdirSync(dataIntegrity);
   const bootOk = bootstrapHostPersistence({ dataDir: dataIntegrity, migrationsDir: catalogMigrations });
   assert(bootOk.ok, 'integrity base bootstrap');
-  // Temporarily disable FK to insert orphan, then re-enable and check.
   bootOk.db.exec('PRAGMA foreign_keys=OFF');
   bootOk.db.exec(
     `INSERT INTO project_members (project_id, user_id, role, active, joined_at)
@@ -137,7 +145,6 @@ try {
   );
   bootOk.db.close();
 
-  // Valid membership path passes
   const dataGood = join(work, 'data-good');
   mkdirSync(dataGood);
   const bootGood = bootstrapHostPersistence({ dataDir: dataGood, migrationsDir: catalogMigrations });
@@ -153,6 +160,208 @@ try {
   const goodIntegrity = runIntegrityCheck(bootGood.db);
   assert(goodIntegrity.ok, `good integrity: ${goodIntegrity.ok ? '' : goodIntegrity.errors.join('; ')}`);
   bootGood.db.close();
+
+  // --- Legacy schema-upgrade.lock: fail-closed (no auto-delete); operator recovery ---
+  const dataLegacy = join(work, 'data-legacy');
+  mkdirSync(dataLegacy);
+  const legacyLock = join(dataLegacy, 'schema-upgrade.lock');
+  writeFileSync(legacyLock, 'held-by-old-host\n', 'utf8');
+  assert(legacySchemaUpgradeLockPresent(dataLegacy), 'legacy lock detected');
+  const bootWhileLegacy = bootstrapHostPersistence({ dataDir: dataLegacy, migrationsDir: catalogMigrations });
+  assert(!bootWhileLegacy.ok, 'migrate must fail-closed while legacy lock present');
+  assert(
+    String(bootWhileLegacy.error).includes('legacy schema-upgrade.lock'),
+    `legacy fail error got ${bootWhileLegacy.error}`,
+  );
+  assert(existsSync(legacyLock), 'legacy lock must remain (no auto-delete)');
+
+  // Old+new concurrency: old host holds legacy lock + reserved write TX (pre-check version outside TX).
+  // New host refuses on lock presence — never steals the lock from a live old upgrader.
+  const dataOldNew = join(work, 'data-old-new');
+  mkdirSync(dataOldNew);
+  // Seed v1 without lock, then simulate old host re-locking for a follow-on step.
+  const seedOldNew = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(seedOldNew.ok, 'seed old-new');
+  seedOldNew.db.close();
+  writeFileSync(join(dataOldNew, 'schema-upgrade.lock'), 'old-runner-active\n', 'utf8');
+  const oldConn = openHostDatabase(join(dataOldNew, 'host.sqlite'));
+  assert(oldConn.ok, 'old host reopen');
+  // Old pattern: read version outside TX, then BEGIN (still holds reserved lock).
+  const oldVersionOutside = readSchemaVersion(oldConn.db);
+  assert(oldVersionOutside === 1, 'old host sees v1');
+  oldConn.db.exec('BEGIN IMMEDIATE');
+  const newWhileOld = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(!newWhileOld.ok, 'new host must fail-closed while old lock file present');
+  assert(String(newWhileOld.error).includes('legacy schema-upgrade.lock'), newWhileOld.error);
+  oldConn.db.exec('ROLLBACK');
+  oldConn.db.close();
+  // Without verified standstill, clear must not be callable as auto-path — require explicit flag.
+  const cleared = clearLegacySchemaUpgradeLockAfterVerifiedStandstill(dataOldNew, {
+    oldHostVerifiedStopped: true,
+  });
+  assert(cleared.ok, `operator clear: ${cleared.ok ? '' : cleared.error}`);
+  assert(!existsSync(join(dataOldNew, 'schema-upgrade.lock')), 'lock removed only after verified standstill');
+  const bootAfterClear = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
+  assert(bootAfterClear.ok, `bootstrap after verified clear: ${bootAfterClear.ok ? '' : bootAfterClear.error}`);
+  assert(bootAfterClear.schemaVersion === 1, 'schema intact after old+new sequence');
+  bootAfterClear.db.close();
+
+  // --- Real process crash (SIGKILL) mid-migration TX (isolated subprocess) ---
+  const sigkill = spawnSync(
+    process.execPath,
+    ['--experimental-strip-types', join(root, 'scripts/mig-011-sigkill-crash.self-test.mjs')],
+    { encoding: 'utf8', timeout: 30_000 },
+  );
+  if (sigkill.status !== 0) {
+    console.error(sigkill.stdout);
+    console.error(sigkill.stderr);
+  }
+  assert(sigkill.status === 0, `SIGKILL crash self-test exit ${sigkill.status}`);
+  assert(/PASS: mig-011 SIGKILL|SKIP: SIGKILL/.test(sigkill.stdout), 'SIGKILL self-test output');
+
+  // --- duplicate migration version must fail closed (not skip) ---
+  const migDup = join(work, 'migrations-dup');
+  mkdirSync(migDup);
+  writeFileSync(join(migDup, '0001_a.sql'), 'SELECT 1;\n', 'utf8');
+  writeFileSync(join(migDup, '0001_b.sql'), 'SELECT 2;\n', 'utf8');
+  let dupThrown = false;
+  try {
+    listMigrationFiles(migDup);
+  } catch (err) {
+    dupThrown = /duplicate migration version/.test(err instanceof Error ? err.message : String(err));
+  }
+  assert(dupThrown, 'duplicate version must throw from listMigrationFiles');
+  const dataDup = join(work, 'data-dup');
+  mkdirSync(dataDup);
+  const openDup = openHostDatabase(join(dataDup, 'host.sqlite'));
+  assert(openDup.ok, 'open dup db');
+  const dupRun = runMigrations({ db: openDup.db, dataDir: dataDup, migrationsDir: migDup });
+  assert(!dupRun.ok, 'runMigrations must fail on duplicate versions');
+  assert(/duplicate migration version/.test(dupRun.error), `dup error got ${dupRun.error}`);
+  openDup.db.close();
+
+  // --- Two concurrent host starts on the same DB (BEGIN IMMEDIATE exclusivity) ---
+  const dataRace = join(work, 'data-race');
+  mkdirSync(dataRace);
+  const workerPath = join(work, 'race-worker.mjs');
+  writeFileSync(
+    workerPath,
+    `
+import { pathToFileURL } from 'node:url';
+const persistenceUrl = process.env.P_URL;
+const dataDir = process.env.DATA_DIR;
+const migrationsDir = process.env.MIG_DIR;
+const { bootstrapHostPersistence } = await import(persistenceUrl);
+const result = bootstrapHostPersistence({ dataDir, migrationsDir });
+if (!result.ok) {
+  console.log(JSON.stringify({ ok: false, error: result.error, failedStepId: result.failedStepId }));
+  process.exit(0);
+}
+const count = result.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
+result.db.close();
+console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, journal: count }));
+`,
+    'utf8',
+  );
+
+  const spawnOne = () =>
+    spawnSync(
+      process.execPath,
+      ['--experimental-strip-types', workerPath],
+      {
+        env: {
+          ...process.env,
+          P_URL: persistenceUrl,
+          DATA_DIR: dataRace,
+          MIG_DIR: catalogMigrations,
+        },
+        encoding: 'utf8',
+        timeout: 15_000,
+      },
+    );
+
+  // Sequential warm-up ensure catalog applies once
+  const warm = spawnOne();
+  assert(warm.status === 0, `warm worker exit ${warm.status}: ${warm.stderr}`);
+  const warmOut = JSON.parse(warm.stdout.trim().split('\n').at(-1));
+  assert(warmOut.ok === true && warmOut.journal === 1, `warm bootstrap: ${JSON.stringify(warmOut)}`);
+
+  const { spawn } = await import('node:child_process');
+  const runParallelOn = (dataDir) =>
+    new Promise((resolve) => {
+      const outs = [];
+      let left = 2;
+      const start = (label) => {
+        const child = spawn(
+          process.execPath,
+          ['--experimental-strip-types', workerPath],
+          {
+            env: { ...process.env, P_URL: persistenceUrl, DATA_DIR: dataDir, MIG_DIR: catalogMigrations },
+            stdio: ['ignore', 'pipe', 'pipe'],
+          },
+        );
+        let stdout = '';
+        let stderr = '';
+        child.stdout.on('data', (d) => {
+          stdout += d;
+        });
+        child.stderr.on('data', (d) => {
+          stderr += d;
+        });
+        child.on('close', (code) => {
+          outs.push({ label, code, stdout, stderr });
+          left -= 1;
+          if (left === 0) resolve(outs);
+        });
+      };
+      start('p1');
+      start('p2');
+    });
+
+  // Concurrent pair on already-migrated DB — no duplicate journal; fail-closed on busy OK
+  const parallel = await runParallelOn(dataRace);
+  for (const p of parallel) {
+    assert(p.code === 0, `parallel ${p.label} exit ${p.code}: ${p.stderr}`);
+    const parsed = JSON.parse(p.stdout.trim().split('\n').at(-1));
+    if (parsed.ok) {
+      assert(parsed.journal === 1, `parallel ${p.label} journal must stay 1 got ${parsed.journal}`);
+      assert(parsed.schemaVersion === 1, `parallel ${p.label} version`);
+    } else {
+      assert(
+        /busy|locked|upgrade/i.test(parsed.error || ''),
+        `parallel fail-closed expected busy, got ${parsed.error}`,
+      );
+    }
+  }
+  const verifyRace = openHostDatabase(join(dataRace, 'host.sqlite'));
+  assert(verifyRace.ok, 'reopen race db');
+  const raceJournal = verifyRace.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
+  assert(raceJournal === 1, `no duplicate journal after concurrent starts, got ${raceJournal}`);
+  assert(readSchemaVersion(verifyRace.db) === 1, 'schema version intact after concurrent starts');
+  verifyRace.db.close();
+
+  // Fresh-DB concurrent migrate: at least one succeeds; journal never >1; no corruption
+  const dataRaceFresh = join(work, 'data-race-fresh');
+  mkdirSync(dataRaceFresh);
+  const freshParallel = await runParallelOn(dataRaceFresh);
+  const freshParsed = freshParallel.map((p) => {
+    assert(p.code === 0, `fresh parallel ${p.label} exit ${p.code}: ${p.stderr}`);
+    return JSON.parse(p.stdout.trim().split('\n').at(-1));
+  });
+  assert(
+    freshParsed.some((p) => p.ok === true),
+    `at least one concurrent migrate must succeed: ${JSON.stringify(freshParsed)}`,
+  );
+  for (const p of freshParsed) {
+    if (!p.ok) {
+      assert(/busy|locked|upgrade/i.test(p.error || ''), `fresh fail-closed: ${p.error}`);
+    }
+  }
+  const verifyFresh = openHostDatabase(join(dataRaceFresh, 'host.sqlite'));
+  assert(verifyFresh.ok, 'reopen fresh race db');
+  const freshJournal = verifyFresh.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
+  assert(freshJournal === 1, `fresh concurrent journal must be 1 got ${freshJournal}`);
+  verifyFresh.db.close();
 
   // --- AC4: ownership registry + boundary private persistence ---
   assert(owningModuleForTable('worlds') === 'world', 'worlds → world');
@@ -172,12 +381,10 @@ try {
   );
   assert(persistenceLeaks.length === 0, `private persistence leaks: ${JSON.stringify(persistenceLeaks)}`);
 
-  // Cross-module private import must be rejected by boundary checker (synthetic probe file not needed —
-  // world must not import project persistence; verify source tree has no such import).
   const worldIndex = readFileSync(join(root, 'server/src/modules/world/index.ts'), 'utf8');
   assert(!worldIndex.includes('project/persistence'), 'world public API must not import project persistence');
 
-  console.log('PASS: mig-011 sqlite schema bootstrap + migration runner');
+  console.log('PASS: mig-011 sqlite schema bootstrap + migration runner (BEGIN IMMEDIATE)');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

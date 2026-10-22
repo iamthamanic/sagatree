@@ -4,8 +4,18 @@
  */
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openHostDatabase, foreignKeysEnabled, type HostDatabase } from './open-database.ts';
-import { runMigrations, readMigrationFailure, readSchemaVersion, type MigrateResult } from './migration-runner.ts';
+import { openHostDatabase, foreignKeysEnabled, isSqliteBusyError, type HostDatabase } from './open-database.ts';
+import {
+  runMigrations,
+  listMigrationFiles,
+  readMigrationFailure,
+  readSchemaVersion,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
+  LEGACY_LOCK_PRESENT_ERROR,
+  LEGACY_SCHEMA_UPGRADE_LOCK_FILE,
+  type MigrateResult,
+} from './migration-runner.ts';
 import { runIntegrityCheck, type IntegrityResult } from './integrity-check.ts';
 import { TABLE_OWNERSHIP, assertUniqueTableOwnership, owningModuleForTable } from './table-ownership.ts';
 import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
@@ -13,9 +23,15 @@ import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
 export {
   openHostDatabase,
   foreignKeysEnabled,
+  isSqliteBusyError,
   runMigrations,
+  listMigrationFiles,
   readMigrationFailure,
   readSchemaVersion,
+  legacySchemaUpgradeLockPresent,
+  clearLegacySchemaUpgradeLockAfterVerifiedStandstill,
+  LEGACY_LOCK_PRESENT_ERROR,
+  LEGACY_SCHEMA_UPGRADE_LOCK_FILE,
   runIntegrityCheck,
   TABLE_OWNERSHIP,
   assertUniqueTableOwnership,
