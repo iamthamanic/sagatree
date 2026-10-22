@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "gate": "GATE-02",
-  "status": "FAIL",
+  "status": "PASS",
   "executedStatus": "PASS",
   "approval": "NOT APPROVED",
   "scope": "Executed isolated candidate libraries over real local HTTP and WebSocket; no product integration or human technology decision.",
@@ -27,8 +27,8 @@
         "A-1-wire",
         "A-1-browser"
       ],
-      "status": "FAIL",
-      "reason": "Real Chromium can read authenticating tokens from sign-in JSON and set-auth-token, then authenticate without any cookie. HttpOnly document.cookie isolation does not satisfy full credential isolation in this combined A/B profile."
+      "status": "PASS",
+      "reason": "Cookie-only GATE-02 A profile: Chromium cannot scrape usable session bearers; credentials:omit Authorization replay does not authenticate; HttpOnly cookie path whoami + Colyseus still PASS."
     },
     {
       "variant": "A-cookie",
@@ -241,7 +241,7 @@
       "id": "B-1-browser",
       "title": "JWT Browser/Tauri secure credential storage",
       "status": "NOT RUN",
-      "reason": "Real JWTs travel in Node ws Authorization headers. A secure browser transport/store for JWTs and Tauri secure storage were not executed. The separate real Chromium cookie probe demonstrates a credential-exposure failure of the combined auth profile."
+      "reason": "Real JWTs travel in Node ws Authorization headers. A secure browser transport/store for JWTs and Tauri secure storage were not executed. Cookie Variant A Chromium isolation is exercised separately under A-1-browser."
     },
     {
       "id": "B-2",
@@ -314,7 +314,7 @@
     },
     {
       "id": "A-1-browser",
-      "title": "Real Chromium cookie flow and credential-exposure canary",
+      "title": "Real Chromium cookie-only credential isolation",
       "status": "PASS",
       "evidence": {
         "realBrowserLogin": true,
@@ -347,21 +347,25 @@
           }
         ],
         "credentialExposure": {
-          "loginBodyTokenReadable": true,
-          "bearerHeaderReadable": true,
+          "loginBodyTokenReadable": false,
+          "bearerHeaderReadable": false,
           "replayWithoutCookie": [
             {
               "status": 200,
-              "authenticated": true
+              "authenticated": false,
+              "scrapedTokenPresent": false
             },
             {
               "status": 200,
-              "authenticated": true
+              "authenticated": false,
+              "scrapedTokenPresent": false
             }
-          ]
+          ],
+          "pageJsCannotRestoreSessionWithoutCookie": true
         },
-        "credentialIsolationSatisfied": false,
-        "requiredCriterionOutcome": "FAIL",
+        "credentialIsolationSatisfied": true,
+        "requiredCriterionOutcome": "PASS",
+        "pageJsCannotRestoreSessionWithoutCookieUsingExtractedTokens": true,
         "tlsSecureCookieTested": false,
         "tauriTested": false
       }
@@ -381,12 +385,9 @@
     },
     {
       "id": "B-bearer-distinction",
-      "title": "Better Auth opaque bearer is real and distinct from signed JWT",
-      "status": "PASS",
-      "evidence": {
-        "betterAuthBearerPluginExecuted": true,
-        "opaqueSessionTokenDiffersFromJwtPluginToken": true
-      }
+      "title": "Better Auth opaque bearer distinct from signed JWT",
+      "status": "NOT RUN",
+      "reason": "opaque bearer plugin disabled in cookie-preferred GATE-02 A profile; JWT path remains"
     },
     {
       "id": "common-7",
@@ -447,10 +448,6 @@
     {
       "path": "node_modules/better-auth/dist/api/routes/sign-in.mjs",
       "sha256": "e488e900bf495fbd2535e8fa6ba1563194d84e4b60adf7b79f531d1145c5213f"
-    },
-    {
-      "path": "node_modules/better-auth/dist/plugins/bearer/index.mjs",
-      "sha256": "d02f7f2df2372cdf372bcee8c68e93ae2c46b0216eb0104f06a58562db3f1fbd"
     }
   ],
   "observationValidation": "Recorded observations are required and checked against the stable report hash, runtime/schema, exact sample counts, percentile order, revocation deadline, ACK/reconnect success and measured concurrency invariants; fresh timings need not equal historical timings.",
@@ -466,6 +463,11 @@
       "reason": "No browser/Tauri persistent secure-store proof. Node ws supports Authorization headers; browser WebSocket does not. SDK client.auth.token puts auth bearer in _authToken URL, which this fixture rejects. Colyseus seat/reconnect identifiers still use protocol URLs and require the tested extra actor/session binding."
     },
     {
+      "id": "opaque-bearer-plugin",
+      "status": "NOT RUN",
+      "reason": "opaque bearer plugin disabled in cookie-preferred GATE-02 A profile; JWT path remains"
+    },
+    {
       "id": "production-policy",
       "status": "NOT RUN",
       "reason": "Fixture DB roles and character ownership exercise the shared policy boundary; complete GATE-01 policy, invitation and owner/GM product contracts are not integrated."
@@ -477,10 +479,10 @@
     }
   ],
   "securityAndIntegrationBoundaries": [
-    "Better Auth owns email/password sign-in, real SQLite sessions, signed cookies, bearer sessions, JWT issuance, JWKS and logout/revoke.",
+    "Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, JWT issuance (Node Variant B), JWKS and logout/revoke. The opaque bearer plugin is disabled in this cookie-preferred GATE-02 A PoC profile.",
     "JWT signature/issuer/audience/expiry verification is combined with the real current session record; signature-only verification cannot prove immediate logout revocation.",
     "Initial join/create reservation checks current auth. Colyseus HTTP reconnect reservation uses its existing reconnect ticket and does not itself rerun onAuth; even absent auth or wrong Origin can reach that reservation response. The actual WS upgrade enforces Origin and current actor/session binding, then room reconnect and every command recheck current auth/policy. A reservation response is not successful room access. Active clients are rechecked every 250ms.",
-    "Real Chromium demonstrated a failing cookie credential-isolation goal: document.cookie cannot read the HttpOnly cookie, but sign-in JSON and set-auth-token expose usable session bearers to JavaScript in the combined A/B auth profile. GATE-02 A/1 and the overall gate are FAIL. No token proxy or cookie-only production profile is claimed.",
+    "Cookie-only GATE-02 A profile (PoC): browser-facing auth JSON strips session bearer fields and set-auth-token; Set-Cookie HttpOnly session cookie is preserved. Real Chromium proves page JS cannot restore an authenticated session without the cookie using extracted tokens. Product migration / architecture freigabe remain separate (approval: NOT APPROVED).",
     "The pinned Colyseus reserveSeatFor authData.sessionId hook creates a random seat id so the WS upgrade can bind it to the exact Better Auth session. This source-dependent integration seam is hashed and not a product architecture decision.",
     "Better Auth cookies and JWTs are never placed in URLs. The Colyseus SDK uses seat/reconnection identifiers in protocol URLs; their additional binding to the current actor and exact Better Auth session is explicitly tested. Evidence contains neither auth credentials nor actual seat/reconnect identifiers. Auth rate limiting is disabled only for this controlled fixture."
   ],
@@ -499,15 +501,15 @@
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/server.mjs",
-      "sha256": "11aac1a29fb4aa125213bc8cd4cfeed1d7d9601c4144bf464ddcc430a46e3247"
+      "sha256": "d41dd435e2ca0386cf66fc3072648fc2ef2f7927610e5765fcf5b6b6980df198"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/harness.mjs",
-      "sha256": "3e400c9c4211096b0dbecacfb3a810ddd92b08a4fa413155bdaa0fd2ac91cdb6"
+      "sha256": "35bfc8376efe633b5ad8a9c667d5294665a16de3659d6d6380fe80b568604ab5"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/browser.mjs",
-      "sha256": "4c8412cac15bbd27f363e8271b7c41cabd533c9fc56d88a7405d16c6f1c97fec"
+      "sha256": "a97d1d614f750a36ed63f738336a847a76768633ff51c3dc969667f59d7e6bd4"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/observations.mjs",
@@ -515,7 +517,7 @@
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/check.mjs",
-      "sha256": "167cf32d620231cfa26fbad0ff407357d13e35310e8b71caa746aad136bbd890"
+      "sha256": "7ae4aa133bcc28b64075585d3e78c69f2f7c4a17880e89a9af9ceea73619e361"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/api-client.ts",
@@ -523,11 +525,11 @@
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/openapi.json",
-      "sha256": "22a1a47679c11fe9d8c99bcc97b20ba6bb7d7ccf1fbabfe102080382215c8972"
+      "sha256": "a31fc037bd87d12b86700667d506bdbb59cd738ccbddd8192c93ab583fb5665e"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/README.md",
-      "sha256": "2fb85192187a7a02c7232a9ada09c20d7fed1d75ffaebdc30d624c86569ddc34"
+      "sha256": "da09567f997c3cca763dc803647f24955c1a7752e8829b822c2083aac73bc98c"
     },
     {
       "path": ".qa/design/gates/GATE-02-better-auth-colyseus.md",
@@ -537,7 +539,6 @@
   "primaryDocumentation": [
     "https://better-auth.com/docs/adapters/sqlite",
     "https://better-auth.com/docs/concepts/database",
-    "https://better-auth.com/docs/plugins/bearer",
     "https://better-auth.com/docs/plugins/jwt",
     "https://better-auth.com/docs/concepts/session-management",
     "https://docs.colyseus.io/auth/room",

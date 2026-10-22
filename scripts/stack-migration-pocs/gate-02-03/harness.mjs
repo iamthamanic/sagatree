@@ -58,15 +58,25 @@ export class FixtureHost {
     return { ...user, login: await this.login(user) };
   }
   async login(user) {
+    // Cookie-only GATE-02 A: sign-in may omit body.token / set-auth-token; Set-Cookie is required.
     const response = await this.http('/api/auth/sign-in/email', { body: { email: user.email, password: user.password } });
-    if (response.status !== 200 || !response.data.token) throw new Error(`real Better Auth login failed: ${response.status}`);
+    if (response.status !== 200 || !response.data?.user?.id) throw new Error(`real Better Auth login failed: ${response.status}`);
     const cookies = response.headers.getSetCookie();
     const sessionCookie = cookies.find((cookie) => cookie.split('=')[0].endsWith('session_token'));
     if (!sessionCookie) throw new Error('Better Auth did not set its session cookie');
     const cookie = sessionCookie.split(';')[0];
     const jwt = await this.http('/api/auth/token', { headers: { cookie } });
     if (jwt.status !== 200 || typeof jwt.data.token !== 'string') throw new Error(`real Better Auth JWT issuance failed: ${jwt.status}`);
-    return { cookie, jwt: jwt.data.token, sessionToken: response.data.token, opaqueBearer: response.headers.get('set-auth-token'), attributes: { httpOnly: /;\s*httponly/i.test(sessionCookie), sameSiteLax: /;\s*samesite=lax/i.test(sessionCookie), secure: /;\s*secure(?:;|$)/i.test(sessionCookie) } };
+    const sessionToken = typeof response.data.token === 'string'
+      ? response.data.token
+      : (await this.call('session-token', { userId: user.userId }))?.token ?? null;
+    return {
+      cookie,
+      jwt: jwt.data.token,
+      sessionToken,
+      opaqueBearer: response.headers.get('set-auth-token'),
+      attributes: { httpOnly: /;\s*httponly/i.test(sessionCookie), sameSiteLax: /;\s*samesite=lax/i.test(sessionCookie), secure: /;\s*secure(?:;|$)/i.test(sessionCookie) },
+    };
   }
   sdk(headers) { return new Client(this.origin, { headers }); }
   track(sdk, room) {

@@ -3,7 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { betterAuth } from 'better-auth';
 import { getMigrations } from 'better-auth/db/migration';
-import { jwt, bearer } from 'better-auth/plugins';
+import { jwt } from 'better-auth/plugins';
 import { toNodeHandler } from 'better-auth/node';
 import { defineServer, Room, ServerError, createRouter, createEndpoint } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
@@ -13,6 +13,84 @@ import { getRequestListener } from '@hono/node-server';
 import { Policy, Fault, errorBody, errorResponse } from './policy.mjs';
 
 let game, db, policy, origin, poll, browserScript;
+
+// Cookie-only GATE-02 A profile for this PoC (not product migration).
+// Bearer plugin is disabled; browser-facing auth JSON must not expose usable session
+// tokens while HttpOnly Set-Cookie remains the browser credential. JWT plugin stays
+// enabled so Node Variant B can still mint JWTs via /api/auth/token with the cookie.
+const SESSION_BEARER_KEYS = new Set(['token', 'sessionToken', 'accessToken', 'refreshToken', 'idToken']);
+function stripSessionBearerFields(value) {
+  if (!value || typeof value !== 'object') return;
+  if (Array.isArray(value)) {
+    for (const item of value) stripSessionBearerFields(item);
+    return;
+  }
+  for (const key of Object.keys(value)) {
+    if (SESSION_BEARER_KEYS.has(key) && typeof value[key] === 'string') delete value[key];
+    else stripSessionBearerFields(value[key]);
+  }
+}
+function scrubAuthResponseHeaders(headers) {
+  if (!headers || typeof headers !== 'object') return headers;
+  const out = Array.isArray(headers) ? [...headers] : { ...headers };
+  if (Array.isArray(out)) {
+    for (let i = out.length - 2; i >= 0; i -= 2) {
+      if (String(out[i]).toLowerCase() === 'set-auth-token') out.splice(i, 2);
+    }
+    return out;
+  }
+  for (const key of Object.keys(out)) {
+    if (key.toLowerCase() === 'set-auth-token') delete out[key];
+  }
+  return out;
+}
+function wrapCookieOnlyAuthHandler(handler) {
+  return (request, response) => {
+    const pathname = new URL(request.url, origin).pathname;
+    const preserveJwtBody = pathname === '/api/auth/token';
+    const setHeader = response.setHeader.bind(response);
+    response.setHeader = (name, value) => {
+      if (String(name).toLowerCase() === 'set-auth-token') return response;
+      return setHeader(name, value);
+    };
+    const writeHead = response.writeHead.bind(response);
+    response.writeHead = (statusCode, reasonOrHeaders, maybeHeaders) => {
+      if (typeof reasonOrHeaders === 'object') return writeHead(statusCode, scrubAuthResponseHeaders(reasonOrHeaders));
+      if (typeof maybeHeaders === 'object') return writeHead(statusCode, reasonOrHeaders, scrubAuthResponseHeaders(maybeHeaders));
+      return writeHead(statusCode, reasonOrHeaders, maybeHeaders);
+    };
+    if (preserveJwtBody) {
+      handler(request, response);
+      return;
+    }
+    const chunks = [];
+    const write = response.write.bind(response);
+    const end = response.end.bind(response);
+    response.write = (chunk, encoding, cb) => {
+      if (chunk) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined));
+      if (typeof encoding === 'function') encoding();
+      else if (typeof cb === 'function') cb();
+      return true;
+    };
+    response.end = (chunk, encoding, cb) => {
+      if (typeof chunk !== 'function' && chunk) {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined));
+      }
+      const callback = typeof chunk === 'function' ? chunk : typeof encoding === 'function' ? encoding : cb;
+      let body = Buffer.concat(chunks);
+      try {
+        const parsed = JSON.parse(body.toString('utf8'));
+        stripSessionBearerFields(parsed);
+        body = Buffer.from(JSON.stringify(parsed));
+        if (response.getHeader('content-length') !== undefined) setHeader('content-length', Buffer.byteLength(body));
+      } catch {
+        // Non-JSON Better Auth responses pass through unchanged.
+      }
+      return end(body, callback);
+    };
+    handler(request, response);
+  };
+}
 const rooms = new Set();
 const seatBindings = new Map();
 const send = (value) => new Promise((resolve, reject) => process.send(value, (error) => error ? reject(error) : resolve()));
@@ -125,13 +203,13 @@ async function initialize(config) {
     session: { cookieCache: { enabled: false } },
     advanced: { defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure: false } },
     rateLimit: { enabled: false }, logger: { disabled: true },
-    plugins: [bearer(), jwt({ jwt: { issuer: origin, audience: origin, expirationTime: '5m', definePayload: ({ user, session }) => ({ sub: user.id, sid: session.id }) } })],
+    plugins: [jwt({ jwt: { issuer: origin, audience: origin, expirationTime: '5m', definePayload: ({ user, session }) => ({ sub: user.id, sid: session.id }) } })],
   });
   await (await getMigrations(auth.options)).runMigrations();
   policy = new Policy({ auth, db, origin, publish: (event) => {
     for (const room of rooms) { room.state.revision = event.revision; room.broadcast('session.delta', event); }
   } });
-  const betterAuthHandler = toNodeHandler(auth);
+  const betterAuthHandler = wrapCookieOnlyAuthHandler(toNodeHandler(auth));
   const hono = new Hono();
   hono.get('/health', (c) => c.json({ ok: true }));
   hono.get('/api/whoami', (c) => call(c.req.raw, 'whoami', {}));
@@ -201,8 +279,11 @@ process.on('message', async (message) => {
       db.prepare('INSERT OR REPLACE INTO poc_roles VALUES (?, ?)').run(message.userId, message.role);
       if (message.characterId) db.prepare('INSERT OR REPLACE INTO poc_characters VALUES (?, ?)').run(message.characterId, message.userId);
       result = { assigned: true };
-    } else if (type === 'expire') {
+    }     else if (type === 'expire') {
       result = db.prepare('UPDATE session SET expiresAt=? WHERE userId=?').run(Date.now() - 1000, message.userId);
+    } else if (type === 'session-token') {
+      // Harness-only: cookie-only sign-in JSON no longer returns the opaque session token.
+      result = db.prepare('SELECT token FROM session WHERE userId=? ORDER BY createdAt DESC LIMIT 1').get(message.userId) ?? null;
     } else if (type === 'drop-room') {
       let count = 0;
       for (const room of rooms) if (!message.roomId || room.roomId === message.roomId) for (const client of [...room.clients]) { client.ref.terminate(); count++; }
