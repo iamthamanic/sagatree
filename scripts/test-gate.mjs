@@ -452,6 +452,18 @@ function checkMig500LocalAssets() {
   );
 }
 
+function checkMig503PgSqliteDryRun() {
+  console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-503-pg-sqlite-dry-run.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2568,6 +2580,7 @@ checkMig011SqliteSchema();
 checkMig013PolicyService();
 checkMig012WorldReadPort();
 checkMig500LocalAssets();
+checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
