@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Camera, CheckCircle2, CircleHelp, Eye, Save, Upload, X } from 'lucide-react';
+import {
+  Camera,
+  CheckCircle,
+  Question,
+  Eye,
+  FloppyDisk,
+  UploadSimple,
+  X
+} from '@phosphor-icons/react';
 import { toast } from 'sonner@2.0.3';
 import type { CharacterStudioRuntime } from '../../../infrastructure/character/avatar/character-studio-runtime';
 import { CharacterLookSelector } from '../../look';
@@ -1330,7 +1338,7 @@ export function CharacterEditor() {
             ) : null}
             <CharacterAssistantButton />
             <Button variant="outline" onClick={() => trackActivity('Character Editor: Vorschau fokussiert')}><Eye className="mr-2 h-4 w-4" />Vorschau</Button>
-            <Button onClick={handleSaveCharacter} disabled={saving || uploading} data-avatar-save-export={saving ? 'saving' : 'idle'}><Save className="mr-2 h-4 w-4" />{saving ? 'Speichert...' : 'Speichern'}</Button>
+            <Button onClick={handleSaveCharacter} disabled={saving || uploading} data-avatar-save-export={saving ? 'saving' : 'idle'}><FloppyDisk className="mr-2 h-4 w-4" />{saving ? 'Speichert...' : 'Speichern'}</Button>
           </div>
         </div>
 
@@ -1493,7 +1501,7 @@ export function CharacterEditor() {
               <Separator />
               <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Start-Fertigkeiten</span><span className="font-semibold">{totalStartSkillPoints} / 10</span></div>
               <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Inventarlast</span><span className={overloaded ? 'font-semibold text-destructive' : 'font-semibold'}>{inventoryLoad} / {carryCapacity}</span></div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2"><Button variant="outline" onClick={handleGeneratePortrait} disabled={uploading}><Camera className="mr-2 h-4 w-4" />Portrait erzeugen</Button><Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}><Upload className="mr-2 h-4 w-4" />Portrait hochladen</Button><input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" /></div>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2"><Button variant="outline" onClick={handleGeneratePortrait} disabled={uploading}><Camera className="mr-2 h-4 w-4" />Portrait erzeugen</Button><Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}><UploadSimple className="mr-2 h-4 w-4" />Portrait hochladen</Button><input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" /></div>
               <div
                 className="space-y-2"
                 aria-live="polite"
@@ -1591,7 +1599,7 @@ export function CharacterEditor() {
                         <span className="inline-flex items-center gap-1.5">
                           Archetype
                           {valuesSubTabComplete.archetype ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                            <CheckCircle className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                           ) : (
                             <IncompleteTabHint label="Archetype" messages={messagesForValuesSubTab('archetype')} />
                           )}
@@ -1601,7 +1609,7 @@ export function CharacterEditor() {
                         <span className="inline-flex items-center gap-1.5">
                           Essenz
                           {valuesSubTabComplete.essenz ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                            <CheckCircle className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                           ) : (
                             <IncompleteTabHint label="Essenz" messages={messagesForValuesSubTab('essenz')} />
                           )}
@@ -1611,7 +1619,7 @@ export function CharacterEditor() {
                         <span className="inline-flex items-center gap-1.5">
                           Attribute
                           {valuesSubTabComplete.attributes ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                            <CheckCircle className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                           ) : (
                             <IncompleteTabHint label="Attribute" messages={messagesForValuesSubTab('attributes')} />
                           )}
@@ -1621,7 +1629,7 @@ export function CharacterEditor() {
                         <span className="inline-flex items-center gap-1.5">
                           Hintergrund
                           {valuesSubTabComplete.background ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                            <CheckCircle className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                           ) : (
                             <IncompleteTabHint label="Hintergrund" messages={messagesForValuesSubTab('background')} />
                           )}
@@ -1631,7 +1639,7 @@ export function CharacterEditor() {
                         <span className="inline-flex items-center gap-1.5">
                           Details
                           {valuesSubTabComplete.details ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+                            <CheckCircle className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
                           ) : null}
                         </span>
                       </TabsTrigger>
@@ -1752,7 +1760,7 @@ export function CharacterEditor() {
                                               onClick={(event) => event.stopPropagation()}
                                               onPointerDown={(event) => { event.preventDefault(); event.stopPropagation(); }}
                                             >
-                                              <CircleHelp className="pointer-events-none size-3.5" />
+                                              <Question className="pointer-events-none size-3.5" />
                                             </button>
                                           </TooltipTrigger>
                                           <TooltipContent side="right" sideOffset={8} className="max-w-[260px] text-left leading-relaxed">

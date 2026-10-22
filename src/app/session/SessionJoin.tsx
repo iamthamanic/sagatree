@@ -19,7 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../shared/ui/select';
-import { ArrowLeft, Users, Gamepad2, Loader2, History } from 'lucide-react';
+import {
+  ArrowLeft,
+  Users,
+  GameController,
+  CircleNotch,
+  ClockCounterClockwise
+} from '@phosphor-icons/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../shared/ui/tabs';
 import { AdaptiveJourneyColumn, AdaptivePage } from '../../shared/ui/adaptive';
 import { useProjectSummaries } from '../project';
@@ -283,7 +289,7 @@ export function SessionJoin({
         >
           <TabsList className="grid h-auto w-full grid-cols-3 gap-1 p-1">
             <TabsTrigger value="create" className="min-h-11 px-2" data-session-join-tab="create">
-              <Gamepad2 className="w-4 h-4 mr-1 sm:mr-2" />
+              <GameController className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Session erstellen</span>
               <span className="sm:hidden">Erstellen</span>
             </TabsTrigger>
@@ -293,7 +299,7 @@ export function SessionJoin({
               <span className="sm:hidden">Beitreten</span>
             </TabsTrigger>
             <TabsTrigger value="past" className="min-h-11 px-2" data-session-join-tab="past">
-              <History className="w-4 h-4 mr-1 sm:mr-2" />
+              <ClockCounterClockwise className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Vergangene Sessions</span>
               <span className="sm:hidden">Vergangen</span>
             </TabsTrigger>
@@ -379,7 +385,7 @@ export function SessionJoin({
                   >
                     {isCreating ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
                         Erstelle...
                       </>
                     ) : (
@@ -469,7 +475,7 @@ export function SessionJoin({
                 >
                   {isJoining ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <CircleNotch className="w-4 h-4 mr-2 animate-spin" />
                       Beitrete...
                     </>
                   ) : selectedCharacterId ? (

@@ -3,7 +3,11 @@
  * Location: src/app/world/places/WorldPlacesPanel.tsx
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Loader2, MapPin, Plus } from 'lucide-react';
+import {
+  CircleNotch,
+  MapPin,
+  Plus
+} from '@phosphor-icons/react';
 import {
   pickPrimaryMapIdForPlace,
   placeHasDetailMap,
@@ -159,7 +163,7 @@ export function WorldPlacesPanel({
 
       {loading ? (
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" aria-hidden />
+          <CircleNotch className="size-4 animate-spin" aria-hidden />
           Orte werden geladen…
         </p>
       ) : null}
@@ -276,7 +280,7 @@ export function WorldPlacesPanel({
                 >
                   {creating ? (
                     <>
-                      <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                      <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden />
                       Wird angelegt…
                     </>
                   ) : (

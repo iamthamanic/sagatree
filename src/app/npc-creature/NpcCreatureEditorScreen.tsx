@@ -4,7 +4,11 @@
  * Location: src/app/npc-creature/NpcCreatureEditorScreen.tsx
  */
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Loader2, Save } from 'lucide-react';
+import {
+  ArrowLeft,
+  CircleNotch,
+  FloppyDisk
+} from '@phosphor-icons/react';
 import {
   deriveNpcCreaturePower,
   NPC_CREATURE_CATEGORIES,
@@ -682,7 +686,7 @@ export function NpcCreatureEditorScreen({
         aria-label="Statblock wird geladen"
         data-npc-editor-loading
       >
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <CircleNotch className="size-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -736,12 +740,12 @@ export function NpcCreatureEditorScreen({
       >
         {editor.isSaving ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+            <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden />
             Speichern…
           </>
         ) : (
           <>
-            <Save className="mr-2 size-4" aria-hidden />
+            <FloppyDisk className="mr-2 size-4" aria-hidden />
             Speichern
           </>
         )}

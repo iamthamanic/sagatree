@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import {
+  Plus,
+  Trash
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import {
@@ -120,7 +123,7 @@ export function CharacterInventoryPanel({ items, onChange, strength }: Character
         <div className="grid gap-3 md:grid-cols-2">
           {items.map((item) => (
             <article key={item.id} className="relative rounded-lg border border-border bg-card p-4">
-              <Button type="button" size="icon" variant="ghost" onClick={() => onChange(items.filter((entry) => entry.id !== item.id))} className="absolute right-2 top-2 size-8 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label={`${item.name} aus Inventar entfernen`}><Trash2 className="h-4 w-4" /></Button>
+              <Button type="button" size="icon" variant="ghost" onClick={() => onChange(items.filter((entry) => entry.id !== item.id))} className="absolute right-2 top-2 size-8 text-destructive hover:bg-destructive/10 hover:text-destructive" aria-label={`${item.name} aus Inventar entfernen`}><Trash className="h-4 w-4" /></Button>
               <div className="pr-9"><h3 className="font-semibold">{item.name}</h3><p className="text-sm text-muted-foreground">{itemTypeLabels[item.type]} · Menge {item.quantity}</p></div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Badge variant="outline">Last {(item.load ?? 1) * Math.max(1, item.quantity)}</Badge>

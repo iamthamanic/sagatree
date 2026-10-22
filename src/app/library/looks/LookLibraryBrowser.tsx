@@ -3,7 +3,11 @@
  * Uses EntityBrowser for Liste / Grid / Karussell like other Library tabs.
  * Location: src/app/library/looks/LookLibraryBrowser.tsx
  */
-import { Loader2, Plus, Search } from 'lucide-react';
+import {
+  CircleNotch,
+  Plus,
+  MagnifyingGlass
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
 import { EntityBrowser } from '../EntityBrowser';
@@ -49,7 +53,7 @@ export function LookLibraryBrowser({
     <div className="space-y-4" data-look-library-browser>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative min-w-0 flex-1">
-          <Search
+          <MagnifyingGlass
             className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
@@ -82,7 +86,7 @@ export function LookLibraryBrowser({
 
       {library.isLoading ? (
         <div className="flex items-center justify-center py-12" data-look-library-loading>
-          <Loader2 className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
+          <CircleNotch className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
         </div>
       ) : null}
 

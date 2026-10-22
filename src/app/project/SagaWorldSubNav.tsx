@@ -2,7 +2,13 @@
  * SagaWorldSubNav — Welt content subtabs (Karte / NPCs / items / quests / lore).
  * Location: src/app/project/SagaWorldSubNav.tsx
  */
-import { BookOpen, Map, Package, ScrollText, Users } from 'lucide-react';
+import {
+  BookOpen,
+  MapTrifold,
+  Package,
+  Scroll,
+  Users
+} from '@phosphor-icons/react';
 import {
   pathSectionForWorldSub,
   resolveSagaWorldSub,
@@ -15,12 +21,12 @@ import { pathForSagaSection } from '../shell';
 const WORLD_TABS: readonly {
   id: SagaWorldSubId;
   label: string;
-  icon: typeof Map;
+  icon: typeof MapTrifold;
 }[] = [
-  { id: 'map', label: 'Karte', icon: Map },
+  { id: 'map', label: 'Karte', icon: MapTrifold },
   { id: 'npc-creatures', label: 'NSCs / Kreaturen', icon: Users },
   { id: 'items', label: 'Gegenstände', icon: Package },
-  { id: 'quests', label: 'Quests', icon: ScrollText },
+  { id: 'quests', label: 'Quests', icon: Scroll },
   { id: 'lore', label: 'Lore / Verlauf', icon: BookOpen },
 ];
 

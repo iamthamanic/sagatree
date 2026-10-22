@@ -3,7 +3,10 @@
  * Location: src/app/project/SagaLoreTimelinePanel.tsx
  */
 import { useEffect, useState } from 'react';
-import { BookOpen, Loader2 } from 'lucide-react';
+import {
+  BookOpen,
+  CircleNotch
+} from '@phosphor-icons/react';
 import type { SagaLoreTimelineVm } from '../../domains/saga/permissions/lore-timeline';
 import { sagaPermissionService } from '../../infrastructure/project/saga-permission-service';
 
@@ -54,7 +57,7 @@ export function SagaLoreTimelinePanel({ sagaPublicId }: SagaLoreTimelinePanelPro
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground" data-saga-lore-loading>
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotch className="size-4 animate-spin" aria-hidden />
         Lore / Verlauf wird geladen…
       </div>
     );

@@ -5,7 +5,10 @@
  * Pin = click on map (or marquee center). Persist via world_places; caller adds stamp.
  */
 import { useState } from 'react';
-import { Loader2, MapPin } from 'lucide-react';
+import {
+  CircleNotch,
+  MapPin
+} from '@phosphor-icons/react';
 import {
   SETTLEMENT_PRESETS,
   type AtlasPlaceAuthorKind,
@@ -209,7 +212,7 @@ export function AtlasDefinePlacePanel({
       >
         {busy ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+            <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden />
             Wird angelegt…
           </>
         ) : (

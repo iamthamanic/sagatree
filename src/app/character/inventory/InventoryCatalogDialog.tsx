@@ -6,7 +6,9 @@
  * Location: src/app/character/inventory/InventoryCatalogDialog.tsx
  */
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import {
+  Plus
+} from '@phosphor-icons/react';
 import { InventoryItemThumb } from './InventoryItemThumb';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';

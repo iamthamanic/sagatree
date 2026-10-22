@@ -1,22 +1,22 @@
 /**
- * ArchetypeIcon — Lucide icon for each SagaTree primary archetype option.
+ * ArchetypeIcon — Phosphor icon for each SagaTree primary archetype option.
  * Location: src/app/character/creation/ArchetypeIcon.tsx
  */
 import {
   Brain,
   Handshake,
-  HeartPulse,
-  Swords,
-  VenetianMask,
-  type LucideIcon,
-} from 'lucide-react';
+  Heartbeat,
+  Sword,
+  MaskHappy,
+  type Icon
+} from '@phosphor-icons/react';
 import type { SagaTreeArchetypeKey } from '../../../domains/rules/sagatree/character-creation';
 
-const ARCHETYPE_ICONS: Record<SagaTreeArchetypeKey, LucideIcon> = {
-  fighter: Swords,
+const ARCHETYPE_ICONS: Record<SagaTreeArchetypeKey, Icon> = {
+  fighter: Sword,
   thinker: Brain,
-  healer: HeartPulse,
-  rebel: VenetianMask,
+  healer: Heartbeat,
+  rebel: MaskHappy,
   diplomat: Handshake,
 };
 

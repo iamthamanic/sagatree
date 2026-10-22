@@ -1,5 +1,8 @@
 import { useMemo, useState, type KeyboardEvent } from 'react';
-import { Plus, X } from 'lucide-react';
+import {
+  Plus,
+  X
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
 import { Label } from '../../../shared/ui/label';

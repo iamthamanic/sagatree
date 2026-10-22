@@ -1,5 +1,5 @@
 /**
- * SkillIcon — Lucide icon for each SagaTree skill option in selects and lists.
+ * SkillIcon — Phosphor icon for each SagaTree skill option in selects and lists.
  * Location: src/app/character/progression/SkillIcon.tsx
  */
 import {
@@ -8,42 +8,42 @@ import {
   Compass,
   Crosshair,
   Cpu,
-  Dumbbell,
-  EyeOff,
-  FileSearch,
+  Barbell,
+  EyeSlash,
+  FileMagnifyingGlass,
   Hand,
   Handshake,
-  HeartPulse,
-  Mic,
-  ScanEye,
+  Heartbeat,
+  Microphone,
+  Scan,
   Skull,
-  Swords,
+  Sword,
   Users,
-  VenetianMask,
-  Zap,
-  type LucideIcon,
-} from 'lucide-react';
+  MaskHappy,
+  Lightning,
+  type Icon
+} from '@phosphor-icons/react';
 import type { SagaTreeSkillKey } from '../../../domains/rules/sagatree/character-creation';
 
-const SKILL_ICONS: Record<SagaTreeSkillKey, LucideIcon> = {
-  athletics: Dumbbell,
-  acrobatics: Zap,
+const SKILL_ICONS: Record<SagaTreeSkillKey, Icon> = {
+  athletics: Barbell,
+  acrobatics: Lightning,
   sleight: Hand,
-  stealth: EyeOff,
-  melee: Swords,
+  stealth: EyeSlash,
+  melee: Sword,
   ranged: Crosshair,
-  awareness: ScanEye,
+  awareness: Scan,
   insight: Users,
   survival: Compass,
-  investigation: FileSearch,
+  investigation: FileMagnifyingGlass,
   knowledge: BookOpen,
   technology: Cpu,
-  medicine: HeartPulse,
+  medicine: Heartbeat,
   driving: Car,
   persuasion: Handshake,
-  deception: VenetianMask,
+  deception: MaskHappy,
   intimidation: Skull,
-  performance: Mic,
+  performance: Microphone,
 };
 
 type SkillIconProps = {

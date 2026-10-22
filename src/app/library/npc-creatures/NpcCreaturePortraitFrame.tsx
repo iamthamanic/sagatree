@@ -5,7 +5,10 @@
  * Location: src/app/library/npc-creatures/NpcCreaturePortraitFrame.tsx
  */
 import { useState } from 'react';
-import { Box, ImageOff } from 'lucide-react';
+import {
+  Cube,
+  ImageBroken
+} from '@phosphor-icons/react';
 import {
   buildNpcCreatureIconPublicSrc,
   type NpcCreatureDefinition,
@@ -58,7 +61,7 @@ export function NpcCreaturePortraitFrame({
             className="flex flex-col items-center justify-center gap-2 px-4 text-center text-sm text-muted-foreground"
             data-npc-creature-portrait-3d-empty
           >
-            <Box className="size-8 opacity-70" aria-hidden="true" />
+            <Cube className="size-8 opacity-70" aria-hidden="true" />
             <p>Noch kein 3D-Modell für diese Figur.</p>
           </div>
         ) : showImage ? (
@@ -87,7 +90,7 @@ export function NpcCreaturePortraitFrame({
             className="flex flex-col items-center justify-center gap-2 text-muted-foreground"
             data-npc-creature-portrait-fallback
           >
-            <ImageOff className="size-8 opacity-70" aria-hidden="true" />
+            <ImageBroken className="size-8 opacity-70" aria-hidden="true" />
             <span className="text-xs">{definition.name}</span>
           </div>
         )}

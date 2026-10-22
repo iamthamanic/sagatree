@@ -4,7 +4,10 @@
  * Location: src/app/project/overview/SagaEpisodeList.tsx
  */
 import { useMemo, useState } from 'react';
-import { Search, Trash2 } from 'lucide-react';
+import {
+  MagnifyingGlass,
+  Trash
+} from '@phosphor-icons/react';
 import type {
   SagaEpisodeVm,
   SagaPrimaryAction,
@@ -139,7 +142,7 @@ export function SagaEpisodeList({
           ) : null}
         </div>
         <div className="relative min-w-0">
-          <Search
+          <MagnifyingGlass
             className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
@@ -232,7 +235,7 @@ export function SagaEpisodeList({
                             }}
                             data-saga-overview-episode-delete={episode.sessionPublicId}
                           >
-                            <Trash2 className="size-4" aria-hidden />
+                            <Trash className="size-4" aria-hidden />
                           </Button>
                         ) : null}
                       </div>

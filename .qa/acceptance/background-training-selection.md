@@ -5,7 +5,7 @@
 ## Intent
 Der Hintergrund-Flow soll die vier möglichen Pool-Fertigkeiten nur so lange zeigen, wie der Spieler seine zwei Trainings auswählt. Es gibt keine statischen Empfehlungen mehr: die Auswahl gehört dem Spieler, spätere Empfehlungen kommen ausschließlich vom Build-Assistenten. Nach `2 / 2` reduziert sich der Skill-Graph auf die zwei tatsächlich trainierten Fertigkeiten und bietet eine explizite Aktion `Auswahl ändern`.
 
-Zusätzlich erhält jedes der 17 Hintergrund Frameworks ein eigenes, semantisch passendes Lucide-Icon statt des aktuell überall verwendeten Buch-Icons. `Eigener Hintergrund` erhält ebenfalls ein eigenes Icon.
+Zusätzlich erhält jedes der 17 Hintergrund Frameworks ein eigenes, semantisch passendes Phosphor-Icon statt des aktuell überall verwendeten Buch-Icons. `Eigener Hintergrund` erhält ebenfalls ein eigenes Icon.
 
 Roadmap/Design-Artefakt: im Repository nicht vorhanden; Scope basiert auf dem aktuellen `main`, dem bestehenden Background-Framework-Flow und der abgestimmten Chat-Anforderung.
 
@@ -13,7 +13,7 @@ Roadmap/Design-Artefakt: im Repository nicht vorhanden; Scope basiert auf dem ak
 - Der aktuelle `main` enthält die 17 universellen Hintergrund Frameworks und den bestehenden `4 Pool → 2 Training → 1 Spezialisierung`-Flow.
 - Die vier Pool-Fertigkeiten eines Frameworks bleiben unverändert und werden weiterhin vollständig auf der Framework-Karte angezeigt.
 - Bestehende gespeicherte Charaktere behalten ihre konkreten Pool-Skills, Trainings und Spezialisierung.
-- Es werden keine neuen Dependencies eingeführt; Icons kommen aus dem bereits installierten `lucide-react`.
+- Es werden keine neuen Dependencies eingeführt; Icons kommen aus dem bereits installierten `@phosphor-icons/react`.
 
 ## Happy Path
 - [ ] Beim Wechsel auf ein Hintergrund Framework werden dessen vier Pool-Fertigkeiten geladen, aber **kein Training automatisch vorausgewählt**.
@@ -26,7 +26,7 @@ Roadmap/Design-Artefakt: im Repository nicht vorhanden; Scope basiert auf dem ak
 - [ ] `Auswahl ändern` blendet wieder alle vier Pool-Nodes ein, ohne die beiden bestehenden Trainings sofort zu löschen.
 - [ ] In diesem Bearbeitungszustand kann der Nutzer einen ausgewählten Skill abwählen und einen anderen Pool-Skill wählen; der Graph reduziert sich danach wieder auf die finalen zwei Trainings.
 - [ ] Die bestehende Spezialisierung bleibt nach `2 / 2` verfügbar und hängt weiterhin als Branch unter dem gewählten trainierten Skill.
-- [ ] Jedes der 17 Hintergrund Frameworks zeigt im Karussell ein eigenes semantisch passendes Lucide-Icon; `Eigener Hintergrund` zeigt ein eigenes Custom-Icon.
+- [ ] Jedes der 17 Hintergrund Frameworks zeigt im Karussell ein eigenes semantisch passendes Phosphor-Icon; `Eigener Hintergrund` zeigt ein eigenes Custom-Icon.
 - [ ] Desktop und Mobile verwenden dieselbe Interaktionslogik ohne horizontales Seiten-Scrolling.
 
 ## Icon Mapping
@@ -84,6 +84,6 @@ Roadmap/Design-Artefakt: im Repository nicht vorhanden; Scope basiert auf dem ak
 - `CharacterEditor` setzt `backgroundTraining` bei jeder Framework-Auswahl nativ auf `['', '']`; damit startet die Auswahl direkt bei `0 / 2`, ohne historisches `recommendedTraining`-Feld oder Bridge-Typ.
 - Die Regression-Checks verbieten `recommendedTraining` sowohl im Framework-Modell als auch im Parent-Editor und verlangen den expliziten neutralen Reset im Editor.
 - Nach `2 / 2` rendert der Background-Graph nur die zwei trainierten Nodes. `Auswahl ändern` öffnet den Vierer-Pool erneut und behält die bestehende Auswahl bis zur tatsächlichen Änderung.
-- Alle 17 Frameworks verwenden stabile ID→Lucide-Icon-Mappings; Custom verwendet `PencilLine`.
+- Alle 17 Frameworks verwenden stabile ID→Phosphor-Icon-Mappings; Custom verwendet `PencilSimpleLine`.
 - Tests: `npm run test-gate` ist für Code-SHA `dfa29cbcae1700dcd1bf2ded9e68d41457831e92` erfolgreich gelaufen; Browser-E2E wird für den finalen PR-Stand erneut durch CI ausgeführt.
 - Known limitations: Build-Assistent-Empfehlungen selbst sind nicht Teil dieses Slices.

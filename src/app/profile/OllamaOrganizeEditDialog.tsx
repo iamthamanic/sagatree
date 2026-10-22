@@ -19,7 +19,7 @@ import {
 } from '../../domains/ai-providers';
 import { ollamaSettingsService } from '../../infrastructure/ai/ollama-settings-service';
 import { toast } from 'sonner';
-import { CheckCircle2, Loader2, Save } from 'lucide-react';
+import { CheckCircle, CircleNotch, FloppyDisk } from '@phosphor-icons/react';
 
 type OllamaUiMode = 'local' | 'cloud';
 
@@ -303,7 +303,7 @@ export function OllamaOrganizeEditDialog({
             >
               {busy === 'test' ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
                   Test…
                 </>
               ) : (
@@ -321,7 +321,7 @@ export function OllamaOrganizeEditDialog({
                 className="flex gap-2 rounded-lg border border-emerald-500/35 bg-emerald-500/[0.06] px-3 py-2 text-xs"
                 data-ollama-test-ok
               >
-                <CheckCircle2
+                <CheckCircle
                   className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
                   aria-hidden="true"
                 />
@@ -377,9 +377,9 @@ export function OllamaOrganizeEditDialog({
             data-ollama-save
           >
             {busy === 'save' ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
             ) : (
-              <Save className="size-4" aria-hidden="true" />
+              <FloppyDisk className="size-4" aria-hidden="true" />
             )}
             Verbindung speichern
           </Button>

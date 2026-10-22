@@ -5,7 +5,12 @@
  * Fills Phase-1 Look-only Welt shell with seeded Dornhain catalog rows.
  */
 import { useEffect, useState, type ReactNode } from 'react';
-import { Loader2, Map, MapPin, BookOpen } from 'lucide-react';
+import {
+  CircleNotch,
+  MapTrifold,
+  MapPin,
+  BookOpen
+} from '@phosphor-icons/react';
 import {
   hasSagaPermission,
   revealLabelDe,
@@ -143,7 +148,7 @@ export function SagaWorldCatalogPanel({ sagaPublicId }: SagaWorldCatalogPanelPro
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground" data-saga-world-loading>
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotch className="size-4 animate-spin" aria-hidden />
         Welt-Katalog wird geladen…
       </div>
     );
@@ -169,7 +174,7 @@ export function SagaWorldCatalogPanel({ sagaPublicId }: SagaWorldCatalogPanelPro
       ) : null}
       <BindingGroup
         title="Karten"
-        icon={<Map className="size-4 text-muted-foreground" aria-hidden />}
+        icon={<MapTrifold className="size-4 text-muted-foreground" aria-hidden />}
         rows={maps}
         projectId={projectId}
         canReveal={canReveal}

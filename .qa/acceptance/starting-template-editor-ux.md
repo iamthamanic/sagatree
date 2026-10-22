@@ -6,7 +6,7 @@ icons + playstyle tooltips in the picker, Vorlage badge in the sticky card heade
 and pulsing incomplete-tab hints with hover copy for open validation gaps.
 
 ## Happy Path
-- [x] Catalog `summaryDe` + Lucide icon per starttemplate key
+- [x] Catalog `summaryDe` + Phosphor icon per starttemplate key
 - [x] Picker rows show icon + CircleHelp tooltip (no accidental select)
 - [x] Editor tracks `appliedVorlage` after starting-template / preset bootstrap
 - [x] CardHeader badge with template icon or Bookmark for user presets

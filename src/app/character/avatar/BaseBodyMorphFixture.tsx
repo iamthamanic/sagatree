@@ -7,7 +7,10 @@
  * Collapsed by default so it does not dominate the Character Editor sidebar.
  */
 import { useEffect, useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import {
+  CaretDown,
+  CaretRight
+} from '@phosphor-icons/react';
 import {
   BASE_BODY_CAMERA_SAFE_BOUNDS,
   assertMorphFixtureCameraSafe,
@@ -66,7 +69,7 @@ export function BaseBodyMorphFixture() {
           onClick={() => setOpen((prev) => !prev)}
         >
           <span className="mt-0.5 shrink-0 text-base-content/70" aria-hidden>
-            {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            {open ? <CaretDown className="h-4 w-4" /> : <CaretRight className="h-4 w-4" />}
           </span>
           <span className="flex min-w-0 flex-col gap-1">
             <span className="text-base font-semibold">Base-Body Morph Fixture</span>

@@ -4,7 +4,11 @@
  * Distinct from WorldNpcCreatureCatalogSection (world-owned definition authoring).
  * Location: src/app/world/npc-creature-catalog/WorldNpcCreatureCatalogModuleSection.tsx
  */
-import { PawPrint, Plus, X } from 'lucide-react';
+import {
+  PawPrint,
+  Plus,
+  X
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../shared/ui/card';

@@ -123,6 +123,71 @@ font-family: 'Darker Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
 - Body: 400 bis 500
 - Keine zusaetzlichen Serif-Fonts in der Produkt-UI
 
+## Iconography
+
+Kanonische visuelle Referenz fuer Produkt-Icons. Implementierungsbeispiele: `docs/ui-styleguide.md`.
+
+### Standardbibliothek
+
+- **System-Icons (Produkt-UI):** [`@phosphor-icons/react`](https://github.com/phosphor-icons/react) — verpflichtend.
+- **Nicht zulaessig:** neue `lucide-react`-Abhaengigkeiten oder gemischte Icon-Familien in Navigation/Chrome.
+- Imports explizit und tree-shaking-freundlich (`import { House, Gear } from '@phosphor-icons/react'`). Keine Namespace-Imports der gesamten Bibliothek.
+- Icons nutzen `currentColor` bzw. vorhandene Theme-Tokens — keine willkuerlichen Hex-Farben.
+
+### Weights und Groessen (Defaults)
+
+| Kontext | Phosphor Weight | Standardgroesse |
+|---|---|---|
+| Sidebar – inaktiv | `regular` | 20 px |
+| Sidebar – aktiv | `regular` (Cyan/`primary` Surface + `currentColor`) | 20 px |
+| Hauptnavigation | `regular` | 20 px |
+| Buttons und Actions | `regular` | 16–20 px |
+| Formulare und Controls | `regular` | 16–20 px |
+| Dashboard-Feature-Karten | `regular` | 24–32 px |
+| Groessere Feature-Illustrationen | `duotone` | 24–32 px |
+| Status und Warnungen | `regular` / `fill` | 16–20 px |
+
+Defaults duerfen bestehende Layouts nicht zerstören; optische Einheitlichkeit vor starrer Pixelzahl.
+
+### Farben und Zustaende
+
+- Standard: Foreground-/Muted-Tokens.
+- Aktive Navigation: Cyan/Teal (`primary` / Sidebar-Accent).
+- Hover: Gold/Amber gemaess Theme.
+- Destructive: Danger-Tokens.
+- Disabled: bestehende Disabled-Konventionen.
+- Zustaende nie ausschliesslich ueber Farbe; Active zusaetzlich ueber Weight (`fill`) und Surface.
+
+### Sidebar
+
+- Eingeklappt und ausgeklappt: gleiche Icon-Familie, 20 px, Weight immer `regular`.
+- Active: Cyan/Teal Primary-Surface (`bg-primary text-primary-foreground`) — Auswahl ueber Farbe und Surface, nicht ueber `fill`.
+- Hover: Gold/Amber (`hover:bg-accent` / `hover:text-accent`) wie bei `Button` — auch auf dem aktiven Item.
+- Icon-only-Buttons brauchen `aria-label` / `title`.
+- Decorative Icons: `aria-hidden`.
+
+### Duotone
+
+- Gezielt auf Feature-Karten und groesseren Illustrationen.
+- Nicht auf jedem Button, Tab oder Form-Control.
+
+### System- vs. Spielwelt-Icons
+
+- **System-Icons:** Phosphor fuer Chrome, Navigation, Dialoge, Forms, Status.
+- **Spielwelt-Icons:** bestehende Custom-SVGs (z. B. Attribute-d20) beibehalten; [game-icons.net](https://game-icons.net/) (CC-BY-3.0) nur lokal und nur wenn ein spezialisiertes RPG-Symbol echten Mehrwert bietet. Attribution inkl. Urheber und Aenderungen. Keine externen Runtime-CDN-Assets.
+
+### Accessibility
+
+- Icon-only Controls: zugaengliche Bezeichnung.
+- Decorative Icons vor Screenreadern verbergen.
+- Erkennbarkeit bei 16–20 px sicherstellen.
+- Loading: `CircleNotch` + `animate-spin` (nicht Farbe allein).
+
+### Individuelle SVGs und Lizenzen
+
+- Hochwertige vorhandene SVGs nicht wahllos durch Phosphor ersetzen.
+- Neue Custom-SVGs nur mit klarer Begruendung und Lizenzhinweis im Repo.
+
 ## Komponentenregeln
 
 ### Buttons

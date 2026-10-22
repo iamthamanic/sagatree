@@ -3,7 +3,13 @@
  * Location: src/app/library/looks/LookLibraryCard.tsx
  */
 import { useCallback, useState } from 'react';
-import { Archive, Copy, CopyPlus, Edit, Palette } from 'lucide-react';
+import {
+  Archive,
+  Copy,
+  CopySimple,
+  PencilSimple,
+  Palette
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import {
@@ -107,7 +113,7 @@ export function LookLibraryCard({
           onClick={() => onEdit(look.profile.id)}
           data-look-action="edit"
         >
-          <Edit className="mr-1.5 size-4" />
+          <PencilSimple className="mr-1.5 size-4" />
           Bearbeiten
         </Button>
       ) : null}
@@ -131,7 +137,7 @@ export function LookLibraryCard({
                   {
                     id: 'duplicate',
                     label: 'Look duplizieren',
-                    icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+                    icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
                     onSelect: () => onDuplicate(look.profile.id),
                   },
                   ...(!isArchived

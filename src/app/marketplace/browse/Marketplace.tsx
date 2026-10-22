@@ -9,7 +9,15 @@ import { Input } from '../../../shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../shared/ui/select';
 import { Badge } from '../../../shared/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../shared/ui/tabs';
-import { Search, Download, Star, TrendingUp, Loader2, Package, Plus } from 'lucide-react';
+import {
+  MagnifyingGlass,
+  DownloadSimple,
+  Star,
+  TrendUp,
+  CircleNotch,
+  Package,
+  Plus
+} from '@phosphor-icons/react';
 import { useMarketplace } from './useMarketplace';
 import type { MarketplaceItemType } from '../../../domains/marketplace/contracts/marketplace.types';
 import { toast } from 'sonner';
@@ -47,7 +55,7 @@ export function Marketplace() {
     return (
       <div className="w-full h-full flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          <CircleNotch className="w-8 h-8 animate-spin mx-auto text-primary" />
           <p className="text-muted-foreground">Lade Marketplace...</p>
         </div>
       </div>
@@ -113,12 +121,12 @@ export function Marketplace() {
           </p>
         </div>
 
-        {/* Search and Filters */}
+        {/* MagnifyingGlass and Filters */}
         <Card>
           <CardContent className="pt-4 md:pt-6">
             <div className="flex flex-col gap-3 md:flex-row md:gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Suche nach Welten, Abenteuern, Charakteren..."
                   className="pl-10 text-sm md:text-base"
@@ -145,7 +153,7 @@ export function Marketplace() {
                   variant="outline" 
                   className="md:w-auto"
                 >
-                  <TrendingUp className="w-4 h-4 md:mr-2" />
+                  <TrendUp className="w-4 h-4 md:mr-2" />
                   <span className="hidden md:inline">Trending</span>
                 </Button>
               </div>
@@ -200,7 +208,7 @@ export function Marketplace() {
                           {item.rating.toFixed(1)}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Download className="w-3 h-3 md:w-4 md:h-4" />
+                          <DownloadSimple className="w-3 h-3 md:w-4 md:h-4" />
                           <span className="hidden sm:inline">{item.downloads.toLocaleString()}</span>
                           <span className="sm:hidden">{(item.downloads / 1000).toFixed(1)}k</span>
                         </span>
@@ -304,7 +312,7 @@ export function Marketplace() {
                               {item.rating.toFixed(1)}
                             </span>
                             <span className="flex items-center gap-0.5">
-                              <Download className="w-3 h-3" />
+                              <DownloadSimple className="w-3 h-3" />
                               <span className="hidden md:inline">{item.downloads}</span>
                               <span className="md:hidden">{(item.downloads / 1000).toFixed(1)}k</span>
                             </span>
@@ -317,7 +325,7 @@ export function Marketplace() {
                             className="w-full text-xs"
                             onClick={() => handleDownload(item.id, item.title, item.price)}
                           >
-                            <Download className="w-3 h-3 mr-1" />
+                            <DownloadSimple className="w-3 h-3 mr-1" />
                             <span className="hidden md:inline">Laden</span>
                           </Button>
                         </div>
@@ -365,7 +373,7 @@ export function Marketplace() {
                               {item.rating.toFixed(1)}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Download className="w-3 h-3 md:w-4 md:h-4" />
+                              <DownloadSimple className="w-3 h-3 md:w-4 md:h-4" />
                               {item.downloads.toLocaleString()}
                             </span>
                             <span className="font-medium">

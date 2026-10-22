@@ -3,7 +3,11 @@
  * Location: src/app/character/creation/CreateCharacterEntryDialog.tsx
  */
 import { useEffect, useState } from 'react';
-import { Loader2, Sparkles, UserPlus } from 'lucide-react';
+import {
+  CircleNotch,
+  Sparkle,
+  UserPlus
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '../../../shared/ui/button';
 import {
@@ -138,7 +142,7 @@ export function CreateCharacterEntryDialog({
               disabled={loading}
               className="flex min-h-[11rem] flex-col items-start justify-between rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
             >
-              {loading ? <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden /> : <Sparkles className="h-8 w-8 text-primary" aria-hidden />}
+              {loading ? <CircleNotch className="h-8 w-8 animate-spin text-primary" aria-hidden /> : <Sparkle className="h-8 w-8 text-primary" aria-hidden />}
               <div className="space-y-1">
                 <p className="text-lg font-semibold">Vorlage wählen</p>
                 <p className="text-sm text-muted-foreground">SagaTree-Starttemplate oder eigenes Preset verwenden.</p>

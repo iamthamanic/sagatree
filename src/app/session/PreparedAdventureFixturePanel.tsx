@@ -4,7 +4,11 @@
  * Lists fixture pregens/NPCs/beats and spawns NPC instances for a selected project (GM).
  */
 import { useEffect, useState } from 'react';
-import { Loader2, Sparkles, UserPlus } from 'lucide-react';
+import {
+  CircleNotch,
+  Sparkle,
+  UserPlus
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '../../shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../shared/ui/card';
@@ -117,7 +121,7 @@ export function PreparedAdventureFixturePanel({
     <Card data-prepared-adventure-fixture="v1" data-dev-only-fixture="true">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-          <Sparkles className="size-5" aria-hidden="true" />
+          <Sparkle className="size-5" aria-hidden="true" />
           DEV · {fixture.adventureName}
         </CardTitle>
         <CardDescription className="text-xs md:text-sm">
@@ -242,7 +246,7 @@ export function PreparedAdventureFixturePanel({
         >
           {preparing ? (
             <>
-              <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />
+              <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden="true" />
               Bereite vor…
             </>
           ) : (

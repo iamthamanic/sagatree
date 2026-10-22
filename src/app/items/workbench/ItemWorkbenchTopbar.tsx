@@ -2,7 +2,9 @@
  * ItemWorkbenchTopbar — back | title | primary (Speichern / Fork) top-right (#139).
  * Location: src/app/items/workbench/ItemWorkbenchTopbar.tsx
  */
-import { ArrowLeft } from 'lucide-react';
+import {
+  ArrowLeft
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 
 export interface ItemWorkbenchTopbarProps {

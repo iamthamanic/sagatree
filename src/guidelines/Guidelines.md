@@ -76,6 +76,17 @@ Merksatz: **Cyan = ausgewaehlt oder wichtigste Aktion. Gold = Hover und Premium-
 - Keine Neon-Glows oder zufaelligen Gradient-Effekte.
 - Goldene Outlines nur fuer bewusst hervorgehobene Premium-/Achievement-Zustaende.
 
+## Icons
+
+- **Pflicht:** `@phosphor-icons/react` fuer allgemeine UI-Icons. Canonical: `src/THEME_GUIDE.md` § Iconography.
+- **Verboten:** `lucide-react` oder andere Icon-Familien in neuer generierter UI.
+- Imports: `import { House, Gear } from '@phosphor-icons/react'` — keine Namespace-Imports.
+- Weights: Navigation immer `regular` (20px); Active = Cyan Primary-Surface + `currentColor` (kein `fill`); Actions/Forms und Dashboard-Karten `regular` 16–32px; Duotone nur gezielt auf groesseren Illustrationen.
+- Farbe: `currentColor` / Theme-Tokens. Keine Glow-/Gradient-Icon-Effekte.
+- RPG-Symbole: vorhandene Custom-SVGs beibehalten; nicht jedes Spielwelt-Icon durch Phosphor ersetzen.
+- Icon-only Buttons: `aria-label`. Decorative: `aria-hidden`.
+- Vor neuen Icons vorhandene Phosphor- und Repo-Assets pruefen.
+
 ## Umsetzung
 
 Vor lokalen Styles zuerst die bestehenden Primitives pruefen:

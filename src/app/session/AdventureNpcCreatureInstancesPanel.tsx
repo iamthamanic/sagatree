@@ -4,7 +4,13 @@
  * Location: src/app/session/AdventureNpcCreatureInstancesPanel.tsx
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Plus, RefreshCw, Trash2, Users } from 'lucide-react';
+import {
+  CircleNotch,
+  Plus,
+  ArrowsClockwise,
+  Trash,
+  Users
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import type {
   NpcCreatureInstance,
@@ -263,7 +269,7 @@ export function AdventureNpcCreatureInstancesPanel({
             disabled={!projectId || loading}
             aria-label="Instanzen neu laden"
           >
-            <RefreshCw className="size-4" aria-hidden="true" />
+            <ArrowsClockwise className="size-4" aria-hidden="true" />
           </Button>
           <Button
             type="button"
@@ -301,7 +307,7 @@ export function AdventureNpcCreatureInstancesPanel({
           aria-label="Instanzen werden geladen"
           data-npc-adventure-instances-loading
         >
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          <CircleNotch className="size-8 animate-spin text-muted-foreground" />
         </div>
       ) : !projectId ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
@@ -369,9 +375,9 @@ export function AdventureNpcCreatureInstancesPanel({
                   data-npc-adventure-instance-remove
                 >
                   {removingId === instance.id ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
                   ) : (
-                    <Trash2 className="size-4 text-destructive" aria-hidden="true" />
+                    <Trash className="size-4 text-destructive" aria-hidden="true" />
                   )}
                 </Button>
               </div>
@@ -448,7 +454,7 @@ export function AdventureNpcCreatureInstancesPanel({
             >
               {spawning ? (
                 <>
-                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />
+                  <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden="true" />
                   Wird hinzugefügt…
                 </>
               ) : (
@@ -554,7 +560,7 @@ export function AdventureNpcCreatureInstancesPanel({
             >
               {savingEdit ? (
                 <>
-                  <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />
+                  <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden="true" />
                   Speichern…
                 </>
               ) : (

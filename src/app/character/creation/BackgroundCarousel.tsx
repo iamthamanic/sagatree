@@ -3,29 +3,29 @@
  * Location: src/app/character/creation/BackgroundCarousel.tsx
  */
 import {
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList,
+  CaretLeft,
+  CaretRight,
+  ClipboardText,
   Compass,
   Crown,
-  Drama,
+  MaskHappy,
   Fingerprint,
   Flame,
   GraduationCap,
-  HandPlatter,
+  HandPointing,
   Handshake,
-  HeartPulse,
-  PencilLine,
-  Scale,
-  Search,
+  Heartbeat,
+  PencilSimpleLine,
+  Scales,
+  MagnifyingGlass,
   Shapes,
   Shield,
-  Trees,
+  Tree,
   Trophy,
-  UsersRound,
+  UsersThree,
   Wrench,
-  type LucideIcon,
-} from 'lucide-react';
+  type Icon
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Card, CardHeader, CardTitle } from '../../../shared/ui/card';
@@ -57,24 +57,24 @@ interface BackgroundCarouselProps {
   onScrollPhaseChange?: (phase: CarouselScrollPhase) => void;
 }
 
-const BACKGROUND_FRAMEWORK_ICON_BY_ID: Readonly<Record<string, LucideIcon>> = {
-  'stage-public': Drama,
+const BACKGROUND_FRAMEWORK_ICON_BY_ID: Readonly<Record<string, Icon>> = {
+  'stage-public': MaskHappy,
   'sport-competition': Trophy,
-  'border-scout': Trees,
+  'border-scout': Tree,
   'academy-research': GraduationCap,
   'corporate-technician': Wrench,
-  'street-doctor': HeartPulse,
+  'street-doctor': Heartbeat,
   soldier: Shield,
   smuggler: Fingerprint,
-  investigator: Search,
+  investigator: MagnifyingGlass,
   'trade-networks': Handshake,
   'privilege-elite': Crown,
   'faith-order': Flame,
   'travel-transport': Compass,
-  'organization-administration': ClipboardList,
-  'service-supply': HandPlatter,
-  'family-community': UsersRound,
-  'law-institutions': Scale,
+  'organization-administration': ClipboardText,
+  'service-supply': HandPointing,
+  'family-community': UsersThree,
+  'law-institutions': Scales,
 };
 
 function buildOptions(templates: readonly SagaTreeBackgroundTemplate[]): BackgroundCarouselOption[] {
@@ -151,7 +151,7 @@ export function BackgroundCarousel({
             const examples = option.kind === 'template' ? option.template.examples.join(' · ') : null;
             const FrameworkIcon = option.kind === 'template'
               ? BACKGROUND_FRAMEWORK_ICON_BY_ID[option.template.id] ?? Shapes
-              : PencilLine;
+              : PencilSimpleLine;
 
             return (
               <CarouselItem
@@ -224,10 +224,10 @@ export function BackgroundCarousel({
       {options.length > 1 ? (
         <div className={navClass}>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} left-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:left-2 md:h-11 md:w-11`} onClick={scrollPrev} aria-label="Vorheriges Hintergrund Framework">
-            <ChevronLeft className="size-5" />
+            <CaretLeft className="size-5" />
           </Button>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} right-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:right-2 md:h-11 md:w-11`} onClick={scrollNext} aria-label="Nächstes Hintergrund Framework">
-            <ChevronRight className="size-5" />
+            <CaretRight className="size-5" />
           </Button>
         </div>
       ) : null}

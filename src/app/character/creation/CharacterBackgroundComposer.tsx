@@ -3,7 +3,10 @@
  * Location: src/app/character/creation/CharacterBackgroundComposer.tsx
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import {
+  Sparkle,
+  X
+} from '@phosphor-icons/react';
 import { toast } from 'sonner@2.0.3';
 import { Button } from '../../../shared/ui/button';
 import { Label } from '../../../shared/ui/label';
@@ -209,7 +212,7 @@ export function CharacterBackgroundComposer({
               disabled={generating}
               data-testid="character-bg-generate"
             >
-              <Sparkles className="size-4" />
+              <Sparkle className="size-4" />
               {generating ? 'Generiert...' : 'Generieren'}
             </Button>
           </div>

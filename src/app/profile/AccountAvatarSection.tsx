@@ -13,7 +13,9 @@ import {
   type DragEvent,
   type KeyboardEvent,
 } from 'react';
-import { ImagePlus } from 'lucide-react';
+import {
+  Image
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { useAuth } from '../../lib/auth-context';
 import {
@@ -305,7 +307,7 @@ export function AccountAvatarSection() {
               )}
               aria-hidden
             >
-              <ImagePlus className="size-5 text-foreground" />
+              <Image className="size-5 text-foreground" />
               <span className="text-[0.7rem] font-medium leading-tight text-foreground">
                 Ändern
               </span>

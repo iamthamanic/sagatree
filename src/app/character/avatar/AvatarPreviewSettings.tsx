@@ -8,7 +8,10 @@
  */
 
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import { Scaling, Settings } from 'lucide-react';
+import {
+  CornersOut,
+  Gear
+} from '@phosphor-icons/react';
 import {
   Accordion,
   AccordionContent,
@@ -252,7 +255,7 @@ export function AvatarPreviewSettings({
         className="h-8 w-8 border-white/15 bg-black/50 p-0 text-slate-100 backdrop-blur-sm hover:bg-black/65"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <Settings className="size-3.5" aria-hidden />
+        <Gear className="size-3.5" aria-hidden />
       </Button>
 
       {open ? (
@@ -279,7 +282,7 @@ export function AvatarPreviewSettings({
                 onExpandPreview?.();
               }}
             >
-              <Scaling className="size-3.5" aria-hidden />
+              <CornersOut className="size-3.5" aria-hidden />
               <span>Setup</span>
             </Button>
           </div>

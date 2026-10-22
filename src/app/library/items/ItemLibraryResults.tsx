@@ -2,7 +2,10 @@
  * ItemLibraryResults — list/grid results, skeletons, empty and error states (#138).
  * Location: src/app/library/items/ItemLibraryResults.tsx
  */
-import { Package, RefreshCw } from 'lucide-react';
+import {
+  Package,
+  ArrowsClockwise
+} from '@phosphor-icons/react';
 import type { ItemDefinition } from '../../../domains/items';
 import { Button } from '../../../shared/ui/button';
 import { cn } from '../../../shared/ui/utils';
@@ -59,7 +62,7 @@ export function ItemLibraryResults({
       >
         <p className="mb-4 text-sm text-destructive">{error}</p>
         <Button type="button" variant="outline" className="h-11 min-h-11" onClick={onRetry}>
-          <RefreshCw className="mr-2 size-4" aria-hidden="true" />
+          <ArrowsClockwise className="mr-2 size-4" aria-hidden="true" />
           Erneut versuchen
         </Button>
       </div>

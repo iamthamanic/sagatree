@@ -3,7 +3,11 @@
  * Location: src/app/session/SessionPastSessionsPanel.tsx
  */
 import { useMemo, useState } from 'react';
-import { History, Loader2, Search } from 'lucide-react';
+import {
+  ClockCounterClockwise,
+  CircleNotch,
+  MagnifyingGlass
+} from '@phosphor-icons/react';
 import type { SessionVm } from '../../domains/session/contracts/session.types';
 import type { PlaySessionStatus } from '../../domains/session/contracts/session-lifecycle';
 import { Badge } from '../../shared/ui/badge';
@@ -82,7 +86,7 @@ export function SessionPastSessionsPanel({
     <Card data-session-past-panel>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-          <History className="size-5" />
+          <ClockCounterClockwise className="size-5" />
           Vergangene Sessions
         </CardTitle>
         <CardDescription className="text-xs md:text-sm">
@@ -94,7 +98,7 @@ export function SessionPastSessionsPanel({
           <div className="space-y-2">
             <Label htmlFor="session-past-search">Suche</Label>
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <MagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="session-past-search"
                 value={query}
@@ -131,7 +135,7 @@ export function SessionPastSessionsPanel({
 
         {isLoading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" />
+            <CircleNotch className="size-4 animate-spin" />
             Lade Sessions…
           </div>
         ) : filtered.length === 0 ? (

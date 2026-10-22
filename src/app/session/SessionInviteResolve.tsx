@@ -5,7 +5,9 @@
  * Resolves opaque token → canonical session-join or live rejoin; strips invite from URL.
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { AdaptivePage } from '../../shared/ui/adaptive';
 import { Button } from '../../shared/ui/button';
@@ -94,7 +96,7 @@ export function SessionInviteResolve({
       >
         {busy ? (
           <>
-            <Loader2 className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
+            <CircleNotch className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
             <p className="text-sm text-muted-foreground">Einladung wird geprüft…</p>
           </>
         ) : (

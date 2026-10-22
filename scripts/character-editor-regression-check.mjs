@@ -162,7 +162,7 @@ rejectMatch(skillsPanel, /Start gesamt 10 Punkte|Vergib genau .* freie Fertigkei
 rejectMatch(skillsPanel, /Mindestens.*Fertigkeiten.*Wert 1 oder höher/s, 'legacy minimum-six trained skills rule');
 rejectMatch(skillsPanel, /Proben verstehen|xl:grid-cols-\[minmax\(0,1fr\)_18rem\]|xl:sticky xl:top-4/, 'removed sticky Proben verstehen aside / two-column grid');
 requireMatch(attributeSkillNode, /Hintergrund-Pool/, 'background pool source distinction');
-requireMatch(attributeSkillNode, /Standardattribut|CircleHelp/, 'attribute hint polish on skill nodes');
+requireMatch(attributeSkillNode, /Standardattribut|Question/, 'attribute hint polish on skill nodes');
 requireMatch(attributeSkillsCarousel, /useCarouselScrollSync/, 'attribute carousel scroll sync hook');
 rejectMatch(skillsPanel, /legacyFinalRanks|provenanceLegacy|legacy-unresolved|Legacy-Charakter/, 'skills panel still has skill-progression legacy UI');
 requireMatch(editor, /<h3 className="font-semibold">Attribute<\/h3>/, 'Attribute section heading under Parameter Attribute tab');

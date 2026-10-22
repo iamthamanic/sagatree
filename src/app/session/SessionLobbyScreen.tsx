@@ -6,7 +6,10 @@
  * Am Tisch seats + Meet-style device bar. Media only after user gesture.
  */
 import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import {
+  Check,
+  Copy
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Button } from '../../shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../shared/ui/avatar';

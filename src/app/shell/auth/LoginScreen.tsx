@@ -8,7 +8,12 @@ import { Switch } from '../../../shared/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../shared/ui/tabs';
 import { Alert, AlertDescription } from '../../../shared/ui/alert';
-import { Loader2, AlertCircle, Moon, Sun } from 'lucide-react';
+import {
+  CircleNotch,
+  WarningCircle,
+  Moon,
+  Sun
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { SagaTreeLogo } from '../SagaTreeLogo';
 
@@ -131,7 +136,7 @@ export function LoginScreen() {
                 <form onSubmit={handleSignIn} className="space-y-4">
                   {error && (
                     <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
+                      <WarningCircle className="h-4 w-4" />
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}
@@ -173,7 +178,7 @@ export function LoginScreen() {
                   <Button type="submit" className="min-h-11 w-full" disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
                         Lädt...
                       </>
                     ) : (
@@ -188,7 +193,7 @@ export function LoginScreen() {
                 <form onSubmit={handleSignUp} className="space-y-4">
                   {error && (
                     <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
+                      <WarningCircle className="h-4 w-4" />
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}
@@ -226,7 +231,7 @@ export function LoginScreen() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
                         Lädt...
                       </>
                     ) : (

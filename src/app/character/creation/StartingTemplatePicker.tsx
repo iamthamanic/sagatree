@@ -5,7 +5,9 @@
  * Each row shows a template icon; playstyle summary lives in a help tooltip (keeps the list compact).
  */
 import type { SyntheticEvent } from 'react';
-import { CircleHelp } from 'lucide-react';
+import {
+  Question
+} from '@phosphor-icons/react';
 import { listSagaTreeStartingTemplates } from '../../../domains/rules/sagatree/starting-templates';
 import type { SagaTreeStartingTemplateKey } from '../../../domains/rules/sagatree/starting-templates';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../shared/ui/tooltip';
@@ -49,7 +51,7 @@ export function StartingTemplatePicker({ onSelect }: StartingTemplatePickerProps
                     onClick={stopHelpEvent}
                     onPointerDown={stopHelpEvent}
                   >
-                    <CircleHelp className="pointer-events-none size-3.5" aria-hidden />
+                    <Question className="pointer-events-none size-3.5" aria-hidden />
                   </span>
                 </TooltipTrigger>
                 <TooltipContent

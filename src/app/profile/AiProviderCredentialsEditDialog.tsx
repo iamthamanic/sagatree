@@ -20,7 +20,7 @@ import {
 } from '../../domains/ai-providers';
 import { aiProviderCredentialsService } from '../../infrastructure/ai/ai-provider-credentials-service';
 import { toast } from 'sonner';
-import { Loader2, RefreshCw, Save, Trash2 } from 'lucide-react';
+import { CircleNotch, ArrowsClockwise, FloppyDisk, Trash } from '@phosphor-icons/react';
 
 export interface AiProviderCredentialsEditDialogProps {
   open: boolean;
@@ -167,7 +167,7 @@ export function AiProviderCredentialsEditDialog({
                   disabled={busy !== null}
                   onClick={() => void handleRefresh()}
                 >
-                  <RefreshCw
+                  <ArrowsClockwise
                     className={`size-4 ${busy === 'refresh' ? 'animate-spin' : ''}`}
                     aria-hidden="true"
                   />
@@ -181,9 +181,9 @@ export function AiProviderCredentialsEditDialog({
                   onClick={() => void handleDelete()}
                 >
                   {busy === 'delete' ? (
-                    <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
                   ) : (
-                    <Trash2 className="size-4" aria-hidden="true" />
+                    <Trash className="size-4" aria-hidden="true" />
                   )}
                   Key entfernen
                 </Button>
@@ -215,9 +215,9 @@ export function AiProviderCredentialsEditDialog({
             onClick={() => void handleSave()}
           >
             {busy === 'save' ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
             ) : (
-              <Save className="size-4" aria-hidden="true" />
+              <FloppyDisk className="size-4" aria-hidden="true" />
             )}
             {provider.configured ? 'Ersetzen & prüfen' : 'Speichern & prüfen'}
           </Button>

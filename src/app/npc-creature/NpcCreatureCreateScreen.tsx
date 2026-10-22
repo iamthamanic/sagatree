@@ -4,7 +4,14 @@
  * Location: src/app/npc-creature/NpcCreatureCreateScreen.tsx
  */
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Loader2, PawPrint, ScrollText, UserRound, Zap } from 'lucide-react';
+import {
+  ArrowLeft,
+  CircleNotch,
+  PawPrint,
+  Scroll,
+  UserCircle,
+  Lightning
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import {
   assembleNpcCreatureDefinition,
@@ -202,7 +209,7 @@ export function NpcCreatureCreateScreen({
                 kind === 'npc' ? 'border-primary bg-primary/10' : 'border-border'
               }`}
             >
-              <UserRound className="h-8 w-8 text-primary" aria-hidden />
+              <UserCircle className="h-8 w-8 text-primary" aria-hidden />
               <div className="space-y-1">
                 <p className="text-lg font-semibold">NPC</p>
                 <p className="text-sm text-muted-foreground">
@@ -257,7 +264,7 @@ export function NpcCreatureCreateScreen({
               onClick={() => setStep('quick')}
               className="flex min-h-[11rem] flex-col items-start justify-between rounded-xl border border-primary bg-primary/10 p-5 text-left transition-colors hover:border-amber-500/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <Zap className="h-8 w-8 text-primary" aria-hidden />
+              <Lightning className="h-8 w-8 text-primary" aria-hidden />
               <div className="space-y-1">
                 <p className="text-lg font-semibold">Schnell erstellen</p>
                 <p className="text-sm text-muted-foreground">
@@ -273,7 +280,7 @@ export function NpcCreatureCreateScreen({
               onClick={handleFullCharacter}
               className="flex min-h-[11rem] flex-col items-start justify-between rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-amber-500/80 hover:bg-amber-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <ScrollText className="h-8 w-8 text-primary" aria-hidden />
+              <Scroll className="h-8 w-8 text-primary" aria-hidden />
               <div className="space-y-1">
                 <p className="text-lg font-semibold">Vollständiger Charakter</p>
                 <p className="text-sm text-muted-foreground">
@@ -473,7 +480,7 @@ export function NpcCreatureCreateScreen({
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 size-4 animate-spin" aria-hidden />
+                    <CircleNotch className="mr-2 size-4 animate-spin" aria-hidden />
                     Erstellen…
                   </>
                 ) : (

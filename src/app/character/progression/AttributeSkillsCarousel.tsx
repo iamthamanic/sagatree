@@ -5,15 +5,15 @@
  */
 import {
   Brain,
-  ChevronLeft,
-  ChevronRight,
-  Dumbbell,
+  CaretLeft,
+  CaretRight,
+  Barbell,
   Eye,
-  HeartPulse,
-  Sparkles,
-  Zap,
-  type LucideIcon,
-} from 'lucide-react';
+  Heartbeat,
+  Sparkle,
+  Lightning,
+  type Icon
+} from '@phosphor-icons/react';
 import {
   sagaTreeAttributeDefinitions,
   sagaTreeSkillDefinitions,
@@ -33,13 +33,13 @@ import { useCarouselScrollSync } from '../../../app/character/shared/useCarousel
 
 export type { CarouselScrollPhase } from '../../../app/character/shared/carousel.types';
 
-const ATTRIBUTE_ICONS: Readonly<Record<SagaTreeAttributeKey, LucideIcon>> = {
-  strength: Dumbbell,
-  dexterity: Zap,
-  endurance: HeartPulse,
+const ATTRIBUTE_ICONS: Readonly<Record<SagaTreeAttributeKey, Icon>> = {
+  strength: Barbell,
+  dexterity: Lightning,
+  endurance: Heartbeat,
   mind: Brain,
   perception: Eye,
-  charisma: Sparkles,
+  charisma: Sparkle,
 };
 
 interface AttributeSkillsCarouselProps {
@@ -169,7 +169,7 @@ export function AttributeSkillsCarousel({
             onClick={scrollPrev}
             aria-label="Vorheriges Attribut"
           >
-            <ChevronLeft className="size-5" />
+            <CaretLeft className="size-5" />
           </Button>
           <Button
             type="button"
@@ -179,7 +179,7 @@ export function AttributeSkillsCarousel({
             onClick={scrollNext}
             aria-label="Nächstes Attribut"
           >
-            <ChevronRight className="size-5" />
+            <CaretRight className="size-5" />
           </Button>
         </div>
       ) : null}

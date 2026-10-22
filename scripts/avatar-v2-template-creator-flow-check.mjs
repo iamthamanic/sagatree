@@ -40,7 +40,7 @@ check(!/from ['"]react['"]/.test(ingress), 'ingress no React');
 check(!/dwarf.*compact|halfling.*compact|orc.*heavy/.test(picker), 'picker no species→family hardcode');
 check(/listTemplateCreatorPickerItems/.test(picker), 'picker uses domain list');
 check(/TooltipContent/.test(picker) && /lookSummaryDe/.test(picker), 'look summary in tooltip');
-check(/CircleHelp/.test(picker) && /species-template-help-/.test(picker), 'help icon beside title');
+check(/Question/.test(picker) && /species-template-help-/.test(picker), 'help icon beside title');
 check(!/text-xs opacity-90/.test(picker), 'no inline look summary under title');
 check(/grid grid-cols-3/.test(picker), 'species cards always 3-col');
 check(/Vorlage anpassen/.test(source), 'source label Vorlage anpassen');

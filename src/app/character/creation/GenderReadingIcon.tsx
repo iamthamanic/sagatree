@@ -1,14 +1,19 @@
 /**
- * GenderReadingIcon — Lucide icon for character gender-reading options in the editor.
+ * GenderReadingIcon — Phosphor icon for character gender-reading options in the editor.
  * Location: src/app/character/creation/GenderReadingIcon.tsx
  */
-import { Mars, NonBinary, Venus, type LucideIcon } from 'lucide-react';
+import {
+  GenderMale,
+  GenderNonbinary,
+  GenderFemale,
+  type Icon
+} from '@phosphor-icons/react';
 import type { CharacterGenderReading } from '../../../domains/character';
 
-const GENDER_READING_ICONS: Record<CharacterGenderReading, LucideIcon> = {
-  'masculine-read': Mars,
-  'feminine-read': Venus,
-  diverse: NonBinary,
+const GENDER_READING_ICONS: Record<CharacterGenderReading, Icon> = {
+  'masculine-read': GenderMale,
+  'feminine-read': GenderFemale,
+  diverse: GenderNonbinary,
 };
 
 type GenderReadingIconProps = {

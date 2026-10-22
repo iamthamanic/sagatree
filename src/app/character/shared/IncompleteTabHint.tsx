@@ -3,7 +3,9 @@
  * Location: src/app/character/shared/IncompleteTabHint.tsx
  */
 import type { SyntheticEvent } from 'react';
-import { AlertCircle } from 'lucide-react';
+import {
+  WarningCircle
+} from '@phosphor-icons/react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../shared/ui/tooltip';
 
 type IncompleteTabHintProps = {
@@ -45,7 +47,7 @@ export function IncompleteTabHint({
           onClick={stopHelpEvent}
           onPointerDown={stopHelpEvent}
         >
-          <AlertCircle className="pointer-events-none size-3.5 animate-pulse" aria-hidden />
+          <WarningCircle className="pointer-events-none size-3.5 animate-pulse" aria-hidden />
         </span>
       </TooltipTrigger>
       <TooltipContent

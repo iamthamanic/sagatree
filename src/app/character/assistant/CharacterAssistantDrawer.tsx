@@ -9,7 +9,11 @@
  * Location: src/app/character/assistant/CharacterAssistantDrawer.tsx
  */
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { Send, Sparkles, User } from 'lucide-react';
+import {
+  PaperPlaneTilt,
+  Sparkle,
+  User
+} from '@phosphor-icons/react';
 import { Button } from '../../../shared/ui/button';
 import { Input } from '../../../shared/ui/input';
 import {
@@ -86,7 +90,7 @@ export function CharacterAssistantDrawer({ open, onOpenChange }: CharacterAssist
       >
         <div className="flex items-center gap-3 border-b px-4 py-3">
           <div className="flex size-9 items-center justify-center rounded-full bg-primary/10">
-            <Sparkles className="size-5 text-primary" />
+            <Sparkle className="size-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
             <SheetTitle className="text-base">Assistant</SheetTitle>
@@ -108,7 +112,7 @@ export function CharacterAssistantDrawer({ open, onOpenChange }: CharacterAssist
             >
               {message.role === 'assistant' && (
                 <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                  <Sparkles className="size-3.5 text-primary" />
+                  <Sparkle className="size-3.5 text-primary" />
                 </div>
               )}
               <div
@@ -142,7 +146,7 @@ export function CharacterAssistantDrawer({ open, onOpenChange }: CharacterAssist
               autoFocus
             />
             <Button type="submit" size="icon" disabled={!draft.trim()} aria-label="Senden">
-              <Send className="size-4" />
+              <PaperPlaneTilt className="size-4" />
             </Button>
           </div>
         </form>

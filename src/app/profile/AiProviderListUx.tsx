@@ -6,12 +6,12 @@
 import type { ReactNode } from 'react';
 import { Button } from '../../shared/ui/button';
 import { Input } from '../../shared/ui/input';
-import { Loader2, Pencil, Search } from 'lucide-react';
+import { CircleNotch, PencilSimple, MagnifyingGlass } from '@phosphor-icons/react';
 
 export function ProviderListLoading({ label = 'Provider werden geladen…' }: { label?: string }) {
   return (
     <div className="flex items-center gap-2 text-sm text-muted-foreground" data-ai-providers-loading>
-      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+      <CircleNotch className="size-4 animate-spin" aria-hidden="true" />
       {label}
     </div>
   );
@@ -30,7 +30,7 @@ export function ProviderListSearch({
 }) {
   return (
     <div className="relative">
-      <Search
+      <MagnifyingGlass
         className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
         aria-hidden="true"
       />
@@ -148,7 +148,7 @@ export function ProviderListCard({
           data-ai-provider-edit={id}
           aria-label={`${displayName} bearbeiten`}
         >
-          <Pencil className="size-4" aria-hidden="true" />
+          <PencilSimple className="size-4" aria-hidden="true" />
           Bearbeiten
         </Button>
       </div>

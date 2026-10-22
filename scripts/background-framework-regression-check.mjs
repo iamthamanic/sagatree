@@ -38,23 +38,23 @@ const expectedFrameworks = [
 ];
 
 const expectedIcons = [
-  ['stage-public', 'Drama'],
+  ['stage-public', 'MaskHappy'],
   ['sport-competition', 'Trophy'],
-  ['border-scout', 'Trees'],
+  ['border-scout', 'Tree'],
   ['academy-research', 'GraduationCap'],
   ['corporate-technician', 'Wrench'],
-  ['street-doctor', 'HeartPulse'],
+  ['street-doctor', 'Heartbeat'],
   ['soldier', 'Shield'],
   ['smuggler', 'Fingerprint'],
-  ['investigator', 'Search'],
+  ['investigator', 'MagnifyingGlass'],
   ['trade-networks', 'Handshake'],
   ['privilege-elite', 'Crown'],
   ['faith-order', 'Flame'],
   ['travel-transport', 'Compass'],
-  ['organization-administration', 'ClipboardList'],
-  ['service-supply', 'HandPlatter'],
-  ['family-community', 'UsersRound'],
-  ['law-institutions', 'Scale'],
+  ['organization-administration', 'ClipboardText'],
+  ['service-supply', 'HandPointing'],
+  ['family-community', 'UsersThree'],
+  ['law-institutions', 'Scales'],
 ];
 
 for (const [id, name] of expectedFrameworks) {
@@ -82,7 +82,7 @@ requireMatch(carousel, /'Hintergrund Framework'/, 'framework terminology in caro
 requireMatch(carousel, /'Freier Hintergrund'/, 'free background terminology in carousel');
 requireMatch(carousel, /option\.template\.examples\.join/, 'cross-setting examples shown in carousel');
 requireMatch(carousel, /data-background-framework-icon/, 'framework icon test hook');
-requireMatch(carousel, /:\s*PencilLine\s*;/, 'custom background PencilLine icon');
+requireMatch(carousel, /:\s*PencilSimpleLine\s*;/, 'custom background PencilSimpleLine icon');
 requireMatch(panel, /adjustBackgroundSkillPoints/, 'stackable background point adjust helper');
 requireMatch(panel, /Hintergrundpunkt erhöhen/, 'in-node background point increase control');
 requireMatch(panel, /data-background-points-budget/, 'background points budget badge');

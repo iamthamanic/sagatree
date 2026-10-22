@@ -9,7 +9,10 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Upload } from 'lucide-react';
+import {
+  CaretDown,
+  UploadSimple
+} from '@phosphor-icons/react';
 import type {
   MeshyAvatarGenerationMode,
   MeshyAvatarJobSnapshot,
@@ -686,7 +689,7 @@ export function AvatarMeshyPanel({ characterId, onSuccess, onJobChange }: Avatar
               data-avatar-meshy-image-pick
               onClick={() => imageInputRef.current?.click()}
             >
-              <Upload className="mr-1.5 h-3.5 w-3.5" />
+              <UploadSimple className="mr-1.5 h-3.5 w-3.5" />
               {imageReady ? 'Bild ändern' : 'Bild wählen'}
             </Button>
             {imageName ? (
@@ -741,7 +744,7 @@ export function AvatarMeshyPanel({ characterId, onSuccess, onJobChange }: Avatar
           aria-expanded={advancedOpen}
           onClick={() => setAdvancedOpen((open) => !open)}
         >
-          <ChevronDown
+          <CaretDown
             className={`mr-1 h-3.5 w-3.5 transition-transform ${advancedOpen ? 'rotate-180' : ''}`}
           />
           Erweiterte Einstellungen

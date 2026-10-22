@@ -7,7 +7,9 @@
  * canvas sits flush under chrome; body stays scrollable.
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import { AdaptivePage } from '../../shared/ui/adaptive';
 import { Skeleton } from '../../shared/ui/skeleton';
@@ -351,7 +353,7 @@ function SagaOverviewSection({
         <div className="space-y-4" data-saga-overview-loading aria-busy="true">
           <Skeleton className="h-[min(70vh,28rem)] w-full" />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <CircleNotch className="size-4 animate-spin" aria-hidden />
             Übersicht wird geladen…
           </div>
         </div>

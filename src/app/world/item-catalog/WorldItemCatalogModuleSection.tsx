@@ -5,7 +5,11 @@
  * Distinct from WorldItemCatalogSection (world-scoped definition authoring #112).
  * Location: src/app/world/item-catalog/WorldItemCatalogModuleSection.tsx
  */
-import { Package, Plus, X } from 'lucide-react';
+import {
+  Package,
+  Plus,
+  X
+} from '@phosphor-icons/react';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../shared/ui/card';

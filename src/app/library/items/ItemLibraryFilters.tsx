@@ -4,7 +4,9 @@
  * Location: src/app/library/items/ItemLibraryFilters.tsx
  */
 import type { ReactNode } from 'react';
-import { X } from 'lucide-react';
+import {
+  X
+} from '@phosphor-icons/react';
 import {
   ITEM_CONTEXTS,
   ITEM_KIND_KEYS,

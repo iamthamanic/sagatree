@@ -7,7 +7,10 @@
  * Location: src/app/library/EntityBrowser.tsx
  */
 import { useRef, type ReactNode } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CaretLeft,
+  CaretRight
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import {
   Carousel,
@@ -198,7 +201,7 @@ export function EntityBrowser<T extends { id: string }>({
                 aria-label="Vorheriges Element"
                 onClick={scrollPrev}
               >
-                <ChevronLeft className="size-5 md:size-6" />
+                <CaretLeft className="size-5 md:size-6" />
               </Button>
               <Button
                 type="button"
@@ -211,7 +214,7 @@ export function EntityBrowser<T extends { id: string }>({
                 aria-label="Nächstes Element"
                 onClick={scrollNext}
               >
-                <ChevronRight className="size-5 md:size-6" />
+                <CaretRight className="size-5 md:size-6" />
               </Button>
             </div>
           )}

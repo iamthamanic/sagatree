@@ -4,7 +4,13 @@
  * Location: src/app/dashboard/Dashboard.tsx
  */
 import { useState } from 'react';
-import { BookOpen, BookPlus, LogIn, Radio, UserPlus } from 'lucide-react';
+import {
+  BookOpen,
+  BookBookmark,
+  Broadcast,
+  SignIn,
+  UserPlus,
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import { AdaptivePage } from '../../shared/ui/adaptive';
 import { CreateCharacterEntryDialog } from '../character';
@@ -17,6 +23,22 @@ interface DashboardProps {
 
 const actionButtonClass =
   'h-auto min-h-14 w-full flex-col gap-2 px-4 py-6 text-base sm:min-h-28 sm:text-lg';
+
+/** Plus crop from Phosphor UserPlus regular — same stroke as „Spieler Charakter erstellen“. */
+function UserPlusStylePlus() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="200 112 56 48"
+      fill="currentColor"
+      // `size-` in className avoids Button's `[&_svg:not([class*='size-'])]:size-4` override.
+      className="size-[7px] shrink-0"
+      aria-hidden
+    >
+      <path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Z" />
+    </svg>
+  );
+}
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const [createCharacterOpen, setCreateCharacterOpen] = useState(false);
@@ -38,7 +60,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             aria-label="Spieler Charakter erstellen"
             data-dashboard-character-create
           >
-            <UserPlus className="size-7 sm:size-8" />
+            <UserPlus className="size-7 sm:size-8" size={32} weight="regular" aria-hidden />
             <span className="text-center whitespace-normal leading-snug">
               Spieler Charakter erstellen
             </span>
@@ -52,7 +74,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             aria-label="Session beitreten"
             data-dashboard-session-join
           >
-            <LogIn className="size-7 sm:size-8" />
+            <SignIn className="size-7 sm:size-8" size={32} weight="regular" aria-hidden />
             <span className="text-center whitespace-normal leading-snug">Session beitreten</span>
           </Button>
 
@@ -64,7 +86,10 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             aria-label="Saga erstellen"
             data-dashboard-saga-create
           >
-            <BookPlus className="size-7 sm:size-8" />
+            <span className="inline-flex items-center gap-0.5" aria-hidden>
+              <BookBookmark className="size-7 sm:size-8" size={32} weight="regular" />
+              <UserPlusStylePlus />
+            </span>
             <span className="text-center whitespace-normal leading-snug">Saga erstellen</span>
           </Button>
 
@@ -76,7 +101,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             aria-label="Session starten"
             data-dashboard-session-host
           >
-            <Radio className="size-7 sm:size-8" />
+            <Broadcast className="size-7 sm:size-8" size={32} weight="regular" aria-hidden />
             <span className="text-center whitespace-normal leading-snug">Session starten</span>
           </Button>
         </div>

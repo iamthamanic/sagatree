@@ -12,18 +12,18 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  BrickWall,
-  ChevronDown,
+  Wall,
+  CaretDown,
   Eraser,
   Hand,
-  MousePointer2,
-  Paintbrush,
-  Route,
+  Cursor,
+  PaintBrush,
+  Path,
   Square,
   Stamp,
   Wrench,
-  type LucideProps,
-} from 'lucide-react';
+  type IconProps
+} from '@phosphor-icons/react';
 import {
   ATLAS_PROTOTYPE_HOTSPOTS,
   ATLAS_PROTOTYPE_LAYER_LABELS,
@@ -1178,13 +1178,13 @@ export function UnifiedAtlasEditor({
     commit({ ...workingDoc, layers: { ...workingDoc.layers, [id]: on } }, false);
   };
 
-  const toolIcons: Record<UnifiedCanvasTool, ComponentType<LucideProps>> = {
+  const toolIcons: Record<UnifiedCanvasTool, ComponentType<IconProps>> = {
     hand: Hand,
-    select: MousePointer2,
-    brush: Paintbrush,
-    road: Route,
+    select: Cursor,
+    brush: PaintBrush,
+    road: Path,
     room: Square,
-    wall: BrickWall,
+    wall: Wall,
     stamp: Stamp,
     erase: Eraser,
   };
@@ -1618,7 +1618,7 @@ export function UnifiedAtlasEditor({
                 onClick={() => setToolsExpanded((v) => !v)}
               >
                 <Wrench className="size-4" aria-hidden />
-                <ChevronDown
+                <CaretDown
                   className={`size-3.5 text-muted-foreground transition-transform duration-300 ease-in-out motion-reduce:transition-none ${
                     toolsExpanded ? 'rotate-180' : 'rotate-0'
                   }`}

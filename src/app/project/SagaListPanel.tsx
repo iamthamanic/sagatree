@@ -2,7 +2,10 @@
  * SagaListPanel — Authorized Saga list for /sagas (#489).
  * Location: src/app/project/SagaListPanel.tsx
  */
-import { Loader2, Plus } from 'lucide-react';
+import {
+  CircleNotch,
+  Plus
+} from '@phosphor-icons/react';
 import { Button } from '../../shared/ui/button';
 import { pathForSagaNew, pathForSagaSection } from '../shell';
 import { useProjectSummaries } from './hooks/useProjectSummaries';
@@ -57,7 +60,7 @@ export function SagaListPanel({ onNavigate, onNavigateHome }: SagaListPanelProps
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12" data-saga-list-loading>
-          <Loader2 className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
+          <CircleNotch className="size-8 animate-spin text-muted-foreground" aria-label="Lädt" />
         </div>
       ) : null}
 

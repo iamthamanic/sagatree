@@ -8,7 +8,10 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Loader2, MoreHorizontal } from 'lucide-react';
+import {
+  CircleNotch,
+  DotsThree
+} from '@phosphor-icons/react';
 import { cn } from '../../shared/ui/utils';
 
 export type EntityBrowserCornerMenuItem = {
@@ -118,9 +121,9 @@ export function EntityBrowserCornerMenuTrigger({
       )}
     >
       {busy ? (
-        <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+        <CircleNotch className="size-3.5 animate-spin" aria-hidden="true" />
       ) : (
-        <MoreHorizontal className="size-3.5" aria-hidden="true" />
+        <DotsThree className="size-3.5" aria-hidden="true" />
       )}
     </button>
   );

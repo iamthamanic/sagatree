@@ -3,7 +3,10 @@
  * Location: src/app/character/progression/CharacterStatisticsPanel.tsx
  */
 import { useEffect, useState } from 'react';
-import { Loader2, Plus } from 'lucide-react';
+import {
+  CircleNotch,
+  Plus
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
@@ -124,7 +127,7 @@ export function CharacterStatisticsPanel({ characterId }: CharacterStatisticsPan
   if (isLoading) {
     return (
       <div className="flex items-center justify-center gap-2 py-12 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
+        <CircleNotch className="h-5 w-5 animate-spin" />
         <span className="text-sm">Lade Abenteuer-Statistik…</span>
       </div>
     );

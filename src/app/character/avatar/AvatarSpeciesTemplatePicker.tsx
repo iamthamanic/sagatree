@@ -8,7 +8,9 @@
  */
 
 import type { ReactNode } from 'react';
-import { CircleHelp } from 'lucide-react';
+import {
+  Question
+} from '@phosphor-icons/react';
 import {
   listTemplateCreatorPickerItems,
   type BaseBodySpeciesId,
@@ -111,7 +113,7 @@ export function AvatarSpeciesTemplatePicker({
                         event.stopPropagation();
                       }}
                     >
-                      <CircleHelp className="pointer-events-none size-3.5" aria-hidden />
+                      <Question className="pointer-events-none size-3.5" aria-hidden />
                     </span>
                   </TooltipTrigger>
                   <TooltipContent

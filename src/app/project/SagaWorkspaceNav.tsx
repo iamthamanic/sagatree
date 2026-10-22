@@ -4,7 +4,11 @@
  *
  * Library-style TabsList grid; deep-link sections map via resolveSagaWorkspaceTop.
  */
-import { BookOpen, LayoutDashboard, Settings } from 'lucide-react';
+import {
+  BookOpen,
+  Layout,
+  Gear
+} from '@phosphor-icons/react';
 import {
   pathSectionForTop,
   resolveSagaWorkspaceTop,
@@ -17,11 +21,11 @@ import { pathForSagaSection } from '../shell';
 const TOP_TABS: readonly {
   id: SagaWorkspaceTopId;
   label: string;
-  icon: typeof LayoutDashboard;
+  icon: typeof Layout;
 }[] = [
-  { id: 'overview', label: 'Übersicht', icon: LayoutDashboard },
+  { id: 'overview', label: 'Übersicht', icon: Layout },
   { id: 'world', label: 'Welt', icon: BookOpen },
-  { id: 'settings', label: 'Einstellungen', icon: Settings },
+  { id: 'settings', label: 'Einstellungen', icon: Gear },
 ];
 
 export type SagaWorkspaceNavProps = {

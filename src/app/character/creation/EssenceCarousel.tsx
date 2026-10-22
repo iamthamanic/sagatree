@@ -2,7 +2,10 @@
  * EssenceCarousel — Swipebare Primär-Essenz-Auswahl, analog zu Archetyp-/Spezies-Karussell.
  * Location: src/app/character/creation/EssenceCarousel.tsx
  */
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  CaretLeft,
+  CaretRight
+} from '@phosphor-icons/react';
 import { sagaTreeEssenceOptions, type SagaTreeEssenceKey } from '../../../domains/rules/sagatree/character-creation';
 import { EssenceIcon } from './EssenceIcon';
 import { RuleHelp } from '../shared/RuleHelp';
@@ -140,10 +143,10 @@ export function EssenceCarousel({
       {options.length > 1 && (
         <div className={navClass}>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} left-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:left-2 md:h-11 md:w-11`} onClick={scrollPrev} aria-label="Vorherige Essenz">
-            <ChevronLeft className="size-5" />
+            <CaretLeft className="size-5" />
           </Button>
           <Button type="button" variant="outline" size="icon" className={`${navButtonClass} right-0 top-[28%] h-10 w-10 rounded-full border-2 bg-background/95 shadow-xl backdrop-blur-sm md:right-2 md:h-11 md:w-11`} onClick={scrollNext} aria-label="Nächste Essenz">
-            <ChevronRight className="size-5" />
+            <CaretRight className="size-5" />
           </Button>
         </div>
       )}

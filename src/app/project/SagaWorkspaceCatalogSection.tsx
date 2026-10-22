@@ -5,7 +5,14 @@
  */
 import type { ReactNode } from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { Loader2, Package, Plus, ScrollText, User, Users } from 'lucide-react';
+import {
+  CircleNotch,
+  Package,
+  Plus,
+  Scroll,
+  User,
+  Users
+} from '@phosphor-icons/react';
 import {
   resolveSagaBindingImageObjectFit,
   resolveSagaBindingImageSrc,
@@ -252,7 +259,7 @@ export function SagaWorkspaceCatalogSection({
         ) : null}
         {bindingsLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <CircleNotch className="size-4 animate-spin" aria-hidden />
             Charaktere werden geladen…
           </div>
         ) : null}
@@ -319,7 +326,7 @@ export function SagaWorkspaceCatalogSection({
   return (
     <CatalogWithBindings
       testId="quests"
-      icon={<ScrollText className="mx-auto mb-2 size-8 text-muted-foreground" aria-hidden />}
+      icon={<Scroll className="mx-auto mb-2 size-8 text-muted-foreground" aria-hidden />}
       title="Quests"
       body="Quests dieser Saga. Dornhain-Starter-Quests kommen mit dem Lern-Seed (Phase 3)."
       bindings={bindings}
@@ -512,7 +519,7 @@ function CatalogWithBindings(props: {
       ) : null}
       {props.bindingsLoading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="size-4 animate-spin" aria-hidden />
+          <CircleNotch className="size-4 animate-spin" aria-hidden />
           Katalog wird geladen…
         </div>
       ) : null}

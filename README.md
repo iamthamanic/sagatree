@@ -303,6 +303,7 @@ SagaTree/                 # Repo (historisch auch sagatree/ lokal)
 
 ## Recent changes
 
+- **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände; Dashboard-Karten ohne Duotone (`chore/phosphor-icon-migration`)
 - **2026-10-21** — Migrationsvorbereitung: geprüfte RPC-/Edge-Verträge, gesperrter 90-Ticket-Plan und echte isolierte SQL-/Atlas-Prüfungen mit offen ausgewiesenen Altfehlern ([#773](https://github.com/iamthamanic/sagatree/issues/773), [Prüfanleitung](docs/stack-migration-preparation.md))
 - **2026-10-18** — Atlas Karte: map-first Chrome (kein Ebenen-Flash), Map keep-alive über Welt-Untertabs, Kontinent-Gruppe unter Welt, dunklere Kategoriezeilen (`fix/atlas-nav-edit-label-box`)
 - **2026-10-18** — Weltatlas 3D: native Prototype-Mount, Länder-Hierarchie, Suche/Filter, editierbare/verschiebbare Kartenlabels (`feat/donalu-world-workspace`)

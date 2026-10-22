@@ -3,7 +3,9 @@
  * Location: src/app/world/atlas/WorldAtlasScreen.tsx
  */
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import {
+  CircleNotch
+} from '@phosphor-icons/react';
 import { useAuth } from '../../../lib/auth-context';
 import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
 import { Button } from '../../../shared/ui/button';
@@ -73,7 +75,7 @@ export function WorldAtlasScreen({ worldPublicId, onBack }: WorldAtlasScreenProp
   if (loading || authLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="size-4 animate-spin" aria-hidden />
+        <CircleNotch className="size-4 animate-spin" aria-hidden />
         Weltatlas wird vorbereitet…
       </div>
     );

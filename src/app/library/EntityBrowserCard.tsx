@@ -6,7 +6,9 @@
  * Location: src/app/library/EntityBrowserCard.tsx
  */
 import { useState, type MouseEvent, type ReactNode, type SyntheticEvent } from 'react';
-import { ImageOff } from 'lucide-react';
+import {
+  ImageBroken
+} from '@phosphor-icons/react';
 import { Badge } from '../../shared/ui/badge';
 import { Card, CardContent } from '../../shared/ui/card';
 import {
@@ -129,7 +131,7 @@ function EntityImageFallback({
       {initials.length > 0 ? (
         <span className={textClassName}>{initials.join('')}</span>
       ) : (
-        <ImageOff className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+        <ImageBroken className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
       )}
     </span>
   );

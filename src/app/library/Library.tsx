@@ -12,20 +12,20 @@ import {
 } from '../../shared/ui/dialog';
 import {
   Plus,
-  Search,
+  MagnifyingGlass,
   User,
   BookOpen,
-  Edit,
-  Trash2,
-  Loader2,
-  Globe2,
+  PencilSimple,
+  Trash,
+  CircleNotch,
+  Globe,
   Package,
   Users,
   Palette,
   Copy,
-  CopyPlus,
-  RotateCcw,
-} from 'lucide-react';
+  CopySimple,
+  ArrowCounterClockwise
+} from '@phosphor-icons/react';
 import {
   useCharacterSummaries,
   CreateCharacterEntryDialog,
@@ -193,7 +193,7 @@ const LIBRARY_TAB_BUTTONS: readonly {
   { id: 'characters', label: 'Charaktere', icon: User },
   { id: 'npcs', label: 'NPCs & Kreaturen', icon: Users },
   { id: 'adventures', label: 'Sagas', icon: BookOpen },
-  { id: 'worlds', label: 'Welten', icon: Globe2 },
+  { id: 'worlds', label: 'Welten', icon: Globe },
   { id: 'items', label: 'Items', icon: Package },
   { id: 'looks', label: 'Looks', icon: Palette },
 ];
@@ -753,7 +753,7 @@ export function Library({
               disabled={!world.publicId}
               data-library-world-map={menuKey}
             >
-              <Globe2 className="mr-1 h-3 w-3 shrink-0" aria-hidden />
+              <Globe className="mr-1 h-3 w-3 shrink-0" aria-hidden />
               <span className="truncate text-xs">Karte</span>
             </Button>
             <Button
@@ -766,7 +766,7 @@ export function Library({
               }}
               data-library-world-open={menuKey}
             >
-              <Edit className="mr-1 h-3 w-3 shrink-0" />
+              <PencilSimple className="mr-1 h-3 w-3 shrink-0" />
               <span className="truncate text-xs">Bearbeiten</span>
             </Button>
           </div>
@@ -846,7 +846,7 @@ export function Library({
           }}
           data-library-character-open={menuKey}
         >
-          <Edit className="mr-1 h-3 w-3 shrink-0" />
+          <PencilSimple className="mr-1 h-3 w-3 shrink-0" />
           <span className="truncate text-xs">Bearbeiten</span>
         </Button>
       }
@@ -856,7 +856,7 @@ export function Library({
 
   const worldsEmptyState = (
     <div className="text-center py-12">
-      <Globe2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+      <Globe className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
       <p className="text-muted-foreground mb-4">
         {searchQuery ? 'Keine Welten gefunden' : 'Noch keine Welten erstellt'}
       </p>
@@ -911,7 +911,7 @@ export function Library({
 
         {activeTab !== 'items' && activeTab !== 'npcs' && activeTab !== 'looks' ? (
           <div className="relative min-w-0">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Suche in deiner Bibliothek..."
               value={searchQuery}
@@ -966,7 +966,7 @@ export function Library({
 
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
               </div>
             ) : (
               <EntityBrowser
@@ -996,7 +996,7 @@ export function Library({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                    <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
                   </div>
                 }
               >
@@ -1023,7 +1023,7 @@ export function Library({
 
             {projectsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
               </div>
             ) : (
               <EntityBrowser
@@ -1072,7 +1072,7 @@ export function Library({
 
             {worldsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
               </div>
             ) : (
               <EntityBrowser
@@ -1102,7 +1102,7 @@ export function Library({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                    <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
                   </div>
                 }
               >
@@ -1120,7 +1120,7 @@ export function Library({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                    <CircleNotch className="w-8 h-8 animate-spin text-muted-foreground" />
                   </div>
                 }
               >
@@ -1181,7 +1181,7 @@ export function Library({
               }}
               data-library-saga-duplicate-progress
             >
-              <CopyPlus className="size-4 shrink-0" aria-hidden="true" />
+              <CopySimple className="size-4 shrink-0" aria-hidden="true" />
               Mit aktuellem Stand
             </Button>
             <Button
@@ -1194,7 +1194,7 @@ export function Library({
               }}
               data-library-saga-duplicate-fresh
             >
-              <RotateCcw className="size-4 shrink-0" aria-hidden="true" />
+              <ArrowCounterClockwise className="size-4 shrink-0" aria-hidden="true" />
               Kopie vom Anfang
             </Button>
             <Button
@@ -1233,7 +1233,7 @@ export function Library({
               items.push({
                 id: 'duplicate',
                 label: 'Saga duplizieren',
-                icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+                icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
                 onSelect: () => setDuplicateTarget(project),
               });
             }
@@ -1241,7 +1241,7 @@ export function Library({
               items.push({
                 id: 'delete',
                 label: 'Saga löschen',
-                icon: <Trash2 className="size-4 shrink-0" aria-hidden="true" />,
+                icon: <Trash className="size-4 shrink-0" aria-hidden="true" />,
                 destructive: true,
                 separatorBefore: true,
                 onSelect: () => void deleteSagaRun(project),
@@ -1270,13 +1270,13 @@ export function Library({
             {
               id: 'duplicate',
               label: 'Welt duplizieren',
-              icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+              icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
               onSelect: () => void handleDuplicateWorld(entityMenu.entity),
             },
             {
               id: 'delete',
               label: 'Welt löschen',
-              icon: <Trash2 className="size-4 shrink-0" aria-hidden="true" />,
+              icon: <Trash className="size-4 shrink-0" aria-hidden="true" />,
               destructive: true,
               separatorBefore: true,
               onSelect: () => void handleDeleteWorld(entityMenu.entity),
@@ -1306,13 +1306,13 @@ export function Library({
             {
               id: 'duplicate',
               label: 'Charakter duplizieren',
-              icon: <CopyPlus className="size-4 shrink-0" aria-hidden="true" />,
+              icon: <CopySimple className="size-4 shrink-0" aria-hidden="true" />,
               onSelect: () => void handleDuplicateCharacter(entityMenu.entity),
             },
             {
               id: 'delete',
               label: 'Charakter löschen',
-              icon: <Trash2 className="size-4 shrink-0" aria-hidden="true" />,
+              icon: <Trash className="size-4 shrink-0" aria-hidden="true" />,
               destructive: true,
               separatorBefore: true,
               onSelect: () => void handleDeleteCharacter(entityMenu.entity),
