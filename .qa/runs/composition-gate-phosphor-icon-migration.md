@@ -1,14 +1,34 @@
-# Composition Gate — phosphor-icon-migration
+# Composition Gate — phosphor-icon-migration (#881)
 
-- **Status:** CLEAR
-- **Branch:** `chore/phosphor-icon-migration-pr`
-- **HEAD_SHA:** `12ba217233241a4686680272edab272a2920577d`
-- **Validated SHA:** `6391a984` (`npm run test-gate` PASS; subsequent tip commits are docs-only SHA binds)
-- **Base:** `origin/main` (includes #879 AI Organize)
-- **Scope:** Lucide → `@phosphor-icons/react` across `src/app/**` + `src/shared/ui/**`; Dashboard „Saga erstellen“ = BookBookmark + Plus; docs (THEME_GUIDE, ui-styleguide, AGENTS, README Recent changes)
-- **Conflict resolution:** Profile + AI BYOK panels kept main UX (#879), icons mapped to Phosphor
-- **Reason:** Icon-only / design-system swap; no domain/RPC/architecture boundary change. Regression scripts updated for Phosphor names.
+- HEAD_SHA: b5a34b52a09fb25d031809a63749419fcacba54b
+- BASE_SHA: 32dd2d4616a6f704a95fb83f24546d8495931091
+- Date: 2026-10-22
+- Verdict: CLEAR
 
-## Verdict
+## Event
 
-CLEAR
+Product UI icons use `@phosphor-icons/react`. User-facing Settings copy keeps “Video” / “KI-Video” / “Audio & Video”; `VideoCamera` is the component identifier only.
+
+## Hop chain
+
+1. Producer: Phosphor icon components in app + shared UI
+2. Brand roles: Cyan selected / Gold hover (sidebar)
+3. Consumer: Settings / Dashboard / shells render icons + labels
+
+## Simulations
+
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Settings audio-video + AI video tabs | Labels Video / Audio & Video; icon VideoCamera | pass |
+| Invalid/missing | N/A (icon swap) | — | pass |
+| Two consumers / crash | N/A | — | pass |
+
+## Flags
+
+| Tag | Severity | Hops | Why local review missed it | Fix |
+|-----|----------|------|----------------------------|-----|
+| (none) | | | | |
+
+## Non-claims
+
+No migration Known-Red freigabe. No GATE-02/03/05.
