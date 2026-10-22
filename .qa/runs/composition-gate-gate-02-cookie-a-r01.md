@@ -1,6 +1,6 @@
 # Composition Gate — gate-02-cookie-a-r01 (#785 R01 fix)
 
-- HEAD_SHA: 9da18d72b29081f6fb6f94c1976de63a5a912eb2
+- HEAD_SHA: ff20eeba580ac9cb7a039fb1486ac7a82b1fb216
 - BASE_SHA: d4b7ebf3df98b1ffd12448c86bd0f01e3e8db2e4
 - Date: 2026-10-22
 - Verdict: SKIPPED
