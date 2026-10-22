@@ -23,6 +23,7 @@ export type PolicyDecision = {
 export type PolicyOp =
   | 'host.health.read'
   | 'host.ping.write'
+  | 'world.read'
   | 'world.edit'
   | 'session.gm'
   | 'player.project.read'
@@ -58,8 +59,10 @@ export class PolicyService {
     if (!this.#db) return deny('deny-by-default');
 
     switch (op) {
+      case 'world.read':
+        return this.#authorizeWorldOwner(actor.actorId, resource, 'world-owner-read');
       case 'world.edit':
-        return this.#authorizeWorldEdit(actor.actorId, resource);
+        return this.#authorizeWorldOwner(actor.actorId, resource, 'world-owner');
       case 'session.gm':
         return this.#authorizeSessionGm(actor.actorId, resource);
       case 'player.project.read':
@@ -69,7 +72,11 @@ export class PolicyService {
     }
   }
 
-  #authorizeWorldEdit(actorId: string, resource: PolicyResource): PolicyDecision {
+  #authorizeWorldOwner(
+    actorId: string,
+    resource: PolicyResource,
+    allowReason: string,
+  ): PolicyDecision {
     const worldId = resource.worldId?.trim();
     if (!worldId) return deny('missing-world');
 
@@ -78,7 +85,7 @@ export class PolicyService {
       | undefined;
     if (!world) return deny('world-not-found');
     if (world.owner_user_id !== actorId) return deny('not-world-owner');
-    return allow('world-owner');
+    return allow(allowReason);
   }
 
   #authorizeSessionGm(actorId: string, resource: PolicyResource): PolicyDecision {

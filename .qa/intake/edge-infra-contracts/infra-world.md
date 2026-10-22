@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `9fd6bd0e7f1d4cdbce61b9a16c311ea9de760e45c45e33856a31f588f01a59c0`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `95a501edd1ff1f24d44b197aaa14cb522d1de251e3fa3576c36ca7ca021ccabb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -514,6 +514,33 @@ supabase
 Enclosing operation: `src/infrastructure/world/world-profile-service.ts:150`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
+
+### src/infrastructure/world/host-world-read.contract.ts:11
+
+```ts
+export type HostWorldReadDto = {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: string;
+};
+```
+
+### src/infrastructure/world/host-world-read.contract.ts:17
+
+```ts
+export type HostWorldReadResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/world/host-world-read.contract.ts:25
+
+```ts
+export type HostWorldReadPort = {
+  readonly listOwnedWorlds: (actorId: string) => Promise<HostWorldReadResult<readonly HostWorldReadDto[]>>;
+  readonly getWorld: (actorId: string, worldId: string) => Promise<HostWorldReadResult<HostWorldReadDto>>;
+};
+```
 
 ### src/infrastructure/world/world-atlas-service.ts:23
 
@@ -1326,6 +1353,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
+| `src/infrastructure/world/host-world-read.contract.ts` | `e81ccebd8dd092ac60642b0c14e7424877fd194e49e47d92b0d5fcb4a4fff2e3` |
 | `src/infrastructure/world/world-atlas-service.ts` | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
 | `src/infrastructure/world/world-map-service.ts` | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |
 | `src/infrastructure/world/world-place-service.ts` | `0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0` |

@@ -10,8 +10,13 @@ import { loadConfig, type HostConfig } from '../config/load-config.ts';
 import { createIdentityPorts } from '../modules/identity/index.ts';
 import { createPermissionsPorts } from '../modules/permissions/index.ts';
 import { createOpsPorts } from '../modules/ops/index.ts';
-import { createWorldPorts } from '../modules/world/index.ts';
+import {
+  createWorldPorts,
+  createWorldPortsStub,
+  type WorldPorts,
+} from '../modules/world/index.ts';
 import { createProjectPorts } from '../modules/project/index.ts';
+import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
@@ -23,6 +28,7 @@ export type HostInstance = {
   readonly config: HostConfig;
   readonly dataDirFingerprint: string;
   readonly schemaVersion: number;
+  readonly world: WorldPorts;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   isReady: () => boolean;
@@ -90,7 +96,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
 
     const identity = createIdentityPorts(actorId);
     const permissions = createPermissionsPorts(db);
-    createWorldPorts();
+    const world: WorldPorts = db
+      ? createWorldPorts({
+          authorize: permissions.authorize,
+          store: createSqliteWorldReadStore(db),
+        })
+      : createWorldPortsStub();
     createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
@@ -114,6 +125,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       config,
       dataDirFingerprint,
       schemaVersion,
+      world,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
       async start() {

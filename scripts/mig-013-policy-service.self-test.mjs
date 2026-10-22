@@ -55,6 +55,8 @@ try {
   const P1 = { kind: 'solo-local', actorId: 'player-p1' };
   const X = { kind: 'solo-local', actorId: 'stranger-x' };
 
+  assert(permissions.authorize('world.read', O, { worldId: 'world-o' }).allow, 'O may read world');
+  assert(!permissions.authorize('world.read', G, { worldId: 'world-o' }).allow, 'G may not read world');
   assert(permissions.authorize('world.edit', O, { worldId: 'world-o' }).allow, 'O may edit world');
   assert(!permissions.authorize('world.edit', G, { worldId: 'world-o' }).allow, 'G may not edit world');
   assert(permissions.authorize('session.gm', G, { projectId: 'proj-1' }).allow, 'G may session.gm');
