@@ -16,6 +16,11 @@ import {
   type WorldPorts,
 } from '../modules/world/index.ts';
 import { createProjectPorts } from '../modules/project/index.ts';
+import {
+  createAssetPorts,
+  createAssetPortsStub,
+  type AssetPorts,
+} from '../assets/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
@@ -29,6 +34,7 @@ export type HostInstance = {
   readonly dataDirFingerprint: string;
   readonly schemaVersion: number;
   readonly world: WorldPorts;
+  readonly assets: AssetPorts;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   isReady: () => boolean;
@@ -102,6 +108,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           store: createSqliteWorldReadStore(db),
         })
       : createWorldPortsStub();
+    const assets: AssetPorts = db
+      ? createAssetPorts({
+          dataDir: config.dataDir,
+          db,
+          authorize: permissions.authorize,
+        })
+      : createAssetPortsStub();
     createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
@@ -126,6 +139,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       dataDirFingerprint,
       schemaVersion,
       world,
+      assets,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
       async start() {

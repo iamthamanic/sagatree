@@ -43,8 +43,11 @@ function formatExit(code, signal) {
 }
 
 const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts')).href;
-const { bootstrapHostPersistence, openHostDatabase, readSchemaVersion } = await import(persistenceUrl);
+const { bootstrapHostPersistence, openHostDatabase, readSchemaVersion, listMigrationFiles } = await import(persistenceUrl);
 const catalogMigrations = join(root, 'server/migrations');
+const catalogSteps = listMigrationFiles(catalogMigrations);
+const expectedVersion = catalogSteps[catalogSteps.length - 1].version;
+const expectedJournal = catalogSteps.length;
 const work = mkdtempSync(join(tmpdir(), 'mig011-sigkill-'));
 
 try {
@@ -175,14 +178,14 @@ setInterval(() => {}, 60_000);
     .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
     .get();
   assert(!partial, 'uncommitted crash_partial must roll back after SIGKILL');
-  assert(readSchemaVersion(afterCrash.db) === 1, 'committed v1 must survive SIGKILL');
+  assert(readSchemaVersion(afterCrash.db) === expectedVersion, 'committed catalog version must survive SIGKILL');
   const journalAfterCrash = afterCrash.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
-  assert(journalAfterCrash === 1, `no duplicate journal after crash, got ${journalAfterCrash}`);
+  assert(journalAfterCrash === expectedJournal, `no duplicate journal after crash, got ${journalAfterCrash}`);
   afterCrash.db.close();
 
   const restartCrash = bootstrapHostPersistence({ dataDir: dataCrash, migrationsDir: migCrash });
   assert(restartCrash.ok, `restart after SIGKILL: ${restartCrash.ok ? '' : restartCrash.error}`);
-  assert(restartCrash.schemaVersion === 1, 'schema version stable after crash recovery');
+  assert(restartCrash.schemaVersion === expectedVersion, 'schema version stable after crash recovery');
   const stillNoPartial = restartCrash.db
     .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='crash_partial'`)
     .get();
