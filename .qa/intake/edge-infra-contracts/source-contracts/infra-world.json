@@ -4,6 +4,10 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "src/infrastructure/world/host-world-read.contract.ts",
+      "sha256": "e81ccebd8dd092ac60642b0c14e7424877fd194e49e47d92b0d5fcb4a4fff2e3"
+    },
+    {
       "path": "src/infrastructure/world/world-atlas-service.ts",
       "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
     },
@@ -2857,6 +2861,24 @@
     }
   ],
   "publicDeclarations": [
+    {
+      "path": "src/infrastructure/world/host-world-read.contract.ts",
+      "line": 11,
+      "endLine": 15,
+      "text": "export type HostWorldReadDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/world/host-world-read.contract.ts",
+      "line": 17,
+      "endLine": 19,
+      "text": "export type HostWorldReadResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/world/host-world-read.contract.ts",
+      "line": 25,
+      "endLine": 28,
+      "text": "export type HostWorldReadPort = {\n  readonly listOwnedWorlds: (actorId: string) => Promise<HostWorldReadResult<readonly HostWorldReadDto[]>>;\n  readonly getWorld: (actorId: string, worldId: string) => Promise<HostWorldReadResult<HostWorldReadDto>>;\n};"
+    },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
       "line": 23,
