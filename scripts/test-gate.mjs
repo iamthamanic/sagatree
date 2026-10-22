@@ -428,6 +428,18 @@ function checkMig013PolicyService() {
   );
 }
 
+function checkMig012WorldReadPort() {
+  console.log('MIG-012 world read port (#791): policy-guarded SQLite adapter self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-012-world-read-port.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2542,6 +2554,7 @@ checkStackMigrationPrep();
 checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();
+checkMig012WorldReadPort();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

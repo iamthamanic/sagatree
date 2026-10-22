@@ -17,6 +17,7 @@ Registered top-level host package for the Epic #773 modular monolith.
 | `migrations/` | Ordered host schema catalog (`0001_host_bootstrap.sql`, …) |
 | `src/modules/<id>/` | Public module APIs (`identity`, `permissions`, `ops`, `world`, `project`) |
 | `src/modules/<id>/persistence/` | Private table ownership mirrors (no cross-module imports) |
+| `src/repositories/world/` | SQLite world read adapter (composition-wired; implements world store port) |
 | `src/application/<use-case>/` | Vertical use-cases (`health`) |
 | `src/http/route-registry.ts` | Sole HTTP composition entry (not a free-for-all under `http/**`) |
 
@@ -38,7 +39,7 @@ Default bind is loopback only. Remote bind requires `SAGATREE_ALLOW_REMOTE_BIND=
 - Legacy `schema-upgrade.lock`: **fail-closed** if present (may mean an old host is mid-upgrade). Never auto-deleted. Clear only via `clearLegacySchemaUpgradeLockAfterVerifiedStandstill({ oldHostVerifiedStopped: true })` after the old host is confirmed stopped
 - Journal: `schema_migrations` (owned by `ops`); failed steps recorded in `migration-failure.json` beside the DB
 - Bootstrap catalog tables: `worlds` (`world`), `projects` + `project_members` (`project`)
-- Drizzle repository adapters remain follow-on under GATE-01 (MIG-012+); Policy Service is MIG-013
+- World read port (MIG-012): policy-guarded `world.read` + SQLite store via `repositories/world` (Drizzle encapsulation remains follow-on); Policy Service is MIG-013
 
 ## Non-claims
 
