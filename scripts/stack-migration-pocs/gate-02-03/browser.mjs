@@ -53,6 +53,9 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
     }, { email: user.email, password: user.password });
     assert.equal(login.status, 200);
     assert.equal(login.documentCookieEmpty, true);
+    // Cookie-only GATE-02 A: page JS must not receive usable session bearers.
+    assert.equal(login.bodyTokenReadable, false);
+    assert.equal(login.bearerHeaderReadable, false);
     const cookie = (await context.cookies(host.origin)).find((entry) => entry.name === 'better-auth.session_token');
     assert.ok(cookie); assert.equal(cookie.httpOnly, true); assert.equal(cookie.sameSite, 'Lax');
     const identity = await page.evaluate(async () => { const response = await fetch('/api/whoami'); return { status: response.status, data: await response.json() }; });
@@ -70,19 +73,31 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
     assert.ok(actualSocketUrl);
     assert.ok(socketFacts.length > 0 && socketFacts.every((socket) => !socket.authTokenParameterPresent && socket.seatParameterPresent));
 
-    // Known failing goal: the combined bearer/JWT profile exposes usable auth
-    // credentials to page JS even though document.cookie cannot read its cookie.
+    // Negative: page JS cannot restore an authenticated session without the cookie
+    // using any tokens scraped from the sign-in response (body or set-auth-token).
     const exposure = await page.evaluate(async () => {
       const results = [];
       for (const token of [window.__pocTokens.bodyToken, window.__pocTokens.headerToken]) {
-        const response = await fetch('/api/auth/get-session', { credentials: 'omit', headers: { authorization: `Bearer ${token}` } });
+        const headers = typeof token === 'string' && token.length > 0 ? { authorization: `Bearer ${token}` } : {};
+        const response = await fetch('/api/auth/get-session', { credentials: 'omit', headers });
         const body = await response.json();
-        results.push({ status: response.status, authenticated: typeof body?.user?.id === 'string' && typeof body?.session?.id === 'string' });
+        results.push({
+          status: response.status,
+          authenticated: typeof body?.user?.id === 'string' && typeof body?.session?.id === 'string',
+          scrapedTokenPresent: typeof token === 'string' && token.length > 0,
+        });
       }
-      return { loginBodyTokenReadable: typeof window.__pocTokens.bodyToken === 'string', bearerHeaderReadable: typeof window.__pocTokens.headerToken === 'string', replayWithoutCookie: results };
+      return {
+        loginBodyTokenReadable: typeof window.__pocTokens.bodyToken === 'string',
+        bearerHeaderReadable: typeof window.__pocTokens.headerToken === 'string',
+        replayWithoutCookie: results,
+        pageJsCannotRestoreSessionWithoutCookie: results.every((entry) => !entry.authenticated && !entry.scrapedTokenPresent),
+      };
     });
-    assert.equal(exposure.loginBodyTokenReadable, true); assert.equal(exposure.bearerHeaderReadable, true);
-    assert.deepEqual(exposure.replayWithoutCookie, [{ status: 200, authenticated: true }, { status: 200, authenticated: true }]);
+    assert.equal(exposure.loginBodyTokenReadable, false);
+    assert.equal(exposure.bearerHeaderReadable, false);
+    assert.ok(exposure.replayWithoutCookie.every((entry) => !entry.authenticated));
+    assert.equal(exposure.pageJsCannotRestoreSessionWithoutCookie, true);
 
     const foreign = await context.newPage();
     const foreignWire = await wireAudit(context, foreign);
@@ -112,8 +127,9 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
     const [ordinaryGet] = await wire('GET', '/api/whoami');
     assert.ok(ordinaryGet); assert.equal(ordinaryGet.originPresent, false); assert.equal(ordinaryGet.fetchSite, 'same-origin'); assert.equal(ordinaryGet.cookiePresent, true);
     const tokenReplays = await wire('GET', '/api/auth/get-session', 2);
-    assert.equal(tokenReplays.length, 2); assert.ok(tokenReplays.every((request) => !request.cookiePresent));
-    assert.ok(tokenReplays.every((request) => request.authorizationPresent));
+    assert.equal(tokenReplays.length, 2);
+    assert.ok(tokenReplays.every((request) => !request.cookiePresent));
+    assert.ok(tokenReplays.every((request) => !request.authorizationPresent), 'cookie-only profile must not leave scraped Authorization credentials for page JS to replay');
     return {
       evidence: {
         realBrowserLogin: true, browserCookieSetAutomatically: true, documentCookieCannotReadHttpOnlyCookie: true, headerEvidence: 'Chromium CDP Network.requestWillBeSentExtraInfo; not renderer-only request headers',
@@ -121,7 +137,8 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
         realBrowserColyseusWebSocket: true, browserWsCommandAcknowledged: true, injectedOriginOrCookieHeaders: false,
         csrf: { realForeignOrigin: true, ambientCookieActuallyPresent: true, observedHttpStatus: 403, unauthorizedRevisionChanges: 0, responseAccess: csrf },
         wrongOriginWebSocketRejected: true, socketUrlFacts: socketFacts,
-        credentialExposure: exposure, credentialIsolationSatisfied: false, requiredCriterionOutcome: 'FAIL',
+        credentialExposure: exposure, credentialIsolationSatisfied: true, requiredCriterionOutcome: 'PASS',
+        pageJsCannotRestoreSessionWithoutCookieUsingExtractedTokens: true,
         tlsSecureCookieTested: false, tauriTested: false,
       },
       observations: { browser: 'chromium', version: browser.version(), headless: true, httpOnly: cookie.httpOnly, sameSite: cookie.sameSite, secure: cookie.secure, reusedUserProfile: false },
