@@ -440,6 +440,18 @@ function checkMig012WorldReadPort() {
   );
 }
 
+function checkMig500LocalAssets() {
+  console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-500-local-assets.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkSagaStateColumnPrivileges() {
   console.log('Saga state column privileges (#569): checking REVOKE + safe selects...');
   execFileSync(process.execPath, ['scripts/saga-state-column-privileges-check.mjs'], {
@@ -2555,6 +2567,7 @@ checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();
 checkMig012WorldReadPort();
+checkMig500LocalAssets();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();

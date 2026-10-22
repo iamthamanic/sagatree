@@ -26,6 +26,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   worlds: 'world',
   projects: 'project',
   project_members: 'project',
+  assets: 'media',
 });
 
 export function owningModuleForTable(table: string): HostModuleId | null {

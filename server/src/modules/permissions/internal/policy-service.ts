@@ -13,6 +13,7 @@ export type PolicyResource = {
   readonly worldId?: string;
   readonly projectId?: string;
   readonly sessionId?: string;
+  readonly assetId?: string;
 };
 
 export type PolicyDecision = {
@@ -27,11 +28,14 @@ export type PolicyOp =
   | 'world.edit'
   | 'session.gm'
   | 'player.project.read'
+  | 'asset.publish'
+  | 'asset.read'
   | string;
 
 type WorldRow = { id: string; owner_user_id: string };
 type ProjectRow = { id: string; world_id: string; gm_user_id: string };
 type MemberRow = { project_id: string; user_id: string; role: string; active: number };
+type AssetRow = { id: string; owner_user_id: string; published: number };
 
 function deny(reason: string): PolicyDecision {
   return { allow: false, reason };
@@ -67,9 +71,26 @@ export class PolicyService {
         return this.#authorizeSessionGm(actor.actorId, resource);
       case 'player.project.read':
         return this.#authorizePlayerProjectRead(actor.actorId, resource);
+      case 'asset.publish':
+        // Publish always stores under the caller's actorId; presence is enough.
+        return allow('asset-owner-publish');
+      case 'asset.read':
+        return this.#authorizeAssetOwner(actor.actorId, resource);
       default:
         return deny('unknown-operation');
     }
+  }
+
+  #authorizeAssetOwner(actorId: string, resource: PolicyResource): PolicyDecision {
+    const assetId = resource.assetId?.trim();
+    if (!assetId) return deny('missing-asset');
+
+    const asset = this.#db!.prepare(
+      `SELECT id, owner_user_id, published FROM assets WHERE id = ?`,
+    ).get(assetId) as AssetRow | undefined;
+    if (!asset || asset.published !== 1) return deny('asset-not-found');
+    if (asset.owner_user_id !== actorId) return deny('not-asset-owner');
+    return allow('asset-owner-read');
   }
 
   #authorizeWorldOwner(

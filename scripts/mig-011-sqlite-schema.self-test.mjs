@@ -48,6 +48,12 @@ const {
 } = await import(persistenceUrl);
 
 const catalogMigrations = join(root, 'server/migrations');
+const catalogSteps = listMigrationFiles(catalogMigrations);
+assert(catalogSteps.length >= 1, 'catalog must have migrations');
+const expectedVersion = catalogSteps[catalogSteps.length - 1].version;
+const expectedJournal = catalogSteps.length;
+const nextBrokenVersion = expectedVersion + 1;
+const nextBrokenId = `${String(nextBrokenVersion).padStart(4, '0')}_broken`;
 const work = mkdtempSync(join(tmpdir(), 'mig011-'));
 
 try {
@@ -56,7 +62,7 @@ try {
   mkdirSync(data1);
   const boot1 = bootstrapHostPersistence({ dataDir: data1, migrationsDir: catalogMigrations });
   assert(boot1.ok, `bootstrap1: ${boot1.ok ? '' : boot1.error}`);
-  assert(boot1.schemaVersion === 1, `schemaVersion after first run expected 1 got ${boot1.schemaVersion}`);
+  assert(boot1.schemaVersion === expectedVersion, `schemaVersion after first run expected ${expectedVersion} got ${boot1.schemaVersion}`);
   assert(foreignKeysEnabled(boot1.db), 'foreign_keys must be ON after bootstrap');
   const v1 = readSchemaVersion(boot1.db);
   boot1.db.close();
@@ -66,7 +72,7 @@ try {
   assert(boot2.schemaVersion === v1, 'second run must leave schema_version unchanged');
   assert(readSchemaVersion(boot2.db) === v1, 'readSchemaVersion stable');
   const journalCount = boot2.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
-  assert(journalCount === 1, `journal rows expected 1 got ${journalCount}`);
+  assert(journalCount === expectedJournal, `journal rows expected ${expectedJournal} got ${journalCount}`);
   boot2.db.close();
 
   // --- AC2: broken migration rolls back; next start reports same failed step (crash mid-migrate) ---
@@ -78,7 +84,7 @@ try {
     copyFileSync(join(catalogMigrations, name), join(migFail, name));
   }
   writeFileSync(
-    join(migFail, '0002_broken.sql'),
+    join(migFail, `${nextBrokenId}.sql`),
     `-- intentional failure\nCREATE TABLE broken_step (id TEXT NOT NULL PRIMARY KEY) STRICT;\nINSERT INTO broken_step (id) VALUES (NULL);\n`,
     'utf8',
   );
@@ -87,8 +93,8 @@ try {
   assert(openFail.ok, 'open fail db');
   const firstFail = runMigrations({ db: openFail.db, dataDir: dataFail, migrationsDir: migFail });
   assert(!firstFail.ok, 'broken migration must fail');
-  assert(firstFail.failedStep?.id === '0002_broken', `failed step id got ${firstFail.failedStep?.id}`);
-  assert(readSchemaVersion(openFail.db) === 1, 'schema_version must remain 1 after rolled-back 0002');
+  assert(firstFail.failedStep?.id === nextBrokenId, `failed step id got ${firstFail.failedStep?.id}`);
+  assert(readSchemaVersion(openFail.db) === expectedVersion, `schema_version must remain ${expectedVersion} after rolled-back broken step`);
   const brokenExists = openFail.db
     .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='broken_step'`)
     .get();
@@ -96,19 +102,19 @@ try {
   openFail.db.close();
 
   const failureSidecar = readMigrationFailure(dataFail);
-  assert(failureSidecar?.id === '0002_broken', 'sidecar must record 0002_broken');
+  assert(failureSidecar?.id === nextBrokenId, `sidecar must record ${nextBrokenId}`);
 
   // Restart after crash: same failed step, no data loss of applied v1
   const openFail2 = openHostDatabase(join(dataFail, 'host.sqlite'));
   assert(openFail2.ok, 'reopen after failure');
   const secondFail = runMigrations({ db: openFail2.db, dataDir: dataFail, migrationsDir: migFail });
   assert(!secondFail.ok, 'second start must still fail on same broken step');
-  assert(secondFail.failedStep?.id === '0002_broken', 'same failed step reported');
-  assert(readSchemaVersion(openFail2.db) === 1, 'schema_version still 1');
+  assert(secondFail.failedStep?.id === nextBrokenId, 'same failed step reported');
+  assert(readSchemaVersion(openFail2.db) === expectedVersion, `schema_version still ${expectedVersion}`);
   const worldsIntact = openFail2.db
     .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='worlds'`)
     .get();
-  assert(!!worldsIntact, 'applied v1 tables must survive crash/rollback of v2');
+  assert(!!worldsIntact, 'applied catalog tables must survive crash/rollback of broken next step');
   openFail2.db.close();
 
   const dataOkHost = join(work, 'data-host');
@@ -120,7 +126,7 @@ try {
     SAGATREE_HOST: '127.0.0.1',
   });
   assert(!('error' in host), `createHost should succeed: ${JSON.stringify(host)}`);
-  assert(host.schemaVersion === 1, 'host schemaVersion 1');
+  assert(host.schemaVersion === expectedVersion, `host schemaVersion ${expectedVersion}`);
   assert(host.isReady() === false, 'not ready before start');
   await host.start();
   assert(host.isReady() === true, 'ready after start');
@@ -188,7 +194,7 @@ try {
   assert(oldConn.ok, 'old host reopen');
   // Old pattern: read version outside TX, then BEGIN (still holds reserved lock).
   const oldVersionOutside = readSchemaVersion(oldConn.db);
-  assert(oldVersionOutside === 1, 'old host sees v1');
+  assert(oldVersionOutside === expectedVersion, `old host sees v${expectedVersion}`);
   oldConn.db.exec('BEGIN IMMEDIATE');
   const newWhileOld = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
   assert(!newWhileOld.ok, 'new host must fail-closed while old lock file present');
@@ -203,7 +209,7 @@ try {
   assert(!existsSync(join(dataOldNew, 'schema-upgrade.lock')), 'lock removed only after verified standstill');
   const bootAfterClear = bootstrapHostPersistence({ dataDir: dataOldNew, migrationsDir: catalogMigrations });
   assert(bootAfterClear.ok, `bootstrap after verified clear: ${bootAfterClear.ok ? '' : bootAfterClear.error}`);
-  assert(bootAfterClear.schemaVersion === 1, 'schema intact after old+new sequence');
+  assert(bootAfterClear.schemaVersion === expectedVersion, 'schema intact after old+new sequence');
   bootAfterClear.db.close();
 
   // --- Real process crash (SIGKILL) mid-migration TX (isolated subprocess) ---
@@ -284,7 +290,7 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   const warm = spawnOne();
   assert(warm.status === 0, `warm worker exit ${warm.status}: ${warm.stderr}`);
   const warmOut = JSON.parse(warm.stdout.trim().split('\n').at(-1));
-  assert(warmOut.ok === true && warmOut.journal === 1, `warm bootstrap: ${JSON.stringify(warmOut)}`);
+  assert(warmOut.ok === true && warmOut.journal === expectedJournal, `warm bootstrap: ${JSON.stringify(warmOut)}`);
 
   const { spawn } = await import('node:child_process');
   const runParallelOn = (dataDir) =>
@@ -324,8 +330,8 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
     assert(p.code === 0, `parallel ${p.label} exit ${p.code}: ${p.stderr}`);
     const parsed = JSON.parse(p.stdout.trim().split('\n').at(-1));
     if (parsed.ok) {
-      assert(parsed.journal === 1, `parallel ${p.label} journal must stay 1 got ${parsed.journal}`);
-      assert(parsed.schemaVersion === 1, `parallel ${p.label} version`);
+      assert(parsed.journal === expectedJournal, `parallel ${p.label} journal must stay ${expectedJournal} got ${parsed.journal}`);
+      assert(parsed.schemaVersion === expectedVersion, `parallel ${p.label} version`);
     } else {
       assert(
         /busy|locked|upgrade/i.test(parsed.error || ''),
@@ -336,8 +342,8 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   const verifyRace = openHostDatabase(join(dataRace, 'host.sqlite'));
   assert(verifyRace.ok, 'reopen race db');
   const raceJournal = verifyRace.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
-  assert(raceJournal === 1, `no duplicate journal after concurrent starts, got ${raceJournal}`);
-  assert(readSchemaVersion(verifyRace.db) === 1, 'schema version intact after concurrent starts');
+  assert(raceJournal === expectedJournal, `no duplicate journal after concurrent starts, got ${raceJournal}`);
+  assert(readSchemaVersion(verifyRace.db) === expectedVersion, 'schema version intact after concurrent starts');
   verifyRace.db.close();
 
   // Fresh-DB concurrent migrate: at least one succeeds; journal never >1; no corruption
@@ -360,7 +366,7 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   const verifyFresh = openHostDatabase(join(dataRaceFresh, 'host.sqlite'));
   assert(verifyFresh.ok, 'reopen fresh race db');
   const freshJournal = verifyFresh.db.prepare('SELECT COUNT(*) AS c FROM schema_migrations').get().c;
-  assert(freshJournal === 1, `fresh concurrent journal must be 1 got ${freshJournal}`);
+  assert(freshJournal === expectedJournal, `fresh concurrent journal must be ${expectedJournal} got ${freshJournal}`);
   verifyFresh.db.close();
 
   // --- AC4: ownership registry + boundary private persistence ---
@@ -368,6 +374,7 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   assert(owningModuleForTable('projects') === 'project', 'projects → project');
   assert(owningModuleForTable('project_members') === 'project', 'project_members → project');
   assert(owningModuleForTable('schema_migrations') === 'ops', 'schema_migrations → ops');
+  assert(owningModuleForTable('assets') === 'media', 'assets → media');
   const owned = Object.keys(TABLE_OWNERSHIP);
   assert(new Set(owned).size === owned.length, 'unique table ownership');
 
