@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-015",
+  "result": "PASS",
+  "testedCommit": "721f53e3ba42b94e7292ce2f8bd24e5970828e24",
+  "githubClosed": true,
+  "mergeRef": "PR #911 → main (#794)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-015-solo-local-identity.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-015.md",
+      "sha256": "b3e9bc88658863a3d864941f9335b0392fca0d749b112692cf446a81b17ed853"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-015.md",
+      "sha256": "ab007c19cf3955c9c03ca38c68477a1f613ea5679cf7e9c33f9a450a1bb59083"
+    }
+  ]
+}
