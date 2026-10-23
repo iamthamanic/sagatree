@@ -82,7 +82,7 @@ function readLinkFile(dataDir: string): LinkFile | { error: 'LINK_STORE_UNREADAB
 }
 
 /**
- * Crash-safe persist: write + fsync temp file, then atomic rename over destination.
+ * Crash-safe persist: write + fsync temp file, atomic rename, fsync parent dir.
  */
 function writeLinkFile(
   dataDir: string,
@@ -94,12 +94,26 @@ function writeLinkFile(
   try {
     const fd = openSync(tmp, 'wx', 0o600);
     try {
-      writeSync(fd, payload);
+      let offset = 0;
+      while (offset < payload.length) {
+        const written = writeSync(fd, payload, offset, payload.length - offset);
+        if (written <= 0) {
+          throw new Error('short-write');
+        }
+        offset += written;
+      }
       fsyncSync(fd);
     } finally {
       closeSync(fd);
     }
     renameSync(tmp, dest);
+    // Persist the directory entry so rename survives power loss.
+    const dirFd = openSync(dataDir, 'r');
+    try {
+      fsyncSync(dirFd);
+    } finally {
+      closeSync(dirFd);
+    }
     return { ok: true };
   } catch {
     try {

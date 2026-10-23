@@ -182,7 +182,12 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           confirm,
         });
         if (!link.ok) {
-          const status = link.code === 'INVALID_LINK_REQUEST' ? 400 : 403;
+          const status =
+            link.code === 'INVALID_LINK_REQUEST'
+              ? 400
+              : link.code === 'LINK_STORE_WRITE_FAILED'
+                ? 500
+                : 403;
           sendJson(res, status, { error: link.code, linked: false }, corsOrigin);
           return;
         }
