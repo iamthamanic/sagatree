@@ -134,6 +134,14 @@ test('desktop PoC cannot be moved before browser CI and operations', () => {
   rejects(input, /Desktop PoC must be deferred/);
 });
 
+test('optional tus remains in inventory but cannot block core cutover', () => {
+  const input = clone();
+  assert.ok(input.intake.issues.some((entry) => entry.localId === 'MIG-501'));
+  assert.ok(!issue(input, 'MIG-700').dependsOn.includes('MIG-501'));
+  issue(input, 'MIG-700').dependsOn.push('MIG-501');
+  rejects(input, /optional MIG-501 must not block core cutover/);
+});
+
 test('shutdown cannot lose Atlas or observation-window guards', () => {
   const input = clone(); issue(input, 'MIG-702').dependsOn = ['MIG-700'];
   rejects(input, /Supabase shutdown must retain Atlas and observation-window predecessors/);
