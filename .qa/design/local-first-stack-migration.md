@@ -1,3 +1,6 @@
+<!-- Product decisions 2026-10-23 supersede historical PREP status text where inconsistent. Historical source-baseline and POcs are not current approval state. -->
+> **CURRENT BINDING DECISIONS:** [Owner decisions 2026-10-23](../../docs/architecture/migration-owner-decisions-2026-10-23.md). GATE-01 and GATE-04 previously approved; GATE-02 cookie-only Variant A and GATE-03 Hono+Colyseus Variant B owner-approved for *implementation*. GATE-05 Tauri+Node sidecar selected but technical/platform release remains deferred. This plan documents its 2026-10-21 PREP snapshot below; don't infer that historic statuses supersede the new approval registry.
+
 # Local-first Stack Migration — Design Lock (Prep)
 
 > **Status:** PREP / NOT STARTED  
