@@ -496,18 +496,6 @@ function checkMig022SessionRuntime() {
   );
 }
 
-function checkMig022SessionRuntime() {
-  console.log('MIG-022 SessionRuntimeState (#797): revision CAS + idempotency + atomicity...');
-  execFileSync(
-    process.execPath,
-    ['--experimental-strip-types', 'scripts/mig-022-session-runtime.self-test.mjs'],
-    {
-      cwd: root,
-      stdio: 'inherit',
-    },
-  );
-}
-
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2651,7 +2639,6 @@ checkMig014BetterAuthHost();
 checkMig015SoloLocalIdentity();
 checkEccMergeGateUnit();
 checkMig020HttpTransport();
-checkMig022SessionRuntime();
 checkMig022SessionRuntime();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
