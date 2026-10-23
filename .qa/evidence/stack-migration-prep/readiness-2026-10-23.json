@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T20:22:47Z",
+  "generatedAt": "2026-10-23T23:07:39Z",
   "branch": "main",
-  "headShaHint": "e605a7e5e49b",
-  "headSha": "e605a7e5e49b432058f396ec0a333f26531d48e4",
-  "meaning": "Evidence-based classification of all 90 Epic #773 child issues. DONE requires completionEvidence; READY requires all transitive predecessors DONE.",
+  "headSha": "ad68c8dfb95e6aaa911f9a8529eab9143a90e10d",
+  "headShaHint": "ad68c8dfb95e",
+  "meaning": "Evidence-based classification of all 90 Epic #773 child issues.",
   "counts": {
     "total": 90,
-    "done": 15,
-    "ready": 5,
-    "waiting": 30,
+    "done": 16,
+    "ready": 6,
+    "waiting": 28,
     "blocked": 40,
     "needsDesign": 0
   },
@@ -17,75 +17,74 @@
     {
       "localId": "MIG-001",
       "githubIssue": 782,
-      "blockerCount": 0,
       "dependsOn": [],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-002",
       "githubIssue": 783,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "GATE-01",
       "githubIssue": 784,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001",
         "MIG-002"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "GATE-02",
       "githubIssue": 785,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001",
         "MIG-002"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "GATE-03",
       "githubIssue": 786,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001",
         "MIG-002"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "GATE-04",
       "githubIssue": 787,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001",
         "MIG-002"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-010",
       "githubIssue": 789,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-001",
         "MIG-002",
@@ -93,12 +92,12 @@
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-011",
       "githubIssue": 790,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-010",
         "GATE-01",
@@ -106,36 +105,36 @@
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-013",
       "githubIssue": 792,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-011",
         "GATE-01"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-012",
       "githubIssue": 791,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-011",
         "MIG-013"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-014",
       "githubIssue": 793,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-010",
         "MIG-011",
@@ -144,12 +143,12 @@
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-014.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-015",
       "githubIssue": 794,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-010",
         "MIG-011",
@@ -158,24 +157,24 @@
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-015.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-500",
       "githubIssue": 841,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-011",
         "MIG-013"
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-020",
       "githubIssue": 795,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-010",
         "MIG-013",
@@ -184,40 +183,66 @@
       ],
       "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-020.json",
       "implementationStatus": "accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
-    {
-      "localId": "MIG-503",
-      "githubIssue": 844,
-      "blockerCount": 0,
-      "dependsOn": [
-        "MIG-011",
-        "MIG-002"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
-      "implementationStatus": "accepted",
-      "sourceStatus": "specified"
-    }
-  ],
-  "ready": [
     {
       "localId": "MIG-022",
       "githubIssue": 797,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-011",
         "MIG-013",
         "MIG-014",
         "GATE-04"
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-022.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-503",
+      "githubIssue": 844,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    }
+  ],
+  "ready": [
+    {
+      "localId": "MIG-023",
+      "githubIssue": 798,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-022",
+        "GATE-02"
+      ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-024",
+      "githubIssue": 799,
+      "dependsOn": [
+        "MIG-013",
+        "MIG-022",
+        "GATE-01"
+      ],
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-306",
       "githubIssue": 805,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-012",
         "MIG-013",
@@ -225,12 +250,12 @@
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
-      "sourceStatus": "source-verified"
+      "sourceStatus": "source-verified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-309",
       "githubIssue": 808,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-012",
         "MIG-013",
@@ -239,24 +264,24 @@
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
-      "sourceStatus": "source-verified"
+      "sourceStatus": "source-verified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-501",
       "githubIssue": 842,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-500",
         "MIG-020"
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     },
     {
       "localId": "MIG-502",
       "githubIssue": 843,
-      "blockerCount": 0,
       "dependsOn": [
         "MIG-500",
         "MIG-503",
@@ -264,12 +289,11 @@
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
-      "sourceStatus": "specified"
+      "sourceStatus": "specified",
+      "blockerCount": 0
     }
   ],
   "waitingDependency": [
-    "MIG-023",
-    "MIG-024",
     "MIG-021",
     "RPC-SAGA-AUTHORING",
     "RPC-SAGA-VERSION-READ",
@@ -502,12 +526,8 @@
     }
   ],
   "notes": [
-    "DONE requires completionEvidence JSON (migration-acceptance) with hashed check artifacts and merge/tested commit.",
-    "READY requires fully specified contract + all transitive predecessors DONE with evidence + no unresolved blockers.",
-    "MIG-014/#793 and MIG-015/#794 DONE after hardening PR #913 (7aa71f2b).",
-    "MIG-020/#795 DONE after PR #912 (2431d446) with session-scoped idempotency + authoritative snapshot ownership.",
-    "Phase 3 ambient CI reds closed via PR #914 (fc436402); ATLAS-LIVE-E2E remains BLOCKED until meta/ciAcceptance is updated with cutover evidence.",
-    "Do not mass-unlock; next agent-ready primary is MIG-022/#797."
+    "MIG-022/#797 DONE after PR #916 \u2192 ad68c8df.",
+    "Next primary READY includes MIG-023 when deps clear; see ready[]."
   ],
   "validator": "scripts/stack-migration-contract-validation.mjs + completion/*.json hashes"
 }

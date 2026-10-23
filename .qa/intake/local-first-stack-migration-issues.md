@@ -21,9 +21,9 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | done | #789, #790, #792, #785 |
 | 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | done | #790, #792 |
 | 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | done | #789, #792, #793, #786 |
-| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | ready | #790, #792, #793, #787 |
-| 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | waiting | #795, #797, #785 |
-| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | waiting | #792, #797, #784 |
+| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | done | #790, #792, #793, #787 |
+| 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | ready | #795, #797, #785 |
+| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | ready | #792, #797, #784 |
 | 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | waiting | #795, #797, #799, #785, #786 |
 | 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | done | #790, #783 |
 | 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |

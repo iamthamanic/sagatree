@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-022",
+  "result": "PASS",
+  "testedCommit": "ad68c8dfb95e6aaa911f9a8529eab9143a90e10d",
+  "githubClosed": true,
+  "mergeRef": "PR #916 \u2192 main (#797)",
+  "note": "Completion requires merge SHA + hashed check artifacts.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-022-session-runtime.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-022.md",
+      "sha256": "4a5e5ccf25fad69b3b52f35ec55554d1abef97f3f36d989848a012c2046db89a"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-022.md",
+      "sha256": "86fa17435483789d509d597688007dbfade0736c0698914c019ccdf167c3f159"
+    }
+  ]
+}
