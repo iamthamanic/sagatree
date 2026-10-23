@@ -426,7 +426,7 @@
     },
     {
       "path": ".qa/design/gates/GATE-03-colyseus-http-vs-hono.md",
-      "sha256": "ca708ff74f44da2a4733ff2b6e8a9f91371e90d6656515fd1bdb2a14258ee0c3"
+      "sha256": "2bab8126e347351ada1a6a3226ffdea42935a37cf679fabc311a5a12e96ef95c"
     }
   ],
   "primaryDocumentation": [

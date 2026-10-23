@@ -6,7 +6,7 @@
   "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
   "githubClosed": false,
   "mergeRef": "PR #906 PoC remediaiton on main; human APPROVED Variant A on #785; ADR on PR #908",
-  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 — architecture freigabe alone does not accept those tickets.",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 \u2014 architecture freigabe alone does not accept those tickets.",
   "checks": [
     {
       "command": "PoC report PASS",

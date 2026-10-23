@@ -32,6 +32,9 @@ BEGIN
   IF v_party_only THEN
     IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN
       v_project := public.atlas_wb_resolve_saga_project(v_row.world_profile_id, p_saga_public_id);
+      IF v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project) THEN
+        RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
+      END IF;
     END IF;
     IF v_project IS NULL THEN
       RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';
@@ -59,9 +62,14 @@ BEGIN
         OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE
       );
 
-    v_meta := jsonb_build_object(
-      'engine', COALESCE(v_meta->>'engine', 'unified_canvas')
-    );
+    -- Preserve render payload; strip only non-render / editor-private keys.
+    v_meta := jsonb_strip_nulls(jsonb_build_object(
+      'engine', COALESCE(v_meta->>'engine', 'unified_canvas'),
+      'unifiedCanvas', v_meta->'unifiedCanvas',
+      'webglRuntime', v_meta->'webglRuntime',
+      'mapFrame', v_meta->'mapFrame',
+      'dungeon', v_meta->'dungeon'
+    ));
 
     IF v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed)) THEN
       v_parent := NULL;
@@ -77,10 +85,7 @@ BEGIN
     'sortOrder', v_row.sort_order,
     'bounds', v_row.bounds,
     'layers', v_layers,
-    'basemapStoragePath', CASE
-      WHEN v_party_only THEN v_row.basemap_storage_path
-      ELSE v_row.basemap_storage_path
-    END,
+    'basemapStoragePath', v_row.basemap_storage_path,
     'azgaarMapStoragePath', CASE
       WHEN v_party_only THEN NULL
       ELSE v_row.azgaar_map_storage_path

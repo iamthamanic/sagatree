@@ -28,9 +28,9 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 **RETURNS:** `void`.
 
-**Wirksame Definition:** [supabase/migrations/041_session_runtime_state.sql](../../../supabase/migrations/041_session_runtime_state.sql) (Zeilen 457–490, SHA-256 `620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6`).
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 52–101, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
 
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql](effective-sql/leave_play_session-1.sql); SHA-256 `65da52733733a17c92a01250b3c1ebbdf776663343bee04dae32dc374a27b217`.
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql](effective-sql/leave_play_session-1.sql); SHA-256 `63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239`.
 
 ### Ausführungskontext und ACL
 
@@ -51,7 +51,9 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 
 | Parser-Zeile | Bedingungspfad | Return-Ausdruck |
 | --- | --- | --- |
-| 6 | unbedingt | `RETURN datum/void` |
+| 15 | NOT FOUND | `RETURN datum/void` |
+| 24 | v_removed = 0 | `RETURN datum/void` |
+| 7 | unbedingt | `RETURN datum/void` |
 
 ### Explizite SQL-Fehler dieses Overloads
 
@@ -65,7 +67,7 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 
 **Direkt referenzierte reale Relationen:** `public.session_players`, `public.sessions`.
 
-**Transitive reale Relationen:** `public.session_events`, `public.session_players`, `public.sessions`.
+**Transitive reale Relationen:** `public.project_members`, `public.projects`, `public.session_events`, `public.session_players`, `public.sessions`.
 
 Diese Relationen stammen aus PostgreSQL-AST-RangeVars und DML-Zielen, einschließlich erreichbarer SQL-Helper und anwendbarer Trigger. CTE-Namen, Aliase und SQL-Schlüsselwörter sind ausgeschlossen. Temporäre Zuordnungstabellen tragen ausdrücklich das Schema pg_temp.
 
@@ -74,9 +76,9 @@ Diese Relationen stammen aus PostgreSQL-AST-RangeVars und DML-Zielen, einschlie�
 | Funktion | Operation | Relation | Spalten | Bedingungspfad |
 | --- | --- | --- | --- | --- |
 | `public.append_session_event(uuid,text,uuid,jsonb,bigint,text)` | INSERT | `public.session_events` | session_id, kind, actor_user_id, payload, revision_after, idempotency_key | unbedingt |
-| `public.leave_play_session(uuid)` | DELETE | `public.session_players` | — | FOUND |
-| `public.leave_play_session(uuid)` | UPDATE | `public.sessions` | runtime_revision, updated_at | FOUND |
-| `public.leave_play_session(uuid)` | DELETE | `public.session_players` | — | ELSE AFTER: FOUND |
+| `public.leave_play_session(uuid)` | DELETE | `public.session_players` | — | NOT FOUND |
+| `public.leave_play_session(uuid)` | DELETE | `public.session_players` | — | unbedingt |
+| `public.leave_play_session(uuid)` | UPDATE | `public.sessions` | runtime_revision, updated_at | unbedingt |
 
 ### Erreichbare Trigger
 
@@ -91,8 +93,10 @@ Alle vollständigen Funktionskörper, Abzweigungen, Queries, Writes, Errors und 
 
 | Helper | SQL-Quelle | Explizite SQLSTATEs | Fixture EXECUTE anon/authenticated |
 | --- | --- | --- | --- |
-| `public.append_session_event(uuid,text,uuid,jsonb,bigint,text)` | [supabase/migrations/041_session_runtime_state.sql](../../../supabase/migrations/041_session_runtime_state.sql) | Keine eigene RAISE | True/True |
+| `public.append_session_event(uuid,text,uuid,jsonb,bigint,text)` | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | 42501 | True/True |
 | `public.forbid_public_id_change()` | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | P0001 | True/True |
+| `public.is_project_gm(uuid,uuid)` | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | Keine eigene RAISE | True/True |
+| `public.is_session_participant(uuid,uuid)` | [supabase/migrations/041_session_runtime_state.sql](../../../supabase/migrations/041_session_runtime_state.sql) | Keine eigene RAISE | True/True |
 | `public.update_updated_at_column()` | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | Keine eigene RAISE | True/True |
 
 ### Constraint-Vertrag
@@ -173,11 +177,18 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `d2f1e89fca1ef75c6b6c633ce8e9169801d3394e52912661c07457511ec4fdac` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
+| [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |
 | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | `053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96` |
 | [supabase/migrations/040_session_join_code_security.sql](../../../supabase/migrations/040_session_join_code_security.sql) | `0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389` |
 | [supabase/migrations/041_session_runtime_state.sql](../../../supabase/migrations/041_session_runtime_state.sql) | `620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6` |
 | [supabase/migrations/047_session_program_presentation.sql](../../../supabase/migrations/047_session_program_presentation.sql) | `98fd05e6d1ae794db77b46eb910fadacffdc760246cda412404c1246eaf0110e` |
 | [supabase/migrations/048_session_knowledge_reveals.sql](../../../supabase/migrations/048_session_knowledge_reveals.sql) | `d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7` |
+| [supabase/migrations/050_session_adventure_runtime.sql](../../../supabase/migrations/050_session_adventure_runtime.sql) | `51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc` |
 | [supabase/migrations/051_session_director_runtime.sql](../../../supabase/migrations/051_session_director_runtime.sql) | `7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010` |
+| [supabase/migrations/052_projects_look_settings.sql](../../../supabase/migrations/052_projects_look_settings.sql) | `fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488` |
 | [supabase/migrations/053_sessions_look_override.sql](../../../supabase/migrations/053_sessions_look_override.sql) | `1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b` |
+| [supabase/migrations/059_saga_state_column_privileges.sql](../../../supabase/migrations/059_saga_state_column_privileges.sql) | `218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866` |
 | [supabase/migrations/061_session_recaps_and_handover.sql](../../../supabase/migrations/061_session_recaps_and_handover.sql) | `be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921` |
+| [supabase/migrations/063_saga_definitions.sql](../../../supabase/migrations/063_saga_definitions.sql) | `09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89` |
+| [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |

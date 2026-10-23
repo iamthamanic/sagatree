@@ -5,14 +5,14 @@
   "result": "PASS",
   "testedCommit": "cb6a7f7a2c241f8f951649447f17e7476e1a931e",
   "githubClosed": true,
-  "mergeRef": "PR #882 → main; human APPROVED on #784",
+  "mergeRef": "PR #882 \u2192 main; human APPROVED on #784",
   "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
   "checks": [
     {
       "command": "PoC report PASS",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-01/report.json",
-      "sha256": "91996895218525c59c559b39e79e1655dccda75aeede00d14e72b335697ef6ca"
+      "sha256": "ece2ac80076e7f70fc4b70cdac69939044dc6c26d68856a98b4c3743dc9ee964"
     },
     {
       "command": "ADR-ST-05",

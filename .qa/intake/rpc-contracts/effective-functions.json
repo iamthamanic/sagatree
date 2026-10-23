@@ -91,13 +91,13 @@
     {
       "signature": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
       "source": {
-        "path": "supabase/migrations/041_session_runtime_state.sql",
-        "startLine": 95,
-        "endLine": 125,
-        "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 1,
+        "endLine": 49,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.append_session_event(p_session_id uuid, p_kind text, p_actor uuid, p_payload jsonb, p_revision_after bigint, p_idempotency_key text = NULL) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_id UUID;\nBEGIN\n  INSERT INTO public.session_events (\n    session_id, kind, actor_user_id, payload, revision_after, idempotency_key\n  ) VALUES (\n    p_session_id,\n    p_kind,\n    p_actor,\n    COALESCE(p_payload, '{}'::jsonb),\n    p_revision_after,\n    NULLIF(BTRIM(COALESCE(p_idempotency_key, '')), '')\n  )\n  RETURNING id INTO v_id;\n  RETURN v_id;\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.append_session_event(p_session_id uuid, p_kind text, p_actor uuid, p_payload jsonb, p_revision_after bigint, p_idempotency_key text = NULL) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_id UUID;\n  v_caller UUID := auth.uid();\nBEGIN\n  -- Client roles must not forge events as another actor. SECURITY DEFINER\n  -- callers running as owner (not anon/authenticated) may pass through.\n  IF current_user IN ('anon', 'authenticated') THEN\n    IF v_caller IS NULL OR v_caller IS DISTINCT FROM p_actor THEN\n      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n    END IF;\n    IF NOT public.is_session_participant(p_session_id, v_caller) THEN\n      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n    END IF;\n  END IF;\n\n  INSERT INTO public.session_events (\n    session_id, kind, actor_user_id, payload, revision_after, idempotency_key\n  ) VALUES (\n    p_session_id,\n    p_kind,\n    p_actor,\n    COALESCE(p_payload, '{}'::jsonb),\n    p_revision_after,\n    NULLIF(BTRIM(COALESCE(p_idempotency_key, '')), '')\n  )\n  RETURNING id INTO v_id;\n  RETURN v_id;\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -105,8 +105,16 @@
         ],
         "calls": [
           {
+            "name": "auth.uid",
+            "arguments": 0
+          },
+          {
             "name": "btrim",
             "arguments": 1
+          },
+          {
+            "name": "public.is_session_participant",
+            "arguments": 2
           }
         ],
         "writes": [
@@ -121,30 +129,137 @@
               "revision_after",
               "idempotency_key"
             ],
-            "line": 5,
+            "line": 17,
             "query": "INSERT INTO public.session_events (\n    session_id, kind, actor_user_id, payload, revision_after, idempotency_key\n  ) VALUES (\n    p_session_id,\n    p_kind,\n    p_actor,\n    COALESCE(p_payload, '{}'::jsonb),\n    p_revision_after,\n    NULLIF(BTRIM(COALESCE(p_idempotency_key, '')), '')\n  )\n  RETURNING id",
             "path": []
           }
         ],
-        "errors": [],
+        "errors": [
+          {
+            "line": 10,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "current_user IN ('anon', 'authenticated')",
+              "v_caller IS NULL OR v_caller IS DISTINCT FROM p_actor"
+            ]
+          },
+          {
+            "line": 13,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "current_user IN ('anon', 'authenticated')",
+              "NOT public.is_session_participant(p_session_id, v_caller)"
+            ]
+          }
+        ],
         "returns": [
           {
-            "line": 16,
+            "line": 28,
             "statement": "PLpgSQL_stmt_return",
             "expression": "v_id",
             "path": []
           }
         ],
-        "branches": [],
+        "branches": [
+          {
+            "line": 8,
+            "condition": "current_user IN ('anon', 'authenticated')",
+            "path": []
+          },
+          {
+            "line": 9,
+            "condition": "v_caller IS NULL OR v_caller IS DISTINCT FROM p_actor",
+            "path": [
+              "current_user IN ('anon', 'authenticated')"
+            ]
+          },
+          {
+            "line": 12,
+            "condition": "NOT public.is_session_participant(p_session_id, v_caller)",
+            "path": [
+              "current_user IN ('anon', 'authenticated')"
+            ]
+          }
+        ],
         "jsonObjectKeys": [],
         "queries": [
           {
-            "line": 5,
+            "line": 4,
+            "query": "auth.uid()",
+            "path": []
+          },
+          {
+            "line": 8,
+            "query": "current_user IN ('anon', 'authenticated')",
+            "path": []
+          },
+          {
+            "line": 9,
+            "query": "v_caller IS NULL OR v_caller IS DISTINCT FROM p_actor",
+            "path": [
+              "current_user IN ('anon', 'authenticated')"
+            ]
+          },
+          {
+            "line": 10,
+            "query": "'42501'",
+            "path": [
+              "current_user IN ('anon', 'authenticated')",
+              "v_caller IS NULL OR v_caller IS DISTINCT FROM p_actor"
+            ]
+          },
+          {
+            "line": 12,
+            "query": "NOT public.is_session_participant(p_session_id, v_caller)",
+            "path": [
+              "current_user IN ('anon', 'authenticated')"
+            ]
+          },
+          {
+            "line": 13,
+            "query": "'42501'",
+            "path": [
+              "current_user IN ('anon', 'authenticated')",
+              "NOT public.is_session_participant(p_session_id, v_caller)"
+            ]
+          },
+          {
+            "line": 17,
             "query": "INSERT INTO public.session_events (\n    session_id, kind, actor_user_id, payload, revision_after, idempotency_key\n  ) VALUES (\n    p_session_id,\n    p_kind,\n    p_actor,\n    COALESCE(p_payload, '{}'::jsonb),\n    p_revision_after,\n    NULLIF(BTRIM(COALESCE(p_idempotency_key, '')), '')\n  )\n  RETURNING id",
             "path": []
           },
           {
-            "line": 16,
+            "line": 28,
             "query": "v_id",
             "path": []
           }
@@ -12179,13 +12294,13 @@
     {
       "signature": "public.get_world_atlas_map(uuid,boolean,text)",
       "source": {
-        "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
-        "startLine": 198,
-        "endLine": 299,
-        "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 928,
+        "endLine": 1038,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map(p_map_id uuid, p_player_view boolean = FALSE, p_saga_public_id text = NULL) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_row public.world_atlas_maps%ROWTYPE;\n  v_layers JSONB;\n  v_meta JSONB;\n  v_can_edit BOOLEAN;\n  v_party_only BOOLEAN;\n  v_project UUID;\n  v_allowed UUID[];\n  v_parent UUID;\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_map_id IS NULL THEN\n    RAISE EXCEPTION 'map_id required' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT * INTO v_row FROM public.world_atlas_maps WHERE id = p_map_id;\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(v_row.world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_can_edit := public.current_user_can_edit_world_profile(v_row.world_profile_id);\n  v_party_only := (NOT v_can_edit) OR (p_player_view IS TRUE);\n\n  IF v_party_only THEN\n    IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN\n      v_project := public.atlas_wb_resolve_saga_project(v_row.world_profile_id, p_saga_public_id);\n    END IF;\n    IF v_project IS NULL THEN\n      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n    END IF;\n    v_allowed := public.atlas_wb_party_revealed_map_ids(v_row.world_profile_id, v_project);\n    IF NOT (p_map_id = ANY (v_allowed)) THEN\n      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n    END IF;\n  END IF;\n\n  v_layers := COALESCE(v_row.layers, '{\"type\":\"FeatureCollection\",\"features\":[]}'::jsonb);\n  v_meta := COALESCE(v_row.generator_meta, '{}'::jsonb);\n  v_parent := v_row.parent_map_id;\n\n  IF v_party_only THEN\n    SELECT jsonb_build_object(\n      'type', 'FeatureCollection',\n      'features', COALESCE(jsonb_agg(f.feat), '[]'::jsonb)\n    )\n    INTO v_layers\n    FROM jsonb_array_elements(COALESCE(v_layers->'features', '[]'::jsonb)) AS f(feat)\n    WHERE COALESCE((f.feat->'properties'->>'secret')::boolean, false) IS NOT TRUE\n      AND (\n        (f.feat->'properties'->>'discovered') IS NULL\n        OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE\n      );\n\n    v_meta := jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas')\n    );\n\n    IF v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed)) THEN\n      v_parent := NULL;\n    END IF;\n  END IF;\n\n  RETURN jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', CASE\n      WHEN v_party_only THEN v_row.basemap_storage_path\n      ELSE v_row.basemap_storage_path\n    END,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  );\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.get_world_atlas_map(p_map_id uuid, p_player_view boolean = FALSE, p_saga_public_id text = NULL) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_row public.world_atlas_maps%ROWTYPE;\n  v_layers JSONB;\n  v_meta JSONB;\n  v_can_edit BOOLEAN;\n  v_party_only BOOLEAN;\n  v_project UUID;\n  v_allowed UUID[];\n  v_parent UUID;\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_map_id IS NULL THEN\n    RAISE EXCEPTION 'map_id required' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT * INTO v_row FROM public.world_atlas_maps WHERE id = p_map_id;\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(v_row.world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_can_edit := public.current_user_can_edit_world_profile(v_row.world_profile_id);\n  v_party_only := (NOT v_can_edit) OR (p_player_view IS TRUE);\n\n  IF v_party_only THEN\n    IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN\n      v_project := public.atlas_wb_resolve_saga_project(v_row.world_profile_id, p_saga_public_id);\n      IF v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project) THEN\n        RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n      END IF;\n    END IF;\n    IF v_project IS NULL THEN\n      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n    END IF;\n    v_allowed := public.atlas_wb_party_revealed_map_ids(v_row.world_profile_id, v_project);\n    IF NOT (p_map_id = ANY (v_allowed)) THEN\n      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';\n    END IF;\n  END IF;\n\n  v_layers := COALESCE(v_row.layers, '{\"type\":\"FeatureCollection\",\"features\":[]}'::jsonb);\n  v_meta := COALESCE(v_row.generator_meta, '{}'::jsonb);\n  v_parent := v_row.parent_map_id;\n\n  IF v_party_only THEN\n    SELECT jsonb_build_object(\n      'type', 'FeatureCollection',\n      'features', COALESCE(jsonb_agg(f.feat), '[]'::jsonb)\n    )\n    INTO v_layers\n    FROM jsonb_array_elements(COALESCE(v_layers->'features', '[]'::jsonb)) AS f(feat)\n    WHERE COALESCE((f.feat->'properties'->>'secret')::boolean, false) IS NOT TRUE\n      AND (\n        (f.feat->'properties'->>'discovered') IS NULL\n        OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE\n      );\n\n    -- Preserve render payload; strip only non-render / editor-private keys.\n    v_meta := jsonb_strip_nulls(jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas'),\n      'unifiedCanvas', v_meta->'unifiedCanvas',\n      'webglRuntime', v_meta->'webglRuntime',\n      'mapFrame', v_meta->'mapFrame',\n      'dungeon', v_meta->'dungeon'\n    ));\n\n    IF v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed)) THEN\n      v_parent := NULL;\n    END IF;\n  END IF;\n\n  RETURN jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', v_row.basemap_storage_path,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  );\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -12210,15 +12325,19 @@
           },
           {
             "name": "jsonb_build_object",
-            "arguments": 2
-          },
-          {
-            "name": "jsonb_build_object",
             "arguments": 4
           },
           {
             "name": "jsonb_build_object",
+            "arguments": 10
+          },
+          {
+            "name": "jsonb_build_object",
             "arguments": 26
+          },
+          {
+            "name": "jsonb_strip_nulls",
+            "arguments": 1
           },
           {
             "name": "public.atlas_wb_party_revealed_map_ids",
@@ -12234,6 +12353,10 @@
           },
           {
             "name": "public.current_user_can_read_world_profile",
+            "arguments": 1
+          },
+          {
+            "name": "public.current_user_is_active_project_member",
             "arguments": 1
           }
         ],
@@ -12328,7 +12451,31 @@
             ]
           },
           {
-            "line": 36,
+            "line": 35,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "v_party_only",
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)"
+            ]
+          },
+          {
+            "line": 39,
             "sqlstateExpression": "'P0002'",
             "message": "not found",
             "parameters": [],
@@ -12351,7 +12498,7 @@
             ]
           },
           {
-            "line": 40,
+            "line": 43,
             "sqlstateExpression": "'P0002'",
             "message": "not found",
             "parameters": [],
@@ -12376,9 +12523,9 @@
         ],
         "returns": [
           {
-            "line": 70,
+            "line": 78,
             "statement": "PLpgSQL_stmt_return",
-            "expression": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', CASE\n      WHEN v_party_only THEN v_row.basemap_storage_path\n      ELSE v_row.basemap_storage_path\n    END,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
+            "expression": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', v_row.basemap_storage_path,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
             "path": []
           }
         ],
@@ -12416,26 +12563,34 @@
             ]
           },
           {
-            "line": 35,
+            "line": 34,
+            "condition": "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)",
+            "path": [
+              "v_party_only",
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
+            "line": 38,
             "condition": "v_project IS NULL",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 39,
+            "line": 42,
             "condition": "NOT (p_map_id = ANY (v_allowed))",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 48,
+            "line": 51,
             "condition": "v_party_only",
             "path": []
           },
           {
-            "line": 65,
+            "line": 73,
             "condition": "v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed))",
             "path": [
               "v_party_only"
@@ -12444,7 +12599,11 @@
         ],
         "jsonObjectKeys": [
           [
-            "engine"
+            "engine",
+            "unifiedCanvas",
+            "webglRuntime",
+            "mapFrame",
+            "dungeon"
           ],
           [
             "id",
@@ -12556,14 +12715,31 @@
             ]
           },
           {
+            "line": 34,
+            "query": "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)",
+            "path": [
+              "v_party_only",
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
             "line": 35,
+            "query": "'42501'",
+            "path": [
+              "v_party_only",
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)"
+            ]
+          },
+          {
+            "line": 38,
             "query": "v_project IS NULL",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 36,
+            "line": 39,
             "query": "'P0002'",
             "path": [
               "v_party_only",
@@ -12571,21 +12747,21 @@
             ]
           },
           {
-            "line": 38,
+            "line": 41,
             "query": "v_allowed := public.atlas_wb_party_revealed_map_ids(v_row.world_profile_id, v_project)",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 39,
+            "line": 42,
             "query": "NOT (p_map_id = ANY (v_allowed))",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 40,
+            "line": 43,
             "query": "'P0002'",
             "path": [
               "v_party_only",
@@ -12593,48 +12769,48 @@
             ]
           },
           {
-            "line": 44,
+            "line": 47,
             "query": "v_layers := COALESCE(v_row.layers, '{\"type\":\"FeatureCollection\",\"features\":[]}'::jsonb)",
             "path": []
           },
           {
-            "line": 45,
+            "line": 48,
             "query": "v_meta := COALESCE(v_row.generator_meta, '{}'::jsonb)",
             "path": []
           },
           {
-            "line": 46,
+            "line": 49,
             "query": "v_parent := v_row.parent_map_id",
             "path": []
           },
           {
-            "line": 48,
+            "line": 51,
             "query": "v_party_only",
             "path": []
           },
           {
-            "line": 49,
+            "line": 52,
             "query": "SELECT jsonb_build_object(\n      'type', 'FeatureCollection',\n      'features', COALESCE(jsonb_agg(f.feat), '[]'::jsonb)\n    )\n                      FROM jsonb_array_elements(COALESCE(v_layers->'features', '[]'::jsonb)) AS f(feat)\n    WHERE COALESCE((f.feat->'properties'->>'secret')::boolean, false) IS NOT TRUE\n      AND (\n        (f.feat->'properties'->>'discovered') IS NULL\n        OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE\n      )",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 61,
-            "query": "v_meta := jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas')\n    )",
+            "line": 65,
+            "query": "v_meta := jsonb_strip_nulls(jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas'),\n      'unifiedCanvas', v_meta->'unifiedCanvas',\n      'webglRuntime', v_meta->'webglRuntime',\n      'mapFrame', v_meta->'mapFrame',\n      'dungeon', v_meta->'dungeon'\n    ))",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 65,
+            "line": 73,
             "query": "v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed))",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 66,
+            "line": 74,
             "query": "v_parent := NULL",
             "path": [
               "v_party_only",
@@ -12642,8 +12818,8 @@
             ]
           },
           {
-            "line": 70,
-            "query": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', CASE\n      WHEN v_party_only THEN v_row.basemap_storage_path\n      ELSE v_row.basemap_storage_path\n    END,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
+            "line": 78,
+            "query": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', v_row.basemap_storage_path,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
             "path": []
           }
         ],
@@ -12656,13 +12832,13 @@
     {
       "signature": "public.get_world_map(uuid,boolean)",
       "source": {
-        "path": "supabase/migrations/068_world_maps.sql",
-        "startLine": 84,
-        "endLine": 142,
-        "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 104,
+        "endLine": 169,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.get_world_map(p_world_profile_id uuid, p_player_view boolean = FALSE) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_row public.world_maps%ROWTYPE;\n  v_data JSONB;\n  v_pins JSONB;\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_world_profile_id IS NULL THEN\n    RAISE EXCEPTION 'world_profile_id required' USING ERRCODE = '22023';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(p_world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  SELECT * INTO v_row FROM public.world_maps WHERE world_profile_id = p_world_profile_id;\n  IF NOT FOUND THEN\n    RETURN jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    );\n  END IF;\n\n  v_data := COALESCE(v_row.map_data, '{}'::jsonb);\n  IF p_player_view THEN\n    SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n      INTO v_pins\n      FROM jsonb_array_elements(COALESCE(v_data->'pins', '[]'::jsonb)) AS elem\n     WHERE COALESCE((elem->>'discovered')::boolean, true) IS TRUE;\n    v_data := jsonb_set(v_data, '{pins}', v_pins, true);\n  END IF;\n\n  RETURN jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  );\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.get_world_map(p_world_profile_id uuid, p_player_view boolean = FALSE) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_row public.world_maps%ROWTYPE;\n  v_data JSONB;\n  v_pins JSONB;\n  v_force_player BOOLEAN;\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_world_profile_id IS NULL THEN\n    RAISE EXCEPTION 'world_profile_id required' USING ERRCODE = '22023';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(p_world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_force_player := (NOT public.current_user_can_edit_world_profile(p_world_profile_id))\n                    OR (p_player_view IS TRUE);\n\n  SELECT * INTO v_row FROM public.world_maps WHERE world_profile_id = p_world_profile_id;\n  IF NOT FOUND THEN\n    RETURN jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    );\n  END IF;\n\n  v_data := COALESCE(v_row.map_data, '{}'::jsonb);\n  IF v_force_player THEN\n    SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n      INTO v_pins\n      FROM jsonb_array_elements(COALESCE(v_data->'pins', '[]'::jsonb)) AS elem\n     WHERE COALESCE((elem->>'discovered')::boolean, true) IS TRUE;\n    v_data := jsonb_set(v_data, '{pins}', COALESCE(v_pins, '[]'::jsonb), true);\n  END IF;\n\n  RETURN jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  );\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -12690,6 +12866,10 @@
             "arguments": 4
           },
           {
+            "name": "public.current_user_can_edit_world_profile",
+            "arguments": 1
+          },
+          {
             "name": "public.current_user_can_read_world_profile",
             "arguments": 1
           }
@@ -12697,7 +12877,7 @@
         "writes": [],
         "errors": [
           {
-            "line": 9,
+            "line": 10,
             "sqlstateExpression": "'42501'",
             "message": "not authenticated",
             "parameters": [],
@@ -12719,7 +12899,7 @@
             ]
           },
           {
-            "line": 12,
+            "line": 13,
             "sqlstateExpression": "'22023'",
             "message": "world_profile_id required",
             "parameters": [],
@@ -12741,7 +12921,7 @@
             ]
           },
           {
-            "line": 15,
+            "line": 16,
             "sqlstateExpression": "'42501'",
             "message": "forbidden",
             "parameters": [],
@@ -12765,7 +12945,7 @@
         ],
         "returns": [
           {
-            "line": 20,
+            "line": 24,
             "statement": "PLpgSQL_stmt_return",
             "expression": "jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    )",
             "path": [
@@ -12773,7 +12953,7 @@
             ]
           },
           {
-            "line": 42,
+            "line": 46,
             "statement": "PLpgSQL_stmt_return",
             "expression": "jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  )",
             "path": []
@@ -12781,28 +12961,28 @@
         ],
         "branches": [
           {
-            "line": 8,
+            "line": 9,
             "condition": "v_user IS NULL",
             "path": []
           },
           {
-            "line": 11,
+            "line": 12,
             "condition": "p_world_profile_id IS NULL",
             "path": []
           },
           {
-            "line": 14,
+            "line": 15,
             "condition": "NOT public.current_user_can_read_world_profile(p_world_profile_id)",
             "path": []
           },
           {
-            "line": 19,
+            "line": 23,
             "condition": "NOT FOUND",
             "path": []
           },
           {
-            "line": 34,
-            "condition": "p_player_view",
+            "line": 38,
+            "condition": "v_force_player",
             "path": []
           }
         ],
@@ -12827,84 +13007,89 @@
             "path": []
           },
           {
-            "line": 8,
+            "line": 9,
             "query": "v_user IS NULL",
             "path": []
           },
           {
-            "line": 9,
+            "line": 10,
             "query": "'42501'",
             "path": [
               "v_user IS NULL"
             ]
           },
           {
-            "line": 11,
+            "line": 12,
             "query": "p_world_profile_id IS NULL",
             "path": []
           },
           {
-            "line": 12,
+            "line": 13,
             "query": "'22023'",
             "path": [
               "p_world_profile_id IS NULL"
             ]
           },
           {
-            "line": 14,
+            "line": 15,
             "query": "NOT public.current_user_can_read_world_profile(p_world_profile_id)",
             "path": []
           },
           {
-            "line": 15,
+            "line": 16,
             "query": "'42501'",
             "path": [
               "NOT public.current_user_can_read_world_profile(p_world_profile_id)"
             ]
           },
           {
-            "line": 18,
+            "line": 19,
+            "query": "v_force_player := (NOT public.current_user_can_edit_world_profile(p_world_profile_id))\n                    OR (p_player_view IS TRUE)",
+            "path": []
+          },
+          {
+            "line": 22,
             "query": "SELECT *            FROM public.world_maps WHERE world_profile_id = p_world_profile_id",
             "path": []
           },
           {
-            "line": 19,
+            "line": 23,
             "query": "NOT FOUND",
             "path": []
           },
           {
-            "line": 20,
+            "line": 24,
             "query": "jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    )",
             "path": [
               "NOT FOUND"
             ]
           },
           {
-            "line": 33,
+            "line": 37,
             "query": "v_data := COALESCE(v_row.map_data, '{}'::jsonb)",
             "path": []
           },
           {
-            "line": 34,
-            "query": "p_player_view",
+            "line": 38,
+            "query": "v_force_player",
             "path": []
           },
           {
-            "line": 35,
+            "line": 39,
             "query": "SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n                        FROM jsonb_array_elements(COALESCE(v_data->'pins', '[]'::jsonb)) AS elem\n     WHERE COALESCE((elem->>'discovered')::boolean, true) IS TRUE",
             "path": [
-              "p_player_view"
+              "v_force_player"
             ]
           },
           {
-            "line": 39,
-            "query": "v_data := jsonb_set(v_data, '{pins}', v_pins, true)",
+            "line": 43,
+            "query": "v_data := jsonb_set(v_data, '{pins}', COALESCE(v_pins, '[]'::jsonb), true)",
             "path": [
-              "p_player_view"
+              "v_force_player"
             ]
           },
           {
-            "line": 42,
+            "line": 46,
             "query": "jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  )",
             "path": []
           }
@@ -13936,13 +14121,13 @@
     {
       "signature": "public.leave_play_session(uuid)",
       "source": {
-        "path": "supabase/migrations/041_session_runtime_state.sql",
-        "startLine": 457,
-        "endLine": 490,
-        "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 52,
+        "endLine": 101,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.leave_play_session(p_session_id uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  actor UUID := auth.uid();\n  v_session public.sessions;\n  v_revision BIGINT;\nBEGIN\n  IF actor IS NULL THEN RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501'; END IF;\n  SELECT * INTO v_session FROM public.sessions WHERE id = p_session_id FOR UPDATE;\n  IF FOUND THEN\n    DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor;\n    v_revision := COALESCE(v_session.runtime_revision, 0) + 1;\n    UPDATE public.sessions\n       SET runtime_revision = v_revision, updated_at = NOW()\n     WHERE id = p_session_id;\n    PERFORM public.append_session_event(\n      p_session_id,\n      'leave',\n      actor,\n      '{}'::jsonb,\n      v_revision,\n      NULL\n    );\n  ELSE\n    DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor;\n  END IF;\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.leave_play_session(p_session_id uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  actor UUID := auth.uid();\n  v_session public.sessions;\n  v_revision BIGINT;\n  v_removed INT := 0;\nBEGIN\n  IF actor IS NULL THEN\n    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';\n  END IF;\n\n  SELECT * INTO v_session FROM public.sessions WHERE id = p_session_id FOR UPDATE;\n  IF NOT FOUND THEN\n    DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor;\n    RETURN;\n  END IF;\n\n  DELETE FROM public.session_players\n   WHERE session_id = p_session_id AND user_id = actor;\n  GET DIAGNOSTICS v_removed = ROW_COUNT;\n\n  IF v_removed = 0 THEN\n    -- Foreign / non-participant leave is a no-op (no revision bump, no event).\n    RETURN;\n  END IF;\n\n  v_revision := COALESCE(v_session.runtime_revision, 0) + 1;\n  UPDATE public.sessions\n     SET runtime_revision = v_revision, updated_at = NOW()\n   WHERE id = p_session_id;\n  PERFORM public.append_session_event(\n    p_session_id,\n    'leave',\n    actor,\n    '{}'::jsonb,\n    v_revision,\n    NULL\n  );\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -13967,11 +14152,18 @@
           {
             "operation": "DELETE",
             "relation": "public.session_players",
-            "line": 10,
+            "line": 14,
             "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
             "path": [
-              "FOUND"
+              "NOT FOUND"
             ]
+          },
+          {
+            "operation": "DELETE",
+            "relation": "public.session_players",
+            "line": 18,
+            "query": "DELETE FROM public.session_players\n   WHERE session_id = p_session_id AND user_id = actor",
+            "path": []
           },
           {
             "operation": "UPDATE",
@@ -13980,25 +14172,14 @@
               "runtime_revision",
               "updated_at"
             ],
-            "line": 12,
-            "query": "UPDATE public.sessions\n       SET runtime_revision = v_revision, updated_at = NOW()\n     WHERE id = p_session_id",
-            "path": [
-              "FOUND"
-            ]
-          },
-          {
-            "operation": "DELETE",
-            "relation": "public.session_players",
-            "line": 24,
-            "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
-            "path": [
-              "ELSE AFTER: FOUND"
-            ]
+            "line": 28,
+            "query": "UPDATE public.sessions\n     SET runtime_revision = v_revision, updated_at = NOW()\n   WHERE id = p_session_id",
+            "path": []
           }
         ],
         "errors": [
           {
-            "line": 7,
+            "line": 9,
             "sqlstateExpression": "'42501'",
             "message": "Authentication required",
             "parameters": [],
@@ -14022,7 +14203,23 @@
         ],
         "returns": [
           {
-            "line": 6,
+            "line": 15,
+            "statement": "PLpgSQL_stmt_return",
+            "expression": "RETURN datum/void",
+            "path": [
+              "NOT FOUND"
+            ]
+          },
+          {
+            "line": 24,
+            "statement": "PLpgSQL_stmt_return",
+            "expression": "RETURN datum/void",
+            "path": [
+              "v_removed = 0"
+            ]
+          },
+          {
+            "line": 7,
             "statement": "PLpgSQL_stmt_return",
             "expression": "RETURN datum/void",
             "path": []
@@ -14030,13 +14227,18 @@
         ],
         "branches": [
           {
-            "line": 7,
+            "line": 8,
             "condition": "actor IS NULL",
             "path": []
           },
           {
-            "line": 9,
-            "condition": "FOUND",
+            "line": 13,
+            "condition": "NOT FOUND",
+            "path": []
+          },
+          {
+            "line": 22,
+            "condition": "v_removed = 0",
             "path": []
           }
         ],
@@ -14048,61 +14250,63 @@
             "path": []
           },
           {
-            "line": 7,
+            "line": 6,
+            "query": "0",
+            "path": []
+          },
+          {
+            "line": 8,
             "query": "actor IS NULL",
             "path": []
           },
           {
-            "line": 7,
+            "line": 9,
             "query": "'42501'",
             "path": [
               "actor IS NULL"
             ]
           },
           {
-            "line": 8,
+            "line": 12,
             "query": "SELECT *                FROM public.sessions WHERE id = p_session_id FOR UPDATE",
             "path": []
           },
           {
-            "line": 9,
-            "query": "FOUND",
+            "line": 13,
+            "query": "NOT FOUND",
             "path": []
           },
           {
-            "line": 10,
+            "line": 14,
             "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
             "path": [
-              "FOUND"
+              "NOT FOUND"
             ]
           },
           {
-            "line": 11,
+            "line": 18,
+            "query": "DELETE FROM public.session_players\n   WHERE session_id = p_session_id AND user_id = actor",
+            "path": []
+          },
+          {
+            "line": 22,
+            "query": "v_removed = 0",
+            "path": []
+          },
+          {
+            "line": 27,
             "query": "v_revision := COALESCE(v_session.runtime_revision, 0) + 1",
-            "path": [
-              "FOUND"
-            ]
+            "path": []
           },
           {
-            "line": 12,
-            "query": "UPDATE public.sessions\n       SET runtime_revision = v_revision, updated_at = NOW()\n     WHERE id = p_session_id",
-            "path": [
-              "FOUND"
-            ]
+            "line": 28,
+            "query": "UPDATE public.sessions\n     SET runtime_revision = v_revision, updated_at = NOW()\n   WHERE id = p_session_id",
+            "path": []
           },
           {
-            "line": 15,
-            "query": "SELECT public.append_session_event(\n      p_session_id,\n      'leave',\n      actor,\n      '{}'::jsonb,\n      v_revision,\n      NULL\n    )",
-            "path": [
-              "FOUND"
-            ]
-          },
-          {
-            "line": 24,
-            "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
-            "path": [
-              "ELSE AFTER: FOUND"
-            ]
+            "line": 31,
+            "query": "SELECT public.append_session_event(\n    p_session_id,\n    'leave',\n    actor,\n    '{}'::jsonb,\n    v_revision,\n    NULL\n  )",
+            "path": []
           }
         ],
         "dynamicSql": [],
@@ -14424,13 +14628,13 @@
     {
       "signature": "public.list_world_atlas_maps(uuid,boolean,text)",
       "source": {
-        "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
-        "startLine": 52,
-        "endLine": 142,
-        "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 172,
+        "endLine": 270,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.list_world_atlas_maps(p_world_profile_id uuid, p_player_view boolean = FALSE, p_saga_public_id text = NULL) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_rows JSONB;\n  v_can_edit BOOLEAN;\n  v_party_only BOOLEAN;\n  v_project UUID;\n  v_allowed UUID[];\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_world_profile_id IS NULL THEN\n    RAISE EXCEPTION 'world_profile_id required' USING ERRCODE = '22023';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(p_world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_can_edit := public.current_user_can_edit_world_profile(p_world_profile_id);\n  v_party_only := (NOT v_can_edit) OR (p_player_view IS TRUE);\n\n  IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN\n    v_project := public.atlas_wb_resolve_saga_project(p_world_profile_id, p_saga_public_id);\n  END IF;\n\n  IF v_party_only THEN\n    IF v_project IS NULL THEN\n      -- Fail closed: never dump full atlas catalog without saga.\n      RETURN jsonb_build_object('maps', '[]'::jsonb);\n    END IF;\n    v_allowed := public.atlas_wb_party_revealed_map_ids(p_world_profile_id, v_project);\n\n    SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        -- Hide parent id when parent map is not party-revealed (no breadcrumb leak).\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n    INTO v_rows\n    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed);\n  ELSE\n    SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', m.parent_map_id,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', m.azgaar_map_storage_path IS NOT NULL,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n    INTO v_rows\n    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id;\n  END IF;\n\n  RETURN jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb));\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.list_world_atlas_maps(p_world_profile_id uuid, p_player_view boolean = FALSE, p_saga_public_id text = NULL) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_rows JSONB;\n  v_can_edit BOOLEAN;\n  v_party_only BOOLEAN;\n  v_project UUID;\n  v_allowed UUID[];\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF p_world_profile_id IS NULL THEN\n    RAISE EXCEPTION 'world_profile_id required' USING ERRCODE = '22023';\n  END IF;\n  IF NOT public.current_user_can_read_world_profile(p_world_profile_id) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_can_edit := public.current_user_can_edit_world_profile(p_world_profile_id);\n  v_party_only := (NOT v_can_edit) OR (p_player_view IS TRUE);\n\n  IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN\n    v_project := public.atlas_wb_resolve_saga_project(p_world_profile_id, p_saga_public_id);\n    IF v_project IS NULL THEN\n      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n    END IF;\n    IF NOT public.current_user_is_active_project_member(v_project) THEN\n      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n    END IF;\n  END IF;\n\n  IF v_party_only THEN\n    IF v_project IS NULL THEN\n      RETURN jsonb_build_object('maps', '[]'::jsonb);\n    END IF;\n    v_allowed := public.atlas_wb_party_revealed_map_ids(p_world_profile_id, v_project);\n\n    SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n    INTO v_rows\n    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed);\n  ELSE\n    SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', m.parent_map_id,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', m.azgaar_map_storage_path IS NOT NULL,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n    INTO v_rows\n    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id;\n  END IF;\n\n  RETURN jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb));\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -14471,6 +14675,10 @@
           },
           {
             "name": "public.current_user_can_read_world_profile",
+            "arguments": 1
+          },
+          {
+            "name": "public.current_user_is_active_project_member",
             "arguments": 1
           }
         ],
@@ -14541,11 +14749,57 @@
             "path": [
               "NOT public.current_user_can_read_world_profile(p_world_profile_id)"
             ]
+          },
+          {
+            "line": 26,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "v_project IS NULL"
+            ]
+          },
+          {
+            "line": 29,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "NOT public.current_user_is_active_project_member(v_project)"
+            ]
           }
         ],
         "returns": [
           {
-            "line": 30,
+            "line": 35,
             "statement": "PLpgSQL_stmt_return",
             "expression": "jsonb_build_object('maps', '[]'::jsonb)",
             "path": [
@@ -14554,7 +14808,7 @@
             ]
           },
           {
-            "line": 79,
+            "line": 83,
             "statement": "PLpgSQL_stmt_return",
             "expression": "jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))",
             "path": []
@@ -14582,12 +14836,26 @@
             "path": []
           },
           {
-            "line": 27,
+            "line": 25,
+            "condition": "v_project IS NULL",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
+            "line": 28,
+            "condition": "NOT public.current_user_is_active_project_member(v_project)",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
+            "line": 33,
             "condition": "v_party_only",
             "path": []
           },
           {
-            "line": 28,
+            "line": 34,
             "condition": "v_project IS NULL",
             "path": [
               "v_party_only"
@@ -14676,19 +14944,49 @@
             ]
           },
           {
-            "line": 27,
+            "line": 25,
+            "query": "v_project IS NULL",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
+            "line": 26,
+            "query": "'42501'",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "v_project IS NULL"
+            ]
+          },
+          {
+            "line": 28,
+            "query": "NOT public.current_user_is_active_project_member(v_project)",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+            ]
+          },
+          {
+            "line": 29,
+            "query": "'42501'",
+            "path": [
+              "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+              "NOT public.current_user_is_active_project_member(v_project)"
+            ]
+          },
+          {
+            "line": 33,
             "query": "v_party_only",
             "path": []
           },
           {
-            "line": 28,
+            "line": 34,
             "query": "v_project IS NULL",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 30,
+            "line": 35,
             "query": "jsonb_build_object('maps', '[]'::jsonb)",
             "path": [
               "v_party_only",
@@ -14696,28 +14994,28 @@
             ]
           },
           {
-            "line": 32,
+            "line": 37,
             "query": "v_allowed := public.atlas_wb_party_revealed_map_ids(p_world_profile_id, v_project)",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 34,
-            "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        -- Hide parent id when parent map is not party-revealed (no breadcrumb leak).\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed)",
+            "line": 39,
+            "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed)",
             "path": [
               "v_party_only"
             ]
           },
           {
-            "line": 59,
+            "line": 63,
             "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', m.parent_map_id,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', m.azgaar_map_storage_path IS NOT NULL,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id",
             "path": [
               "ELSE AFTER: v_party_only"
             ]
           },
           {
-            "line": 79,
+            "line": 83,
             "query": "jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))",
             "path": []
           }
@@ -23917,35 +24215,13 @@
     {
       "signature": "public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)",
       "source": {
-        "path": "supabase/migrations/065_saga_simulation_ops.sql",
-        "startLine": 36,
-        "endLine": 381,
-        "sha256": "a7fa13ff4d2868abd79f26593690f8907d2e2982e54023a027ec6f8f29f97ba9"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 345,
+        "endLine": 696,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
-      "transformations": [
-        {
-          "kind": "rename",
-          "from": "public.sagadrive_resolve_adventure_command",
-          "to": "public.sagatree_resolve_adventure_command",
-          "source": {
-            "path": "supabase/migrations/073_sagatree_schema_rename_compat.sql",
-            "startLine": 124,
-            "endLine": 173,
-            "sha256": "f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608"
-          }
-        },
-        {
-          "kind": "body-rewrite",
-          "source": {
-            "path": "supabase/migrations/085_fix_function_bodies_sagatree.sql",
-            "startLine": 1,
-            "endLine": 28,
-            "sha256": "36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3"
-          },
-          "replacement": "sagadrive→sagatree; SagaDrive→SagaTree"
-        }
-      ],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.sagatree_resolve_adventure_command(p_session_id uuid, p_payload jsonb, p_is_gm boolean, p_world jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_in JSONB := COALESCE(p_payload, '{}'::jsonb);\n  v_world JSONB := COALESCE(p_world, '{}'::jsonb);\n  v_shared JSONB := COALESCE(v_world->'shared', '{}'::jsonb);\n  v_op TEXT;\n  v_adv JSONB;\n  v_project UUID;\n  v_project_adv JSONB;\n  v_key TEXT;\n  v_value JSONB;\n  v_vis TEXT;\n  v_flags JSONB;\n  v_clocks JSONB;\n  v_clock JSONB;\n  v_clock_id TEXT;\n  v_max INT;\n  v_val INT;\n  v_delta INT;\n  v_rel JSONB;\n  v_rel_id TEXT;\n  v_cons JSONB;\n  v_id TEXT;\n  v_event JSONB;\n  v_rev INT;\n  v_schema INT;\n  v_patch JSONB;\n  v_days INT;\n  v_loc TEXT;\n  v_cons_elem JSONB;\n  v_batch_count INT;\nBEGIN\n  IF NOT p_is_gm THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n  IF jsonb_typeof(v_shared) IS DISTINCT FROM 'object' THEN\n    v_shared := '{}'::jsonb;\n  END IF;\n\n  v_op := NULLIF(BTRIM(COALESCE(v_in->>'op', '')), '');\n  IF v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL THEN\n    v_op := 'set_flag';\n  END IF;\n  IF v_op IS NULL THEN\n    RAISE EXCEPTION 'Adventure-op erforderlich' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT project_id INTO v_project FROM public.sessions WHERE id = p_session_id;\n  IF v_project IS NULL THEN\n    RAISE EXCEPTION 'Session not found' USING ERRCODE = 'P0002';\n  END IF;\n  SELECT COALESCE(adventure_runtime, '{}'::jsonb) INTO v_project_adv\n  FROM public.projects WHERE id = v_project;\n\n  v_adv := COALESCE(v_shared->'adventure', public.sagatree_empty_adventure_runtime());\n  IF jsonb_typeof(v_adv) IS DISTINCT FROM 'object' THEN\n    v_adv := public.sagatree_empty_adventure_runtime();\n  END IF;\n  v_schema := COALESCE((v_adv->>'schemaVersion')::int, 0);\n  IF v_schema NOT IN (1, 2) THEN\n    v_adv := public.sagatree_empty_adventure_runtime() || jsonb_build_object(\n      'definitionRef', v_adv->'definitionRef'\n    );\n    v_schema := 1;\n  END IF;\n\n  IF v_op = 'hydrate_from_project' THEN\n    IF jsonb_typeof(v_project_adv) = 'object'\n       AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) IN (1, 2) THEN\n      v_adv := v_project_adv;\n    ELSE\n      v_adv := public.sagatree_empty_adventure_runtime();\n    END IF;\n  ELSIF v_op = 'set_definition_ref' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'definitionRef', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'definitionRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_adv := jsonb_set(v_adv, '{definitionRef}', to_jsonb(left(v_in->>'definitionRef', 120)), true);\n  ELSIF v_op = 'set_flag' THEN\n    v_key := NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '');\n    IF v_key IS NULL THEN\n      RAISE EXCEPTION 'key erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_key := left(v_key, 64);\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    IF v_in ? 'value' THEN\n      v_value := v_in->'value';\n    ELSE\n      v_value := 'true'::jsonb;\n    END IF;\n    v_flags := COALESCE(v_adv->'flags', '{}'::jsonb);\n    v_flags := jsonb_set(\n      v_flags,\n      ARRAY[v_key],\n      jsonb_build_object(\n        'key', v_key,\n        'value', v_value,\n        'visibility', v_vis,\n        'updatedAt', NOW()\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{flags}', v_flags, true);\n  ELSIF v_op = 'set_relationship' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'actorRef', '')), '') IS NULL\n       OR NULLIF(BTRIM(COALESCE(v_in->>'targetRef', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'actorRef und targetRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_rel_id := left((v_in->>'actorRef') || '->' || (v_in->>'targetRef'), 64);\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'gm_only');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'gm_only';\n    END IF;\n    v_rel := COALESCE(v_adv->'relationships', '{}'::jsonb);\n    v_rel := jsonb_set(\n      v_rel,\n      ARRAY[v_rel_id],\n      jsonb_build_object(\n        'actorRef', left(v_in->>'actorRef', 80),\n        'targetRef', left(v_in->>'targetRef', 80),\n        'score', GREATEST(-100, LEAST(100, COALESCE((v_in->>'score')::int, 0))),\n        'note', left(COALESCE(v_in->>'note', ''), 200),\n        'visibility', v_vis\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{relationships}', v_rel, true);\n  ELSIF v_op = 'tick_clock' THEN\n    v_clock_id := left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockId', '')), ''), 'danger'), 64);\n    v_clocks := COALESCE(v_adv->'clocks', '{}'::jsonb);\n    v_clock := COALESCE(v_clocks->v_clock_id, '{}'::jsonb);\n    v_max := GREATEST(1, LEAST(12, COALESCE((v_in->>'clockMax')::int, (v_clock->>'max')::int, 4)));\n    v_delta := COALESCE((v_in->>'clockDelta')::int, 1);\n    v_val := GREATEST(0, LEAST(v_max, COALESCE((v_clock->>'value')::int, 0) + v_delta));\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), COALESCE(v_clock->>'visibility', 'shared'));\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    v_clocks := jsonb_set(\n      v_clocks,\n      ARRAY[v_clock_id],\n      jsonb_build_object(\n        'id', v_clock_id,\n        'label', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockLabel', '')), ''), v_clock->>'label', v_clock_id), 80),\n        'value', v_val,\n        'max', v_max,\n        'visibility', v_vis\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{clocks}', v_clocks, true);\n  ELSIF v_op = 'add_consequence' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'summary', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'summary erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);\n    v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb);\n    IF jsonb_typeof(v_cons) IS DISTINCT FROM 'array' THEN\n      v_cons := '[]'::jsonb;\n    END IF;\n    v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n      'id', v_id,\n      'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'consequenceKind', '')), ''), 'generic'), 40),\n      'summary', left(v_in->>'summary', 200),\n      'visibility', v_vis,\n      'createdAt', NOW()\n    ));\n    IF jsonb_array_length(v_cons) > 64 THEN\n      v_cons := (\n        SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n        FROM (\n          SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n          OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n        ) s\n      );\n    END IF;\n    v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);\n  ELSIF v_op = 'persist_to_project' THEN\n    NULL;\n  ELSIF v_op IN ('advance_time', 'apply_simulation_batch') THEN\n    -- Client preview (pure kernel); server validates + persists patch only.\n    v_days := COALESCE((v_in->>'days')::int, 0);\n    IF v_op = 'advance_time' AND (v_days < 1 OR v_days > 30) THEN\n      RAISE EXCEPTION 'days muss zwischen 1 und 30 liegen' USING ERRCODE = '22023';\n    END IF;\n    v_patch := v_in->'simulationPatch';\n    IF jsonb_typeof(v_patch) IS DISTINCT FROM 'object' THEN\n      RAISE EXCEPTION 'simulationPatch erforderlich' USING ERRCODE = '22023';\n    END IF;\n    -- Reject unknown top-level patch keys\n    IF EXISTS (\n      SELECT 1 FROM jsonb_object_keys(v_patch) k\n      WHERE k NOT IN ('time', 'clocks', 'threats', 'deadlines', 'flags', 'rngSeed', 'partyLocationRef', 'rules')\n    ) THEN\n      RAISE EXCEPTION 'simulationPatch enthält unbekannte Felder' USING ERRCODE = '22023';\n    END IF;\n    v_adv := public.sagatree_ensure_adventure_v2(v_adv);\n    IF v_patch ? 'time' AND jsonb_typeof(v_patch->'time') = 'object' THEN\n      v_adv := jsonb_set(\n        v_adv,\n        '{time}',\n        jsonb_build_object(\n          'day', GREATEST(0, LEAST(9999, COALESCE((v_patch->'time'->>'day')::int, 0)))\n        ),\n        true\n      );\n    END IF;\n    IF v_patch ? 'clocks' AND jsonb_typeof(v_patch->'clocks') = 'object' THEN\n      v_adv := jsonb_set(v_adv, '{clocks}', v_patch->'clocks', true);\n    END IF;\n    IF v_patch ? 'threats' AND jsonb_typeof(v_patch->'threats') = 'array' THEN\n      IF jsonb_array_length(v_patch->'threats') > 64 THEN\n        RAISE EXCEPTION 'threats zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_adv := jsonb_set(v_adv, '{threats}', v_patch->'threats', true);\n    END IF;\n    IF v_patch ? 'deadlines' AND jsonb_typeof(v_patch->'deadlines') = 'array' THEN\n      IF jsonb_array_length(v_patch->'deadlines') > 64 THEN\n        RAISE EXCEPTION 'deadlines zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_adv := jsonb_set(v_adv, '{deadlines}', v_patch->'deadlines', true);\n    END IF;\n    IF v_patch ? 'flags' AND jsonb_typeof(v_patch->'flags') = 'object' THEN\n      v_adv := jsonb_set(v_adv, '{flags}', v_patch->'flags', true);\n    END IF;\n    IF v_patch ? 'rngSeed' THEN\n      v_adv := jsonb_set(v_adv, '{rngSeed}', to_jsonb(COALESCE((v_patch->>'rngSeed')::bigint, 0)), true);\n    END IF;\n    IF v_patch ? 'partyLocationRef' THEN\n      v_adv := jsonb_set(\n        v_adv,\n        '{partyLocationRef}',\n        CASE\n          WHEN v_patch->>'partyLocationRef' IS NULL OR BTRIM(v_patch->>'partyLocationRef') = '' THEN 'null'::jsonb\n          ELSE to_jsonb(left(v_patch->>'partyLocationRef', 80))\n        END,\n        true\n      );\n    END IF;\n    -- Append consequences from approved preview (batch size limit)\n    IF jsonb_typeof(v_in->'appendConsequences') = 'array' THEN\n      v_batch_count := jsonb_array_length(v_in->'appendConsequences');\n      IF v_batch_count > 32 THEN\n        RAISE EXCEPTION 'appendConsequences zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb);\n      IF jsonb_typeof(v_cons) IS DISTINCT FROM 'array' THEN\n        v_cons := '[]'::jsonb;\n      END IF;\n      FOR v_cons_elem IN SELECT elem FROM jsonb_array_elements(v_in->'appendConsequences') AS elem\n      LOOP\n        IF NULLIF(BTRIM(COALESCE(v_cons_elem->>'summary', '')), '') IS NULL THEN\n          CONTINUE;\n        END IF;\n        v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'visibility', '')), ''), 'gm_only');\n        IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n          v_vis := 'gm_only';\n        END IF;\n        v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);\n        v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n          'id', v_id,\n          'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'kind', '')), ''), 'sim'), 40),\n          'summary', left(v_cons_elem->>'summary', 200),\n          'visibility', v_vis,\n          'createdAt', NOW()\n        ));\n      END LOOP;\n      IF jsonb_array_length(v_cons) > 64 THEN\n        v_cons := (\n          SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n          FROM (\n            SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n            OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n          ) s\n        );\n      END IF;\n      v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);\n    END IF;\n    v_schema := 2;\n  ELSIF v_op = 'set_party_location' THEN\n    v_loc := NULLIF(BTRIM(COALESCE(v_in->>'locationRef', '')), '');\n    IF v_loc IS NULL THEN\n      RAISE EXCEPTION 'locationRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_adv := public.sagatree_ensure_adventure_v2(v_adv);\n    v_adv := jsonb_set(v_adv, '{partyLocationRef}', to_jsonb(left(v_loc, 80)), true);\n    v_schema := 2;\n  ELSE\n    RAISE EXCEPTION 'Unbekannte Adventure-Operation' USING ERRCODE = '22023';\n  END IF;\n\n  v_rev := GREATEST(0, COALESCE((v_adv->>'sliceRevision')::int, 0)) + 1;\n  IF v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2 THEN\n    v_adv := jsonb_set(v_adv, '{schemaVersion}', '2'::jsonb, true);\n  ELSE\n    v_adv := jsonb_set(v_adv, '{schemaVersion}', to_jsonb(COALESCE((v_adv->>'schemaVersion')::int, 1)), true);\n  END IF;\n  v_adv := jsonb_set(v_adv, '{sliceRevision}', to_jsonb(v_rev), true);\n  v_adv := jsonb_set(v_adv, '{updatedAt}', to_jsonb(NOW()), true);\n\n  v_shared := jsonb_set(v_shared, '{adventure}', v_adv, true);\n  v_world := jsonb_set(v_world, '{shared}', v_shared, true);\n\n  IF v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true' THEN\n    IF v_op IN (\n      'set_flag', 'set_relationship', 'tick_clock', 'add_consequence',\n      'set_definition_ref', 'persist_to_project',\n      'advance_time', 'apply_simulation_batch', 'set_party_location'\n    ) THEN\n      UPDATE public.projects\n         SET adventure_runtime = v_adv,\n             updated_at = NOW()\n       WHERE id = v_project;\n    END IF;\n  END IF;\n\n  v_event := jsonb_build_object(\n    'op', v_op,\n    'key', v_in->>'key',\n    'batchId', v_in->>'batchId',\n    'days', v_in->'days',\n    'definitionRef', v_adv->>'definitionRef',\n    'sliceRevision', v_rev,\n    'authoritative', true\n  );\n  RETURN jsonb_build_object('worldState', v_world, 'eventPayload', v_event);\nEND;\n$$",
+      "transformations": [],
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.sagatree_resolve_adventure_command(p_session_id uuid, p_payload jsonb, p_is_gm boolean, p_world jsonb) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_in JSONB := COALESCE(p_payload, '{}'::jsonb);\n  v_world JSONB := COALESCE(p_world, '{}'::jsonb);\n  v_shared JSONB := COALESCE(v_world->'shared', '{}'::jsonb);\n  v_op TEXT;\n  v_adv JSONB;\n  v_project UUID;\n  v_project_adv JSONB;\n  v_key TEXT;\n  v_value JSONB;\n  v_vis TEXT;\n  v_flags JSONB;\n  v_clocks JSONB;\n  v_clock JSONB;\n  v_clock_id TEXT;\n  v_max INT;\n  v_val INT;\n  v_delta INT;\n  v_rel JSONB;\n  v_rel_id TEXT;\n  v_cons JSONB;\n  v_id TEXT;\n  v_event JSONB;\n  v_rev INT;\n  v_schema INT;\n  v_patch JSONB;\n  v_days INT;\n  v_loc TEXT;\n  v_cons_elem JSONB;\n  v_batch_count INT;\nBEGIN\n  -- Ignore client p_is_gm; derive authority from membership.\n  IF auth.uid() IS NULL THEN\n    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';\n  END IF;\n  SELECT project_id INTO v_project FROM public.sessions WHERE id = p_session_id;\n  IF v_project IS NULL THEN\n    RAISE EXCEPTION 'Session not found' USING ERRCODE = 'P0002';\n  END IF;\n  IF NOT public.is_project_gm(v_project, auth.uid()) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n  IF jsonb_typeof(v_shared) IS DISTINCT FROM 'object' THEN\n    v_shared := '{}'::jsonb;\n  END IF;\n\n  v_op := NULLIF(BTRIM(COALESCE(v_in->>'op', '')), '');\n  IF v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL THEN\n    v_op := 'set_flag';\n  END IF;\n  IF v_op IS NULL THEN\n    RAISE EXCEPTION 'Adventure-op erforderlich' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT COALESCE(adventure_runtime, '{}'::jsonb) INTO v_project_adv\n  FROM public.projects WHERE id = v_project;\n\n  v_adv := COALESCE(v_shared->'adventure', public.sagatree_empty_adventure_runtime());\n  IF jsonb_typeof(v_adv) IS DISTINCT FROM 'object' THEN\n    v_adv := public.sagatree_empty_adventure_runtime();\n  END IF;\n  v_schema := COALESCE((v_adv->>'schemaVersion')::int, 0);\n  IF v_schema NOT IN (1, 2) THEN\n    v_adv := public.sagatree_empty_adventure_runtime() || jsonb_build_object(\n      'definitionRef', v_adv->'definitionRef'\n    );\n    v_schema := 1;\n  END IF;\n\n  IF v_op = 'hydrate_from_project' THEN\n    IF jsonb_typeof(v_project_adv) = 'object'\n       AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) IN (1, 2) THEN\n      v_adv := v_project_adv;\n    ELSE\n      v_adv := public.sagatree_empty_adventure_runtime();\n    END IF;\n  ELSIF v_op = 'set_definition_ref' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'definitionRef', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'definitionRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_adv := jsonb_set(v_adv, '{definitionRef}', to_jsonb(left(v_in->>'definitionRef', 120)), true);\n  ELSIF v_op = 'set_flag' THEN\n    v_key := NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '');\n    IF v_key IS NULL THEN\n      RAISE EXCEPTION 'key erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_key := left(v_key, 64);\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    IF v_in ? 'value' THEN\n      v_value := v_in->'value';\n    ELSE\n      v_value := 'true'::jsonb;\n    END IF;\n    v_flags := COALESCE(v_adv->'flags', '{}'::jsonb);\n    v_flags := jsonb_set(\n      v_flags,\n      ARRAY[v_key],\n      jsonb_build_object(\n        'key', v_key,\n        'value', v_value,\n        'visibility', v_vis,\n        'updatedAt', NOW()\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{flags}', v_flags, true);\n  ELSIF v_op = 'set_relationship' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'actorRef', '')), '') IS NULL\n       OR NULLIF(BTRIM(COALESCE(v_in->>'targetRef', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'actorRef und targetRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_rel_id := left((v_in->>'actorRef') || '->' || (v_in->>'targetRef'), 64);\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'gm_only');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'gm_only';\n    END IF;\n    v_rel := COALESCE(v_adv->'relationships', '{}'::jsonb);\n    v_rel := jsonb_set(\n      v_rel,\n      ARRAY[v_rel_id],\n      jsonb_build_object(\n        'actorRef', left(v_in->>'actorRef', 80),\n        'targetRef', left(v_in->>'targetRef', 80),\n        'score', GREATEST(-100, LEAST(100, COALESCE((v_in->>'score')::int, 0))),\n        'note', left(COALESCE(v_in->>'note', ''), 200),\n        'visibility', v_vis\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{relationships}', v_rel, true);\n  ELSIF v_op = 'tick_clock' THEN\n    v_clock_id := left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockId', '')), ''), 'danger'), 64);\n    v_clocks := COALESCE(v_adv->'clocks', '{}'::jsonb);\n    v_clock := COALESCE(v_clocks->v_clock_id, '{}'::jsonb);\n    v_max := GREATEST(1, LEAST(12, COALESCE((v_in->>'clockMax')::int, (v_clock->>'max')::int, 4)));\n    v_delta := COALESCE((v_in->>'clockDelta')::int, 1);\n    v_val := GREATEST(0, LEAST(v_max, COALESCE((v_clock->>'value')::int, 0) + v_delta));\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), COALESCE(v_clock->>'visibility', 'shared'));\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    v_clocks := jsonb_set(\n      v_clocks,\n      ARRAY[v_clock_id],\n      jsonb_build_object(\n        'id', v_clock_id,\n        'label', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockLabel', '')), ''), v_clock->>'label', v_clock_id), 80),\n        'value', v_val,\n        'max', v_max,\n        'visibility', v_vis\n      ),\n      true\n    );\n    v_adv := jsonb_set(v_adv, '{clocks}', v_clocks, true);\n  ELSIF v_op = 'add_consequence' THEN\n    IF NULLIF(BTRIM(COALESCE(v_in->>'summary', '')), '') IS NULL THEN\n      RAISE EXCEPTION 'summary erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared');\n    IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n      v_vis := 'shared';\n    END IF;\n    v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);\n    v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb);\n    IF jsonb_typeof(v_cons) IS DISTINCT FROM 'array' THEN\n      v_cons := '[]'::jsonb;\n    END IF;\n    v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n      'id', v_id,\n      'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'consequenceKind', '')), ''), 'generic'), 40),\n      'summary', left(v_in->>'summary', 200),\n      'visibility', v_vis,\n      'createdAt', NOW()\n    ));\n    IF jsonb_array_length(v_cons) > 64 THEN\n      v_cons := (\n        SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n        FROM (\n          SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n          OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n        ) s\n      );\n    END IF;\n    v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);\n  ELSIF v_op = 'persist_to_project' THEN\n    NULL;\n  ELSIF v_op IN ('advance_time', 'apply_simulation_batch') THEN\n    -- Client preview (pure kernel); server validates + persists patch only.\n    v_days := COALESCE((v_in->>'days')::int, 0);\n    IF v_op = 'advance_time' AND (v_days < 1 OR v_days > 30) THEN\n      RAISE EXCEPTION 'days muss zwischen 1 und 30 liegen' USING ERRCODE = '22023';\n    END IF;\n    v_patch := v_in->'simulationPatch';\n    IF jsonb_typeof(v_patch) IS DISTINCT FROM 'object' THEN\n      RAISE EXCEPTION 'simulationPatch erforderlich' USING ERRCODE = '22023';\n    END IF;\n    -- Reject unknown top-level patch keys\n    IF EXISTS (\n      SELECT 1 FROM jsonb_object_keys(v_patch) k\n      WHERE k NOT IN ('time', 'clocks', 'threats', 'deadlines', 'flags', 'rngSeed', 'partyLocationRef', 'rules')\n    ) THEN\n      RAISE EXCEPTION 'simulationPatch enthält unbekannte Felder' USING ERRCODE = '22023';\n    END IF;\n    v_adv := public.sagatree_ensure_adventure_v2(v_adv);\n    IF v_patch ? 'time' AND jsonb_typeof(v_patch->'time') = 'object' THEN\n      v_adv := jsonb_set(\n        v_adv,\n        '{time}',\n        jsonb_build_object(\n          'day', GREATEST(0, LEAST(9999, COALESCE((v_patch->'time'->>'day')::int, 0)))\n        ),\n        true\n      );\n    END IF;\n    IF v_patch ? 'clocks' AND jsonb_typeof(v_patch->'clocks') = 'object' THEN\n      v_adv := jsonb_set(v_adv, '{clocks}', v_patch->'clocks', true);\n    END IF;\n    IF v_patch ? 'threats' AND jsonb_typeof(v_patch->'threats') = 'array' THEN\n      IF jsonb_array_length(v_patch->'threats') > 64 THEN\n        RAISE EXCEPTION 'threats zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_adv := jsonb_set(v_adv, '{threats}', v_patch->'threats', true);\n    END IF;\n    IF v_patch ? 'deadlines' AND jsonb_typeof(v_patch->'deadlines') = 'array' THEN\n      IF jsonb_array_length(v_patch->'deadlines') > 64 THEN\n        RAISE EXCEPTION 'deadlines zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_adv := jsonb_set(v_adv, '{deadlines}', v_patch->'deadlines', true);\n    END IF;\n    IF v_patch ? 'flags' AND jsonb_typeof(v_patch->'flags') = 'object' THEN\n      v_adv := jsonb_set(v_adv, '{flags}', v_patch->'flags', true);\n    END IF;\n    IF v_patch ? 'rngSeed' THEN\n      v_adv := jsonb_set(v_adv, '{rngSeed}', to_jsonb(COALESCE((v_patch->>'rngSeed')::bigint, 0)), true);\n    END IF;\n    IF v_patch ? 'partyLocationRef' THEN\n      v_adv := jsonb_set(\n        v_adv,\n        '{partyLocationRef}',\n        CASE\n          WHEN v_patch->>'partyLocationRef' IS NULL OR BTRIM(v_patch->>'partyLocationRef') = '' THEN 'null'::jsonb\n          ELSE to_jsonb(left(v_patch->>'partyLocationRef', 80))\n        END,\n        true\n      );\n    END IF;\n    -- Append consequences from approved preview (batch size limit)\n    IF jsonb_typeof(v_in->'appendConsequences') = 'array' THEN\n      v_batch_count := jsonb_array_length(v_in->'appendConsequences');\n      IF v_batch_count > 32 THEN\n        RAISE EXCEPTION 'appendConsequences zu groß' USING ERRCODE = '22023';\n      END IF;\n      v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb);\n      IF jsonb_typeof(v_cons) IS DISTINCT FROM 'array' THEN\n        v_cons := '[]'::jsonb;\n      END IF;\n      FOR v_cons_elem IN SELECT elem FROM jsonb_array_elements(v_in->'appendConsequences') AS elem\n      LOOP\n        IF NULLIF(BTRIM(COALESCE(v_cons_elem->>'summary', '')), '') IS NULL THEN\n          CONTINUE;\n        END IF;\n        v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'visibility', '')), ''), 'gm_only');\n        IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN\n          v_vis := 'gm_only';\n        END IF;\n        v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);\n        v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n          'id', v_id,\n          'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'kind', '')), ''), 'sim'), 40),\n          'summary', left(v_cons_elem->>'summary', 200),\n          'visibility', v_vis,\n          'createdAt', NOW()\n        ));\n      END LOOP;\n      IF jsonb_array_length(v_cons) > 64 THEN\n        v_cons := (\n          SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n          FROM (\n            SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n            OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n          ) s\n        );\n      END IF;\n      v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);\n    END IF;\n    v_schema := 2;\n  ELSIF v_op = 'set_party_location' THEN\n    v_loc := NULLIF(BTRIM(COALESCE(v_in->>'locationRef', '')), '');\n    IF v_loc IS NULL THEN\n      RAISE EXCEPTION 'locationRef erforderlich' USING ERRCODE = '22023';\n    END IF;\n    v_adv := public.sagatree_ensure_adventure_v2(v_adv);\n    v_adv := jsonb_set(v_adv, '{partyLocationRef}', to_jsonb(left(v_loc, 80)), true);\n    v_schema := 2;\n  ELSE\n    RAISE EXCEPTION 'Unbekannte Adventure-Operation' USING ERRCODE = '22023';\n  END IF;\n\n  v_rev := GREATEST(0, COALESCE((v_adv->>'sliceRevision')::int, 0)) + 1;\n  IF v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2 THEN\n    v_adv := jsonb_set(v_adv, '{schemaVersion}', '2'::jsonb, true);\n  ELSE\n    v_adv := jsonb_set(v_adv, '{schemaVersion}', to_jsonb(COALESCE((v_adv->>'schemaVersion')::int, 1)), true);\n  END IF;\n  v_adv := jsonb_set(v_adv, '{sliceRevision}', to_jsonb(v_rev), true);\n  v_adv := jsonb_set(v_adv, '{updatedAt}', to_jsonb(NOW()), true);\n\n  v_shared := jsonb_set(v_shared, '{adventure}', v_adv, true);\n  v_world := jsonb_set(v_world, '{shared}', v_shared, true);\n\n  IF v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true' THEN\n    IF v_op IN (\n      'set_flag', 'set_relationship', 'tick_clock', 'add_consequence',\n      'set_definition_ref', 'persist_to_project',\n      'advance_time', 'apply_simulation_batch', 'set_party_location'\n    ) THEN\n      UPDATE public.projects\n         SET adventure_runtime = v_adv,\n             updated_at = NOW()\n       WHERE id = v_project;\n    END IF;\n  END IF;\n\n  v_event := jsonb_build_object(\n    'op', v_op,\n    'key', v_in->>'key',\n    'batchId', v_in->>'batchId',\n    'days', v_in->'days',\n    'definitionRef', v_adv->>'definitionRef',\n    'sliceRevision', v_rev,\n    'authoritative', true\n  );\n  RETURN jsonb_build_object('worldState', v_world, 'eventPayload', v_event);\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -23953,6 +24229,10 @@
           "public.sessions"
         ],
         "calls": [
+          {
+            "name": "auth.uid",
+            "arguments": 0
+          },
           {
             "name": "btrim",
             "arguments": 1
@@ -24018,6 +24298,10 @@
             "arguments": 0
           },
           {
+            "name": "public.is_project_gm",
+            "arguments": 2
+          },
+          {
             "name": "public.sagatree_empty_adventure_runtime",
             "arguments": 0
           },
@@ -24046,7 +24330,7 @@
               "adventure_runtime",
               "updated_at"
             ],
-            "line": 317,
+            "line": 321,
             "query": "UPDATE public.projects\n         SET adventure_runtime = v_adv,\n             updated_at = NOW()\n       WHERE id = v_project",
             "path": [
               "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'",
@@ -24056,9 +24340,9 @@
         ],
         "errors": [
           {
-            "line": 34,
+            "line": 35,
             "sqlstateExpression": "'42501'",
-            "message": "forbidden",
+            "message": "Authentication required",
             "parameters": [],
             "raiseOptions": [
               {
@@ -24074,33 +24358,11 @@
               }
             ],
             "path": [
-              "NOT p_is_gm"
+              "auth.uid() IS NULL"
             ]
           },
           {
-            "line": 45,
-            "sqlstateExpression": "'22023'",
-            "message": "Adventure-op erforderlich",
-            "parameters": [],
-            "raiseOptions": [
-              {
-                "PLpgSQL_raise_option": {
-                  "opt_type": 0,
-                  "expr": {
-                    "PLpgSQL_expr": {
-                      "query": "'22023'",
-                      "parseMode": 2
-                    }
-                  }
-                }
-              }
-            ],
-            "path": [
-              "v_op IS NULL"
-            ]
-          },
-          {
-            "line": 50,
+            "line": 39,
             "sqlstateExpression": "'P0002'",
             "message": "Session not found",
             "parameters": [],
@@ -24122,7 +24384,51 @@
             ]
           },
           {
-            "line": 76,
+            "line": 42,
+            "sqlstateExpression": "'42501'",
+            "message": "forbidden",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'42501'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "NOT public.is_project_gm(v_project, auth.uid())"
+            ]
+          },
+          {
+            "line": 53,
+            "sqlstateExpression": "'22023'",
+            "message": "Adventure-op erforderlich",
+            "parameters": [],
+            "raiseOptions": [
+              {
+                "PLpgSQL_raise_option": {
+                  "opt_type": 0,
+                  "expr": {
+                    "PLpgSQL_expr": {
+                      "query": "'22023'",
+                      "parseMode": 2
+                    }
+                  }
+                }
+              }
+            ],
+            "path": [
+              "v_op IS NULL"
+            ]
+          },
+          {
+            "line": 80,
             "sqlstateExpression": "'22023'",
             "message": "definitionRef erforderlich",
             "parameters": [],
@@ -24146,7 +24452,7 @@
             ]
           },
           {
-            "line": 82,
+            "line": 86,
             "sqlstateExpression": "'22023'",
             "message": "key erforderlich",
             "parameters": [],
@@ -24170,7 +24476,7 @@
             ]
           },
           {
-            "line": 110,
+            "line": 114,
             "sqlstateExpression": "'22023'",
             "message": "actorRef und targetRef erforderlich",
             "parameters": [],
@@ -24194,7 +24500,7 @@
             ]
           },
           {
-            "line": 157,
+            "line": 161,
             "sqlstateExpression": "'22023'",
             "message": "summary erforderlich",
             "parameters": [],
@@ -24218,7 +24524,7 @@
             ]
           },
           {
-            "line": 191,
+            "line": 195,
             "sqlstateExpression": "'22023'",
             "message": "days muss zwischen 1 und 30 liegen",
             "parameters": [],
@@ -24242,7 +24548,7 @@
             ]
           },
           {
-            "line": 195,
+            "line": 199,
             "sqlstateExpression": "'22023'",
             "message": "simulationPatch erforderlich",
             "parameters": [],
@@ -24266,7 +24572,7 @@
             ]
           },
           {
-            "line": 202,
+            "line": 206,
             "sqlstateExpression": "'22023'",
             "message": "simulationPatch enthält unbekannte Felder",
             "parameters": [],
@@ -24290,7 +24596,7 @@
             ]
           },
           {
-            "line": 220,
+            "line": 224,
             "sqlstateExpression": "'22023'",
             "message": "threats zu groß",
             "parameters": [],
@@ -24315,7 +24621,7 @@
             ]
           },
           {
-            "line": 226,
+            "line": 230,
             "sqlstateExpression": "'22023'",
             "message": "deadlines zu groß",
             "parameters": [],
@@ -24340,7 +24646,7 @@
             ]
           },
           {
-            "line": 251,
+            "line": 255,
             "sqlstateExpression": "'22023'",
             "message": "appendConsequences zu groß",
             "parameters": [],
@@ -24365,7 +24671,7 @@
             ]
           },
           {
-            "line": 290,
+            "line": 294,
             "sqlstateExpression": "'22023'",
             "message": "locationRef erforderlich",
             "parameters": [],
@@ -24389,7 +24695,7 @@
             ]
           },
           {
-            "line": 296,
+            "line": 300,
             "sqlstateExpression": "'22023'",
             "message": "Unbekannte Adventure-Operation",
             "parameters": [],
@@ -24413,7 +24719,7 @@
         ],
         "returns": [
           {
-            "line": 333,
+            "line": 337,
             "statement": "PLpgSQL_stmt_return",
             "expression": "jsonb_build_object('worldState', v_world, 'eventPayload', v_event)",
             "path": []
@@ -24421,61 +24727,66 @@
         ],
         "branches": [
           {
-            "line": 33,
-            "condition": "NOT p_is_gm",
+            "line": 34,
+            "condition": "auth.uid() IS NULL",
             "path": []
           },
           {
-            "line": 36,
-            "condition": "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'",
-            "path": []
-          },
-          {
-            "line": 41,
-            "condition": "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL",
-            "path": []
-          },
-          {
-            "line": 44,
-            "condition": "v_op IS NULL",
-            "path": []
-          },
-          {
-            "line": 49,
+            "line": 38,
             "condition": "v_project IS NULL",
             "path": []
           },
           {
-            "line": 56,
-            "condition": "jsonb_typeof(v_adv) IS DISTINCT FROM 'object'",
+            "line": 41,
+            "condition": "NOT public.is_project_gm(v_project, auth.uid())",
+            "path": []
+          },
+          {
+            "line": 44,
+            "condition": "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'",
+            "path": []
+          },
+          {
+            "line": 49,
+            "condition": "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL",
+            "path": []
+          },
+          {
+            "line": 52,
+            "condition": "v_op IS NULL",
             "path": []
           },
           {
             "line": 60,
+            "condition": "jsonb_typeof(v_adv) IS DISTINCT FROM 'object'",
+            "path": []
+          },
+          {
+            "line": 64,
             "condition": "v_schema NOT IN (1, 2)",
             "path": []
           },
           {
-            "line": 67,
+            "line": 71,
             "condition": "v_op = 'hydrate_from_project'",
             "path": []
           },
           {
-            "line": 68,
+            "line": 72,
             "condition": "jsonb_typeof(v_project_adv) = 'object'\n       AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) IN (1, 2)",
             "path": [
               "v_op = 'hydrate_from_project'"
             ]
           },
           {
-            "line": 74,
+            "line": 78,
             "condition": "v_op = 'set_definition_ref'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'"
             ]
           },
           {
-            "line": 75,
+            "line": 79,
             "condition": "NULLIF(BTRIM(COALESCE(v_in->>'definitionRef', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'",
@@ -24483,14 +24794,14 @@
             ]
           },
           {
-            "line": 79,
+            "line": 83,
             "condition": "v_op = 'set_flag'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'"
             ]
           },
           {
-            "line": 81,
+            "line": 85,
             "condition": "v_key IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -24498,7 +24809,7 @@
             ]
           },
           {
-            "line": 86,
+            "line": 90,
             "condition": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -24506,7 +24817,7 @@
             ]
           },
           {
-            "line": 89,
+            "line": 93,
             "condition": "v_in ? 'value'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -24514,14 +24825,14 @@
             ]
           },
           {
-            "line": 107,
+            "line": 111,
             "condition": "v_op = 'set_relationship'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'"
             ]
           },
           {
-            "line": 108,
+            "line": 112,
             "condition": "NULLIF(BTRIM(COALESCE(v_in->>'actorRef', '')), '') IS NULL\n       OR NULLIF(BTRIM(COALESCE(v_in->>'targetRef', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -24529,7 +24840,7 @@
             ]
           },
           {
-            "line": 114,
+            "line": 118,
             "condition": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -24537,14 +24848,14 @@
             ]
           },
           {
-            "line": 131,
+            "line": 135,
             "condition": "v_op = 'tick_clock'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'"
             ]
           },
           {
-            "line": 139,
+            "line": 143,
             "condition": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -24552,14 +24863,14 @@
             ]
           },
           {
-            "line": 155,
+            "line": 159,
             "condition": "v_op = 'add_consequence'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'"
             ]
           },
           {
-            "line": 156,
+            "line": 160,
             "condition": "NULLIF(BTRIM(COALESCE(v_in->>'summary', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -24567,7 +24878,7 @@
             ]
           },
           {
-            "line": 160,
+            "line": 164,
             "condition": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -24575,7 +24886,7 @@
             ]
           },
           {
-            "line": 165,
+            "line": 169,
             "condition": "jsonb_typeof(v_cons) IS DISTINCT FROM 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -24583,7 +24894,7 @@
             ]
           },
           {
-            "line": 175,
+            "line": 179,
             "condition": "jsonb_array_length(v_cons) > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -24591,21 +24902,21 @@
             ]
           },
           {
-            "line": 185,
+            "line": 189,
             "condition": "v_op = 'persist_to_project'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence'"
             ]
           },
           {
-            "line": 187,
+            "line": 191,
             "condition": "v_op IN ('advance_time', 'apply_simulation_batch')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'"
             ]
           },
           {
-            "line": 190,
+            "line": 194,
             "condition": "v_op = 'advance_time' AND (v_days < 1 OR v_days > 30)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24613,7 +24924,7 @@
             ]
           },
           {
-            "line": 194,
+            "line": 198,
             "condition": "jsonb_typeof(v_patch) IS DISTINCT FROM 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24621,7 +24932,7 @@
             ]
           },
           {
-            "line": 198,
+            "line": 202,
             "condition": "EXISTS (\n      SELECT 1 FROM jsonb_object_keys(v_patch) k\n      WHERE k NOT IN ('time', 'clocks', 'threats', 'deadlines', 'flags', 'rngSeed', 'partyLocationRef', 'rules')\n    )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24629,7 +24940,7 @@
             ]
           },
           {
-            "line": 205,
+            "line": 209,
             "condition": "v_patch ? 'time' AND jsonb_typeof(v_patch->'time') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24637,7 +24948,7 @@
             ]
           },
           {
-            "line": 215,
+            "line": 219,
             "condition": "v_patch ? 'clocks' AND jsonb_typeof(v_patch->'clocks') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24645,7 +24956,7 @@
             ]
           },
           {
-            "line": 218,
+            "line": 222,
             "condition": "v_patch ? 'threats' AND jsonb_typeof(v_patch->'threats') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24653,7 +24964,7 @@
             ]
           },
           {
-            "line": 219,
+            "line": 223,
             "condition": "jsonb_array_length(v_patch->'threats') > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24662,7 +24973,7 @@
             ]
           },
           {
-            "line": 224,
+            "line": 228,
             "condition": "v_patch ? 'deadlines' AND jsonb_typeof(v_patch->'deadlines') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24670,7 +24981,7 @@
             ]
           },
           {
-            "line": 225,
+            "line": 229,
             "condition": "jsonb_array_length(v_patch->'deadlines') > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24679,7 +24990,7 @@
             ]
           },
           {
-            "line": 230,
+            "line": 234,
             "condition": "v_patch ? 'flags' AND jsonb_typeof(v_patch->'flags') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24687,7 +24998,7 @@
             ]
           },
           {
-            "line": 233,
+            "line": 237,
             "condition": "v_patch ? 'rngSeed'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24695,7 +25006,7 @@
             ]
           },
           {
-            "line": 236,
+            "line": 240,
             "condition": "v_patch ? 'partyLocationRef'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24703,7 +25014,7 @@
             ]
           },
           {
-            "line": 248,
+            "line": 252,
             "condition": "jsonb_typeof(v_in->'appendConsequences') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24711,7 +25022,7 @@
             ]
           },
           {
-            "line": 250,
+            "line": 254,
             "condition": "v_batch_count > 32",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24720,7 +25031,7 @@
             ]
           },
           {
-            "line": 254,
+            "line": 258,
             "condition": "jsonb_typeof(v_cons) IS DISTINCT FROM 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24729,7 +25040,7 @@
             ]
           },
           {
-            "line": 259,
+            "line": 263,
             "condition": "NULLIF(BTRIM(COALESCE(v_cons_elem->>'summary', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24738,7 +25049,7 @@
             ]
           },
           {
-            "line": 263,
+            "line": 267,
             "condition": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24747,7 +25058,7 @@
             ]
           },
           {
-            "line": 275,
+            "line": 279,
             "condition": "jsonb_array_length(v_cons) > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -24756,14 +25067,14 @@
             ]
           },
           {
-            "line": 287,
+            "line": 291,
             "condition": "v_op = 'set_party_location'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')"
             ]
           },
           {
-            "line": 289,
+            "line": 293,
             "condition": "v_loc IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -24771,17 +25082,17 @@
             ]
           },
           {
-            "line": 300,
+            "line": 304,
             "condition": "v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2",
             "path": []
           },
           {
-            "line": 311,
+            "line": 315,
             "condition": "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'",
             "path": []
           },
           {
-            "line": 312,
+            "line": 316,
             "condition": "v_op IN (\n      'set_flag', 'set_relationship', 'tick_clock', 'add_consequence',\n      'set_definition_ref', 'persist_to_project',\n      'advance_time', 'apply_simulation_batch', 'set_party_location'\n    )",
             "path": [
               "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'"
@@ -24853,135 +25164,147 @@
             "path": []
           },
           {
-            "line": 33,
-            "query": "NOT p_is_gm",
+            "line": 34,
+            "query": "auth.uid() IS NULL",
             "path": []
           },
           {
-            "line": 34,
+            "line": 35,
             "query": "'42501'",
             "path": [
-              "NOT p_is_gm"
+              "auth.uid() IS NULL"
             ]
-          },
-          {
-            "line": 36,
-            "query": "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'",
-            "path": []
           },
           {
             "line": 37,
-            "query": "v_shared := '{}'::jsonb",
-            "path": [
-              "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'"
-            ]
-          },
-          {
-            "line": 40,
-            "query": "v_op := NULLIF(BTRIM(COALESCE(v_in->>'op', '')), '')",
-            "path": []
-          },
-          {
-            "line": 41,
-            "query": "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL",
-            "path": []
-          },
-          {
-            "line": 42,
-            "query": "v_op := 'set_flag'",
-            "path": [
-              "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL"
-            ]
-          },
-          {
-            "line": 44,
-            "query": "v_op IS NULL",
-            "path": []
-          },
-          {
-            "line": 45,
-            "query": "'22023'",
-            "path": [
-              "v_op IS NULL"
-            ]
-          },
-          {
-            "line": 48,
             "query": "SELECT project_id                FROM public.sessions WHERE id = p_session_id",
             "path": []
           },
           {
-            "line": 49,
+            "line": 38,
             "query": "v_project IS NULL",
             "path": []
           },
           {
-            "line": 50,
+            "line": 39,
             "query": "'P0002'",
             "path": [
               "v_project IS NULL"
             ]
           },
           {
+            "line": 41,
+            "query": "NOT public.is_project_gm(v_project, auth.uid())",
+            "path": []
+          },
+          {
+            "line": 42,
+            "query": "'42501'",
+            "path": [
+              "NOT public.is_project_gm(v_project, auth.uid())"
+            ]
+          },
+          {
+            "line": 44,
+            "query": "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'",
+            "path": []
+          },
+          {
+            "line": 45,
+            "query": "v_shared := '{}'::jsonb",
+            "path": [
+              "jsonb_typeof(v_shared) IS DISTINCT FROM 'object'"
+            ]
+          },
+          {
+            "line": 48,
+            "query": "v_op := NULLIF(BTRIM(COALESCE(v_in->>'op', '')), '')",
+            "path": []
+          },
+          {
+            "line": 49,
+            "query": "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL",
+            "path": []
+          },
+          {
+            "line": 50,
+            "query": "v_op := 'set_flag'",
+            "path": [
+              "v_op IS NULL AND NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '') IS NOT NULL"
+            ]
+          },
+          {
             "line": 52,
+            "query": "v_op IS NULL",
+            "path": []
+          },
+          {
+            "line": 53,
+            "query": "'22023'",
+            "path": [
+              "v_op IS NULL"
+            ]
+          },
+          {
+            "line": 56,
             "query": "SELECT COALESCE(adventure_runtime, '{}'::jsonb)                      FROM public.projects WHERE id = v_project",
             "path": []
           },
           {
-            "line": 55,
+            "line": 59,
             "query": "v_adv := COALESCE(v_shared->'adventure', public.sagatree_empty_adventure_runtime())",
             "path": []
           },
           {
-            "line": 56,
+            "line": 60,
             "query": "jsonb_typeof(v_adv) IS DISTINCT FROM 'object'",
             "path": []
           },
           {
-            "line": 57,
+            "line": 61,
             "query": "v_adv := public.sagatree_empty_adventure_runtime()",
             "path": [
               "jsonb_typeof(v_adv) IS DISTINCT FROM 'object'"
             ]
           },
           {
-            "line": 59,
+            "line": 63,
             "query": "v_schema := COALESCE((v_adv->>'schemaVersion')::int, 0)",
             "path": []
           },
           {
-            "line": 60,
+            "line": 64,
             "query": "v_schema NOT IN (1, 2)",
             "path": []
           },
           {
-            "line": 61,
+            "line": 65,
             "query": "v_adv := public.sagatree_empty_adventure_runtime() || jsonb_build_object(\n      'definitionRef', v_adv->'definitionRef'\n    )",
             "path": [
               "v_schema NOT IN (1, 2)"
             ]
           },
           {
-            "line": 64,
+            "line": 68,
             "query": "v_schema := 1",
             "path": [
               "v_schema NOT IN (1, 2)"
             ]
           },
           {
-            "line": 67,
+            "line": 71,
             "query": "v_op = 'hydrate_from_project'",
             "path": []
           },
           {
-            "line": 68,
+            "line": 72,
             "query": "jsonb_typeof(v_project_adv) = 'object'\n       AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) IN (1, 2)",
             "path": [
               "v_op = 'hydrate_from_project'"
             ]
           },
           {
-            "line": 70,
+            "line": 74,
             "query": "v_adv := v_project_adv",
             "path": [
               "v_op = 'hydrate_from_project'",
@@ -24989,7 +25312,7 @@
             ]
           },
           {
-            "line": 72,
+            "line": 76,
             "query": "v_adv := public.sagatree_empty_adventure_runtime()",
             "path": [
               "v_op = 'hydrate_from_project'",
@@ -24997,14 +25320,14 @@
             ]
           },
           {
-            "line": 74,
+            "line": 78,
             "query": "v_op = 'set_definition_ref'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'"
             ]
           },
           {
-            "line": 75,
+            "line": 79,
             "query": "NULLIF(BTRIM(COALESCE(v_in->>'definitionRef', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'",
@@ -25012,7 +25335,7 @@
             ]
           },
           {
-            "line": 76,
+            "line": 80,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'",
@@ -25021,7 +25344,7 @@
             ]
           },
           {
-            "line": 78,
+            "line": 82,
             "query": "v_adv := jsonb_set(v_adv, '{definitionRef}', to_jsonb(left(v_in->>'definitionRef', 120)), true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project'",
@@ -25029,14 +25352,14 @@
             ]
           },
           {
-            "line": 79,
+            "line": 83,
             "query": "v_op = 'set_flag'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'"
             ]
           },
           {
-            "line": 80,
+            "line": 84,
             "query": "v_key := NULLIF(BTRIM(COALESCE(v_in->>'key', '')), '')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25044,7 +25367,7 @@
             ]
           },
           {
-            "line": 81,
+            "line": 85,
             "query": "v_key IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25052,7 +25375,7 @@
             ]
           },
           {
-            "line": 82,
+            "line": 86,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25061,7 +25384,7 @@
             ]
           },
           {
-            "line": 84,
+            "line": 88,
             "query": "v_key := left(v_key, 64)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25069,7 +25392,7 @@
             ]
           },
           {
-            "line": 85,
+            "line": 89,
             "query": "v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25077,7 +25400,7 @@
             ]
           },
           {
-            "line": 86,
+            "line": 90,
             "query": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25085,7 +25408,7 @@
             ]
           },
           {
-            "line": 87,
+            "line": 91,
             "query": "v_vis := 'shared'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25094,7 +25417,7 @@
             ]
           },
           {
-            "line": 89,
+            "line": 93,
             "query": "v_in ? 'value'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25102,7 +25425,7 @@
             ]
           },
           {
-            "line": 90,
+            "line": 94,
             "query": "v_value := v_in->'value'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25111,7 +25434,7 @@
             ]
           },
           {
-            "line": 92,
+            "line": 96,
             "query": "v_value := 'true'::jsonb",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25120,7 +25443,7 @@
             ]
           },
           {
-            "line": 94,
+            "line": 98,
             "query": "v_flags := COALESCE(v_adv->'flags', '{}'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25128,7 +25451,7 @@
             ]
           },
           {
-            "line": 95,
+            "line": 99,
             "query": "v_flags := jsonb_set(\n      v_flags,\n      ARRAY[v_key],\n      jsonb_build_object(\n        'key', v_key,\n        'value', v_value,\n        'visibility', v_vis,\n        'updatedAt', NOW()\n      ),\n      true\n    )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25136,7 +25459,7 @@
             ]
           },
           {
-            "line": 106,
+            "line": 110,
             "query": "v_adv := jsonb_set(v_adv, '{flags}', v_flags, true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref'",
@@ -25144,14 +25467,14 @@
             ]
           },
           {
-            "line": 107,
+            "line": 111,
             "query": "v_op = 'set_relationship'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'"
             ]
           },
           {
-            "line": 108,
+            "line": 112,
             "query": "NULLIF(BTRIM(COALESCE(v_in->>'actorRef', '')), '') IS NULL\n       OR NULLIF(BTRIM(COALESCE(v_in->>'targetRef', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25159,7 +25482,7 @@
             ]
           },
           {
-            "line": 110,
+            "line": 114,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25168,7 +25491,7 @@
             ]
           },
           {
-            "line": 112,
+            "line": 116,
             "query": "v_rel_id := left((v_in->>'actorRef') || '->' || (v_in->>'targetRef'), 64)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25176,7 +25499,7 @@
             ]
           },
           {
-            "line": 113,
+            "line": 117,
             "query": "v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25184,7 +25507,7 @@
             ]
           },
           {
-            "line": 114,
+            "line": 118,
             "query": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25192,7 +25515,7 @@
             ]
           },
           {
-            "line": 115,
+            "line": 119,
             "query": "v_vis := 'gm_only'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25201,7 +25524,7 @@
             ]
           },
           {
-            "line": 117,
+            "line": 121,
             "query": "v_rel := COALESCE(v_adv->'relationships', '{}'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25209,7 +25532,7 @@
             ]
           },
           {
-            "line": 118,
+            "line": 122,
             "query": "v_rel := jsonb_set(\n      v_rel,\n      ARRAY[v_rel_id],\n      jsonb_build_object(\n        'actorRef', left(v_in->>'actorRef', 80),\n        'targetRef', left(v_in->>'targetRef', 80),\n        'score', GREATEST(-100, LEAST(100, COALESCE((v_in->>'score')::int, 0))),\n        'note', left(COALESCE(v_in->>'note', ''), 200),\n        'visibility', v_vis\n      ),\n      true\n    )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25217,7 +25540,7 @@
             ]
           },
           {
-            "line": 130,
+            "line": 134,
             "query": "v_adv := jsonb_set(v_adv, '{relationships}', v_rel, true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag'",
@@ -25225,14 +25548,14 @@
             ]
           },
           {
-            "line": 131,
+            "line": 135,
             "query": "v_op = 'tick_clock'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'"
             ]
           },
           {
-            "line": 132,
+            "line": 136,
             "query": "v_clock_id := left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockId', '')), ''), 'danger'), 64)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25240,7 +25563,7 @@
             ]
           },
           {
-            "line": 133,
+            "line": 137,
             "query": "v_clocks := COALESCE(v_adv->'clocks', '{}'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25248,7 +25571,7 @@
             ]
           },
           {
-            "line": 134,
+            "line": 138,
             "query": "v_clock := COALESCE(v_clocks->v_clock_id, '{}'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25256,7 +25579,7 @@
             ]
           },
           {
-            "line": 135,
+            "line": 139,
             "query": "v_max := GREATEST(1, LEAST(12, COALESCE((v_in->>'clockMax')::int, (v_clock->>'max')::int, 4)))",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25264,7 +25587,7 @@
             ]
           },
           {
-            "line": 136,
+            "line": 140,
             "query": "v_delta := COALESCE((v_in->>'clockDelta')::int, 1)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25272,7 +25595,7 @@
             ]
           },
           {
-            "line": 137,
+            "line": 141,
             "query": "v_val := GREATEST(0, LEAST(v_max, COALESCE((v_clock->>'value')::int, 0) + v_delta))",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25280,7 +25603,7 @@
             ]
           },
           {
-            "line": 138,
+            "line": 142,
             "query": "v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), COALESCE(v_clock->>'visibility', 'shared'))",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25288,7 +25611,7 @@
             ]
           },
           {
-            "line": 139,
+            "line": 143,
             "query": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25296,7 +25619,7 @@
             ]
           },
           {
-            "line": 140,
+            "line": 144,
             "query": "v_vis := 'shared'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25305,7 +25628,7 @@
             ]
           },
           {
-            "line": 142,
+            "line": 146,
             "query": "v_clocks := jsonb_set(\n      v_clocks,\n      ARRAY[v_clock_id],\n      jsonb_build_object(\n        'id', v_clock_id,\n        'label', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'clockLabel', '')), ''), v_clock->>'label', v_clock_id), 80),\n        'value', v_val,\n        'max', v_max,\n        'visibility', v_vis\n      ),\n      true\n    )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25313,7 +25636,7 @@
             ]
           },
           {
-            "line": 154,
+            "line": 158,
             "query": "v_adv := jsonb_set(v_adv, '{clocks}', v_clocks, true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship'",
@@ -25321,14 +25644,14 @@
             ]
           },
           {
-            "line": 155,
+            "line": 159,
             "query": "v_op = 'add_consequence'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'"
             ]
           },
           {
-            "line": 156,
+            "line": 160,
             "query": "NULLIF(BTRIM(COALESCE(v_in->>'summary', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25336,7 +25659,7 @@
             ]
           },
           {
-            "line": 157,
+            "line": 161,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25345,7 +25668,7 @@
             ]
           },
           {
-            "line": 159,
+            "line": 163,
             "query": "v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'visibility', '')), ''), 'shared')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25353,7 +25676,7 @@
             ]
           },
           {
-            "line": 160,
+            "line": 164,
             "query": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25361,7 +25684,7 @@
             ]
           },
           {
-            "line": 161,
+            "line": 165,
             "query": "v_vis := 'shared'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25370,7 +25693,7 @@
             ]
           },
           {
-            "line": 163,
+            "line": 167,
             "query": "v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25378,7 +25701,7 @@
             ]
           },
           {
-            "line": 164,
+            "line": 168,
             "query": "v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25386,7 +25709,7 @@
             ]
           },
           {
-            "line": 165,
+            "line": 169,
             "query": "jsonb_typeof(v_cons) IS DISTINCT FROM 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25394,7 +25717,7 @@
             ]
           },
           {
-            "line": 166,
+            "line": 170,
             "query": "v_cons := '[]'::jsonb",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25403,7 +25726,7 @@
             ]
           },
           {
-            "line": 168,
+            "line": 172,
             "query": "v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n      'id', v_id,\n      'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'consequenceKind', '')), ''), 'generic'), 40),\n      'summary', left(v_in->>'summary', 200),\n      'visibility', v_vis,\n      'createdAt', NOW()\n    ))",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25411,7 +25734,7 @@
             ]
           },
           {
-            "line": 175,
+            "line": 179,
             "query": "jsonb_array_length(v_cons) > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25419,7 +25742,7 @@
             ]
           },
           {
-            "line": 176,
+            "line": 180,
             "query": "v_cons := (\n        SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n        FROM (\n          SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n          OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n        ) s\n      )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25428,7 +25751,7 @@
             ]
           },
           {
-            "line": 184,
+            "line": 188,
             "query": "v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock'",
@@ -25436,21 +25759,21 @@
             ]
           },
           {
-            "line": 185,
+            "line": 189,
             "query": "v_op = 'persist_to_project'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence'"
             ]
           },
           {
-            "line": 187,
+            "line": 191,
             "query": "v_op IN ('advance_time', 'apply_simulation_batch')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'"
             ]
           },
           {
-            "line": 189,
+            "line": 193,
             "query": "v_days := COALESCE((v_in->>'days')::int, 0)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25458,33 +25781,8 @@
             ]
           },
           {
-            "line": 190,
-            "query": "v_op = 'advance_time' AND (v_days < 1 OR v_days > 30)",
-            "path": [
-              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
-              "v_op IN ('advance_time', 'apply_simulation_batch')"
-            ]
-          },
-          {
-            "line": 191,
-            "query": "'22023'",
-            "path": [
-              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
-              "v_op IN ('advance_time', 'apply_simulation_batch')",
-              "v_op = 'advance_time' AND (v_days < 1 OR v_days > 30)"
-            ]
-          },
-          {
-            "line": 193,
-            "query": "v_patch := v_in->'simulationPatch'",
-            "path": [
-              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
-              "v_op IN ('advance_time', 'apply_simulation_batch')"
-            ]
-          },
-          {
             "line": 194,
-            "query": "jsonb_typeof(v_patch) IS DISTINCT FROM 'object'",
+            "query": "v_op = 'advance_time' AND (v_days < 1 OR v_days > 30)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
               "v_op IN ('advance_time', 'apply_simulation_batch')"
@@ -25496,11 +25794,36 @@
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
               "v_op IN ('advance_time', 'apply_simulation_batch')",
-              "jsonb_typeof(v_patch) IS DISTINCT FROM 'object'"
+              "v_op = 'advance_time' AND (v_days < 1 OR v_days > 30)"
+            ]
+          },
+          {
+            "line": 197,
+            "query": "v_patch := v_in->'simulationPatch'",
+            "path": [
+              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
+              "v_op IN ('advance_time', 'apply_simulation_batch')"
             ]
           },
           {
             "line": 198,
+            "query": "jsonb_typeof(v_patch) IS DISTINCT FROM 'object'",
+            "path": [
+              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
+              "v_op IN ('advance_time', 'apply_simulation_batch')"
+            ]
+          },
+          {
+            "line": 199,
+            "query": "'22023'",
+            "path": [
+              "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
+              "v_op IN ('advance_time', 'apply_simulation_batch')",
+              "jsonb_typeof(v_patch) IS DISTINCT FROM 'object'"
+            ]
+          },
+          {
+            "line": 202,
             "query": "EXISTS (\n      SELECT 1 FROM jsonb_object_keys(v_patch) k\n      WHERE k NOT IN ('time', 'clocks', 'threats', 'deadlines', 'flags', 'rngSeed', 'partyLocationRef', 'rules')\n    )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25508,7 +25831,7 @@
             ]
           },
           {
-            "line": 202,
+            "line": 206,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25517,7 +25840,7 @@
             ]
           },
           {
-            "line": 204,
+            "line": 208,
             "query": "v_adv := public.sagatree_ensure_adventure_v2(v_adv)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25525,7 +25848,7 @@
             ]
           },
           {
-            "line": 205,
+            "line": 209,
             "query": "v_patch ? 'time' AND jsonb_typeof(v_patch->'time') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25533,7 +25856,7 @@
             ]
           },
           {
-            "line": 206,
+            "line": 210,
             "query": "v_adv := jsonb_set(\n        v_adv,\n        '{time}',\n        jsonb_build_object(\n          'day', GREATEST(0, LEAST(9999, COALESCE((v_patch->'time'->>'day')::int, 0)))\n        ),\n        true\n      )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25542,7 +25865,7 @@
             ]
           },
           {
-            "line": 215,
+            "line": 219,
             "query": "v_patch ? 'clocks' AND jsonb_typeof(v_patch->'clocks') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25550,7 +25873,7 @@
             ]
           },
           {
-            "line": 216,
+            "line": 220,
             "query": "v_adv := jsonb_set(v_adv, '{clocks}', v_patch->'clocks', true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25559,7 +25882,7 @@
             ]
           },
           {
-            "line": 218,
+            "line": 222,
             "query": "v_patch ? 'threats' AND jsonb_typeof(v_patch->'threats') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25567,7 +25890,7 @@
             ]
           },
           {
-            "line": 219,
+            "line": 223,
             "query": "jsonb_array_length(v_patch->'threats') > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25576,7 +25899,7 @@
             ]
           },
           {
-            "line": 220,
+            "line": 224,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25586,7 +25909,7 @@
             ]
           },
           {
-            "line": 222,
+            "line": 226,
             "query": "v_adv := jsonb_set(v_adv, '{threats}', v_patch->'threats', true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25595,7 +25918,7 @@
             ]
           },
           {
-            "line": 224,
+            "line": 228,
             "query": "v_patch ? 'deadlines' AND jsonb_typeof(v_patch->'deadlines') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25603,7 +25926,7 @@
             ]
           },
           {
-            "line": 225,
+            "line": 229,
             "query": "jsonb_array_length(v_patch->'deadlines') > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25612,7 +25935,7 @@
             ]
           },
           {
-            "line": 226,
+            "line": 230,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25622,7 +25945,7 @@
             ]
           },
           {
-            "line": 228,
+            "line": 232,
             "query": "v_adv := jsonb_set(v_adv, '{deadlines}', v_patch->'deadlines', true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25631,7 +25954,7 @@
             ]
           },
           {
-            "line": 230,
+            "line": 234,
             "query": "v_patch ? 'flags' AND jsonb_typeof(v_patch->'flags') = 'object'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25639,7 +25962,7 @@
             ]
           },
           {
-            "line": 231,
+            "line": 235,
             "query": "v_adv := jsonb_set(v_adv, '{flags}', v_patch->'flags', true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25648,7 +25971,7 @@
             ]
           },
           {
-            "line": 233,
+            "line": 237,
             "query": "v_patch ? 'rngSeed'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25656,7 +25979,7 @@
             ]
           },
           {
-            "line": 234,
+            "line": 238,
             "query": "v_adv := jsonb_set(v_adv, '{rngSeed}', to_jsonb(COALESCE((v_patch->>'rngSeed')::bigint, 0)), true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25665,7 +25988,7 @@
             ]
           },
           {
-            "line": 236,
+            "line": 240,
             "query": "v_patch ? 'partyLocationRef'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25673,7 +25996,7 @@
             ]
           },
           {
-            "line": 237,
+            "line": 241,
             "query": "v_adv := jsonb_set(\n        v_adv,\n        '{partyLocationRef}',\n        CASE\n          WHEN v_patch->>'partyLocationRef' IS NULL OR BTRIM(v_patch->>'partyLocationRef') = '' THEN 'null'::jsonb\n          ELSE to_jsonb(left(v_patch->>'partyLocationRef', 80))\n        END,\n        true\n      )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25682,7 +26005,7 @@
             ]
           },
           {
-            "line": 248,
+            "line": 252,
             "query": "jsonb_typeof(v_in->'appendConsequences') = 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25690,7 +26013,7 @@
             ]
           },
           {
-            "line": 249,
+            "line": 253,
             "query": "v_batch_count := jsonb_array_length(v_in->'appendConsequences')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25699,7 +26022,7 @@
             ]
           },
           {
-            "line": 250,
+            "line": 254,
             "query": "v_batch_count > 32",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25708,7 +26031,7 @@
             ]
           },
           {
-            "line": 251,
+            "line": 255,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25718,7 +26041,7 @@
             ]
           },
           {
-            "line": 253,
+            "line": 257,
             "query": "v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25727,7 +26050,7 @@
             ]
           },
           {
-            "line": 254,
+            "line": 258,
             "query": "jsonb_typeof(v_cons) IS DISTINCT FROM 'array'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25736,7 +26059,7 @@
             ]
           },
           {
-            "line": 255,
+            "line": 259,
             "query": "v_cons := '[]'::jsonb",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25746,7 +26069,7 @@
             ]
           },
           {
-            "line": 259,
+            "line": 263,
             "query": "NULLIF(BTRIM(COALESCE(v_cons_elem->>'summary', '')), '') IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25755,7 +26078,7 @@
             ]
           },
           {
-            "line": 262,
+            "line": 266,
             "query": "v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'visibility', '')), ''), 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25764,7 +26087,7 @@
             ]
           },
           {
-            "line": 263,
+            "line": 267,
             "query": "v_vis NOT IN ('public', 'shared', 'gm_only')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25773,7 +26096,7 @@
             ]
           },
           {
-            "line": 264,
+            "line": 268,
             "query": "v_vis := 'gm_only'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25783,7 +26106,7 @@
             ]
           },
           {
-            "line": 266,
+            "line": 270,
             "query": "v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25792,7 +26115,7 @@
             ]
           },
           {
-            "line": 267,
+            "line": 271,
             "query": "v_cons := v_cons || jsonb_build_array(jsonb_build_object(\n          'id', v_id,\n          'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'kind', '')), ''), 'sim'), 40),\n          'summary', left(v_cons_elem->>'summary', 200),\n          'visibility', v_vis,\n          'createdAt', NOW()\n        ))",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25801,7 +26124,7 @@
             ]
           },
           {
-            "line": 257,
+            "line": 261,
             "query": "SELECT elem FROM jsonb_array_elements(v_in->'appendConsequences') AS elem",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25810,7 +26133,7 @@
             ]
           },
           {
-            "line": 275,
+            "line": 279,
             "query": "jsonb_array_length(v_cons) > 64",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25819,7 +26142,7 @@
             ]
           },
           {
-            "line": 276,
+            "line": 280,
             "query": "v_cons := (\n          SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n          FROM (\n            SELECT elem FROM jsonb_array_elements(v_cons) AS elem\n            OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)\n          ) s\n        )",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25829,7 +26152,7 @@
             ]
           },
           {
-            "line": 284,
+            "line": 288,
             "query": "v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25838,7 +26161,7 @@
             ]
           },
           {
-            "line": 286,
+            "line": 290,
             "query": "v_schema := 2",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project'",
@@ -25846,14 +26169,14 @@
             ]
           },
           {
-            "line": 287,
+            "line": 291,
             "query": "v_op = 'set_party_location'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')"
             ]
           },
           {
-            "line": 288,
+            "line": 292,
             "query": "v_loc := NULLIF(BTRIM(COALESCE(v_in->>'locationRef', '')), '')",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25861,7 +26184,7 @@
             ]
           },
           {
-            "line": 289,
+            "line": 293,
             "query": "v_loc IS NULL",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25869,7 +26192,7 @@
             ]
           },
           {
-            "line": 290,
+            "line": 294,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25878,7 +26201,7 @@
             ]
           },
           {
-            "line": 292,
+            "line": 296,
             "query": "v_adv := public.sagatree_ensure_adventure_v2(v_adv)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25886,7 +26209,7 @@
             ]
           },
           {
-            "line": 293,
+            "line": 297,
             "query": "v_adv := jsonb_set(v_adv, '{partyLocationRef}', to_jsonb(left(v_loc, 80)), true)",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25894,7 +26217,7 @@
             ]
           },
           {
-            "line": 294,
+            "line": 298,
             "query": "v_schema := 2",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch')",
@@ -25902,70 +26225,70 @@
             ]
           },
           {
-            "line": 296,
+            "line": 300,
             "query": "'22023'",
             "path": [
               "ELSE AFTER: v_op = 'hydrate_from_project' ; v_op = 'set_definition_ref' ; v_op = 'set_flag' ; v_op = 'set_relationship' ; v_op = 'tick_clock' ; v_op = 'add_consequence' ; v_op = 'persist_to_project' ; v_op IN ('advance_time', 'apply_simulation_batch') ; v_op = 'set_party_location'"
             ]
           },
           {
-            "line": 299,
+            "line": 303,
             "query": "v_rev := GREATEST(0, COALESCE((v_adv->>'sliceRevision')::int, 0)) + 1",
             "path": []
           },
           {
-            "line": 300,
+            "line": 304,
             "query": "v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2",
             "path": []
           },
           {
-            "line": 301,
+            "line": 305,
             "query": "v_adv := jsonb_set(v_adv, '{schemaVersion}', '2'::jsonb, true)",
             "path": [
               "v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2"
             ]
           },
           {
-            "line": 303,
+            "line": 307,
             "query": "v_adv := jsonb_set(v_adv, '{schemaVersion}', to_jsonb(COALESCE((v_adv->>'schemaVersion')::int, 1)), true)",
             "path": [
               "ELSE AFTER: v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2"
             ]
           },
           {
-            "line": 305,
+            "line": 309,
             "query": "v_adv := jsonb_set(v_adv, '{sliceRevision}', to_jsonb(v_rev), true)",
             "path": []
           },
           {
-            "line": 306,
+            "line": 310,
             "query": "v_adv := jsonb_set(v_adv, '{updatedAt}', to_jsonb(NOW()), true)",
             "path": []
           },
           {
-            "line": 308,
+            "line": 312,
             "query": "v_shared := jsonb_set(v_shared, '{adventure}', v_adv, true)",
             "path": []
           },
           {
-            "line": 309,
+            "line": 313,
             "query": "v_world := jsonb_set(v_world, '{shared}', v_shared, true)",
             "path": []
           },
           {
-            "line": 311,
+            "line": 315,
             "query": "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'",
             "path": []
           },
           {
-            "line": 312,
+            "line": 316,
             "query": "v_op IN (\n      'set_flag', 'set_relationship', 'tick_clock', 'add_consequence',\n      'set_definition_ref', 'persist_to_project',\n      'advance_time', 'apply_simulation_batch', 'set_party_location'\n    )",
             "path": [
               "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'"
             ]
           },
           {
-            "line": 317,
+            "line": 321,
             "query": "UPDATE public.projects\n         SET adventure_runtime = v_adv,\n             updated_at = NOW()\n       WHERE id = v_project",
             "path": [
               "v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true'",
@@ -25973,12 +26296,12 @@
             ]
           },
           {
-            "line": 324,
+            "line": 328,
             "query": "v_event := jsonb_build_object(\n    'op', v_op,\n    'key', v_in->>'key',\n    'batchId', v_in->>'batchId',\n    'days', v_in->'days',\n    'definitionRef', v_adv->>'definitionRef',\n    'sliceRevision', v_rev,\n    'authoritative', true\n  )",
             "path": []
           },
           {
-            "line": 333,
+            "line": 337,
             "query": "jsonb_build_object('worldState', v_world, 'eventPayload', v_event)",
             "path": []
           }
@@ -31642,35 +31965,13 @@
     {
       "signature": "public.sagatree_resolve_session_check(uuid,uuid,jsonb,boolean)",
       "source": {
-        "path": "supabase/migrations/042_session_shared_rolls.sql",
-        "startLine": 140,
-        "endLine": 351,
-        "sha256": "ba87cf0ed1b75250d07333cfe3b5a26a54db069bd96dc5835e9f4069128ca906"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 711,
+        "endLine": 923,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
-      "transformations": [
-        {
-          "kind": "rename",
-          "from": "public.sagadrive_resolve_session_check",
-          "to": "public.sagatree_resolve_session_check",
-          "source": {
-            "path": "supabase/migrations/073_sagatree_schema_rename_compat.sql",
-            "startLine": 124,
-            "endLine": 173,
-            "sha256": "f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608"
-          }
-        },
-        {
-          "kind": "body-rewrite",
-          "source": {
-            "path": "supabase/migrations/085_fix_function_bodies_sagatree.sql",
-            "startLine": 1,
-            "endLine": 28,
-            "sha256": "36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3"
-          },
-          "replacement": "sagadrive→sagatree; SagaDrive→SagaTree"
-        }
-      ],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.sagatree_resolve_session_check(p_session_id uuid, p_actor uuid, p_payload jsonb, p_is_gm boolean) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_in JSONB := public.sagatree_strip_forged_roll_keys(p_payload);\n  v_skill TEXT := NULLIF(BTRIM(COALESCE(v_in->>'skill', '')), '');\n  v_mode TEXT := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'mode', '')), ''), 'normal');\n  v_use_drive BOOLEAN := COALESCE((v_in->>'useDrive')::boolean, false);\n  v_attr_key TEXT;\n  v_character public.characters;\n  v_char_id UUID;\n  v_public_id TEXT;\n  v_attr INT;\n  v_skill_rank INT;\n  v_eb INT;\n  v_flat INT;\n  v_world JSONB;\n  v_shared JSONB;\n  v_target INT;\n  v_drive INT;\n  v_n1 INT;\n  v_n2 INT;\n  v_natural INT;\n  v_total INT;\n  v_grade TEXT;\n  v_n1b INT;\n  v_n2b INT;\n  v_natural_b INT;\n  v_total_b INT;\n  v_grade_b_text TEXT;\n  v_drive_spent INT := 0;\n  v_naturals JSONB;\n  v_result JSONB;\nBEGIN\n  IF v_skill IS NULL OR public.sagatree_skill_attribute_key(v_skill) IS NULL THEN\n    RAISE EXCEPTION 'Invalid skill for session check' USING ERRCODE = '22023';\n  END IF;\n  IF v_mode NOT IN ('normal', 'advantage', 'disadvantage') THEN\n    RAISE EXCEPTION 'Invalid check mode' USING ERRCODE = '22023';\n  END IF;\n\n  v_attr_key := public.sagatree_skill_attribute_key(v_skill);\n  v_public_id := NULLIF(BTRIM(COALESCE(v_in->>'characterPublicId', '')), '');\n\n  IF v_in ? 'characterId' AND NULLIF(BTRIM(COALESCE(v_in->>'characterId', '')), '') IS NOT NULL THEN\n    BEGIN\n      v_char_id := (v_in->>'characterId')::uuid;\n    EXCEPTION WHEN others THEN\n      RAISE EXCEPTION 'Invalid characterId' USING ERRCODE = '22023';\n    END;\n    SELECT * INTO v_character FROM public.characters WHERE id = v_char_id;\n  ELSIF v_public_id IS NOT NULL THEN\n    SELECT * INTO v_character FROM public.characters WHERE public_id = v_public_id;\n  ELSE\n    RAISE EXCEPTION 'characterPublicId or characterId required' USING ERRCODE = '22023';\n  END IF;\n\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'Character not found for session check' USING ERRCODE = 'P0002';\n  END IF;\n\n  -- Membership already checked by caller; character must belong to actor or actor is GM.\n  IF NOT p_is_gm AND v_character.user_id IS DISTINCT FROM p_actor THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_attr := COALESCE((v_character.attributes ->> v_attr_key)::int, 0);\n  IF v_attr < 1 OR v_attr > 5 THEN\n    RAISE EXCEPTION 'Character attribute out of range for check' USING ERRCODE = '22023';\n  END IF;\n\n  v_skill_rank := COALESCE((v_character.skills ->> v_skill)::int, 0);\n  IF v_skill_rank < 0 OR v_skill_rank > 5 THEN\n    RAISE EXCEPTION 'Character skill rank out of range' USING ERRCODE = '22023';\n  END IF;\n\n  v_eb := public.sagatree_applied_experience_bonus(v_skill_rank, COALESCE(v_character.level, 1));\n  v_flat := v_attr + v_skill_rank + v_eb;\n\n  SELECT world_state INTO v_world FROM public.sessions WHERE id = p_session_id;\n  v_world := COALESCE(v_world, '{}'::jsonb);\n  v_shared := COALESCE(v_world->'shared', '{}'::jsonb);\n  IF jsonb_typeof(v_shared) IS DISTINCT FROM 'object' THEN\n    v_shared := '{}'::jsonb;\n  END IF;\n\n  -- Target: GM may set via payload; else shared.checkTarget / resistance; default 15.\n  IF p_is_gm AND v_in ? 'target' AND (v_in->>'target') ~ '^-?[0-9]+$' THEN\n    v_target := (v_in->>'target')::int;\n    v_shared := jsonb_set(v_shared, '{checkTarget}', to_jsonb(v_target), true);\n  ELSIF p_is_gm AND v_in ? 'resistance' AND (v_in->>'resistance') ~ '^-?[0-9]+$' THEN\n    v_target := (v_in->>'resistance')::int;\n    v_shared := jsonb_set(v_shared, '{checkTarget}', to_jsonb(v_target), true);\n  ELSIF v_shared ? 'checkTarget' AND (v_shared->>'checkTarget') ~ '^-?[0-9]+$' THEN\n    v_target := (v_shared->>'checkTarget')::int;\n  ELSE\n    v_target := 15;\n  END IF;\n\n  -- Drive pool: prefer shared overlay keyed by character id, else profile.\n  IF v_shared ? 'driveByCharacter'\n     AND jsonb_typeof(v_shared->'driveByCharacter') = 'object'\n     AND (v_shared->'driveByCharacter') ? v_character.id::text\n     AND ((v_shared->'driveByCharacter'->>v_character.id::text) ~ '^[0-9]+$') THEN\n    v_drive := (v_shared->'driveByCharacter'->>v_character.id::text)::int;\n  ELSE\n    v_drive := COALESCE((v_character.sagatree_profile->>'drive')::int, 3);\n  END IF;\n  IF v_drive < 0 THEN v_drive := 0; END IF;\n  IF v_drive > 5 THEN v_drive := 5; END IF;\n\n  v_n1 := public.sagatree_roll_d20();\n  IF v_mode = 'normal' THEN\n    v_natural := v_n1;\n    v_naturals := jsonb_build_array(v_n1);\n  ELSE\n    v_n2 := public.sagatree_roll_d20();\n    IF v_mode = 'advantage' THEN\n      v_natural := GREATEST(v_n1, v_n2);\n    ELSE\n      v_natural := LEAST(v_n1, v_n2);\n    END IF;\n    v_naturals := jsonb_build_array(v_n1, v_n2);\n  END IF;\n\n  v_total := v_natural + v_flat;\n  v_grade := public.sagatree_resolve_probe_grade(v_total, v_target, v_natural);\n\n  IF v_use_drive THEN\n    IF v_drive < 1 THEN\n      RAISE EXCEPTION 'No Drive available for reroll' USING ERRCODE = '22023';\n    END IF;\n    v_n1b := public.sagatree_roll_d20();\n    IF v_mode = 'normal' THEN\n      v_natural_b := v_n1b;\n    ELSE\n      v_n2b := public.sagatree_roll_d20();\n      IF v_mode = 'advantage' THEN\n        v_natural_b := GREATEST(v_n1b, v_n2b);\n      ELSE\n        v_natural_b := LEAST(v_n1b, v_n2b);\n      END IF;\n    END IF;\n    v_total_b := v_natural_b + v_flat;\n    v_grade_b_text := public.sagatree_resolve_probe_grade(v_total_b, v_target, v_natural_b);\n    -- Keep better (§2.10): higher grade rank, then higher total.\n    IF public.sagatree_grade_rank(v_grade_b_text) > public.sagatree_grade_rank(v_grade)\n       OR (\n         public.sagatree_grade_rank(v_grade_b_text) = public.sagatree_grade_rank(v_grade)\n         AND v_total_b > v_total\n       ) THEN\n      v_natural := v_natural_b;\n      v_total := v_total_b;\n      v_grade := v_grade_b_text;\n      IF v_mode = 'normal' THEN\n        v_naturals := jsonb_build_array(v_n1b);\n      ELSE\n        v_naturals := jsonb_build_array(v_n1b, v_n2b);\n      END IF;\n    END IF;\n    v_drive_spent := 1;\n    v_drive := v_drive - 1;\n  END IF;\n\n  v_shared := jsonb_set(\n    COALESCE(v_shared, '{}'::jsonb),\n    ARRAY['driveByCharacter', v_character.id::text],\n    to_jsonb(v_drive),\n    true\n  );\n\n  v_result := jsonb_build_object(\n    'intent', 'standard-check',\n    'skill', v_skill,\n    'mode', v_mode,\n    'useDrive', v_use_drive,\n    'characterPublicId', COALESCE(v_character.public_id, v_public_id),\n    'characterId', v_character.id,\n    'target', v_target,\n    'natural', v_natural,\n    'naturals', v_naturals,\n    'flatBonus', v_flat,\n    'attributeValue', v_attr,\n    'skillRank', v_skill_rank,\n    'experienceBonus', v_eb,\n    'total', v_total,\n    'grade', v_grade,\n    'driveSpent', v_drive_spent,\n    'driveRemaining', v_drive,\n    'actorUserId', p_actor,\n    'authoritative', true\n  );\n\n  v_shared := jsonb_set(v_shared, '{lastRoll}', v_result, true);\n  v_world := jsonb_set(COALESCE(v_world, '{}'::jsonb), '{shared}', v_shared, true);\n\n  RETURN jsonb_build_object(\n    'eventPayload', v_result,\n    'worldState', v_world\n  );\nEND;\n$$",
+      "transformations": [],
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.sagatree_resolve_session_check(p_session_id uuid, p_actor uuid, p_payload jsonb, p_is_gm boolean) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public', 'pg_temp' AS $$\nDECLARE\n  v_in JSONB := public.sagatree_strip_forged_roll_keys(p_payload);\n  v_skill TEXT := NULLIF(BTRIM(COALESCE(v_in->>'skill', '')), '');\n  v_mode TEXT := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'mode', '')), ''), 'normal');\n  v_use_drive BOOLEAN := COALESCE((v_in->>'useDrive')::boolean, false);\n  v_attr_key TEXT;\n  v_character public.characters;\n  v_char_id UUID;\n  v_public_id TEXT;\n  v_attr INT;\n  v_skill_rank INT;\n  v_eb INT;\n  v_flat INT;\n  v_world JSONB;\n  v_shared JSONB;\n  v_target INT;\n  v_drive INT;\n  v_n1 INT;\n  v_n2 INT;\n  v_natural INT;\n  v_total INT;\n  v_grade TEXT;\n  v_n1b INT;\n  v_n2b INT;\n  v_natural_b INT;\n  v_total_b INT;\n  v_grade_b_text TEXT;\n  v_drive_spent INT := 0;\n  v_naturals JSONB;\n  v_result JSONB;\nBEGIN\n  IF v_skill IS NULL OR public.sagatree_skill_attribute_key(v_skill) IS NULL THEN\n    RAISE EXCEPTION 'Invalid skill for session check' USING ERRCODE = '22023';\n  END IF;\n  IF v_mode NOT IN ('normal', 'advantage', 'disadvantage') THEN\n    RAISE EXCEPTION 'Invalid check mode' USING ERRCODE = '22023';\n  END IF;\n\n  v_attr_key := public.sagatree_skill_attribute_key(v_skill);\n  v_public_id := NULLIF(BTRIM(COALESCE(v_in->>'characterPublicId', '')), '');\n\n  IF v_in ? 'characterId' AND NULLIF(BTRIM(COALESCE(v_in->>'characterId', '')), '') IS NOT NULL THEN\n    BEGIN\n      v_char_id := (v_in->>'characterId')::uuid;\n    EXCEPTION WHEN others THEN\n      RAISE EXCEPTION 'Invalid characterId' USING ERRCODE = '22023';\n    END;\n    SELECT * INTO v_character FROM public.characters WHERE id = v_char_id;\n  ELSIF v_public_id IS NOT NULL THEN\n    SELECT * INTO v_character FROM public.characters WHERE public_id = v_public_id;\n  ELSE\n    RAISE EXCEPTION 'characterPublicId or characterId required' USING ERRCODE = '22023';\n  END IF;\n\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'Character not found for session check' USING ERRCODE = 'P0002';\n  END IF;\n\n  -- Membership already checked by caller; character must belong to actor or actor is GM.\n  IF NOT p_is_gm AND v_character.owner_user_id IS DISTINCT FROM p_actor THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  v_attr := COALESCE((v_character.attributes ->> v_attr_key)::int, 0);\n  IF v_attr < 1 OR v_attr > 5 THEN\n    RAISE EXCEPTION 'Character attribute out of range for check' USING ERRCODE = '22023';\n  END IF;\n\n  v_skill_rank := COALESCE((v_character.skills ->> v_skill)::int, 0);\n  IF v_skill_rank < 0 OR v_skill_rank > 5 THEN\n    RAISE EXCEPTION 'Character skill rank out of range' USING ERRCODE = '22023';\n  END IF;\n\n  v_eb := public.sagatree_applied_experience_bonus(v_skill_rank, COALESCE(v_character.level, 1));\n  v_flat := v_attr + v_skill_rank + v_eb;\n\n  SELECT world_state INTO v_world FROM public.sessions WHERE id = p_session_id;\n  v_world := COALESCE(v_world, '{}'::jsonb);\n  v_shared := COALESCE(v_world->'shared', '{}'::jsonb);\n  IF jsonb_typeof(v_shared) IS DISTINCT FROM 'object' THEN\n    v_shared := '{}'::jsonb;\n  END IF;\n\n  -- Target: GM may set via payload; else shared.checkTarget / resistance; default 15.\n  IF p_is_gm AND v_in ? 'target' AND (v_in->>'target') ~ '^-?[0-9]+$' THEN\n    v_target := (v_in->>'target')::int;\n    v_shared := jsonb_set(v_shared, '{checkTarget}', to_jsonb(v_target), true);\n  ELSIF p_is_gm AND v_in ? 'resistance' AND (v_in->>'resistance') ~ '^-?[0-9]+$' THEN\n    v_target := (v_in->>'resistance')::int;\n    v_shared := jsonb_set(v_shared, '{checkTarget}', to_jsonb(v_target), true);\n  ELSIF v_shared ? 'checkTarget' AND (v_shared->>'checkTarget') ~ '^-?[0-9]+$' THEN\n    v_target := (v_shared->>'checkTarget')::int;\n  ELSE\n    v_target := 15;\n  END IF;\n\n  -- Drive pool: prefer shared overlay keyed by character id, else profile.\n  IF v_shared ? 'driveByCharacter'\n     AND jsonb_typeof(v_shared->'driveByCharacter') = 'object'\n     AND (v_shared->'driveByCharacter') ? v_character.id::text\n     AND ((v_shared->'driveByCharacter'->>v_character.id::text) ~ '^[0-9]+$') THEN\n    v_drive := (v_shared->'driveByCharacter'->>v_character.id::text)::int;\n  ELSE\n    v_drive := COALESCE((v_character.sagatree_profile->>'drive')::int, 3);\n  END IF;\n  IF v_drive < 0 THEN v_drive := 0; END IF;\n  IF v_drive > 5 THEN v_drive := 5; END IF;\n\n  v_n1 := public.sagatree_roll_d20();\n  IF v_mode = 'normal' THEN\n    v_natural := v_n1;\n    v_naturals := jsonb_build_array(v_n1);\n  ELSE\n    v_n2 := public.sagatree_roll_d20();\n    IF v_mode = 'advantage' THEN\n      v_natural := GREATEST(v_n1, v_n2);\n    ELSE\n      v_natural := LEAST(v_n1, v_n2);\n    END IF;\n    v_naturals := jsonb_build_array(v_n1, v_n2);\n  END IF;\n\n  v_total := v_natural + v_flat;\n  v_grade := public.sagatree_resolve_probe_grade(v_total, v_target, v_natural);\n\n  IF v_use_drive THEN\n    IF v_drive < 1 THEN\n      RAISE EXCEPTION 'No Drive available for reroll' USING ERRCODE = '22023';\n    END IF;\n    v_n1b := public.sagatree_roll_d20();\n    IF v_mode = 'normal' THEN\n      v_natural_b := v_n1b;\n    ELSE\n      v_n2b := public.sagatree_roll_d20();\n      IF v_mode = 'advantage' THEN\n        v_natural_b := GREATEST(v_n1b, v_n2b);\n      ELSE\n        v_natural_b := LEAST(v_n1b, v_n2b);\n      END IF;\n    END IF;\n    v_total_b := v_natural_b + v_flat;\n    v_grade_b_text := public.sagatree_resolve_probe_grade(v_total_b, v_target, v_natural_b);\n    -- Keep better (§2.10): higher grade rank, then higher total.\n    IF public.sagatree_grade_rank(v_grade_b_text) > public.sagatree_grade_rank(v_grade)\n       OR (\n         public.sagatree_grade_rank(v_grade_b_text) = public.sagatree_grade_rank(v_grade)\n         AND v_total_b > v_total\n       ) THEN\n      v_natural := v_natural_b;\n      v_total := v_total_b;\n      v_grade := v_grade_b_text;\n      IF v_mode = 'normal' THEN\n        v_naturals := jsonb_build_array(v_n1b);\n      ELSE\n        v_naturals := jsonb_build_array(v_n1b, v_n2b);\n      END IF;\n    END IF;\n    v_drive_spent := 1;\n    v_drive := v_drive - 1;\n  END IF;\n\n  v_shared := jsonb_set(\n    COALESCE(v_shared, '{}'::jsonb),\n    ARRAY['driveByCharacter', v_character.id::text],\n    to_jsonb(v_drive),\n    true\n  );\n\n  v_result := jsonb_build_object(\n    'intent', 'standard-check',\n    'skill', v_skill,\n    'mode', v_mode,\n    'useDrive', v_use_drive,\n    'characterPublicId', COALESCE(v_character.public_id, v_public_id),\n    'characterId', v_character.id,\n    'target', v_target,\n    'natural', v_natural,\n    'naturals', v_naturals,\n    'flatBonus', v_flat,\n    'attributeValue', v_attr,\n    'skillRank', v_skill_rank,\n    'experienceBonus', v_eb,\n    'total', v_total,\n    'grade', v_grade,\n    'driveSpent', v_drive_spent,\n    'driveRemaining', v_drive,\n    'actorUserId', p_actor,\n    'authoritative', true\n  );\n\n  v_shared := jsonb_set(v_shared, '{lastRoll}', v_result, true);\n  v_world := jsonb_set(COALESCE(v_world, '{}'::jsonb), '{shared}', v_shared, true);\n\n  RETURN jsonb_build_object(\n    'eventPayload', v_result,\n    'worldState', v_world\n  );\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [
@@ -31866,7 +32167,7 @@
               }
             ],
             "path": [
-              "NOT p_is_gm AND v_character.user_id IS DISTINCT FROM p_actor"
+              "NOT p_is_gm AND v_character.owner_user_id IS DISTINCT FROM p_actor"
             ]
           },
           {
@@ -31975,7 +32276,7 @@
           },
           {
             "line": 61,
-            "condition": "NOT p_is_gm AND v_character.user_id IS DISTINCT FROM p_actor",
+            "condition": "NOT p_is_gm AND v_character.owner_user_id IS DISTINCT FROM p_actor",
             "path": []
           },
           {
@@ -32231,14 +32532,14 @@
           },
           {
             "line": 61,
-            "query": "NOT p_is_gm AND v_character.user_id IS DISTINCT FROM p_actor",
+            "query": "NOT p_is_gm AND v_character.owner_user_id IS DISTINCT FROM p_actor",
             "path": []
           },
           {
             "line": 62,
             "query": "'42501'",
             "path": [
-              "NOT p_is_gm AND v_character.user_id IS DISTINCT FROM p_actor"
+              "NOT p_is_gm AND v_character.owner_user_id IS DISTINCT FROM p_actor"
             ]
           },
           {
@@ -33774,10 +34075,10 @@
     {
       "signature": "public.save_session_recap_summary(uuid,text)",
       "source": {
-        "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-        "startLine": 186,
-        "endLine": 200,
-        "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 326,
+        "endLine": 340,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
       "effectiveSql": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary(p_session_id uuid, p_summary_text text) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nBEGIN\n  RETURN public.save_session_recap_summary(p_session_id, p_summary_text, 'draft');\nEND;\n$$",
@@ -33818,13 +34119,13 @@
     {
       "signature": "public.save_session_recap_summary(uuid,text,text)",
       "source": {
-        "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-        "startLine": 135,
-        "endLine": 182,
-        "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "startLine": 279,
+        "endLine": 326,
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       },
       "transformations": [],
-      "effectiveSql": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary(p_session_id uuid, p_summary_text text, p_status text = 'draft') RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_session public.sessions%ROWTYPE;\n  v_status TEXT := lower(btrim(COALESCE(p_status, 'draft')));\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF v_status NOT IN ('draft', 'approved', 'none') THEN\n    RAISE EXCEPTION 'invalid summary status' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT * INTO v_session FROM public.sessions WHERE id = p_session_id;\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'Session not found' USING ERRCODE = 'P0002';\n  END IF;\n  IF NOT public.is_project_gm(v_session.project_id, v_user) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  INSERT INTO public.session_recaps (session_id, summary_text, summary_status, highlight_lines, snapshot)\n  VALUES (\n    p_session_id,\n    NULLIF(BTRIM(COALESCE(p_summary_text, '')), ''),\n    v_status,\n    '[]'::jsonb,\n    '{}'::jsonb\n  )\n  ON CONFLICT (session_id) DO UPDATE\n    SET summary_text = EXCLUDED.summary_text,\n        summary_status = EXCLUDED.summary_status,\n        updated_at = NOW();\n\n  RETURN public.get_session_recap(p_session_id);\nEND;\n$$",
+      "effectiveSql": "CREATE OR REPLACE FUNCTION public.save_session_recap_summary(p_session_id uuid, p_summary_text text, p_status text) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$\nDECLARE\n  v_user UUID := auth.uid();\n  v_session public.sessions%ROWTYPE;\n  v_status TEXT := lower(btrim(COALESCE(p_status, 'draft')));\nBEGIN\n  IF v_user IS NULL THEN\n    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';\n  END IF;\n  IF v_status NOT IN ('draft', 'approved', 'none') THEN\n    RAISE EXCEPTION 'invalid summary status' USING ERRCODE = '22023';\n  END IF;\n\n  SELECT * INTO v_session FROM public.sessions WHERE id = p_session_id;\n  IF NOT FOUND THEN\n    RAISE EXCEPTION 'Session not found' USING ERRCODE = 'P0002';\n  END IF;\n  IF NOT public.is_project_gm(v_session.project_id, v_user) THEN\n    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';\n  END IF;\n\n  INSERT INTO public.session_recaps (session_id, summary_text, summary_status, highlight_lines, snapshot)\n  VALUES (\n    p_session_id,\n    NULLIF(BTRIM(COALESCE(p_summary_text, '')), ''),\n    v_status,\n    '[]'::jsonb,\n    '{}'::jsonb\n  )\n  ON CONFLICT (session_id) DO UPDATE\n    SET summary_text = EXCLUDED.summary_text,\n        summary_status = EXCLUDED.summary_status,\n        updated_at = NOW();\n\n  RETURN public.get_session_recap(p_session_id);\nEND;\n$$",
       "semantics": {
         "language": "plpgsql",
         "relations": [

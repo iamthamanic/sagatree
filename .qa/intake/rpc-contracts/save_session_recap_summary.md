@@ -20,59 +20,19 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 ## SQL-Signatur 1
 
-`public.save_session_recap_summary(uuid,text)`
-
-| Parameter | PostgreSQL-Typ | Modus | Default |
-| --- | --- | --- | --- |
-| p_session_id | `uuid` | DEFAULT | Kein Default — expliziter Wert erforderlich |
-| p_summary_text | `text` | DEFAULT | Kein Default — expliziter Wert erforderlich |
-
-**RETURNS:** `jsonb`.
-
-**Wirksame Definition:** [supabase/migrations/062_session_recap_ai_summary.sql](../../../supabase/migrations/062_session_recap_ai_summary.sql) (Zeilen 186–200, SHA-256 `d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a`).
-
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql](effective-sql/save_session_recap_summary-1.sql); SHA-256 `9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52`.
-
-### Ausführungskontext und ACL
-
-| Eigenschaft | Belegter Wert |
-| --- | --- |
-| SECURITY DEFINER | True |
-| search_path | `SET search_path TO 'public'` |
-| Migration-/Skript-EXECUTE-Deklarationen | authenticated |
-| ACL-Scope | Migration/optional-script declarations starting from PostgreSQL PUBLIC default; platform default ACL is separate below. |
-
-Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende beobachtete ACL für das isolierte Fixture maßgeblich, nicht allein die GRANT/REVOKE-Liste der Migration. EXECUTE-Berechtigung ist vom inneren Auth-Guard zu unterscheiden.
-
-| Owner | Effektive Fixture-ACL | authenticated EXECUTE | anon EXECUTE |
-| --- | --- | --- | --- |
-| postgres | `{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}` | True | True |
-
-### Exakte Return-Pfade
-
-| Parser-Zeile | Bedingungspfad | Return-Ausdruck |
-| --- | --- | --- |
-| 3 | unbedingt | `public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')` |
-
-### Explizite SQL-Fehler dieses Overloads
-
-Keine eigene RAISE-EXCEPTION-Anweisung. Fehler können aus delegierten Funktionen, Typkonvertierung oder Datenbank-Constraints stammen.
-
-## SQL-Signatur 2
-
 `public.save_session_recap_summary(uuid,text,text)`
 
 | Parameter | PostgreSQL-Typ | Modus | Default |
 | --- | --- | --- | --- |
 | p_session_id | `uuid` | DEFAULT | Kein Default — expliziter Wert erforderlich |
 | p_summary_text | `text` | DEFAULT | Kein Default — expliziter Wert erforderlich |
-| p_status | `text` | DEFAULT | `'draft'` |
+| p_status | `text` | DEFAULT | Kein Default — expliziter Wert erforderlich |
 
 **RETURNS:** `jsonb`.
 
-**Wirksame Definition:** [supabase/migrations/062_session_recap_ai_summary.sql](../../../supabase/migrations/062_session_recap_ai_summary.sql) (Zeilen 135–182, SHA-256 `d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a`).
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 279–326, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
 
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql](effective-sql/save_session_recap_summary-2.sql); SHA-256 `703b33b6b2d49cbe4e426e752c32a593298a464f69ccfd04ba23b83fe48ffa00`.
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql](effective-sql/save_session_recap_summary-1.sql); SHA-256 `78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e`.
 
 ### Ausführungskontext und ACL
 
@@ -103,6 +63,46 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 | 22023 | invalid summary status | — | v_status NOT IN ('draft', 'approved', 'none') |
 | P0002 | Session not found | — | NOT FOUND |
 | 42501 | forbidden | — | NOT public.is_project_gm(v_session.project_id, v_user) |
+
+## SQL-Signatur 2
+
+`public.save_session_recap_summary(uuid,text)`
+
+| Parameter | PostgreSQL-Typ | Modus | Default |
+| --- | --- | --- | --- |
+| p_session_id | `uuid` | DEFAULT | Kein Default — expliziter Wert erforderlich |
+| p_summary_text | `text` | DEFAULT | Kein Default — expliziter Wert erforderlich |
+
+**RETURNS:** `jsonb`.
+
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 326–340, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
+
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql](effective-sql/save_session_recap_summary-2.sql); SHA-256 `9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52`.
+
+### Ausführungskontext und ACL
+
+| Eigenschaft | Belegter Wert |
+| --- | --- |
+| SECURITY DEFINER | True |
+| search_path | `SET search_path TO 'public'` |
+| Migration-/Skript-EXECUTE-Deklarationen | authenticated |
+| ACL-Scope | Migration/optional-script declarations starting from PostgreSQL PUBLIC default; platform default ACL is separate below. |
+
+Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende beobachtete ACL für das isolierte Fixture maßgeblich, nicht allein die GRANT/REVOKE-Liste der Migration. EXECUTE-Berechtigung ist vom inneren Auth-Guard zu unterscheiden.
+
+| Owner | Effektive Fixture-ACL | authenticated EXECUTE | anon EXECUTE |
+| --- | --- | --- | --- |
+| postgres | `{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}` | True | True |
+
+### Exakte Return-Pfade
+
+| Parser-Zeile | Bedingungspfad | Return-Ausdruck |
+| --- | --- | --- |
+| 3 | unbedingt | `public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')` |
+
+### Explizite SQL-Fehler dieses Overloads
+
+Keine eigene RAISE-EXCEPTION-Anweisung. Fehler können aus delegierten Funktionen, Typkonvertierung oder Datenbank-Constraints stammen.
 
 ## Transaktion, Idempotenz und Folgewirkungen
 
@@ -212,6 +212,13 @@ Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zwei
 
 **Isolierte Beobachtung:** [.qa/intake/rpc-contracts/legacy-observations.json](legacy-observations.json) / `BASELINE-RPC-RECAP-OVERLOAD`. Eigene RPC-Reproduktion: True.
 
+## Entfernte historische Signaturen
+
+| Entfernte Signatur | Grund | Quelle |
+| --- | --- | --- |
+| `public.save_session_recap_summary(uuid,text)` | explicit DROP FUNCTION | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 273–278, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`) |
+| `public.save_session_recap_summary(uuid,text,text)` | explicit DROP FUNCTION | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 278–279, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`) |
+
 ## Vollständige Quellenbindung
 
 Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquellen und Caller-/Decoderquellen. Der zusätzliche isolierte Katalogvergleich steht in [.qa/intake/rpc-contracts/postgres-proof.json](postgres-proof.json).
@@ -237,3 +244,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [supabase/migrations/073_sagatree_schema_rename_compat.sql](../../../supabase/migrations/073_sagatree_schema_rename_compat.sql) | `f1892766c1b12e6877e009355fcbd7a4e0c9abe264d36c0880a018802094b608` |
 | [supabase/migrations/085_fix_function_bodies_sagatree.sql](../../../supabase/migrations/085_fix_function_bodies_sagatree.sql) | `36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3` |
 | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |

@@ -126,7 +126,7 @@ Alle vollständigen Funktionskörper, Abzweigungen, Queries, Writes, Errors und 
 
 | Helper | SQL-Quelle | Explizite SQLSTATEs | Fixture EXECUTE anon/authenticated |
 | --- | --- | --- | --- |
-| `public.append_session_event(uuid,text,uuid,jsonb,bigint,text)` | [supabase/migrations/041_session_runtime_state.sql](../../../supabase/migrations/041_session_runtime_state.sql) | Keine eigene RAISE | True/True |
+| `public.append_session_event(uuid,text,uuid,jsonb,bigint,text)` | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | 42501 | True/True |
 | `public.forbid_public_id_change()` | [supabase/migrations/039_public_resource_ids_and_session_numbers.sql](../../../supabase/migrations/039_public_resource_ids_and_session_numbers.sql) | P0001 | True/True |
 | `public.get_session_runtime_snapshot(uuid)` | [supabase/migrations/050_session_adventure_runtime.sql](../../../supabase/migrations/050_session_adventure_runtime.sql) | 22023, 42501, P0002 | True/True |
 | `public.is_project_gm(uuid,uuid)` | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | Keine eigene RAISE | True/True |
@@ -150,14 +150,14 @@ Alle vollständigen Funktionskörper, Abzweigungen, Queries, Writes, Errors und 
 | `public.sagatree_pc_initiative_bonus(integer,integer,integer)` | [supabase/migrations/044_session_combat_encounter.sql](../../../supabase/migrations/044_session_combat_encounter.sql) | Keine eigene RAISE | True/True |
 | `public.sagatree_project_shared_adventure(jsonb,boolean)` | [supabase/migrations/066_saga_between_sessions_bote.sql](../../../supabase/migrations/066_saga_between_sessions_bote.sql) | Keine eigene RAISE | True/True |
 | `public.sagatree_project_shared_knowledge(jsonb,boolean,uuid)` | [supabase/migrations/048_session_knowledge_reveals.sql](../../../supabase/migrations/048_session_knowledge_reveals.sql) | Keine eigene RAISE | True/True |
-| `public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)` | [supabase/migrations/065_saga_simulation_ops.sql](../../../supabase/migrations/065_saga_simulation_ops.sql) | 22023, 42501, P0002 | True/True |
+| `public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)` | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | 22023, 42501, P0002 | True/True |
 | `public.sagatree_resolve_combat_command(uuid,uuid,jsonb,boolean,jsonb)` | [supabase/migrations/044_session_combat_encounter.sql](../../../supabase/migrations/044_session_combat_encounter.sql) | 22023, 42501, P0002 | True/True |
 | `public.sagatree_resolve_condition_command(jsonb,boolean,jsonb)` | [supabase/migrations/044_session_combat_encounter.sql](../../../supabase/migrations/044_session_combat_encounter.sql) | 22023, 42501, P0002 | True/True |
 | `public.sagatree_resolve_cue_command(jsonb,boolean,boolean,jsonb)` | [supabase/migrations/051_session_director_runtime.sql](../../../supabase/migrations/051_session_director_runtime.sql) | 22023, 42501 | True/True |
 | `public.sagatree_resolve_damage_command(jsonb,boolean,jsonb)` | [supabase/migrations/049_session_death_lifecycle.sql](../../../supabase/migrations/049_session_death_lifecycle.sql) | 22023, 42501, P0002 | True/True |
 | `public.sagatree_resolve_life_command(jsonb,boolean,jsonb)` | [supabase/migrations/049_session_death_lifecycle.sql](../../../supabase/migrations/049_session_death_lifecycle.sql) | 22023, 42501 | True/True |
 | `public.sagatree_resolve_probe_grade(integer,integer,integer)` | [supabase/migrations/042_session_shared_rolls.sql](../../../supabase/migrations/042_session_shared_rolls.sql) | Keine eigene RAISE | True/True |
-| `public.sagatree_resolve_session_check(uuid,uuid,jsonb,boolean)` | [supabase/migrations/042_session_shared_rolls.sql](../../../supabase/migrations/042_session_shared_rolls.sql) | 22023, 42501, P0002 | True/True |
+| `public.sagatree_resolve_session_check(uuid,uuid,jsonb,boolean)` | [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | 22023, 42501, P0002 | True/True |
 | `public.sagatree_roll_d20()` | [supabase/migrations/042_session_shared_rolls.sql](../../../supabase/migrations/042_session_shared_rolls.sql) | Keine eigene RAISE | True/True |
 | `public.sagatree_session_has_director(uuid,uuid)` | [supabase/migrations/051_session_director_runtime.sql](../../../supabase/migrations/051_session_director_runtime.sql) | Keine eigene RAISE | True/True |
 | `public.sagatree_skill_attribute_key(text)` | [supabase/migrations/042_session_shared_rolls.sql](../../../supabase/migrations/042_session_shared_rolls.sql) | Keine eigene RAISE | True/True |
@@ -703,3 +703,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [supabase/migrations/085_fix_function_bodies_sagatree.sql](../../../supabase/migrations/085_fix_function_bodies_sagatree.sql) | `36d9065b9abba7236230995842dfcd48487a428240a5d85426faf4515d1bcaa3` |
 | [supabase/migrations/089_gm_presence_character_type.sql](../../../supabase/migrations/089_gm_presence_character_type.sql) | `f66c1286947dd3119ac4cfac01736a3948e1cb35648f61837e6a79fd9c519560` |
 | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |

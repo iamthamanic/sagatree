@@ -87,8 +87,16 @@ export async function seedFixtures(client) {
       [sessionId, publicId, projectId, name === 'second' ? 2 : 1, `Fixture ${name}`, `FXS${name === 'primary' ? '01' : name === 'second' ? '02' : '03'}`]);
     }
     for (const [name, characterId, publicId] of [['player1', fixture.player1Character, 'CH-FX234'], ['player2', fixture.player2Character, 'CH-FX235']]) {
-      await client.query(`INSERT INTO public.characters(id,public_id,owner_user_id,project_id,name,character_type,sheet_status,inventory_v2,inventory_schema_version)
-        VALUES($1,$2,$3,$4,$5,'pc','incomplete','{"schemaVersion":2,"instances":[]}',2)`,
+      await client.query(`INSERT INTO public.characters(
+          id,public_id,owner_user_id,project_id,name,character_type,sheet_status,
+          ruleset_key,level,attributes,skills,sagatree_profile,
+          inventory_v2,inventory_schema_version)
+        VALUES(
+          $1,$2,$3,$4,$5,'pc','incomplete','sagatree-core',1,
+          '{"strength":3,"dexterity":3,"endurance":3,"intelligence":3,"wisdom":3,"charisma":3}'::jsonb,
+          '{"athletics":2,"awareness":1,"melee":1}'::jsonb,
+          '{"drive":3}'::jsonb,
+          '{"schemaVersion":2,"instances":[]}',2)`,
       [characterId, publicId, fixture.actors[name], fixture.project, `Fixture ${name}`]);
       for (const sessionId of [fixture.session, fixture.secondSession]) {
         await client.query('INSERT INTO public.session_players(session_id,user_id,character_id,is_online) VALUES($1,$2,$3,true)',

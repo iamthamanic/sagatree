@@ -716,6 +716,10 @@
     {
       "path": "supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
       "sha256": "e0d35e8a469efa708da70b3a2c27c08e1b3988ec1ebacdd761fb8629c9001726"
+    },
+    {
+      "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+      "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
     }
   ],
   "liveDatabaseVerified": false,
@@ -785,7 +789,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "6b70a01fa828ed04e30f088b1e803ab9b255983a6939264146f5b37a483b076b",
+      "definitionSha256": "888b9180997f9dd92a75455c4b48c643b38623439e78a7de49c7fe1abe3b74e9",
       "fingerprint": {
         "signature": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
         "parameters": [
@@ -828,7 +832,7 @@
         ],
         "returns": "uuid",
         "returnsSet": false,
-        "bodySha256": "8741d1e547244e8c74c255bbec7b9c78b977a9e5bb7414ac1eb991b3adf75fec",
+        "bodySha256": "888b9180997f9dd92a75455c4b48c643b38623439e78a7de49c7fe1abe3b74e9",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public', 'pg_temp'",
@@ -3970,7 +3974,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": false,
-      "definitionSha256": "1188fa7d076112e2fe4077e5cb9bfe97207942b2bea1374598d29e12e2a877b4",
+      "definitionSha256": "d6e152a10bb9a82d2e1a1ef4fb09e83a3dc23865d3032f0c73c59fd2f865e780",
       "fingerprint": {
         "signature": "public.get_world_atlas_map(uuid,boolean,text)",
         "parameters": [
@@ -3995,7 +3999,7 @@
         ],
         "returns": "jsonb",
         "returnsSet": false,
-        "bodySha256": "5705f2067d5a397efa5af0a9393874145bf1b1648de582096c7ea58382a7a3b9",
+        "bodySha256": "d6e152a10bb9a82d2e1a1ef4fb09e83a3dc23865d3032f0c73c59fd2f865e780",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public'",
@@ -4022,7 +4026,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "855f17f95e1112e02fb814379a1ae0703d92ac50abf8c1510e441c197e49e1ad",
+      "definitionSha256": "8331344ff04853c6077d218a3384cbe06e71bafb8c39af15144e403450f16233",
       "fingerprint": {
         "signature": "public.get_world_map(uuid,boolean)",
         "parameters": [
@@ -4041,7 +4045,7 @@
         ],
         "returns": "jsonb",
         "returnsSet": false,
-        "bodySha256": "1f1428ac2a60ae6231ab9ac5daab2eb97806c1f04eb66cd025a407dd84f6d7a7",
+        "bodySha256": "8331344ff04853c6077d218a3384cbe06e71bafb8c39af15144e403450f16233",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public'",
@@ -4424,7 +4428,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "87eac23b0bf10265dad40ea63ef08f14e164ef384458550a5f85ac6bcbddd3cd",
+      "definitionSha256": "8a529a798c7ff773189ee0a232c5a9a196418f57b82a0691589fd5a1f5ab7671",
       "fingerprint": {
         "signature": "public.leave_play_session(uuid)",
         "parameters": [
@@ -4437,7 +4441,7 @@
         ],
         "returns": "void",
         "returnsSet": false,
-        "bodySha256": "2eb5e2d4addbb353999b2ecc937e09343b19dc95778635341fad09bf1c742384",
+        "bodySha256": "8a529a798c7ff773189ee0a232c5a9a196418f57b82a0691589fd5a1f5ab7671",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public', 'pg_temp'",
@@ -4550,7 +4554,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": false,
-      "definitionSha256": "62808150a84e12c0d540829f9aa9ce3d06367aea92d258c3969752b4eed90eed",
+      "definitionSha256": "91796a56f4b7b658b3aa0529ba86864e23cd61338bf3b741b46a3de33ff14172",
       "fingerprint": {
         "signature": "public.list_world_atlas_maps(uuid,boolean,text)",
         "parameters": [
@@ -4575,7 +4579,7 @@
         ],
         "returns": "jsonb",
         "returnsSet": false,
-        "bodySha256": "291bdb793b2b3f20876e0954c6253b3092b311859a71dbea1b7af9c18a24d2f0",
+        "bodySha256": "91796a56f4b7b658b3aa0529ba86864e23cd61338bf3b741b46a3de33ff14172",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public'",
@@ -5280,6 +5284,45 @@
         "searchPath": "SET search_path TO 'public', 'pg_temp'",
         "volatility": "volatile"
       }
+    },
+    {
+      "fingerprint": {
+        "signature": "public.sagadrive_resolve_adventure_command(uuid,jsonb,boolean,jsonb)",
+        "parameters": [
+          {
+            "name": "p_session_id",
+            "type": "uuid",
+            "mode": "IN",
+            "default": null
+          },
+          {
+            "name": "p_payload",
+            "type": "jsonb",
+            "mode": "IN",
+            "default": null
+          },
+          {
+            "name": "p_is_gm",
+            "type": "boolean",
+            "mode": "IN",
+            "default": null
+          },
+          {
+            "name": "p_world",
+            "type": "jsonb",
+            "mode": "IN",
+            "default": null
+          }
+        ],
+        "returns": "jsonb",
+        "returnsSet": false,
+        "bodySha256": "e49d79c5e117022f089e6eb13c47ce47ab44403ad3fe3950de58ef034ba9d02d",
+        "language": "sql",
+        "securityDefiner": true,
+        "searchPath": "SET search_path TO 'public', 'pg_temp'",
+        "volatility": "volatile"
+      },
+      "definitionSha256": "e49d79c5e117022f089e6eb13c47ce47ab44403ad3fe3950de58ef034ba9d02d"
     },
     {
       "schema": "public",
@@ -6284,7 +6327,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "2ff80812b3ab149407e7ce887b0d0f6c8d3691483e2c4cf23836be22b27f17ca",
+      "definitionSha256": "4d97010e39e88d62aab04ed7060a633984946d9f92df8d0c3a19004fd682df40",
       "fingerprint": {
         "signature": "public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)",
         "parameters": [
@@ -6315,7 +6358,7 @@
         ],
         "returns": "jsonb",
         "returnsSet": false,
-        "bodySha256": "3035664c5b01b5fc218b2c9e6916dd6a50915a12bac551163a76b02ed279d7cd",
+        "bodySha256": "4d97010e39e88d62aab04ed7060a633984946d9f92df8d0c3a19004fd682df40",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public', 'pg_temp'",
@@ -6681,7 +6724,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "aeae518e3a5a7fa92384aa19316060d04ba275e9ea113d5cfa5e79c28a47c185",
+      "definitionSha256": "723afd29f13d4fce49df8cfff6b00c12f54da27c554a40c530a0f31f025adeb2",
       "fingerprint": {
         "signature": "public.sagatree_resolve_session_check(uuid,uuid,jsonb,boolean)",
         "parameters": [
@@ -6712,7 +6755,7 @@
         ],
         "returns": "jsonb",
         "returnsSet": false,
-        "bodySha256": "825534d498f3d537e2ef09187624d91b05e77a81206c11afdecf0ea0830257ff",
+        "bodySha256": "723afd29f13d4fce49df8cfff6b00c12f54da27c554a40c530a0f31f025adeb2",
         "language": "plpgsql",
         "securityDefiner": true,
         "searchPath": "SET search_path TO 'public', 'pg_temp'",
@@ -7139,7 +7182,7 @@
       "owner": "postgres",
       "authenticated_execute": true,
       "anon_execute": true,
-      "definitionSha256": "f74b3dc9f5d5a8afa3ad5c00c4ce062603f50446359e7a7a024edb615f5a2cbc",
+      "definitionSha256": "e43c528b38cd41cb91be3cc5d4dd65064398b20a3189899648cec429e07553cd",
       "fingerprint": {
         "signature": "public.save_session_recap_summary(uuid,text,text)",
         "parameters": [
@@ -7159,7 +7202,7 @@
             "name": "p_status",
             "type": "text",
             "mode": "IN",
-            "default": "'draft'"
+            "default": null
           }
         ],
         "returns": "jsonb",
@@ -18223,9 +18266,9 @@
   ],
   "comparison": {
     "status": "passed",
-    "functionCount": 177,
-    "exactBodyMatches": 177,
-    "signatureDefaultsResultAndSecurityMatches": 177,
+    "functionCount": 178,
+    "exactBodyMatches": 178,
+    "signatureDefaultsResultAndSecurityMatches": 178,
     "normalizations": [
       "pg_get_functiondef omits public. qualification on composite types; compare resolved public type names.",
       "pg_get_functiondef adds input-type casts to DEFAULT constants; strip AST TypeCast after comparing input types.",

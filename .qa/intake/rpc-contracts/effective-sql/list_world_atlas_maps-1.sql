@@ -23,11 +23,16 @@ BEGIN
 
   IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN
     v_project := public.atlas_wb_resolve_saga_project(p_world_profile_id, p_saga_public_id);
+    IF v_project IS NULL THEN
+      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
+    END IF;
+    IF NOT public.current_user_is_active_project_member(v_project) THEN
+      RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
+    END IF;
   END IF;
 
   IF v_party_only THEN
     IF v_project IS NULL THEN
-      -- Fail closed: never dump full atlas catalog without saga.
       RETURN jsonb_build_object('maps', '[]'::jsonb);
     END IF;
     v_allowed := public.atlas_wb_party_revealed_map_ids(p_world_profile_id, v_project);
@@ -36,7 +41,6 @@ BEGIN
       jsonb_build_object(
         'id', m.id,
         'worldProfileId', m.world_profile_id,
-        -- Hide parent id when parent map is not party-revealed (no breadcrumb leak).
         'parentMapId', CASE
           WHEN m.parent_map_id IS NULL THEN NULL
           WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id

@@ -29,9 +29,9 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 **RETURNS:** `jsonb`.
 
-**Wirksame Definition:** [supabase/migrations/068_world_maps.sql](../../../supabase/migrations/068_world_maps.sql) (Zeilen 84–142, SHA-256 `5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43`).
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 104–169, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
 
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/get_world_map-1.sql](effective-sql/get_world_map-1.sql); SHA-256 `a514063b7871c98743e068589b93b8fe745589220e309d5a3d6b2a9019222a95`.
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/get_world_map-1.sql](effective-sql/get_world_map-1.sql); SHA-256 `b53d1111bca08ccdda3b79d3da1bcd00d18da4841aa8ac1624fa218b1fc60edf`.
 
 ### Ausführungskontext und ACL
 
@@ -52,8 +52,8 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 
 | Parser-Zeile | Bedingungspfad | Return-Ausdruck |
 | --- | --- | --- |
-| 20 | NOT FOUND | `jsonb_build_object(       'worldProfileId', p_world_profile_id,       'revision', 0,       'mapData', jsonb_build_object(         'size', 24,         'tiles', '{}'::jsonb,         'countries', '[]'::jsonb,         'pins', '[]'::jsonb       ),       'updatedAt', NULL     )` |
-| 42 | unbedingt | `jsonb_build_object(     'worldProfileId', v_row.world_profile_id,     'revision', v_row.revision,     'mapData', v_data,     'updatedAt', v_row.updated_at   )` |
+| 24 | NOT FOUND | `jsonb_build_object(       'worldProfileId', p_world_profile_id,       'revision', 0,       'mapData', jsonb_build_object(         'size', 24,         'tiles', '{}'::jsonb,         'countries', '[]'::jsonb,         'pins', '[]'::jsonb       ),       'updatedAt', NULL     )` |
+| 46 | unbedingt | `jsonb_build_object(     'worldProfileId', v_row.world_profile_id,     'revision', v_row.revision,     'mapData', v_data,     'updatedAt', v_row.updated_at   )` |
 
 Die vollständigen SQL-Ausdrücke und Caller-Decoder sind normativ. Die AST-erfassten JSON-Schlüsselgruppen umfassen auch verschachtelte Objekte und Event-Payloads; sie sind keine zusammengeworfene globale Antwortstruktur.
 
@@ -84,6 +84,7 @@ Alle vollständigen Funktionskörper, Abzweigungen, Queries, Writes, Errors und 
 
 | Helper | SQL-Quelle | Explizite SQLSTATEs | Fixture EXECUTE anon/authenticated |
 | --- | --- | --- | --- |
+| `public.current_user_can_edit_world_profile(uuid)` | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | Keine eigene RAISE | False/True |
 | `public.current_user_can_read_world_profile(uuid)` | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | Keine eigene RAISE | False/True |
 | `public.current_user_is_active_project_member(uuid)` | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | Keine eigene RAISE | False/True |
 
@@ -167,3 +168,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [supabase/migrations/068_world_maps.sql](../../../supabase/migrations/068_world_maps.sql) | `5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43` |
 | [supabase/migrations/083_world_profiles_public_id.sql](../../../supabase/migrations/083_world_profiles_public_id.sql) | `38b33710dcf628e7b834810e7dfd4dfacc97a0d23cc8673d76d96e2330bf6081` |
 | [supabase/migrations/092_fix_projects_rls_recursion.sql](../../../supabase/migrations/092_fix_projects_rls_recursion.sql) | `8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |
