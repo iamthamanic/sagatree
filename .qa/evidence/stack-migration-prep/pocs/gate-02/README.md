@@ -1,6 +1,6 @@
 # GATE-02 — real authentication and Chromium evidence
 
-**Required Cookie-A R01: PASS (cookie-only PoC profile). Execution: PASS. Approval: NOT APPROVED.** Real Chromium proves page JS cannot restore an authenticated session without the HttpOnly cookie using extracted sign-in tokens. Architecture freigabe still requires a human decision on #785.
+**Required Cookie-A R01: PASS (`authProfile: 'cookie'`; JWT escape remediaiton). Execution: PASS. Approval: NOT APPROVED.** Real Chromium proves page JS cannot restore a session without the HttpOnly cookie, and cannot mint a reusable JWT via `/api/auth/token` (hard-denied). Architecture freigabe still requires a human decision on #785.
 
 The [report](report.json) records exact per-criterion status, assertions, versions and source hashes. [Observations](observations.json) record the actual runtime and timings. The [complete fixture README](../../../../../scripts/stack-migration-pocs/gate-02-03/README.md) explains reproduction, all severity levels, exact boundaries and primary sources. ADR draft: [`ADR-ST-06`](../../../../../docs/architecture/ADR-ST-06-gate-02-auth-handshake.md) (**PROPOSAL / DECISION PENDING**).
 
@@ -8,7 +8,7 @@ The [report](report.json) records exact per-criterion status, assertions, versio
 
 | Row | Assertion / observed goal | A cookie | B JWT |
 | --- | --- | --- | --- |
-| 1 | Credential isolation: no JS-usable sign-in/bearer tokens; cookie path still authenticates | **PASS** | **NOT RUN** for secure browser JWT storage/transport |
+| 1 | Credential isolation: no JS-usable sign-in/bearer/JWT; `/api/auth/token` denied on cookie hosts; cookie path still authenticates | **PASS** | **NOT RUN** for secure browser JWT storage/transport |
 | 2 | No credentials cannot join an actual room | PASS | PASS |
 | 3 | Actual logout/revoke rejects new joins/reconnects and closes the old socket within 2 s | PASS | PASS |
 | 4 | Valid reconnect restores room/seat; another actor or second login cannot take over the ticket | PASS | PASS |
@@ -18,7 +18,7 @@ The [report](report.json) records exact per-criterion status, assertions, versio
 
 The executed browser result uses **Chromium 140.0.7339.186 / Playwright 1.55.1**, a new nonpersistent context, real Better Auth HTTP login and the real Colyseus browser SDK. Cookies and Origin are not injected into the positive flow. Chrome stores the actual HttpOnly/SameSite=Lax cookie and `document.cookie` cannot read it. Ordinary `/api/whoami` GET without Origin succeeds; the real socket joins and acknowledges a command. A foreign-origin command actually carries the ambient same-site cookie but receives HTTP 403 with no revision change; the foreign-origin socket fails.
 
-**Cookie-only profile:** opaque `bearer()` plugin disabled; browser-facing auth JSON strips session bearer fields and `set-auth-token`; `/api/auth/token` JWT issuance remains for Node Variant B. Chromium confirms `bodyTokenReadable` / `bearerHeaderReadable` are false and `credentials:'omit'` Authorization replay does not authenticate.
+**Cookie profile:** opaque `bearer()` and JWT plugins unloaded; `/api/auth/token` hard-returns 404; browser-facing auth JSON strips session bearer fields and `set-auth-token`; JWT issuance only on a separate `authProfile: 'jwt'` host (Node B). Chromium confirms `bodyTokenReadable` / `bearerHeaderReadable` are false, token-endpoint mint is denied, and `credentials:'omit'` Authorization replay does not authenticate.
 
 Expired/tampered credentials, foreign character seats, current roles, real sign-out/revoke and independent auth stores are also exercised. The JWT-signature canary shows that an unexpired revoked JWT remains cryptographically valid; the current-session lookup supplies the tested immediate rejection. Opaque bearer distinction is **NOT RUN** (plugin disabled).
 

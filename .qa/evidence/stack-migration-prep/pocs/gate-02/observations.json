@@ -3,7 +3,7 @@
   "gate": "GATE-02",
   "status": "PASS",
   "executedStatus": "PASS",
-  "runAt": "2026-10-22T21:31:43.507Z",
+  "runAt": "2026-10-23T06:47:40.559Z",
   "runtime": {
     "node": "v22.22.3",
     "os": "darwin",
@@ -15,21 +15,21 @@
     "cookieRevocation": [
       {
         "operation": "sign-out",
-        "endToEndMs": 239.833
+        "endToEndMs": 40.518
       },
       {
         "operation": "revoke-session",
-        "endToEndMs": 198.304
+        "endToEndMs": 188.921
       }
     ],
     "jwtRevocation": [
       {
         "operation": "sign-out",
-        "endToEndMs": 34.562
+        "endToEndMs": 90.397
       },
       {
         "operation": "revoke-session",
-        "endToEndMs": 196.475
+        "endToEndMs": 188.548
       }
     ],
     "browser": {
@@ -42,5 +42,5 @@
       "reusedUserProfile": false
     }
   },
-  "deterministicReportSha256": "0f55dab58a91c36d91608f431321ec6df184d8662059330eb766fdaf830d5366"
+  "deterministicReportSha256": "114115a7e263c472bf4435723c0d0d5d965732ffcf5e1227b8e0eb655928919b"
 }

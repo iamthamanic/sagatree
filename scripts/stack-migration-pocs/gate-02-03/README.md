@@ -37,9 +37,11 @@ These are selected candidate versions, not a claim about future releases or an a
 
 ## Real boundaries and fixture boundaries
 
-`server.mjs` runs each HTTP candidate in a separate child process with an actual Better Auth SQLite database, random secret and JWT signing keys. Real library migrations create the auth tables. Accounts sign up/sign in over real HTTP. Private harness IPC assigns synthetic roles/character ownership, expires actual test sessions and terminates the fixture's sockets. These controls are not public HTTP endpoints.
+`server.mjs` runs each HTTP candidate in a separate child process with an actual Better Auth SQLite database and random secret. Real library migrations create the auth tables. Accounts sign up/sign in over real HTTP. Private harness IPC assigns synthetic roles/character ownership, expires actual test sessions and terminates the fixture's sockets. These controls are not public HTTP endpoints.
 
-**Cookie-only GATE-02 A profile (PoC only; product migration is separate):** the Better Auth `bearer()` plugin is not loaded. The `/api/auth/*` Node handler strips session bearer fields (`token` and similar) from JSON response bodies (except `/api/auth/token` JWT issuance for Node Variant B) and strips any `set-auth-token` response header, while preserving `Set-Cookie` HttpOnly session cookies.
+**Auth profiles are split (PoC only; product migration is separate):**
+- **`authProfile: 'cookie'` (Variant A):** no Better Auth `bearer()` or `jwt()` plugin; `/api/auth/token` hard-returns `404 JWT_ISSUANCE_DISABLED` (not UA/Origin/Fetch-Metadata); browser-facing auth JSON strips session bearer fields and `set-auth-token`; HttpOnly `Set-Cookie` preserved; policy rejects `Authorization` Bearer.
+- **`authProfile: 'jwt'` (Variant B):** separate fixture host with JWT plugin; Node clients mint JWTs via `/api/auth/token` with the session cookie. Cookie-only hosts never load that path.
 
 `policy.mjs` is the sole role, seat, command and query implementation used by both HTTP variants and Colyseus. Fixture roles are host-admin/player/outsider. They do not implement the full GATE-01 owner/GM/invitation contract. The counter and command results are in memory; there is no claim of production transaction/durability parity. The separate GATE-04 fixture has its own SQLite transaction scope.
 
@@ -51,7 +53,7 @@ Actual outgoing Cookie/Origin/Fetch-Metadata evidence comes from Chromium `Netwo
 
 ## GATE-02: executed flows and cookie-only credential objective
 
-Variant A uses the real signed HttpOnly session cookie. Variant B uses actual JWT-plugin output (issued via `/api/auth/token` with the cookie), EdDSA/JWKS verification and a signed session id (`sid`) that must still identify a current, unexpired database session belonging to the subject. The opaque bearer plugin is disabled; `B-bearer-distinction` is NOT RUN for that reason.
+Variant A uses the real signed HttpOnly session cookie on cookie-profile hosts. Variant B runs on a **separate** jwt-profile host and uses actual JWT-plugin output (issued via `/api/auth/token` with the cookie), EdDSA/JWKS verification and a signed session id (`sid`) that must still identify a current, unexpired database session belonging to the subject. The opaque bearer plugin is disabled; `B-bearer-distinction` is NOT RUN for that reason.
 
 Both variants exercise real sign-in, HTTP whoami, unauthenticated join denial, logout and revoke-session, new-join and reconnect denial after revocation, active-socket closure within 2 seconds, valid reconnect with seat/room preservation and token rotation, GM/foreign-character/outsider denial, forged client roles, expired/tampered credentials and independent host/origin negatives. Active clients are rechecked every 250 ms. The measured deadline begins before the actual logout/revoke HTTP call. A signature-only canary proves that the unexpired revoked JWT still passes cryptographic validation; the current-session policy rejects it.
 
@@ -61,7 +63,9 @@ Better Auth cookies and JWTs are not put into URLs. Colyseus protocol seat/recon
 
 ### Actual browser result (Cookie-A R01)
 
-Chrome sets the signed HttpOnly/SameSite=Lax cookie automatically. `document.cookie` cannot read it. Sign-in JSON does **not** expose a usable session `token`, and `set-auth-token` is absent. Real same-origin GET `/api/whoami` and a real browser Colyseus room join/command succeed. Replay of scraped tokens with `credentials: 'omit'` does **not** authenticate. A foreign-origin command actually carries the ambient same-site cookie but receives HTTP 403 without a revision change. The foreign-origin socket attempt fails and the original session remains valid.
+Chrome sets the signed HttpOnly/SameSite=Lax cookie automatically. `document.cookie` cannot read it. Sign-in JSON does **not** expose a usable session `token`, and `set-auth-token` is absent. Same-origin `fetch('/api/auth/token')` with ambient cookies returns **404** (`JWT_ISSUANCE_DISABLED`) and yields no JS-readable JWT. Real same-origin GET `/api/whoami` and a real browser Colyseus room join/command succeed. Replay of scraped tokens with `credentials: 'omit'` does **not** authenticate. A foreign-origin command actually carries the ambient same-site cookie but receives HTTP 403 without a revision change. The foreign-origin socket attempt fails and the original session remains valid.
+
+**P1 follow-up (PR #900 discussion):** prior cookie-only PoC still left `/api/auth/token` reachable while the JWT plugin was loaded, so page JS could mint a reusable Bearer. That escape is closed by profile split + Chromium negatives; R01 was FAIL until this remediaiton.
 
 The browser also exposed a real bug in the original fixture: ordinary GET omits Origin and was incorrectly denied. The fix accepts absent Origin only for the safe HTTP whoami/snapshot actions with exact Host and browser Fetch Metadata `Sec-Fetch-Site: same-origin`. Missing/foreign metadata, explicit wrong Origin, writes and sockets do not gain that exception. The new actual-browser flow plus originless negative cases exercise the boundary.
 
@@ -91,7 +95,7 @@ No p95 SLO is invented: the spec asks for measurements and no lost ACKs. Single 
 | POST /api/ping-session | Shared authorized command; strict Origin |
 | POST /api/gm-command | Same command boundary with current host-admin role |
 | GET /api/failure | Test-only caught exception, not a proposed product endpoint |
-| /api/auth/* | Better Auth with cookie-only browser profile; JWT issuance at `/api/auth/token` for Node B |
+| /api/auth/* | Better Auth; cookie hosts deny `/api/auth/token`; JWT issuance only on separate jwt-profile host (Node B) |
 | /matchmake/* and room socket | Actual Colyseus protocol with the initial/reconnect distinction above |
 
 Future layout notes for a human-approved server architecture: auth/session resolution, one session application service, thin HTTP adapter and thin realtime adapter. The approved GATE-01 policy belongs behind their shared port. Neither transport should implement a second set of business rules. Exact line counts are recorded, but no product server tree or AGENTS.md is changed. Asset downloads, OAuth callbacks, automatic OpenAPI generation, product-wide client generation and production logging/metrics qualification remain NOT RUN.
@@ -100,7 +104,7 @@ Future layout notes for a human-approved server architecture: auth/session resol
 
 | Severity | Finding | State |
 | --- | --- | --- |
-| High | Cookie-A R01 JS-readable session tokens in combined bearer profile | **Mitigated in PoC** by cookie-only profile (bearer disabled + response strip); Chromium A/1 PASS. Product freigabe still required on #785. |
+| High | Cookie-A R01 JS-readable session tokens / JWT escape via `/api/auth/token` | **Mitigated in PoC** by authProfile split (no JWT plugin + hard-deny token endpoint on cookie hosts; Chromium A/1 PASS including token-endpoint negative). Product freigabe still required on #785. |
 | High | Unexpired JWT signatures survive logout/revocation. | Mitigated in fixture by current actual session lookup; signature-only canary executed. |
 | High | A replayed reconnect ticket must be bound to the actual current peer/user/login at WS upgrade. | Mitigated for room access; another actor/session denied. Ticket-only HTTP reservation remains documented. |
 | Medium | Browser GET without Origin was masked by Node-injected headers. | Fixed with narrowly scoped safe-read/Host/Fetch-Metadata check and actual Chromium regression. |
@@ -111,7 +115,7 @@ Future layout notes for a human-approved server architecture: auth/session resol
 | Low | JSON null produced inconsistent 403/500 responses between adapters. | Shared object guard and equal 400/INVALID_PAYLOAD; no side effects. |
 | Info / tech-debt | Schema, route setup, seat binding and reconnect hooks depend on exact installed APIs. | Pins, source hashes and executable boundary probes; upgrades require rerunning. |
 | Info / tech-debt | Explicit OpenAPI/client and minimal test assets do not prove product-wide generators/assets/callbacks. | NOT RUN. |
-| Info | Opaque bearer plugin retired for cookie-preferred GATE-02 A PoC | NOT RUN (`B-bearer-distinction`); JWT path remains for Node Variant B. |
+| Info | Opaque bearer plugin retired; JWT isolated to jwt authProfile host | NOT RUN (`B-bearer-distinction`); Node Variant B uses separate fixture. |
 
 ## Primary sources
 

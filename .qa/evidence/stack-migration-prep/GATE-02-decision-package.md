@@ -16,11 +16,11 @@
 
 | Field | Value |
 | --- | --- |
-| PoC run | 2026-10-22 (Node 22.22.3, darwin arm64, SQLite 3.51.3; Chromium 140.0.7339.186) |
+| PoC run | 2026-10-23 (Node 22.22.3, darwin arm64, SQLite 3.51.0; Chromium 140.0.7339.186) |
 | Probe execution | **PASS** (17 executed assertions PASS, 0 FAIL; opaque bearer + B-1-browser NOT RUN) |
 | Gate objective (cookie-preferred A) | **PASS** (all A rows PASS; B row 1 NOT RUN allowed) |
 | Browser | Chromium 140.0.7339.186 / Playwright 1.55.1, real Better Auth + Colyseus SDK |
-| Report hash | `0f55dab58a91c36d91608f431321ec6df184d8662059330eb766fdaf830d5366` |
+| Report hash | `cb6179fd1d9c82e9f4b277fcc9d0bba557bc1fd635754b7691c469248ff28c77` |
 
 Reproduce: see [`pocs/gate-02/README.md`](pocs/gate-02/README.md).
 
@@ -32,7 +32,7 @@ Rows match [GATE-02 spec](../../design/gates/GATE-02-better-auth-colyseus.md). S
 
 | Row | Criterion (short) | **A — session cookie** | **B — bearer JWT** |
 | --- | --- | --- | --- |
-| 1 | Credential not readable by JS (A) / stored securely (B) | **PASS** (cookie-only PoC) | **NOT RUN** |
+| 1 | Credential not readable by JS (A) / stored securely (B) | **PASS** (cookie profile; `/api/auth/token` hard-denied; JWT host separate) | **NOT RUN** |
 | 2 | WS join without auth rejected | PASS | PASS |
 | 3 | Revoke/logout rejects within ≤2s | PASS | PASS |
 | 4 | Valid reconnect restores seat; no privilege escalation | PASS | PASS |
@@ -48,14 +48,21 @@ Rows match [GATE-02 spec](../../design/gates/GATE-02-better-auth-colyseus.md). S
 
 **Required outcome:** credentials must not be usable by page JavaScript under the chosen auth profile (threat model documented).
 
-**Observed (real Chromium, cookie-only GATE-02 A PoC profile):**
+### External abnahme finding (PR #900 discussion `PRRT_kwDOStABwc6vY3oO`)
+
+After PR #900, Cookie-A still loaded the Better Auth JWT plugin and left `/api/auth/token` reachable. Same-origin page JS could call `fetch('/api/auth/token')` with the ambient HttpOnly cookie and receive a **JS-readable JWT** usable as Bearer without the cookie. R01 was therefore **FAIL** until the follow-up remediaiton (profile split).
+
+### Observed after remediaiton (real Chromium, `authProfile: 'cookie'`):
 
 - HttpOnly `SameSite=Lax` session cookie is set; `document.cookie` **cannot** read it.
-- Sign-in JSON does **not** expose a page-readable session token; `set-auth-token` is **absent** (opaque bearer plugin disabled; response strip for browser-facing auth JSON).
-- Page JS replay against `/api/auth/get-session` with `credentials: omit` does **not** authenticate (no usable scraped Authorization credential).
+- Sign-in JSON does **not** expose a page-readable session token; `set-auth-token` is **absent**.
+- JWT plugin is **not** loaded on cookie hosts; `/api/auth/token` hard-returns **404** `JWT_ISSUANCE_DISABLED` (not UA/Origin/Fetch-Metadata).
+- Page JS cannot obtain a reusable JWT; scanned `/api/auth/*` paths expose no readable credential fields.
+- Cookie hosts reject `Authorization` Bearer; JWT issuance lives only on a separate `authProfile: 'jwt'` Node host (Variant B).
+- Page JS replay against `/api/auth/get-session` with `credentials: omit` does **not** authenticate.
 - Real Colyseus browser WS join works on the cookie path; foreign-origin CSRF probe returned **403** with no unauthorized revision changes (cookie CSRF negatives **PASS**).
 
-**Interpretation:** Cookie-A R01 **PASS** for the PoC cookie-only profile. Overall architecture freigabe remains **NOT APPROVED** until human decision on #785. Product migration is separate from this PoC wrapper.
+**Interpretation:** Cookie-A R01 **PASS** after remediaiton for the PoC cookie-only profile. Overall architecture freigabe remains **NOT APPROVED** until human decision on #785. Product migration is separate from this PoC wrapper.
 
 No token values are stored in evidence artifacts.
 
@@ -93,11 +100,11 @@ Reply on **#785** with one of (exact prefix helps automation):
 
 ### Option A — Better Auth session cookies + Colyseus `onAuth` via shared session store
 
-**PoC today:** rows 1–7 **PASS** under cookie-only profile (R01 closed in PoC).
+**PoC today:** rows 1–7 **PASS** under `authProfile: 'cookie'` (R01 closed after JWT-escape remediaiton; Chromium proves `/api/auth/token` denied).
 
 **Must be true before human APPROVED:**
 
-1. **Cookie-A R01 resolved** — done in PoC (cookie-only profile + Chromium PASS). Human confirms the product will adopt the same constraints (no JS-readable session bearers on the browser path).
+1. **Cookie-A R01 resolved** — done in PoC (no JWT plugin on cookie hosts; hard-deny `/api/auth/token`; Chromium PASS). Human confirms the product will adopt the same constraints (no JS-readable session bearers **and** no browser-reachable JWT mint on the cookie path).
 2. **CSRF story** for cookie variant documented (foreign-origin negatives executed in PoC; extend to product routes).
 3. Human accepts **NOT RUN** items relevant to SagaTree shipping surface (HTTPS Secure cookies, Tauri, other engines) or scopes follow-up tickets.
 
@@ -121,7 +128,7 @@ Requires new evidence ticket; do not invent a third variant in implementation wi
 
 | Severity | Topic | Note |
 | --- | --- | --- |
-| **High** | Cookie-A R01 JS-readable tokens | **Closed in PoC** (cookie-only profile); still needs human APPROVED on #785 for product freigabe |
+| **High** | Cookie-A R01 JS-readable tokens / JWT escape via `/api/auth/token` | **Closed in PoC follow-up** (authProfile split + Chromium token-endpoint negative); still needs human APPROVED on #785 for product freigabe |
 | Medium | GET without Origin / Fetch-Metadata fix in fixture | Addressed in PoC; verify in product |
 | Medium | Observation integrity checks | Regression-guarded in harness |
 | Low | Typed decoder / null / async-handler edges | Documented in GATE0203 review |

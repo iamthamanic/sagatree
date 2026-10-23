@@ -14,10 +14,10 @@ import { Policy, Fault, errorBody, errorResponse } from './policy.mjs';
 
 let game, db, policy, origin, poll, browserScript;
 
-// Cookie-only GATE-02 A profile for this PoC (not product migration).
-// Bearer plugin is disabled; browser-facing auth JSON must not expose usable session
-// tokens while HttpOnly Set-Cookie remains the browser credential. JWT plugin stays
-// enabled so Node Variant B can still mint JWTs via /api/auth/token with the cookie.
+// GATE-02 PoC auth profiles (not product migration):
+// - cookie: Variant A — no JWT plugin, hard-deny /api/auth/token (not UA/Origin/Fetch-Metadata),
+//   strip browser-readable session bearers; HttpOnly Set-Cookie only.
+// - jwt: Variant B — separate Node fixture with JWT plugin; /api/auth/token allowed for Node clients.
 const SESSION_BEARER_KEYS = new Set(['token', 'sessionToken', 'accessToken', 'refreshToken', 'idToken']);
 function stripSessionBearerFields(value) {
   if (!value || typeof value !== 'object') return;
@@ -44,10 +44,16 @@ function scrubAuthResponseHeaders(headers) {
   }
   return out;
 }
-function wrapCookieOnlyAuthHandler(handler) {
+function wrapAuthHandler(handler, { authProfile, preserveJwtIssuance }) {
   return (request, response) => {
     const pathname = new URL(request.url, origin).pathname;
-    const preserveJwtBody = pathname === '/api/auth/token';
+    // Hard profile gate — never rely on User-Agent / Origin / Fetch-Metadata alone.
+    if (authProfile === 'cookie' && (pathname === '/api/auth/token' || pathname.startsWith('/api/auth/token/'))) {
+      response.writeHead(404, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+      response.end(JSON.stringify({ error: { code: 'JWT_ISSUANCE_DISABLED' } }));
+      return;
+    }
+    const preserveJwtBody = preserveJwtIssuance && pathname === '/api/auth/token';
     const setHeader = response.setHeader.bind(response);
     response.setHeader = (name, value) => {
       if (String(name).toLowerCase() === 'set-auth-token') return response;
@@ -157,6 +163,8 @@ class SessionRoom extends Room {
 
 async function initialize(config) {
   const bindHost = config.bindHost ?? '127.0.0.1';
+  const authProfile = config.authProfile ?? 'cookie';
+  if (!['cookie', 'jwt'].includes(authProfile)) throw new Error('unknown authProfile');
   if (config.mode === 'solo' && !['127.0.0.1', '::1', 'localhost'].includes(bindHost)) throw new Fault('SOLO_REQUIRES_LOOPBACK');
   if (!['minimal', 'hono'].includes(config.variant)) throw new Error('unknown HTTP variant');
   const http = createServer();
@@ -197,19 +205,25 @@ async function initialize(config) {
   await game.listen(0, bindHost);
   origin = `http://127.0.0.1:${http.address().port}`;
   db = new DatabaseSync(config.databasePath);
+  const plugins = authProfile === 'jwt'
+    ? [jwt({ jwt: { issuer: origin, audience: origin, expirationTime: '5m', definePayload: ({ user, session }) => ({ sub: user.id, sid: session.id }) } })]
+    : [];
   const auth = betterAuth({
     database: db, baseURL: origin, secret: randomBytes(48).toString('base64url'), trustedOrigins: [origin],
     emailAndPassword: { enabled: true, requireEmailVerification: false },
     session: { cookieCache: { enabled: false } },
     advanced: { defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure: false } },
     rateLimit: { enabled: false }, logger: { disabled: true },
-    plugins: [jwt({ jwt: { issuer: origin, audience: origin, expirationTime: '5m', definePayload: ({ user, session }) => ({ sub: user.id, sid: session.id }) } })],
+    plugins,
   });
   await (await getMigrations(auth.options)).runMigrations();
-  policy = new Policy({ auth, db, origin, publish: (event) => {
+  policy = new Policy({ auth, db, origin, authProfile, publish: (event) => {
     for (const room of rooms) { room.state.revision = event.revision; room.broadcast('session.delta', event); }
   } });
-  const betterAuthHandler = wrapCookieOnlyAuthHandler(toNodeHandler(auth));
+  const betterAuthHandler = wrapAuthHandler(toNodeHandler(auth), {
+    authProfile,
+    preserveJwtIssuance: authProfile === 'jwt',
+  });
   const hono = new Hono();
   hono.get('/health', (c) => c.json({ ok: true }));
   hono.get('/api/whoami', (c) => call(c.req.raw, 'whoami', {}));
@@ -266,7 +280,15 @@ async function initialize(config) {
     } finally { checking = false; }
   }, 250);
   poll.unref();
-  return { origin, variant: config.variant, bindHost, sqlite: db.prepare('SELECT sqlite_version() version').get().version, sessionColumns: db.prepare('PRAGMA table_info(session)').all().map((row) => ({ name: row.name, type: row.type })) };
+  return {
+    origin,
+    variant: config.variant,
+    authProfile,
+    bindHost,
+    sqlite: db.prepare('SELECT sqlite_version() version').get().version,
+    sessionColumns: db.prepare('PRAGMA table_info(session)').all().map((row) => ({ name: row.name, type: row.type })),
+    jwtIssuanceEnabled: authProfile === 'jwt',
+  };
 }
 
 process.on('message', async (message) => {

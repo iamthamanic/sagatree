@@ -40,7 +40,12 @@ export class FixtureHost {
       this.child.send({ id, type, ...args }, (error) => { if (error) { this.pending.delete(id); reject(error); } });
     }), 15000, `fixture ${type}`);
   }
-  async init(config) { this.config = await this.call('init', { config }); this.origin = this.config.origin; return this; }
+  async init(config) {
+    this.config = await this.call('init', { config });
+    this.origin = this.config.origin;
+    this.authProfile = this.config.authProfile ?? 'cookie';
+    return this;
+  }
   async http(path, { body, headers = {}, method } = {}) {
     const response = await fetch(`${this.origin}${path}`, { method: method ?? (body === undefined ? 'GET' : 'POST'), headers: { origin: this.origin, ...headers, ...(body === undefined ? {} : { 'content-type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(10000) });
     const text = await response.text();
@@ -59,20 +64,30 @@ export class FixtureHost {
   }
   async login(user) {
     // Cookie-only GATE-02 A: sign-in may omit body.token / set-auth-token; Set-Cookie is required.
+    // JWT issuance is only available on a separate authProfile=jwt host (Variant B).
     const response = await this.http('/api/auth/sign-in/email', { body: { email: user.email, password: user.password } });
     if (response.status !== 200 || !response.data?.user?.id) throw new Error(`real Better Auth login failed: ${response.status}`);
     const cookies = response.headers.getSetCookie();
     const sessionCookie = cookies.find((cookie) => cookie.split('=')[0].endsWith('session_token'));
     if (!sessionCookie) throw new Error('Better Auth did not set its session cookie');
     const cookie = sessionCookie.split(';')[0];
-    const jwt = await this.http('/api/auth/token', { headers: { cookie } });
-    if (jwt.status !== 200 || typeof jwt.data.token !== 'string') throw new Error(`real Better Auth JWT issuance failed: ${jwt.status}`);
+    let jwtToken = null;
+    if (this.authProfile === 'jwt') {
+      const jwt = await this.http('/api/auth/token', { headers: { cookie } });
+      if (jwt.status !== 200 || typeof jwt.data.token !== 'string') throw new Error(`real Better Auth JWT issuance failed: ${jwt.status}`);
+      jwtToken = jwt.data.token;
+    } else {
+      const denied = await this.http('/api/auth/token', { headers: { cookie } });
+      if (denied.status !== 404 || denied.data?.error?.code !== 'JWT_ISSUANCE_DISABLED') {
+        throw new Error(`cookie profile must hard-deny /api/auth/token: ${denied.status} ${JSON.stringify(denied.data)}`);
+      }
+    }
     const sessionToken = typeof response.data.token === 'string'
       ? response.data.token
       : (await this.call('session-token', { userId: user.userId }))?.token ?? null;
     return {
       cookie,
-      jwt: jwt.data.token,
+      jwt: jwtToken,
       sessionToken,
       opaqueBearer: response.headers.get('set-auth-token'),
       attributes: { httpOnly: /;\s*httponly/i.test(sessionCookie), sameSiteLax: /;\s*samesite=lax/i.test(sessionCookie), secure: /;\s*secure(?:;|$)/i.test(sessionCookie) },
