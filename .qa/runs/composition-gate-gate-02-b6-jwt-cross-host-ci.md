@@ -1,6 +1,6 @@
 # Composition Gate — gate-02-b6-jwt-cross-host-ci (#785 / PR #905 P1 remediaiton)
 
-- HEAD_SHA: WORKTREE (pre-commit; updated to commit SHA after ship)
+- HEAD_SHA: d39121b74185a74ca8985da5d91175b482029ff3
 - BASE_SHA: b1374d3b89ae316772a213e3fd15bb5f0cf7d1d8
 - Date: 2026-10-23
 - Verdict: CLEAR
