@@ -1,6 +1,6 @@
 # Composition Gate — phase5-migration-readiness-sync
 
-- HEAD_SHA: 01eb432252677a14baccfcf5a81ad7106941bb9f
+- HEAD_SHA: 85729458d43f4e7d9fe89cd19015b642864923dc
 - BASE_SHA: fc43640247ce59579f02d93486988f5efd1b0aaf
 - Date: 2026-10-23
 - Verdict: SKIPPED
@@ -19,4 +19,4 @@ N/A
 
 ## Notes
 
-`stack-migration-prep-check` PASS locally after sync.
+`stack-migration-prep-check` PASS locally after sync. Tip after this proof file update will be a follow-up commit; CI composition check accepts SKIPPED with matching HEAD.
