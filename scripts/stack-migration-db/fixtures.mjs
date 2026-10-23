@@ -92,7 +92,7 @@ export async function seedFixtures(client) {
           ruleset_key,level,attributes,skills,sagatree_profile,
           inventory_v2,inventory_schema_version)
         VALUES(
-          $1,$2,$3,$4,$5,'pc','complete','sagatree-core',1,
+          $1,$2,$3,$4,$5,'pc','incomplete','sagatree-core',1,
           '{"strength":3,"dexterity":3,"endurance":3,"intelligence":3,"wisdom":3,"charisma":3}'::jsonb,
           '{"athletics":2,"awareness":1,"melee":1}'::jsonb,
           '{"drive":3}'::jsonb,
