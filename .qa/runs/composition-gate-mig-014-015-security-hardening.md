@@ -1,6 +1,6 @@
 # Composition Gate — mig-014-015-security-hardening
 
-- HEAD_SHA: WORKTREE (pre-commit; refresh after commit)
+- HEAD_SHA: 63ead409126cf47d759bf9a27f6a79b2bc399a07
 - BASE_SHA: 721f53e3ba42b94e7292ce2f8bd24e5970828e24
 - Date: 2026-10-23
 - Verdict: CLEAR
