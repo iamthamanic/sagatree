@@ -345,8 +345,7 @@ REVOKE ALL ON FUNCTION public.save_session_recap_summary(UUID, TEXT) FROM PUBLIC
 GRANT EXECUTE ON FUNCTION public.save_session_recap_summary(UUID, TEXT) TO authenticated;
 
 -- ---------------------------------------------------------------------------
--- Adventure command: derive GM from auth (canonical sagatree_* name)
--- ---------------------------------------------------------------------------
+-- Adventure (v2 body from 065) + authz gate
 CREATE OR REPLACE FUNCTION public.sagatree_resolve_adventure_command(
   p_session_id UUID,
   p_payload JSONB,
@@ -382,6 +381,12 @@ DECLARE
   v_id TEXT;
   v_event JSONB;
   v_rev INT;
+  v_schema INT;
+  v_patch JSONB;
+  v_days INT;
+  v_loc TEXT;
+  v_cons_elem JSONB;
+  v_batch_count INT;
 BEGIN
   -- Ignore client p_is_gm; derive authority from membership.
   IF auth.uid() IS NULL THEN
@@ -413,14 +418,17 @@ BEGIN
   IF jsonb_typeof(v_adv) IS DISTINCT FROM 'object' THEN
     v_adv := public.sagatree_empty_adventure_runtime();
   END IF;
-  IF COALESCE((v_adv->>'schemaVersion')::int, 0) <> 1 THEN
+  v_schema := COALESCE((v_adv->>'schemaVersion')::int, 0);
+  IF v_schema NOT IN (1, 2) THEN
     v_adv := public.sagatree_empty_adventure_runtime() || jsonb_build_object(
       'definitionRef', v_adv->'definitionRef'
     );
+    v_schema := 1;
   END IF;
 
   IF v_op = 'hydrate_from_project' THEN
-    IF jsonb_typeof(v_project_adv) = 'object' AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) = 1 THEN
+    IF jsonb_typeof(v_project_adv) = 'object'
+       AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) IN (1, 2) THEN
       v_adv := v_project_adv;
     ELSE
       v_adv := public.sagatree_empty_adventure_runtime();
@@ -526,7 +534,6 @@ BEGIN
       'visibility', v_vis,
       'createdAt', NOW()
     ));
-    -- keep last 64
     IF jsonb_array_length(v_cons) > 64 THEN
       v_cons := (
         SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)
@@ -538,25 +545,136 @@ BEGIN
     END IF;
     v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);
   ELSIF v_op = 'persist_to_project' THEN
-    -- no-op on session state; persistence below
     NULL;
+  ELSIF v_op IN ('advance_time', 'apply_simulation_batch') THEN
+    -- Client preview (pure kernel); server validates + persists patch only.
+    v_days := COALESCE((v_in->>'days')::int, 0);
+    IF v_op = 'advance_time' AND (v_days < 1 OR v_days > 30) THEN
+      RAISE EXCEPTION 'days muss zwischen 1 und 30 liegen' USING ERRCODE = '22023';
+    END IF;
+    v_patch := v_in->'simulationPatch';
+    IF jsonb_typeof(v_patch) IS DISTINCT FROM 'object' THEN
+      RAISE EXCEPTION 'simulationPatch erforderlich' USING ERRCODE = '22023';
+    END IF;
+    -- Reject unknown top-level patch keys
+    IF EXISTS (
+      SELECT 1 FROM jsonb_object_keys(v_patch) k
+      WHERE k NOT IN ('time', 'clocks', 'threats', 'deadlines', 'flags', 'rngSeed', 'partyLocationRef', 'rules')
+    ) THEN
+      RAISE EXCEPTION 'simulationPatch enthält unbekannte Felder' USING ERRCODE = '22023';
+    END IF;
+    v_adv := public.sagatree_ensure_adventure_v2(v_adv);
+    IF v_patch ? 'time' AND jsonb_typeof(v_patch->'time') = 'object' THEN
+      v_adv := jsonb_set(
+        v_adv,
+        '{time}',
+        jsonb_build_object(
+          'day', GREATEST(0, LEAST(9999, COALESCE((v_patch->'time'->>'day')::int, 0)))
+        ),
+        true
+      );
+    END IF;
+    IF v_patch ? 'clocks' AND jsonb_typeof(v_patch->'clocks') = 'object' THEN
+      v_adv := jsonb_set(v_adv, '{clocks}', v_patch->'clocks', true);
+    END IF;
+    IF v_patch ? 'threats' AND jsonb_typeof(v_patch->'threats') = 'array' THEN
+      IF jsonb_array_length(v_patch->'threats') > 64 THEN
+        RAISE EXCEPTION 'threats zu groß' USING ERRCODE = '22023';
+      END IF;
+      v_adv := jsonb_set(v_adv, '{threats}', v_patch->'threats', true);
+    END IF;
+    IF v_patch ? 'deadlines' AND jsonb_typeof(v_patch->'deadlines') = 'array' THEN
+      IF jsonb_array_length(v_patch->'deadlines') > 64 THEN
+        RAISE EXCEPTION 'deadlines zu groß' USING ERRCODE = '22023';
+      END IF;
+      v_adv := jsonb_set(v_adv, '{deadlines}', v_patch->'deadlines', true);
+    END IF;
+    IF v_patch ? 'flags' AND jsonb_typeof(v_patch->'flags') = 'object' THEN
+      v_adv := jsonb_set(v_adv, '{flags}', v_patch->'flags', true);
+    END IF;
+    IF v_patch ? 'rngSeed' THEN
+      v_adv := jsonb_set(v_adv, '{rngSeed}', to_jsonb(COALESCE((v_patch->>'rngSeed')::bigint, 0)), true);
+    END IF;
+    IF v_patch ? 'partyLocationRef' THEN
+      v_adv := jsonb_set(
+        v_adv,
+        '{partyLocationRef}',
+        CASE
+          WHEN v_patch->>'partyLocationRef' IS NULL OR BTRIM(v_patch->>'partyLocationRef') = '' THEN 'null'::jsonb
+          ELSE to_jsonb(left(v_patch->>'partyLocationRef', 80))
+        END,
+        true
+      );
+    END IF;
+    -- Append consequences from approved preview (batch size limit)
+    IF jsonb_typeof(v_in->'appendConsequences') = 'array' THEN
+      v_batch_count := jsonb_array_length(v_in->'appendConsequences');
+      IF v_batch_count > 32 THEN
+        RAISE EXCEPTION 'appendConsequences zu groß' USING ERRCODE = '22023';
+      END IF;
+      v_cons := COALESCE(v_adv->'consequences', '[]'::jsonb);
+      IF jsonb_typeof(v_cons) IS DISTINCT FROM 'array' THEN
+        v_cons := '[]'::jsonb;
+      END IF;
+      FOR v_cons_elem IN SELECT elem FROM jsonb_array_elements(v_in->'appendConsequences') AS elem
+      LOOP
+        IF NULLIF(BTRIM(COALESCE(v_cons_elem->>'summary', '')), '') IS NULL THEN
+          CONTINUE;
+        END IF;
+        v_vis := COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'visibility', '')), ''), 'gm_only');
+        IF v_vis NOT IN ('public', 'shared', 'gm_only') THEN
+          v_vis := 'gm_only';
+        END IF;
+        v_id := 'c-' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);
+        v_cons := v_cons || jsonb_build_array(jsonb_build_object(
+          'id', v_id,
+          'kind', left(COALESCE(NULLIF(BTRIM(COALESCE(v_cons_elem->>'kind', '')), ''), 'sim'), 40),
+          'summary', left(v_cons_elem->>'summary', 200),
+          'visibility', v_vis,
+          'createdAt', NOW()
+        ));
+      END LOOP;
+      IF jsonb_array_length(v_cons) > 64 THEN
+        v_cons := (
+          SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)
+          FROM (
+            SELECT elem FROM jsonb_array_elements(v_cons) AS elem
+            OFFSET GREATEST(jsonb_array_length(v_cons) - 64, 0)
+          ) s
+        );
+      END IF;
+      v_adv := jsonb_set(v_adv, '{consequences}', v_cons, true);
+    END IF;
+    v_schema := 2;
+  ELSIF v_op = 'set_party_location' THEN
+    v_loc := NULLIF(BTRIM(COALESCE(v_in->>'locationRef', '')), '');
+    IF v_loc IS NULL THEN
+      RAISE EXCEPTION 'locationRef erforderlich' USING ERRCODE = '22023';
+    END IF;
+    v_adv := public.sagatree_ensure_adventure_v2(v_adv);
+    v_adv := jsonb_set(v_adv, '{partyLocationRef}', to_jsonb(left(v_loc, 80)), true);
+    v_schema := 2;
   ELSE
     RAISE EXCEPTION 'Unbekannte Adventure-Operation' USING ERRCODE = '22023';
   END IF;
 
   v_rev := GREATEST(0, COALESCE((v_adv->>'sliceRevision')::int, 0)) + 1;
-  v_adv := jsonb_set(v_adv, '{schemaVersion}', '1'::jsonb, true);
+  IF v_op IN ('advance_time', 'apply_simulation_batch', 'set_party_location') OR v_schema = 2 THEN
+    v_adv := jsonb_set(v_adv, '{schemaVersion}', '2'::jsonb, true);
+  ELSE
+    v_adv := jsonb_set(v_adv, '{schemaVersion}', to_jsonb(COALESCE((v_adv->>'schemaVersion')::int, 1)), true);
+  END IF;
   v_adv := jsonb_set(v_adv, '{sliceRevision}', to_jsonb(v_rev), true);
   v_adv := jsonb_set(v_adv, '{updatedAt}', to_jsonb(NOW()), true);
 
   v_shared := jsonb_set(v_shared, '{adventure}', v_adv, true);
   v_world := jsonb_set(v_world, '{shared}', v_shared, true);
 
-  -- Saga continuity: durable project snapshot (never writes into definition tables)
   IF v_op IS DISTINCT FROM 'hydrate_from_project' OR v_in->>'forcePersist' = 'true' THEN
     IF v_op IN (
       'set_flag', 'set_relationship', 'tick_clock', 'add_consequence',
-      'set_definition_ref', 'persist_to_project'
+      'set_definition_ref', 'persist_to_project',
+      'advance_time', 'apply_simulation_batch', 'set_party_location'
     ) THEN
       UPDATE public.projects
          SET adventure_runtime = v_adv,
@@ -568,6 +686,8 @@ BEGIN
   v_event := jsonb_build_object(
     'op', v_op,
     'key', v_in->>'key',
+    'batchId', v_in->>'batchId',
+    'days', v_in->'days',
     'definitionRef', v_adv->>'definitionRef',
     'sliceRevision', v_rev,
     'authoritative', true
@@ -589,11 +709,9 @@ SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$ SELECT public.sagatree_resolve_adventure_command(p_session_id, p_payload, p_is_gm, p_world); $$;
 REVOKE ALL ON FUNCTION public.sagadrive_resolve_adventure_command(UUID, JSONB, BOOLEAN, JSONB) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.sagadrive_resolve_adventure_command(UUID, JSONB, BOOLEAN, JSONB) TO authenticated;
+-- No GRANT to anon/authenticated — compat name is internal-only after 079 drop window.
 
--- ---------------------------------------------------------------------------
--- Dice: characters.owner_user_id (canonical sagatree_resolve_session_check)
--- ---------------------------------------------------------------------------
+-- Dice (from 042) + owner_user_id + sagatree helpers
 CREATE OR REPLACE FUNCTION public.sagatree_resolve_session_check(
   p_session_id UUID,
   p_actor UUID,
@@ -708,7 +826,7 @@ BEGIN
      AND ((v_shared->'driveByCharacter'->>v_character.id::text) ~ '^[0-9]+$') THEN
     v_drive := (v_shared->'driveByCharacter'->>v_character.id::text)::int;
   ELSE
-    v_drive := COALESCE((v_character.sagadrive_profile->>'drive')::int, 3);
+    v_drive := COALESCE((v_character.sagatree_profile->>'drive')::int, 3);
   END IF;
   IF v_drive < 0 THEN v_drive := 0; END IF;
   IF v_drive > 5 THEN v_drive := 5; END IF;
@@ -807,17 +925,9 @@ $$;
 
 REVOKE ALL ON FUNCTION public.sagatree_resolve_session_check(UUID, UUID, JSONB, BOOLEAN) FROM PUBLIC;
 
+REVOKE ALL ON FUNCTION public.sagatree_resolve_session_check(UUID, UUID, JSONB, BOOLEAN) FROM PUBLIC;
+-- Callable only via apply_session_runtime_command (SECURITY DEFINER owner).
 
-CREATE OR REPLACE FUNCTION public.sagadrive_resolve_session_check(
-  p_session_id UUID, p_actor UUID, p_payload JSONB, p_is_gm BOOLEAN
-)
-RETURNS JSONB
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public, pg_temp
-AS $$ SELECT public.sagatree_resolve_session_check(p_session_id, p_actor, p_payload, p_is_gm); $$;
-
--- ---------------------------------------------------------------------------
 -- get_world_atlas_map: keep renderable generator_meta for players; require
 -- saga membership; do not strip unifiedCanvas/webglRuntime (demo fallback).
 -- ---------------------------------------------------------------------------
