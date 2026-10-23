@@ -4,6 +4,9 @@
  *
  * MIG-020 proof surface only. Full SessionRuntimeState persistence is MIG-022.
  * Pipeline order (binding): validate → authorize → execute.
+ *
+ * Idempotency (ADR-ST-08): key is session-scoped; stored actor is binding;
+ * expectedRevision is replay metadata only (not part of operation fingerprint).
  */
 import { createHash } from 'node:crypto';
 import type { Actor } from '../../modules/identity/index.ts';
@@ -119,14 +122,21 @@ function parseSnapshotInput(raw: unknown): TransportSnapshotInput | null {
   };
 }
 
+/**
+ * Canonical operation fingerprint — excludes expectedRevision (ADR-ST-08 replay metadata).
+ */
 function payloadHash(input: TransportCommandInput): string {
   const canonical = JSON.stringify({
     sessionId: input.sessionId,
     projectId: input.projectId,
-    expectedRevision: input.expectedRevision,
     note: input.note ?? null,
   });
   return createHash('sha256').update(canonical).digest('hex');
+}
+
+/** Session-scoped idempotency map key (not actor-scoped). */
+function idempotencyMapKey(sessionId: string, idempotencyKey: string): string {
+  return `${sessionId}:${idempotencyKey}`;
 }
 
 function projectFor(
@@ -153,12 +163,17 @@ export function createTransportUseCase(deps: {
   const sessions = new Map<string, SessionRecord>();
   const idempotency = new Map<string, IdempotencyRecord>();
 
-  function ensureSession(sessionId: string, projectId: string): SessionRecord {
+  /**
+   * Mutation path only: create session bound to the authorized project, or
+   * return existing. Never rebinds projectId on an existing session.
+   */
+  function ensureSessionForCommand(
+    sessionId: string,
+    projectId: string,
+  ): SessionRecord | { mismatch: true } {
     const existing = sessions.get(sessionId);
     if (existing) {
-      if (existing.projectId !== projectId) {
-        // Caller must treat as SESSION_MISMATCH — return sentinel via throw path avoided.
-      }
+      if (existing.projectId !== projectId) return { mismatch: true };
       return existing;
     }
     const created: SessionRecord = {
@@ -171,6 +186,11 @@ export function createTransportUseCase(deps: {
     };
     sessions.set(sessionId, created);
     return created;
+  }
+
+  /** Read path: never invent session→project from client IDs. */
+  function lookupSession(sessionId: string): SessionRecord | null {
+    return sessions.get(sessionId) ?? null;
   }
 
   return {
@@ -191,16 +211,18 @@ export function createTransportUseCase(deps: {
         return { ok: false, error: 'FORBIDDEN', reason: decision.reason };
       }
 
-      const state = ensureSession(input.sessionId, input.projectId);
-      if (state.projectId !== input.projectId) {
+      const stateOrMismatch = ensureSessionForCommand(input.sessionId, input.projectId);
+      if ('mismatch' in stateOrMismatch) {
         return { ok: false, error: 'SESSION_MISMATCH' };
       }
+      const state = stateOrMismatch;
 
-      const idKey = `${actor.actorId}:${input.sessionId}:${input.idempotencyKey}`;
+      // Session-scoped key; original actor stored for binding checks.
+      const idKey = idempotencyMapKey(input.sessionId, input.idempotencyKey);
       const hash = payloadHash(input);
       const prior = idempotency.get(idKey);
       if (prior) {
-        if (prior.payloadHash !== hash || prior.actorId !== actor.actorId) {
+        if (prior.actorId !== actor.actorId || prior.payloadHash !== hash) {
           return { ok: false, error: 'IDEMPOTENCY_CONFLICT' };
         }
         return { ...prior.result, idempotentReplay: true };
@@ -236,11 +258,20 @@ export function createTransportUseCase(deps: {
       const input = parseSnapshotInput(raw);
       if (!input) return { ok: false, error: 'INVALID_PAYLOAD' };
 
+      // Authoritative association only — never create on read.
+      const state = lookupSession(input.sessionId);
+      if (!state) {
+        return { ok: false, error: 'FORBIDDEN', reason: 'session-not-found' };
+      }
+      if (state.projectId !== input.projectId) {
+        return { ok: false, error: 'SESSION_MISMATCH' };
+      }
+
       const gmDecision = deps.permissions.authorize('session.gm', actor, {
-        projectId: input.projectId,
+        projectId: state.projectId,
       });
       const playerDecision = deps.permissions.authorize('player.project.read', actor, {
-        projectId: input.projectId,
+        projectId: state.projectId,
       });
       if (!gmDecision.allow && !playerDecision.allow) {
         return {
@@ -250,11 +281,6 @@ export function createTransportUseCase(deps: {
         };
       }
       const role: 'gm' | 'player' = gmDecision.allow ? 'gm' : 'player';
-
-      const state = ensureSession(input.sessionId, input.projectId);
-      if (state.projectId !== input.projectId) {
-        return { ok: false, error: 'SESSION_MISMATCH' };
-      }
 
       return {
         ok: true,

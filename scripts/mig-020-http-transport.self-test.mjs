@@ -160,19 +160,13 @@ try {
   assert(invalid.res.status === 422, `422 expected: ${invalid.res.status} ${invalid.text}`);
   assert(invalid.json?.error === 'INVALID_PAYLOAD', 'INVALID_PAYLOAD');
 
-  // Snapshot before any command — revision 0
-  const snap0 = await httpJson(baseURL, snapPath, {
+  // P1: snapshot read must not create session→project from client IDs
+  const snapBefore = await httpJson(baseURL, snapPath, {
     headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
     cookie: gmCookie,
   });
-  assert(snap0.res.status === 200, `snap0 ${snap0.res.status}`);
-  assert(snap0.json?.ok === true, 'snap0 ok');
-  assert(snap0.json?.projection?.revision === 0, 'revision 0');
-  assert(Array.isArray(snap0.json?.pipeline), 'pipeline present');
-  assert(
-    JSON.stringify(snap0.json.pipeline) === JSON.stringify([...TRANSPORT_PIPELINE]),
-    `pipeline order: ${JSON.stringify(snap0.json.pipeline)}`,
-  );
+  assert(snapBefore.res.status === 403, `snap-before must not invent session: ${snapBefore.res.status}`);
+  assert(snapBefore.json?.error === 'FORBIDDEN', 'session-not-found → FORBIDDEN');
 
   // --- Fall 1: happy path command (validate → authorize → execute) ---
   const cmd1 = await httpJson(baseURL, cmdPath, {
@@ -198,6 +192,18 @@ try {
     'command pipeline order',
   );
 
+  const snap0 = await httpJson(baseURL, snapPath, {
+    headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+    cookie: gmCookie,
+  });
+  assert(snap0.res.status === 200, `snap0 ${snap0.res.status}`);
+  assert(snap0.json?.projection?.revision === 1, 'snapshot after create');
+  assert(Array.isArray(snap0.json?.pipeline), 'pipeline present');
+  assert(
+    JSON.stringify(snap0.json.pipeline) === JSON.stringify([...TRANSPORT_PIPELINE]),
+    `pipeline order: ${JSON.stringify(snap0.json.pipeline)}`,
+  );
+
   // --- Fall 3: idempotent retry (lost response) — same result, no double mutation ---
   const cmd1Retry = await httpJson(baseURL, cmdPath, {
     method: 'POST',
@@ -214,6 +220,22 @@ try {
   assert(cmd1Retry.json?.idempotentReplay === true, 'idempotent replay');
   assert(cmd1Retry.json?.projection?.revision === 1, 'retry still revision 1');
   assert(cmd1Retry.json?.projection?.value === 1, 'retry value unchanged');
+
+  // P2: refreshed expectedRevision alone must still replay (not in fingerprint)
+  const cmd1RetryFreshRev = await httpJson(baseURL, cmdPath, {
+    method: 'POST',
+    headers: { Origin: baseURL },
+    cookie: gmCookie,
+    body: {
+      projectId: 'proj-mig020',
+      expectedRevision: 1,
+      idempotencyKey: 'k-happy-1',
+      note: 'gm-secret-note',
+    },
+  });
+  assert(cmd1RetryFreshRev.res.status === 200, `fresh-rev retry ${cmd1RetryFreshRev.res.status}`);
+  assert(cmd1RetryFreshRev.json?.idempotentReplay === true, 'fresh-rev is replay');
+  assert(cmd1RetryFreshRev.json?.projection?.revision === 1, 'fresh-rev no second mutation');
 
   const snapAfterRetry = await httpJson(baseURL, snapPath, {
     headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
@@ -299,6 +321,80 @@ try {
     },
   });
   assert(cmd2.res.status === 200 && cmd2.json?.projection?.revision === 2, 'cmd2 advances');
+
+  // --- P1: GM handover — session-scoped key rejects other actor (no double mutate) ---
+  const gm2Password = `Pw-${randomBytes(12).toString('base64url')}`;
+  const gm2Cookie = await signIn(baseURL, 'gm2@mig020.test', gm2Password);
+  const gm2Who = await httpJson(baseURL, '/api/whoami', {
+    headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+    cookie: gm2Cookie,
+  });
+  const gm2ActorId = gm2Who.json.actorId;
+  const pdb2 = new DatabaseSync(hostDbPath);
+  pdb2.exec(`
+    INSERT OR IGNORE INTO project_members (project_id, user_id, role, active, joined_at)
+    VALUES ('proj-mig020', '${gm2ActorId.replace(/'/g, "''")}', 'gm', 1, '2026-10-23T00:00:00.000Z');
+    UPDATE projects SET gm_user_id = '${gm2ActorId.replace(/'/g, "''")}' WHERE id = 'proj-mig020';
+  `);
+  pdb2.close();
+
+  const handover = await httpJson(baseURL, cmdPath, {
+    method: 'POST',
+    headers: { Origin: baseURL },
+    cookie: gm2Cookie,
+    body: {
+      projectId: 'proj-mig020',
+      expectedRevision: 2,
+      idempotencyKey: 'k-happy-2',
+    },
+  });
+  assert(handover.res.status === 409, `handover conflict: ${handover.res.status} ${handover.text}`);
+  assert(handover.json?.error === 'IDEMPOTENCY_CONFLICT', 'actor mismatch → IDEMPOTENCY_CONFLICT');
+  const snapHandover = await httpJson(baseURL, snapPath, {
+    headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+    cookie: gmCookie,
+  });
+  assert(snapHandover.json?.projection?.revision === 2, 'handover must not mutate');
+
+  // --- P1: cross-project snapshot squat denied without mutation ---
+  const pdb3 = new DatabaseSync(hostDbPath);
+  pdb3.exec(`
+    INSERT OR IGNORE INTO worlds (id, owner_user_id, title, created_at)
+    VALUES ('world-other', '${playerActorId.replace(/'/g, "''")}', 'Other', '2026-10-23T00:00:00.000Z');
+    INSERT OR IGNORE INTO projects (id, world_id, gm_user_id, title, created_at)
+    VALUES ('proj-other', 'world-other', '${playerActorId.replace(/'/g, "''")}', 'OtherP', '2026-10-23T00:00:00.000Z');
+    INSERT OR IGNORE INTO project_members (project_id, user_id, role, active, joined_at)
+    VALUES ('proj-other', '${playerActorId.replace(/'/g, "''")}', 'gm', 1, '2026-10-23T00:00:00.000Z');
+  `);
+  pdb3.close();
+
+  const squatSnap = await httpJson(
+    baseURL,
+    `/api/v1/sessions/${sessionId}/snapshot?projectId=proj-other`,
+    {
+      headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+      cookie: playerCookie,
+    },
+  );
+  assert(squatSnap.res.status === 409, `squat snap denied: ${squatSnap.res.status}`);
+  assert(squatSnap.json?.error === 'SESSION_MISMATCH', 'SESSION_MISMATCH on cross-project read');
+
+  const squatUnknown = await httpJson(
+    baseURL,
+    `/api/v1/sessions/sess-never-created/snapshot?projectId=proj-other`,
+    {
+      headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+      cookie: playerCookie,
+    },
+  );
+  assert(squatUnknown.res.status === 403, `unknown session not invented: ${squatUnknown.res.status}`);
+
+  const snapStillOwner = await httpJson(baseURL, snapPath, {
+    headers: { Origin: baseURL, 'Sec-Fetch-Site': 'same-origin' },
+    cookie: gmCookie,
+  });
+  assert(snapStillOwner.res.status === 200, 'owner snap still works');
+  assert(snapStillOwner.json?.projection?.revision === 2, 'owner association unchanged');
 
   // Health still works through Hono
   const health = await httpJson(baseURL, '/health');
