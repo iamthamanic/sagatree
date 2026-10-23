@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-402",
+  "result": "PASS",
+  "testedCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "checks": [
+    {
+      "command": "synthetic MIG-402",
+      "result": "PASS",
+      "evidenceFile": ".qa/tmp/migration-completion-fixtures/mig-402-check.txt",
+      "sha256": "c8f160860fe61c93055bace9f8661d9af55b690db0f66f4946a49c568abe44fa"
+    }
+  ]
+}

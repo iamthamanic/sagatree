@@ -17,11 +17,11 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 9 | 1 | MIG-011 [#790](https://github.com/iamthamanic/sagatree/issues/790) | done | #789, #784, #787 |
 | 10 | 1 | MIG-013 [#792](https://github.com/iamthamanic/sagatree/issues/792) | done | #790, #784 |
 | 11 | 1 | MIG-012 [#791](https://github.com/iamthamanic/sagatree/issues/791) | done | #790, #792 |
-| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | ready | #789, #790, #792, #785 |
-| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | ready | #789, #790, #792, #785 |
+| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | done | #789, #790, #792, #785 |
+| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | done | #789, #790, #792, #785 |
 | 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | done | #790, #792 |
-| 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | waiting | #789, #792, #793, #786 |
-| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | waiting | #790, #792, #793, #787 |
+| 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | done | #789, #792, #793, #786 |
+| 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | ready | #790, #792, #793, #787 |
 | 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | waiting | #795, #797, #785 |
 | 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | waiting | #792, #797, #784 |
 | 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | waiting | #795, #797, #799, #785, #786 |
@@ -77,16 +77,16 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 69 | 4 | MIG-303 [#802](https://github.com/iamthamanic/sagatree/issues/802) | waiting | #791, #792, #795, #825, #826, #793 |
 | 70 | 4 | MIG-304 [#803](https://github.com/iamthamanic/sagatree/issues/803) | waiting | #791, #792, #795, #828, #793 |
 | 71 | 4 | MIG-305 [#804](https://github.com/iamthamanic/sagatree/issues/804) | blocked | #791, #792, #795, #878, #793 |
-| 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | waiting | #791, #792, #795 |
+| 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | ready | #791, #792, #795 |
 | 73 | 4 | MIG-307 [#806](https://github.com/iamthamanic/sagatree/issues/806) | waiting | #791, #792, #795, #877, #793 |
 | 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | waiting | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
-| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | waiting | #791, #792, #795, #793 |
+| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | ready | #791, #792, #795, #793 |
 | 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | waiting | #791, #792, #795, #871, #873, #872, #876, #793 |
 | 77 | 4 | MIG-311 [#810](https://github.com/iamthamanic/sagatree/issues/810) | blocked | #791, #792, #795, #867, #868, #869, #870, #836, #837, #796, #793 |
 | 78 | 4 | MIG-312 [#811](https://github.com/iamthamanic/sagatree/issues/811) | blocked | #791, #792, #795, #841, #793 |
 | 79 | 4 | MIG-313 [#812](https://github.com/iamthamanic/sagatree/issues/812) | waiting | #791, #792, #795, #866, #864, #865, #862, #861, #863, #841, #793 |
-| 80 | 5 | MIG-501 [#842](https://github.com/iamthamanic/sagatree/issues/842) | waiting | #841, #795 |
-| 81 | 5 | MIG-502 [#843](https://github.com/iamthamanic/sagatree/issues/843) | waiting | #841, #844, #795 |
+| 80 | 5 | MIG-501 [#842](https://github.com/iamthamanic/sagatree/issues/842) | ready | #841, #795 |
+| 81 | 5 | MIG-502 [#843](https://github.com/iamthamanic/sagatree/issues/843) | ready | #841, #844, #795 |
 | 82 | 6 | MIG-600 [#845](https://github.com/iamthamanic/sagatree/issues/845) | waiting | #796, #798, #799, #841, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
 | 83 | 6 | MIG-601 [#846](https://github.com/iamthamanic/sagatree/issues/846) | waiting | #789, #793, #794, #841, #830 |
 | 84 | 6 | MIG-602 [#847](https://github.com/iamthamanic/sagatree/issues/847) | waiting | #845, #846, #770, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |

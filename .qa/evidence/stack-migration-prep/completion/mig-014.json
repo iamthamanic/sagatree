@@ -3,10 +3,10 @@
   "kind": "migration-acceptance",
   "localId": "MIG-014",
   "result": "PASS",
-  "testedCommit": "b139fed9af37a7da450844d276dc1a5aaeacd4e3",
+  "testedCommit": "7aa71f2b273fba2caf5871f4d9acf3bc5da8c2e6",
   "githubClosed": true,
-  "mergeRef": "PR #909 → main (#793)",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "mergeRef": "PR #909 → main (#793); hardening PR #913 → 7aa71f2b",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. P1/P2 trust-boundary findings from #909 were closed by verified hardening on #913.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-014-better-auth-host.self-test.mjs",
@@ -19,6 +19,18 @@
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-014.md",
       "sha256": "9808a82ae3503de81d292a83fb39aa37f11832cb1af281789d57a7f10452d797"
+    },
+    {
+      "command": "node --experimental-strip-types scripts/mig-014-better-auth-host.self-test.mjs (hardening regressions)",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/mig-014-015-security-hardening.md",
+      "sha256": "0ef6dbb401343b736784850e711251a0997aebfc237c16cbb068d968d826a84d"
+    },
+    {
+      "command": "composition-gate CLEAR (hardening)",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-mig-014-015-security-hardening.md",
+      "sha256": "c6e732c278d5f986da81d30d4ad7f913fd9fbd82e68079639d74a9342a7cb400"
     }
   ]
 }

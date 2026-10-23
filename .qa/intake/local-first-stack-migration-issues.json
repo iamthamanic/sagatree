@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 2,
-    "issuesBlockedOrNeedsDesign": 76,
+    "issuesReady": 5,
+    "issuesBlockedOrNeedsDesign": 70,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -1544,7 +1544,7 @@
       "title": "Better Auth host accounts (remote-reachable mode)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-014",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-014.md",
       "dependsOn": [
@@ -1624,9 +1624,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-014.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1656,7 +1657,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-012",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1665,7 +1666,7 @@
       "title": "Solo local identity without privilege transfer",
       "priority": "P0",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-015",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-015.md",
       "dependsOn": [
@@ -1743,9 +1744,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-015.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1775,7 +1777,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-013",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1904,7 +1906,7 @@
       "title": "HTTP command/query transport layer",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-020",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-020.md",
       "dependsOn": [
@@ -1984,9 +1986,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-020.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -2016,8 +2019,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-015",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -2026,7 +2028,7 @@
       "title": "SessionRuntimeState port (revision+idempotency)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-022",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-022.md",
       "dependsOn": [
@@ -2138,8 +2140,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-016",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -13011,7 +13012,7 @@
       "title": "Port infrastructure/media adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-306",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-306.md",
       "dependsOn": [
@@ -13121,8 +13122,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-072",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -13599,7 +13599,7 @@
       "title": "Port infrastructure/rulesets adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-309",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-309.md",
       "dependsOn": [
@@ -13699,8 +13699,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-075",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -14827,7 +14826,7 @@
       "title": "Optional tus for large uploads",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-501",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-501.md",
       "dependsOn": [
@@ -14933,8 +14932,7 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-080",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -14943,7 +14941,7 @@
       "title": "Export/import versioned bundles + restore drills",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-502",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-502.md",
       "dependsOn": [
@@ -15055,8 +15053,7 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-081",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
