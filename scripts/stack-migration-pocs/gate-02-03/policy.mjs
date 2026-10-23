@@ -9,9 +9,12 @@ export const errorResponse = (error) => Response.json(errorBody(error), { status
 // One policy and one command/query implementation are shared by both HTTP adapters and Colyseus.
 // Better Auth owns credential creation, signature verification for cookies and session lifecycle.
 export class Policy {
-  constructor({ auth, db, origin, publish }) {
-    Object.assign(this, { auth, db, origin, publish });
-    this.jwks = createRemoteJWKSet(new URL('/api/auth/jwks', origin), { timeoutDuration: 3000 });
+  constructor({ auth, db, origin, publish, authProfile = 'cookie' }) {
+    Object.assign(this, { auth, db, origin, publish, authProfile });
+    // JWKS remote is only meaningful for Variant B JWT hosts.
+    this.jwks = authProfile === 'jwt'
+      ? createRemoteJWKSet(new URL('/api/auth/jwks', origin), { timeoutDuration: 3000 })
+      : null;
     this.revision = 0;
     this.commands = new Map();
     this.metrics = { http: 0, ws: 0, denied: 0, commits: 0, notifications: 0, reconnectChecks: 0, revokedConnections: 0 };
@@ -34,6 +37,8 @@ export class Policy {
     const authorization = headers.get('authorization');
     let userId, sessionId, credentialKind;
     if (authorization) {
+      // Cookie-only Variant A never accepts bearer/JWT — profile gate, not client sniffing.
+      if (this.authProfile !== 'jwt' || !this.jwks) throw new Fault('UNAUTHENTICATED', 401);
       if (!authorization.startsWith('Bearer ')) throw new Fault('UNAUTHENTICATED', 401);
       try {
         // The JWT is issued by the real Better Auth JWT plugin, with a signed session id.

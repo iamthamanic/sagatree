@@ -12,19 +12,22 @@ Epic #773 local-first stack migration requires a browser-capable auth handshake 
 
 | Variant | Credential | Browser row 1 (R01) |
 | --- | --- | --- |
-| **A — session cookies** | HttpOnly `SameSite=Lax` Better Auth session cookie | Cookie-only PoC profile: Chromium PASS (no JS-usable sign-in/bearer tokens; cookie path whoami + Colyseus + CSRF negatives PASS) |
-| **B — bearer JWT** | JWT plugin + session-store recheck | Node/ws PASS for rows 2–7; **browser/Tauri secure store NOT RUN** |
+| **A — session cookies** | HttpOnly `SameSite=Lax` Better Auth session cookie on `authProfile: 'cookie'` hosts | Chromium PASS after JWT-escape remediaiton: no JS-usable sign-in/bearer tokens; `/api/auth/token` hard-denied; cookie whoami + Colyseus + CSRF PASS |
+| **B — bearer JWT** | Separate `authProfile: 'jwt'` host; JWT plugin + session-store recheck | Node/ws PASS for rows 2–7; **browser/Tauri secure store NOT RUN** |
 
 Decision package: `.qa/evidence/stack-migration-prep/GATE-02-decision-package.md` (status remains **NOT APPROVED / UNDECIDED** until human freigabe).
 
 ## Recommendation (proposal only)
 
-**Prefer Variant A (session cookies)** after Cookie-A R01 PASS under the cookie-only PoC profile:
+**Prefer Variant A (session cookies)** after Cookie-A R01 PASS under the split cookie PoC profile:
 
 1. Disable opaque Better Auth `bearer()` for the browser path.
-2. Do not return usable session bearer fields (or `set-auth-token`) to page JS on sign-in / browser-facing auth JSON.
-3. Preserve HttpOnly `Set-Cookie` as the sole browser session credential.
-4. Keep JWT issuance (`/api/auth/token`) available only where a non-browser Node client explicitly needs Variant B evidence — product adoption of B still requires a separate browser/Tauri secure-store proof.
+2. Do **not** load the JWT plugin on cookie-profile hosts; hard-deny `/api/auth/token` (not via User-Agent / Origin / Fetch-Metadata alone).
+3. Do not return usable session bearer fields (or `set-auth-token`) to page JS on sign-in / browser-facing auth JSON.
+4. Preserve HttpOnly `Set-Cookie` as the sole browser session credential; cookie hosts reject `Authorization` Bearer.
+5. Run Variant B JWT issuance only on a **separate** jwt-profile host for Node clients — product adoption of B still requires a separate browser/Tauri secure-store proof.
+
+**History:** PR #900 left `/api/auth/token` reachable on the cookie PoC (external P1). Follow-up remediaiton closes that escape; R01 was FAIL until then.
 
 This ADR **does not** grant architecture freigabe. Only an explicit human comment on #785 plus updates to `architecture-approvals.json` may set `GATE-02: APPROVED`.
 
@@ -45,8 +48,8 @@ This ADR **does not** grant architecture freigabe. Only an explicit human commen
 
 ## Evidence summary
 
-- Cookie-A R01: real Chromium isolation PASS under cookie-only PoC profile (`A-1-browser`, `credentialIsolationSatisfied: true`).
-- Cookie rows 2–7 and JWT Node rows 2–7: PASS in fixture reports.
+- Cookie-A R01: real Chromium isolation PASS under `authProfile: 'cookie'` (`A-1-browser` includes `/api/auth/token` 404 negative + auth-path credential scan; `credentialIsolationSatisfied: true`).
+- Cookie rows 2–7 on cookie hosts and JWT Node rows 2–7 on separate jwt host: PASS in fixture reports.
 - B row 1 browser/Tauri secure JWT store: NOT RUN.
-- Opaque bearer distinction case: NOT RUN (plugin disabled in cookie-preferred profile).
+- Opaque bearer distinction case: NOT RUN (plugin disabled; JWT isolated to jwt host).
 - Approval field in reports: always `NOT APPROVED` until human decision.

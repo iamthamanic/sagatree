@@ -49,63 +49,79 @@ async function run(gate, id, title, execute) {
 
 let typedClient;
 try {
-  for (const variant of ['minimal', 'hono']) {
-    const host = new FixtureHost(); hosts[variant] = host;
-    await host.init({ variant, databasePath: join(folder, `${variant}.sqlite`) });
+  async function bootHost(name, { variant, authProfile }) {
+    const host = new FixtureHost();
+    hosts[name] = host;
+    await host.init({ variant, authProfile, databasePath: join(folder, `${name}.sqlite`) });
     host.users = {};
     for (const [label, role, characterId] of [
       ['gm', 'host-admin'], ['player1', 'player', 'character-1'], ['player2', 'player', 'character-2'],
       ['revokable', 'player', 'character-revokable'], ['expired', 'player', 'character-expired'], ['outsider', 'outsider'],
     ]) host.users[label] = await host.user(label, role, characterId);
+    return host;
   }
+  // Variant A cookie-only hosts (browser + cookie wire). Variant B uses a separate JWT host.
+  await bootHost('minimal', { variant: 'minimal', authProfile: 'cookie' });
+  await bootHost('hono', { variant: 'hono', authProfile: 'cookie' });
+  await bootHost('jwt', { variant: 'minimal', authProfile: 'jwt' });
   const primary = hosts.minimal;
 
   for (const kind of ['cookie', 'jwt']) {
     const prefix = kind === 'cookie' ? 'A' : 'B';
-    const player = primary.users.player1;
-    const headers = credentials(primary, player.login, kind);
+    const host = kind === 'cookie' ? primary : hosts.jwt;
+    const player = host.users.player1;
+    const headers = credentials(host, player.login, kind);
     await run('GATE-02', `${prefix}-1-wire`, `Real Better Auth ${kind} login, HTTP identity and WS join`, async () => {
-      const result = await primary.http('/api/whoami', { headers });
+      assert.equal(host.authProfile, kind === 'cookie' ? 'cookie' : 'jwt');
+      if (kind === 'cookie') assert.equal(player.login.jwt, null);
+      else assert.equal(typeof player.login.jwt, 'string');
+      const result = await host.http('/api/whoami', { headers });
       assert.equal(result.status, 200);
       assert.deepEqual(result.data, { ok: true, role: 'player', credentialKind: kind });
       assert.deepEqual(player.login.attributes, { httpOnly: true, sameSiteLax: true, secure: false });
-      const link = await primary.join(headers, seat(player));
+      const link = await host.join(headers, seat(player));
       assert.equal((await link.room.request('seat')).role, 'player');
       if (kind === 'jwt') {
-        const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', primary.origin));
-        const verified = await jwtVerify(player.login.jwt, jwks, { issuer: primary.origin, audience: primary.origin, algorithms: ['EdDSA'] });
+        const jwks = createRemoteJWKSet(new URL('/api/auth/jwks', host.origin));
+        const verified = await jwtVerify(player.login.jwt, jwks, { issuer: host.origin, audience: host.origin, algorithms: ['EdDSA'] });
         assert.equal(verified.payload.sub, player.userId);
         assert.equal(typeof verified.payload.sid, 'string');
+      } else {
+        const tokenDenied = await host.http('/api/auth/token', { headers: { cookie: player.login.cookie } });
+        assert.equal(tokenDenied.status, 404);
+        assert.equal(tokenDenied.data?.error?.code, 'JWT_ISSUANCE_DISABLED');
+        const bearerRejected = await host.http('/api/whoami', { headers: { origin: host.origin, authorization: 'Bearer not-a-real-jwt' } });
+        assert.equal(bearerRejected.status, 401);
       }
-      return { realEmailPasswordSignIn: true, realDatabaseSession: true, httpWhoami: 200, webSocketJoined: true, cookieHttpOnly: true, cookieSameSite: 'Lax', cookieSecureOnLoopbackHttp: false, credentialKind: kind, ...(kind === 'jwt' ? { jwtSignatureVerifiedAgainstBetterAuthJwks: true, algorithm: 'EdDSA', issuerAndAudienceChecked: true } : {}) };
+      return { realEmailPasswordSignIn: true, realDatabaseSession: true, httpWhoami: 200, webSocketJoined: true, cookieHttpOnly: true, cookieSameSite: 'Lax', cookieSecureOnLoopbackHttp: false, credentialKind: kind, authProfile: host.authProfile, ...(kind === 'jwt' ? { jwtSignatureVerifiedAgainstBetterAuthJwks: true, algorithm: 'EdDSA', issuerAndAudienceChecked: true } : { jwtIssuanceHardDeniedOnCookieProfile: true, bearerRejectedOnCookieProfile: true }) };
     });
-    if (kind === 'jwt') cases['GATE-02'].push({ id: `${prefix}-1-browser`, title: 'JWT Browser/Tauri secure credential storage', status: 'NOT RUN', reason: 'Real JWTs travel in Node ws Authorization headers. A secure browser transport/store for JWTs and Tauri secure storage were not executed. Cookie Variant A Chromium isolation is exercised separately under A-1-browser.' });
+    if (kind === 'jwt') cases['GATE-02'].push({ id: `${prefix}-1-browser`, title: 'JWT Browser/Tauri secure credential storage', status: 'NOT RUN', reason: 'Real JWTs travel in Node ws Authorization headers on a separate jwt authProfile host. A secure browser transport/store for JWTs and Tauri secure storage were not executed. Cookie Variant A Chromium isolation is exercised separately under A-1-browser.' });
     await run('GATE-02', `${prefix}-2`, 'Unauthenticated WebSocket join is rejected', async () => {
-      await rejected(primary.join({ origin: primary.origin }, seat(player)), 'UNAUTHENTICATED');
+      await rejected(host.join({ origin: host.origin }, seat(player)), 'UNAUTHENTICATED');
       return { unauthenticatedJoinDenied: true };
     });
     await run('GATE-02', `${prefix}-3`, 'Real logout/revoke denies active socket, new join and reconnect within 2s', async () => {
       const timings = [];
       for (const endpoint of ['sign-out', 'revoke-session']) {
-        const user = primary.users.revokable;
-        const login = await primary.login(user);
+        const user = host.users.revokable;
+        const login = await host.login(user);
         if (endpoint === 'revoke-session') assert.equal(typeof login.sessionToken, 'string', 'harness must resolve session token via cookie path or fixture DB for revoke-session');
-        const authHeaders = credentials(primary, login, kind);
-        const link = await primary.join(authHeaders, seat(user));
+        const authHeaders = credentials(host, login, kind);
+        const link = await host.join(authHeaders, seat(user));
         const token = link.room.reconnectionToken;
         const start = performance.now();
-        const response = await primary.http(`/api/auth/${endpoint}`, { headers: { cookie: login.cookie }, body: endpoint === 'revoke-session' ? { token: login.sessionToken } : {} });
+        const response = await host.http(`/api/auth/${endpoint}`, { headers: { cookie: login.cookie }, body: endpoint === 'revoke-session' ? { token: login.sessionToken } : {} });
         assert.equal(response.status, 200);
-        await rejected(primary.join(authHeaders, seat(user)), 'UNAUTHENTICATED');
+        await rejected(host.join(authHeaders, seat(user)), 'UNAUTHENTICATED');
         await until(() => !link.room.connection.isOpen, 1900, 'active session revocation');
         const elapsedMs = performance.now() - start;
         assert.ok(elapsedMs <= 2000, 'end-to-end revocation exceeded 2 seconds');
-        await rejected(primary.reconnect(authHeaders, token));
-        const who = await primary.http('/api/whoami', { headers: authHeaders });
+        await rejected(host.reconnect(authHeaders, token));
+        const who = await host.http('/api/whoami', { headers: authHeaders });
         assert.equal(who.status, 401); denied(who.data, 'UNAUTHENTICATED');
         if (kind === 'jwt') {
           // Canary: signature alone still accepts a revoked session's unexpired JWT.
-          await jwtVerify(login.jwt, createRemoteJWKSet(new URL('/api/auth/jwks', primary.origin)), { issuer: primary.origin, audience: primary.origin, algorithms: ['EdDSA'] });
+          await jwtVerify(login.jwt, createRemoteJWKSet(new URL('/api/auth/jwks', host.origin)), { issuer: host.origin, audience: host.origin, algorithms: ['EdDSA'] });
         }
         timings.push({ operation: endpoint, endToEndMs: Number(elapsedMs.toFixed(3)) });
       }
@@ -113,14 +129,14 @@ try {
       return { logoutAndRevokeExercised: true, deadlineMs: 2000, activeSocketClosed: true, newJoinDenied: true, reconnectDenied: true, currentSessionRechecked: true, ...(kind === 'jwt' ? { signatureOnlyCanaryStillAcceptsRevokedJwt: true, sessionStoreCheckRejectsIt: true } : {}) };
     });
     await run('GATE-02', `${prefix}-4`, 'Valid reconnect restores the same seat and rejects another actor using its ticket', async () => {
-      const link = await primary.join(headers, seat(player));
+      const link = await host.join(headers, seat(player));
       const previous = { token: link.room.reconnectionToken, sessionId: link.room.sessionId, roomId: link.room.roomId };
       link.room.connection.transport.ws.terminate();
       await until(() => !link.room.connection.isOpen, 1000, 'socket drop');
-      await rejected(primary.reconnect(credentials(primary, primary.users.player2.login, kind), previous.token));
-      const otherLogin = await primary.login(player);
-      await rejected(primary.reconnect(credentials(primary, otherLogin, kind), previous.token));
-      const restored = await primary.reconnect(headers, previous.token);
+      await rejected(host.reconnect(credentials(host, host.users.player2.login, kind), previous.token));
+      const otherLogin = await host.login(player);
+      await rejected(host.reconnect(credentials(host, otherLogin, kind), previous.token));
+      const restored = await host.reconnect(headers, previous.token);
       assert.equal(restored.room.sessionId, previous.sessionId);
       assert.equal(restored.room.roomId, previous.roomId);
       assert.notEqual(restored.room.reconnectionToken, previous.token);
@@ -129,33 +145,34 @@ try {
       return { sameRoom: true, sameSeat: true, tokenRotated: true, restoredRole: 'player', differentActorTicketReplayDenied: true, sameActorDifferentSessionTicketReplayDenied: true, denialTimeoutAcceptedAsPass: false };
     });
     await run('GATE-02', `${prefix}-5`, 'Player cannot claim GM authority or another character', async () => {
-      await rejected(primary.join(headers, { sessionId: 'demo', seat: 'gm', role: 'host-admin', userId: primary.users.gm.userId }), 'GM_REQUIRED');
-      await rejected(primary.join(headers, { sessionId: 'demo', seat: 'player', characterId: 'character-2' }), 'CHARACTER_FORBIDDEN');
-      await rejected(primary.join(credentials(primary, primary.users.outsider.login, kind), { sessionId: 'demo', seat: 'gm' }), 'SESSION_FORBIDDEN');
-      const link = await primary.join(headers, { ...seat(player), role: 'host-admin', userId: primary.users.gm.userId });
+      await rejected(host.join(headers, { sessionId: 'demo', seat: 'gm', role: 'host-admin', userId: host.users.gm.userId }), 'GM_REQUIRED');
+      await rejected(host.join(headers, { sessionId: 'demo', seat: 'player', characterId: 'character-2' }), 'CHARACTER_FORBIDDEN');
+      await rejected(host.join(credentials(host, host.users.outsider.login, kind), { sessionId: 'demo', seat: 'gm' }), 'SESSION_FORBIDDEN');
+      const link = await host.join(headers, { ...seat(player), role: 'host-admin', userId: host.users.gm.userId });
       assert.equal((await link.room.request('seat')).role, 'player');
       return { gmSeatDenied: true, foreignCharacterDenied: true, authenticatedOutsiderDenied: true, clientRoleAndUserIdCannotElevate: true };
     });
     await run('GATE-02', `${prefix}-6`, 'Credentials and origins are isolated between two real hosts', async () => {
-      const other = hosts.hono;
+      // Cookie A uses the second cookie host; JWT B uses the cookie host as a foreign store/secret.
+      const other = kind === 'cookie' ? hosts.hono : hosts.minimal;
       const foreign = credentials(other, player.login, kind);
       assert.equal((await other.http('/api/whoami', { headers: foreign })).status, 401);
       await rejected(other.join(foreign, seat(player)), 'UNAUTHENTICATED');
-      const wrongOrigin = credentials(primary, player.login, kind, other.origin);
-      const deniedOrigin = await primary.http('/api/whoami', { headers: wrongOrigin });
+      const wrongOrigin = credentials(host, player.login, kind, other.origin);
+      const deniedOrigin = await host.http('/api/whoami', { headers: wrongOrigin });
       assert.equal(deniedOrigin.status, 403); denied(deniedOrigin.data, 'ORIGIN_DENIED');
-      await rejected(primary.join(wrongOrigin, seat(player)), 'ORIGIN_DENIED');
+      await rejected(host.join(wrongOrigin, seat(player)), 'ORIGIN_DENIED');
       return { independentSecretsAndStores: true, crossHostCredentialRejected: true, foreignOriginHttpDenied: true, foreignOriginWebSocketDenied: true };
     });
     await run('GATE-02', `${prefix}-negative`, 'Expired and tampered credentials are rejected', async () => {
-      const user = primary.users.expired;
-      const login = await primary.login(user);
-      await primary.call('expire', { userId: user.userId });
-      await rejected(primary.join(credentials(primary, login, kind), seat(user)), 'UNAUTHENTICATED');
+      const user = host.users.expired;
+      const login = await host.login(user);
+      await host.call('expire', { userId: user.userId });
+      await rejected(host.join(credentials(host, login, kind), seat(user)), 'UNAUTHENTICATED');
       const tampered = { ...headers };
       if (kind === 'cookie') tampered.cookie += 'tampered';
       else tampered.authorization = `Bearer ${player.login.jwt.slice(0, -12)}aaaaaaaaaaaa`;
-      await rejected(primary.join(tampered, seat(player)), 'UNAUTHENTICATED');
+      await rejected(host.join(tampered, seat(player)), 'UNAUTHENTICATED');
       return { expiredDatabaseSessionDenied: true, tamperedCredentialDenied: true, expirationMethod: 'Explicit fixture update of real Better Auth session.expiresAt; no clock-mock authentication.' };
     });
   }
@@ -189,7 +206,7 @@ try {
     id: 'B-bearer-distinction',
     title: 'Better Auth opaque bearer distinct from signed JWT',
     status: 'NOT RUN',
-    reason: 'opaque bearer plugin disabled in cookie-preferred GATE-02 A profile; JWT path remains',
+    reason: 'opaque bearer plugin disabled; JWT issuance isolated to authProfile=jwt host',
   });
   await run('GATE-02', 'common-7', 'Solo configuration cannot bind publicly and local identity cannot authorize remote requests', async () => {
     const guard = new FixtureHost();
@@ -399,10 +416,10 @@ for (const gate of Object.keys(cases)) {
       if (variant === 'A' && row === 1) {
         const browser = entries.find((entry) => entry.id === 'A-1-browser');
         if (browser?.evidence?.requiredCriterionOutcome === 'FAIL') {
-          return { variant: 'A-cookie', row, cases: ids, status: 'FAIL', reason: 'Real Chromium can read authenticating tokens from sign-in JSON and set-auth-token, then authenticate without any cookie.' };
+          return { variant: 'A-cookie', row, cases: ids, status: 'FAIL', reason: 'Real Chromium can obtain a reusable bearer/JWT (sign-in JSON, set-auth-token, and/or /api/auth/token with ambient cookie) and authenticate without the session cookie.' };
         }
         if (browser?.evidence?.requiredCriterionOutcome === 'PASS' && browser?.evidence?.credentialIsolationSatisfied === true) {
-          return { variant: 'A-cookie', row, cases: ids, status: 'PASS', reason: 'Cookie-only GATE-02 A profile: Chromium cannot scrape usable session bearers; credentials:omit Authorization replay does not authenticate; HttpOnly cookie path whoami + Colyseus still PASS.' };
+          return { variant: 'A-cookie', row, cases: ids, status: 'PASS', reason: 'Cookie-only authProfile: Chromium cannot scrape usable session bearers; /api/auth/token hard-denied (no JWT mint via ambient cookie); credentials:omit Authorization replay does not authenticate; HttpOnly cookie whoami + Colyseus still PASS.' };
         }
       }
       return { variant: variant === 'A' ? 'A-cookie' : 'B-jwt', row, cases: ids, status: statusFor(entries, ids) };
@@ -431,7 +448,7 @@ for (const gate of Object.keys(cases)) {
     notRun: gate === 'GATE-02' ? [
       { id: 'https-and-tauri-cookie', status: 'NOT RUN', reason: 'Real Chromium loopback login, document.cookie isolation, ordinary GET, WS and foreign-Origin CSRF were executed. HTTPS Secure-cookie behavior, other browsers and Tauri cookie persistence were not.' },
       { id: 'browser-jwt-storage', status: 'NOT RUN', reason: 'No browser/Tauri persistent secure-store proof. Node ws supports Authorization headers; browser WebSocket does not. SDK client.auth.token puts auth bearer in _authToken URL, which this fixture rejects. Colyseus seat/reconnect identifiers still use protocol URLs and require the tested extra actor/session binding.' },
-      { id: 'opaque-bearer-plugin', status: 'NOT RUN', reason: 'opaque bearer plugin disabled in cookie-preferred GATE-02 A profile; JWT path remains' },
+      { id: 'opaque-bearer-plugin', status: 'NOT RUN', reason: 'opaque bearer plugin disabled; JWT plugin loaded only on separate authProfile=jwt host (Variant B), not on cookie-only A hosts' },
       { id: 'production-policy', status: 'NOT RUN', reason: 'Fixture DB roles and character ownership exercise the shared policy boundary; complete GATE-01 policy, invitation and owner/GM product contracts are not integrated.' },
       { id: 'public-and-solo-platform', status: 'NOT RUN', reason: 'Loopback HTTP only; public TLS deployment, trusted proxy topology, solo identity creation and Tauri bootstrap/persistence not executed.' },
     ] : [
@@ -440,10 +457,10 @@ for (const gate of Object.keys(cases)) {
       { id: 'generated-openapi', status: 'NOT RUN', reason: 'Explicit OpenAPI fixture document and compiled typed client are provided; full automatic schema generation and compatibility with a product-wide client generator were not exercised.' },
     ],
     securityAndIntegrationBoundaries: [
-      'Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, JWT issuance (Node Variant B), JWKS and logout/revoke. The opaque bearer plugin is disabled in this cookie-preferred GATE-02 A PoC profile.',
+      'Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, logout/revoke. Opaque bearer plugin is disabled. JWT plugin + /api/auth/token exist only on a separate authProfile=jwt fixture host (Variant B Node clients).',
       'JWT signature/issuer/audience/expiry verification is combined with the real current session record; signature-only verification cannot prove immediate logout revocation.',
       'Initial join/create reservation checks current auth. Colyseus HTTP reconnect reservation uses its existing reconnect ticket and does not itself rerun onAuth; even absent auth or wrong Origin can reach that reservation response. The actual WS upgrade enforces Origin and current actor/session binding, then room reconnect and every command recheck current auth/policy. A reservation response is not successful room access. Active clients are rechecked every 250ms.',
-      'Cookie-only GATE-02 A profile (PoC): browser-facing auth JSON strips session bearer fields and set-auth-token; Set-Cookie HttpOnly session cookie is preserved. Real Chromium proves page JS cannot restore an authenticated session without the cookie using extracted tokens. Product migration / architecture freigabe remain separate (approval: NOT APPROVED).',
+      'Cookie-only GATE-02 A profile (PoC): JWT plugin unloaded; /api/auth/token hard-returns 404 JWT_ISSUANCE_DISABLED (not UA/Origin/Fetch-Metadata); browser-facing auth JSON strips session bearer fields and set-auth-token; Set-Cookie HttpOnly session cookie preserved; cookie hosts reject Authorization Bearer. Real Chromium proves page JS cannot mint or reuse a JWT via /api/auth/token and cannot restore a session without the cookie. Product migration / architecture freigabe remain separate (approval: NOT APPROVED).',
       'The pinned Colyseus reserveSeatFor authData.sessionId hook creates a random seat id so the WS upgrade can bind it to the exact Better Auth session. This source-dependent integration seam is hashed and not a product architecture decision.',
       'Better Auth cookies and JWTs are never placed in URLs. The Colyseus SDK uses seat/reconnection identifiers in protocol URLs; their additional binding to the current actor and exact Better Auth session is explicitly tested. Evidence contains neither auth credentials nor actual seat/reconnect identifiers. Auth rate limiting is disabled only for this controlled fixture.',
     ],

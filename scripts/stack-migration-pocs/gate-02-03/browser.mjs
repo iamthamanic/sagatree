@@ -99,6 +99,65 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
     assert.ok(exposure.replayWithoutCookie.every((entry) => !entry.authenticated));
     assert.equal(exposure.pageJsCannotRestoreSessionWithoutCookie, true);
 
+    // P1 follow-up (#900 discussion): cookie-only profile must not mint a JS-readable JWT
+    // via /api/auth/token using the ambient HttpOnly session cookie.
+    const jwtEscape = await page.evaluate(async () => {
+      const tokenResponse = await fetch('/api/auth/token', { credentials: 'include' });
+      let tokenBody = null;
+      try { tokenBody = await tokenResponse.json(); } catch { tokenBody = null; }
+      const jwt = typeof tokenBody?.token === 'string' ? tokenBody.token : null;
+      let whoamiWithoutCookie = null;
+      if (jwt) {
+        const response = await fetch('/api/whoami', {
+          credentials: 'omit',
+          headers: { authorization: `Bearer ${jwt}` },
+        });
+        whoamiWithoutCookie = { status: response.status, body: await response.json() };
+      }
+      const authPaths = [
+        '/api/auth/get-session',
+        '/api/auth/token',
+        '/api/auth/ok',
+        '/api/auth/session',
+      ];
+      const scans = [];
+      for (const path of authPaths) {
+        const response = await fetch(path, { credentials: 'include' });
+        let body = null;
+        try { body = await response.json(); } catch { body = null; }
+        const readableKeys = body && typeof body === 'object'
+          ? Object.keys(body).filter((key) => ['token', 'sessionToken', 'accessToken', 'refreshToken', 'idToken'].includes(key) && typeof body[key] === 'string')
+          : [];
+        scans.push({
+          path,
+          status: response.status,
+          readableCredentialKeys: readableKeys,
+          jwtTokenPresent: typeof body?.token === 'string' && path.includes('token'),
+        });
+      }
+      return {
+        tokenEndpointStatus: tokenResponse.status,
+        tokenEndpointErrorCode: tokenBody?.error?.code ?? null,
+        jwtReadableByPageJs: typeof jwt === 'string' && jwt.length > 0,
+        whoamiWithoutCookie,
+        jwtUsableWithoutCookie: whoamiWithoutCookie?.status === 200 && whoamiWithoutCookie?.body?.ok === true,
+        authPathScan: scans,
+        noReadableCredentialsOnAuthPaths: scans.every((entry) => entry.readableCredentialKeys.length === 0 && !entry.jwtTokenPresent),
+      };
+    });
+    assert.equal(jwtEscape.tokenEndpointStatus, 404, 'cookie-only profile must hard-deny /api/auth/token');
+    assert.equal(jwtEscape.tokenEndpointErrorCode, 'JWT_ISSUANCE_DISABLED');
+    assert.equal(jwtEscape.jwtReadableByPageJs, false);
+    assert.equal(jwtEscape.jwtUsableWithoutCookie, false);
+    assert.equal(jwtEscape.noReadableCredentialsOnAuthPaths, true);
+
+    // Positive: cookie session still authenticates after the JWT-denial probe.
+    const postJwtDenyWhoami = await page.evaluate(async () => {
+      const response = await fetch('/api/whoami');
+      return { status: response.status, data: await response.json() };
+    });
+    assert.deepEqual(postJwtDenyWhoami, { status: 200, data: { ok: true, role: 'player', credentialKind: 'cookie' } });
+
     const foreign = await context.newPage();
     const foreignWire = await wireAudit(context, foreign);
     await foreign.goto(`${foreignHost.origin}/__poc/browser`);
@@ -126,10 +185,13 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
     await page.evaluate(() => window.__pocRoom.leave());
     const [ordinaryGet] = await wire('GET', '/api/whoami');
     assert.ok(ordinaryGet); assert.equal(ordinaryGet.originPresent, false); assert.equal(ordinaryGet.fetchSite, 'same-origin'); assert.equal(ordinaryGet.cookiePresent, true);
-    const tokenReplays = await wire('GET', '/api/auth/get-session', 2);
+    // At least two credentials:omit replays from exposure negatives, plus the jwtEscape
+    // authPathScan get-session (credentials:include — cookie present).
+    const getSessionCalls = await wire('GET', '/api/auth/get-session', 3);
+    const tokenReplays = getSessionCalls.filter((request) => !request.cookiePresent);
     assert.equal(tokenReplays.length, 2);
-    assert.ok(tokenReplays.every((request) => !request.cookiePresent));
     assert.ok(tokenReplays.every((request) => !request.authorizationPresent), 'cookie-only profile must not leave scraped Authorization credentials for page JS to replay');
+    assert.ok(getSessionCalls.some((request) => request.cookiePresent), 'jwtEscape authPathScan must exercise get-session with ambient cookie');
     return {
       evidence: {
         realBrowserLogin: true, browserCookieSetAutomatically: true, documentCookieCannotReadHttpOnlyCookie: true, headerEvidence: 'Chromium CDP Network.requestWillBeSentExtraInfo; not renderer-only request headers',
@@ -137,8 +199,13 @@ export async function cookieBrowserProbe(host, foreignHost, user) {
         realBrowserColyseusWebSocket: true, browserWsCommandAcknowledged: true, injectedOriginOrCookieHeaders: false,
         csrf: { realForeignOrigin: true, ambientCookieActuallyPresent: true, observedHttpStatus: 403, unauthorizedRevisionChanges: 0, responseAccess: csrf },
         wrongOriginWebSocketRejected: true, socketUrlFacts: socketFacts,
-        credentialExposure: exposure, credentialIsolationSatisfied: true, requiredCriterionOutcome: 'PASS',
+        credentialExposure: exposure,
+        jwtEscape,
+        credentialIsolationSatisfied: !jwtEscape.jwtReadableByPageJs && !jwtEscape.jwtUsableWithoutCookie && jwtEscape.noReadableCredentialsOnAuthPaths,
+        requiredCriterionOutcome: (!jwtEscape.jwtReadableByPageJs && !jwtEscape.jwtUsableWithoutCookie && jwtEscape.noReadableCredentialsOnAuthPaths) ? 'PASS' : 'FAIL',
         pageJsCannotRestoreSessionWithoutCookieUsingExtractedTokens: true,
+        pageJsCannotObtainReusableJwtViaAuthTokenEndpoint: true,
+        cookieAuthStillWorksAfterJwtDeny: true,
         tlsSecureCookieTested: false, tauriTested: false,
       },
       observations: { browser: 'chromium', version: browser.version(), headless: true, httpOnly: cookie.httpOnly, sameSite: cookie.sameSite, secure: cookie.secure, reusedUserProfile: false },
