@@ -49,7 +49,7 @@ This ADR **does not** grant architecture freigabe. Only an explicit human commen
 ## Evidence summary
 
 - Cookie-A R01: real Chromium isolation PASS under `authProfile: 'cookie'` (`A-1-browser` includes `/api/auth/token` 404 negative + auth-path credential scan; `credentialIsolationSatisfied: true`).
-- Cookie rows 2–7 on cookie hosts and JWT Node rows 2–7 on separate jwt host: PASS in fixture reports.
+- Cookie rows 2–7 on cookie hosts and JWT Node rows 2–7 on separate jwt hosts: PASS in fixture reports (B-6 = jwt↔jwt via second independently initialized jwt host + foreign JWKS negative control; not cookie-profile Bearer denial).
 - B row 1 browser/Tauri secure JWT store: NOT RUN.
 - Opaque bearer distinction case: NOT RUN (plugin disabled; JWT isolated to jwt host).
 - Approval field in reports: always `NOT APPROVED` until human decision.
