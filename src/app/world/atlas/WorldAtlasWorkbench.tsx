@@ -88,7 +88,12 @@ export function WorldAtlasWorkbench({
   onBack,
   title = 'Weltatlas',
 }: WorldAtlasWorkbenchProps) {
-  const editor = useWorldAtlasEditor({ worldProfileId, canEdit, playerView });
+  const editor = useWorldAtlasEditor({
+    worldProfileId,
+    canEdit,
+    playerView,
+    sagaPublicId,
+  });
   const fileRef = useRef<HTMLInputElement>(null);
   const [childTitle, setChildTitle] = useState('Detailkarte');
   const [hierarchyOpen, setHierarchyOpen] = useState(false);

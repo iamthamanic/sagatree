@@ -37,6 +37,8 @@ export type UseWorldAtlasEditorOptions = {
   readonly worldProfileId: string | null;
   readonly playerView?: boolean;
   readonly canEdit?: boolean;
+  /** Required for player projection — list/get must carry saga context. */
+  readonly sagaPublicId?: string | null;
 };
 
 function pickDefaultMapId(list: readonly WorldAtlasMapSummary[], prev: string | null): string | null {
@@ -51,6 +53,7 @@ export function useWorldAtlasEditor({
   worldProfileId,
   playerView = false,
   canEdit = false,
+  sagaPublicId = null,
 }: UseWorldAtlasEditorOptions) {
   const { hasJwtSession, ensureJwtSession, isLoading: authLoading } = useAuth();
   const [summaries, setSummaries] = useState<WorldAtlasMapSummary[]>([]);
@@ -94,9 +97,10 @@ export function useWorldAtlasEditor({
     setLoading(true);
     setError(null);
     try {
+      const listOpts = { playerView, sagaPublicId };
       let list = canEdit
         ? await worldAtlasService.ensureRoot(id)
-        : await worldAtlasService.listMaps(id);
+        : await worldAtlasService.listMaps(id, listOpts);
 
       // Ensure a non-legacy world root so Unified Canvas is the default path.
       // Dornhain geometry comes from DB seed (098); here only a blank non-demo canvas.
@@ -114,7 +118,7 @@ export function useWorldAtlasEditor({
             unifiedCanvas: emptyUnifiedCanvasDoc(false),
           },
         });
-        list = await worldAtlasService.listMaps(id);
+        list = await worldAtlasService.listMaps(id, listOpts);
       }
 
       setSummaries(
@@ -129,7 +133,7 @@ export function useWorldAtlasEditor({
     } finally {
       setLoading(false);
     }
-  }, [worldProfileId, canEdit, hasJwtSession, ensureJwtSession, authLoading]);
+  }, [worldProfileId, canEdit, playerView, sagaPublicId, hasJwtSession, ensureJwtSession, authLoading]);
 
   useEffect(() => {
     void reloadList();
@@ -150,7 +154,7 @@ export function useWorldAtlasEditor({
     setLoading(true);
     setError(null);
     void worldAtlasService
-      .getMap(id, playerView)
+      .getMap(id, playerView, sagaPublicId)
       .then((vm) => {
         if (cancelled) return;
         const parsed = extractUnifiedCanvasFromGeneratorMeta(vm.generatorMeta);
@@ -196,7 +200,7 @@ export function useWorldAtlasEditor({
     return () => {
       cancelled = true;
     };
-  }, [activeMapId, playerView]);
+  }, [activeMapId, playerView, sagaPublicId]);
 
   const updateCanvasDoc = useCallback(
     (next: UnifiedCanvasDoc) => {
@@ -231,7 +235,7 @@ export function useWorldAtlasEditor({
     setLoading(true);
     setError(null);
     try {
-      const next = await worldAtlasService.getMap(id, playerView);
+      const next = await worldAtlasService.getMap(id, playerView, sagaPublicId);
       setMap(next);
       const parsed = extractUnifiedCanvasFromGeneratorMeta(next.generatorMeta);
       setCanvasDoc(parsed ?? emptyUnifiedCanvasDoc(false));
@@ -245,7 +249,7 @@ export function useWorldAtlasEditor({
     } finally {
       setLoading(false);
     }
-  }, [activeMapId, playerView, bumpPersist]);
+  }, [activeMapId, playerView, sagaPublicId, bumpPersist]);
 
   const saveCanvas = useCallback(async () => {
     if (!map || !canEdit) return;

@@ -1287,7 +1287,8 @@ export function UnifiedAtlasEditor({
         data-atlas-surface-mode="3d"
       >
         {canEdit ? (
-          <div className="pointer-events-none absolute right-3 top-3 z-[3]">
+          // Center-top: right-3 overlaps #tools „Werkzeuge“ fold (Atlas E2E / product journeys).
+          <div className="pointer-events-none absolute left-1/2 top-3 z-[3] -translate-x-1/2">
             <Button
               type="button"
               variant="outline"
