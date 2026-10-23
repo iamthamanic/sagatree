@@ -5,7 +5,8 @@ import { dependencyResolver } from './stack-migration-dependencies.mjs';
 
 const SECTIONS = ['vorher', 'nachher', 'verhalten', 'sicherheit', 'tests', 'abhaengigkeiten', 'grenzen'];
 const REQUIRED_IDS = migrationIssueIds;
-const STATUSES = new Set(['ready', 'blocked', 'needs-design', 'done']);
+const STATUSES = new Set(['ready', 'blocked', 'needs-design', 'waiting', 'done']);
+const NON_EXECUTABLE = new Set(['blocked', 'needs-design', 'waiting']);
 const GENERIC = /^(?:no (?:new )?(?:typescript )?escape hatches?|touched files:|production migration remains|composition\/docs|explicit human approved|no silent library choice)/i;
 const PLACEHOLDER = /\b(?:TBD|TODO:|lorem ipsum|parametersGuess|returnsGuess|tablesGuess)\b|extract (?:exact |the )?.*before port|document .*from source before coding/i;
 const SHA = /^[a-f0-9]{64}$/;
@@ -35,7 +36,7 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   if (intake.meta?.githubIssueMappedCount !== issues.length || intake.coverage?.issuesTotal !== issues.length) error('issue count metadata differs from the inventory');
   const actualReady = issues.filter((issue) => issue.status === 'ready').length;
   if (actualReady > 0 && !preparationAuthority.runnerExecution) error('Migration runner execution is not authorized by this preparation contract');
-  if (intake.coverage?.issuesReady !== actualReady || intake.coverage?.issuesBlockedOrNeedsDesign !== issues.filter((issue) => ['blocked', 'needs-design'].includes(issue.status)).length) error('readiness counts differ from actual issue states');
+  if (intake.coverage?.issuesReady !== actualReady || intake.coverage?.issuesBlockedOrNeedsDesign !== issues.filter((issue) => NON_EXECUTABLE.has(issue.status)).length) error('readiness counts differ from actual issue states');
   if (!setEqual(ids, intake.topoOrder ?? [])) error('topoOrder must include every issue exactly once');
   if (!Array.isArray(dependencyPlan?.plan) || !setEqual(ids, (dependencyPlan?.plan ?? []).map((entry) => entry.localId))) error('dependency plan must include every issue exactly once');
   if (!setEqual(ids, dependencyPlan?.topo ?? [])) error('dependency-plan topo must include every issue exactly once');
@@ -92,8 +93,16 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     if (!strings(issue.dependsOn, true) || new Set(issue.dependsOn).size !== issue.dependsOn.length) { error(`${id}: dependsOn must contain unique nonempty IDs`); continue; }
     if (!strings(issue.labels)) error(`${id}: labels must be a non-empty string array`);
     if (array(issue.labels).includes('agent-ready') !== (issue.status === 'ready')) error(`${id}: agent-ready label must match ready status`);
-    if (['blocked', 'needs-design'].includes(issue.status) && !array(issue.labels).includes('agent-blocked')) error(`${id}: blocked work must carry the runner execution lock`);
+    if (NON_EXECUTABLE.has(issue.status) && !array(issue.labels).includes('agent-blocked')) error(`${id}: blocked work must carry the runner execution lock`);
+    if (issue.status === 'waiting' && !array(issue.labels).includes('waiting-dependency')) error(`${id}: waiting status requires waiting-dependency label`);
     if (array(issue.labels).includes('agent-ready') && array(issue.labels).includes('agent-blocked')) error(`${id}: contradictory runner labels`);
+    // Architecture-approved gates must not be treated as open design questions.
+    if (id.startsWith('GATE-') && issue.status === 'needs-design' && approvals?.decisions?.[id]?.status === 'APPROVED') {
+      error(`${id}: architecture-approved gate must not remain needs-design`);
+    }
+    if (id === 'GATE-05' && ['ready', 'done'].includes(issue.status)) {
+      error('GATE-05: must not be marked technically done before browser-host and ops acceptance');
+    }
     if (!text(issue.designFile) || !io.exists(issue.designFile)) error(`${id}: designFile must resolve to an existing contract`);
     for (const key of SECTIONS) {
       const value = issue.contractSections?.[key];
@@ -103,7 +112,7 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     }
     if (!same(issue.contractSections?.abhaengigkeiten, issue.dependsOn)) error(`${id}: dependency copies disagree`);
     if (!same(issue.contractSections?.tests, issue.acceptance)) error(`${id}: acceptance and contract tests disagree`);
-    // Minimum counts only — never truncate inventoried requiredTests to fit a bullet-count cap.
+    // Minimum counts only — never truncate inventoried requiredTests to fit a public bullet-count cap.
     if (!strings(issue.acceptance) || issue.acceptance.length < 3) error(`${id}: acceptance must have at least 3 nonempty entries`);
     const substantive = array(issue.acceptance).filter((value) => text(value) && !GENERIC.test(value));
     if (substantive.length < 2) error(`${id}: acceptance contains insufficient operation-specific criteria`);
@@ -114,10 +123,8 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
       if (!plain(assertion) || !text(assertion.given) || !text(assertion.when) || !text(assertion.then)) error(`${id}: assertion ${index + 1} requires given/when/then`);
       if (!strings(assertion?.sourceRefs)) error(`${id}: assertion ${index + 1} has no source reference`);
       for (const reference of array(assertion?.sourceRefs)) if (!io.exists(reference)) error(`${id}: assertion source not found: ${reference}`);
-      const groupedCases = issue.acceptance.length <= 5 && issue.assertions.length > 4
-        && issue.acceptance.some((item) => item.startsWith(`Alle ${issue.assertions.length} quellenabgeleiteten Given/When/Then-Fälle`));
-      if (!groupedCases && !array(issue.acceptance).includes(assertion?.then))
-        error(`${id}: behavior assertion is absent from acceptance`);
+      // Full 1:1 coverage required in intake/design; public GitHub Acceptance may summarize separately.
+      if (!array(issue.acceptance).includes(assertion?.then)) error(`${id}: behavior assertion is absent from acceptance`);
     }
     for (const dep of issue.dependsOn) {
       if (!byId.has(dep)) error(`${id}: unknown predecessor ${dep}`);
@@ -126,7 +133,7 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     const plan = planById.get(id);
     if (plan?.githubIssue !== issue.githubIssue || plan?.order !== issue.order || plan?.wave !== issue.waveNumber || plan?.status !== issue.status) error(`${id}: plan identity/order/wave/status drift`);
     if (!same(plan?.dependsOnGithub, issue.dependsOn.map((dep) => byId.get(dep)?.githubIssue))) error(`${id}: plan predecessor IDs drift`);
-    if (plan?.runnerBlock !== ['blocked', 'needs-design'].includes(issue.status)) error(`${id}: plan execution lock drift`);
+    if (plan?.runnerBlock !== NON_EXECUTABLE.has(issue.status)) error(`${id}: plan execution lock drift`);
     if (issue.order !== (positions.get(id) ?? -1) + 1) error(`${id}: numerical order does not match topological position`);
     if (!Number.isInteger(issue.waveNumber) || issue.waveNumber < 0 || issue.waveNumber > 7 || !text(issue.wave) || !issue.wave.startsWith(`migration-wave-${issue.waveNumber}-`)) error(`${id}: invalid wave identity`);
     if (!array(issue.labels).includes(issue.wave) || !array(issue.labels).includes(`migration-order-${String(issue.order).padStart(3, '0')}`)) error(`${id}: wave/order labels differ from plan`);

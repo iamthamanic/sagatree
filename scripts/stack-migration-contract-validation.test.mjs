@@ -31,13 +31,18 @@ const rejects = (input, pattern, customIo) => assert.ok(errors(input, customIo).
 function setStatus(input, id, status) {
   const current = issue(input, id);
   current.status = status;
-  current.labels = current.labels.filter((label) => !['agent-ready', 'agent-blocked', 'needs-design'].includes(label));
+  current.labels = current.labels.filter((label) => !['agent-ready', 'agent-blocked', 'needs-design', 'waiting-dependency'].includes(label));
   if (status === 'ready') current.labels.push('agent-ready');
-  else if (status !== 'done') current.labels.push('agent-blocked');
+  else if (status === 'done') { /* agent-done optional in mutated fixtures */ }
+  else {
+    current.labels.push('agent-blocked');
+    if (status === 'waiting') current.labels.push('waiting-dependency');
+    if (status === 'needs-design') current.labels.push('needs-design');
+  }
   const target = plan(input, id);
   Object.assign(target, { status, runnerBlock: !['ready', 'done'].includes(status), labels: [...current.labels] });
   input.intake.coverage.issuesReady = input.intake.issues.filter((entry) => entry.status === 'ready').length;
-  input.intake.coverage.issuesBlockedOrNeedsDesign = input.intake.issues.filter((entry) => ['blocked', 'needs-design'].includes(entry.status)).length;
+  input.intake.coverage.issuesBlockedOrNeedsDesign = input.intake.issues.filter((entry) => ['blocked', 'needs-design', 'waiting'].includes(entry.status)).length;
 }
 
 test('the complete published plan validates without an implementation or architecture approval claim', () => {
@@ -194,8 +199,21 @@ test('a malformed human claim is rejected even when architecture approval is aut
   // Existing comment URL but nonexistent evidence file
   input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-123', evidenceFile: 'nonexistent-adr.md' };
   rejects(input, /GATE-01: missing explicit human architecture approval/);
-  setStatus(input, 'MIG-001', 'ready');
-  rejects(input, /runner execution is not authorized/);
+  // Runner may be authorized for accepted slices, but agent-ready still requires real predecessor evidence.
+  setStatus(input, 'MIG-301', 'ready');
+  rejects(input, /MIG-301: ready despite incomplete predecessor/);
+});
+
+test('architecture-approved gates must not remain needs-design after owner decisions', () => {
+  const input = clone();
+  setStatus(input, 'GATE-01', 'needs-design');
+  rejects(input, /GATE-01: architecture-approved gate must not remain needs-design/);
+});
+
+test('GATE-05 cannot be marked ready or done before platform qualification', () => {
+  const input = clone();
+  setStatus(input, 'GATE-05', 'ready');
+  rejects(input, /GATE-05: must not be marked technically done before browser-host/);
 });
 
 test('human GATE-01 APPROVED with verifiable comment URL and ADR evidence is accepted', () => {

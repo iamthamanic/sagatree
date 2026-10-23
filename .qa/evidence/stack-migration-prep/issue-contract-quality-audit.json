@@ -6,11 +6,13 @@
   "mapped": 90,
   "statusCounts": {
     "ready": 0,
-    "blocked": 85,
-    "needs-design": 5
+    "waiting": 51,
+    "blocked": 39,
+    "needs-design": 0,
+    "done": 0
   },
   "implementationAccepted": 0,
-  "architectureApproved": 0,
+  "architectureApproved": 4,
   "sourceInventory": {
     "rpc": 57,
     "edge": 25,

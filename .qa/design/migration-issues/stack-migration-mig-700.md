@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,31 +15,42 @@ Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schrei
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: docs/architektur-sqlite-based.md, .qa/design/atlas-live-e2e-cutover-gate.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
-
-### Nachher und Verhalten
-
-Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schreibautorität vorbereiten. Zielpfade: docs/ops/cutover, server/src/migration.
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`.
+- Source Contracts: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
-- Änderbare Zielpfade: `docs/ops/cutover`, `server/src/migration`
-- Quellverträge: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
+In:
+- `docs/ops/cutover`
+- `server/src/migration`
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung sind Scope, Backup, Schreibsperre und menschliche Freigabe konkret zu verlinken.
+- Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung sind Scope, Backup, Schreibsperre und menschliche Freigabe konkret zu verlinken.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
 ## Edge Cases
 
@@ -63,6 +74,15 @@ Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung 
 - Wenn: Rollback ausgeführt wird
 - Dann: Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
 - Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
+
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.
+2. Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.
+3. Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
+4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
@@ -134,7 +154,6 @@ Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung 
 - Depends on #810 (MIG-311)
 - Depends on #811 (MIG-312)
 - Depends on #812 (MIG-313)
-- Depends on #842 (MIG-501)
 - Depends on #843 (MIG-502)
 - Depends on #845 (MIG-600)
 - Depends on #846 (MIG-601)
@@ -159,25 +178,27 @@ Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung 
 - Depends on #877 (RPC-NPC-INSTANCES)
 - Depends on #878 (RPC-MARKETPLACE-COUNT)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-700`
 - Design: `.qa/design/migration-issues/stack-migration-mig-700.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 87; Welle: 7
-- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-087`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-087`, `agent-blocked`, `waiting-dependency`
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-700.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: specified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+

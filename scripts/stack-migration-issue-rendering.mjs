@@ -160,10 +160,17 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
           : [];
     const sourceStatus = inventoryStates.some((state) => state !== 'source-verified') ? 'source-blocked' : sourceContracts.length ? 'source-verified' : 'specified';
     // Preserve genuine progress recorded in intake; the validator rejects forged READY/DONE without verified evidence.
-    // Historical GATE-01..04 architecture choices are settled, but do NOT mark technical acceptance done without proofs.
-    const status = old.status === 'ready' || old.status === 'done' ? old.status
-      : id === 'GATE-05' ? 'blocked'
-      : id.startsWith('GATE-') ? 'blocked' : 'blocked';
+    // Architecture-approved gates must never be re-stamped needs-design. Fully specified work waiting on deps → waiting.
+    // GATE-05 target is chosen but platform qualification is deferred → blocked until browser-host + ops acceptance.
+    // Closed GitHub issues alone never become done/ready here.
+    let status;
+    if (old.status === 'ready' || old.status === 'done') {
+      status = old.status;
+    } else if (id === 'GATE-05' || blockers.length > 0 || sourceStatus === 'source-blocked') {
+      status = 'blocked';
+    } else {
+      status = 'waiting';
+    }
     const priority = old.priority ?? 'P1';
     return {
       localId: id, githubIssue: registry.issues[id], title: old.title, priority, kind, status, featureSlug: slug,
@@ -207,7 +214,16 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     issue.order = topo.length;
     issue.waveNumber = Math.max(baseWave(id), ...issue.dependsOn.map((dep) => byId.get(dep).waveNumber));
     issue.wave = waveNames[issue.waveNumber];
-    issue.labels = [issue.priority, issue.wave, `migration-order-${String(issue.order).padStart(3, '0')}`, issue.status === 'ready' ? 'agent-ready' : issue.status === 'done' ? 'agent-done' : 'agent-blocked', ...(issue.status === 'needs-design' ? ['needs-design', 'gate-issue'] : [])];
+    const runnerLabel = issue.status === 'ready' ? 'agent-ready' : issue.status === 'done' ? 'agent-done' : 'agent-blocked';
+    issue.labels = [
+      issue.priority,
+      issue.wave,
+      `migration-order-${String(issue.order).padStart(3, '0')}`,
+      runnerLabel,
+      ...(issue.status === 'waiting' ? ['waiting-dependency'] : []),
+      ...(issue.status === 'needs-design' ? ['needs-design'] : []),
+      ...(issue.localId.startsWith('GATE-') ? ['gate-issue'] : []),
+    ];
     issue.contractSections.abhaengigkeiten = issue.dependsOn;
   }
   const ordered = topo.map((id) => byId.get(id));
@@ -216,8 +232,9 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     note: 'Published contracts; source verification, isolated integration evidence, implementation acceptance and human architecture approval are separate states.',
     atlasLiveE2e: { githubIssue: 770, design: '.qa/design/atlas-live-e2e-cutover-gate.md', ciEnabled: true, workflow: '.github/workflows/stack-migration-baseline.yml', ciAcceptance: 'not-passing', implementationIssueRemainsOpen: true },
   };
-  const intake = { meta, coverage: { legacyMigrations: 106, legacyEdgeFunctions: edgeInventory.edges.length, legacyFrontendRpcs: rpcInventory.rpcs.length, originalLiteralFrontendRpcs: 55, infraAreas: edgeInventory.infrastructure.length, issuesTotal: ordered.length, originalMigrationIssues: 71, existingAtlasIssue: 1, rpcChildIssues: splits.groups.length, issuesReady: ordered.filter((issue) => issue.status === 'ready').length, issuesBlockedOrNeedsDesign: ordered.filter((issue) => ['blocked', 'needs-design'].includes(issue.status)).length, gateIssues: 5, openArchitectureDecisions: 1 }, waves: waveNames, topoOrder: topo, issues: ordered };
-  const dependencyPlan = { schemaVersion: 2, baselineSha, topo, plan: ordered.map((issue) => ({ localId: issue.localId, githubIssue: issue.githubIssue, order: issue.order, wave: issue.waveNumber, status: issue.status, dependsOnGithub: issue.dependsOn.map((id) => byId.get(id).githubIssue), runnerBlock: ['blocked', 'needs-design'].includes(issue.status), labels: issue.labels })) };
+  const nonExecutable = (status) => ['blocked', 'needs-design', 'waiting'].includes(status);
+  const intake = { meta, coverage: { legacyMigrations: 106, legacyEdgeFunctions: edgeInventory.edges.length, legacyFrontendRpcs: rpcInventory.rpcs.length, originalLiteralFrontendRpcs: 55, infraAreas: edgeInventory.infrastructure.length, issuesTotal: ordered.length, originalMigrationIssues: 71, existingAtlasIssue: 1, rpcChildIssues: splits.groups.length, issuesReady: ordered.filter((issue) => issue.status === 'ready').length, issuesBlockedOrNeedsDesign: ordered.filter((issue) => nonExecutable(issue.status)).length, gateIssues: 5, openArchitectureDecisions: 1 }, waves: waveNames, topoOrder: topo, issues: ordered };
+  const dependencyPlan = { schemaVersion: 2, baselineSha, topo, plan: ordered.map((issue) => ({ localId: issue.localId, githubIssue: issue.githubIssue, order: issue.order, wave: issue.waveNumber, status: issue.status, dependsOnGithub: issue.dependsOn.map((id) => byId.get(id).githubIssue), runnerBlock: nonExecutable(issue.status), labels: issue.labels })) };
   return { intake, dependencyPlan };
 }
 
@@ -244,12 +261,15 @@ export function renderIssue(issue, byId) {
   const journey = isUserFacing
     ? `## User Journey\n\n1. Der berechtigte Nutzer startet den bereits vorhandenen SagaTree-Vorgang (keine neuen UX-Flows oder UI-Varianten erfinden).\n2. Der bestehende UI-/Service-Adapter erreicht den benannten Host-Use-Case unter unveränderten DTO-/Fehler- und Rollenverträgen.\n3. Die UI zeigt denselben fachlichen Zustand und die erlaubte Projektion; Lade-, Fehler-, Reload- und Reconnect-Verhalten bleibt äquivalent.\n4. Bei einem Fremdbesitzer, fehlender Membership oder nicht veröffentlichter GM-Information liefert der Host einen nachgewiesenen DENY statt nur versteckter UI.\n\nUI-Parität, soweit betroffen: \`src/THEME_GUIDE.md\`, \`docs/ui-styleguide.md\`, \`docs/concepts/adaptive-ui-experience-contract.md\`, \`docs/concepts/conductor-experience-contract.md\` und \`docs/concepts/imagination-first-visualization-contract.md\`.\n\n`
     : '';
-  const boundedAcceptance = issue.acceptance.length <= 5 ? issue.acceptance : [
-    `Alle ${issue.assertions.length} quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.`,
+  // Public GitHub Acceptance may summarize (≤5). Full binding tests stay in Edge Cases + Required Tests;
+  // intake.acceptance / assertions remain 1:1 and are what validators enforce.
+  const publicAcceptance = issue.acceptance.length <= 5 ? issue.acceptance : [
+    `Alle ${issue.assertions.length} quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.`,
     'Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.',
     'Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.',
     'Touched files: zero type escape hatches (typed-strict / Boy Scout).',
   ];
+  const requiredTestsBlock = issue.acceptance.map((entry, index) => `${index + 1}. ${entry}`).join('\n');
   const peers = issue.integrationWith?.length ? `## Integration peers\n\n${issue.integrationWith.map((id) => `- #${byId.get(id)?.githubIssue} (${id})`).join('\n')}\n\nGemeinsame Ports bleiben stabil, Integrationsabnahme in MIG-600; keine zyklischen Startverbote.\n\n` : '';
   const owned = issue.ownedPrerequisites?.length ? `## Owned internal prerequisites\n\n${issue.ownedPrerequisites.map((name) => `- ${code(name)}`).join('\n')}\n\nDiese Helper sind vollständig Teil dieses Tickets und benötigen eigene Sicherheits-/Atomizitätsnachweise.\n\n` : '';
   return `<!-- migration-contract:v2 localId=${ID} -->
@@ -303,9 +323,15 @@ ${knownDefects}
 ## Edge Cases
 
 ${detailedCases}
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake \`acceptance\` / \`assertions\`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+${requiredTestsBlock}
+
 ## Acceptance
 
-${boundedAcceptance.map((entry) => `- [ ] ${entry}`).join('\n')}
+${publicAcceptance.map((entry) => `- [ ] ${entry}`).join('\n')}
 
 ## Blockers
 

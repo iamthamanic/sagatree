@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,31 +15,41 @@ Geschützte lokale Assets mit atomarem Publish und metadata-basierter Autorisier
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/media, src/infrastructure/media, supabase/migrations. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
-
-### Nachher und Verhalten
-
-Geschützte lokale Assets mit atomarem Publish und metadata-basierter Autorisierung bereitstellen. Zielpfade: server/src/assets.
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`.
+- Source Contracts: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
-- Änderbare Zielpfade: `server/src/assets`
-- Quellverträge: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
+In:
+- `server/src/assets`
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-Weder Dateipfad noch URL ist ein Berechtigungsnachweis; Traversal, Symlinks und fremde Owner-Referenzen werden vor Dateizugriff abgewiesen.
+- Weder Dateipfad noch URL ist ein Berechtigungsnachweis; Traversal, Symlinks und fremde Owner-Referenzen werden vor Dateizugriff abgewiesen.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
 ## Edge Cases
 
@@ -64,6 +74,15 @@ Weder Dateipfad noch URL ist ein Berechtigungsnachweis; Traversal, Symlinks und 
 - Dann: Kein unvollständiges Asset gilt als veröffentlicht; temporäre Dateien werden nachvollziehbar bereinigt und bestätigte Dateien bleiben erhalten.
 - Quelle: `supabase/functions/media`, `src/infrastructure/media`, `supabase/migrations`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. Erst nach vollständiger Validierung wird das Asset sichtbar; DB-Metadaten und Dateiprüfsumme passen auch nach Host-Neustart zusammen.
+2. Der Zugriff endet mit 401/403 bzw. Validierungsfehler; keine Datei außerhalb des Asset-Roots wird gelesen oder überschrieben.
+3. Kein unvollständiges Asset gilt als veröffentlicht; temporäre Dateien werden nachvollziehbar bereinigt und bestätigte Dateien bleiben erhalten.
+4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
 - [ ] Erst nach vollständiger Validierung wird das Asset sichtbar; DB-Metadaten und Dateiprüfsumme passen auch nach Host-Neustart zusammen.
@@ -76,25 +95,27 @@ Weder Dateipfad noch URL ist ein Berechtigungsnachweis; Traversal, Symlinks und 
 - Depends on #790 (MIG-011)
 - Depends on #792 (MIG-013)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-500`
 - Design: `.qa/design/migration-issues/stack-migration-mig-500.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 14; Welle: 1
-- Labels: `P1`, `migration-wave-1-host-auth`, `migration-order-014`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Labels: `P1`, `migration-wave-1-host-auth`, `migration-order-014`, `agent-blocked`, `waiting-dependency`
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-500.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: specified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+
