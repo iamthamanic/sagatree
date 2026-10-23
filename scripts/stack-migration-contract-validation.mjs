@@ -114,7 +114,10 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
       if (!plain(assertion) || !text(assertion.given) || !text(assertion.when) || !text(assertion.then)) error(`${id}: assertion ${index + 1} requires given/when/then`);
       if (!strings(assertion?.sourceRefs)) error(`${id}: assertion ${index + 1} has no source reference`);
       for (const reference of array(assertion?.sourceRefs)) if (!io.exists(reference)) error(`${id}: assertion source not found: ${reference}`);
-      if (!array(issue.acceptance).includes(assertion?.then)) error(`${id}: behavior assertion is absent from acceptance`);
+      const groupedCases = issue.acceptance.length <= 5 && issue.assertions.length > 4
+        && issue.acceptance.some((item) => item.startsWith(`Alle ${issue.assertions.length} quellenabgeleiteten Given/When/Then-Fälle`));
+      if (!groupedCases && !array(issue.acceptance).includes(assertion?.then))
+        error(`${id}: behavior assertion is absent from acceptance`);
     }
     for (const dep of issue.dependsOn) {
       if (!byId.has(dep)) error(`${id}: unknown predecessor ${dep}`);

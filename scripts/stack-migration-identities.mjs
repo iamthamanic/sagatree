@@ -95,4 +95,6 @@ export const migrationIssueIdentities = Object.freeze({
 export const migrationIssueIds = Object.freeze(Object.keys(migrationIssueIdentities));
 // Architecture APPROVED entries are allowed after an explicit human gate comment (see architecture-approvals.json).
 // Unrestricted runnerExecution across the inventory remains false; individual tickets start only with explicit freigabe.
-export const preparationAuthority = Object.freeze({ runnerExecution: false, architectureApproval: true });
+// Owner explicitly authorized the autonomous ECC issue loop on 2026-10-23 for accepted implementation slices.
+// The validator still requires real dependency acceptance and verified architecture source; production cutover is excluded.
+export const preparationAuthority = Object.freeze({ runnerExecution: true, architectureApproval: true });
