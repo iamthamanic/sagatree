@@ -23,6 +23,7 @@ Registered top-level host package for the Epic #773 modular monolith.
 | `src/application/<use-case>/` | Vertical use-cases (`health`) |
 | `src/http/route-registry.ts` | Sole HTTP composition entry (not a free-for-all under `http/**`) |
 | `src/auth/` | Better Auth cookie profile (no JWT plugin); session resolve for HTTP + `/v1/session-ws` |
+| `src/auth/solo/` | Persistent solo/loopback identity; forged local-identity deny; explicit account-link (MIG-015) |
 
 ## Run
 
@@ -49,6 +50,13 @@ Remote-reachable mode (`SAGATREE_HOST_MODE=remote` or non-loopback with `SAGATRE
 | `SAGATREE_AUTH_ALLOW_JWT` / `SAGATREE_AUTH_ENABLE_JWT` | **Forbidden** — host refuses to start |
 
 Cookie profile: HttpOnly + SameSite=Lax; `/api/auth/token` → 404 `JWT_ISSUANCE_DISABLED`; `Authorization: Bearer` rejected. Auth DB: `dataDir/auth.sqlite`.
+
+### Solo local identity (MIG-015)
+
+- Durable `dataDir/host-identity.json` (`solo-<uuid>`) — stable across restarts; never echoed in errors
+- `SAGATREE_HOST_MODE=solo` + non-loopback bind → fail closed `SOLO_REQUIRES_LOOPBACK` (GATE-02 common-7)
+- Forged `x-solo-user` / `localIdentity` claims → `SOLO_IDENTITY_FORBIDDEN` on remote HTTP/WS (no remote GM mint)
+- Solo→remote ownership reuse requires `POST /api/solo/link-account` with `confirm: true` matching this host’s solo id; missing link → `ACCOUNT_LINK_REQUIRED`
 
 ## Persistence (MIG-011)
 

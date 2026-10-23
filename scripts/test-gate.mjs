@@ -452,6 +452,18 @@ function checkMig014BetterAuthHost() {
   );
 }
 
+function checkMig015SoloLocalIdentity() {
+  console.log('MIG-015 solo local identity (#794): persist + forged deny + account-link...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-015-solo-local-identity.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2592,6 +2604,7 @@ checkMig011SqliteSchema();
 checkMig013PolicyService();
 checkMig012WorldReadPort();
 checkMig014BetterAuthHost();
+checkMig015SoloLocalIdentity();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

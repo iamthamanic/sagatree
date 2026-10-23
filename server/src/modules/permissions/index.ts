@@ -21,6 +21,16 @@ export function createPermissionsPorts(db: HostDatabase | null = null): Permissi
   const policy = new PolicyService(db);
   return {
     authorize: (op, actor, resource = {}) =>
-      policy.authorize(op, actor ? { actorId: actor.actorId } : null, resource),
+      policy.authorize(
+        op,
+        actor
+          ? {
+              actorId: actor.actorId,
+              linkedSoloActorIds:
+                actor.kind === 'remote-account' ? actor.linkedSoloActorIds : undefined,
+            }
+          : null,
+        resource,
+      ),
   };
 }

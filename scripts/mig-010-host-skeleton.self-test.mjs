@@ -232,10 +232,12 @@ const throwingHandler = createRouteHandler({
   identity: {
     resolveSoloActor: () => ({ kind: 'solo-local', actorId: 'test' }),
     resolveRemoteSession: async () => ({ ok: false, code: 'AUTH_NOT_CONFIGURED' }),
+    linkSoloToRemoteAccount: () => ({ ok: false, code: 'INVALID_LINK_REQUEST' }),
   },
   recordPing: () => ({ ok: true }),
   authHandlerRef: { current: null },
   tryAuthorizedProjectTouch: () => ({ ok: false, status: 403, error: 'test' }),
+  tryAuthorizedWorldTouch: () => ({ ok: false, status: 403, error: 'test' }),
 });
 const mockRes = {
   headersSent: false,
