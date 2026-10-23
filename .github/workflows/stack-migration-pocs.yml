@@ -37,7 +37,9 @@ jobs:
 
   auth-http-realtime-candidates:
     name: GATE-02 and GATE-03 real browser, auth and transport candidates
-    runs-on: ubuntu-latest
+    # Playwright 1.55.1 does not ship Chromium for ubuntu26.04 (ubuntu-latest as of 2026-10).
+    # Pin ubuntu-24.04 so the real browser install and GATE-02/03 probes actually run — no skip/fallback.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4

@@ -16,11 +16,11 @@
 
 | Field | Value |
 | --- | --- |
-| PoC run | 2026-10-23 (Node 22.22.3, darwin arm64, SQLite 3.51.0; Chromium 140.0.7339.186) |
+| PoC run | 2026-10-23 (Node 22.22.3, darwin arm64, SQLite 3.51.3; Chromium 140.0.7339.186) |
 | Probe execution | **PASS** (17 executed assertions PASS, 0 FAIL; opaque bearer + B-1-browser NOT RUN) |
 | Gate objective (cookie-preferred A) | **PASS** (all A rows PASS; B row 1 NOT RUN allowed) |
 | Browser | Chromium 140.0.7339.186 / Playwright 1.55.1, real Better Auth + Colyseus SDK |
-| Report hash | `cb6179fd1d9c82e9f4b277fcc9d0bba557bc1fd635754b7691c469248ff28c77` |
+| Report hash | `6fd4c4a0c05bb6f4d0e32f2ae17b4fbfac648acf141d653588b5fe0cbf559893` |
 
 Reproduce: see [`pocs/gate-02/README.md`](pocs/gate-02/README.md).
 
@@ -37,7 +37,7 @@ Rows match [GATE-02 spec](../../design/gates/GATE-02-better-auth-colyseus.md). S
 | 3 | Revoke/logout rejects within ≤2s | PASS | PASS |
 | 4 | Valid reconnect restores seat; no privilege escalation | PASS | PASS |
 | 5 | Player cannot join as GM / other character | PASS | PASS |
-| 6 | Cross-host / wrong origin denied | PASS | PASS |
+| 6 | Cross-host / wrong origin denied | PASS | **PASS** (jwt↔jwt via second `authProfile: 'jwt'` host; not cookie Bearer denial) |
 | 7 | Solo public bind + forged local identity fail closed | PASS | PASS |
 
 **Architecture status remains NOT APPROVED / UNDECIDED.** Cookie-A R01 is proven PASS in the PoC; human freigabe on #785 is still required. B row 1 (browser/Tauri secure JWT store) stays NOT RUN.
@@ -129,6 +129,7 @@ Requires new evidence ticket; do not invent a third variant in implementation wi
 | Severity | Topic | Note |
 | --- | --- | --- |
 | **High** | Cookie-A R01 JS-readable tokens / JWT escape via `/api/auth/token` | **Closed in PoC follow-up** (authProfile split + Chromium token-endpoint negative); still needs human APPROVED on #785 for product freigabe |
+| Medium | B-6 JWT presented only to cookie host (PR #905 P1) | **Closed:** second independent jwt host + JWKS negative control; HTTP/WS cross-host UNAUTHENTICATED |
 | Medium | GET without Origin / Fetch-Metadata fix in fixture | Addressed in PoC; verify in product |
 | Medium | Observation integrity checks | Regression-guarded in harness |
 | Low | Typed decoder / null / async-handler edges | Documented in GATE0203 review |

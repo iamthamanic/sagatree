@@ -209,7 +209,8 @@
         "independentSecretsAndStores": true,
         "crossHostCredentialRejected": true,
         "foreignOriginHttpDenied": true,
-        "foreignOriginWebSocketDenied": true
+        "foreignOriginWebSocketDenied": true,
+        "isolationMode": "cookie-to-cookie"
       }
     },
     {
@@ -303,7 +304,12 @@
         "independentSecretsAndStores": true,
         "crossHostCredentialRejected": true,
         "foreignOriginHttpDenied": true,
-        "foreignOriginWebSocketDenied": true
+        "foreignOriginWebSocketDenied": true,
+        "isolationMode": "jwt-to-jwt",
+        "peerHostAuthProfile": "jwt",
+        "foreignJwksRejectsLocalJwt": true,
+        "peerJwtHostAcceptsOwnJwt": true,
+        "rejectionNotFromCookieProfileBearerDeny": true
       }
     },
     {
@@ -519,7 +525,7 @@
     }
   ],
   "securityAndIntegrationBoundaries": [
-    "Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, logout/revoke. Opaque bearer plugin is disabled. JWT plugin + /api/auth/token exist only on a separate authProfile=jwt fixture host (Variant B Node clients).",
+    "Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, logout/revoke. Opaque bearer plugin is disabled. JWT plugin + /api/auth/token exist only on separate authProfile=jwt fixture hosts (Variant B Node clients). B-6 uses two independently initialized JWT hosts so cross-host rejection is JWT/JWKS/issuer/session isolation — not cookie-profile Bearer denial.",
     "JWT signature/issuer/audience/expiry verification is combined with the real current session record; signature-only verification cannot prove immediate logout revocation.",
     "Initial join/create reservation checks current auth. Colyseus HTTP reconnect reservation uses its existing reconnect ticket and does not itself rerun onAuth; even absent auth or wrong Origin can reach that reservation response. The actual WS upgrade enforces Origin and current actor/session binding, then room reconnect and every command recheck current auth/policy. A reservation response is not successful room access. Active clients are rechecked every 250ms.",
     "Cookie-only GATE-02 A profile (PoC): JWT plugin unloaded; /api/auth/token hard-returns 404 JWT_ISSUANCE_DISABLED (not UA/Origin/Fetch-Metadata); browser-facing auth JSON strips session bearer fields and set-auth-token; Set-Cookie HttpOnly session cookie preserved; cookie hosts reject Authorization Bearer. Real Chromium proves page JS cannot mint or reuse a JWT via /api/auth/token and cannot restore a session without the cookie. Product migration / architecture freigabe remain separate (approval: NOT APPROVED).",
@@ -557,7 +563,7 @@
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/check.mjs",
-      "sha256": "cd9aaf237bd2d997e521bb977d61ae9a92145899266c5d2e50b0212bedac1b66"
+      "sha256": "51b8f2bf4ec9d606b4267f23aa7bb4085140aaedca9850bba65ce0981853d645"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/api-client.ts",
@@ -569,7 +575,7 @@
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/README.md",
-      "sha256": "6252a2e4644ea17ce31965b01ae3c2c3054372ca3adb4f2262c08f3be91b9d88"
+      "sha256": "9cfcff916fe3c0bf0b843a03b3aa60e27f01cdb84a2212d061dc4c3d28ab7b50"
     },
     {
       "path": ".qa/design/gates/GATE-02-better-auth-colyseus.md",

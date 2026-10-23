@@ -60,10 +60,12 @@ try {
     ]) host.users[label] = await host.user(label, role, characterId);
     return host;
   }
-  // Variant A cookie-only hosts (browser + cookie wire). Variant B uses a separate JWT host.
+  // Variant A: cookie-only hosts. Variant B: two independently initialized JWT hosts
+  // (separate secrets, JWKS, session stores) for real JWT↔JWT cross-host isolation.
   await bootHost('minimal', { variant: 'minimal', authProfile: 'cookie' });
   await bootHost('hono', { variant: 'hono', authProfile: 'cookie' });
   await bootHost('jwt', { variant: 'minimal', authProfile: 'jwt' });
+  await bootHost('jwt2', { variant: 'minimal', authProfile: 'jwt' });
   const primary = hosts.minimal;
 
   for (const kind of ['cookie', 'jwt']) {
@@ -153,16 +155,52 @@ try {
       return { gmSeatDenied: true, foreignCharacterDenied: true, authenticatedOutsiderDenied: true, clientRoleAndUserIdCannotElevate: true };
     });
     await run('GATE-02', `${prefix}-6`, 'Credentials and origins are isolated between two real hosts', async () => {
-      // Cookie A uses the second cookie host; JWT B uses the cookie host as a foreign store/secret.
-      const other = kind === 'cookie' ? hosts.hono : hosts.minimal;
+      // Cookie A: second cookie host. JWT B: second jwt host (not a cookie host — cookie
+      // profiles reject all Bearer and would mask missing JWT↔JWT isolation).
+      const other = kind === 'cookie' ? hosts.hono : hosts.jwt2;
+      assert.equal(other.authProfile, kind === 'cookie' ? 'cookie' : 'jwt');
+      assert.notEqual(host.origin, other.origin);
+
+      if (kind === 'jwt') {
+        assert.equal(host.authProfile, 'jwt');
+        assert.equal(typeof player.login.jwt, 'string');
+        const localJwks = createRemoteJWKSet(new URL('/api/auth/jwks', host.origin));
+        const foreignJwks = createRemoteJWKSet(new URL('/api/auth/jwks', other.origin));
+        // Control: local JWT verifies against this host's JWKS.
+        await jwtVerify(player.login.jwt, localJwks, { issuer: host.origin, audience: host.origin, algorithms: ['EdDSA'] });
+        // Negative control: foreign JWKS/issuer must reject this JWT. Shared signing material
+        // or a shared trust store would make this succeed and fail the test.
+        await assert.rejects(jwtVerify(player.login.jwt, foreignJwks, { issuer: other.origin, audience: other.origin, algorithms: ['EdDSA'] }));
+        await assert.rejects(jwtVerify(player.login.jwt, foreignJwks, { issuer: host.origin, audience: host.origin, algorithms: ['EdDSA'] }));
+        // Peer JWT host still accepts its own minted JWT (Bearer path is live on both).
+        const peerHeaders = credentials(other, other.users.player1.login, 'jwt');
+        const peerWhoami = await other.http('/api/whoami', { headers: peerHeaders });
+        assert.equal(peerWhoami.status, 200);
+        assert.deepEqual(peerWhoami.data, { ok: true, role: 'player', credentialKind: 'jwt' });
+      }
+
       const foreign = credentials(other, player.login, kind);
-      assert.equal((await other.http('/api/whoami', { headers: foreign })).status, 401);
+      const foreignWhoami = await other.http('/api/whoami', { headers: foreign });
+      assert.equal(foreignWhoami.status, 401);
+      denied(foreignWhoami.data, 'UNAUTHENTICATED');
       await rejected(other.join(foreign, seat(player)), 'UNAUTHENTICATED');
       const wrongOrigin = credentials(host, player.login, kind, other.origin);
       const deniedOrigin = await host.http('/api/whoami', { headers: wrongOrigin });
       assert.equal(deniedOrigin.status, 403); denied(deniedOrigin.data, 'ORIGIN_DENIED');
       await rejected(host.join(wrongOrigin, seat(player)), 'ORIGIN_DENIED');
-      return { independentSecretsAndStores: true, crossHostCredentialRejected: true, foreignOriginHttpDenied: true, foreignOriginWebSocketDenied: true };
+      return {
+        independentSecretsAndStores: true,
+        crossHostCredentialRejected: true,
+        foreignOriginHttpDenied: true,
+        foreignOriginWebSocketDenied: true,
+        isolationMode: kind === 'cookie' ? 'cookie-to-cookie' : 'jwt-to-jwt',
+        ...(kind === 'jwt' ? {
+          peerHostAuthProfile: 'jwt',
+          foreignJwksRejectsLocalJwt: true,
+          peerJwtHostAcceptsOwnJwt: true,
+          rejectionNotFromCookieProfileBearerDeny: true,
+        } : {}),
+      };
     });
     await run('GATE-02', `${prefix}-negative`, 'Expired and tampered credentials are rejected', async () => {
       const user = host.users.expired;
@@ -457,7 +495,7 @@ for (const gate of Object.keys(cases)) {
       { id: 'generated-openapi', status: 'NOT RUN', reason: 'Explicit OpenAPI fixture document and compiled typed client are provided; full automatic schema generation and compatibility with a product-wide client generator were not exercised.' },
     ],
     securityAndIntegrationBoundaries: [
-      'Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, logout/revoke. Opaque bearer plugin is disabled. JWT plugin + /api/auth/token exist only on a separate authProfile=jwt fixture host (Variant B Node clients).',
+      'Better Auth owns email/password sign-in, real SQLite sessions, signed HttpOnly cookies, logout/revoke. Opaque bearer plugin is disabled. JWT plugin + /api/auth/token exist only on separate authProfile=jwt fixture hosts (Variant B Node clients). B-6 uses two independently initialized JWT hosts so cross-host rejection is JWT/JWKS/issuer/session isolation — not cookie-profile Bearer denial.',
       'JWT signature/issuer/audience/expiry verification is combined with the real current session record; signature-only verification cannot prove immediate logout revocation.',
       'Initial join/create reservation checks current auth. Colyseus HTTP reconnect reservation uses its existing reconnect ticket and does not itself rerun onAuth; even absent auth or wrong Origin can reach that reservation response. The actual WS upgrade enforces Origin and current actor/session binding, then room reconnect and every command recheck current auth/policy. A reservation response is not successful room access. Active clients are rechecked every 250ms.',
       'Cookie-only GATE-02 A profile (PoC): JWT plugin unloaded; /api/auth/token hard-returns 404 JWT_ISSUANCE_DISABLED (not UA/Origin/Fetch-Metadata); browser-facing auth JSON strips session bearer fields and set-auth-token; Set-Cookie HttpOnly session cookie preserved; cookie hosts reject Authorization Bearer. Real Chromium proves page JS cannot mint or reuse a JWT via /api/auth/token and cannot restore a session without the cookie. Product migration / architecture freigabe remain separate (approval: NOT APPROVED).',

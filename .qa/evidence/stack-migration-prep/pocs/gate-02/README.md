@@ -13,14 +13,14 @@ The [report](report.json) records exact per-criterion status, assertions, versio
 | 3 | Actual logout/revoke rejects new joins/reconnects and closes the old socket within 2 s | PASS | PASS |
 | 4 | Valid reconnect restores room/seat; another actor or second login cannot take over the ticket | PASS | PASS |
 | 5 | Player cannot claim GM/another character; client role spoof and outsider denied | PASS | PASS |
-| 6 | Independent host credentials and foreign Origin denied for actual room access | PASS | PASS |
+| 6 | Independent host credentials and foreign Origin denied for actual room access | PASS (cookie↔cookie) | **PASS** (jwt↔jwt via second `authProfile: 'jwt'` host + foreign JWKS negative; not cookie Bearer denial) |
 | 7 | Solo plus public bind fails before listen; forged local identity cannot authorize remote room access | PASS | PASS |
 
 The executed browser result uses **Chromium 140.0.7339.186 / Playwright 1.55.1**, a new nonpersistent context, real Better Auth HTTP login and the real Colyseus browser SDK. Cookies and Origin are not injected into the positive flow. Chrome stores the actual HttpOnly/SameSite=Lax cookie and `document.cookie` cannot read it. Ordinary `/api/whoami` GET without Origin succeeds; the real socket joins and acknowledges a command. A foreign-origin command actually carries the ambient same-site cookie but receives HTTP 403 with no revision change; the foreign-origin socket fails.
 
 **Cookie profile:** opaque `bearer()` and JWT plugins unloaded; `/api/auth/token` hard-returns 404; browser-facing auth JSON strips session bearer fields and `set-auth-token`; JWT issuance only on a separate `authProfile: 'jwt'` host (Node B). Chromium confirms `bodyTokenReadable` / `bearerHeaderReadable` are false, token-endpoint mint is denied, and `credentials:'omit'` Authorization replay does not authenticate.
 
-Expired/tampered credentials, foreign character seats, current roles, real sign-out/revoke and independent auth stores are also exercised. The JWT-signature canary shows that an unexpired revoked JWT remains cryptographically valid; the current-session lookup supplies the tested immediate rejection. Opaque bearer distinction is **NOT RUN** (plugin disabled).
+Expired/tampered credentials, foreign character seats, current roles, real sign-out/revoke and independent auth stores are also exercised. **B-6** uses a second independently initialized jwt-profile host (`jwt2`) so cross-host rejection is JWT/JWKS/issuer/session isolation — presenting a JWT only to a cookie host would mask missing jwt↔jwt isolation. Evidence keys include `isolationMode: "jwt-to-jwt"`, `foreignJwksRejectsLocalJwt`, `peerJwtHostAcceptsOwnJwt`, and `rejectionNotFromCookieProfileBearerDeny`. The JWT-signature canary shows that an unexpired revoked JWT remains cryptographically valid; the current-session lookup supplies the tested immediate rejection. Opaque bearer distinction is **NOT RUN** (plugin disabled).
 
 ## Recorded revocation observations
 

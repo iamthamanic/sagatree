@@ -3,7 +3,7 @@
   "gate": "GATE-03",
   "status": "PASS",
   "executedStatus": "PASS",
-  "runAt": "2026-10-23T06:47:40.568Z",
+  "runAt": "2026-10-23T09:23:29.855Z",
   "runtime": {
     "node": "v22.22.3",
     "os": "darwin",
@@ -14,72 +14,72 @@
   "metrics": {
     "minimalCommands": {
       "samples": 200,
-      "p50Ms": 17.959,
-      "p95Ms": 57.944,
-      "p99Ms": 61.474,
-      "maxMs": 62.147,
-      "elapsedMs": 71.623,
+      "p50Ms": 29.825,
+      "p95Ms": 75.318,
+      "p99Ms": 84.999,
+      "maxMs": 85.154,
+      "elapsedMs": 91.169,
       "errorRate": 0,
-      "operationsPerSecond": 2792.415
+      "operationsPerSecond": 2193.738
     },
     "minimalReconnects": {
       "samples": 200,
-      "p50Ms": 172.911,
-      "p95Ms": 271.022,
-      "p99Ms": 277.173,
-      "maxMs": 277.634,
-      "elapsedMs": 284.757,
+      "p50Ms": 254.127,
+      "p95Ms": 433.202,
+      "p99Ms": 439.61,
+      "maxMs": 440.297,
+      "elapsedMs": 456.114,
       "attempts": 200,
       "succeeded": 200,
       "errorRate": 0
     },
     "minimalConcurrentHttp": {
       "samples": 200,
-      "p50Ms": 45.399,
-      "p95Ms": 198.304,
-      "p99Ms": 220.008,
-      "maxMs": 220.995,
+      "p50Ms": 62.056,
+      "p95Ms": 289.905,
+      "p99Ms": 302.192,
+      "maxMs": 307.158,
       "attempts": 200,
       "succeeded": 200,
       "errorRate": 0,
-      "overlapMs": 225.602,
+      "overlapMs": 312.234,
       "httpAcksDuringReconnects": 200,
-      "reconnectsDuringHttp": 184
+      "reconnectsDuringHttp": 155
     },
     "honoCommands": {
       "samples": 200,
-      "p50Ms": 23.261,
-      "p95Ms": 63.739,
-      "p99Ms": 67.35,
-      "maxMs": 67.827,
-      "elapsedMs": 71.976,
+      "p50Ms": 76.269,
+      "p95Ms": 131.431,
+      "p99Ms": 134.421,
+      "maxMs": 135.12,
+      "elapsedMs": 139.964,
       "errorRate": 0,
-      "operationsPerSecond": 2778.69
+      "operationsPerSecond": 1428.935
     },
     "honoReconnects": {
       "samples": 200,
-      "p50Ms": 169.857,
-      "p95Ms": 263.664,
-      "p99Ms": 269.595,
-      "maxMs": 270.249,
-      "elapsedMs": 273.957,
+      "p50Ms": 199.509,
+      "p95Ms": 270.225,
+      "p99Ms": 274.722,
+      "maxMs": 275.332,
+      "elapsedMs": 280.003,
       "attempts": 200,
       "succeeded": 200,
       "errorRate": 0
     },
     "honoConcurrentHttp": {
       "samples": 200,
-      "p50Ms": 39.506,
-      "p95Ms": 181.097,
-      "p99Ms": 186.905,
-      "maxMs": 188.432,
+      "p50Ms": 54.634,
+      "p95Ms": 69.701,
+      "p99Ms": 93.956,
+      "maxMs": 184.632,
       "attempts": 200,
       "succeeded": 200,
       "errorRate": 0,
-      "overlapMs": 195.096,
+      "overlapMs": 189.567,
       "httpAcksDuringReconnects": 200,
-      "reconnectsDuringHttp": 139
+      "reconnectsDuringHttp": 138
     }
   },
-  "deterministicReportSha256": "007a420f8e8b342259ddc23e5e9ac85adb3d8b70e47efb4099dc191a26adb45f"
+  "deterministicReportSha256": "57192580ea2b501a4389041fe2ba3d2766eca385cfca102c705342eba58e9a83"
 }
