@@ -150,7 +150,9 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   for (const id of ids) ancestors(id);
   const cutover = byId.get('MIG-700');
   if (cutover) {
-    const required = issues.filter((issue) => issue.localId !== 'MIG-700' && issue.waveNumber <= 6).map((issue) => issue.localId);
+    // Optional resumable tus uploads are post-core by the owner's 2026-10-23 decision; still tracked and tested before their own release.
+    const required = issues.filter((issue) => issue.localId !== 'MIG-700' && issue.localId !== 'MIG-501' && issue.waveNumber <= 6).map((issue) => issue.localId);
+    if (array(cutover.dependsOn).includes('MIG-501')) error('MIG-700: optional MIG-501 must not block core cutover');
     for (const id of required) if (!array(cutover.dependsOn).includes(id)) error(`MIG-700: missing required predecessor ${id}`);
   }
   if (!array(byId.get('MIG-702')?.dependsOn).includes('ATLAS-LIVE-E2E') || !array(byId.get('MIG-702')?.dependsOn).includes('MIG-701')) error('Supabase shutdown must retain Atlas and observation-window predecessors');
