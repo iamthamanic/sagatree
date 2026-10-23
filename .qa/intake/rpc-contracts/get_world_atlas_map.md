@@ -31,9 +31,9 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 **RETURNS:** `jsonb`.
 
-**Wirksame Definition:** [supabase/migrations/105_atlas_worldbuilder_player_projection.sql](../../../supabase/migrations/105_atlas_worldbuilder_player_projection.sql) (Zeilen 198–299, SHA-256 `8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf`).
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 928–1038, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
 
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/get_world_atlas_map-1.sql](effective-sql/get_world_atlas_map-1.sql); SHA-256 `08144bbae3b2047f3799f40ca96b59b13a7b58dec54afe52050c4694944499b9`.
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/get_world_atlas_map-1.sql](effective-sql/get_world_atlas_map-1.sql); SHA-256 `ed9c1232f4c6116213d7562f3c0e547bb5b66eaba1895071b60e8e1d2d2a7764`.
 
 ### Ausführungskontext und ACL
 
@@ -54,11 +54,11 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 
 | Parser-Zeile | Bedingungspfad | Return-Ausdruck |
 | --- | --- | --- |
-| 70 | unbedingt | `jsonb_build_object(     'id', v_row.id,     'worldProfileId', v_row.world_profile_id,     'parentMapId', v_parent,     'kind', v_row.kind,     'title', v_row.title,     'sortOrder', v_row.sort_order,     'bounds', v_row.bounds,     'layers', v_layers,     'basemapStoragePath', CASE       WHEN v_party_only THEN v_row.basemap_storage_path       ELSE v_row.basemap_storage_path     END,     'azgaarMapStoragePath', CASE       WHEN v_party_only THEN NULL       ELSE v_row.azgaar_map_storage_path     END,     'generatorMeta', v_meta,     'revision', v_row.revision,     'updatedAt', v_row.updated_at   )` |
+| 78 | unbedingt | `jsonb_build_object(     'id', v_row.id,     'worldProfileId', v_row.world_profile_id,     'parentMapId', v_parent,     'kind', v_row.kind,     'title', v_row.title,     'sortOrder', v_row.sort_order,     'bounds', v_row.bounds,     'layers', v_layers,     'basemapStoragePath', v_row.basemap_storage_path,     'azgaarMapStoragePath', CASE       WHEN v_party_only THEN NULL       ELSE v_row.azgaar_map_storage_path     END,     'generatorMeta', v_meta,     'revision', v_row.revision,     'updatedAt', v_row.updated_at   )` |
 
 Die vollständigen SQL-Ausdrücke und Caller-Decoder sind normativ. Die AST-erfassten JSON-Schlüsselgruppen umfassen auch verschachtelte Objekte und Event-Payloads; sie sind keine zusammengeworfene globale Antwortstruktur.
 
-- `engine`
+- `engine`, `unifiedCanvas`, `webglRuntime`, `mapFrame`, `dungeon`
 - `id`, `worldProfileId`, `parentMapId`, `kind`, `title`, `sortOrder`, `bounds`, `layers`, `basemapStoragePath`, `azgaarMapStoragePath`, `generatorMeta`, `revision`, `updatedAt`
 - `type`, `features`
 
@@ -70,6 +70,7 @@ Die vollständigen SQL-Ausdrücke und Caller-Decoder sind normativ. Die AST-erfa
 | 22023 | map_id required | — | p_map_id IS NULL |
 | P0002 | not found | — | NOT FOUND |
 | 42501 | forbidden | — | NOT public.current_user_can_read_world_profile(v_row.world_profile_id) |
+| 42501 | forbidden | — | v_party_only ∧ p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' ∧ v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project) |
 | P0002 | not found | — | v_party_only ∧ v_project IS NULL |
 | P0002 | not found | — | v_party_only ∧ NOT (p_map_id = ANY (v_allowed)) |
 
@@ -217,3 +218,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql](../../../supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql) | `84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d` |
 | [supabase/migrations/105_atlas_worldbuilder_player_projection.sql](../../../supabase/migrations/105_atlas_worldbuilder_player_projection.sql) | `8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf` |
 | [supabase/migrations/106_atlas_get_map_overload_fix.sql](../../../supabase/migrations/106_atlas_get_map_overload_fix.sql) | `7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |

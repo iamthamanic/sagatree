@@ -31,9 +31,9 @@ Die Signaturen, Defaults und Funktionskörper der Repository-Migrationskette wur
 
 **RETURNS:** `jsonb`.
 
-**Wirksame Definition:** [supabase/migrations/105_atlas_worldbuilder_player_projection.sql](../../../supabase/migrations/105_atlas_worldbuilder_player_projection.sql) (Zeilen 52–142, SHA-256 `8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf`).
+**Wirksame Definition:** [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) (Zeilen 172–270, SHA-256 `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b`).
 
-**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/list_world_atlas_maps-1.sql](effective-sql/list_world_atlas_maps-1.sql); SHA-256 `cd149fc26b1dd13340a57b78025dd555eb3ec1e771318f79878ffeacc60b2ef2`.
+**Vollständiger abgeleiteter SQL-Text:** [.qa/intake/rpc-contracts/effective-sql/list_world_atlas_maps-1.sql](effective-sql/list_world_atlas_maps-1.sql); SHA-256 `fd2ed3e2bb2f6692218e67fb8ba746f72789e2cfe960f90eac19419172427cc0`.
 
 ### Ausführungskontext und ACL
 
@@ -54,8 +54,8 @@ Die Plattform setzt zusätzliche Defaultprivilegien. Deshalb ist die folgende be
 
 | Parser-Zeile | Bedingungspfad | Return-Ausdruck |
 | --- | --- | --- |
-| 30 | v_party_only ∧ v_project IS NULL | `jsonb_build_object('maps', '[]'::jsonb)` |
-| 79 | unbedingt | `jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))` |
+| 35 | v_party_only ∧ v_project IS NULL | `jsonb_build_object('maps', '[]'::jsonb)` |
+| 83 | unbedingt | `jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))` |
 
 Die vollständigen SQL-Ausdrücke und Caller-Decoder sind normativ. Die AST-erfassten JSON-Schlüsselgruppen umfassen auch verschachtelte Objekte und Event-Payloads; sie sind keine zusammengeworfene globale Antwortstruktur.
 
@@ -69,6 +69,8 @@ Die vollständigen SQL-Ausdrücke und Caller-Decoder sind normativ. Die AST-erfa
 | 42501 | not authenticated | — | v_user IS NULL |
 | 22023 | world_profile_id required | — | p_world_profile_id IS NULL |
 | 42501 | forbidden | — | NOT public.current_user_can_read_world_profile(p_world_profile_id) |
+| 42501 | forbidden | — | p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' ∧ v_project IS NULL |
+| 42501 | forbidden | — | p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' ∧ NOT public.current_user_is_active_project_member(v_project) |
 
 ## Transaktion, Idempotenz und Folgewirkungen
 
@@ -209,3 +211,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [supabase/migrations/102_world_atlas_player_redaction_force.sql](../../../supabase/migrations/102_world_atlas_player_redaction_force.sql) | `a1add570f090c4b8cae03170cf5b73bc7eba6ccc2a0f785d3d1910d0a3178bb3` |
 | [supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql](../../../supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql) | `84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d` |
 | [supabase/migrations/105_atlas_worldbuilder_player_projection.sql](../../../supabase/migrations/105_atlas_worldbuilder_player_projection.sql) | `8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf` |
+| [supabase/migrations/109_baseline_security_trust_boundaries.sql](../../../supabase/migrations/109_baseline_security_trust_boundaries.sql) | `4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b` |
