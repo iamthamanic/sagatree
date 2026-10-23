@@ -1,0 +1,84 @@
+name: ECC Merge Gate
+
+# Machine-enforced merge prerequisites for Epic #773 recovery:
+# - Unresolved Codex/Bugbot P1/P2 (Critical/Important) review findings → FAIL
+# - Required quality checks must be green on the PR head SHA
+#
+# Ambient known-red migration baselines (Atlas E2E, PG baseline, GATE-01/02/03
+# isolated candidates) are intentionally NOT in requiredChecks — see
+# .qa/merge-gate.yaml. Do not weaken this job to silence unresolved P1/P2.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  # Allow re-check after other workflows finish (same SHA).
+  workflow_run:
+    workflows:
+      - Quality Gates
+      - Stack migration baseline
+      - Stack migration source contracts
+    types: [completed]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: read
+
+concurrency:
+  group: ecc-merge-gate-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  ecc-merge-gate:
+    name: ECC Merge Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # On workflow_run, only evaluate the originating PR.
+    if: >
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != '')
+
+    steps:
+      - name: Resolve PR number
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            PR=$(gh api "repos/${{ github.repository }}/commits/${{ github.event.workflow_run.head_sha }}/pulls" --jq '.[0].number // empty')
+            if [ -z "$PR" ]; then
+              echo "No PR for workflow_run head — skip"
+              echo "number=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "number=$PR" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.pr.outputs.number != ''
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.pr.outputs.sha }}
+
+      - name: Setup Node
+        if: steps.pr.outputs.number != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run ECC Merge Gate check
+        if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
+          # On first pull_request event, sibling checks may still be pending —
+          # only enforce review findings; workflow_run recheck enforces checks.
+          ECC_MERGE_GATE_SKIP_CHECKS: ${{ github.event_name == 'pull_request' && '1' || '0' }}
+        run: node scripts/ecc-merge-gate-check.mjs

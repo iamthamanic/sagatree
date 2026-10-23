@@ -1,0 +1,29 @@
+# ECC merge gate policy — machine-enforced companions live in
+# scripts/ecc-merge-gate-check.mjs + .github/workflows/ecc-merge-gate.yml
+# and the repository ruleset "ECC required checks".
+mergeStrategy: squash
+deleteBranchAfterMerge: true
+requireHumanApproval: false
+allowDraftMerge: false
+cloudDeployAfterMerge: false
+
+# Required status check names (must match GitHub check run names).
+requiredChecks:
+  - Test Gate
+  - Composition Gate
+  - ECC Merge Gate
+  - Actual RLS regression canary
+  - RPC source regeneration and migration contracts
+  - Browser E2E
+
+# Ambient known-red migration baselines are NOT merge-blocking unless listed above.
+# Unresolved Codex/Bugbot P1/P2 review findings always block (see ecc-merge-gate-check).
+
+blockOnUnresolvedReviewSeverities:
+  - P1
+  - P2
+  - Critical
+  - Important
+
+requireCompositionProofFresh: true
+requireEccCheckReadyEvidence: false # agent-local; CI enforces checks + review findings

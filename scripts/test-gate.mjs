@@ -464,6 +464,14 @@ function checkMig015SoloLocalIdentity() {
   );
 }
 
+function checkEccMergeGateUnit() {
+  console.log('ECC merge gate: P1/P2 finding detector self-test...');
+  execFileSync(process.execPath, ['scripts/ecc-merge-gate-check.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2605,6 +2613,7 @@ checkMig013PolicyService();
 checkMig012WorldReadPort();
 checkMig014BetterAuthHost();
 checkMig015SoloLocalIdentity();
+checkEccMergeGateUnit();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
