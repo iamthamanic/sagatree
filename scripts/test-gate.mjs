@@ -472,6 +472,18 @@ function checkEccMergeGateUnit() {
   });
 }
 
+function checkMig020HttpTransport() {
+  console.log('MIG-020 HTTP transport (#795): Hono command/query + 401/403/409/422...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-020-http-transport.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2614,6 +2626,7 @@ checkMig012WorldReadPort();
 checkMig014BetterAuthHost();
 checkMig015SoloLocalIdentity();
 checkEccMergeGateUnit();
+checkMig020HttpTransport();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

@@ -14,18 +14,18 @@ Typed HTTP queries and commands on the host (GATE-03 Variant B / Hono) with clea
 
 ## Happy Path
 
-- [ ] Valid Actor + command DTO → validate → authorize → application command in documented order; response is role-scoped only
-- [ ] Idempotent retry after lost HTTP response returns same application result without double mutation
+- [x] Valid Actor + command DTO → validate → authorize → application command in documented order; response is role-scoped only
+- [x] Idempotent retry after lost HTTP response returns same application result without double mutation
 
 ## Edge Cases
 
-- [ ] Missing auth → 401; missing right → 403; stale revision → 409; invalid payload → validation error; no partial state
-- [ ] Touched files: zero type escape hatches (typed-strict)
+- [x] Missing auth → 401; missing right → 403; stale revision → 409; invalid payload → validation error; no partial state
+- [x] Touched files: zero type escape hatches (typed-strict)
 
 ## Regression
 
-- [ ] MIG-014/015 self-tests still PASS
-- [ ] Solo identity boundary unchanged
+- [x] MIG-014/015 self-tests still PASS
+- [x] Solo identity boundary unchanged
 
 ## Assumptions
 
@@ -47,8 +47,12 @@ N/A — not a launch ticket.
 
 ## Implementation Notes
 
-_(in progress — branch `feat/mig-020-795-http-transport`)_
+- Hono 4.13.13 + `@hono/node-server` 2.1.5 mounted from `server/src/http/route-registry.ts` (Better Auth `/api/auth` remains Node adapter)
+- Transport canary: `GET/POST /api/v1/sessions/:sessionId/{snapshot,commands}` via `server/src/application/transport` + `server/src/api`
+- Pipeline constant `TRANSPORT_PIPELINE = validate → authorize → execute`; players never receive `gmNotes`
+- Self-test: `scripts/mig-020-http-transport.self-test.mjs` (wired into `npm run test-gate`)
+- Durable SessionRuntimeState → MIG-022; Colyseus rooms → MIG-021+
 
 ## Composition Gate
 
-Proof: `.qa/runs/composition-gate-stack-migration-mig-020.md` (pending)
+Proof: `.qa/runs/composition-gate-stack-migration-mig-020.md`

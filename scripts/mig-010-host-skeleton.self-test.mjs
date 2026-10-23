@@ -219,8 +219,8 @@ assert(healthAfterBad.status === 200, 'host remains reachable after malformed re
 assert((await healthAfterBad.json()).ready === true, 'health still ready after malformed request');
 await hostHttp.stop();
 
-// Unexpected handler error is controlled (500) and does not reject the promise.
-let handlerRejected = false;
+// Unexpected handler error is controlled (500) and does not reject / leak secrets.
+// Use a real Node HTTP server — Hono's node adapter needs a complete IncomingMessage.
 const throwingHandler = createRouteHandler({
   health: {
     execute: () => {
@@ -234,34 +234,33 @@ const throwingHandler = createRouteHandler({
     resolveRemoteSession: async () => ({ ok: false, code: 'AUTH_NOT_CONFIGURED' }),
     linkSoloToRemoteAccount: () => ({ ok: false, code: 'INVALID_LINK_REQUEST' }),
   },
+  transport: {
+    applyCommand: () => ({ ok: false, error: 'INVALID_PAYLOAD' }),
+    getSnapshot: () => ({ ok: false, error: 'INVALID_PAYLOAD' }),
+  },
   recordPing: () => ({ ok: true }),
   authHandlerRef: { current: null },
   tryAuthorizedProjectTouch: () => ({ ok: false, status: 403, error: 'test' }),
   tryAuthorizedWorldTouch: () => ({ ok: false, status: 403, error: 'test' }),
 });
-const mockRes = {
-  headersSent: false,
-  writableEnded: false,
-  statusCode: 0,
-  body: '',
-  writeHead(status) {
-    this.statusCode = status;
-    this.headersSent = true;
-  },
-  end(payload) {
-    this.body = String(payload ?? '');
-    this.writableEnded = true;
-  },
-};
-await Promise.resolve(
-  throwingHandler({ method: 'GET', url: '/health' }, mockRes),
-).catch(() => {
-  handlerRejected = true;
+const throwPort = port + 14;
+const throwServer = createServer((req, res) => {
+  void Promise.resolve(throwingHandler(req, res)).catch(() => {
+    if (!res.headersSent) {
+      res.writeHead(500, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ error: 'internal-error' }));
+    }
+  });
 });
-assert(!handlerRejected, 'handler promise must not reject on unexpected errors');
-assert(mockRes.statusCode === 500, `unexpected handler error must be 500, got ${mockRes.statusCode}`);
-assert(mockRes.body.includes('internal-error'), 'generic internal-error body');
-assert(!mockRes.body.includes('SHOULD_NOT_LEAK'), 'handler error must not leak secret marker');
+await new Promise((resolve, reject) => {
+  throwServer.listen(throwPort, '127.0.0.1', resolve).on('error', reject);
+});
+const throwRes = await fetch(`http://127.0.0.1:${throwPort}/health`);
+const throwBody = await throwRes.text();
+assert(throwRes.status === 500, `unexpected handler error must be 500, got ${throwRes.status}`);
+assert(throwBody.includes('internal-error'), `generic internal-error body: ${throwBody}`);
+assert(!throwBody.includes('SHOULD_NOT_LEAK'), 'handler error must not leak secret marker');
+await new Promise((resolve, reject) => throwServer.close((err) => (err ? reject(err) : resolve())));
 
 // --- Regression 2: corrupted identity with synthetic secret marker ---
 const corruptDir = mkdtempSync(join(tmpdir(), 'mig010-corrupt-'));

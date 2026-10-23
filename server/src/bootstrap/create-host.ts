@@ -27,6 +27,7 @@ import {
 } from '../assets/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
+import { createTransportUseCase } from '../application/transport/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
   bootstrapHostPersistence,
@@ -120,6 +121,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       dataDirFingerprint,
     });
     const health = createHealthUseCase(ops);
+    const transport = createTransportUseCase({
+      permissions,
+      acceptMutations: () => acceptingMutations,
+    });
 
     const recordPing = () => {
       if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
@@ -173,6 +178,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ops,
       permissions,
       identity,
+      transport,
       hostMode: config.mode,
       trustedOrigins: config.auth?.trustedOrigins ?? [],
       recordPing,
