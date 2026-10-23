@@ -9,6 +9,7 @@ import { randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { betterAuth } from 'better-auth';
 import { getMigrations } from 'better-auth/db/migration';
+import { normalizeOrigin } from './origin.ts';
 
 export type CookieAuthProfileConfig = {
   readonly databasePath: string;
@@ -50,10 +51,8 @@ export function validateCookieAuthConfig(config: CookieAuthProfileConfig): strin
     return 'trustedOrigins must not be empty for cookie auth';
   }
   for (const origin of config.trustedOrigins) {
-    try {
-      new URL(origin);
-    } catch {
-      return `trusted origin is not a valid URL: ${origin}`;
+    if (!normalizeOrigin(origin)) {
+      return `trusted origin is not a valid http(s) origin: ${origin}`;
     }
   }
   return null;

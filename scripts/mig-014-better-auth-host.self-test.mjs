@@ -138,12 +138,27 @@ try {
   const misconfig = createHost({
     SAGATREE_DATA_DIR: join(work, 'bad'),
     SAGATREE_PORT: String(port + 1),
-    SAGATREE_HOST: '0.0.0.0',
+    SAGATREE_HOST: '127.0.0.1',
     SAGATREE_ALLOW_REMOTE_BIND: '1',
     SAGATREE_HOST_MODE: 'remote',
   });
   assert('error' in misconfig, 'remote without secret must fail closed');
   assert(/BETTER_AUTH_SECRET|Better Auth/i.test(misconfig.error), `remote misconfig message: ${misconfig.error}`);
+
+  // --- P1: wildcard bind must not invent loopback auth URL ---
+  const wildcardNoBase = createHost({
+    SAGATREE_DATA_DIR: join(work, 'wildcard-bad'),
+    SAGATREE_PORT: String(port + 2),
+    SAGATREE_HOST: '0.0.0.0',
+    SAGATREE_ALLOW_REMOTE_BIND: '1',
+    SAGATREE_HOST_MODE: 'remote',
+    SAGATREE_BETTER_AUTH_SECRET: authSecret,
+  });
+  assert('error' in wildcardNoBase, '0.0.0.0 without AUTH_BASE_URL must fail closed');
+  assert(
+    /SAGATREE_AUTH_BASE_URL|Wildcard bind/i.test(wildcardNoBase.error),
+    `wildcard baseURL required: ${wildcardNoBase.error}`,
+  );
 
   // --- Fail closed: JWT opt-in forbidden ---
   const jwtMis = createHost({
@@ -332,12 +347,151 @@ try {
     cookie,
   });
   assert(crossOrigin.res.status === 403, `cross-origin whoami denied: ${crossOrigin.res.status}`);
+  assert(
+    crossOrigin.res.headers.get('access-control-allow-origin') === null,
+    'denied origin must not receive ACAO',
+  );
 
   const wsCross = await wsProbe(port, `127.0.0.1:${port}`, {
     cookie,
     origin: 'http://evil.example',
   });
   assert(wsCross.upgraded === false, 'ws cross-origin denied');
+
+  // --- P1: trailing-slash / normalized trusted origins ---
+  await host.stop();
+  const frontendOrigin = 'http://127.0.0.1:5173';
+  const trustedHost = createHost({
+    SAGATREE_DATA_DIR: join(work, 'trusted'),
+    SAGATREE_PORT: String(port + 20),
+    SAGATREE_HOST: '127.0.0.1',
+    SAGATREE_ENABLE_HOST_AUTH: '1',
+    SAGATREE_BETTER_AUTH_SECRET: authSecret,
+    SAGATREE_AUTH_BASE_URL: `http://127.0.0.1:${port + 20}/`,
+    SAGATREE_AUTH_TRUSTED_ORIGINS: `${frontendOrigin}/,http://127.0.0.1:${port + 20}`,
+  });
+  assert(!('error' in trustedHost), `trusted host create: ${JSON.stringify(trustedHost)}`);
+  assert(
+    trustedHost.config.auth.trustedOrigins.includes(frontendOrigin),
+    'trusted origins normalized without trailing slash',
+  );
+  assert(
+    !trustedHost.config.auth.trustedOrigins.some((o) => o.endsWith('/')),
+    'no trailing slash in trusted origins',
+  );
+  await trustedHost.start();
+  const trustedBase = `http://127.0.0.1:${port + 20}`;
+  const trustedSignUp = await httpJson(trustedBase, '/api/auth/sign-up/email', {
+    method: 'POST',
+    headers: { Origin: frontendOrigin },
+    body: { email: 'fe@example.test', password: `Pw-${secret().slice(0, 16)}`, name: 'FE' },
+  });
+  assert(trustedSignUp.res.status < 400, `cross-origin sign-up ${trustedSignUp.res.status} ${trustedSignUp.text}`);
+  const trustedCookie = trustedSignUp.cookie;
+  assert(trustedCookie.includes('='), 'cross-origin session cookie');
+
+  // P1: credentialed CORS — preflight + whoami
+  const preflight = await fetch(`${trustedBase}/api/whoami`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: frontendOrigin,
+      'Access-Control-Request-Method': 'GET',
+    },
+  });
+  assert(preflight.status === 204, `preflight status ${preflight.status}`);
+  assert(
+    preflight.headers.get('access-control-allow-origin') === frontendOrigin,
+    `preflight ACAO exact: ${preflight.headers.get('access-control-allow-origin')}`,
+  );
+  assert(
+    preflight.headers.get('access-control-allow-credentials') === 'true',
+    'preflight credentials',
+  );
+  assert(
+    preflight.headers.get('access-control-allow-origin') !== '*',
+    'never wildcard ACAO',
+  );
+
+  const feWhoami = await httpJson(trustedBase, '/api/whoami', {
+    headers: { Origin: frontendOrigin, 'Sec-Fetch-Site': 'cross-site' },
+    cookie: trustedCookie,
+  });
+  assert(feWhoami.res.status === 200, `FE whoami ${feWhoami.res.status} ${feWhoami.text}`);
+  assert(
+    feWhoami.res.headers.get('access-control-allow-origin') === frontendOrigin,
+    'whoami ACAO exact',
+  );
+  assert(feWhoami.res.headers.get('access-control-allow-credentials') === 'true', 'whoami credentials');
+
+  const evilPreflight = await fetch(`${trustedBase}/api/whoami`, {
+    method: 'OPTIONS',
+    headers: { Origin: 'http://evil.example', 'Access-Control-Request-Method': 'GET' },
+  });
+  assert(evilPreflight.status === 403, `evil preflight denied: ${evilPreflight.status}`);
+
+  // P2: WS close frame present (opcode 0x8) after identity
+  const wsClose = await new Promise((resolve) => {
+    const key = randomBytes(16).toString('base64');
+    const lines = [
+      'GET /v1/session-ws HTTP/1.1',
+      `Host: 127.0.0.1:${port + 20}`,
+      'Upgrade: websocket',
+      'Connection: Upgrade',
+      `Sec-WebSocket-Key: ${key}`,
+      'Sec-WebSocket-Version: 13',
+      `Origin: ${frontendOrigin}`,
+      `Cookie: ${trustedCookie}`,
+      '',
+      '',
+    ];
+    const socket = createConnection({ host: '127.0.0.1', port: port + 20 }, () => {
+      socket.write(lines.join('\r\n'));
+    });
+    let buf = Buffer.alloc(0);
+    const timer = setTimeout(() => {
+      socket.destroy();
+      resolve({ ok: false, reason: 'timeout' });
+    }, 5000);
+    socket.on('data', (chunk) => {
+      buf = Buffer.concat([buf, chunk]);
+      const text = buf.toString('utf8');
+      const headerEnd = text.indexOf('\r\n\r\n');
+      if (headerEnd < 0) return;
+      if (!text.startsWith('HTTP/1.1 101')) {
+        clearTimeout(timer);
+        socket.destroy();
+        resolve({ ok: false, reason: `status ${text.slice(0, 32)}` });
+        return;
+      }
+      const frame = buf.subarray(headerEnd + 4);
+      let sawClose = false;
+      let offset = 0;
+      while (offset + 2 <= frame.length) {
+        const opcode = frame[offset] & 0x0f;
+        const len = frame[offset + 1] & 0x7f;
+        if (opcode === 0x8) {
+          sawClose = true;
+          break;
+        }
+        if (len >= 126) break;
+        offset += 2 + len;
+      }
+      if (sawClose || frame.length > 4) {
+        clearTimeout(timer);
+        socket.destroy();
+        resolve({ ok: sawClose, reason: sawClose ? 'close-frame' : 'no-close', frameLen: frame.length });
+      }
+    });
+    socket.on('error', (err) => {
+      clearTimeout(timer);
+      resolve({ ok: false, reason: String(err) });
+    });
+  });
+  assert(wsClose.ok === true, `ws close frame required: ${JSON.stringify(wsClose)}`);
+
+  await trustedHost.stop();
+  assert(trustedHost.isReady() === false, 'trusted host stopped');
+  assert(host.isReady() === false, 'primary host already stopped');
 
   // Frontend bridge scrub + probe helpers
   const dirty = { ok: true, actorId: 'a', kind: 'remote-account', email: null, token: 'leak', accessToken: 'x' };
@@ -360,9 +514,6 @@ try {
     assert(httpsBad.config.auth.cookieSecure === true, 'https forces Secure cookies');
     // don't start — no TLS listener in this test
   }
-
-  await host.stop();
-  assert(host.isReady() === false, 'not ready after stop');
 
   // strip helper unit
   const sample = { user: { token: 'abc', name: 'n' }, nested: { sessionToken: 's' } };

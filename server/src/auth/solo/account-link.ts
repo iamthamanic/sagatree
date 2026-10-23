@@ -4,8 +4,18 @@
  *
  * Mode switch never silently maps solo ownership onto a remote session.
  * Missing link → caller surfaces ACCOUNT_LINK_REQUIRED via policy.
+ * Persist atomically: temp file → fsync → rename.
  */
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  closeSync,
+  existsSync,
+  fsyncSync,
+  openSync,
+  readFileSync,
+  renameSync,
+  unlinkSync,
+  writeSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { isSoloActorId } from './identity-file.ts';
 
@@ -30,7 +40,8 @@ export type LinkSoloAccountResult =
         | 'ACCOUNT_LINK_MISMATCH'
         | 'ACCOUNT_LINK_TAKEN'
         | 'INVALID_LINK_REQUEST'
-        | 'LINK_STORE_UNREADABLE';
+        | 'LINK_STORE_UNREADABLE'
+        | 'LINK_STORE_WRITE_FAILED';
     };
 
 export function soloAccountLinksPath(dataDir: string): string {
@@ -70,8 +81,34 @@ function readLinkFile(dataDir: string): LinkFile | { error: 'LINK_STORE_UNREADAB
   }
 }
 
-function writeLinkFile(dataDir: string, file: LinkFile): void {
-  writeFileSync(soloAccountLinksPath(dataDir), `${JSON.stringify(file, null, 2)}\n`, 'utf8');
+/**
+ * Crash-safe persist: write + fsync temp file, then atomic rename over destination.
+ */
+function writeLinkFile(
+  dataDir: string,
+  file: LinkFile,
+): { ok: true } | { ok: false; code: 'LINK_STORE_WRITE_FAILED' } {
+  const dest = soloAccountLinksPath(dataDir);
+  const tmp = `${dest}.${process.pid}.${Date.now()}.tmp`;
+  const payload = Buffer.from(`${JSON.stringify(file, null, 2)}\n`, 'utf8');
+  try {
+    const fd = openSync(tmp, 'wx', 0o600);
+    try {
+      writeSync(fd, payload);
+      fsyncSync(fd);
+    } finally {
+      closeSync(fd);
+    }
+    renameSync(tmp, dest);
+    return { ok: true };
+  } catch {
+    try {
+      unlinkSync(tmp);
+    } catch {
+      /* ignore */
+    }
+    return { ok: false, code: 'LINK_STORE_WRITE_FAILED' };
+  }
 }
 
 /** Solo actor ids already linked to this remote Better Auth user. */
@@ -132,6 +169,9 @@ export function linkSoloAccount(input: {
     remoteAccountId: remote,
     linkedAt: new Date().toISOString(),
   };
-  writeLinkFile(input.dataDir, { version: 1, links: [...file.links, link] });
+  const written = writeLinkFile(input.dataDir, { version: 1, links: [...file.links, link] });
+  if (!written.ok) {
+    return { ok: false, code: written.code };
+  }
   return { ok: true, link };
 }

@@ -9,12 +9,21 @@ import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
+import {
+  applyCredentialedCorsHeaders,
+  decideCredentialedCors,
+  handleCorsPreflight,
+} from './cors.ts';
 
 export type RouteRegistryDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
   readonly ops: OpsPorts;
   readonly permissions: PermissionsPorts;
   readonly identity: IdentityPorts;
+  /** Solo vs remote — solo-only mutation shortcuts are refused in remote mode. */
+  readonly hostMode?: 'solo' | 'remote';
+  /** Normalized trusted origins for credentialed CORS (empty → no CORS echo). */
+  readonly trustedOrigins?: readonly string[];
   readonly recordPing: () => { ok: true } | { ok: false; status: number; error: string };
   /** Better Auth cookie handler ref (filled after async auth init in start()). */
   readonly authHandlerRef: { current: NodeAuthHandler | null };
@@ -39,8 +48,16 @@ export type RouteRegistryDeps = {
   }) => { ok: true; mutated: boolean } | { ok: false; status: number; error: string };
 };
 
-export function sendJson(res: ServerResponse, status: number, body: unknown): void {
+export function sendJson(
+  res: ServerResponse,
+  status: number,
+  body: unknown,
+  corsOrigin?: string | null,
+): void {
   if (res.writableEnded || res.headersSent) return;
+  if (corsOrigin) {
+    applyCredentialedCorsHeaders(res, corsOrigin);
+  }
   const payload = JSON.stringify(body);
   res.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
@@ -74,23 +91,41 @@ function authDenyStatus(code: string): number {
   return 403;
 }
 
+function corsOriginFor(req: IncomingMessage, trustedOrigins: readonly string[]): string | null {
+  if (trustedOrigins.length === 0) return null;
+  const decision = decideCredentialedCors(req, trustedOrigins);
+  return decision.ok ? decision.origin : null;
+}
+
 /**
  * Route handler that never rejects: invalid targets → 400, unexpected errors → 500.
  */
 export function createRouteHandler(deps: RouteRegistryDeps) {
+  const trustedOrigins = deps.trustedOrigins ?? [];
+  const hostMode = deps.hostMode ?? 'solo';
   return async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    let corsOrigin: string | null = null;
     try {
+      corsOrigin = corsOriginFor(req, trustedOrigins);
       let url: URL;
       try {
         url = new URL(req.url ?? '/', 'http://127.0.0.1');
       } catch {
-        sendJson(res, 400, { error: 'invalid-request-target' });
+        sendJson(res, 400, { error: 'invalid-request-target' }, corsOrigin);
         return;
       }
       const method = req.method ?? 'GET';
 
+      // Credentialed CORS preflight for host-bridge + auth paths (exact origin only).
+      if (method === 'OPTIONS' && trustedOrigins.length > 0) {
+        handleCorsPreflight(req, res, trustedOrigins);
+        return;
+      }
+
       if (deps.authHandlerRef.current && url.pathname.startsWith('/api/auth')) {
-        deps.authHandlerRef.current(req, res);
+        // Await Better Auth so handler rejections reach this catch (no unhandled rejection).
+        if (corsOrigin) applyCredentialedCorsHeaders(res, corsOrigin);
+        await Promise.resolve(deps.authHandlerRef.current(req, res));
         return;
       }
 
@@ -98,11 +133,11 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
         const actor = deps.identity.resolveSoloActor();
         const decision = deps.permissions.authorize('host.health.read', actor);
         if (!decision.allow) {
-          sendJson(res, 403, { error: decision.reason });
+          sendJson(res, 403, { error: decision.reason }, corsOrigin);
           return;
         }
         const health = deps.health.execute();
-        sendJson(res, health.ready ? 200 : 503, health);
+        sendJson(res, health.ready ? 200 : 503, health, corsOrigin);
         return;
       }
 
@@ -111,10 +146,10 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           allowSameOriginRead: true,
         });
         if (!resolved.ok) {
-          sendJson(res, authDenyStatus(resolved.code), { error: resolved.code });
+          sendJson(res, authDenyStatus(resolved.code), { error: resolved.code }, corsOrigin);
           return;
         }
-        sendJson(res, 200, actorToWhoamiDto(resolved.actor));
+        sendJson(res, 200, actorToWhoamiDto(resolved.actor), corsOrigin);
         return;
       }
 
@@ -125,11 +160,16 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           body,
         });
         if (!resolved.ok) {
-          sendJson(res, authDenyStatus(resolved.code), { error: resolved.code, linked: false });
+          sendJson(
+            res,
+            authDenyStatus(resolved.code),
+            { error: resolved.code, linked: false },
+            corsOrigin,
+          );
           return;
         }
         if (body === null || typeof body !== 'object' || Array.isArray(body)) {
-          sendJson(res, 400, { error: 'INVALID_PAYLOAD', linked: false });
+          sendJson(res, 400, { error: 'INVALID_PAYLOAD', linked: false }, corsOrigin);
           return;
         }
         const record = body as Record<string, unknown>;
@@ -143,10 +183,15 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
         });
         if (!link.ok) {
           const status = link.code === 'INVALID_LINK_REQUEST' ? 400 : 403;
-          sendJson(res, status, { error: link.code, linked: false });
+          sendJson(res, status, { error: link.code, linked: false }, corsOrigin);
           return;
         }
-        sendJson(res, 200, { ok: true, linked: true, soloActorId: link.link.soloActorId });
+        sendJson(
+          res,
+          200,
+          { ok: true, linked: true, soloActorId: link.link.soloActorId },
+          corsOrigin,
+        );
         return;
       }
 
@@ -157,26 +202,36 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           body,
         });
         if (!resolved.ok) {
-          sendJson(res, authDenyStatus(resolved.code), { error: resolved.code, mutated: false });
+          sendJson(
+            res,
+            authDenyStatus(resolved.code),
+            { error: resolved.code, mutated: false },
+            corsOrigin,
+          );
           return;
         }
         if (body === null || typeof body !== 'object' || Array.isArray(body)) {
-          sendJson(res, 400, { error: 'INVALID_PAYLOAD', mutated: false });
+          sendJson(res, 400, { error: 'INVALID_PAYLOAD', mutated: false }, corsOrigin);
           return;
         }
         const record = body as Record<string, unknown>;
         const worldId = typeof record.worldId === 'string' ? record.worldId : '';
         const decision = deps.permissions.authorize('world.edit', resolved.actor, { worldId });
         if (!decision.allow) {
-          sendJson(res, 403, {
-            error: decision.reason,
-            mutated: false,
-            ignoredClaims: {
-              role: record.role ?? null,
-              ownerUserId: record.ownerUserId ?? null,
-              localIdentity: record.localIdentity ?? null,
+          sendJson(
+            res,
+            403,
+            {
+              error: decision.reason,
+              mutated: false,
+              ignoredClaims: {
+                role: record.role ?? null,
+                ownerUserId: record.ownerUserId ?? null,
+                localIdentity: record.localIdentity ?? null,
+              },
             },
-          });
+            corsOrigin,
+          );
           return;
         }
         const touch = deps.tryAuthorizedWorldTouch({
@@ -184,10 +239,10 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           worldId,
         });
         if (!touch.ok) {
-          sendJson(res, touch.status, { error: touch.error, mutated: false });
+          sendJson(res, touch.status, { error: touch.error, mutated: false }, corsOrigin);
           return;
         }
-        sendJson(res, 200, { ok: true, mutated: touch.mutated });
+        sendJson(res, 200, { ok: true, mutated: touch.mutated }, corsOrigin);
         return;
       }
 
@@ -198,12 +253,17 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           body,
         });
         if (!resolved.ok) {
-          sendJson(res, authDenyStatus(resolved.code), { error: resolved.code, mutated: false });
+          sendJson(
+            res,
+            authDenyStatus(resolved.code),
+            { error: resolved.code, mutated: false },
+            corsOrigin,
+          );
           return;
         }
 
         if (body === null || typeof body !== 'object' || Array.isArray(body)) {
-          sendJson(res, 400, { error: 'INVALID_PAYLOAD', mutated: false });
+          sendJson(res, 400, { error: 'INVALID_PAYLOAD', mutated: false }, corsOrigin);
           return;
         }
         const record = body as Record<string, unknown>;
@@ -211,14 +271,19 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
         const decision = deps.permissions.authorize('session.gm', resolved.actor, { projectId });
         if (!decision.allow) {
           // Client-claimed role/owner fields are intentionally ignored for elevation.
-          sendJson(res, 403, {
-            error: decision.reason,
-            mutated: false,
-            ignoredClaims: {
-              role: record.role ?? null,
-              ownerUserId: record.ownerUserId ?? null,
+          sendJson(
+            res,
+            403,
+            {
+              error: decision.reason,
+              mutated: false,
+              ignoredClaims: {
+                role: record.role ?? null,
+                ownerUserId: record.ownerUserId ?? null,
+              },
             },
-          });
+            corsOrigin,
+          );
           return;
         }
 
@@ -229,36 +294,57 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
           claimedOwnerUserId: record.ownerUserId,
         });
         if (!touch.ok) {
-          sendJson(res, touch.status, { error: touch.error, mutated: false });
+          sendJson(res, touch.status, { error: touch.error, mutated: false }, corsOrigin);
           return;
         }
-        sendJson(res, 200, { ok: true, mutated: touch.mutated });
+        sendJson(res, 200, { ok: true, mutated: touch.mutated }, corsOrigin);
         return;
       }
 
       if (method === 'POST' && url.pathname === '/v1/ping') {
-        const actor = deps.identity.resolveSoloActor();
-        const decision = deps.permissions.authorize('host.ping.write', actor);
-        if (!decision.allow) {
-          sendJson(res, 403, { error: decision.reason });
-          return;
+        // Remote mode: never execute solo-identity mutations without a cookie session.
+        if (hostMode === 'remote') {
+          const resolved = await deps.identity.resolveRemoteSession(req.headers, {
+            allowSameOriginRead: false,
+          });
+          if (!resolved.ok) {
+            sendJson(
+              res,
+              authDenyStatus(resolved.code),
+              { error: resolved.code, mutated: false },
+              corsOrigin,
+            );
+            return;
+          }
+          const decision = deps.permissions.authorize('host.ping.write', resolved.actor);
+          if (!decision.allow) {
+            sendJson(res, 403, { error: decision.reason, mutated: false }, corsOrigin);
+            return;
+          }
+        } else {
+          const actor = deps.identity.resolveSoloActor();
+          const decision = deps.permissions.authorize('host.ping.write', actor);
+          if (!decision.allow) {
+            sendJson(res, 403, { error: decision.reason }, corsOrigin);
+            return;
+          }
         }
         if (!deps.ops.acceptMutations()) {
-          sendJson(res, 503, { error: 'host-shutting-down' });
+          sendJson(res, 503, { error: 'host-shutting-down' }, corsOrigin);
           return;
         }
         const result = deps.recordPing();
         if (!result.ok) {
-          sendJson(res, result.status, { error: result.error });
+          sendJson(res, result.status, { error: result.error }, corsOrigin);
           return;
         }
-        sendJson(res, 200, { ok: true });
+        sendJson(res, 200, { ok: true }, corsOrigin);
         return;
       }
 
-      sendJson(res, 404, { error: 'not-found' });
+      sendJson(res, 404, { error: 'not-found' }, corsOrigin);
     } catch {
-      sendJson(res, 500, { error: 'internal-error' });
+      sendJson(res, 500, { error: 'internal-error' }, corsOrigin);
     }
   };
 }

@@ -5,6 +5,7 @@
 import { accessSync, constants, mkdirSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { assertCookieAuthSecret } from '../auth/cookie-profile.ts';
+import { normalizeOrigin, normalizeTrustedOrigins } from '../auth/origin.ts';
 import {
   assertSoloLoopbackBind,
   isLoopbackHost,
@@ -14,6 +15,7 @@ import {
 export type HostAuthConfig = {
   readonly secret: string;
   readonly baseURL: string;
+  /** Canonical URL.origin strings (no trailing slash). */
   readonly trustedOrigins: readonly string[];
   readonly cookieSecure: boolean;
 };
@@ -36,12 +38,27 @@ function redacted(message: string): string {
   return message.replace(/(?:token|key|secret|password)=[^\s]+/gi, '$1=[redacted]');
 }
 
-function parseTrustedOrigins(raw: string | undefined, baseURL: string): string[] {
-  if (!raw || !raw.trim()) return [baseURL];
-  return raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+function parseTrustedOrigins(
+  raw: string | undefined,
+  baseURL: string,
+): string[] | { error: string } {
+  const entries =
+    !raw || !raw.trim()
+      ? [baseURL]
+      : raw
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0);
+  const normalized = normalizeTrustedOrigins(entries);
+  if (!normalized) {
+    return { error: 'SAGATREE_AUTH_TRUSTED_ORIGINS must be valid http(s) origins' };
+  }
+  return normalized;
+}
+
+/** Wildcard / all-interfaces binds must not invent a loopback auth base URL. */
+function isWildcardBindHost(host: string): boolean {
+  return host === '0.0.0.0' || host === '::' || host === '[::]';
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): HostConfig | ConfigError {
@@ -129,9 +146,29 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): HostConfig | C
       return { code: 'AUTH_MISCONFIG', message: redacted(secretErr) };
     }
 
-    const baseURL =
-      (env.SAGATREE_AUTH_BASE_URL ?? '').trim() ||
-      `http://${host === '0.0.0.0' ? '127.0.0.1' : host}:${port}`;
+    const explicitBase = (env.SAGATREE_AUTH_BASE_URL ?? '').trim();
+    if (isWildcardBindHost(host) && !explicitBase) {
+      return {
+        code: 'AUTH_MISCONFIG',
+        message: redacted(
+          'Wildcard bind (0.0.0.0 / ::) requires explicit SAGATREE_AUTH_BASE_URL; loopback auth URL is not substituted.',
+        ),
+      };
+    }
+    if (!isLoopbackHost(host) && !isWildcardBindHost(host) && !explicitBase) {
+      return {
+        code: 'AUTH_MISCONFIG',
+        message: redacted(
+          'Non-loopback bind requires explicit SAGATREE_AUTH_BASE_URL matching the public auth origin.',
+        ),
+      };
+    }
+
+    const baseURL = explicitBase || `http://${host}:${port}`;
+    const baseOrigin = normalizeOrigin(baseURL);
+    if (!baseOrigin) {
+      return { code: 'AUTH_MISCONFIG', message: 'SAGATREE_AUTH_BASE_URL is not a valid URL' };
+    }
     let baseParsed: URL;
     try {
       baseParsed = new URL(baseURL);
@@ -148,10 +185,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): HostConfig | C
       };
     }
 
-    const trustedOrigins = parseTrustedOrigins(env.SAGATREE_AUTH_TRUSTED_ORIGINS, baseURL);
+    const trustedParsed = parseTrustedOrigins(env.SAGATREE_AUTH_TRUSTED_ORIGINS, baseOrigin);
+    if ('error' in trustedParsed) {
+      return { code: 'AUTH_MISCONFIG', message: trustedParsed.error };
+    }
+    // Always include the auth base origin so same-origin clients remain trusted.
+    const trustedOrigins = trustedParsed.includes(baseOrigin)
+      ? trustedParsed
+      : [baseOrigin, ...trustedParsed];
+    // Canonical origin form — no trailing slash (matches browser Origin).
     auth = {
       secret,
-      baseURL,
+      baseURL: baseOrigin,
       trustedOrigins,
       cookieSecure,
     };
