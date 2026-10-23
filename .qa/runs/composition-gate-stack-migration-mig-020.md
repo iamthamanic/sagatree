@@ -1,6 +1,7 @@
 # Composition Gate — stack-migration-mig-020 (#795)
 
-- HEAD_SHA: (filled after feature commit)
+- HEAD_SHA: 14719ad8b6e47f8cfcbdcc32c5d556bb286d51c1
+- PROOF_TIP: docs pin commit may sit atop this SHA; implementation CLEAR at feature commit
 - BASE_SHA: 721f53e3ba42b94e7292ce2f8bd24e5970828e24
 - Date: 2026-10-23
 - Verdict: CLEAR
