@@ -1,6 +1,6 @@
 # Composition Gate — mig-014-015-security-hardening
 
-- HEAD_SHA: edff64976462dbb81811878ae9a879f4531c8693
+- HEAD_SHA: 8c5c984b1c970d31c23c8c7c8acafcf13ca8fded
 - BASE_SHA: 721f53e3ba42b94e7292ce2f8bd24e5970828e24
 - Date: 2026-10-23
 - Verdict: CLEAR
