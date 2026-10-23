@@ -9,18 +9,19 @@ Registered top-level host package for the Epic #773 modular monolith.
 - GATE-02: APPROVED Variant A — Better Auth cookie-only ([ADR-ST-06](../docs/architecture/ADR-ST-06-gate-02-auth-handshake.md)); product cutover NOT approved
 - GATE-03: APPROVED Hono+Colyseus design ([ADR-ST-07](../docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md)); HTTP transport landed in MIG-020; full Colyseus room surface is MIG-021+
 
-## Layout (MIG-010 + MIG-011 + MIG-014 + MIG-020)
+## Layout (MIG-010 … MIG-022)
 
 | Path | Role |
 | --- | --- |
 | `src/bootstrap/` | Composition root (`create-host.ts`, `main.ts`) |
 | `src/config/` | Loopback-first config + writable `SAGATREE_DATA_DIR` |
 | `src/persistence/` | SQLite open + atomic migration journal + integrity gate (composition only) |
-| `migrations/` | Ordered host schema catalog (`0001_host_bootstrap.sql`, …) |
-| `src/modules/<id>/` | Public module APIs (`identity`, `permissions`, `ops`, `world`, `project`) |
+| `migrations/` | Ordered host schema catalog (`0001`…`0003_session_runtime.sql`) |
+| `src/modules/<id>/` | Public module APIs (`identity`, `permissions`, `ops`, `world`, `project`, `session`) |
 | `src/modules/<id>/persistence/` | Private table ownership mirrors (no cross-module imports) |
+| `src/modules/session/` | SessionRuntimeState ports — atomic revision/event/idempotency (MIG-022 / ADR-ST-08) |
 | `src/repositories/world/` | SQLite world read adapter (composition-wired; implements world store port) |
-| `src/application/<use-case>/` | Vertical use-cases (`health`, `transport`) |
+| `src/application/<use-case>/` | Vertical use-cases (`health`, `transport`, `session`) |
 | `src/api/` | Hono typed HTTP command/query surface (MIG-020) |
 | `src/http/route-registry.ts` | Sole HTTP composition entry — mounts Better Auth + Hono (not a free-for-all under `http/**`) |
 | `src/auth/` | Better Auth cookie profile (no JWT plugin); session resolve for HTTP + `/v1/session-ws` |
