@@ -5,6 +5,7 @@ DECLARE
   v_row public.world_maps%ROWTYPE;
   v_data JSONB;
   v_pins JSONB;
+  v_force_player BOOLEAN;
 BEGIN
   IF v_user IS NULL THEN
     RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';
@@ -15,6 +16,9 @@ BEGIN
   IF NOT public.current_user_can_read_world_profile(p_world_profile_id) THEN
     RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
   END IF;
+
+  v_force_player := (NOT public.current_user_can_edit_world_profile(p_world_profile_id))
+                    OR (p_player_view IS TRUE);
 
   SELECT * INTO v_row FROM public.world_maps WHERE world_profile_id = p_world_profile_id;
   IF NOT FOUND THEN
@@ -32,12 +36,12 @@ BEGIN
   END IF;
 
   v_data := COALESCE(v_row.map_data, '{}'::jsonb);
-  IF p_player_view THEN
+  IF v_force_player THEN
     SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)
       INTO v_pins
       FROM jsonb_array_elements(COALESCE(v_data->'pins', '[]'::jsonb)) AS elem
      WHERE COALESCE((elem->>'discovered')::boolean, true) IS TRUE;
-    v_data := jsonb_set(v_data, '{pins}', v_pins, true);
+    v_data := jsonb_set(v_data, '{pins}', COALESCE(v_pins, '[]'::jsonb), true);
   END IF;
 
   RETURN jsonb_build_object(

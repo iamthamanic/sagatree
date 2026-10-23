@@ -14,7 +14,7 @@
     "isolatedPostgresCatalogueVerified": true,
     "postgresProof": {
       "path": ".qa/intake/rpc-contracts/postgres-proof.json",
-      "sha256": "c3e9a002237894a8b42266364380e68cdeef047a9917dcb88d2904306490b4c1"
+      "sha256": "063fa87e23a6681f2cf2449b01d46cf927ad2e6b330eb46893eff7eb038ee91b"
     }
   },
   "rpcs": [
@@ -178,6 +178,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -3243,6 +3247,11 @@
         },
         {
           "from": "public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)",
+          "to": "public.is_project_gm(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.sagatree_resolve_adventure_command(uuid,jsonb,boolean,jsonb)",
           "to": "public.sagatree_empty_adventure_runtime()",
           "kind": "function-call"
         },
@@ -3298,6 +3307,11 @@
         {
           "from": "public.get_session_runtime_snapshot(uuid)",
           "to": "public.sagatree_project_shared_knowledge(jsonb,boolean,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
           "kind": "function-call"
         }
       ],
@@ -7024,6 +7038,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -26783,6 +26801,10 @@
           {
             "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
             "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -28162,6 +28184,11 @@
           "kind": "function-call"
         },
         {
+          "from": "public.list_world_atlas_maps(uuid,boolean,text)",
+          "to": "public.current_user_is_active_project_member(uuid)",
+          "kind": "function-call"
+        },
+        {
           "from": "public.current_user_can_read_world_profile(uuid)",
           "to": "public.current_user_is_active_project_member(uuid)",
           "kind": "function-call"
@@ -28292,6 +28319,10 @@
         {
           "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
           "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -38721,6 +38752,10 @@
           {
             "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
             "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -38729,7 +38764,7 @@
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/get_world_atlas_map-1.sql",
-              "sha256": "08144bbae3b2047f3799f40ca96b59b13a7b58dec54afe52050c4694944499b9"
+              "sha256": "ed9c1232f4c6116213d7562f3c0e547bb5b66eaba1895071b60e8e1d2d2a7764"
             }
           ]
         },
@@ -38770,6 +38805,12 @@
           "startLine": 365,
           "endLine": 378,
           "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 928,
+          "endLine": 1038,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "callerContracts": [
@@ -38948,10 +38989,10 @@
           "securityDefiner": true,
           "searchPath": "SET search_path TO 'public'",
           "source": {
-            "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
-            "startLine": 198,
-            "endLine": 299,
-            "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 928,
+            "endLine": 1038,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           },
           "transformations": [],
           "executeGrants": [
@@ -38993,6 +39034,24 @@
                 "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
               },
               "statement": "GRANT EXECUTE ON FUNCTION public.get_world_atlas_map (uuid, boolean, text) TO authenticated"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 1038,
+                "endLine": 1041,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.get_world_atlas_map (uuid, boolean, text) FROM PUBLIC"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 1041,
+                "endLine": 1042,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION public.get_world_atlas_map (uuid, boolean, text) TO authenticated"
             }
           ],
           "origin": "migration-chain",
@@ -39018,11 +39077,11 @@
             "owner": "postgres",
             "authenticated_execute": true,
             "anon_execute": false,
-            "definitionSha256": "1188fa7d076112e2fe4077e5cb9bfe97207942b2bea1374598d29e12e2a877b4"
+            "definitionSha256": "d6e152a10bb9a82d2e1a1ef4fb09e83a3dc23865d3032f0c73c59fd2f865e780"
           },
           "effectiveSource": {
             "path": ".qa/intake/rpc-contracts/effective-sql/get_world_atlas_map-1.sql",
-            "sha256": "08144bbae3b2047f3799f40ca96b59b13a7b58dec54afe52050c4694944499b9"
+            "sha256": "ed9c1232f4c6116213d7562f3c0e547bb5b66eaba1895071b60e8e1d2d2a7764"
           },
           "semantics": {
             "language": "plpgsql",
@@ -39048,15 +39107,19 @@
               },
               {
                 "name": "jsonb_build_object",
-                "arguments": 2
-              },
-              {
-                "name": "jsonb_build_object",
                 "arguments": 4
               },
               {
                 "name": "jsonb_build_object",
+                "arguments": 10
+              },
+              {
+                "name": "jsonb_build_object",
                 "arguments": 26
+              },
+              {
+                "name": "jsonb_strip_nulls",
+                "arguments": 1
               },
               {
                 "name": "public.atlas_wb_party_revealed_map_ids",
@@ -39072,6 +39135,10 @@
               },
               {
                 "name": "public.current_user_can_read_world_profile",
+                "arguments": 1
+              },
+              {
+                "name": "public.current_user_is_active_project_member",
                 "arguments": 1
               }
             ],
@@ -39166,7 +39233,31 @@
                 ]
               },
               {
-                "line": 36,
+                "line": 35,
+                "sqlstateExpression": "'42501'",
+                "message": "forbidden",
+                "parameters": [],
+                "raiseOptions": [
+                  {
+                    "PLpgSQL_raise_option": {
+                      "opt_type": 0,
+                      "expr": {
+                        "PLpgSQL_expr": {
+                          "query": "'42501'",
+                          "parseMode": 2
+                        }
+                      }
+                    }
+                  }
+                ],
+                "path": [
+                  "v_party_only",
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)"
+                ]
+              },
+              {
+                "line": 39,
                 "sqlstateExpression": "'P0002'",
                 "message": "not found",
                 "parameters": [],
@@ -39189,7 +39280,7 @@
                 ]
               },
               {
-                "line": 40,
+                "line": 43,
                 "sqlstateExpression": "'P0002'",
                 "message": "not found",
                 "parameters": [],
@@ -39214,9 +39305,9 @@
             ],
             "returns": [
               {
-                "line": 70,
+                "line": 78,
                 "statement": "PLpgSQL_stmt_return",
-                "expression": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', CASE\n      WHEN v_party_only THEN v_row.basemap_storage_path\n      ELSE v_row.basemap_storage_path\n    END,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
+                "expression": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', v_row.basemap_storage_path,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
                 "path": []
               }
             ],
@@ -39254,26 +39345,34 @@
                 ]
               },
               {
-                "line": 35,
+                "line": 34,
+                "condition": "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)",
+                "path": [
+                  "v_party_only",
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
+                "line": 38,
                 "condition": "v_project IS NULL",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 39,
+                "line": 42,
                 "condition": "NOT (p_map_id = ANY (v_allowed))",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 48,
+                "line": 51,
                 "condition": "v_party_only",
                 "path": []
               },
               {
-                "line": 65,
+                "line": 73,
                 "condition": "v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed))",
                 "path": [
                   "v_party_only"
@@ -39282,7 +39381,11 @@
             ],
             "jsonObjectKeys": [
               [
-                "engine"
+                "engine",
+                "unifiedCanvas",
+                "webglRuntime",
+                "mapFrame",
+                "dungeon"
               ],
               [
                 "id",
@@ -39394,14 +39497,31 @@
                 ]
               },
               {
+                "line": 34,
+                "query": "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)",
+                "path": [
+                  "v_party_only",
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
                 "line": 35,
+                "query": "'42501'",
+                "path": [
+                  "v_party_only",
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project)"
+                ]
+              },
+              {
+                "line": 38,
                 "query": "v_project IS NULL",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 36,
+                "line": 39,
                 "query": "'P0002'",
                 "path": [
                   "v_party_only",
@@ -39409,21 +39529,21 @@
                 ]
               },
               {
-                "line": 38,
+                "line": 41,
                 "query": "v_allowed := public.atlas_wb_party_revealed_map_ids(v_row.world_profile_id, v_project)",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 39,
+                "line": 42,
                 "query": "NOT (p_map_id = ANY (v_allowed))",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 40,
+                "line": 43,
                 "query": "'P0002'",
                 "path": [
                   "v_party_only",
@@ -39431,48 +39551,48 @@
                 ]
               },
               {
-                "line": 44,
+                "line": 47,
                 "query": "v_layers := COALESCE(v_row.layers, '{\"type\":\"FeatureCollection\",\"features\":[]}'::jsonb)",
                 "path": []
               },
               {
-                "line": 45,
+                "line": 48,
                 "query": "v_meta := COALESCE(v_row.generator_meta, '{}'::jsonb)",
                 "path": []
               },
               {
-                "line": 46,
+                "line": 49,
                 "query": "v_parent := v_row.parent_map_id",
                 "path": []
               },
               {
-                "line": 48,
+                "line": 51,
                 "query": "v_party_only",
                 "path": []
               },
               {
-                "line": 49,
+                "line": 52,
                 "query": "SELECT jsonb_build_object(\n      'type', 'FeatureCollection',\n      'features', COALESCE(jsonb_agg(f.feat), '[]'::jsonb)\n    )\n                      FROM jsonb_array_elements(COALESCE(v_layers->'features', '[]'::jsonb)) AS f(feat)\n    WHERE COALESCE((f.feat->'properties'->>'secret')::boolean, false) IS NOT TRUE\n      AND (\n        (f.feat->'properties'->>'discovered') IS NULL\n        OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE\n      )",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 61,
-                "query": "v_meta := jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas')\n    )",
+                "line": 65,
+                "query": "v_meta := jsonb_strip_nulls(jsonb_build_object(\n      'engine', COALESCE(v_meta->>'engine', 'unified_canvas'),\n      'unifiedCanvas', v_meta->'unifiedCanvas',\n      'webglRuntime', v_meta->'webglRuntime',\n      'mapFrame', v_meta->'mapFrame',\n      'dungeon', v_meta->'dungeon'\n    ))",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 65,
+                "line": 73,
                 "query": "v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed))",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 66,
+                "line": 74,
                 "query": "v_parent := NULL",
                 "path": [
                   "v_party_only",
@@ -39480,8 +39600,8 @@
                 ]
               },
               {
-                "line": 70,
-                "query": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', CASE\n      WHEN v_party_only THEN v_row.basemap_storage_path\n      ELSE v_row.basemap_storage_path\n    END,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
+                "line": 78,
+                "query": "jsonb_build_object(\n    'id', v_row.id,\n    'worldProfileId', v_row.world_profile_id,\n    'parentMapId', v_parent,\n    'kind', v_row.kind,\n    'title', v_row.title,\n    'sortOrder', v_row.sort_order,\n    'bounds', v_row.bounds,\n    'layers', v_layers,\n    'basemapStoragePath', v_row.basemap_storage_path,\n    'azgaarMapStoragePath', CASE\n      WHEN v_party_only THEN NULL\n      ELSE v_row.azgaar_map_storage_path\n    END,\n    'generatorMeta', v_meta,\n    'revision', v_row.revision,\n    'updatedAt', v_row.updated_at\n  )",
                 "path": []
               }
             ],
@@ -40364,6 +40484,11 @@
           "kind": "function-call"
         },
         {
+          "from": "public.get_world_atlas_map(uuid,boolean,text)",
+          "to": "public.current_user_is_active_project_member(uuid)",
+          "kind": "function-call"
+        },
+        {
           "from": "public.current_user_can_read_world_profile(uuid)",
           "to": "public.current_user_is_active_project_member(uuid)",
           "kind": "function-call"
@@ -40559,6 +40684,10 @@
         {
           "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
           "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -40631,6 +40760,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -40639,7 +40772,7 @@
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/get_world_map-1.sql",
-              "sha256": "a514063b7871c98743e068589b93b8fe745589220e309d5a3d6b2a9019222a95"
+              "sha256": "b53d1111bca08ccdda3b79d3da1bcd00d18da4841aa8ac1624fa218b1fc60edf"
             }
           ]
         },
@@ -40656,6 +40789,12 @@
           "startLine": 84,
           "endLine": 142,
           "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 104,
+          "endLine": 169,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "callerContracts": [
@@ -40754,10 +40893,10 @@
           "securityDefiner": true,
           "searchPath": "SET search_path TO 'public'",
           "source": {
-            "path": "supabase/migrations/068_world_maps.sql",
-            "startLine": 84,
-            "endLine": 142,
-            "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43"
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 104,
+            "endLine": 169,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           },
           "transformations": [],
           "executeGrants": [
@@ -40779,6 +40918,24 @@
                 "startLine": 144,
                 "endLine": 145,
                 "sha256": "5898195600f2fc10330b1444cb288da5d58c59b5373058fa7a5923dfb123fe43"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION public.get_world_map (uuid, boolean) TO authenticated"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 169,
+                "endLine": 171,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.get_world_map (uuid, boolean) FROM PUBLIC"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 171,
+                "endLine": 172,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
               },
               "statement": "GRANT EXECUTE ON FUNCTION public.get_world_map (uuid, boolean) TO authenticated"
             }
@@ -40805,11 +40962,11 @@
             "owner": "postgres",
             "authenticated_execute": true,
             "anon_execute": true,
-            "definitionSha256": "855f17f95e1112e02fb814379a1ae0703d92ac50abf8c1510e441c197e49e1ad"
+            "definitionSha256": "8331344ff04853c6077d218a3384cbe06e71bafb8c39af15144e403450f16233"
           },
           "effectiveSource": {
             "path": ".qa/intake/rpc-contracts/effective-sql/get_world_map-1.sql",
-            "sha256": "a514063b7871c98743e068589b93b8fe745589220e309d5a3d6b2a9019222a95"
+            "sha256": "b53d1111bca08ccdda3b79d3da1bcd00d18da4841aa8ac1624fa218b1fc60edf"
           },
           "semantics": {
             "language": "plpgsql",
@@ -40838,6 +40995,10 @@
                 "arguments": 4
               },
               {
+                "name": "public.current_user_can_edit_world_profile",
+                "arguments": 1
+              },
+              {
                 "name": "public.current_user_can_read_world_profile",
                 "arguments": 1
               }
@@ -40845,7 +41006,7 @@
             "writes": [],
             "errors": [
               {
-                "line": 9,
+                "line": 10,
                 "sqlstateExpression": "'42501'",
                 "message": "not authenticated",
                 "parameters": [],
@@ -40867,7 +41028,7 @@
                 ]
               },
               {
-                "line": 12,
+                "line": 13,
                 "sqlstateExpression": "'22023'",
                 "message": "world_profile_id required",
                 "parameters": [],
@@ -40889,7 +41050,7 @@
                 ]
               },
               {
-                "line": 15,
+                "line": 16,
                 "sqlstateExpression": "'42501'",
                 "message": "forbidden",
                 "parameters": [],
@@ -40913,7 +41074,7 @@
             ],
             "returns": [
               {
-                "line": 20,
+                "line": 24,
                 "statement": "PLpgSQL_stmt_return",
                 "expression": "jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    )",
                 "path": [
@@ -40921,7 +41082,7 @@
                 ]
               },
               {
-                "line": 42,
+                "line": 46,
                 "statement": "PLpgSQL_stmt_return",
                 "expression": "jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  )",
                 "path": []
@@ -40929,28 +41090,28 @@
             ],
             "branches": [
               {
-                "line": 8,
+                "line": 9,
                 "condition": "v_user IS NULL",
                 "path": []
               },
               {
-                "line": 11,
+                "line": 12,
                 "condition": "p_world_profile_id IS NULL",
                 "path": []
               },
               {
-                "line": 14,
+                "line": 15,
                 "condition": "NOT public.current_user_can_read_world_profile(p_world_profile_id)",
                 "path": []
               },
               {
-                "line": 19,
+                "line": 23,
                 "condition": "NOT FOUND",
                 "path": []
               },
               {
-                "line": 34,
-                "condition": "p_player_view",
+                "line": 38,
+                "condition": "v_force_player",
                 "path": []
               }
             ],
@@ -40975,84 +41136,89 @@
                 "path": []
               },
               {
-                "line": 8,
+                "line": 9,
                 "query": "v_user IS NULL",
                 "path": []
               },
               {
-                "line": 9,
+                "line": 10,
                 "query": "'42501'",
                 "path": [
                   "v_user IS NULL"
                 ]
               },
               {
-                "line": 11,
+                "line": 12,
                 "query": "p_world_profile_id IS NULL",
                 "path": []
               },
               {
-                "line": 12,
+                "line": 13,
                 "query": "'22023'",
                 "path": [
                   "p_world_profile_id IS NULL"
                 ]
               },
               {
-                "line": 14,
+                "line": 15,
                 "query": "NOT public.current_user_can_read_world_profile(p_world_profile_id)",
                 "path": []
               },
               {
-                "line": 15,
+                "line": 16,
                 "query": "'42501'",
                 "path": [
                   "NOT public.current_user_can_read_world_profile(p_world_profile_id)"
                 ]
               },
               {
-                "line": 18,
+                "line": 19,
+                "query": "v_force_player := (NOT public.current_user_can_edit_world_profile(p_world_profile_id))\n                    OR (p_player_view IS TRUE)",
+                "path": []
+              },
+              {
+                "line": 22,
                 "query": "SELECT *            FROM public.world_maps WHERE world_profile_id = p_world_profile_id",
                 "path": []
               },
               {
-                "line": 19,
+                "line": 23,
                 "query": "NOT FOUND",
                 "path": []
               },
               {
-                "line": 20,
+                "line": 24,
                 "query": "jsonb_build_object(\n      'worldProfileId', p_world_profile_id,\n      'revision', 0,\n      'mapData', jsonb_build_object(\n        'size', 24,\n        'tiles', '{}'::jsonb,\n        'countries', '[]'::jsonb,\n        'pins', '[]'::jsonb\n      ),\n      'updatedAt', NULL\n    )",
                 "path": [
                   "NOT FOUND"
                 ]
               },
               {
-                "line": 33,
+                "line": 37,
                 "query": "v_data := COALESCE(v_row.map_data, '{}'::jsonb)",
                 "path": []
               },
               {
-                "line": 34,
-                "query": "p_player_view",
+                "line": 38,
+                "query": "v_force_player",
                 "path": []
               },
               {
-                "line": 35,
+                "line": 39,
                 "query": "SELECT COALESCE(jsonb_agg(elem), '[]'::jsonb)\n                        FROM jsonb_array_elements(COALESCE(v_data->'pins', '[]'::jsonb)) AS elem\n     WHERE COALESCE((elem->>'discovered')::boolean, true) IS TRUE",
                 "path": [
-                  "p_player_view"
+                  "v_force_player"
                 ]
               },
               {
-                "line": 39,
-                "query": "v_data := jsonb_set(v_data, '{pins}', v_pins, true)",
+                "line": 43,
+                "query": "v_data := jsonb_set(v_data, '{pins}', COALESCE(v_pins, '[]'::jsonb), true)",
                 "path": [
-                  "p_player_view"
+                  "v_force_player"
                 ]
               },
               {
-                "line": 42,
+                "line": 46,
                 "query": "jsonb_build_object(\n    'worldProfileId', v_row.world_profile_id,\n    'revision', v_row.revision,\n    'mapData', v_data,\n    'updatedAt', v_row.updated_at\n  )",
                 "path": []
               }
@@ -41529,11 +41695,17 @@
         }
       ],
       "dependencyFunctions": [
+        "public.current_user_can_edit_world_profile(uuid)",
         "public.current_user_can_read_world_profile(uuid)",
         "public.current_user_is_active_project_member(uuid)",
         "public.get_world_map(uuid,boolean)"
       ],
       "dependencyEdges": [
+        {
+          "from": "public.get_world_map(uuid,boolean)",
+          "to": "public.current_user_can_edit_world_profile(uuid)",
+          "kind": "function-call"
+        },
         {
           "from": "public.get_world_map(uuid,boolean)",
           "to": "public.current_user_can_read_world_profile(uuid)",
@@ -41649,6 +41821,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -43517,16 +43693,32 @@
             "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
           },
           {
+            "path": "supabase/migrations/050_session_adventure_runtime.sql",
+            "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+          },
+          {
             "path": "supabase/migrations/051_session_director_runtime.sql",
             "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+          },
+          {
+            "path": "supabase/migrations/052_projects_look_settings.sql",
+            "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
           },
           {
             "path": "supabase/migrations/053_sessions_look_override.sql",
             "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
           },
           {
+            "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+            "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+          },
+          {
             "path": "supabase/migrations/061_session_recaps_and_handover.sql",
             "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+          },
+          {
+            "path": "supabase/migrations/063_saga_definitions.sql",
+            "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
           },
           {
             "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
@@ -43547,6 +43739,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -44369,6 +44565,7 @@
         "public.npc_creature_controller_assignments",
         "public.npc_creature_instances",
         "public.project_members",
+        "public.projects",
         "public.session_events",
         "public.session_players",
         "public.sessions"
@@ -44784,6 +44981,114 @@
         },
         {
           "schema": "public",
+          "relation": "projects",
+          "name": "projects_code_key",
+          "type": "u",
+          "definition": "UNIQUE (code)",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_default_look_profile_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (default_look_profile_id) REFERENCES look_profiles(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "look_profiles",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_gm_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (gm_user_id) REFERENCES auth.users(id)",
+          "relation_id": "projects",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_public_id_format",
+          "type": "c",
+          "definition": "CHECK ((public_id ~ '^SA-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$'::text))",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_saga_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (saga_id) REFERENCES saga_definitions(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "saga_definitions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_saga_version_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (saga_version_id) REFERENCES saga_definition_versions(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "saga_definition_versions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_status_check",
+          "type": "c",
+          "definition": "CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'completed'::character varying, 'archived'::character varying])::text[])))",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_world_profile_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (world_profile_id) REFERENCES world_profiles(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "world_profiles",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
           "relation": "session_events",
           "name": "session_events_actor_user_id_fkey",
           "type": "f",
@@ -44953,6 +45258,39 @@
       ],
       "relationPolicies": [
         {
+          "name": "GMs can insert their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 183,
+            "endLine": 186,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can insert their projects\" ON public.projects AS PERMISSIVE FOR insert TO PUBLIC WITH CHECK (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can update their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 186,
+            "endLine": 189,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can update their projects\" ON public.projects AS PERMISSIVE FOR update TO PUBLIC USING (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can delete their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 189,
+            "endLine": 192,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can delete their projects\" ON public.projects AS PERMISSIVE FOR delete TO PUBLIC USING (gm_user_id = auth.uid())"
+        },
+        {
           "name": "Users can insert their characters",
           "relation": "public.characters",
           "source": {
@@ -45074,6 +45412,28 @@
           "statement": "CREATE POLICY \"Users can view their characters\" ON public.characters AS PERMISSIVE FOR select TO PUBLIC USING (owner_user_id = auth.uid() OR is_public = TRUE OR (project_id IS NOT NULL AND (public.is_project_gm(project_id, auth.uid()) OR public.current_user_is_active_project_member(project_id))))"
         },
         {
+          "name": "Users can view projects where they are GM",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 64,
+            "endLine": 69,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Users can view projects where they are GM\" ON public.projects AS PERMISSIVE FOR select TO authenticated USING (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "Active members can view their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 69,
+            "endLine": 74,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Active members can view their projects\" ON public.projects AS PERMISSIVE FOR select TO authenticated USING (public.current_user_is_active_project_member(id))"
+        },
+        {
           "name": "Users can view project members",
           "relation": "public.project_members",
           "source": {
@@ -45124,6 +45484,8 @@
         "public.clear_npc_creature_instance_temp_controller_on_member_inactive()",
         "public.ensure_active_project_player(uuid,uuid,uuid)",
         "public.forbid_public_id_change()",
+        "public.is_project_gm(uuid,uuid)",
+        "public.is_session_participant(uuid,uuid)",
         "public.join_session_by_code(text,uuid)",
         "public.set_npc_creature_controller_assignments_updated_at()",
         "public.set_npc_creature_instances_updated_at()",
@@ -45188,6 +45550,16 @@
           "kind": "trigger",
           "trigger": "trg_npc_creature_controller_assignments_updated_at",
           "relation": "public.npc_creature_controller_assignments"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.is_session_participant(uuid,uuid)",
+          "to": "public.is_project_gm(uuid,uuid)",
+          "kind": "function-call"
         }
       ],
       "proposedSuccessor": {
@@ -45317,16 +45689,32 @@
           "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
         },
         {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+        },
+        {
           "path": "supabase/migrations/051_session_director_runtime.sql",
           "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+        },
+        {
+          "path": "supabase/migrations/052_projects_look_settings.sql",
+          "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
         },
         {
           "path": "supabase/migrations/053_sessions_look_override.sql",
           "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
         },
         {
+          "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+          "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+        },
+        {
           "path": "supabase/migrations/061_session_recaps_and_handover.sql",
           "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+        },
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
         },
         {
           "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
@@ -45347,6 +45735,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -45373,6 +45765,10 @@
             "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
           },
           {
+            "path": "supabase/migrations/015_inventory_item_definitions.sql",
+            "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7"
+          },
+          {
             "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
             "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96"
           },
@@ -45393,16 +45789,40 @@
             "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
           },
           {
+            "path": "supabase/migrations/050_session_adventure_runtime.sql",
+            "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+          },
+          {
             "path": "supabase/migrations/051_session_director_runtime.sql",
             "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+          },
+          {
+            "path": "supabase/migrations/052_projects_look_settings.sql",
+            "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
           },
           {
             "path": "supabase/migrations/053_sessions_look_override.sql",
             "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
           },
           {
+            "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+            "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+          },
+          {
             "path": "supabase/migrations/061_session_recaps_and_handover.sql",
             "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+          },
+          {
+            "path": "supabase/migrations/063_saga_definitions.sql",
+            "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
+          },
+          {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -45411,7 +45831,7 @@
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
-              "sha256": "65da52733733a17c92a01250b3c1ebbdf776663343bee04dae32dc374a27b217"
+              "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
             }
           ]
         },
@@ -45435,6 +45855,12 @@
           "startLine": 457,
           "endLine": 490,
           "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 52,
+          "endLine": 101,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "callerContracts": [
@@ -45529,10 +45955,10 @@
           "securityDefiner": true,
           "searchPath": "SET search_path TO 'public', 'pg_temp'",
           "source": {
-            "path": "supabase/migrations/041_session_runtime_state.sql",
-            "startLine": 457,
-            "endLine": 490,
-            "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 52,
+            "endLine": 101,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           },
           "transformations": [],
           "executeGrants": [
@@ -45554,6 +45980,24 @@
                 "startLine": 190,
                 "endLine": 191,
                 "sha256": "0f925ad01130c34b55bdc7304b2248e83f26c7e9f12bf75622fdfc22e87d6389"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION public.leave_play_session (uuid) TO authenticated"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 101,
+                "endLine": 103,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.leave_play_session (uuid) FROM PUBLIC"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 103,
+                "endLine": 104,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
               },
               "statement": "GRANT EXECUTE ON FUNCTION public.leave_play_session (uuid) TO authenticated"
             }
@@ -45579,11 +46023,11 @@
             "owner": "postgres",
             "authenticated_execute": true,
             "anon_execute": true,
-            "definitionSha256": "87eac23b0bf10265dad40ea63ef08f14e164ef384458550a5f85ac6bcbddd3cd"
+            "definitionSha256": "8a529a798c7ff773189ee0a232c5a9a196418f57b82a0691589fd5a1f5ab7671"
           },
           "effectiveSource": {
             "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
-            "sha256": "65da52733733a17c92a01250b3c1ebbdf776663343bee04dae32dc374a27b217"
+            "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
           },
           "semantics": {
             "language": "plpgsql",
@@ -45609,11 +46053,18 @@
               {
                 "operation": "DELETE",
                 "relation": "public.session_players",
-                "line": 10,
+                "line": 14,
                 "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
                 "path": [
-                  "FOUND"
+                  "NOT FOUND"
                 ]
+              },
+              {
+                "operation": "DELETE",
+                "relation": "public.session_players",
+                "line": 18,
+                "query": "DELETE FROM public.session_players\n   WHERE session_id = p_session_id AND user_id = actor",
+                "path": []
               },
               {
                 "operation": "UPDATE",
@@ -45622,25 +46073,14 @@
                   "runtime_revision",
                   "updated_at"
                 ],
-                "line": 12,
-                "query": "UPDATE public.sessions\n       SET runtime_revision = v_revision, updated_at = NOW()\n     WHERE id = p_session_id",
-                "path": [
-                  "FOUND"
-                ]
-              },
-              {
-                "operation": "DELETE",
-                "relation": "public.session_players",
-                "line": 24,
-                "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
-                "path": [
-                  "ELSE AFTER: FOUND"
-                ]
+                "line": 28,
+                "query": "UPDATE public.sessions\n     SET runtime_revision = v_revision, updated_at = NOW()\n   WHERE id = p_session_id",
+                "path": []
               }
             ],
             "errors": [
               {
-                "line": 7,
+                "line": 9,
                 "sqlstateExpression": "'42501'",
                 "message": "Authentication required",
                 "parameters": [],
@@ -45664,7 +46104,23 @@
             ],
             "returns": [
               {
-                "line": 6,
+                "line": 15,
+                "statement": "PLpgSQL_stmt_return",
+                "expression": "RETURN datum/void",
+                "path": [
+                  "NOT FOUND"
+                ]
+              },
+              {
+                "line": 24,
+                "statement": "PLpgSQL_stmt_return",
+                "expression": "RETURN datum/void",
+                "path": [
+                  "v_removed = 0"
+                ]
+              },
+              {
+                "line": 7,
                 "statement": "PLpgSQL_stmt_return",
                 "expression": "RETURN datum/void",
                 "path": []
@@ -45672,13 +46128,18 @@
             ],
             "branches": [
               {
-                "line": 7,
+                "line": 8,
                 "condition": "actor IS NULL",
                 "path": []
               },
               {
-                "line": 9,
-                "condition": "FOUND",
+                "line": 13,
+                "condition": "NOT FOUND",
+                "path": []
+              },
+              {
+                "line": 22,
+                "condition": "v_removed = 0",
                 "path": []
               }
             ],
@@ -45690,61 +46151,63 @@
                 "path": []
               },
               {
-                "line": 7,
+                "line": 6,
+                "query": "0",
+                "path": []
+              },
+              {
+                "line": 8,
                 "query": "actor IS NULL",
                 "path": []
               },
               {
-                "line": 7,
+                "line": 9,
                 "query": "'42501'",
                 "path": [
                   "actor IS NULL"
                 ]
               },
               {
-                "line": 8,
+                "line": 12,
                 "query": "SELECT *                FROM public.sessions WHERE id = p_session_id FOR UPDATE",
                 "path": []
               },
               {
-                "line": 9,
-                "query": "FOUND",
+                "line": 13,
+                "query": "NOT FOUND",
                 "path": []
               },
               {
-                "line": 10,
+                "line": 14,
                 "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
                 "path": [
-                  "FOUND"
+                  "NOT FOUND"
                 ]
               },
               {
-                "line": 11,
+                "line": 18,
+                "query": "DELETE FROM public.session_players\n   WHERE session_id = p_session_id AND user_id = actor",
+                "path": []
+              },
+              {
+                "line": 22,
+                "query": "v_removed = 0",
+                "path": []
+              },
+              {
+                "line": 27,
                 "query": "v_revision := COALESCE(v_session.runtime_revision, 0) + 1",
-                "path": [
-                  "FOUND"
-                ]
+                "path": []
               },
               {
-                "line": 12,
-                "query": "UPDATE public.sessions\n       SET runtime_revision = v_revision, updated_at = NOW()\n     WHERE id = p_session_id",
-                "path": [
-                  "FOUND"
-                ]
+                "line": 28,
+                "query": "UPDATE public.sessions\n     SET runtime_revision = v_revision, updated_at = NOW()\n   WHERE id = p_session_id",
+                "path": []
               },
               {
-                "line": 15,
-                "query": "SELECT public.append_session_event(\n      p_session_id,\n      'leave',\n      actor,\n      '{}'::jsonb,\n      v_revision,\n      NULL\n    )",
-                "path": [
-                  "FOUND"
-                ]
-              },
-              {
-                "line": 24,
-                "query": "DELETE FROM public.session_players WHERE session_id = p_session_id AND user_id = actor",
-                "path": [
-                  "ELSE AFTER: FOUND"
-                ]
+                "line": 31,
+                "query": "SELECT public.append_session_event(\n    p_session_id,\n    'leave',\n    actor,\n    '{}'::jsonb,\n    v_revision,\n    NULL\n  )",
+                "path": []
               }
             ],
             "dynamicSql": [],
@@ -45759,11 +46222,193 @@
         "public.sessions"
       ],
       "transitiveRelations": [
+        "public.project_members",
+        "public.projects",
         "public.session_events",
         "public.session_players",
         "public.sessions"
       ],
       "relationConstraints": [
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "project_members",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_project_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE",
+          "relation_id": "project_members",
+          "referenced_relation": "projects",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_project_id_user_id_key",
+          "type": "u",
+          "definition": "UNIQUE (project_id, user_id)",
+          "relation_id": "project_members",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_role_check",
+          "type": "c",
+          "definition": "CHECK (((role)::text = ANY ((ARRAY['gm'::character varying, 'player'::character varying, 'observer'::character varying])::text[])))",
+          "relation_id": "project_members",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_status_check",
+          "type": "c",
+          "definition": "CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'inactive'::character varying, 'kicked'::character varying])::text[])))",
+          "relation_id": "project_members",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "project_members",
+          "name": "project_members_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+          "relation_id": "project_members",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_code_key",
+          "type": "u",
+          "definition": "UNIQUE (code)",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_default_look_profile_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (default_look_profile_id) REFERENCES look_profiles(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "look_profiles",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_gm_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (gm_user_id) REFERENCES auth.users(id)",
+          "relation_id": "projects",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_public_id_format",
+          "type": "c",
+          "definition": "CHECK ((public_id ~ '^SA-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$'::text))",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_saga_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (saga_id) REFERENCES saga_definitions(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "saga_definitions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_saga_version_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (saga_version_id) REFERENCES saga_definition_versions(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "saga_definition_versions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_status_check",
+          "type": "c",
+          "definition": "CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'paused'::character varying, 'completed'::character varying, 'archived'::character varying])::text[])))",
+          "relation_id": "projects",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "projects",
+          "name": "projects_world_profile_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (world_profile_id) REFERENCES world_profiles(id) ON DELETE SET NULL",
+          "relation_id": "projects",
+          "referenced_relation": "world_profiles",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
         {
           "schema": "public",
           "relation": "session_events",
@@ -45935,6 +46580,39 @@
       ],
       "relationPolicies": [
         {
+          "name": "GMs can insert their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 183,
+            "endLine": 186,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can insert their projects\" ON public.projects AS PERMISSIVE FOR insert TO PUBLIC WITH CHECK (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can update their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 186,
+            "endLine": 189,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can update their projects\" ON public.projects AS PERMISSIVE FOR update TO PUBLIC USING (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can delete their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 189,
+            "endLine": 192,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can delete their projects\" ON public.projects AS PERMISSIVE FOR delete TO PUBLIC USING (gm_user_id = auth.uid())"
+        },
+        {
           "name": "Users can view their sessions",
           "relation": "public.sessions",
           "source": {
@@ -45988,11 +46666,79 @@
             "sha256": "620b4a236e944c1c77b4eb15ae310dca4c6a6cd2011e42047f445ad94d787cb6"
           },
           "statement": "CREATE POLICY \"Members can view session events\" ON public.session_events AS PERMISSIVE FOR select TO PUBLIC USING (session_id IN (SELECT s.id FROM public.sessions AS s WHERE public.is_project_gm(s.project_id, auth.uid()) OR EXISTS (SELECT 1 FROM public.session_players AS sp WHERE sp.session_id = s.id AND sp.user_id = auth.uid()) OR EXISTS (SELECT 1 FROM public.project_members AS pm WHERE pm.project_id = s.project_id AND pm.user_id = auth.uid() AND pm.status = 'active')))"
+        },
+        {
+          "name": "Users can view projects where they are GM",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 64,
+            "endLine": 69,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Users can view projects where they are GM\" ON public.projects AS PERMISSIVE FOR select TO authenticated USING (gm_user_id = auth.uid())"
+        },
+        {
+          "name": "Active members can view their projects",
+          "relation": "public.projects",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 69,
+            "endLine": 74,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Active members can view their projects\" ON public.projects AS PERMISSIVE FOR select TO authenticated USING (public.current_user_is_active_project_member(id))"
+        },
+        {
+          "name": "Users can view project members",
+          "relation": "public.project_members",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 83,
+            "endLine": 90,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Users can view project members\" ON public.project_members AS PERMISSIVE FOR select TO authenticated USING (user_id = auth.uid() OR public.is_project_gm(project_id, auth.uid()))"
+        },
+        {
+          "name": "GM can add members to their projects",
+          "relation": "public.project_members",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 90,
+            "endLine": 96,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"GM can add members to their projects\" ON public.project_members AS PERMISSIVE FOR insert TO authenticated WITH CHECK (public.is_project_gm(project_id, auth.uid()))"
+        },
+        {
+          "name": "GM can update members in their projects",
+          "relation": "public.project_members",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 96,
+            "endLine": 102,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"GM can update members in their projects\" ON public.project_members AS PERMISSIVE FOR update TO authenticated USING (public.is_project_gm(project_id, auth.uid())) WITH CHECK (public.is_project_gm(project_id, auth.uid()))"
+        },
+        {
+          "name": "Users can leave active project memberships",
+          "relation": "public.project_members",
+          "source": {
+            "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+            "startLine": 102,
+            "endLine": 109,
+            "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          "statement": "CREATE POLICY \"Users can leave active project memberships\" ON public.project_members AS PERMISSIVE FOR delete TO authenticated USING (user_id = auth.uid() AND status = 'active')"
         }
       ],
       "dependencyFunctions": [
         "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
         "public.forbid_public_id_change()",
+        "public.is_project_gm(uuid,uuid)",
+        "public.is_session_participant(uuid,uuid)",
         "public.leave_play_session(uuid)",
         "public.update_updated_at_column()"
       ],
@@ -46015,6 +46761,16 @@
           "kind": "trigger",
           "trigger": "trg_sessions_forbid_public_id_change",
           "relation": "public.sessions"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.is_session_participant(uuid,uuid)",
+          "to": "public.is_project_gm(uuid,uuid)",
+          "kind": "function-call"
         }
       ],
       "proposedSuccessor": {
@@ -46090,6 +46846,10 @@
           "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
         },
         {
+          "path": "supabase/migrations/015_inventory_item_definitions.sql",
+          "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7"
+        },
+        {
           "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
           "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96"
         },
@@ -46110,16 +46870,40 @@
           "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
         },
         {
+          "path": "supabase/migrations/050_session_adventure_runtime.sql",
+          "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+        },
+        {
           "path": "supabase/migrations/051_session_director_runtime.sql",
           "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+        },
+        {
+          "path": "supabase/migrations/052_projects_look_settings.sql",
+          "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
         },
         {
           "path": "supabase/migrations/053_sessions_look_override.sql",
           "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
         },
         {
+          "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+          "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+        },
+        {
           "path": "supabase/migrations/061_session_recaps_and_handover.sql",
           "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+        },
+        {
+          "path": "supabase/migrations/063_saga_definitions.sql",
+          "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
+        },
+        {
+          "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+          "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -48249,6 +49033,10 @@
           {
             "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
             "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -48257,7 +49045,7 @@
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/list_world_atlas_maps-1.sql",
-              "sha256": "cd149fc26b1dd13340a57b78025dd555eb3ec1e771318f79878ffeacc60b2ef2"
+              "sha256": "fd2ed3e2bb2f6692218e67fb8ba746f72789e2cfe960f90eac19419172427cc0"
             }
           ]
         },
@@ -48280,6 +49068,12 @@
           "startLine": 52,
           "endLine": 142,
           "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 172,
+          "endLine": 270,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "callerContracts": [
@@ -48458,10 +49252,10 @@
           "securityDefiner": true,
           "searchPath": "SET search_path TO 'public'",
           "source": {
-            "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
-            "startLine": 52,
-            "endLine": 142,
-            "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 172,
+            "endLine": 270,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           },
           "transformations": [],
           "executeGrants": [
@@ -48483,6 +49277,24 @@
                 "startLine": 383,
                 "endLine": 384,
                 "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION public.list_world_atlas_maps (uuid, boolean, text) TO authenticated"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 270,
+                "endLine": 272,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.list_world_atlas_maps (uuid, boolean, text) FROM PUBLIC"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 272,
+                "endLine": 273,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
               },
               "statement": "GRANT EXECUTE ON FUNCTION public.list_world_atlas_maps (uuid, boolean, text) TO authenticated"
             }
@@ -48510,11 +49322,11 @@
             "owner": "postgres",
             "authenticated_execute": true,
             "anon_execute": false,
-            "definitionSha256": "62808150a84e12c0d540829f9aa9ce3d06367aea92d258c3969752b4eed90eed"
+            "definitionSha256": "91796a56f4b7b658b3aa0529ba86864e23cd61338bf3b741b46a3de33ff14172"
           },
           "effectiveSource": {
             "path": ".qa/intake/rpc-contracts/effective-sql/list_world_atlas_maps-1.sql",
-            "sha256": "cd149fc26b1dd13340a57b78025dd555eb3ec1e771318f79878ffeacc60b2ef2"
+            "sha256": "fd2ed3e2bb2f6692218e67fb8ba746f72789e2cfe960f90eac19419172427cc0"
           },
           "semantics": {
             "language": "plpgsql",
@@ -48556,6 +49368,10 @@
               },
               {
                 "name": "public.current_user_can_read_world_profile",
+                "arguments": 1
+              },
+              {
+                "name": "public.current_user_is_active_project_member",
                 "arguments": 1
               }
             ],
@@ -48626,11 +49442,57 @@
                 "path": [
                   "NOT public.current_user_can_read_world_profile(p_world_profile_id)"
                 ]
+              },
+              {
+                "line": 26,
+                "sqlstateExpression": "'42501'",
+                "message": "forbidden",
+                "parameters": [],
+                "raiseOptions": [
+                  {
+                    "PLpgSQL_raise_option": {
+                      "opt_type": 0,
+                      "expr": {
+                        "PLpgSQL_expr": {
+                          "query": "'42501'",
+                          "parseMode": 2
+                        }
+                      }
+                    }
+                  }
+                ],
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "v_project IS NULL"
+                ]
+              },
+              {
+                "line": 29,
+                "sqlstateExpression": "'42501'",
+                "message": "forbidden",
+                "parameters": [],
+                "raiseOptions": [
+                  {
+                    "PLpgSQL_raise_option": {
+                      "opt_type": 0,
+                      "expr": {
+                        "PLpgSQL_expr": {
+                          "query": "'42501'",
+                          "parseMode": 2
+                        }
+                      }
+                    }
+                  }
+                ],
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "NOT public.current_user_is_active_project_member(v_project)"
+                ]
               }
             ],
             "returns": [
               {
-                "line": 30,
+                "line": 35,
                 "statement": "PLpgSQL_stmt_return",
                 "expression": "jsonb_build_object('maps', '[]'::jsonb)",
                 "path": [
@@ -48639,7 +49501,7 @@
                 ]
               },
               {
-                "line": 79,
+                "line": 83,
                 "statement": "PLpgSQL_stmt_return",
                 "expression": "jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))",
                 "path": []
@@ -48667,12 +49529,26 @@
                 "path": []
               },
               {
-                "line": 27,
+                "line": 25,
+                "condition": "v_project IS NULL",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
+                "line": 28,
+                "condition": "NOT public.current_user_is_active_project_member(v_project)",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
+                "line": 33,
                 "condition": "v_party_only",
                 "path": []
               },
               {
-                "line": 28,
+                "line": 34,
                 "condition": "v_project IS NULL",
                 "path": [
                   "v_party_only"
@@ -48761,19 +49637,49 @@
                 ]
               },
               {
-                "line": 27,
+                "line": 25,
+                "query": "v_project IS NULL",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
+                "line": 26,
+                "query": "'42501'",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "v_project IS NULL"
+                ]
+              },
+              {
+                "line": 28,
+                "query": "NOT public.current_user_is_active_project_member(v_project)",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''"
+                ]
+              },
+              {
+                "line": 29,
+                "query": "'42501'",
+                "path": [
+                  "p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> ''",
+                  "NOT public.current_user_is_active_project_member(v_project)"
+                ]
+              },
+              {
+                "line": 33,
                 "query": "v_party_only",
                 "path": []
               },
               {
-                "line": 28,
+                "line": 34,
                 "query": "v_project IS NULL",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 30,
+                "line": 35,
                 "query": "jsonb_build_object('maps', '[]'::jsonb)",
                 "path": [
                   "v_party_only",
@@ -48781,28 +49687,28 @@
                 ]
               },
               {
-                "line": 32,
+                "line": 37,
                 "query": "v_allowed := public.atlas_wb_party_revealed_map_ids(p_world_profile_id, v_project)",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 34,
-                "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        -- Hide parent id when parent map is not party-revealed (no breadcrumb leak).\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed)",
+                "line": 39,
+                "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', CASE\n          WHEN m.parent_map_id IS NULL THEN NULL\n          WHEN m.parent_map_id = ANY (v_allowed) THEN m.parent_map_id\n          ELSE NULL\n        END,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', false,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id\n      AND m.id = ANY (v_allowed)",
                 "path": [
                   "v_party_only"
                 ]
               },
               {
-                "line": 59,
+                "line": 63,
                 "query": "SELECT COALESCE(jsonb_agg(\n      jsonb_build_object(\n        'id', m.id,\n        'worldProfileId', m.world_profile_id,\n        'parentMapId', m.parent_map_id,\n        'kind', m.kind,\n        'title', m.title,\n        'sortOrder', m.sort_order,\n        'revision', m.revision,\n        'updatedAt', m.updated_at,\n        'hasAzgaarMap', m.azgaar_map_storage_path IS NOT NULL,\n        'hasBasemap', m.basemap_storage_path IS NOT NULL\n      )\n      ORDER BY m.sort_order, m.title\n    ), '[]'::jsonb)\n                    FROM public.world_atlas_maps m\n    WHERE m.world_profile_id = p_world_profile_id",
                 "path": [
                   "ELSE AFTER: v_party_only"
                 ]
               },
               {
-                "line": 79,
+                "line": 83,
                 "query": "jsonb_build_object('maps', COALESCE(v_rows, '[]'::jsonb))",
                 "path": []
               }
@@ -49686,6 +50592,11 @@
           "kind": "function-call"
         },
         {
+          "from": "public.list_world_atlas_maps(uuid,boolean,text)",
+          "to": "public.current_user_is_active_project_member(uuid)",
+          "kind": "function-call"
+        },
+        {
           "from": "public.current_user_can_read_world_profile(uuid)",
           "to": "public.current_user_is_active_project_member(uuid)",
           "kind": "function-call"
@@ -49866,6 +50777,10 @@
         {
           "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
           "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -53758,6 +54673,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -54635,6 +55554,7 @@
         "public.saga_definitions",
         "public.session_events",
         "public.session_outcome_promotions",
+        "public.session_players",
         "public.session_recaps",
         "public.sessions"
       ],
@@ -55061,6 +55981,66 @@
         },
         {
           "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_character_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (character_id) REFERENCES characters(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "characters",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+          "relation_id": "session_players",
+          "referenced_relation": "sessions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_user_id_key",
+          "type": "u",
+          "definition": "UNIQUE (session_id, user_id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
           "relation": "session_recaps",
           "name": "session_recaps_pkey",
           "type": "p",
@@ -55213,6 +56193,28 @@
           "statement": "CREATE POLICY \"GMs can manage sessions\" ON public.sessions AS PERMISSIVE FOR all TO PUBLIC USING (project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid()))"
         },
         {
+          "name": "Users can view session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 242,
+            "endLine": 248,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"Users can view session players\" ON public.session_players AS PERMISSIVE FOR select TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())) OR user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can manage session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 248,
+            "endLine": 253,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can manage session players\" ON public.session_players AS PERMISSIVE FOR all TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())))"
+        },
+        {
           "name": "Members can view session events",
           "relation": "public.session_events",
           "source": {
@@ -55315,6 +56317,7 @@
       "dependencyFunctions": [
         "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
         "public.is_project_gm(uuid,uuid)",
+        "public.is_session_participant(uuid,uuid)",
         "public.promote_session_outcome_to_saga(uuid,text)",
         "public.sagatree_ensure_saga_draft(uuid)",
         "public.sagatree_find_session_consequence(uuid,text)"
@@ -55338,6 +56341,16 @@
         {
           "from": "public.promote_session_outcome_to_saga(uuid,text)",
           "to": "public.sagatree_find_session_consequence(uuid,text)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.is_session_participant(uuid,uuid)",
+          "to": "public.is_project_gm(uuid,uuid)",
           "kind": "function-call"
         }
       ],
@@ -55483,6 +56496,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -55595,6 +56612,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -56371,6 +57392,7 @@
         "public.projects",
         "public.session_events",
         "public.session_outcome_promotions",
+        "public.session_players",
         "public.session_recaps",
         "public.sessions",
         "public.world_profiles"
@@ -56690,6 +57712,66 @@
         },
         {
           "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_character_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (character_id) REFERENCES characters(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "characters",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+          "relation_id": "session_players",
+          "referenced_relation": "sessions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_user_id_key",
+          "type": "u",
+          "definition": "UNIQUE (session_id, user_id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
           "relation": "session_recaps",
           "name": "session_recaps_pkey",
           "type": "p",
@@ -56902,6 +57984,28 @@
           "statement": "CREATE POLICY \"GMs can manage sessions\" ON public.sessions AS PERMISSIVE FOR all TO PUBLIC USING (project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid()))"
         },
         {
+          "name": "Users can view session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 242,
+            "endLine": 248,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"Users can view session players\" ON public.session_players AS PERMISSIVE FOR select TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())) OR user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can manage session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 248,
+            "endLine": 253,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can manage session players\" ON public.session_players AS PERMISSIVE FOR all TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())))"
+        },
+        {
           "name": "Users can insert their world profiles",
           "relation": "public.world_profiles",
           "source": {
@@ -57039,6 +58143,7 @@
         "public.current_user_can_edit_world_profile(uuid)",
         "public.forbid_public_id_change()",
         "public.is_project_gm(uuid,uuid)",
+        "public.is_session_participant(uuid,uuid)",
         "public.promote_session_outcome_to_world(uuid,text)",
         "public.sagatree_find_session_consequence(uuid,text)"
       ],
@@ -57069,6 +58174,16 @@
           "kind": "trigger",
           "trigger": "trg_world_profiles_forbid_public_id_change",
           "relation": "public.world_profiles"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.is_session_participant(uuid,uuid)",
+          "to": "public.is_project_gm(uuid,uuid)",
+          "kind": "function-call"
         }
       ],
       "proposedSuccessor": {
@@ -57217,6 +58332,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -65089,6 +66208,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -65097,11 +66220,11 @@
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
-              "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
+              "sha256": "78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e"
             },
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
-              "sha256": "703b33b6b2d49cbe4e426e752c32a593298a464f69ccfd04ba23b83fe48ffa00"
+              "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
             }
           ]
         },
@@ -65130,6 +66253,18 @@
           "startLine": 186,
           "endLine": 200,
           "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 279,
+          "endLine": 326,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "startLine": 326,
+          "endLine": 340,
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "callerContracts": [
@@ -65238,139 +66373,6 @@
       ],
       "overloads": [
         {
-          "signature": "public.save_session_recap_summary(uuid,text)",
-          "parameters": [
-            {
-              "name": "p_session_id",
-              "type": "uuid",
-              "mode": "FUNC_PARAM_DEFAULT",
-              "default": null
-            },
-            {
-              "name": "p_summary_text",
-              "type": "text",
-              "mode": "FUNC_PARAM_DEFAULT",
-              "default": null
-            }
-          ],
-          "returns": "jsonb",
-          "returnsSet": false,
-          "tableReturnColumns": [],
-          "rowReturnColumns": [],
-          "rowReturnColumnEvidence": null,
-          "securityDefiner": true,
-          "searchPath": "SET search_path TO 'public'",
-          "source": {
-            "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-            "startLine": 186,
-            "endLine": 200,
-            "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
-          },
-          "transformations": [],
-          "executeGrants": [
-            "authenticated"
-          ],
-          "grantHistory": [
-            {
-              "source": {
-                "path": "supabase/migrations/061_session_recaps_and_handover.sql",
-                "startLine": 218,
-                "endLine": 221,
-                "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
-              },
-              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.save_session_recap_summary (uuid, text) FROM PUBLIC"
-            },
-            {
-              "source": {
-                "path": "supabase/migrations/061_session_recaps_and_handover.sql",
-                "startLine": 221,
-                "endLine": 222,
-                "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
-              },
-              "statement": "GRANT EXECUTE ON FUNCTION public.save_session_recap_summary (uuid, text) TO authenticated"
-            },
-            {
-              "source": {
-                "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-                "startLine": 200,
-                "endLine": 203,
-                "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
-              },
-              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.save_session_recap_summary (uuid, text) FROM PUBLIC"
-            },
-            {
-              "source": {
-                "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-                "startLine": 203,
-                "endLine": 204,
-                "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
-              },
-              "statement": "GRANT EXECUTE ON FUNCTION public.save_session_recap_summary (uuid, text) TO authenticated"
-            }
-          ],
-          "origin": "migration-chain",
-          "executeGrantsScope": "Migration/optional-script declarations starting from PostgreSQL PUBLIC default; platform default ACL is separate below.",
-          "isolatedPostgresObservation": {
-            "schema": "public",
-            "name": "save_session_recap_summary",
-            "identity_arguments": "p_session_id uuid, p_summary_text text",
-            "arguments": "p_session_id uuid, p_summary_text text",
-            "result": "jsonb",
-            "proargnames": [
-              "p_session_id",
-              "p_summary_text"
-            ],
-            "pronargdefaults": 0,
-            "security_definer": true,
-            "volatility": "v",
-            "settings": [
-              "search_path=public"
-            ],
-            "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
-            "owner": "postgres",
-            "authenticated_execute": true,
-            "anon_execute": true,
-            "definitionSha256": "70c4f2a22c613135356b76c8034483b01f54695b1281f972e6ad8b1d11be64b8"
-          },
-          "effectiveSource": {
-            "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
-            "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
-          },
-          "semantics": {
-            "language": "plpgsql",
-            "relations": [],
-            "calls": [
-              {
-                "name": "public.save_session_recap_summary",
-                "arguments": 3
-              }
-            ],
-            "writes": [],
-            "errors": [],
-            "returns": [
-              {
-                "line": 3,
-                "statement": "PLpgSQL_stmt_return",
-                "expression": "public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')",
-                "path": []
-              }
-            ],
-            "branches": [],
-            "jsonObjectKeys": [],
-            "queries": [
-              {
-                "line": 3,
-                "query": "public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')",
-                "path": []
-              }
-            ],
-            "dynamicSql": [],
-            "parseErrors": [],
-            "parserNormalizations": [],
-            "temporaryRelations": []
-          }
-        },
-        {
           "signature": "public.save_session_recap_summary(uuid,text,text)",
           "parameters": [
             {
@@ -65389,7 +66391,7 @@
               "name": "p_status",
               "type": "text",
               "mode": "FUNC_PARAM_DEFAULT",
-              "default": "'draft'"
+              "default": null
             }
           ],
           "returns": "jsonb",
@@ -65400,10 +66402,10 @@
           "securityDefiner": true,
           "searchPath": "SET search_path TO 'public'",
           "source": {
-            "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-            "startLine": 135,
-            "endLine": 182,
-            "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 279,
+            "endLine": 326,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           },
           "transformations": [],
           "executeGrants": [
@@ -65412,19 +66414,19 @@
           "grantHistory": [
             {
               "source": {
-                "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-                "startLine": 182,
-                "endLine": 185,
-                "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 340,
+                "endLine": 342,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
               },
               "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.save_session_recap_summary (uuid, text, text) FROM PUBLIC"
             },
             {
               "source": {
-                "path": "supabase/migrations/062_session_recap_ai_summary.sql",
-                "startLine": 185,
-                "endLine": 186,
-                "sha256": "d02f115b12a959b1186539c310726de5791314380cc010ca337014f3045d079a"
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 342,
+                "endLine": 343,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
               },
               "statement": "GRANT EXECUTE ON FUNCTION public.save_session_recap_summary (uuid, text, text) TO authenticated"
             }
@@ -65452,11 +66454,11 @@
             "owner": "postgres",
             "authenticated_execute": true,
             "anon_execute": true,
-            "definitionSha256": "f74b3dc9f5d5a8afa3ad5c00c4ce062603f50446359e7a7a024edb615f5a2cbc"
+            "definitionSha256": "e43c528b38cd41cb91be3cc5d4dd65064398b20a3189899648cec429e07553cd"
           },
           "effectiveSource": {
-            "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
-            "sha256": "703b33b6b2d49cbe4e426e752c32a593298a464f69ccfd04ba23b83fe48ffa00"
+            "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
+            "sha256": "78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e"
           },
           "semantics": {
             "language": "plpgsql",
@@ -65705,6 +66707,121 @@
               {
                 "line": 35,
                 "query": "public.get_session_recap(p_session_id)",
+                "path": []
+              }
+            ],
+            "dynamicSql": [],
+            "parseErrors": [],
+            "parserNormalizations": [],
+            "temporaryRelations": []
+          }
+        },
+        {
+          "signature": "public.save_session_recap_summary(uuid,text)",
+          "parameters": [
+            {
+              "name": "p_session_id",
+              "type": "uuid",
+              "mode": "FUNC_PARAM_DEFAULT",
+              "default": null
+            },
+            {
+              "name": "p_summary_text",
+              "type": "text",
+              "mode": "FUNC_PARAM_DEFAULT",
+              "default": null
+            }
+          ],
+          "returns": "jsonb",
+          "returnsSet": false,
+          "tableReturnColumns": [],
+          "rowReturnColumns": [],
+          "rowReturnColumnEvidence": null,
+          "securityDefiner": true,
+          "searchPath": "SET search_path TO 'public'",
+          "source": {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 326,
+            "endLine": 340,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+          },
+          "transformations": [],
+          "executeGrants": [
+            "authenticated"
+          ],
+          "grantHistory": [
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 343,
+                "endLine": 344,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION public.save_session_recap_summary (uuid, text) FROM PUBLIC"
+            },
+            {
+              "source": {
+                "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+                "startLine": 344,
+                "endLine": 345,
+                "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION public.save_session_recap_summary (uuid, text) TO authenticated"
+            }
+          ],
+          "origin": "migration-chain",
+          "executeGrantsScope": "Migration/optional-script declarations starting from PostgreSQL PUBLIC default; platform default ACL is separate below.",
+          "isolatedPostgresObservation": {
+            "schema": "public",
+            "name": "save_session_recap_summary",
+            "identity_arguments": "p_session_id uuid, p_summary_text text",
+            "arguments": "p_session_id uuid, p_summary_text text",
+            "result": "jsonb",
+            "proargnames": [
+              "p_session_id",
+              "p_summary_text"
+            ],
+            "pronargdefaults": 0,
+            "security_definer": true,
+            "volatility": "v",
+            "settings": [
+              "search_path=public"
+            ],
+            "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+            "owner": "postgres",
+            "authenticated_execute": true,
+            "anon_execute": true,
+            "definitionSha256": "70c4f2a22c613135356b76c8034483b01f54695b1281f972e6ad8b1d11be64b8"
+          },
+          "effectiveSource": {
+            "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
+            "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
+          },
+          "semantics": {
+            "language": "plpgsql",
+            "relations": [],
+            "calls": [
+              {
+                "name": "public.save_session_recap_summary",
+                "arguments": 3
+              }
+            ],
+            "writes": [],
+            "errors": [],
+            "returns": [
+              {
+                "line": 3,
+                "statement": "PLpgSQL_stmt_return",
+                "expression": "public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')",
+                "path": []
+              }
+            ],
+            "branches": [],
+            "jsonObjectKeys": [],
+            "queries": [
+              {
+                "line": 3,
+                "query": "public.save_session_recap_summary(p_session_id, p_summary_text, 'draft')",
                 "path": []
               }
             ],
@@ -66219,6 +67336,11 @@
       ],
       "dependencyEdges": [
         {
+          "from": "public.save_session_recap_summary(uuid,text)",
+          "to": "public.save_session_recap_summary(uuid,text,text)",
+          "kind": "function-call"
+        },
+        {
           "from": "public.save_session_recap_summary(uuid,text,text)",
           "to": "public.get_session_recap(uuid)",
           "kind": "function-call"
@@ -66246,11 +67368,6 @@
         {
           "from": "public.is_session_participant(uuid,uuid)",
           "to": "public.is_project_gm(uuid,uuid)",
-          "kind": "function-call"
-        },
-        {
-          "from": "public.save_session_recap_summary(uuid,text)",
-          "to": "public.save_session_recap_summary(uuid,text,text)",
           "kind": "function-call"
         }
       ],
@@ -66297,7 +67414,28 @@
       "transactionAndIdempotency": [
         "UPSERT und anschließende Projektion sind eine Transaktion; gleiche Inhalte aktualisieren updated_at. Kein Request-Key."
       ],
-      "removedOverloads": [],
+      "removedOverloads": [
+        {
+          "signature": "public.save_session_recap_summary(uuid,text)",
+          "source": {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 273,
+            "endLine": 278,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+          },
+          "reason": "explicit DROP FUNCTION"
+        },
+        {
+          "signature": "public.save_session_recap_summary(uuid,text,text)",
+          "source": {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "startLine": 278,
+            "endLine": 279,
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
+          },
+          "reason": "explicit DROP FUNCTION"
+        }
+      ],
       "sourceFiles": [
         {
           "path": "src/infrastructure/session/session-recap-ai-service.ts",
@@ -66374,6 +67512,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -70576,6 +71718,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -71740,6 +72886,11 @@
           "from": "public.get_session_runtime_snapshot(uuid)",
           "to": "public.sagatree_project_shared_knowledge(jsonb,boolean,uuid)",
           "kind": "function-call"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
         }
       ],
       "proposedSuccessor": {
@@ -71875,6 +73026,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -71975,6 +73130,10 @@
           {
             "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
             "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -72825,6 +73984,7 @@
         "public.project_members",
         "public.projects",
         "public.session_events",
+        "public.session_players",
         "public.session_recaps",
         "public.sessions"
       ],
@@ -73059,6 +74219,66 @@
         },
         {
           "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_character_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (character_id) REFERENCES characters(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "characters",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_pkey",
+          "type": "p",
+          "definition": "PRIMARY KEY (id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE",
+          "relation_id": "session_players",
+          "referenced_relation": "sessions",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_session_id_user_id_key",
+          "type": "u",
+          "definition": "UNIQUE (session_id, user_id)",
+          "relation_id": "session_players",
+          "referenced_relation": "-",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
+          "relation": "session_players",
+          "name": "session_players_user_id_fkey",
+          "type": "f",
+          "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+          "relation_id": "session_players",
+          "referenced_relation": "auth.users",
+          "deferrable": false,
+          "initially_deferred": false,
+          "validated": true
+        },
+        {
+          "schema": "public",
           "relation": "session_recaps",
           "name": "session_recaps_pkey",
           "type": "p",
@@ -73211,6 +74431,28 @@
           "statement": "CREATE POLICY \"GMs can manage sessions\" ON public.sessions AS PERMISSIVE FOR all TO PUBLIC USING (project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid()))"
         },
         {
+          "name": "Users can view session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 242,
+            "endLine": 248,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"Users can view session players\" ON public.session_players AS PERMISSIVE FOR select TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())) OR user_id = auth.uid())"
+        },
+        {
+          "name": "GMs can manage session players",
+          "relation": "public.session_players",
+          "source": {
+            "path": "supabase/migrations/001_initial.sql",
+            "startLine": 248,
+            "endLine": 253,
+            "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
+          },
+          "statement": "CREATE POLICY \"GMs can manage session players\" ON public.session_players AS PERMISSIVE FOR all TO PUBLIC USING (session_id IN (SELECT id FROM public.sessions WHERE project_id IN (SELECT id FROM public.projects WHERE gm_user_id = auth.uid())))"
+        },
+        {
           "name": "Members can view session events",
           "relation": "public.session_events",
           "source": {
@@ -73292,6 +74534,7 @@
         "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
         "public.forbid_public_id_change()",
         "public.is_project_gm(uuid,uuid)",
+        "public.is_session_participant(uuid,uuid)",
         "public.sagatree_build_recap_highlight_lines(jsonb,boolean)",
         "public.sagatree_upsert_session_recap(uuid)",
         "public.set_session_status(uuid,text)",
@@ -73345,6 +74588,16 @@
           "kind": "trigger",
           "trigger": "trg_projects_forbid_public_id_change",
           "relation": "public.projects"
+        },
+        {
+          "from": "public.append_session_event(uuid,text,uuid,jsonb,bigint,text)",
+          "to": "public.is_session_participant(uuid,uuid)",
+          "kind": "function-call"
+        },
+        {
+          "from": "public.is_session_participant(uuid,uuid)",
+          "to": "public.is_project_gm(uuid,uuid)",
+          "kind": "function-call"
         }
       ],
       "proposedSuccessor": {
@@ -73481,6 +74734,10 @@
         {
           "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
           "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -76975,6 +78232,10 @@
           {
             "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
             "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+          },
+          {
+            "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+            "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
           }
         ],
         "reviewEvidence": {
@@ -78698,6 +79959,11 @@
           "kind": "function-call"
         },
         {
+          "from": "public.get_world_atlas_map(uuid,boolean,text)",
+          "to": "public.current_user_is_active_project_member(uuid)",
+          "kind": "function-call"
+        },
+        {
           "from": "public.current_user_can_read_world_profile(uuid)",
           "to": "public.current_user_is_active_project_member(uuid)",
           "kind": "function-call"
@@ -78831,6 +80097,10 @@
         {
           "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
           "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+        },
+        {
+          "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+          "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
         }
       ],
       "securityDefiner": true
@@ -81089,7 +82359,7 @@
   "sourceCatalogue": {
     "path": ".qa/intake/rpc-contracts/effective-functions.json",
     "functionCount": 149,
-    "sourceFileCount": 108,
+    "sourceFileCount": 109,
     "sourceFiles": [
       {
         "path": "src/supabase/add_marketplace_rpc.sql",
@@ -81522,6 +82792,10 @@
       {
         "path": "supabase/migrations/108_atlas_worldbuilder_migration_apply.sql",
         "sha256": "e0d35e8a469efa708da70b3a2c27c08e1b3988ec1ebacdd761fb8629c9001726"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ]
   }

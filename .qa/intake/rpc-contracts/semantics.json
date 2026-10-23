@@ -3714,6 +3714,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -3962,6 +3966,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -4297,16 +4305,32 @@
         "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
       },
       {
+        "path": "supabase/migrations/050_session_adventure_runtime.sql",
+        "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+      },
+      {
         "path": "supabase/migrations/051_session_director_runtime.sql",
         "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+      },
+      {
+        "path": "supabase/migrations/052_projects_look_settings.sql",
+        "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
       },
       {
         "path": "supabase/migrations/053_sessions_look_override.sql",
         "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
       },
       {
+        "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+        "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+      },
+      {
         "path": "supabase/migrations/061_session_recaps_and_handover.sql",
         "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+      },
+      {
+        "path": "supabase/migrations/063_saga_definitions.sql",
+        "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
       },
       {
         "path": "supabase/migrations/072_dornhain_seed_and_character_rls.sql",
@@ -4327,6 +4351,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -4401,6 +4429,10 @@
         "sha256": "e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8"
       },
       {
+        "path": "supabase/migrations/015_inventory_item_definitions.sql",
+        "sha256": "aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7"
+      },
+      {
         "path": "supabase/migrations/039_public_resource_ids_and_session_numbers.sql",
         "sha256": "053f02aaea8e1f3af27bfa3f6c7e17caadd5d5434ef6298e11920d0891b55f96"
       },
@@ -4421,22 +4453,46 @@
         "sha256": "d2cc67aea9ea3751ca52d09392c0777529019e4700b80a63fdbbd4dc4fcec8b7"
       },
       {
+        "path": "supabase/migrations/050_session_adventure_runtime.sql",
+        "sha256": "51fae34e30f92395dc8437f8194af45c422f67c91c403e00f747807b09fa75fc"
+      },
+      {
         "path": "supabase/migrations/051_session_director_runtime.sql",
         "sha256": "7b483670555f06c5dec8dd3347e9b8b9336c17b143a6ada8f0c90709b479c010"
+      },
+      {
+        "path": "supabase/migrations/052_projects_look_settings.sql",
+        "sha256": "fd581588589e5d27c50bc8c97ab5478aa7b12d4d3ba081f367e752543fdb2488"
       },
       {
         "path": "supabase/migrations/053_sessions_look_override.sql",
         "sha256": "1ff74aba67dc024b7f7c080933e5cbb684c139f8532bf7d10bf13669c9e5647b"
       },
       {
+        "path": "supabase/migrations/059_saga_state_column_privileges.sql",
+        "sha256": "218a09c923cc8880384355c8cefad15fb4a31d7b39cbd11d5531f5a433c58866"
+      },
+      {
         "path": "supabase/migrations/061_session_recaps_and_handover.sql",
         "sha256": "be5ec785052294d9722fb0789032fbd62d845695d1c2bddeca7c60fe9e951921"
+      },
+      {
+        "path": "supabase/migrations/063_saga_definitions.sql",
+        "sha256": "09e02b7347ee1f64bcac0e1ff18b2293fc169269e01264e9cdbf8c412fa53c89"
+      },
+      {
+        "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
+        "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
-        "sha256": "65da52733733a17c92a01250b3c1ebbdf776663343bee04dae32dc374a27b217"
+        "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
       }
     ],
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
@@ -4566,6 +4622,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -5125,16 +5185,20 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-1.sql",
-        "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
+        "sha256": "78aa2e120df0e7ea548da637210560ee04c49a1b41f06fdd235b4c6255ba638e"
       },
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/save_session_recap_summary-2.sql",
-        "sha256": "703b33b6b2d49cbe4e426e752c32a593298a464f69ccfd04ba23b83fe48ffa00"
+        "sha256": "9f32efdc341c62f5fbd16922d48bdd8ebc78ac535e41fc3cebb493f0b7942c52"
       }
     ],
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
@@ -7123,6 +7187,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -7270,6 +7338,10 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -7375,12 +7447,16 @@
       {
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/get_world_map-1.sql",
-        "sha256": "a514063b7871c98743e068589b93b8fe745589220e309d5a3d6b2a9019222a95"
+        "sha256": "b53d1111bca08ccdda3b79d3da1bcd00d18da4841aa8ac1624fa218b1fc60edf"
       }
     ],
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
@@ -7559,6 +7635,10 @@
       {
         "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
         "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
@@ -7603,6 +7683,33 @@
         "observation": {
           "path": ".qa/intake/rpc-contracts/legacy-observations.json",
           "testId": "BASELINE-SEC-CROSS-SAGA"
+        }
+      }
+    ],
+    "transportObservations": [
+      {
+        "scope": "Isolated real GoTrue 2.143.0 and PostgREST 12.0.1 with synthetic data; not a deployed product database.",
+        "source": {
+          "path": ".qa/intake/rpc-contracts/transport-observations.json",
+          "sha256": "12cafb85433a188d601f1e4231ed32dfffc1da697bb4093867ffc0bdc9a9e03b"
+        },
+        "observedAt": "2026-10-21T08:22:09.006Z",
+        "actor": "outsider",
+        "actorId": "a7700000-0000-4000-8000-000000000005",
+        "authentication": "Actual GoTrue password grant",
+        "method": "POST",
+        "path": "/rest/v1/rpc/list_world_atlas_maps",
+        "request": {
+          "p_world_profile_id": "a7700000-0000-4000-8000-000000000101",
+          "p_player_view": false,
+          "p_saga_public_id": "SA-FX234"
+        },
+        "status": 403,
+        "response": {
+          "code": "42501",
+          "details": null,
+          "hint": null,
+          "message": "forbidden"
         }
       }
     ],
@@ -7698,42 +7805,19 @@
       {
         "path": "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
         "sha256": "8ab33d4d6ace74d129350524607e5e3e9ceab4a4c1d06c9d59b867be4899eacf"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/list_world_atlas_maps-1.sql",
-        "sha256": "cd149fc26b1dd13340a57b78025dd555eb3ec1e771318f79878ffeacc60b2ef2"
+        "sha256": "fd2ed3e2bb2f6692218e67fb8ba746f72789e2cfe960f90eac19419172427cc0"
       }
     ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
-    "transportObservations": [
-      {
-        "scope": "Isolated real GoTrue 2.143.0 and PostgREST 12.0.1 with synthetic data; not a deployed product database.",
-        "source": {
-          "path": ".qa/intake/rpc-contracts/transport-observations.json",
-          "sha256": "12cafb85433a188d601f1e4231ed32dfffc1da697bb4093867ffc0bdc9a9e03b"
-        },
-        "observedAt": "2026-10-21T08:22:09.006Z",
-        "actor": "outsider",
-        "actorId": "a7700000-0000-4000-8000-000000000005",
-        "authentication": "Actual GoTrue password grant",
-        "method": "POST",
-        "path": "/rest/v1/rpc/list_world_atlas_maps",
-        "request": {
-          "p_world_profile_id": "a7700000-0000-4000-8000-000000000101",
-          "p_player_view": false,
-          "p_saga_public_id": "SA-FX234"
-        },
-        "status": 403,
-        "response": {
-          "code": "42501",
-          "details": null,
-          "hint": null,
-          "message": "forbidden"
-        }
-      }
-    ]
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
   },
   "get_world_atlas_map": {
     "summary": "Liefert genau eine Atlas-Karte mit erzwungener Party-Geometrie-/Metadatenprojektion.",
@@ -7771,6 +7855,33 @@
           "testId": "BASELINE-SEC-CROSS-SAGA"
         },
         "reproductionScope": "The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture."
+      }
+    ],
+    "transportObservations": [
+      {
+        "scope": "Isolated real GoTrue 2.143.0 and PostgREST 12.0.1 with synthetic data; not a deployed product database.",
+        "source": {
+          "path": ".qa/intake/rpc-contracts/transport-observations.json",
+          "sha256": "12cafb85433a188d601f1e4231ed32dfffc1da697bb4093867ffc0bdc9a9e03b"
+        },
+        "observedAt": "2026-10-21T08:22:09.006Z",
+        "actor": "player1",
+        "actorId": "a7700000-0000-4000-8000-000000000003",
+        "authentication": "Actual GoTrue password grant",
+        "method": "POST",
+        "path": "/rest/v1/rpc/get_world_atlas_map",
+        "request": {
+          "p_map_id": "a7700000-0000-4000-8000-000000000502",
+          "p_player_view": true,
+          "p_saga_public_id": "SA-FX234"
+        },
+        "status": 500,
+        "response": {
+          "code": "P0002",
+          "details": null,
+          "hint": null,
+          "message": "not found"
+        }
       }
     ],
     "reviewedSources": [
@@ -7869,42 +7980,19 @@
       {
         "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
         "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
       {
         "path": ".qa/intake/rpc-contracts/effective-sql/get_world_atlas_map-1.sql",
-        "sha256": "08144bbae3b2047f3799f40ca96b59b13a7b58dec54afe52050c4694944499b9"
+        "sha256": "ed9c1232f4c6116213d7562f3c0e547bb5b66eaba1895071b60e8e1d2d2a7764"
       }
     ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
-    "transportObservations": [
-      {
-        "scope": "Isolated real GoTrue 2.143.0 and PostgREST 12.0.1 with synthetic data; not a deployed product database.",
-        "source": {
-          "path": ".qa/intake/rpc-contracts/transport-observations.json",
-          "sha256": "12cafb85433a188d601f1e4231ed32dfffc1da697bb4093867ffc0bdc9a9e03b"
-        },
-        "observedAt": "2026-10-21T08:22:09.006Z",
-        "actor": "player1",
-        "actorId": "a7700000-0000-4000-8000-000000000003",
-        "authentication": "Actual GoTrue password grant",
-        "method": "POST",
-        "path": "/rest/v1/rpc/get_world_atlas_map",
-        "request": {
-          "p_map_id": "a7700000-0000-4000-8000-000000000502",
-          "p_player_view": true,
-          "p_saga_public_id": "SA-FX234"
-        },
-        "status": 500,
-        "response": {
-          "code": "P0002",
-          "details": null,
-          "hint": null,
-          "message": "not found"
-        }
-      }
-    ]
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
   },
   "upsert_world_atlas_map": {
     "summary": "Legt Atlas-Karten an oder ersetzt sie mit Revisionskontrolle und GeoJSON-Validierung.",
@@ -8025,6 +8113,10 @@
       {
         "path": "supabase/migrations/106_atlas_get_map_overload_fix.sql",
         "sha256": "7710abc048b018cb9505fad8767792baa659f49943ae1ee38b85222f69449a2d"
+      },
+      {
+        "path": "supabase/migrations/109_baseline_security_trust_boundaries.sql",
+        "sha256": "4d4fe56b87341147a6324fd8b5a37de9b149dbc391f81c8046c9b8fa018bb26b"
       }
     ],
     "reviewedEffectiveSql": [
