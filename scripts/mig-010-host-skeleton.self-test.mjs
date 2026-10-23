@@ -229,8 +229,13 @@ const throwingHandler = createRouteHandler({
   },
   ops: { getHealth: () => ({ ready: true, mode: 'solo', dataDirFingerprint: 'x' }), acceptMutations: () => true },
   permissions: { authorize: () => ({ allow: true, reason: 'test' }) },
-  identity: { resolveSoloActor: () => ({ kind: 'solo-local', actorId: 'test' }) },
+  identity: {
+    resolveSoloActor: () => ({ kind: 'solo-local', actorId: 'test' }),
+    resolveRemoteSession: async () => ({ ok: false, code: 'AUTH_NOT_CONFIGURED' }),
+  },
   recordPing: () => ({ ok: true }),
+  authHandlerRef: { current: null },
+  tryAuthorizedProjectTouch: () => ({ ok: false, status: 403, error: 'test' }),
 });
 const mockRes = {
   headersSent: false,

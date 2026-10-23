@@ -440,6 +440,18 @@ function checkMig012WorldReadPort() {
   );
 }
 
+function checkMig014BetterAuthHost() {
+  console.log('MIG-014 Better Auth host accounts (#793): cookie profile + HTTP/WS self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-014-better-auth-host.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2579,6 +2591,7 @@ checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();
 checkMig012WorldReadPort();
+checkMig014BetterAuthHost();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
