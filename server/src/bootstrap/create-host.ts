@@ -89,7 +89,11 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     let server: Server | null = null;
     let authDbClose: (() => void) | null = null;
     let betterAuth: HostBetterAuth | null = null;
-    const authRuntime: AuthRuntimeHolder = { auth: null, origin: null };
+    const authRuntime: AuthRuntimeHolder = {
+      auth: null,
+      origin: null,
+      trustedOrigins: config.auth?.trustedOrigins ?? [],
+    };
     const pingLogPath = join(config.dataDir, 'ping-log.jsonl');
     const projectTouchPath = join(config.dataDir, 'project-touch.jsonl');
     const worldTouchPath = join(config.dataDir, 'world-touch.jsonl');
@@ -169,6 +173,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ops,
       permissions,
       identity,
+      hostMode: config.mode,
+      trustedOrigins: config.auth?.trustedOrigins ?? [],
       recordPing,
       authHandlerRef,
       tryAuthorizedProjectTouch,
@@ -202,6 +208,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           betterAuth = created.auth;
           authRuntime.auth = created.auth;
           authRuntime.origin = config.auth.baseURL;
+          authRuntime.trustedOrigins = config.auth.trustedOrigins;
           authDbClose = () => {
             try {
               created.db.close();
@@ -225,6 +232,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           attachSessionWebSocket(server, {
             auth: betterAuth,
             origin: config.auth.baseURL,
+            trustedOrigins: config.auth.trustedOrigins,
           });
         }
 

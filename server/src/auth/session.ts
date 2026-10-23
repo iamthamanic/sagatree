@@ -4,6 +4,7 @@
  */
 import type { IncomingHttpHeaders } from 'node:http';
 import type { HostBetterAuth } from './cookie-profile.ts';
+import { isTrustedOrigin, normalizeOrigin } from './origin.ts';
 import { detectForgedSoloIdentityClaims } from './solo/forged-identity.ts';
 
 export type RemoteActor = {
@@ -43,7 +44,13 @@ function headersFromNode(raw: IncomingHttpHeaders | Headers): Headers {
 
 export type SessionResolveOptions = {
   readonly auth: HostBetterAuth;
+  /** Auth API base URL (used for Host header checks). */
   readonly origin: string;
+  /**
+   * Normalized trusted origins (URL.origin). Cross-origin frontends must be listed.
+   * When empty/omitted, falls back to the auth `origin` only.
+   */
+  readonly trustedOrigins?: readonly string[];
   readonly headers: IncomingHttpHeaders | Headers;
   /** Safe same-origin GETs may omit Origin; require Host + Sec-Fetch-Site. */
   readonly allowSameOriginRead?: boolean;
@@ -52,6 +59,15 @@ export type SessionResolveOptions = {
   /** Solo actor ids linked to the resolved remote user (from durable link store). */
   readonly linkedSoloActorIds?: readonly string[];
 };
+
+function resolveAllowlist(
+  origin: string,
+  trustedOrigins: readonly string[] | undefined,
+): readonly string[] {
+  if (trustedOrigins && trustedOrigins.length > 0) return trustedOrigins;
+  const fallback = normalizeOrigin(origin);
+  return fallback ? [fallback] : [];
+}
 
 /**
  * Resolve the current Better Auth cookie session into a remote Actor.
@@ -73,9 +89,10 @@ export async function resolveCookieSession(
     return { ok: false, code: 'HOST_DENIED' };
   }
 
+  const allowlist = resolveAllowlist(options.origin, options.trustedOrigins);
   const originHeader = headers.get('origin');
   if (originHeader) {
-    if (originHeader !== options.origin) {
+    if (!isTrustedOrigin(originHeader, allowlist)) {
       return { ok: false, code: 'ORIGIN_DENIED' };
     }
   } else if (options.allowSameOriginRead) {

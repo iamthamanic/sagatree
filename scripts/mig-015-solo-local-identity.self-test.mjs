@@ -337,6 +337,53 @@ try {
   const stillSame = JSON.parse(readFileSync(join(remoteDir, solo.HOST_IDENTITY_FILENAME), 'utf8')).actorId;
   assert(stillSame === actorId1, 'host identity not rewritten by link');
 
+  // --- P1: remote /v1/ping must not mutate under solo identity without auth ---
+  const pingPath = join(remoteDir, 'ping-log.jsonl');
+  const pingBefore = existsSync(pingPath) ? readFileSync(pingPath, 'utf8') : '';
+  const unauthPing = await httpJson(baseURL, '/v1/ping', {
+    method: 'POST',
+    headers: { Origin: baseURL },
+  });
+  assert(
+    unauthPing.res.status === 401 || unauthPing.res.status === 403,
+    `unauth remote ping denied: ${unauthPing.res.status}`,
+  );
+  assert(unauthPing.json?.mutated !== true, 'unauth ping must not report mutation');
+  const pingAfterUnauth = existsSync(pingPath) ? readFileSync(pingPath, 'utf8') : '';
+  assert(pingAfterUnauth === pingBefore, 'ping-log unchanged without session');
+
+  const forgedPing = await httpJson(baseURL, '/v1/ping', {
+    method: 'POST',
+    headers: { Origin: baseURL, 'x-solo-user': 'local-owner' },
+  });
+  assert(
+    forgedPing.res.status === 401 || forgedPing.res.status === 403,
+    `forged solo ping denied: ${forgedPing.res.status}`,
+  );
+  assert(forgedPing.json?.error === 'SOLO_IDENTITY_FORBIDDEN', `forged ping code: ${forgedPing.json?.error}`);
+  const pingAfterForged = existsSync(pingPath) ? readFileSync(pingPath, 'utf8') : '';
+  assert(pingAfterForged === pingBefore, 'ping-log unchanged with forged solo header');
+
+  const authPing = await httpJson(baseURL, '/v1/ping', {
+    method: 'POST',
+    headers: { Origin: baseURL },
+    cookie,
+  });
+  assert(authPing.res.status === 200, `auth remote ping ${authPing.res.status} ${authPing.text}`);
+  assert(existsSync(pingPath), 'ping-log written after authenticated ping');
+
+  // --- P2: account-link store is atomic (temp+rename); readable after write ---
+  const linkPath = join(remoteDir, solo.SOLO_ACCOUNT_LINKS_FILENAME);
+  assert(existsSync(linkPath), 'link store exists');
+  const linkRaw = readFileSync(linkPath, 'utf8');
+  const linkParsed = JSON.parse(linkRaw);
+  assert(linkParsed.version === 1 && Array.isArray(linkParsed.links), 'link store well-formed');
+  assert(linkParsed.links.some((l) => l.soloActorId === actorId1), 'link entry present');
+  // No leftover temp files from atomic writer.
+  const { readdirSync } = await import('node:fs');
+  const leftovers = readdirSync(remoteDir).filter((name) => name.includes('.tmp'));
+  assert(leftovers.length === 0, `no tmp leftovers: ${leftovers.join(',')}`);
+
   await remote.stop();
 
   console.log('PASS: mig-015 solo local identity without privilege transfer');

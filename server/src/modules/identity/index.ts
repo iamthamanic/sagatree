@@ -24,6 +24,8 @@ export type Actor = SoloActor | RemoteActor;
 export type AuthRuntimeHolder = {
   auth: HostBetterAuth | null;
   origin: string | null;
+  /** Normalized trusted origins for Origin allowlisting + CORS. */
+  trustedOrigins: readonly string[];
 };
 
 export type IdentityPorts = {
@@ -50,7 +52,7 @@ export type IdentityPorts = {
 
 export function createIdentityPorts(
   soloActorId: string,
-  authRuntime: AuthRuntimeHolder = { auth: null, origin: null },
+  authRuntime: AuthRuntimeHolder = { auth: null, origin: null, trustedOrigins: [] },
   dataDir: string = '',
 ): IdentityPorts {
   return {
@@ -67,6 +69,7 @@ export function createIdentityPorts(
       const resolved = await resolveCookieSession({
         auth: authRuntime.auth,
         origin: authRuntime.origin,
+        trustedOrigins: authRuntime.trustedOrigins,
         headers,
         allowSameOriginRead: options.allowSameOriginRead === true,
         body: options.body,

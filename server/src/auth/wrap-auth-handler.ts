@@ -138,6 +138,7 @@ export function wrapCookieAuthHandler(handler: NodeAuthHandler, origin: string):
       return end(body, callback);
     }) as typeof response.end;
 
-    void handler(request, response);
+    // Propagate rejections to the request boundary (never discard the promise).
+    return handler(request, response);
   };
 }

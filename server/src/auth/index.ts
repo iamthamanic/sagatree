@@ -24,6 +24,11 @@ export {
   type RemoteActor,
   type SessionResolveResult,
 } from './session.ts';
+export {
+  normalizeOrigin,
+  normalizeTrustedOrigins,
+  isTrustedOrigin,
+} from './origin.ts';
 export { attachSessionWebSocket, randomSecWebSocketKey } from './ws-session.ts';
 export {
   ensureSoloIdentityFile,

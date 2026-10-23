@@ -37,9 +37,27 @@ function encodeTextFrame(text: string): Buffer {
   return Buffer.concat([header, payload]);
 }
 
+/** RFC6455 close frame — normal closure (1000) so browsers do not report 1006. */
+function encodeCloseFrame(code = 1000, reason = ''): Buffer {
+  const reasonBuf = Buffer.from(reason, 'utf8');
+  const payload = Buffer.alloc(2 + reasonBuf.length);
+  payload.writeUInt16BE(code, 0);
+  reasonBuf.copy(payload, 2);
+  const len = payload.length;
+  if (len < 126) {
+    return Buffer.concat([Buffer.from([0x88, len]), payload]);
+  }
+  const header = Buffer.alloc(4);
+  header[0] = 0x88;
+  header[1] = 126;
+  header.writeUInt16BE(len, 2);
+  return Buffer.concat([header, payload]);
+}
+
 export type WsSessionDeps = {
   readonly auth: HostBetterAuth;
   readonly origin: string;
+  readonly trustedOrigins?: readonly string[];
   /** Called after a successful authenticated probe (for mutation canaries). */
   readonly onAuthenticatedProbe?: (actorId: string) => void;
 };
@@ -82,6 +100,7 @@ async function handleUpgrade(
   const resolved = await resolveCookieSession({
     auth: deps.auth,
     origin: deps.origin,
+    trustedOrigins: deps.trustedOrigins,
     headers: req.headers,
     allowSameOriginRead: false,
   });
@@ -111,7 +130,8 @@ async function handleUpgrade(
       '\r\n',
   );
   socket.write(encodeTextFrame(JSON.stringify(dto)));
-  // One-shot probe: close after identity frame (no privileged mutation surface).
+  // One-shot probe: send a protocol close frame before ending the TCP stream.
+  socket.write(encodeCloseFrame(1000));
   socket.end();
 }
 
