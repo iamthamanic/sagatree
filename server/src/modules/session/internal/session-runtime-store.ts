@@ -2,22 +2,30 @@
  * SQLite SessionRuntime store — atomic state/revision/event/idempotency (ADR-ST-08).
  * Location: server/src/modules/session/internal/session-runtime-store.ts
  *
- * Private to the session module. expectedRevision is concurrency metadata only.
+ * Persists the shared domain `SessionRuntimeState` contract (status/roster/gameplay).
+ * Commands use domain `SessionEventKind` + payload (same shape as the legacy RPC port).
+ * expectedRevision is concurrency metadata only — not part of the operation fingerprint.
  */
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import { isSqliteBusyError } from '../../../persistence/open-database.ts';
+import {
+  assertPlaySessionStatusTransition,
+  assertSessionEventKind,
+  emptyGameplayState,
+  normalizePlaySessionStatus,
+  type PlaySessionStatus,
+  type SessionEventKind,
+  type SessionGameplayState,
+  type SessionPresenceEntry,
+  type SessionRuntimeState,
+} from './session-runtime-domain.ts';
 import { canonicalJson, digest } from './canonical.ts';
 
-export type SessionRuntimeState = {
-  readonly value: number;
-  readonly applied: number;
-  readonly note: string;
-};
+export type { SessionRuntimeState };
 
 export type SessionCommandOp = {
-  readonly type: 'adjust';
-  readonly delta: number;
-  readonly note?: string;
+  readonly kind: SessionEventKind | string;
+  readonly payload?: Record<string, unknown>;
 };
 
 export type ApplyCommandInput = {
@@ -30,10 +38,7 @@ export type ApplyCommandInput = {
 export type ApplyCommandSuccess = {
   readonly ok: true;
   readonly committed: boolean;
-  readonly sessionId: string;
-  readonly revision: number;
-  readonly eventSequence: number;
-  readonly state: SessionRuntimeState;
+  readonly snapshot: SessionRuntimeState;
 };
 
 export type ApplyCommandFailure = {
@@ -47,8 +52,6 @@ export type ApplyCommandFailure = {
     | 'INVALID_OPERATION'
     | 'STALE_REVISION'
     | 'IDEMPOTENCY_MISMATCH'
-    | 'STATE_TOO_LARGE'
-    | 'NUMERIC_OVERFLOW'
     | 'DATABASE_BUSY'
     | 'SESSION_NOT_FOUND';
   readonly expected?: number;
@@ -63,19 +66,16 @@ export type SessionRuntimeStore = {
     readonly projectId: string;
     readonly writers: readonly string[];
     readonly readers?: readonly string[];
-    readonly initialState?: SessionRuntimeState;
+    readonly initial?: Partial<Pick<SessionRuntimeState, 'status' | 'roster' | 'gameplay'>>;
   }) => void;
   readonly applyCommand: (actorUserId: string, command: ApplyCommandInput) => ApplyCommandResult;
   readonly readSnapshot: (
     actorUserId: string,
     sessionId: string,
   ) =>
-    | { ok: true; sessionId: string; projectId: string; revision: number; state: SessionRuntimeState; updatedAt: string }
+    | { ok: true; snapshot: SessionRuntimeState; projectId: string }
     | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'SESSION_NOT_FOUND' };
 };
-
-const MAX_KEY_BYTES = 512;
-const MAX_STATE_BYTES = 65_536;
 
 function failure(
   error: ApplyCommandFailure['error'],
@@ -99,17 +99,92 @@ function memberExists(db: HostDatabase, sessionId: string, actorUserId: string):
   return Boolean(row);
 }
 
+function emptySnapshot(sessionId: string): SessionRuntimeState {
+  return {
+    sessionId,
+    revision: 0,
+    status: 'waiting',
+    roster: [],
+    gameplay: emptyGameplayState(),
+    updatedAt: new Date(0).toISOString(),
+  };
+}
+
+function mergePresence(
+  roster: readonly SessionPresenceEntry[],
+  entry: SessionPresenceEntry,
+): SessionPresenceEntry[] {
+  const without = roster.filter((row) => row.userId !== entry.userId);
+  return [...without, entry];
+}
+
+function applyOp(
+  previous: SessionRuntimeState,
+  kind: SessionEventKind,
+  payload: Record<string, unknown>,
+  updatedAt: string,
+): SessionRuntimeState {
+  if (kind === 'status') {
+    const nextStatus = normalizePlaySessionStatus(String(payload.status ?? ''));
+    assertPlaySessionStatusTransition(previous.status, nextStatus);
+    return { ...previous, status: nextStatus, updatedAt };
+  }
+  if (kind === 'presence') {
+    const userId = typeof payload.userId === 'string' ? payload.userId : '';
+    if (!userId) throw new Error('INVALID_OPERATION');
+    const entry: SessionPresenceEntry = {
+      userId,
+      characterId: typeof payload.characterId === 'string' ? payload.characterId : null,
+      isOnline: payload.isOnline === true,
+      joinedAt:
+        typeof payload.joinedAt === 'string' && payload.joinedAt
+          ? payload.joinedAt
+          : updatedAt,
+    };
+    return { ...previous, roster: mergePresence(previous.roster, entry), updatedAt };
+  }
+  if (kind === 'gameplay' || kind === 'scene' || kind === 'combat') {
+    const gameplay: SessionGameplayState = {
+      sceneId:
+        typeof payload.sceneId === 'string'
+          ? payload.sceneId
+          : previous.gameplay.sceneId,
+      combatActive:
+        typeof payload.combatActive === 'boolean'
+          ? payload.combatActive
+          : previous.gameplay.combatActive,
+      shared:
+        payload.shared && typeof payload.shared === 'object' && !Array.isArray(payload.shared)
+          ? { ...previous.gameplay.shared, ...(payload.shared as Record<string, unknown>) }
+          : previous.gameplay.shared,
+    };
+    return { ...previous, gameplay, updatedAt };
+  }
+  // Other event kinds append as no-op state mutation (audit via session_events) for CAS proof.
+  return { ...previous, updatedAt };
+}
+
 export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore {
   return {
     seedSession(input) {
-      const state = input.initialState ?? { value: 0, applied: 0, note: '' };
-      const stateJson = canonicalJson(state);
-      const updatedAt = new Date(0).toISOString();
+      const base = emptySnapshot(input.sessionId);
+      const snapshot: SessionRuntimeState = {
+        ...base,
+        status: (input.initial?.status as PlaySessionStatus | undefined) ?? base.status,
+        roster: input.initial?.roster ?? base.roster,
+        gameplay: input.initial?.gameplay ?? base.gameplay,
+      };
+      const body = {
+        status: snapshot.status,
+        roster: snapshot.roster,
+        gameplay: snapshot.gameplay,
+      };
+      const stateJson = canonicalJson(body);
       db.exec('BEGIN IMMEDIATE');
       try {
         db.prepare(
           'INSERT INTO session_runtime (session_id, project_id, revision, state_json, updated_at) VALUES (?, ?, 0, ?, ?)',
-        ).run(input.sessionId, input.projectId, stateJson, updatedAt);
+        ).run(input.sessionId, input.projectId, stateJson, snapshot.updatedAt);
         for (const writer of input.writers) {
           db.prepare(
             'INSERT INTO session_members (session_id, actor_user_id, can_write) VALUES (?, ?, 1)',
@@ -135,9 +210,8 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
       const sessionId = command.sessionId.trim();
       const idempotencyKey =
         typeof command.idempotencyKey === 'string' ? command.idempotencyKey.trim() : '';
-      if (!idempotencyKey || Buffer.byteLength(idempotencyKey) > MAX_KEY_BYTES) {
-        return failure('INVALID_IDEMPOTENCY_KEY');
-      }
+      // Non-empty key required (ADR-ST-08). No product-wide byte cap (capacity deferred to MIG-700).
+      if (!idempotencyKey) return failure('INVALID_IDEMPOTENCY_KEY');
       if (
         typeof command.expectedRevision !== 'number' ||
         !Number.isSafeInteger(command.expectedRevision) ||
@@ -145,23 +219,20 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
       ) {
         return failure('INVALID_REVISION');
       }
-      const op = command.op;
-      if (
-        !op ||
-        op.type !== 'adjust' ||
-        !Number.isSafeInteger(op.delta) ||
-        Math.abs(op.delta) > 10_000 ||
-        (op.note !== undefined && typeof op.note !== 'string')
-      ) {
+
+      let kind: SessionEventKind;
+      try {
+        kind = assertSessionEventKind(String(command.op?.kind ?? ''));
+      } catch {
         return failure('INVALID_OPERATION');
       }
-      const normalizedOp: SessionCommandOp = {
-        type: 'adjust',
-        delta: op.delta,
-        note: op.note ?? '',
-      };
+      const payload =
+        command.op?.payload && typeof command.op.payload === 'object' && !Array.isArray(command.op.payload)
+          ? command.op.payload
+          : {};
+
       // expectedRevision excluded from fingerprint (ADR-ST-08).
-      const payloadHash = digest({ version: 1, op: normalizedOp });
+      const payloadHash = digest({ version: 1, kind, payload });
 
       let inTransaction = false;
       try {
@@ -169,12 +240,7 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
         inTransaction = true;
 
         const writeAccess = memberCanWrite(db, sessionId, actorUserId);
-        if (writeAccess === null) {
-          db.exec('ROLLBACK');
-          inTransaction = false;
-          return failure('FORBIDDEN');
-        }
-        if (!writeAccess) {
+        if (writeAccess === null || !writeAccess) {
           db.exec('ROLLBACK');
           inTransaction = false;
           return failure('FORBIDDEN');
@@ -194,25 +260,17 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
           if (existing.actor_user_id !== actorUserId || existing.payload_hash !== payloadHash) {
             return failure('IDEMPOTENCY_MISMATCH');
           }
-          const prior = JSON.parse(existing.result_json) as {
-            sessionId: string;
-            revision: number;
-            eventSequence: number;
-            state: SessionRuntimeState;
-          };
-          return {
-            ok: true,
-            committed: false,
-            sessionId: prior.sessionId,
-            revision: prior.revision,
-            eventSequence: prior.eventSequence,
-            state: prior.state,
-          };
+          const prior = JSON.parse(existing.result_json) as SessionRuntimeState;
+          return { ok: true, committed: false, snapshot: prior };
         }
 
         const current = db
-          .prepare('SELECT revision, state_json FROM session_runtime WHERE session_id = ?')
-          .get(sessionId) as { revision: number; state_json: string } | undefined;
+          .prepare(
+            'SELECT revision, state_json, updated_at FROM session_runtime WHERE session_id = ?',
+          )
+          .get(sessionId) as
+          | { revision: number; state_json: string; updated_at: string }
+          | undefined;
         if (!current) {
           db.exec('ROLLBACK');
           inTransaction = false;
@@ -227,51 +285,58 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
           });
         }
 
-        const previous = JSON.parse(current.state_json) as SessionRuntimeState;
-        const revision = current.revision + 1;
-        const state: SessionRuntimeState = {
-          value: previous.value + normalizedOp.delta,
-          applied: previous.applied + 1,
-          note: normalizedOp.note ?? '',
+        const body = JSON.parse(current.state_json) as {
+          status: PlaySessionStatus;
+          roster: SessionPresenceEntry[];
+          gameplay: SessionGameplayState;
         };
-        if (!Number.isSafeInteger(state.value) || !Number.isSafeInteger(revision)) {
-          db.exec('ROLLBACK');
-          inTransaction = false;
-          return failure('NUMERIC_OVERFLOW');
-        }
-        const stateJson = canonicalJson(state);
-        if (Buffer.byteLength(stateJson) > MAX_STATE_BYTES) {
-          db.exec('ROLLBACK');
-          inTransaction = false;
-          return failure('STATE_TOO_LARGE');
-        }
-
-        const eventSequence = revision;
-        const resultPayload = {
+        const previous: SessionRuntimeState = {
           sessionId,
-          revision,
-          eventSequence,
-          state,
+          revision: current.revision,
+          status: body.status,
+          roster: body.roster,
+          gameplay: body.gameplay,
+          updatedAt: current.updated_at,
         };
-        const resultJson = canonicalJson(resultPayload);
+
         const updatedAt = new Date().toISOString();
+        let next: SessionRuntimeState;
+        try {
+          next = applyOp(previous, kind, payload, updatedAt);
+        } catch {
+          db.exec('ROLLBACK');
+          inTransaction = false;
+          return failure('INVALID_OPERATION');
+        }
+        next = { ...next, revision: current.revision + 1, updatedAt };
+
+        const stateJson = canonicalJson({
+          status: next.status,
+          roster: next.roster,
+          gameplay: next.gameplay,
+        });
+        const resultJson = canonicalJson(next);
+        const eventSequence = next.revision;
 
         const update = db
           .prepare(
             'UPDATE session_runtime SET revision = ?, state_json = ?, updated_at = ? WHERE session_id = ? AND revision = ?',
           )
-          .run(revision, stateJson, updatedAt, sessionId, command.expectedRevision);
+          .run(next.revision, stateJson, updatedAt, sessionId, command.expectedRevision);
         if (update.changes !== 1) {
           throw new Error('guarded UPDATE did not modify exactly one row');
         }
 
-        const payloadJson = canonicalJson({
-          op: normalizedOp,
-          stateHash: digest(stateJson),
-        });
         db.prepare(
           'INSERT INTO session_events (session_id, event_sequence, revision, actor_user_id, idempotency_key, payload_json) VALUES (?, ?, ?, ?, ?, ?)',
-        ).run(sessionId, eventSequence, revision, actorUserId, idempotencyKey, payloadJson);
+        ).run(
+          sessionId,
+          eventSequence,
+          next.revision,
+          actorUserId,
+          idempotencyKey,
+          canonicalJson({ kind, payload, stateHash: digest(stateJson) }),
+        );
 
         db.prepare(
           'INSERT INTO command_idempotency (session_id, idempotency_key, actor_user_id, payload_hash, result_json) VALUES (?, ?, ?, ?, ?)',
@@ -279,15 +344,7 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
 
         db.exec('COMMIT');
         inTransaction = false;
-
-        return {
-          ok: true,
-          committed: true,
-          sessionId,
-          revision,
-          eventSequence,
-          state,
-        };
+        return { ok: true, committed: true, snapshot: next };
       } catch (err) {
         if (inTransaction) {
           try {
@@ -320,13 +377,22 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
           }
         | undefined;
       if (!row) return { ok: false, error: 'SESSION_NOT_FOUND' };
+      const body = JSON.parse(row.state_json) as {
+        status: PlaySessionStatus;
+        roster: SessionPresenceEntry[];
+        gameplay: SessionGameplayState;
+      };
       return {
         ok: true,
-        sessionId: row.session_id,
         projectId: row.project_id,
-        revision: row.revision,
-        state: JSON.parse(row.state_json) as SessionRuntimeState,
-        updatedAt: row.updated_at,
+        snapshot: {
+          sessionId: row.session_id,
+          revision: row.revision,
+          status: body.status,
+          roster: body.roster,
+          gameplay: body.gameplay,
+          updatedAt: row.updated_at,
+        },
       };
     },
   };

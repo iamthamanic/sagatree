@@ -29,14 +29,7 @@ export type SessionQueryPort = {
     actor: Actor,
     sessionId: string,
   ) =>
-    | {
-        readonly ok: true;
-        readonly sessionId: string;
-        readonly projectId: string;
-        readonly revision: number;
-        readonly state: SessionRuntimeState;
-        readonly updatedAt: string;
-      }
+    | { readonly ok: true; readonly snapshot: SessionRuntimeState; readonly projectId: string }
     | { readonly ok: false; readonly error: string };
 };
 
@@ -44,7 +37,6 @@ export type SessionPorts = {
   readonly moduleId: 'session';
   readonly commands: SessionCommandPort;
   readonly queries: SessionQueryPort;
-  /** Composition-root seed helper for tests/bootstrap — not an HTTP surface. */
   readonly store: SessionRuntimeStore;
 };
 
