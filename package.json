@@ -7,6 +7,7 @@
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.20.2",
     "@gltf-transform/core": "^4.5.0",
+    "@hono/node-server": "^2.1.5",
     "@jsquash/webp": "^1.5.0",
     "@jsr/supabase__supabase-js": "^2.49.8",
     "@mediapipe/tasks-vision": "0.10.14",
@@ -44,6 +45,7 @@
     "clsx": "*",
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
+    "hono": "^4.13.13",
     "input-otp": "^1.4.2",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",

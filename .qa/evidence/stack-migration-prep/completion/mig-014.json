@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-014",
+  "result": "PASS",
+  "testedCommit": "b139fed9af37a7da450844d276dc1a5aaeacd4e3",
+  "githubClosed": true,
+  "mergeRef": "PR #909 → main (#793)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-014-better-auth-host.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-014.md",
+      "sha256": "ac6e47080ba061cc6752863f519c98fdf6fc078decbcb9b6ff04e903cd1cb68d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-014.md",
+      "sha256": "9808a82ae3503de81d292a83fb39aa37f11832cb1af281789d57a7f10452d797"
+    }
+  ]
+}

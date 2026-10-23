@@ -7,9 +7,9 @@ Registered top-level host package for the Epic #773 modular monolith.
 - GATE-01: APPROVED — Drizzle + SagaTree Policy Service ([ADR-ST-05](../docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md)); ORM choice does not replace module boundaries
 - GATE-04: APPROVED implementation freigabe — SQLite single-writer ([ADR-ST-08](../docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md))
 - GATE-02: APPROVED Variant A — Better Auth cookie-only ([ADR-ST-06](../docs/architecture/ADR-ST-06-gate-02-auth-handshake.md)); product cutover NOT approved
-- GATE-03: APPROVED Hono+Colyseus design ([ADR-ST-07](../docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md)); full room surface is later MIG tickets
+- GATE-03: APPROVED Hono+Colyseus design ([ADR-ST-07](../docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md)); HTTP transport landed in MIG-020; full Colyseus room surface is MIG-021+
 
-## Layout (MIG-010 + MIG-011 + MIG-014)
+## Layout (MIG-010 + MIG-011 + MIG-014 + MIG-020)
 
 | Path | Role |
 | --- | --- |
@@ -20,8 +20,9 @@ Registered top-level host package for the Epic #773 modular monolith.
 | `src/modules/<id>/` | Public module APIs (`identity`, `permissions`, `ops`, `world`, `project`) |
 | `src/modules/<id>/persistence/` | Private table ownership mirrors (no cross-module imports) |
 | `src/repositories/world/` | SQLite world read adapter (composition-wired; implements world store port) |
-| `src/application/<use-case>/` | Vertical use-cases (`health`) |
-| `src/http/route-registry.ts` | Sole HTTP composition entry (not a free-for-all under `http/**`) |
+| `src/application/<use-case>/` | Vertical use-cases (`health`, `transport`) |
+| `src/api/` | Hono typed HTTP command/query surface (MIG-020) |
+| `src/http/route-registry.ts` | Sole HTTP composition entry — mounts Better Auth + Hono (not a free-for-all under `http/**`) |
 | `src/auth/` | Better Auth cookie profile (no JWT plugin); session resolve for HTTP + `/v1/session-ws` |
 | `src/auth/solo/` | Persistent solo/loopback identity; forged local-identity deny; explicit account-link (MIG-015) |
 
@@ -57,6 +58,17 @@ Cookie profile: HttpOnly + SameSite=Lax; `/api/auth/token` → 404 `JWT_ISSUANCE
 - `SAGATREE_HOST_MODE=solo` + non-loopback bind → fail closed `SOLO_REQUIRES_LOOPBACK` (GATE-02 common-7)
 - Forged `x-solo-user` / `localIdentity` claims → `SOLO_IDENTITY_FORBIDDEN` on remote HTTP/WS (no remote GM mint)
 - Solo→remote ownership reuse requires `POST /api/solo/link-account` with `confirm: true` matching this host’s solo id; missing link → `ACCOUNT_LINK_REQUIRED`
+
+### HTTP transport (MIG-020 / Hono)
+
+Typed command/query routes under `/api/v1/sessions/:sessionId/*` (pipeline: validate → authorize → execute):
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/sessions/:id/snapshot?projectId=` | Role-scoped projection (`gmNotes` GM-only) |
+| `POST` | `/api/v1/sessions/:id/commands` | Body: `projectId`, `expectedRevision`, `idempotencyKey`, optional `note` |
+
+Structured errors: `401` unauthenticated, `403` policy deny, `409` stale revision / idempotency conflict, `422` validation. Idempotent retries return the same application result without a second mutation. Full durable SessionRuntimeState is MIG-022; Colyseus rooms are MIG-021+.
 
 ## Persistence (MIG-011)
 
