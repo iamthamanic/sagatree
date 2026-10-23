@@ -2,9 +2,9 @@
  * Composition root — wires modules, use-cases, auth, and HTTP once at start.
  * Location: server/src/bootstrap/create-host.ts
  */
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { toNodeHandler } from 'better-auth/node';
 import { loadConfig, type HostConfig } from '../config/load-config.ts';
@@ -36,6 +36,7 @@ import {
   createCookieAuthProfile,
   wrapCookieAuthHandler,
   attachSessionWebSocket,
+  ensureSoloIdentityFile,
   type HostBetterAuth,
 } from '../auth/index.ts';
 
@@ -57,34 +58,6 @@ function fingerprintDataDir(dataDir: string): string {
   return createHash('sha256').update(dataDir).digest('hex').slice(0, 16);
 }
 
-/**
- * Load or create solo identity. Never throws; never echoes file contents.
- */
-function ensureIdentityFile(dataDir: string): { ok: true; actorId: string } | { ok: false; error: string } {
-  const path = join(dataDir, 'host-identity.json');
-  try {
-    if (existsSync(path)) {
-      let raw: unknown;
-      try {
-        raw = JSON.parse(readFileSync(path, 'utf8'));
-      } catch {
-        return { ok: false, error: 'Host identity file is unreadable or invalid' };
-      }
-      const actorId =
-        raw && typeof raw === 'object' && 'actorId' in raw && typeof (raw as { actorId: unknown }).actorId === 'string'
-          ? (raw as { actorId: string }).actorId
-          : '';
-      if (actorId.length > 0) return { ok: true, actorId };
-      return { ok: false, error: 'Host identity file is unreadable or invalid' };
-    }
-    const actorId = `solo-${randomUUID()}`;
-    writeFileSync(path, `${JSON.stringify({ actorId }, null, 2)}\n`, 'utf8');
-    return { ok: true, actorId };
-  } catch {
-    return { ok: false, error: 'Host identity file is unreadable or invalid' };
-  }
-}
-
 function redactLogMessage(message: string): string {
   return message.replace(/(?:token|key|secret|password)=[^\s]+/gi, '$1=[redacted]');
 }
@@ -97,7 +70,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     }
     const config = loaded;
     const dataDirFingerprint = fingerprintDataDir(config.dataDir);
-    const identityResult = ensureIdentityFile(config.dataDir);
+    const identityResult = ensureSoloIdentityFile(config.dataDir);
     if (!identityResult.ok) {
       return { error: identityResult.error, code: 1 };
     }
@@ -119,8 +92,9 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const authRuntime: AuthRuntimeHolder = { auth: null, origin: null };
     const pingLogPath = join(config.dataDir, 'ping-log.jsonl');
     const projectTouchPath = join(config.dataDir, 'project-touch.jsonl');
+    const worldTouchPath = join(config.dataDir, 'world-touch.jsonl');
 
-    const identity = createIdentityPorts(actorId, authRuntime);
+    const identity = createIdentityPorts(actorId, authRuntime, config.dataDir);
     const permissions = createPermissionsPorts(db);
     const world: WorldPorts = db
       ? createWorldPorts({
@@ -172,6 +146,20 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       return { ok: true as const, mutated: true };
     };
 
+    const tryAuthorizedWorldTouch = (input: { actorId: string; worldId: string }) => {
+      if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
+      writeFileSync(
+        worldTouchPath,
+        `${JSON.stringify({
+          at: new Date().toISOString(),
+          actorId: input.actorId,
+          worldId: input.worldId,
+        })}\n`,
+        { flag: 'a', encoding: 'utf8' },
+      );
+      return { ok: true as const, mutated: true };
+    };
+
     // Handler is created once; authHandlerRef filled after cookie profile init in start().
     const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
       current: null,
@@ -184,6 +172,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       recordPing,
       authHandlerRef,
       tryAuthorizedProjectTouch,
+      tryAuthorizedWorldTouch,
     });
 
     return {

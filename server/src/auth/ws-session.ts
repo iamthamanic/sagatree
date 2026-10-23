@@ -88,7 +88,11 @@ async function handleUpgrade(
 
   if (!resolved.ok) {
     const status =
-      resolved.code === 'UNAUTHENTICATED' || resolved.code === 'BEARER_FORBIDDEN' ? 401 : 403;
+      resolved.code === 'UNAUTHENTICATED' ||
+      resolved.code === 'BEARER_FORBIDDEN' ||
+      resolved.code === 'SOLO_IDENTITY_FORBIDDEN'
+        ? 401
+        : 403;
     socket.write(
       `HTTP/1.1 ${status} Denied\r\nConnection: close\r\nContent-Type: application/json\r\n\r\n${JSON.stringify({ error: resolved.code })}`,
     );

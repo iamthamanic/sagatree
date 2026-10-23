@@ -25,3 +25,20 @@ export {
   type SessionResolveResult,
 } from './session.ts';
 export { attachSessionWebSocket, randomSecWebSocketKey } from './ws-session.ts';
+export {
+  ensureSoloIdentityFile,
+  hostIdentityPath,
+  isSoloActorId,
+  detectForgedSoloIdentityClaims,
+  linkSoloAccount,
+  loadLinkedSoloActorIds,
+  assertSoloLoopbackBind,
+  isLoopbackHost,
+  SOLO_REQUIRES_LOOPBACK,
+  HOST_IDENTITY_FILENAME,
+  SOLO_ACCOUNT_LINKS_FILENAME,
+  type SoloIdentityLoadResult,
+  type LinkSoloAccountResult,
+  type SoloAccountLink,
+  type ForgedSoloIdentityResult,
+} from './solo/index.ts';

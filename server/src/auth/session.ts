@@ -4,17 +4,28 @@
  */
 import type { IncomingHttpHeaders } from 'node:http';
 import type { HostBetterAuth } from './cookie-profile.ts';
+import { detectForgedSoloIdentityClaims } from './solo/forged-identity.ts';
 
 export type RemoteActor = {
   readonly kind: 'remote-account';
   readonly actorId: string;
   readonly sessionId: string;
   readonly email: string | null;
+  /** Solo actor ids explicitly linked to this remote account (MIG-015). */
+  readonly linkedSoloActorIds: readonly string[];
 };
 
 export type SessionResolveResult =
   | { ok: true; actor: RemoteActor }
-  | { ok: false; code: 'UNAUTHENTICATED' | 'HOST_DENIED' | 'ORIGIN_DENIED' | 'BEARER_FORBIDDEN' };
+  | {
+      ok: false;
+      code:
+        | 'UNAUTHENTICATED'
+        | 'HOST_DENIED'
+        | 'ORIGIN_DENIED'
+        | 'BEARER_FORBIDDEN'
+        | 'SOLO_IDENTITY_FORBIDDEN';
+    };
 
 function headersFromNode(raw: IncomingHttpHeaders | Headers): Headers {
   if (raw instanceof Headers) return raw;
@@ -36,15 +47,25 @@ export type SessionResolveOptions = {
   readonly headers: IncomingHttpHeaders | Headers;
   /** Safe same-origin GETs may omit Origin; require Host + Sec-Fetch-Site. */
   readonly allowSameOriginRead?: boolean;
+  /** Optional request body — scanned for forged localIdentity / solo claims. */
+  readonly body?: unknown;
+  /** Solo actor ids linked to the resolved remote user (from durable link store). */
+  readonly linkedSoloActorIds?: readonly string[];
 };
 
 /**
  * Resolve the current Better Auth cookie session into a remote Actor.
  * Cookie profile rejects Authorization Bearer (fail closed — no JWT path).
+ * Forged solo/local-identity headers never authorize (MIG-015 / GATE-02 common-7).
  */
 export async function resolveCookieSession(
   options: SessionResolveOptions,
 ): Promise<SessionResolveResult> {
+  const forged = detectForgedSoloIdentityClaims(options.headers, options.body);
+  if (forged.forged) {
+    return { ok: false, code: forged.code };
+  }
+
   const headers = headersFromNode(options.headers);
   const expectedHost = new URL(options.origin).host;
   const host = headers.get('host');
@@ -93,6 +114,7 @@ export async function resolveCookieSession(
       actorId: found.user.id,
       sessionId: found.session.id,
       email: typeof found.user.email === 'string' ? found.user.email : null,
+      linkedSoloActorIds: options.linkedSoloActorIds ?? [],
     },
   };
 }

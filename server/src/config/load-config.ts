@@ -5,6 +5,11 @@
 import { accessSync, constants, mkdirSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { assertCookieAuthSecret } from '../auth/cookie-profile.ts';
+import {
+  assertSoloLoopbackBind,
+  isLoopbackHost,
+  SOLO_REQUIRES_LOOPBACK,
+} from '../auth/solo/index.ts';
 
 export type HostAuthConfig = {
   readonly secret: string;
@@ -43,18 +48,32 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): HostConfig | C
   const host = (env.SAGATREE_HOST ?? '127.0.0.1').trim();
   const allowRemote = env.SAGATREE_ALLOW_REMOTE_BIND === '1';
   const modeEnv = (env.SAGATREE_HOST_MODE ?? '').trim().toLowerCase();
+
+  // GATE-02 common-7: explicit solo mode cannot bind publicly (even with allow-remote).
+  if (modeEnv === 'solo') {
+    const soloBindErr = assertSoloLoopbackBind('solo', host);
+    if (soloBindErr) {
+      return { code: 'INVALID_CONFIG', message: SOLO_REQUIRES_LOOPBACK };
+    }
+  }
+
   const mode: 'solo' | 'remote' =
-    modeEnv === 'remote' || (allowRemote && host !== '127.0.0.1' && host !== 'localhost')
+    modeEnv === 'remote' || (modeEnv !== 'solo' && allowRemote && !isLoopbackHost(host))
       ? 'remote'
       : 'solo';
 
-  if (host !== '127.0.0.1' && host !== 'localhost' && !allowRemote) {
+  if (!isLoopbackHost(host) && !allowRemote) {
     return {
       code: 'INVALID_CONFIG',
       message: redacted(
         `Remote bind to ${host} requires SAGATREE_ALLOW_REMOTE_BIND=1; default is loopback only.`,
       ),
     };
+  }
+
+  const soloBindErr = assertSoloLoopbackBind(mode, host);
+  if (soloBindErr) {
+    return { code: 'INVALID_CONFIG', message: SOLO_REQUIRES_LOOPBACK };
   }
 
   // Cookie profile must never enable JWT minting — fail closed on explicit opt-in.
