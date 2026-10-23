@@ -409,12 +409,12 @@ BEGIN
   SELECT COALESCE(adventure_runtime, '{}'::jsonb) INTO v_project_adv
   FROM public.projects WHERE id = v_project;
 
-  v_adv := COALESCE(v_shared->'adventure', public.sagadrive_empty_adventure_runtime());
+  v_adv := COALESCE(v_shared->'adventure', public.sagatree_empty_adventure_runtime());
   IF jsonb_typeof(v_adv) IS DISTINCT FROM 'object' THEN
-    v_adv := public.sagadrive_empty_adventure_runtime();
+    v_adv := public.sagatree_empty_adventure_runtime();
   END IF;
   IF COALESCE((v_adv->>'schemaVersion')::int, 0) <> 1 THEN
-    v_adv := public.sagadrive_empty_adventure_runtime() || jsonb_build_object(
+    v_adv := public.sagatree_empty_adventure_runtime() || jsonb_build_object(
       'definitionRef', v_adv->'definitionRef'
     );
   END IF;
@@ -423,7 +423,7 @@ BEGIN
     IF jsonb_typeof(v_project_adv) = 'object' AND COALESCE((v_project_adv->>'schemaVersion')::int, 0) = 1 THEN
       v_adv := v_project_adv;
     ELSE
-      v_adv := public.sagadrive_empty_adventure_runtime();
+      v_adv := public.sagatree_empty_adventure_runtime();
     END IF;
   ELSIF v_op = 'set_definition_ref' THEN
     IF NULLIF(BTRIM(COALESCE(v_in->>'definitionRef', '')), '') IS NULL THEN
@@ -606,7 +606,7 @@ SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
 DECLARE
-  v_in JSONB := public.sagadrive_strip_forged_roll_keys(p_payload);
+  v_in JSONB := public.sagatree_strip_forged_roll_keys(p_payload);
   v_skill TEXT := NULLIF(BTRIM(COALESCE(v_in->>'skill', '')), '');
   v_mode TEXT := COALESCE(NULLIF(BTRIM(COALESCE(v_in->>'mode', '')), ''), 'normal');
   v_use_drive BOOLEAN := COALESCE((v_in->>'useDrive')::boolean, false);
@@ -636,14 +636,14 @@ DECLARE
   v_naturals JSONB;
   v_result JSONB;
 BEGIN
-  IF v_skill IS NULL OR public.sagadrive_skill_attribute_key(v_skill) IS NULL THEN
+  IF v_skill IS NULL OR public.sagatree_skill_attribute_key(v_skill) IS NULL THEN
     RAISE EXCEPTION 'Invalid skill for session check' USING ERRCODE = '22023';
   END IF;
   IF v_mode NOT IN ('normal', 'advantage', 'disadvantage') THEN
     RAISE EXCEPTION 'Invalid check mode' USING ERRCODE = '22023';
   END IF;
 
-  v_attr_key := public.sagadrive_skill_attribute_key(v_skill);
+  v_attr_key := public.sagatree_skill_attribute_key(v_skill);
   v_public_id := NULLIF(BTRIM(COALESCE(v_in->>'characterPublicId', '')), '');
 
   IF v_in ? 'characterId' AND NULLIF(BTRIM(COALESCE(v_in->>'characterId', '')), '') IS NOT NULL THEN
@@ -678,7 +678,7 @@ BEGIN
     RAISE EXCEPTION 'Character skill rank out of range' USING ERRCODE = '22023';
   END IF;
 
-  v_eb := public.sagadrive_applied_experience_bonus(v_skill_rank, COALESCE(v_character.level, 1));
+  v_eb := public.sagatree_applied_experience_bonus(v_skill_rank, COALESCE(v_character.level, 1));
   v_flat := v_attr + v_skill_rank + v_eb;
 
   SELECT world_state INTO v_world FROM public.sessions WHERE id = p_session_id;
@@ -713,12 +713,12 @@ BEGIN
   IF v_drive < 0 THEN v_drive := 0; END IF;
   IF v_drive > 5 THEN v_drive := 5; END IF;
 
-  v_n1 := public.sagadrive_roll_d20();
+  v_n1 := public.sagatree_roll_d20();
   IF v_mode = 'normal' THEN
     v_natural := v_n1;
     v_naturals := jsonb_build_array(v_n1);
   ELSE
-    v_n2 := public.sagadrive_roll_d20();
+    v_n2 := public.sagatree_roll_d20();
     IF v_mode = 'advantage' THEN
       v_natural := GREATEST(v_n1, v_n2);
     ELSE
@@ -728,17 +728,17 @@ BEGIN
   END IF;
 
   v_total := v_natural + v_flat;
-  v_grade := public.sagadrive_resolve_probe_grade(v_total, v_target, v_natural);
+  v_grade := public.sagatree_resolve_probe_grade(v_total, v_target, v_natural);
 
   IF v_use_drive THEN
     IF v_drive < 1 THEN
       RAISE EXCEPTION 'No Drive available for reroll' USING ERRCODE = '22023';
     END IF;
-    v_n1b := public.sagadrive_roll_d20();
+    v_n1b := public.sagatree_roll_d20();
     IF v_mode = 'normal' THEN
       v_natural_b := v_n1b;
     ELSE
-      v_n2b := public.sagadrive_roll_d20();
+      v_n2b := public.sagatree_roll_d20();
       IF v_mode = 'advantage' THEN
         v_natural_b := GREATEST(v_n1b, v_n2b);
       ELSE
@@ -746,11 +746,11 @@ BEGIN
       END IF;
     END IF;
     v_total_b := v_natural_b + v_flat;
-    v_grade_b_text := public.sagadrive_resolve_probe_grade(v_total_b, v_target, v_natural_b);
+    v_grade_b_text := public.sagatree_resolve_probe_grade(v_total_b, v_target, v_natural_b);
     -- Keep better (§2.10): higher grade rank, then higher total.
-    IF public.sagadrive_grade_rank(v_grade_b_text) > public.sagadrive_grade_rank(v_grade)
+    IF public.sagatree_grade_rank(v_grade_b_text) > public.sagatree_grade_rank(v_grade)
        OR (
-         public.sagadrive_grade_rank(v_grade_b_text) = public.sagadrive_grade_rank(v_grade)
+         public.sagatree_grade_rank(v_grade_b_text) = public.sagatree_grade_rank(v_grade)
          AND v_total_b > v_total
        ) THEN
       v_natural := v_natural_b;
@@ -816,3 +816,117 @@ LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$ SELECT public.sagatree_resolve_session_check(p_session_id, p_actor, p_payload, p_is_gm); $$;
+
+-- ---------------------------------------------------------------------------
+-- get_world_atlas_map: keep renderable generator_meta for players; require
+-- saga membership; do not strip unifiedCanvas/webglRuntime (demo fallback).
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_world_atlas_map(
+  p_map_id UUID,
+  p_player_view BOOLEAN DEFAULT false,
+  p_saga_public_id TEXT DEFAULT NULL
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user UUID := auth.uid();
+  v_row public.world_atlas_maps%ROWTYPE;
+  v_layers JSONB;
+  v_meta JSONB;
+  v_can_edit BOOLEAN;
+  v_party_only BOOLEAN;
+  v_project UUID;
+  v_allowed UUID[];
+  v_parent UUID;
+BEGIN
+  IF v_user IS NULL THEN
+    RAISE EXCEPTION 'not authenticated' USING ERRCODE = '42501';
+  END IF;
+  IF p_map_id IS NULL THEN
+    RAISE EXCEPTION 'map_id required' USING ERRCODE = '22023';
+  END IF;
+
+  SELECT * INTO v_row FROM public.world_atlas_maps WHERE id = p_map_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';
+  END IF;
+  IF NOT public.current_user_can_read_world_profile(v_row.world_profile_id) THEN
+    RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
+  END IF;
+
+  v_can_edit := public.current_user_can_edit_world_profile(v_row.world_profile_id);
+  v_party_only := (NOT v_can_edit) OR (p_player_view IS TRUE);
+
+  IF v_party_only THEN
+    IF p_saga_public_id IS NOT NULL AND btrim(p_saga_public_id) <> '' THEN
+      v_project := public.atlas_wb_resolve_saga_project(v_row.world_profile_id, p_saga_public_id);
+      IF v_project IS NULL OR NOT public.current_user_is_active_project_member(v_project) THEN
+        RAISE EXCEPTION 'forbidden' USING ERRCODE = '42501';
+      END IF;
+    END IF;
+    IF v_project IS NULL THEN
+      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';
+    END IF;
+    v_allowed := public.atlas_wb_party_revealed_map_ids(v_row.world_profile_id, v_project);
+    IF NOT (p_map_id = ANY (v_allowed)) THEN
+      RAISE EXCEPTION 'not found' USING ERRCODE = 'P0002';
+    END IF;
+  END IF;
+
+  v_layers := COALESCE(v_row.layers, '{"type":"FeatureCollection","features":[]}'::jsonb);
+  v_meta := COALESCE(v_row.generator_meta, '{}'::jsonb);
+  v_parent := v_row.parent_map_id;
+
+  IF v_party_only THEN
+    SELECT jsonb_build_object(
+      'type', 'FeatureCollection',
+      'features', COALESCE(jsonb_agg(f.feat), '[]'::jsonb)
+    )
+    INTO v_layers
+    FROM jsonb_array_elements(COALESCE(v_layers->'features', '[]'::jsonb)) AS f(feat)
+    WHERE COALESCE((f.feat->'properties'->>'secret')::boolean, false) IS NOT TRUE
+      AND (
+        (f.feat->'properties'->>'discovered') IS NULL
+        OR COALESCE((f.feat->'properties'->>'discovered')::boolean, true) IS TRUE
+      );
+
+    -- Preserve render payload; strip only non-render / editor-private keys.
+    v_meta := jsonb_strip_nulls(jsonb_build_object(
+      'engine', COALESCE(v_meta->>'engine', 'unified_canvas'),
+      'unifiedCanvas', v_meta->'unifiedCanvas',
+      'webglRuntime', v_meta->'webglRuntime',
+      'mapFrame', v_meta->'mapFrame',
+      'dungeon', v_meta->'dungeon'
+    ));
+
+    IF v_parent IS NOT NULL AND NOT (v_parent = ANY (v_allowed)) THEN
+      v_parent := NULL;
+    END IF;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'id', v_row.id,
+    'worldProfileId', v_row.world_profile_id,
+    'parentMapId', v_parent,
+    'kind', v_row.kind,
+    'title', v_row.title,
+    'sortOrder', v_row.sort_order,
+    'bounds', v_row.bounds,
+    'layers', v_layers,
+    'basemapStoragePath', v_row.basemap_storage_path,
+    'azgaarMapStoragePath', CASE
+      WHEN v_party_only THEN NULL
+      ELSE v_row.azgaar_map_storage_path
+    END,
+    'generatorMeta', v_meta,
+    'revision', v_row.revision,
+    'updatedAt', v_row.updated_at
+  );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_world_atlas_map(UUID, BOOLEAN, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_world_atlas_map(UUID, BOOLEAN, TEXT) TO authenticated;
