@@ -1,0 +1,913 @@
+{
+  "schemaVersion": 1,
+  "repository": "iamthamanic/sagatree",
+  "mode": "write",
+  "startedAt": "2026-10-23T13:43:58.474Z",
+  "total": 90,
+  "updated": 36,
+  "unchanged": 54,
+  "failed": [],
+  "issues": [
+    {
+      "localId": "MIG-001",
+      "number": 782,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "3bd9147bfe6b99786ab34a2179b9b358ac14da7c05b7a2b634fdd81c2f0a9217",
+      "action": "unchanged"
+    },
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "number": 770,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "0e3f2562c3ff98778a183396a150cec20175c662b72c8f22654122832655f075",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-002",
+      "number": 783,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "e41984f0ceb262a2d677022136658c3f24dfc2095da357e7da2c253fcd25bf72",
+      "action": "unchanged"
+    },
+    {
+      "localId": "GATE-01",
+      "number": 784,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "26b3e5fdee7605711d255c5b0db30811e466d9271a11deee47c16da19b76597e",
+      "action": "unchanged"
+    },
+    {
+      "localId": "GATE-02",
+      "number": 785,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "68eac71b84ff74cf5aa5ed5ea853533668340bf3022c0d6db9caeed8dceb0734",
+      "action": "unchanged"
+    },
+    {
+      "localId": "GATE-03",
+      "number": 786,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "6aaa3e1a4d457189d31209cc464dccbc10da8485215ef35dd6b658a5570d0916",
+      "action": "unchanged"
+    },
+    {
+      "localId": "GATE-04",
+      "number": 787,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "58a93f33a75567479728d8c6bd042adebbd03f3aa14b45d4c074977509e69fff",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-010",
+      "number": 789,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "c2d960cfc0d2fc63898eacacdd0e33283a9e366149514e26d3698bc58d7e9a83",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-011",
+      "number": 790,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "ef012f77ac08884474ce3ad630ea81118fae49b9b375575470f0fd30f6deff4d",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-013",
+      "number": 792,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "4bbb112bfa7df0945f3850df7a22c385a9d5a1ceaeda906b916d49a02d894f51",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-012",
+      "number": 791,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "a17af3260685c1d7011ae2ed055e1710f09fdc8a11432b6aad41b3e8eb63d723",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-014",
+      "number": 793,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "493ff96c9a06c625bfae2622dcafb41df6c25c1152b0da2133b2c1faf13804e0",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-015",
+      "number": 794,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "e1a7f4b10e238614b1ba41d93190223b4151175dfc3f4d6ef649bd0a0968b92a",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-500",
+      "number": 841,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "343f15489f7d591f36f193a982af7805d1d07f2f7f8a0cfc7eb3c3a08ea24865",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-020",
+      "number": 795,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "71d3e5f0aff4ea1ad0987bdaf6d2f3b18534859fbfb86737629140076e4f7b15",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-022",
+      "number": 797,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "73d1c822f110465b936401359e473265904dd282a07e3a33b86e5a042c029da7",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-023",
+      "number": 798,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "91c5062558cc15cdc551024a25c982c9c2ffd4beac55df6d292d1e3d3c52c247",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-024",
+      "number": 799,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "d672d9a6abdffa1d1d8645e26be5f66339018f75e37baffdbb301d9a77721d9b",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-021",
+      "number": 796,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "4985c09f7bdf1ce952c49b9c438cffa347f1b69f6042ec381d3fe044d0f0f3ce",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-503",
+      "number": 844,
+      "state": "CLOSED",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "59ece72f3d9a86e2bf402f36a93d32cdb5eaeca003fb78f1b22894e5fbe2ec14",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-MARKETPLACE-COUNT",
+      "number": 878,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "d4bce453a859bd0f53dcda9ea6d10c2122586ea05f158e36055a12931625055b",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-SAGA-AUTHORING",
+      "number": 871,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "b256a8e4455f936767988df2a78553b89cbd9eba5b5d15931f1d5342e3f53fd6",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-SAGA-VERSION-READ",
+      "number": 872,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "373aeeb51163ce34c49018aad03942edb61bf3e3b418a8d5dc32e71d202509e0",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-SAGA-PROVISION",
+      "number": 873,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "8b59b33ebe064e5950edc406b7401a672a296748fcf9bad6ac2df687d78abd80",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-PROJECT-MEMBERSHIP",
+      "number": 874,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "6bd477633d633c17e4eed38a5f9a33b6494e9b2156a876ca22169b37da04b189",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-SAGA-GOVERNANCE",
+      "number": 875,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "153b7c557ec84a177f396fd7e23e2d785c911ad6e8304379c07b1537db124a13",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-SESSION-RUNTIME",
+      "number": 867,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "21fef1825d37f4b8761f41116950a68e926f9704e7428357282e186183f0d3b0",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-SESSION-LIFECYCLE",
+      "number": 868,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "c8b5ed1f0b9b565de57f0aace8b3d9f5b9219678d486635f9b05054cfdff7610",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-NPC-INSTANCES",
+      "number": 877,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "8b253f5b958d05e4066c2cf79674e0e9d3fff6a156afd9515a08b876cd36afb4",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-353",
+      "number": 816,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "52650447d7128558edccbd39862c02e7bceaa17260eb5299060cb505b5460d3f",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-SESSION-ACCESS",
+      "number": 869,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "0026c4e5600d01fb747c6f40821d6e16ace64d01ed3599190ae796b53e3e09dd",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-SESSION-RECAP",
+      "number": 870,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "33e4aee963aa2356acb0ab467863edba46545a55d5f9677ec423716b357d614f",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-351",
+      "number": 814,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "555880864e7d9a6c01353d46a93fb2bfdf94dd45737da6d220d6e03243cc6af2",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-SAGA-PROJECTIONS",
+      "number": 876,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "d600cbfe5e10416e2ee98a5d84e862929b65e4afbe5a651df8c2a9b88e2ed473",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-352",
+      "number": 815,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "0406c9fc411f573680c28038a60821a6786b323fc62accb8fed70e836286a48a",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-WORLD-MAP",
+      "number": 861,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "3a0d5e55539013632872661c41d8fc59b6eb71a8d3270da677ecc6f4040e71dc",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "number": 862,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "ea07ad067f108898d591e28290dd638613d58f70f6fcbf3a4c2d4daee854abd8",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-WORLD-PLACES",
+      "number": 863,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "4962fa9ca59b0c6f3f06e20100a43fb648b50b8ea3af80acc3ae15c07980346d",
+      "action": "unchanged"
+    },
+    {
+      "localId": "RPC-WORLD-CREATE",
+      "number": 864,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "a59c1d986ddeb194a649e35ed60a116d076642f43768e77a82b7d6e6b493fe7b",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-WORLD-RESTRUCTURE",
+      "number": 865,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "4358da6f51ad409063376cbc4717601770fea0a1bb5a62ca6ee0bd960f1a7f53",
+      "action": "updated"
+    },
+    {
+      "localId": "RPC-WORLD-DESTRUCTIVE",
+      "number": 866,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "c5ed823366f2bbdfc945e5e5d1cf6481cfeb4f57842eacfb3a31bac0ae49327b",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-350",
+      "number": 813,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "c25616b3b983911e8a784a1c8e62c7b2afc3ae7957f2c5df02530e3f4b698bd7",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-402",
+      "number": 818,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "42180c6cc0b4aa9d7af85125412453bc1a1cceb5de349d36f14ecdba2d0cb3ef",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-401",
+      "number": 817,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "2a313765af2bd754bb2f9e0cb225000eaa6d4e290d0a955224e362cbb126604e",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-403",
+      "number": 819,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "86da6c1779be9bd417a6d03a5d8de838b0d8057c799c9ec6befe104b1fcc4d4a",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-404",
+      "number": 820,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "c532f66ff78545f08baf531e0123e2fbb717c44d82144f1496d20c7c0e4d08e1",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-405",
+      "number": 821,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "a4870d826114ec76db575773b5a52775b1f0ad27706f1ba8cc61745512929b31",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-406",
+      "number": 822,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "4345f92fe2588cc851c903c3bedff93371a9ffd4724a1cc02bafd7b509a18e96",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-407",
+      "number": 823,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "cd87f1b24f8affe062d093c15e4a6c13f3607e8e2bc9972b142738882a4d4e25",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-408",
+      "number": 824,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "aa3323b0962cfe56924d116cdb6f970ed32111b16d81e79647e936cc49a3b7c1",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-409",
+      "number": 825,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "73b77563e1848237be6f4f931f84c76d8e914a6f7c4525ddaa018367bb6a6750",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-410",
+      "number": 826,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "8562f1ae3e992c482fde09e18167417404ace30bdb1b1ab6da0d472f32d375b9",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-411",
+      "number": 827,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "97535fb472adf5c382de24ab8b9fa347c690893ea7b6ec017bcce871cfa58fd8",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-412",
+      "number": 828,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "4000e874b811a4faf8736cb8982a30e118bec943333fb5eaa440b2d2ab3ceb85",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-413",
+      "number": 829,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "0f7759d1fb580aab75170d021b402f9a2011350925097647741f44b367b72a38",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-415",
+      "number": 831,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "5bdb19c138a44c3d91432ce7f3c79334616b111a36370d86178aaf5f249ac1cc",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-416",
+      "number": 832,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "67fca1b995a65259ac4c02ef3deb450c966d3436673c157a09b51245a9b01c0a",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-417",
+      "number": 833,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "3ce6d5d74a8f6a24cfc64be9c655f680c45d1616df5fbf9f9dbf4a1e44fa90b1",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-418",
+      "number": 834,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "882842803e2e4ea62d0211a02c5a7aa0520b64b7411509f3c0b6fda40ab18fc7",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-419",
+      "number": 835,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "53239479050e06dee84a03a23370564b026dae20a387ec0ef683671d40355d74",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-420",
+      "number": 836,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "627d9ed072b3cb67dea2746ceb4b6d559bfe73140b5d3cfb3207ee38f24b1c56",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-421",
+      "number": 837,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "0234dde1443a566ba6b92266692d8a8d03d8b511c9b7540c49c67b80f3cb65ca",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-414",
+      "number": 830,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "75254cbe2e4604a79e5722526a2170cfbd1cc492f41aa956ba2266630b63f25d",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-422",
+      "number": 838,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "addf7729da97ab53fba6167a0e81b0692ba0644aa99619eb5317ef753939cbc6",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-423",
+      "number": 839,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "4e1c8a2e6f56ae0847dd2daa7a05cd72ff1c12011d76418f5370ff41111e7a85",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-424",
+      "number": 840,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "a61f60e450e92bb2e6fe0074c2eb35d0990bdab08bf340f863b97d0b0297e16a",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-301",
+      "number": 800,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "b2aacee819b89d485b6b001c6759423d1d896728a96f391ba9f8d782998fe4f7",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-302",
+      "number": 801,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "8916841ed03071e5e82ede05ae92757cd4c989f70cff200f7ef08d5bee0ad746",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-303",
+      "number": 802,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "ce354a0ec9d00301637976356b404991aa77e04b45adb3803c244b0c598f9dfd",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-304",
+      "number": 803,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "b11a2fcd81c26a6447779018cf20e65d899f92338ef62c77af489d0a1e40cc27",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-305",
+      "number": 804,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "18420fb7ca7f6d75d0986cb2806ab034c5d74aa5967b46629a70d48d729c0b33",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-306",
+      "number": 805,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "77ffab45ce27c1aaad9e7f9a9c1788e056ae492e95890e08ba68c3c429bf240f",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-307",
+      "number": 806,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "9e75d86a181033663f86ffbd41cbb2de71e4bbc402fd26c9b33e25f94ad62e14",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-308",
+      "number": 807,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "887412aa2b86f634205eb2af2b78717563294a5b2e2e648e6fa7e1676fad0e0f",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-309",
+      "number": 808,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "10ebe2347df96771705a439601b49a6c8c31242fafe033eedf39d62e145aa3f7",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-310",
+      "number": 809,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "ffd3b9092eaff3400f0dd89834506a53b022e7f828d9c4d205be3ebb52a49542",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-311",
+      "number": 810,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "07de21de1f487bf8a073e60a7bc70ac705dfee8f619d23023bb5181d38a41415",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-312",
+      "number": 811,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "59a0e582e60dade3ada33d69a41dce67daaaf5092653c9dd25bc4d379ca904fc",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-313",
+      "number": 812,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "ec45d18db6b9785f713b078e8945faa9d01b92d16181ac556b34a9e15123108b",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-501",
+      "number": 842,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "5be2ece5565a64877232cabba55a2dbe096f59056da787f5f579d2a859320de9",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-502",
+      "number": 843,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "d854985d1c3358d0924d5d6d12198c9c0f581e2f286c449f1a6e552101abd854",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-600",
+      "number": 845,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "02a7738828921395f48c225ffac9430c365aabec3a687741d1ca6e6d5b6ff7d3",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-601",
+      "number": 846,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "ac20a35d4431bf0960413805a3b69f0b71d6e0fc41fee5944db9a0f6eb013221",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-602",
+      "number": 847,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "8615b08659e9f336f23453281e49bc1d84fb78872595f2b4bcff1f78125911a4",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-603",
+      "number": 848,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "73f82a96324250af9700880e0bd18c268fac602398a92a78c7b7e810e4aa1f99",
+      "action": "updated"
+    },
+    {
+      "localId": "GATE-05",
+      "number": 788,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": true,
+      "sha256": "17985639435be765ef87f6386d7c720f0e9b2b9a7d119835c8163b7b365b05e0",
+      "action": "unchanged"
+    },
+    {
+      "localId": "MIG-700",
+      "number": 849,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "655c940350be8461ffdf9ae58c247a9b1de2f3c3bfc4379fc5bc14521c232186",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-701",
+      "number": 850,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "ea2181ec9b1989b293802c138ff3156365859a90af408a67ff0645a7627da7f6",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-702",
+      "number": 851,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "01b96260f596bef552611902959e25aa1d59201bb323fe7fb4d3133fd2b5b696",
+      "action": "updated"
+    },
+    {
+      "localId": "MIG-703",
+      "number": 852,
+      "state": "OPEN",
+      "titleOk": true,
+      "bodyOk": true,
+      "labelsOk": false,
+      "sha256": "30609d61fd8b4d929df249ae4ce90ef62ff3be0bff4a0d182474b3f7db0286b7",
+      "action": "updated"
+    }
+  ],
+  "finishedAt": "2026-10-23T13:46:30.162Z"
+}
