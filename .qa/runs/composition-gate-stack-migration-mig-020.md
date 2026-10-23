@@ -1,14 +1,13 @@
 # Composition Gate — stack-migration-mig-020 (#795)
 
-- HEAD_SHA: 14719ad8b6e47f8cfcbdcc32c5d556bb286d51c1
-- PROOF_TIP: docs pin commit may sit atop this SHA; implementation CLEAR at feature commit
+- HEAD_SHA: 65e87cfd2207470e4e49bb5e57be6b2037ceea36
 - BASE_SHA: 721f53e3ba42b94e7292ce2f8bd24e5970828e24
 - Date: 2026-10-23
 - Verdict: CLEAR
 
 ## Event
 
-Authenticated HTTP commands/queries enter via Hono (`server/src/api`), resolve a Better Auth cookie actor, pass Policy Service authorization, then execute a single application transport use-case. Deny paths (401/403/409/422) leave no partial mutation. Idempotent retries return the same committed result without a second revision bump. Role-scoped snapshots omit GM-only fields for players.
+Authenticated HTTP commands/queries enter via Hono (`server/src/api`), resolve a Better Auth cookie actor, pass Policy Service authorization, then execute a single application transport use-case. Deny paths (401/403/409/422) leave no partial mutation. Idempotent retries return the same committed result without a second revision bump. Role-scoped snapshots omit GM-only fields for players. Root-hoisted Hono packages keep CI `npm ci` able to resolve `@hono/node-server`.
 
 ## Hop chain
 
@@ -24,8 +23,9 @@ Authenticated HTTP commands/queries enter via Hono (`server/src/api`), resolve a
 |------|----------|----------|--------|
 | N-actors | GM command advances revision; player command denied; player snapshot without gmNotes | mig-020 self-test | pass |
 | Invalid/missing | Unauth 401; invalid payload 422; stale revision 409; no mutation | mig-020 self-test | pass |
-| Two consumers / retry | Lost-response retry same idempotency key → same revision/value; conflicting payload → IDEMPOTENCY_CONFLICT | mig-020 self-test | pass |
+| Two consumers / crash | Lost-response retry same idempotency key → same revision/value; conflicting payload → IDEMPOTENCY_CONFLICT; host remains reachable | mig-020 self-test | pass |
 | Legacy canaries | whoami / health / project-touch still via same Hono mount + Better Auth prefix | mig-014/015/010 self-tests | pass |
+| CI resolve | Root `npm ci` provides hono + @hono/node-server for host imports | Test Gate PASS after hoist | pass |
 
 ## Flags
 
