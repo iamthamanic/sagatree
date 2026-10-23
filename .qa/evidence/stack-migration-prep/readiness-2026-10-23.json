@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-23T13:36:29.995Z",
+  "branch": "docs/migration-owner-decisions-20261023",
+  "headShaHint": "pre-readiness-commit",
+  "meaning": "Evidence-based execution readiness for Epic #773 child issues. Architecture freigabe ≠ DONE. Source fingerprint ≠ DONE. Closed GitHub alone ≠ DONE.",
+  "counts": {
+    "total": 90,
+    "done": 12,
+    "ready": 2,
+    "waiting": 36,
+    "blocked": 40,
+    "needsDesign": 0
+  },
+  "done": [
+    {
+      "localId": "MIG-001",
+      "githubIssue": 782,
+      "dependsOn": [],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-002",
+      "githubIssue": 783,
+      "dependsOn": [
+        "MIG-001"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "GATE-01",
+      "githubIssue": 784,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "GATE-02",
+      "githubIssue": 785,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "GATE-03",
+      "githubIssue": 786,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "GATE-04",
+      "githubIssue": 787,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-010",
+      "githubIssue": 789,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-011",
+      "githubIssue": 790,
+      "dependsOn": [
+        "MIG-010",
+        "GATE-01",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-013",
+      "githubIssue": 792,
+      "dependsOn": [
+        "MIG-011",
+        "GATE-01"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-012",
+      "githubIssue": 791,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-500",
+      "githubIssue": 841,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-503",
+      "githubIssue": 844,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    }
+  ],
+  "ready": [
+    {
+      "localId": "MIG-014",
+      "githubIssue": 793,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    },
+    {
+      "localId": "MIG-015",
+      "githubIssue": 794,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
+    }
+  ],
+  "waitingDependency": [
+    "MIG-020",
+    "MIG-022",
+    "MIG-023",
+    "MIG-024",
+    "MIG-021",
+    "RPC-SAGA-AUTHORING",
+    "RPC-SAGA-VERSION-READ",
+    "RPC-PROJECT-MEMBERSHIP",
+    "RPC-SAGA-GOVERNANCE",
+    "RPC-NPC-INSTANCES",
+    "MIG-351",
+    "MIG-352",
+    "RPC-WORLD-CREATE",
+    "RPC-WORLD-RESTRUCTURE",
+    "MIG-350",
+    "MIG-421",
+    "MIG-301",
+    "MIG-302",
+    "MIG-303",
+    "MIG-304",
+    "MIG-306",
+    "MIG-307",
+    "MIG-308",
+    "MIG-309",
+    "MIG-310",
+    "MIG-313",
+    "MIG-501",
+    "MIG-502",
+    "MIG-600",
+    "MIG-601",
+    "MIG-602",
+    "MIG-603",
+    "MIG-700",
+    "MIG-701",
+    "MIG-702",
+    "MIG-703"
+  ],
+  "blocked": [
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "githubIssue": 770,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-MARKETPLACE-COUNT",
+      "githubIssue": 878,
+      "blockerCount": 2
+    },
+    {
+      "localId": "RPC-SAGA-PROVISION",
+      "githubIssue": 873,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-SESSION-RUNTIME",
+      "githubIssue": 867,
+      "blockerCount": 3
+    },
+    {
+      "localId": "RPC-SESSION-LIFECYCLE",
+      "githubIssue": 868,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-353",
+      "githubIssue": 816,
+      "blockerCount": 0
+    },
+    {
+      "localId": "RPC-SESSION-ACCESS",
+      "githubIssue": 869,
+      "blockerCount": 2
+    },
+    {
+      "localId": "RPC-SESSION-RECAP",
+      "githubIssue": 870,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-SAGA-PROJECTIONS",
+      "githubIssue": 876,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-WORLD-MAP",
+      "githubIssue": 861,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "githubIssue": 862,
+      "blockerCount": 2
+    },
+    {
+      "localId": "RPC-WORLD-PLACES",
+      "githubIssue": 863,
+      "blockerCount": 1
+    },
+    {
+      "localId": "RPC-WORLD-DESTRUCTIVE",
+      "githubIssue": 866,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-402",
+      "githubIssue": 818,
+      "blockerCount": 2
+    },
+    {
+      "localId": "MIG-401",
+      "githubIssue": 817,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-403",
+      "githubIssue": 819,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-404",
+      "githubIssue": 820,
+      "blockerCount": 2
+    },
+    {
+      "localId": "MIG-405",
+      "githubIssue": 821,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-406",
+      "githubIssue": 822,
+      "blockerCount": 2
+    },
+    {
+      "localId": "MIG-407",
+      "githubIssue": 823,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-408",
+      "githubIssue": 824,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-409",
+      "githubIssue": 825,
+      "blockerCount": 3
+    },
+    {
+      "localId": "MIG-410",
+      "githubIssue": 826,
+      "blockerCount": 2
+    },
+    {
+      "localId": "MIG-411",
+      "githubIssue": 827,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-412",
+      "githubIssue": 828,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-413",
+      "githubIssue": 829,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-415",
+      "githubIssue": 831,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-416",
+      "githubIssue": 832,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-417",
+      "githubIssue": 833,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-418",
+      "githubIssue": 834,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-419",
+      "githubIssue": 835,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-420",
+      "githubIssue": 836,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-414",
+      "githubIssue": 830,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-422",
+      "githubIssue": 838,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-423",
+      "githubIssue": 839,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-424",
+      "githubIssue": 840,
+      "blockerCount": 1
+    },
+    {
+      "localId": "MIG-305",
+      "githubIssue": 804,
+      "blockerCount": 2
+    },
+    {
+      "localId": "MIG-311",
+      "githubIssue": 810,
+      "blockerCount": 3
+    },
+    {
+      "localId": "MIG-312",
+      "githubIssue": 811,
+      "blockerCount": 1
+    },
+    {
+      "localId": "GATE-05",
+      "githubIssue": 788,
+      "blockerCount": 0
+    }
+  ],
+  "notes": [
+    "DONE requires completionEvidence JSON (migration-acceptance) with hashed check artifacts and merge/tested commit.",
+    "READY requires fully specified contract + all transitive predecessors DONE with evidence + no unresolved blockers.",
+    "GATE-02/03 marked DONE for gate PoC+human APPROVED; product auth/host work remains MIG-014/015/020/021.",
+    "ATLAS-LIVE-E2E remains BLOCKED while baseline Atlas CI is not-passing.",
+    "Do not mass-unlock; only MIG-014/#793 and MIG-015/#794 became READY from this evidence pass."
+  ],
+  "validator": {
+    "errors": 0,
+    "warnings": 76
+  },
+  "headSha": "dba12742e56044518741bdaf62633b51ffb62c8c"
+}

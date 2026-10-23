@@ -1,10 +1,28 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { validateMigrationPlan } from './stack-migration-contract-validation.mjs';
 import { buildMigrationPlan, publishEntry, renderIssue } from './stack-migration-issue-rendering.mjs';
 import { validatePublicationEntry } from './stack-migration-publish-payload.mjs';
+
+function writeSyntheticCompletion(localId) {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const artifact = `${dir}/${localId.toLowerCase()}-check.txt`;
+  writeFileSync(artifact, `synthetic-pass:${localId}\n`);
+  const path = `${dir}/${localId.toLowerCase()}.json`;
+  writeFileSync(path, `${JSON.stringify({
+    schemaVersion: 1,
+    kind: 'migration-acceptance',
+    localId,
+    result: 'PASS',
+    testedCommit: 'a'.repeat(40),
+    checks: [{ command: `synthetic ${localId}`, result: 'PASS', evidenceFile: artifact, sha256: createHash('sha256').update(readFileSync(artifact)).digest('hex') }],
+  }, null, 2)}\n`);
+  return path;
+}
 
 const read = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const evidence = '.qa/evidence/stack-migration-prep';
@@ -31,19 +49,29 @@ const rejects = (input, pattern, customIo) => assert.ok(errors(input, customIo).
 function setStatus(input, id, status) {
   const current = issue(input, id);
   current.status = status;
-  current.labels = current.labels.filter((label) => !['agent-ready', 'agent-blocked', 'needs-design'].includes(label));
+  current.labels = current.labels.filter((label) => !['agent-ready', 'agent-blocked', 'needs-design', 'waiting-dependency'].includes(label));
   if (status === 'ready') current.labels.push('agent-ready');
-  else if (status !== 'done') current.labels.push('agent-blocked');
+  else if (status === 'done') { /* agent-done optional in mutated fixtures */ }
+  else {
+    current.labels.push('agent-blocked');
+    if (status === 'waiting') current.labels.push('waiting-dependency');
+    if (status === 'needs-design') current.labels.push('needs-design');
+  }
   const target = plan(input, id);
   Object.assign(target, { status, runnerBlock: !['ready', 'done'].includes(status), labels: [...current.labels] });
   input.intake.coverage.issuesReady = input.intake.issues.filter((entry) => entry.status === 'ready').length;
-  input.intake.coverage.issuesBlockedOrNeedsDesign = input.intake.issues.filter((entry) => ['blocked', 'needs-design'].includes(entry.status)).length;
+  input.intake.coverage.issuesBlockedOrNeedsDesign = input.intake.issues.filter((entry) => ['blocked', 'needs-design', 'waiting'].includes(entry.status)).length;
 }
 
 test('the complete published plan validates without an implementation or architecture approval claim', () => {
   assert.deepEqual(errors(original), []);
   assert.equal(original.intake.coverage.legacyFrontendRpcs, 57);
-  assert.equal(original.intake.issues.filter((entry) => entry.status === 'ready').length, 0);
+  // Evidence-based READY only (MIG-014/015 after wave-0/1 DONE); never a mass unlock of all 90.
+  const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
+  assert.equal(ready.length, original.intake.coverage.issuesReady);
+  assert.ok(ready.length > 0 && ready.length < 10, `expected a small READY set, got ${ready.length}`);
+  assert.ok(ready.every((entry) => ['MIG-014', 'MIG-015'].includes(entry.localId)));
+  assert.ok(original.intake.issues.filter((entry) => entry.status === 'done').length >= 10);
 });
 
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {
@@ -69,7 +97,13 @@ test('backticks do not turn generic boilerplate into behavioral acceptance', () 
 });
 
 test('MIG-002 has no special exception for incomplete baseline predecessors', () => {
-  const input = clone(); setStatus(input, 'MIG-002', 'ready');
+  const input = clone();
+  // Strip real MIG-001 completion so READY cannot ride on historical DONE evidence.
+  setStatus(input, 'MIG-001', 'waiting');
+  delete issue(input, 'MIG-001').completionEvidence;
+  issue(input, 'MIG-001').verification.implementationStatus = 'not-accepted';
+  setStatus(input, 'MIG-002', 'ready');
+  delete issue(input, 'MIG-002').completionEvidence;
   rejects(input, /MIG-002: ready despite incomplete predecessor MIG-001/);
 });
 
@@ -116,22 +150,46 @@ test('an agent-authored approval cannot unlock a fully completed ancestor graph'
   const mark = (id, visited = new Set()) => {
     if (visited.has(id)) return; visited.add(id);
     const entry = issue(input, id); for (const dep of entry.dependsOn) mark(dep, visited);
-    setStatus(input, id, 'done'); entry.completionEvidence = '.qa/evidence/stack-migration-prep/baseline.md';
-    if (id.startsWith('GATE-')) input.approvals.decisions[id] = { status: 'APPROVED', actorType: 'agent', actor: 'test-agent', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/773', evidenceFile: entry.completionEvidence };
+    setStatus(input, id, 'done');
+    entry.completionEvidence = entry.completionEvidence && existsSync(entry.completionEvidence)
+      ? entry.completionEvidence
+      : writeSyntheticCompletion(id);
+    entry.verification.implementationStatus = 'accepted';
+    entry.verification.blockers = [];
+    if (id.startsWith('GATE-')) {
+      input.approvals.decisions[id] = {
+        status: 'APPROVED',
+        actorType: 'agent',
+        actor: 'test-agent',
+        sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/773',
+        evidenceFile: entry.completionEvidence,
+      };
+    }
   };
   for (const dep of issue(input, 'MIG-301').dependsOn) mark(dep);
   setStatus(input, 'MIG-301', 'ready');
+  issue(input, 'MIG-301').verification.blockers = [];
   rejects(input, /missing explicit human architecture approval/);
 });
 
 test('a done label without completion evidence is not completion', () => {
-  const input = clone(); setStatus(input, 'MIG-002', 'done');
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  delete issue(input, 'MIG-002').completionEvidence;
   rejects(input, /MIG-002: done without completion evidence/);
 });
 
 test('desktop PoC cannot be moved before browser CI and operations', () => {
   const input = clone(); issue(input, 'GATE-05').dependsOn = ['MIG-001'];
   rejects(input, /Desktop PoC must be deferred/);
+});
+
+test('optional tus remains in inventory but cannot block core cutover', () => {
+  const input = clone();
+  assert.ok(input.intake.issues.some((entry) => entry.localId === 'MIG-501'));
+  assert.ok(!issue(input, 'MIG-700').dependsOn.includes('MIG-501'));
+  issue(input, 'MIG-700').dependsOn.push('MIG-501');
+  rejects(input, /optional MIG-501 must not block core cutover/);
 });
 
 test('shutdown cannot lose Atlas or observation-window guards', () => {
@@ -186,8 +244,21 @@ test('a malformed human claim is rejected even when architecture approval is aut
   // Existing comment URL but nonexistent evidence file
   input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-123', evidenceFile: 'nonexistent-adr.md' };
   rejects(input, /GATE-01: missing explicit human architecture approval/);
-  setStatus(input, 'MIG-001', 'ready');
-  rejects(input, /runner execution is not authorized/);
+  // Runner may be authorized for accepted slices, but agent-ready still requires real predecessor evidence.
+  setStatus(input, 'MIG-301', 'ready');
+  rejects(input, /MIG-301: ready despite incomplete predecessor/);
+});
+
+test('architecture-approved gates must not remain needs-design after owner decisions', () => {
+  const input = clone();
+  setStatus(input, 'GATE-01', 'needs-design');
+  rejects(input, /GATE-01: architecture-approved gate must not remain needs-design/);
+});
+
+test('GATE-05 cannot be marked ready or done before platform qualification', () => {
+  const input = clone();
+  setStatus(input, 'GATE-05', 'ready');
+  rejects(input, /GATE-05: must not be marked technically done before browser-host/);
 });
 
 test('human GATE-01 APPROVED with verifiable comment URL and ADR evidence is accepted', () => {
@@ -225,7 +296,8 @@ test('unknown internal RPC dependencies are not silently filtered from the graph
 
 test('publication binds labels, title, repository, issue number and content together', () => {
   const byId = new Map(original.intake.issues.map((entry) => [entry.localId, entry]));
-  const current = byId.get('MIG-001');
+  // Use a still-blocked ticket so runner-label tamper remains observable.
+  const current = byId.get('ATLAS-LIVE-E2E');
   const base = { repository: original.registry.repository, entry: publishEntry(current, byId), issue: current, byId, body: renderIssue(current, byId) };
   assert.doesNotThrow(() => validatePublicationEntry(base));
   const mutations = [

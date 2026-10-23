@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-001",
+  "result": "PASS",
+  "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
+  "githubClosed": true,
+  "mergeRef": "PR #860 → main",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "evidence-lock: baseline AC map",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/baseline.md",
+      "sha256": "f928be182e0e55fa113035dca36223500d109b8132c160bb0959173ee2a5067c"
+    },
+    {
+      "command": "parity dual-rebuild verify",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/parity-fixtures/execution-2026-10-21-rebuild/rebuild-verify.json",
+      "sha256": "e39b12c87fa35c26a56fd5be26e41b37c1c5d04400dd71add7e6a5810915dce0"
+    }
+  ]
+}

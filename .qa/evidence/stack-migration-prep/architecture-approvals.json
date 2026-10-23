@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "note": "Architecture APPROVED entries require a human GitHub issue comment on the gate issue (sourceUrl) plus an evidence file that exists in-repo. GATE-02/03/05 remain undecided/deferred. GATE-04 is implementation freigabe only — not production cutover.",
+  "note": "Human decisions originate in explicit owner confirmations on 2026-10-23, delegated transcription in linked GitHub issue comments. GATE-05 target selection is not platform qualification; GATE-04 implementation only; production cutover requires separate approval.",
   "decisions": {
     "GATE-01": {
       "status": "APPROVED",
@@ -16,10 +16,61 @@
         "additional import-boundary CI against unguarded Drizzle/DB-client access",
         "separate world-owner and project-GM authority axes"
       ],
-      "doesNotApprove": ["GATE-02", "GATE-03", "GATE-04", "GATE-05", "production-cutover"]
+      "doesNotApprove": [
+        "GATE-02",
+        "GATE-03",
+        "GATE-04",
+        "GATE-05",
+        "production-cutover"
+      ]
     },
-    "GATE-02": { "status": "UNDECIDED" },
-    "GATE-03": { "status": "UNDECIDED" },
+    "GATE-02": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED — Variant A (session cookies), product implementation only",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/785#issuecomment-6364772323",
+      "evidenceFile": "docs/architecture/ADR-ST-06-gate-02-auth-handshake.md",
+      "approvedAt": "2026-10-23T12:21:00Z",
+      "provenance": "Owner's explicit chat decision; delegated transcription on linked GitHub issue; not an agent-selected variant.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-decisions-2026-10-23.md",
+        "Cookie-only HttpOnly SameSite and Secure on HTTPS; never JWT minting or JS-readable browser bearers",
+        "One server-validated session, actor, host and membership for HTTP/Colyseus",
+        "CSRF/Origin, logout, revocation and reconnect enforced",
+        "HTTPS/Tauri/other browser and product policy evidence required before platform ship"
+      ],
+      "doesNotApprove": [
+        "GATE-03",
+        "GATE-05",
+        "production-cutover",
+        "Supabase-Auth-shutdown",
+        "browser-or-Tauri-Variant-B"
+      ]
+    },
+    "GATE-03": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED — Variant B (Hono HTTP + Colyseus realtime, one Node host)",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/786#issuecomment-6364773133",
+      "evidenceFile": "docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md",
+      "approvedAt": "2026-10-23T12:21:00Z",
+      "provenance": "Owner's explicit chat decision; delegated transcription on linked GitHub issue.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-decisions-2026-10-23.md",
+        "One Node process; Hono typed HTTP and Colyseus realtime",
+        "Shared application commands, Policy Service and auth context",
+        "No duplicate business logic; preserve GATE-04 revision/idempotency and GATE-02 cookie constraints",
+        "Product integration and performance tests required before release"
+      ],
+      "doesNotApprove": [
+        "GATE-05",
+        "production-cutover",
+        "Supabase-shutdown",
+        "unverified-production-capacity"
+      ]
+    },
     "GATE-04": {
       "status": "APPROVED",
       "actorType": "human",
@@ -40,7 +91,10 @@
       ],
       "openCapacityProof": {
         "status": "NOT RUN",
-        "trackedOn": ["MIG-700/#849", "Epic #773"],
+        "trackedOn": [
+          "MIG-700/#849",
+          "Epic #773"
+        ],
         "requiredBeforeCutover": [
           "target hardware",
           "state sizes",
@@ -58,6 +112,9 @@
         "production-capacity-SLOs"
       ]
     },
-    "GATE-05": { "status": "DEFERRED_UNTIL_BROWSER_HOST_COMPLETE" }
+    "GATE-05": {
+      "status": "DEFERRED_UNTIL_BROWSER_HOST_COMPLETE",
+      "provenance": "Owner chose target Tauri+Node sidecar across macOS/Windows/Linux on 2026-10-23; deferred technical qualification and desktop ship gate remain unsatisfied. See https://github.com/iamthamanic/sagatree/issues/788#issuecomment-6364773974"
+    }
   }
 }

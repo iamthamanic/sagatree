@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+chore
 
 ## Intent
 
@@ -15,31 +15,42 @@ Drizzle mit zentralem Policy Service und ZenStack 3 anhand derselben SQLite-Bere
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: .qa/design/gates/GATE-01-drizzle-vs-zenstack.md, supabase/migrations/015_inventory_item_definitions.sql. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
-
-### Nachher und Verhalten
-
-Drizzle mit zentralem Policy Service und ZenStack 3 anhand derselben SQLite-Berechtigungsfälle bewerten. Zielpfade: .qa/evidence/stack-migration-prep/pocs/gate-01, .qa/design/gates/GATE-01-drizzle-vs-zenstack.md.
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`.
+- Source Contracts: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
-- Änderbare Zielpfade: `.qa/evidence/stack-migration-prep/pocs/gate-01`, `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`
-- Quellverträge: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
+In:
+- `.qa/evidence/stack-migration-prep/pocs/gate-01`
+- `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-Welteigentum und Projekt-GM sind verschiedene Rollen. Ein GM erhält durch seine Sitzung keine Welt-Editierrechte; ein Weltbesitzer verliert diese nicht, wenn er kein GM ist.
+- Welteigentum und Projekt-GM sind verschiedene Rollen. Ein GM erhält durch seine Sitzung keine Welt-Editierrechte; ein Weltbesitzer verliert diese nicht, wenn er kein GM ist.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
 ## Edge Cases
 
@@ -64,6 +75,15 @@ Welteigentum und Projekt-GM sind verschiedene Rollen. Ein GM erhält durch seine
 - Dann: Die Tabelle nennt PASS/FAIL/NOT RUN je Kriterium und Version; abhängige Issues bleiben bis zur verlinkten menschlichen APPROVED-Entscheidung gesperrt.
 - Quelle: `.qa/design/gates/GATE-01-drizzle-vs-zenstack.md`, `supabase/migrations/015_inventory_item_definitions.sql`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. O darf updateMapTitle ausführen, G/P1/P2/X nicht; G darf die GM-Sitzungsoperation ausführen, O ohne GM-Rolle nicht; versteckte Karten fehlen in Spielerprojektionen.
+2. Die Mutation liefert einen Konflikt ohne Revisionserhöhung; ein unautorisierter Actor erhält einen Berechtigungsfehler und keinen Konflikt als Existenzsignal.
+3. Die Tabelle nennt PASS/FAIL/NOT RUN je Kriterium und Version; abhängige Issues bleiben bis zur verlinkten menschlichen APPROVED-Entscheidung gesperrt.
+4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
 - [ ] O darf updateMapTitle ausführen, G/P1/P2/X nicht; G darf die GM-Sitzungsoperation ausführen, O ohne GM-Rolle nicht; versteckte Karten fehlen in Spielerprojektionen.
@@ -76,25 +96,27 @@ Welteigentum und Projekt-GM sind verschiedene Rollen. Ein GM erhält durch seine
 - Depends on #782 (MIG-001)
 - Depends on #783 (MIG-002)
 
-Status: **needs-design**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-gate-01`
 - Design: `.qa/design/migration-issues/stack-migration-gate-01.md`
-- Status: needs-design
+- Status: done
 - Reihenfolge: 4; Welle: 0
-- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-004`, `agent-blocked`, `needs-design`, `gate-issue`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-004`, `agent-done`, `gate-issue`
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-gate-01.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: specified
-- Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Implementation acceptance: accepted
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+

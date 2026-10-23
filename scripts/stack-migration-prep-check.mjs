@@ -44,5 +44,5 @@ for (const script of ['verify-postgres', 'extract', 'docs']) execFileSync(python
 execFileSync(process.execPath, ['scripts/stack-migration-edge-source-contracts.mjs'], { stdio: 'inherit' });
 execFileSync(process.execPath, ['scripts/stack-migration-edge-contracts.mjs'], { stdio: 'inherit' });
 execFileSync(process.execPath, ['scripts/stack-migration-contract-validation.test.mjs'], { stdio: 'inherit' });
-console.log(`stack-migration-prep-check: PASS (contracts=${inputs.intake.issues.length}, RPC=${inputs.rpcInventory.rpcs.length}, Edge=${inputs.edgeInventory.edges.length}, Infra=${inputs.edgeInventory.infrastructure.length}; execution-blocked=${result.warnings.length}; architecture-approved=0)`);
+console.log(`stack-migration-prep-check: PASS (contracts=${inputs.intake.issues.length}, RPC=${inputs.rpcInventory.rpcs.length}, Edge=${inputs.edgeInventory.edges.length}, Infra=${inputs.edgeInventory.infrastructure.length}; execution-blocked=${result.warnings.length}; architecture-approved=${Object.values(inputs.approvals.decisions).filter((entry) => entry.status === 'APPROVED').length})`);
 console.log('Scope: local structure, source-derived RPC/Edge contracts, checked fingerprints and regression tests. This is not deployed-state verification, implementation acceptance, or cutover approval.');

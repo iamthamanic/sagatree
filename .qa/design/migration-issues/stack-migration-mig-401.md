@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,39 +15,52 @@ ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behä
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: supabase/functions/_shared/ai-gm-rate-limit.ts, supabase/functions/_shared/ai-provider-crypto.ts, supabase/functions/_shared/character-lore-prompt.ts, supabase/functions/_shared/character-lore-provider.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/ollama-llm-resolve.ts, supabase/functions/_shared/ollama-url-policy.ts, supabase/functions/_shared/session-membership-gate.ts, supabase/functions/ai-gm/index.ts, supabase/functions/main/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-ai-gm.md, .qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json.
-
-### Nachher und Verhalten
-
-ai-gm: Den nicht eingebundenen Legacy-Worker erfassen; der produktive Host behält die 404-Grenze, bis eine gesonderte Freigabe einen sicheren Nachfolger aktiviert. Zielpfade: .
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `supabase/functions/_shared/ai-gm-rate-limit.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/ollama-llm-resolve.ts`, `supabase/functions/_shared/ollama-url-policy.ts`, `supabase/functions/_shared/session-membership-gate.ts`, `supabase/functions/ai-gm/index.ts`, `supabase/functions/main/index.ts`.
+- Source Contracts: `.qa/intake/edge-infra-contracts/edge-ai-gm.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `supabase/functions/_shared/ai-gm-rate-limit.ts`, `supabase/functions/_shared/ai-provider-crypto.ts`, `supabase/functions/_shared/character-lore-prompt.ts`, `supabase/functions/_shared/character-lore-provider.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/ollama-llm-resolve.ts`, `supabase/functions/_shared/ollama-url-policy.ts`, `supabase/functions/_shared/session-membership-gate.ts`, `supabase/functions/ai-gm/index.ts`, `supabase/functions/main/index.ts`
-- Änderbare Zielpfade: 
-- Quellverträge: `.qa/intake/edge-infra-contracts/edge-ai-gm.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json`
+In:
 
-## Owned internal prerequisites
 
-- `consume_ai_gm_rate_limit`
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
 
-Diese internen Helper gehören zum Implementierungsumfang dieses Tickets. Ihre sichere Policy und Atomizität müssen mit dem Edge-Port abgenommen werden; sie sind kein ausgelassener oder selbst erfüllter Vorgänger.
+## User Journey
+
+1. Der berechtigte Nutzer startet den bereits vorhandenen SagaTree-Vorgang (keine neuen UX-Flows oder UI-Varianten erfinden).
+2. Der bestehende UI-/Service-Adapter erreicht den benannten Host-Use-Case unter unveränderten DTO-/Fehler- und Rollenverträgen.
+3. Die UI zeigt denselben fachlichen Zustand und die erlaubte Projektion; Lade-, Fehler-, Reload- und Reconnect-Verhalten bleibt äquivalent.
+4. Bei einem Fremdbesitzer, fehlender Membership oder nicht veröffentlichter GM-Information liefert der Host einen nachgewiesenen DENY statt nur versteckter UI.
+
+UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `docs/concepts/adaptive-ui-experience-contract.md`, `docs/concepts/conductor-experience-contract.md` und `docs/concepts/imagination-first-visualization-contract.md`.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-ai-gm: External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {"kind":"legacy-unmounted","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve external 404; no automatic host route or public activation."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+- ai-gm: External dispatcher returns404 before worker creation. If directly invoked in an isolated fixture, assertSessionMemberAccess runs before persistent user quota and provider/lore fan-out; it does not establish a role-safe projection of caller-supplied NPC IDs/context. Dispatcher-Status: {"kind":"legacy-unmounted","dispatcherAllowed":false,"publicActivationAuthorized":false,"decision":"Preserve external 404; no automatic host route or public activation."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
-### Bekannte Legacy-Defekte / offene Verifikation
+### Bekannte Legacy-Defekte / negative Regressionen
 
 - Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions.
 
@@ -81,6 +94,16 @@ ai-gm: External dispatcher returns404 before worker creation. If directly invoke
 - Dann: If retained internally, pin NDJSON-under-text/event-stream framing and nonstream metadata shape; chunk-boundary/error/failed state write tests must pass.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-ai-gm.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. Dispatcher requests for ai-gm return404 for valid/invalid/no JWT, without creating worker.
+2. Any future enablement requires separate reviewed GM/player projection and explicit replacement for blocked lorekeeper/sessions fan-out.
+3. Isolated fixture validates action max5000, membership rejection before LLM,13th default quota request429.
+4. If retained internally, pin NDJSON-under-text/event-stream framing and nonstream metadata shape; chunk-boundary/error/failed state write tests must pass.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
 - [ ] Dispatcher requests for ai-gm return404 for valid/invalid/no JWT, without creating worker.
@@ -97,7 +120,7 @@ ai-gm: External dispatcher returns404 before worker creation. If directly invoke
 - Depends on #818 (MIG-402)
 - Depends on #791 (MIG-012)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
@@ -106,16 +129,24 @@ Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein S
 - Status: blocked
 - Reihenfolge: 44; Welle: 3
 - Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-044`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-401.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: source-verified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+
+## Owned internal prerequisites
+
+- `consume_ai_gm_rate_limit`
+
+Diese Helper sind vollständig Teil dieses Tickets und benötigen eigene Sicherheits-/Atomizitätsnachweise.
+

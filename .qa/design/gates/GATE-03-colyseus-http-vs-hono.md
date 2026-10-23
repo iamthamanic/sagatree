@@ -1,6 +1,6 @@
 # GATE-03 — Colyseus HTTP routes vs Hono API layer
 
-> **Status:** SPEC only — not APPROVED  
+> **Status:** OWNER APPROVED Variant B for implementation (2026-10-23); production qualification NOT RUN  
 > **GitHub:** #786 · Prep criteria: #776  
 > **Blocks:** MIG-020, MIG-021
 
@@ -42,6 +42,6 @@
 
 ADR-ST-07; unblock MIG-020/021.
 
-## Explicit non-decision
+## Decision source
 
-No agent APPROVED stamp. LiveKit remains out of scope (media plane).
+[Owner approval on #786](https://github.com/iamthamanic/sagatree/issues/786#issuecomment-6364773133), delegated transcription. [ADR-ST-07](../../../docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md) is binding for implementation; live HTTPS, product integration and cutover still need evidence. LiveKit remains separate.

@@ -159,24 +159,52 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
           ? [infra.verification?.status]
           : [];
     const sourceStatus = inventoryStates.some((state) => state !== 'source-verified') ? 'source-blocked' : sourceContracts.length ? 'source-verified' : 'specified';
-    const status = id.startsWith('GATE-') ? 'needs-design' : 'blocked';
+    // Preserve recorded completionEvidence / accepted implementation; validator rejects forged READY/DONE without hashed checks.
+    // Architecture freigabe alone is never DONE. Closed GitHub alone is never DONE. Source fingerprint alone is never DONE.
+    // GATE-05 target is chosen but platform qualification is deferred → blocked until browser-host + ops acceptance.
+    // Fully specified work with every predecessor DONE (+ completionEvidence) becomes READY; otherwise WAITING_DEPENDENCY.
+    blockers = unique([
+      ...blockers,
+      ...(Array.isArray(old.verification?.blockers) ? old.verification.blockers.map(text) : []),
+      ...(id === 'ATLAS-LIVE-E2E' && previous.meta?.atlasLiveE2e?.ciAcceptance === 'not-passing'
+        ? ['Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).']
+        : []),
+    ]);
+    const previousById = new Map((previous.issues ?? []).map((issue) => [issue.localId, issue]));
+    const predecessorsDone = unique(dependsOn).every((dep) => {
+      const predecessor = previousById.get(dep);
+      return predecessor?.status === 'done' && typeof predecessor.completionEvidence === 'string' && predecessor.completionEvidence.length > 0;
+    });
+    let status;
+    if (old.status === 'done') {
+      status = 'done';
+    } else if (id === 'GATE-05' || blockers.length > 0 || sourceStatus === 'source-blocked') {
+      status = 'blocked';
+    } else if (predecessorsDone) {
+      status = 'ready';
+    } else {
+      status = 'waiting';
+    }
     const priority = old.priority ?? 'P1';
     return {
       localId: id, githubIssue: registry.issues[id], title: old.title, priority, kind, status, featureSlug: slug,
       designFile: `${contractRoot}/${slug}.md`, dependsOn: unique(dependsOn), sourceContracts, integrationWith, ownedPrerequisites,
       ...(rpcNames ? { rpcNames } : {}), ...(group ? { parentIssue: group.parentIssue } : {}),
       before: { paths: unique(definition.sources), baselineSha, scope: 'Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory.' },
-      after: { paths: unique(definition.targets.filter(Boolean)), behavior: definition.intent, architecture: 'Concrete libraries remain subject to GATE decisions.' },
+      after: { paths: unique(definition.targets.filter(Boolean)), behavior: definition.intent,
+        architecture: 'Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending.' },
       behavior: definition.intent,
       security: definition.security,
-      scope: { mayChange: unique(definition.targets.filter(Boolean)), mustNotChange: ['production data', 'unrelated product flows'], nonGoals: ['Unapproved framework choice', 'Production cutover', 'Silent retirement of an operation'] },
+      scope: { mayChange: unique(definition.targets.filter(Boolean)), mustNotChange: ['production data', 'unrelated product flows'], nonGoals: ['Unapproved framework substitution', 'Production cutover or Supabase shutdown', 'Retirement of any reachable legacy behavior without owner sign-off'] },
       acceptance, assertions: definition.assertions,
-      verification: { sourceStatus, implementationStatus: 'not-accepted', blockers: unique(blockers), approvalRequired: id.startsWith('GATE-') ? 'human-architecture-decision' : null },
+      ...(old.completionEvidence ? { completionEvidence: old.completionEvidence } : {}),
+      verification: { sourceStatus, implementationStatus: old.status === 'done' || old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
+        blockers: unique(blockers), approvalRequired: id === 'GATE-05' ? 'platform-qualification-pending' : null },
       contractSections: {
         vorher: `Baseline ${baselineSha}; Quellpfade: ${definition.sources.join(', ')}. Detaillierte Aufruf-/SQL-Nachweise: ${sourceContracts.length ? sourceContracts.join(', ') : 'die unten referenzierten Anforderungen'}.`,
         nachher: `${definition.intent} Zielpfade: ${definition.targets.filter(Boolean).join(', ')}.`,
         verhalten: definition.intent, sicherheit: definition.security, tests: acceptance, abhaengigkeiten: unique(dependsOn),
-        grenzen: 'Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.',
+        grenzen: 'Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.',
       },
     };
   });
@@ -188,7 +216,8 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   byId.get('MIG-602').dependsOn = unique(['MIG-600', 'MIG-601', 'ATLAS-LIVE-E2E', ...ports]);
   byId.get('MIG-603').dependsOn = ['MIG-502', 'MIG-503', 'MIG-601'];
   const baseWave = (id) => /^(?:GATE-0[1-4]|ATLAS|MIG-00)/.test(id) ? 0 : /^MIG-01/.test(id) || id === 'MIG-500' ? 1 : /^(?:MIG-02|RPC-|MIG-35)/.test(id) || id === 'MIG-503' ? 2 : /^MIG-4/.test(id) ? 3 : /^MIG-3/.test(id) ? 4 : /^MIG-5/.test(id) ? 5 : /^MIG-6/.test(id) ? 6 : 7;
-  byId.get('MIG-700').dependsOn = issues.filter((issue) => baseWave(issue.localId) <= 6).map((issue) => issue.localId);
+  // Optional tus is a post-core enhancement, explicitly excluded from cutover by the owner.
+  byId.get('MIG-700').dependsOn = issues.filter((issue) => baseWave(issue.localId) <= 6 && issue.localId !== 'MIG-501').map((issue) => issue.localId);
   const pending = new Set(issues.map((issue) => issue.localId));
   const topo = [];
   while (pending.size) {
@@ -199,7 +228,16 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     issue.order = topo.length;
     issue.waveNumber = Math.max(baseWave(id), ...issue.dependsOn.map((dep) => byId.get(dep).waveNumber));
     issue.wave = waveNames[issue.waveNumber];
-    issue.labels = [issue.priority, issue.wave, `migration-order-${String(issue.order).padStart(3, '0')}`, issue.status === 'ready' ? 'agent-ready' : 'agent-blocked', ...(issue.status === 'needs-design' ? ['needs-design', 'gate-issue'] : [])];
+    const runnerLabel = issue.status === 'ready' ? 'agent-ready' : issue.status === 'done' ? 'agent-done' : 'agent-blocked';
+    issue.labels = [
+      issue.priority,
+      issue.wave,
+      `migration-order-${String(issue.order).padStart(3, '0')}`,
+      runnerLabel,
+      ...(issue.status === 'waiting' ? ['waiting-dependency'] : []),
+      ...(issue.status === 'needs-design' ? ['needs-design'] : []),
+      ...(issue.localId.startsWith('GATE-') ? ['gate-issue'] : []),
+    ];
     issue.contractSections.abhaengigkeiten = issue.dependsOn;
   }
   const ordered = topo.map((id) => byId.get(id));
@@ -208,20 +246,136 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     note: 'Published contracts; source verification, isolated integration evidence, implementation acceptance and human architecture approval are separate states.',
     atlasLiveE2e: { githubIssue: 770, design: '.qa/design/atlas-live-e2e-cutover-gate.md', ciEnabled: true, workflow: '.github/workflows/stack-migration-baseline.yml', ciAcceptance: 'not-passing', implementationIssueRemainsOpen: true },
   };
-  const intake = { meta, coverage: { legacyMigrations: 106, legacyEdgeFunctions: edgeInventory.edges.length, legacyFrontendRpcs: rpcInventory.rpcs.length, originalLiteralFrontendRpcs: 55, infraAreas: edgeInventory.infrastructure.length, issuesTotal: ordered.length, originalMigrationIssues: 71, existingAtlasIssue: 1, rpcChildIssues: splits.groups.length, issuesReady: ordered.filter((issue) => issue.status === 'ready').length, issuesBlockedOrNeedsDesign: ordered.filter((issue) => ['blocked', 'needs-design'].includes(issue.status)).length, gateIssues: 5, openArchitectureDecisions: 5 }, waves: waveNames, topoOrder: topo, issues: ordered };
-  const dependencyPlan = { schemaVersion: 2, baselineSha, topo, plan: ordered.map((issue) => ({ localId: issue.localId, githubIssue: issue.githubIssue, order: issue.order, wave: issue.waveNumber, status: issue.status, dependsOnGithub: issue.dependsOn.map((id) => byId.get(id).githubIssue), runnerBlock: ['blocked', 'needs-design'].includes(issue.status), labels: issue.labels })) };
+  const nonExecutable = (status) => ['blocked', 'needs-design', 'waiting'].includes(status);
+  const intake = { meta, coverage: { legacyMigrations: 106, legacyEdgeFunctions: edgeInventory.edges.length, legacyFrontendRpcs: rpcInventory.rpcs.length, originalLiteralFrontendRpcs: 55, infraAreas: edgeInventory.infrastructure.length, issuesTotal: ordered.length, originalMigrationIssues: 71, existingAtlasIssue: 1, rpcChildIssues: splits.groups.length, issuesReady: ordered.filter((issue) => issue.status === 'ready').length, issuesBlockedOrNeedsDesign: ordered.filter((issue) => nonExecutable(issue.status)).length, gateIssues: 5, openArchitectureDecisions: 1 }, waves: waveNames, topoOrder: topo, issues: ordered };
+  const dependencyPlan = { schemaVersion: 2, baselineSha, topo, plan: ordered.map((issue) => ({ localId: issue.localId, githubIssue: issue.githubIssue, order: issue.order, wave: issue.waveNumber, status: issue.status, dependsOnGithub: issue.dependsOn.map((id) => byId.get(id).githubIssue), runnerBlock: nonExecutable(issue.status), labels: issue.labels })) };
   return { intake, dependencyPlan };
 }
 
 export function renderIssue(issue, byId) {
   const refs = (paths) => paths.map(code).join(', ');
+  const ID = issue.localId;
+  const type = ID === 'ATLAS-LIVE-E2E' ? 'bug'
+    : issue.kind === 'coordination' || /^GATE-/.test(ID) || /^MIG-00/.test(ID) ? 'chore'
+    : 'feature';
+  const isUserFacing = ID === 'ATLAS-LIVE-E2E'
+    || /^(?:RPC-|MIG-0[12][0-9]|MIG-3[0-9]{2}|MIG-4[0-9]{2})/.test(ID);
+  const targets = issue.scope.mayChange ?? issue.after.paths;
+  const forbidden = issue.scope.mustNotChange ?? [];
+  const sources = issue.sourceContracts.length ? issue.sourceContracts : issue.before.paths;
+  const architecture = 'docs/architecture/migration-owner-decisions-2026-10-23.md';
   const blocks = issue.dependsOn.map((id) => `- Depends on #${byId.get(id)?.githubIssue ?? 'unpublished'} (${id})`).join('\n') || '- Keine Vorgänger.';
-  const assertions = issue.assertions.map((entry, index) => `### Fall ${index + 1}\n\n- Gegeben: ${entry.given}\n- Wenn: ${entry.when}\n- Dann: ${entry.then}\n- Quelle: ${refs(entry.sourceRefs)}\n`).join('\n');
-  const defects = issue.verification.blockers.length ? `\n### Bekannte Legacy-Defekte / offene Verifikation\n\n${issue.verification.blockers.map((entry) => `- ${entry}`).join('\n')}\n` : '';
-  const rendered = `<!-- migration-contract:v2 localId=${issue.localId} -->\n# ${issue.localId}: ${issue.title}\n\n## Type\n\n${issue.kind === 'coordination' ? 'Coordination' : 'Task'}\n\n## Intent\n\n${issue.behavior}\n\n## Goal\n\n${issue.contractSections.nachher}\n\n## Non-Goals\n\n${issue.scope.nonGoals.map((entry) => `- ${entry}`).join('\n')}\n\n## Context\n\nEpic #773. Baseline: ${code(baselineSha)}. ${issue.parentIssue ? `Koordinator: #${issue.parentIssue}. ` : ''}\n\n### Vorher\n\n${issue.contractSections.vorher}\n\n### Nachher und Verhalten\n\n${issue.contractSections.nachher}\n\n## Scope\n\n- Quellpfade: ${refs(issue.before.paths)}\n- Änderbare Zielpfade: ${refs(issue.after.paths)}\n- Quellverträge: ${issue.sourceContracts.length ? refs(issue.sourceContracts) : refs(issue.before.paths)}\n\n## Security & Data\n\n${issue.security}\n${defects}\n## Edge Cases\n\n${assertions}\n## Acceptance\n\n${issue.acceptance.map((entry) => `- [ ] ${entry}`).join('\n')}\n\n## Blockers\n\n${blocks}\n\nStatus: **${issue.status}**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.\n\n## Runner\n\n- Feature slug: ${code(issue.featureSlug)}\n- Design: ${code(issue.designFile)}\n- Status: ${issue.status}\n- Reihenfolge: ${issue.order}; Welle: ${issue.waveNumber}\n- Labels: ${issue.labels.map(code).join(', ')}\n- Checks: ${code('npm run test-gate')}; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.\n\n## Design\n\n${code(issue.designFile)}\n\n${issue.contractSections.grenzen}\n\n## Verification state\n\n- Source: ${issue.verification.sourceStatus}\n- Implementation acceptance: ${issue.verification.implementationStatus}\n- Human architecture approval: **not granted by this contract**\n`;
-  const peers = issue.integrationWith?.length ? `## Integration peers\n\n${issue.integrationWith.map((id) => `- #${byId.get(id)?.githubIssue} (${id})`).join('\n')}\n\nDiese Adapter interagieren über die in MIG-012 fixierten Ports. Bestehende Signaturen bleiben beim einzelnen Port stabil; die gemeinsame Abnahme erfolgt in MIG-600. Ihre gegenseitigen Imports erzeugen kein zyklisches Startverbot.\n\n` : '';
-  const owned = issue.ownedPrerequisites?.length ? `## Owned internal prerequisites\n\n${issue.ownedPrerequisites.map((name) => `- ${code(name)}`).join('\n')}\n\nDiese internen Helper gehören zum Implementierungsumfang dieses Tickets. Ihre sichere Policy und Atomizität müssen mit dem Edge-Port abgenommen werden; sie sind kein ausgelassener oder selbst erfüllter Vorgänger.\n\n` : '';
-  return rendered.replace('## Security & Data', `${peers}${owned}## Security & Data`);
+  const detailedCases = issue.assertions.map((entry, index) =>
+    `### Fall ${index + 1}\n\n- Gegeben: ${entry.given}\n- Wenn: ${entry.when}\n- Dann: ${entry.then}\n- Quelle: ${refs(entry.sourceRefs)}\n`).join('\n');
+  const knownDefects = issue.verification.blockers.length
+    ? `\n### Bekannte Legacy-Defekte / negative Regressionen\n\n${issue.verification.blockers.map((entry) => `- ${entry}`).join('\n')}\n` : '';
+  const runtime = ID === 'MIG-703' || ID === 'GATE-05'
+    ? '| Desktop macOS/Windows/Linux | Tauri+Node-Sidecar; echte Plattformtests erforderlich |\n| Browser/VPS | bestehender gemeinsamer Host unverändert; keine zweite Runtime |'
+    : '| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |\n| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |\n| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |';
+  const journey = isUserFacing
+    ? `## User Journey\n\n1. Der berechtigte Nutzer startet den bereits vorhandenen SagaTree-Vorgang (keine neuen UX-Flows oder UI-Varianten erfinden).\n2. Der bestehende UI-/Service-Adapter erreicht den benannten Host-Use-Case unter unveränderten DTO-/Fehler- und Rollenverträgen.\n3. Die UI zeigt denselben fachlichen Zustand und die erlaubte Projektion; Lade-, Fehler-, Reload- und Reconnect-Verhalten bleibt äquivalent.\n4. Bei einem Fremdbesitzer, fehlender Membership oder nicht veröffentlichter GM-Information liefert der Host einen nachgewiesenen DENY statt nur versteckter UI.\n\nUI-Parität, soweit betroffen: \`src/THEME_GUIDE.md\`, \`docs/ui-styleguide.md\`, \`docs/concepts/adaptive-ui-experience-contract.md\`, \`docs/concepts/conductor-experience-contract.md\` und \`docs/concepts/imagination-first-visualization-contract.md\`.\n\n`
+    : '';
+  // Public GitHub Acceptance may summarize (≤5). Full binding tests stay in Edge Cases + Required Tests;
+  // intake.acceptance / assertions remain 1:1 and are what validators enforce.
+  const publicAcceptance = issue.acceptance.length <= 5 ? issue.acceptance : [
+    `Alle ${issue.assertions.length} quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.`,
+    'Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.',
+    'Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.',
+    'Touched files: zero type escape hatches (typed-strict / Boy Scout).',
+  ];
+  const requiredTestsBlock = issue.acceptance.map((entry, index) => `${index + 1}. ${entry}`).join('\n');
+  const peers = issue.integrationWith?.length ? `## Integration peers\n\n${issue.integrationWith.map((id) => `- #${byId.get(id)?.githubIssue} (${id})`).join('\n')}\n\nGemeinsame Ports bleiben stabil, Integrationsabnahme in MIG-600; keine zyklischen Startverbote.\n\n` : '';
+  const owned = issue.ownedPrerequisites?.length ? `## Owned internal prerequisites\n\n${issue.ownedPrerequisites.map((name) => `- ${code(name)}`).join('\n')}\n\nDiese Helper sind vollständig Teil dieses Tickets und benötigen eigene Sicherheits-/Atomizitätsnachweise.\n\n` : '';
+  return `<!-- migration-contract:v2 localId=${ID} -->
+# ${ID}: ${issue.title}
+
+## Type
+
+${type}
+
+## Intent
+
+${issue.behavior}
+
+## Goal
+
+${issue.contractSections.nachher}
+
+## Non-Goals
+
+${issue.scope.nonGoals.map((entry) => `- ${entry}`).join('\n')}
+
+## Context
+
+- Epic: #773; historische Baseline: ${code(baselineSha)}; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: ${code(architecture)}.
+- Quellpfade und bestehende Adapter: ${refs(issue.before.paths)}.
+- Source Contracts: ${refs(sources)}.
+- Zielverhalten: ${issue.after.architecture}.
+${issue.parentIssue ? `- RPC-Koordinator: #${issue.parentIssue}.\n` : ''}
+## Scope
+
+In:
+${targets.map((entry) => `- ${code(entry)}`).join('\n')}
+
+Out:
+${forbidden.map((entry) => `- ${entry}`).join('\n')}
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+${journey}## Runtime
+
+| Axis | This slice |
+| --- | --- |
+${runtime}
+
+## Security & Data
+
+- ${issue.security}
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
+${knownDefects}
+## Edge Cases
+
+${detailedCases}
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake \`acceptance\` / \`assertions\`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+${requiredTestsBlock}
+
+## Acceptance
+
+${publicAcceptance.map((entry) => `- [ ] ${entry}`).join('\n')}
+
+## Blockers
+
+${blocks}
+
+Status: **${issue.status}**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+
+## Runner
+
+- Feature slug: ${code(issue.featureSlug)}
+- Design: ${code(issue.designFile)}
+- Status: ${issue.status}
+- Reihenfolge: ${issue.order}; Welle: ${issue.waveNumber}
+- Labels: ${issue.labels.map(code).join(', ')}
+- Checks: ${code('npm run test-gate')}; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
+
+## Design
+
+${code(issue.designFile)}
+
+${issue.contractSections.grenzen}
+
+## Verification state
+
+- Source: ${issue.verification.sourceStatus}
+- Implementation acceptance: ${issue.verification.implementationStatus}
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+
+${peers}${owned}`;
 }
 
 export const bodyHash = (body) => createHash('sha256').update(body).digest('hex');

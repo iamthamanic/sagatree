@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "GATE-01",
+  "result": "PASS",
+  "testedCommit": "cb6a7f7a2c241f8f951649447f17e7476e1a931e",
+  "githubClosed": true,
+  "mergeRef": "PR #882 → main; human APPROVED on #784",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "PoC report PASS",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-01/report.json",
+      "sha256": "91996895218525c59c559b39e79e1655dccda75aeede00d14e72b335697ef6ca"
+    },
+    {
+      "command": "ADR-ST-05",
+      "result": "PASS",
+      "evidenceFile": "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+      "sha256": "62ba756de8589bee082969d4955b76c55ee4fa597e66a16d54af9773638438b8"
+    },
+    {
+      "command": "architecture-approvals GATE-01",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
+      "sha256": "26bb64821d89f716ad2af50f3ef95f2977f6700ffec057aff5c1361dad3b7f9e"
+    }
+  ]
+}

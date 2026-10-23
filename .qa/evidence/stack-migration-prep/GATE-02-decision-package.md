@@ -1,3 +1,5 @@
+> **DECISION AFTER PoC:** [Owner-approved Cookie-A Variant A for implementation, 2026-10-23](https://github.com/iamthamanic/sagatree/issues/785#issuecomment-6364772323). The EXECUTED / NOT APPROVED / UNDECIDED fields *below* describe the earlier PoC execution/approval snapshot. They are not current architecture registry state. HTTPS/Tauri test gaps remain NOT RUN and are release blockers.
+
 # GATE-02 / #785 — Human auth variant decision package
 
 **Status:** **EXECUTED** · **NOT APPROVED** · **UNDECIDED** (no human A/B choice recorded)  

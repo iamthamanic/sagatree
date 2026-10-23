@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,33 +15,52 @@ session-media-token: Den aktuell eingebundenen Worker mit denselben validierten 
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/infrastructure/session/media/media-token-client.ts, supabase/functions/_shared/cors.ts, supabase/functions/_shared/edge-dispatcher-allowlist.ts, supabase/functions/_shared/edge-jwt-gate.ts, supabase/functions/_shared/session-media-token.ts, supabase/functions/main/index.ts, supabase/functions/session-media-token/index.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/edge-session-media-token.md, .qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json.
-
-### Nachher und Verhalten
-
-session-media-token: Den aktuell eingebundenen Worker mit denselben validierten Operationen am Host bereitstellen. Zielpfade: server/src/application/session-media-token/.
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `src/infrastructure/session/media/media-token-client.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/session-media-token.ts`, `supabase/functions/main/index.ts`, `supabase/functions/session-media-token/index.ts`.
+- Source Contracts: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `src/infrastructure/session/media/media-token-client.ts`, `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts`, `supabase/functions/_shared/session-media-token.ts`, `supabase/functions/main/index.ts`, `supabase/functions/session-media-token/index.ts`
-- Änderbare Zielpfade: `server/src/application/session-media-token/`
-- Quellverträge: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
+In:
+- `server/src/application/session-media-token/`
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## User Journey
+
+1. Der berechtigte Nutzer startet den bereits vorhandenen SagaTree-Vorgang (keine neuen UX-Flows oder UI-Varianten erfinden).
+2. Der bestehende UI-/Service-Adapter erreicht den benannten Host-Use-Case unter unveränderten DTO-/Fehler- und Rollenverträgen.
+3. Die UI zeigt denselben fachlichen Zustand und die erlaubte Projektion; Lade-, Fehler-, Reload- und Reconnect-Verhalten bleibt äquivalent.
+4. Bei einem Fremdbesitzer, fehlender Membership oder nicht veröffentlichter GM-Information liefert der Host einen nachgewiesenen DENY statt nur versteckter UI.
+
+UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `docs/concepts/adaptive-ui-experience-contract.md`, `docs/concepts/conductor-experience-contract.md` und `docs/concepts/imagination-first-visualization-contract.md`.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-session-media-token: /auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+- session-media-token: /auth/v1/user identity -> sessions.project_id -> project_members(status=active,user_id=caller). Actual code has no session_players fallback despite its comment. Roles gm->gamemaster and observer->viewer; unsupported role denied. Capabilities are loaded as null/empty, not trusted from client. Dispatcher-Status: {"kind":"allowlisted-worker","dispatcherAllowed":true,"publicActivationAuthorized":false,"decision":"Current branch mount; a successor cutover still requires gates and contract tests."}. Provider-Schlüssel bleiben serverseitig; die vollständigen request-/response-/quota-spezifischen Regeln stehen im Quellvertrag.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
-### Bekannte Legacy-Defekte / offene Verifikation
+### Bekannte Legacy-Defekte / negative Regressionen
 
 - No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.
 
@@ -82,13 +101,22 @@ session-media-token: /auth/v1/user identity -> sessions.project_id -> project_me
 - Dann: Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. Distinct active player/GM/viewer accounts receive only server-derived room/identity/grants; foreign account403 and caller-supplied role/capabilities/room ignored.
+2. Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.
+3. No project_members row403 even if legacy session_players fixture exists; inactive member403.
+4. Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.
+5. Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
-- [ ] Distinct active player/GM/viewer accounts receive only server-derived room/identity/grants; foreign account403 and caller-supplied role/capabilities/room ignored.
-- [ ] Decode JWT and verify HS256 signature, iss/sub/nbf/iat/exp plus room; TTL omitted120,1->30,999->300.
-- [ ] No project_members row403 even if legacy session_players fixture exists; inactive member403.
-- [ ] Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.
-- [ ] Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers
@@ -99,7 +127,7 @@ session-media-token: /auth/v1/user identity -> sessions.project_id -> project_me
 - Depends on #791 (MIG-012)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
@@ -108,16 +136,18 @@ Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein S
 - Status: blocked
 - Reihenfolge: 61; Welle: 3
 - Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-061`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-420.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: source-verified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+

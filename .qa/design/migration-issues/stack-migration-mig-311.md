@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,33 +15,52 @@ src/infrastructure/session: bestehende Aufrufer über den freigegebenen Host tra
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/resource-id/session-routing.ts, src/domains/session/contracts/live-session-access.ts, src/domains/session/contracts/session-invite.ts, src/domains/session/contracts/session-lifecycle.ts, src/domains/session/contracts/session-prepare-recap.ts, src/domains/session/contracts/session-runtime.ts, src/domains/session/contracts/session.types.ts, src/domains/session/media/media-plane-contract.ts, src/infrastructure/session/live-session-access.resolver.ts, src/infrastructure/session/media/index.ts, src/infrastructure/session/media/livekit-media-plane-adapter.ts, src/infrastructure/session/media/media-plane-adapter.ts, src/infrastructure/session/media/media-token-client.ts, src/infrastructure/session/media/memory-media-plane-adapter.ts, src/infrastructure/session/media/memory-media-plane-bus.ts, src/infrastructure/session/media/session-media-plane.ts, src/infrastructure/session/session-lobby-channel.ts, src/infrastructure/session/session-recap-ai-service.ts, src/infrastructure/session/session-recap-service.ts, src/infrastructure/session/session-runtime-channel.ts, src/infrastructure/session/session-runtime-service.ts, src/infrastructure/session/session-service.ts, src/lib/authenticatedUser.ts, src/lib/localAdmin.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-session.md, .qa/intake/edge-infra-contracts/source-contracts/infra-session.json.
-
-### Nachher und Verhalten
-
-src/infrastructure/session: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `src/domains/resource-id/session-routing.ts`, `src/domains/session/contracts/live-session-access.ts`, `src/domains/session/contracts/session-invite.ts`, `src/domains/session/contracts/session-lifecycle.ts`, `src/domains/session/contracts/session-prepare-recap.ts`, `src/domains/session/contracts/session-runtime.ts`, `src/domains/session/contracts/session.types.ts`, `src/domains/session/media/media-plane-contract.ts`, `src/infrastructure/session/live-session-access.resolver.ts`, `src/infrastructure/session/media/index.ts`, `src/infrastructure/session/media/livekit-media-plane-adapter.ts`, `src/infrastructure/session/media/media-plane-adapter.ts`, `src/infrastructure/session/media/media-token-client.ts`, `src/infrastructure/session/media/memory-media-plane-adapter.ts`, `src/infrastructure/session/media/memory-media-plane-bus.ts`, `src/infrastructure/session/media/session-media-plane.ts`, `src/infrastructure/session/session-lobby-channel.ts`, `src/infrastructure/session/session-recap-ai-service.ts`, `src/infrastructure/session/session-recap-service.ts`, `src/infrastructure/session/session-runtime-channel.ts`, `src/infrastructure/session/session-runtime-service.ts`, `src/infrastructure/session/session-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
+- Source Contracts: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `src/domains/resource-id/session-routing.ts`, `src/domains/session/contracts/live-session-access.ts`, `src/domains/session/contracts/session-invite.ts`, `src/domains/session/contracts/session-lifecycle.ts`, `src/domains/session/contracts/session-prepare-recap.ts`, `src/domains/session/contracts/session-runtime.ts`, `src/domains/session/contracts/session.types.ts`, `src/domains/session/media/media-plane-contract.ts`, `src/infrastructure/session/live-session-access.resolver.ts`, `src/infrastructure/session/media/index.ts`, `src/infrastructure/session/media/livekit-media-plane-adapter.ts`, `src/infrastructure/session/media/media-plane-adapter.ts`, `src/infrastructure/session/media/media-token-client.ts`, `src/infrastructure/session/media/memory-media-plane-adapter.ts`, `src/infrastructure/session/media/memory-media-plane-bus.ts`, `src/infrastructure/session/media/session-media-plane.ts`, `src/infrastructure/session/session-lobby-channel.ts`, `src/infrastructure/session/session-recap-ai-service.ts`, `src/infrastructure/session/session-recap-service.ts`, `src/infrastructure/session/session-runtime-channel.ts`, `src/infrastructure/session/session-runtime-service.ts`, `src/infrastructure/session/session-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`
-- Änderbare Zielpfade: 
-- Quellverträge: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+In:
+
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## User Journey
+
+1. Der berechtigte Nutzer startet den bereits vorhandenen SagaTree-Vorgang (keine neuen UX-Flows oder UI-Varianten erfinden).
+2. Der bestehende UI-/Service-Adapter erreicht den benannten Host-Use-Case unter unveränderten DTO-/Fehler- und Rollenverträgen.
+3. Die UI zeigt denselben fachlichen Zustand und die erlaubte Projektion; Lade-, Fehler-, Reload- und Reconnect-Verhalten bleibt äquivalent.
+4. Bei einem Fremdbesitzer, fehlender Membership oder nicht veröffentlichter GM-Information liefert der Host einen nachgewiesenen DENY statt nur versteckter UI.
+
+UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `docs/concepts/adaptive-ui-experience-contract.md`, `docs/concepts/conductor-experience-contract.md` und `docs/concepts/imagination-first-visualization-contract.md`.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.
+- Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
-### Bekannte Legacy-Defekte / offene Verifikation
+### Bekannte Legacy-Defekte / negative Regressionen
 
 - Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.
 - Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.
@@ -161,24 +180,33 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Dann: Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. All12 exact RPC variants and2 Edge invokes preserve argument/error/decoder contracts; wrong user/GM/foreign session cannot mutate runtime.
+2. Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.
+3. Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.
+4. Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.
+5. Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+6. Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+7. Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+8. Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+9. Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+10. Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+11. Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+12. Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+13. Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+14. Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+15. Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+16. Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+17. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
-- [ ] All12 exact RPC variants and2 Edge invokes preserve argument/error/decoder contracts; wrong user/GM/foreign session cannot mutate runtime.
-- [ ] Runtime event subscriptions use exact table/event/session filters and removeChannel on unsubscribe; explicit resync reloads authoritative state. Snapshot-before-subscribe gap and overlapping fetch ordering require an explicit successor consistency fixture.
-- [ ] Lobby ready is ephemeral broadcast with exacttopic/event/payload; spoofed ready userId cannot authorize gameplay.
-- [ ] Media missing factory/token/server becomes degraded without blocking gameplay; viewer publication denied by media-plane access; local-only presence and reliable:false data behavior remain explicit.
-- [ ] Contract fixture for apply_session_runtime_command: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for create_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for create_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for get_session_recap: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for get_session_runtime_snapshot: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for join_session_by_code: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for leave_play_session: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for resolve_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for revoke_session_invite: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-- [ ] Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Alle 16 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Blockers
@@ -195,7 +223,7 @@ Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine
 - Depends on #796 (MIG-021)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
@@ -204,16 +232,18 @@ Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein S
 - Status: blocked
 - Reihenfolge: 77; Welle: 4
 - Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-077`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-311.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: source-verified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+

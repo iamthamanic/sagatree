@@ -1,6 +1,6 @@
 # GATE-05 — Tauri + sidecar vs Electron (deferred)
 
-> **Status:** SPEC only — not APPROVED; deferred until browser host parity  
+> **Status:** Tauri+Node sidecar selected by owner; platform qualification / ship NOT APPROVED; deferred until browser host parity  
 > **GitHub:** #852 / GATE issue #788 · Prep criteria: #776  
 > **Blocks:** MIG-703 only — **not** wave-1..6
 
@@ -14,7 +14,7 @@
 ## Reproducible setup (when executed)
 
 1. Package host that serves health + one authenticated read.  
-2. Platforms: macOS + Linux minimum; Windows noted.  
+2. Platforms: **macOS, Windows and Linux required** for release; no invented pass if untested.  
 3. Measure: cold start, update path, code signing story (notes), SQLite path locations.
 
 ## Metrics / PASS criteria
@@ -35,11 +35,15 @@
 
 ## Decision criteria
 
-Human APPROVED only after wave-6 host+CI green. Prefer A if sidecar reuse is clean.
+Owner selected Variant A Tauri+Node sidecar on 2026-10-23. After wave-6 host+CI green, execute real three-OS PoC; Electron is fallback only on documented mandatory-criterion failure; release still requires explicit evidence and approval.
 
 ## On APPROVED
 
 ADR-ST-09; unblock MIG-703.
+
+## Owner source / timing
+
+[Owner target selection #788](https://github.com/iamthamanic/sagatree/issues/788#issuecomment-6364773974) is implementation direction only, not a verified platform acceptance.
 
 ## Explicit non-decision / timing
 

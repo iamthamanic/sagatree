@@ -3,7 +3,7 @@
 
 ## Type
 
-Task
+feature
 
 ## Intent
 
@@ -15,31 +15,42 @@ Reproduzierbare Compose-Profile für Host und optionale AI-/Media-Dienste bereit
 
 ## Non-Goals
 
-- Unapproved framework choice
-- Production cutover
-- Silent retirement of an operation
+- Unapproved framework substitution
+- Production cutover or Supabase shutdown
+- Retirement of any reachable legacy behavior without owner sign-off
 
 ## Context
 
-Epic #773. Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. 
-
-### Vorher
-
-Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: docker-compose.yml, .github/workflows/verify.yml. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.
-
-### Nachher und Verhalten
-
-Reproduzierbare Compose-Profile für Host und optionale AI-/Media-Dienste bereitstellen. Zielpfade: deployment, docs/ops.
+- Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
+- Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
+- Quellpfade und bestehende Adapter: `docker-compose.yml`, `.github/workflows/verify.yml`.
+- Source Contracts: `docker-compose.yml`, `.github/workflows/verify.yml`.
+- Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
 
-- Quellpfade: `docker-compose.yml`, `.github/workflows/verify.yml`
-- Änderbare Zielpfade: `deployment`, `docs/ops`
-- Quellverträge: `docker-compose.yml`, `.github/workflows/verify.yml`
+In:
+- `deployment`
+- `docs/ops`
+
+Out:
+- production data
+- unrelated product flows
+- Unaufgeforderte Re-Designs, nicht eingebundene Legacy-Worker oder alternative Architektur-Stacks.
+
+## Runtime
+
+| Axis | This slice |
+| --- | --- |
+| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |
+| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |
+| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |
 
 ## Security & Data
 
-Host-only benötigt keine Cloud-Secrets; optionale Provider-Credentials werden extern injiziert und nicht in Images/Logs geschrieben.
+- Host-only benötigt keine Cloud-Secrets; optionale Provider-Credentials werden extern injiziert und nicht in Images/Logs geschrieben.
+- Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
+- Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
 ## Edge Cases
 
@@ -64,6 +75,15 @@ Host-only benötigt keine Cloud-Secrets; optionale Provider-Credentials werden e
 - Dann: HTTP-/Realtime- und Persistenzverhalten stimmen überein; Ports, Datenpfade und Backup-Mounts sind im Runbook reproduzierbar festgehalten.
 - Quelle: `docker-compose.yml`, `.github/workflows/verify.yml`
 
+## Required Tests
+
+Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
+
+1. Health wird erst nach DB-Readiness grün; bestätigte Welt-/Session-Daten überleben Container-Neustart.
+2. Der Host bleibt für lokale Kernfunktionen benutzbar, während der betroffene Provider einen erklärten Capability-Fehler meldet.
+3. HTTP-/Realtime- und Persistenzverhalten stimmen überein; Ports, Datenpfade und Backup-Mounts sind im Runbook reproduzierbar festgehalten.
+4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+
 ## Acceptance
 
 - [ ] Health wird erst nach DB-Readiness grün; bestätigte Welt-/Session-Daten überleben Container-Neustart.
@@ -79,25 +99,27 @@ Host-only benötigt keine Cloud-Secrets; optionale Provider-Credentials werden e
 - Depends on #841 (MIG-500)
 - Depends on #830 (MIG-414)
 
-Status: **blocked**. Abschluss benötigt ausgeführte fachliche Nachweise; ein Source-Snapshot genügt dafür nicht.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-601`
 - Design: `.qa/design/migration-issues/stack-migration-mig-601.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 83; Welle: 6
-- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-083`, `agent-blocked`
-- Checks: `npm run test-gate`; die im Quellvertrag genannten Integrationsfälle sind zusätzlich vor dem Abschluss auszuführen.
+- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-083`, `agent-blocked`, `waiting-dependency`
+- Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
 
 `.qa/design/migration-issues/stack-migration-mig-601.md`
 
-Source-Verifikation ist keine Implementierungsabnahme. Offene Vorgänger, Architekturentscheidungen und ausgewiesene Defekte sperren Ausführung/Abschluss. Keine produktive Migration durch diesen Vorbereitungsauftrag.
+Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produktarchitektur am 2026-10-23 verbindlich gewählt. Ausstehende technische Tests, echte Vorgängerbelege und Release-Gates bleiben separat verpflichtend. Keine produktive Migration oder Supabase-Abschaltung ohne eigene menschliche Freigabe.
 
 ## Verification state
 
 - Source: specified
 - Implementation acceptance: not-accepted
-- Human architecture approval: **not granted by this contract**
+- Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
+- Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
+

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "GATE-04",
+  "result": "PASS",
+  "testedCommit": "00b07b787e50c86e67652ed20cc7dccc2de99fea",
+  "githubClosed": true,
+  "mergeRef": "PR #886 → main; human APPROVED on #787",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "PoC report PASS",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-04/report.json",
+      "sha256": "5bbd05128a73f5cd2c7ac147e44e97734b81681cb87c11abb832162ba43efb1d"
+    },
+    {
+      "command": "ADR-ST-08",
+      "result": "PASS",
+      "evidenceFile": "docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md",
+      "sha256": "be9bdabee13643809655bb9ec6d41a94bd3d55312c86d5d5f9132d7cdd5b4eb3"
+    },
+    {
+      "command": "architecture-approvals GATE-04",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
+      "sha256": "26bb64821d89f716ad2af50f3ef95f2977f6700ffec057aff5c1361dad3b7f9e"
+    }
+  ]
+}
