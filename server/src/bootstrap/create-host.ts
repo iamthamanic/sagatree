@@ -1,13 +1,17 @@
 /**
- * Composition root — wires modules, use-cases, and HTTP once at start.
+ * Composition root — wires modules, use-cases, auth, and HTTP once at start.
  * Location: server/src/bootstrap/create-host.ts
  */
 import { createHash, randomUUID } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { toNodeHandler } from 'better-auth/node';
 import { loadConfig, type HostConfig } from '../config/load-config.ts';
-import { createIdentityPorts } from '../modules/identity/index.ts';
+import {
+  createIdentityPorts,
+  type AuthRuntimeHolder,
+} from '../modules/identity/index.ts';
 import { createPermissionsPorts } from '../modules/permissions/index.ts';
 import { createOpsPorts } from '../modules/ops/index.ts';
 import {
@@ -28,6 +32,12 @@ import {
   bootstrapHostPersistence,
   type HostDatabase,
 } from '../persistence/index.ts';
+import {
+  createCookieAuthProfile,
+  wrapCookieAuthHandler,
+  attachSessionWebSocket,
+  type HostBetterAuth,
+} from '../auth/index.ts';
 
 export type HostInstance = {
   readonly config: HostConfig;
@@ -35,6 +45,8 @@ export type HostInstance = {
   readonly schemaVersion: number;
   readonly world: WorldPorts;
   readonly assets: AssetPorts;
+  /** Better Auth instance when cookie profile is enabled (tests only). */
+  readonly getAuth: () => HostBetterAuth | null;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   isReady: () => boolean;
@@ -73,6 +85,10 @@ function ensureIdentityFile(dataDir: string): { ok: true; actorId: string } | { 
   }
 }
 
+function redactLogMessage(message: string): string {
+  return message.replace(/(?:token|key|secret|password)=[^\s]+/gi, '$1=[redacted]');
+}
+
 export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance | { error: string; code: number } {
   try {
     const loaded = loadConfig(env);
@@ -98,9 +114,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     let ready = false;
     let acceptingMutations = true;
     let server: Server | null = null;
+    let authDbClose: (() => void) | null = null;
+    let betterAuth: HostBetterAuth | null = null;
+    const authRuntime: AuthRuntimeHolder = { auth: null, origin: null };
     const pingLogPath = join(config.dataDir, 'ping-log.jsonl');
+    const projectTouchPath = join(config.dataDir, 'project-touch.jsonl');
 
-    const identity = createIdentityPorts(actorId);
+    const identity = createIdentityPorts(actorId, authRuntime);
     const permissions = createPermissionsPorts(db);
     const world: WorldPorts = db
       ? createWorldPorts({
@@ -132,7 +152,39 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       return { ok: true as const };
     };
 
-    const handler = createRouteHandler({ health, ops, permissions, identity, recordPing });
+    const tryAuthorizedProjectTouch = (input: {
+      actorId: string;
+      projectId: string;
+      claimedRole?: unknown;
+      claimedOwnerUserId?: unknown;
+    }) => {
+      if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
+      // Membership already authorized via Policy Service; claims are never persisted as authority.
+      writeFileSync(
+        projectTouchPath,
+        `${JSON.stringify({
+          at: new Date().toISOString(),
+          actorId: input.actorId,
+          projectId: input.projectId,
+        })}\n`,
+        { flag: 'a', encoding: 'utf8' },
+      );
+      return { ok: true as const, mutated: true };
+    };
+
+    // Handler is created once; authHandlerRef filled after cookie profile init in start().
+    const authHandlerRef: { current: ReturnType<typeof wrapCookieAuthHandler> | null } = {
+      current: null,
+    };
+    const handler = createRouteHandler({
+      health,
+      ops,
+      permissions,
+      identity,
+      recordPing,
+      authHandlerRef,
+      tryAuthorizedProjectTouch,
+    });
 
     return {
       config,
@@ -140,16 +192,53 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       schemaVersion,
       world,
       assets,
+      getAuth: () => betterAuth,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
       async start() {
         if (server) return;
+
+        if (config.auth) {
+          const authDbPath = join(config.dataDir, 'auth.sqlite');
+          const created = await createCookieAuthProfile({
+            databasePath: authDbPath,
+            baseURL: config.auth.baseURL,
+            secret: config.auth.secret,
+            trustedOrigins: config.auth.trustedOrigins,
+            cookieSecure: config.auth.cookieSecure,
+          });
+          if (!created.ok) {
+            throw new Error(created.error);
+          }
+          betterAuth = created.auth;
+          authRuntime.auth = created.auth;
+          authRuntime.origin = config.auth.baseURL;
+          authDbClose = () => {
+            try {
+              created.db.close();
+            } catch {
+              /* ignore */
+            }
+          };
+          authHandlerRef.current = wrapCookieAuthHandler(
+            toNodeHandler(created.auth),
+            config.auth.baseURL,
+          );
+        }
+
         server = createServer((req, res) => {
-          // Belt-and-suspenders: handler is designed not to reject, but never leave an unhandled rejection.
           void Promise.resolve(handler(req, res)).catch(() => {
             sendJson(res, 500, { error: 'internal-error' });
           });
         });
+
+        if (betterAuth && config.auth) {
+          attachSessionWebSocket(server, {
+            auth: betterAuth,
+            origin: config.auth.baseURL,
+          });
+        }
+
         await new Promise<void>((resolve, reject) => {
           server!.once('error', (err: NodeJS.ErrnoException) => {
             ready = false;
@@ -166,6 +255,14 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         ready = false;
         const current = server;
         server = null;
+        betterAuth = null;
+        authRuntime.auth = null;
+        authRuntime.origin = null;
+        authHandlerRef.current = null;
+        if (authDbClose) {
+          authDbClose();
+          authDbClose = null;
+        }
         if (db) {
           try {
             db.close();
@@ -182,7 +279,6 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const redacted = message.replace(/(?:token|key|secret|password)=[^\s]+/gi, '$1=[redacted]');
-    return { error: redacted, code: 1 };
+    return { error: redactLogMessage(message), code: 1 };
   }
 }

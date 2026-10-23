@@ -11,6 +11,10 @@
  * Durable intent = `isLocalAdminSession()` storage flag (see localAdminAuthPolicy).
  * Generation refs alone are cleared on HMR / Strict remount and must not scrub a
  * wanted Local Admin JWT (that race left the UI stuck on the login screen).
+ *
+ * MIG-014 host cookie bridge (GATE-02 Variant A): opt-in via
+ * `VITE_SAGATREE_HOST_AUTH_URL` — see `hostAuthBridge.ts`. GoTrue remains the
+ * default product path; host Better Auth is credentials/cookie-only (no JWT mint).
  */
 
 import {
@@ -49,6 +53,22 @@ import {
 } from './localAdminAuthPolicy';
 import type { AuthTokenResponsePassword, User } from '@supabase/supabase-js';
 import { projectService } from '../infrastructure/project/project-service';
+import {
+  isHostAuthBridgeEnabled,
+  probeHostActor,
+  scrubHostAuthJson,
+  getHostAuthBaseUrl,
+  HOST_AUTH_SESSION_BEARER_KEYS,
+} from './hostAuthBridge';
+
+/** Re-export host cookie bridge (MIG-014) — no GoTrue cutover. */
+export {
+  isHostAuthBridgeEnabled,
+  probeHostActor,
+  scrubHostAuthJson,
+  getHostAuthBaseUrl,
+  HOST_AUTH_SESSION_BEARER_KEYS,
+};
 
 interface AuthContextType {
   user: User | null;
