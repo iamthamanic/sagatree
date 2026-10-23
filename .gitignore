@@ -97,3 +97,5 @@ public/assets/avatars/canonical/*.vrm
 
 # local Kong expand (#604)
 supabase/config/kong.runtime.yml
+.qa/tmp/
+__pycache__/

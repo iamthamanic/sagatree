@@ -107,15 +107,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #785 (GATE-02)
 
-Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-014`
 - Design: `.qa/design/migration-issues/stack-migration-mig-014.md`
-- Status: ready
+- Status: done
 - Reihenfolge: 12; Welle: 1
-- Labels: `P0`, `migration-wave-1-host-auth`, `migration-order-012`, `agent-ready`
+- Labels: `P0`, `migration-wave-1-host-auth`, `migration-order-012`, `agent-done`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
@@ -127,7 +127,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 ## Verification state
 
 - Source: specified
-- Implementation acceptance: not-accepted
+- Implementation acceptance: accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 

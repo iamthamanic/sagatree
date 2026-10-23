@@ -66,12 +66,17 @@ function setStatus(input, id, status) {
 test('the complete published plan validates without an implementation or architecture approval claim', () => {
   assert.deepEqual(errors(original), []);
   assert.equal(original.intake.coverage.legacyFrontendRpcs, 57);
-  // Evidence-based READY only (MIG-014/015 after wave-0/1 DONE); never a mass unlock of all 90.
+  // Evidence-based READY only after transitive DONE; never a mass unlock of all 90.
+  // Post quality-recovery: MIG-014/015/020 DONE → READY includes MIG-022 (+ other unlocked deps of MIG-020).
   const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
+  const done = original.intake.issues.filter((entry) => entry.status === 'done');
   assert.equal(ready.length, original.intake.coverage.issuesReady);
   assert.ok(ready.length > 0 && ready.length < 10, `expected a small READY set, got ${ready.length}`);
-  assert.ok(ready.every((entry) => ['MIG-014', 'MIG-015'].includes(entry.localId)));
-  assert.ok(original.intake.issues.filter((entry) => entry.status === 'done').length >= 10);
+  assert.ok(done.some((entry) => entry.localId === 'MIG-014'));
+  assert.ok(done.some((entry) => entry.localId === 'MIG-015'));
+  assert.ok(done.some((entry) => entry.localId === 'MIG-020'));
+  assert.ok(ready.some((entry) => entry.localId === 'MIG-022'));
+  assert.ok(done.length >= 13);
 });
 
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {

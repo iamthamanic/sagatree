@@ -4,9 +4,9 @@ Evidence-based classification of all **90** Epic #773 child issues.
 
 | Status | Count |
 | --- | ---: |
-| DONE | 12 |
-| READY | 2 |
-| WAITING_DEPENDENCY | 36 |
+| DONE | 15 |
+| READY | 5 |
+| WAITING_DEPENDENCY | 30 |
 | BLOCKED | 40 |
 
 ## DONE (merge SHA + acceptance evidence)
@@ -21,20 +21,27 @@ Evidence-based classification of all **90** Epic #773 child issues.
 - **MIG-011** #790 — `.qa/evidence/stack-migration-prep/completion/mig-011.json`
 - **MIG-013** #792 — `.qa/evidence/stack-migration-prep/completion/mig-013.json`
 - **MIG-012** #791 — `.qa/evidence/stack-migration-prep/completion/mig-012.json`
+- **MIG-014** #793 — `.qa/evidence/stack-migration-prep/completion/mig-014.json`
+- **MIG-015** #794 — `.qa/evidence/stack-migration-prep/completion/mig-015.json`
 - **MIG-500** #841 — `.qa/evidence/stack-migration-prep/completion/mig-500.json`
+- **MIG-020** #795 — `.qa/evidence/stack-migration-prep/completion/mig-020.json`
 - **MIG-503** #844 — `.qa/evidence/stack-migration-prep/completion/mig-503.json`
 
 ## READY (executable; all transitive deps DONE)
 
-- **MIG-014** #793 ← MIG-010, MIG-011, MIG-013, GATE-02
-- **MIG-015** #794 ← MIG-010, MIG-011, MIG-013, GATE-02
+- **MIG-022** #797 ← MIG-011, MIG-013, MIG-014, GATE-04
+- **MIG-306** #805 ← MIG-012, MIG-013, MIG-020
+- **MIG-309** #808 ← MIG-012, MIG-013, MIG-020, MIG-014
+- **MIG-501** #842 ← MIG-500, MIG-020
+- **MIG-502** #843 ← MIG-500, MIG-503, MIG-020
 
 ## Rules applied
 
 - DONE requires completionEvidence JSON (migration-acceptance) with hashed check artifacts and merge/tested commit.
 - READY requires fully specified contract + all transitive predecessors DONE with evidence + no unresolved blockers.
-- GATE-02/03 marked DONE for gate PoC+human APPROVED; product auth/host work remains MIG-014/015/020/021.
-- ATLAS-LIVE-E2E remains BLOCKED while baseline Atlas CI is not-passing.
-- Do not mass-unlock; only MIG-014/#793 and MIG-015/#794 became READY from this evidence pass.
+- MIG-014/#793 and MIG-015/#794 DONE after hardening PR #913 (7aa71f2b).
+- MIG-020/#795 DONE after PR #912 (2431d446) with session-scoped idempotency + authoritative snapshot ownership.
+- Phase 3 ambient CI reds closed via PR #914 (fc436402); ATLAS-LIVE-E2E remains BLOCKED until meta/ciAcceptance is updated with cutover evidence.
+- Do not mass-unlock; next agent-ready primary is MIG-022/#797.
 
 Machine-readable: [readiness-2026-10-23.json](./readiness-2026-10-23.json).

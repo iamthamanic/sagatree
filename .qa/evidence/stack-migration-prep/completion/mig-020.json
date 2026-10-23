@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-020",
+  "result": "PASS",
+  "testedCommit": "2431d446b73a81a4f2e66489c63c5519358e58c7",
+  "githubClosed": true,
+  "mergeRef": "PR #912 → main (#795)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. Session-scoped idempotency, actor-bound replay, and authoritative snapshot ownership regressions are covered by the HTTP transport self-test.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-020-http-transport.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-020.md",
+      "sha256": "cf8f819a2aecbbbe37a3eab144a699a065fb56bbe393e1ea2d6ca99952f81228"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-020.md",
+      "sha256": "dfc6f11a2e0563b9e85292eceb44f8f6650ddbd73bc52cf568ca478b3ed50828"
+    }
+  ]
+}
