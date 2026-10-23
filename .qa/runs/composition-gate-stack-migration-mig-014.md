@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-014 (#793)
 
-- HEAD_SHA: 580a34f2229612287188f86a7df41d82ae11858c
+- HEAD_SHA: 849fdf409b08bb047c3bbc674d117de16a72ad83
 - BASE_SHA: 63de26293337d418860ccf00b5a94a866f0ab32d
 - Date: 2026-10-23
 - Verdict: CLEAR
@@ -23,7 +23,7 @@ Remote-reachable host accounts authenticate via Better Auth cookie-only sessions
 |------|----------|----------|--------|
 | N-actors | Same actor on login, whoami reload, WS probe | mig-014 self-test | pass |
 | Invalid/missing | Revoke, cross-origin, Bearer, JWT token path | HTTP+WS deny; no project-touch write | pass |
-| Two consumers | HTTP whoami + WS session-ws share authRuntime | both restore same actorId | pass |
+| Two consumers / crash | HTTP whoami + WS session-ws share authRuntime; host stop tears down authRuntime | both restore same actorId; post-stop whoami/WS deny | pass |
 | Claimed elevation | Player forges role=gm / ownerUserId | session.gm deny; mutated=false | pass |
 | Misconfig | Remote without secret; JWT allow flag | createHost fails closed | pass |
 
