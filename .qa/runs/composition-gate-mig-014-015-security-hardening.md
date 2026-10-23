@@ -1,29 +1,30 @@
 # Composition Gate — mig-014-015-security-hardening
 
-- HEAD_SHA: 63ead409126cf47d759bf9a27f6a79b2bc399a07
+- HEAD_SHA: edff64976462dbb81811878ae9a879f4531c8693
 - BASE_SHA: 721f53e3ba42b94e7292ce2f8bd24e5970828e24
 - Date: 2026-10-23
 - Verdict: CLEAR
 
 ## Event
 
-Remote cookie sessions and solo-owned mutations stay correctly bounded across HTTP/WS hops: public binds require an explicit auth base URL; Origin allowlisting + credentialed CORS admit only configured frontends; remote solo-identity mutations (`/v1/ping`) never run without a cookie session; account-link durability survives crash via atomic rename.
+Remote cookie sessions and solo-owned mutations stay correctly bounded across HTTP/WS hops; public binds require an explicit auth base URL; Origin allowlisting + credentialed CORS admit only configured frontends; remote solo-identity mutations (`/v1/ping`) never run without a cookie session; account-link durability survives crash via atomic rename. Merge policy is machine-enforced so unresolved P1/P2 review findings cannot be squash-merged unnoticed.
 
 ## Hop chain
 
 1. Producer: `loadConfig` → auth baseURL + normalized `trustedOrigins`
-2. HTTP entry (`route-registry`) → credentialed CORS decision → Better Auth / session resolve (`trustedOrigins`) → policy → mutation
+2. HTTP entry (`route-registry`) → credentialed CORS → Better Auth / session resolve → policy → mutation
 3. WS entry (`ws-session`) → same session resolve → identity frame → protocol close frame
-4. Solo link store (`account-link`) → temp+fsync+rename → policy `linkedSoloActorIds` on later world-touch
+4. Solo link store (`account-link`) → temp+fsync+rename → policy `linkedSoloActorIds`
+5. Merge gate: `ecc-merge-gate-check` reads PR review threads + required checks before merge
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors / cross-origin FE | FE origin in allowlist → whoami + ACAO exact | mig-014 trusted-host block | pass |
-| Invalid/missing | 0.0.0.0 without AUTH_BASE_URL; evil Origin preflight; unauth remote ping | AUTH_MISCONFIG / 403 / 401; no mutation | pass |
-| Two consumers / crash | Link write atomic; ping-log only after auth | mig-015 atomic leftovers=0; ping-log gated | pass |
-| WS close | Browser-compatible close (not 1006) | close opcode 0x8 after identity | pass |
+| Invalid/missing | 0.0.0.0 without AUTH_BASE_URL; evil Origin; unauth remote ping | AUTH_MISCONFIG / 403 / 401; no mutation | pass |
+| Two consumers / crash | Link write atomic; ping-log only after auth | mig-015 leftovers=0; ping-log gated | pass |
+| Merge gate negative | Open P1 on #909 → gate FAIL; resolved #912 → PASS | ecc-merge-gate-check | pass |
 
 ## Flags
 
