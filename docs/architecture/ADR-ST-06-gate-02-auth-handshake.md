@@ -1,10 +1,10 @@
 # ADR-ST-06 — GATE-02: Auth handshake (Better Auth + Colyseus)
 
-- **Status:** **PROPOSAL / DECISION PENDING** — **not APPROVED**
+- **Status:** **APPROVED — Variant A**, product implementation only (platform release / production cutover NOT approved)
 - **Date:** 2026-10-22
 - **Issue:** [#785](https://github.com/iamthamanic/sagatree/issues/785)
-- **Human source:** _pending explicit comment on #785_
-- **Proposed decision text (not yet recorded):** `GATE-02: APPROVED — Variant A (session cookies)`
+- **Human source:** [owner decision, delegated recording on #785](https://github.com/iamthamanic/sagatree/issues/785#issuecomment-6364772323) (explicit owner confirmation 2026-10-23)
+- **Decision:** `GATE-02: APPROVED — Variant A (session cookies)`
 
 ## Context
 
@@ -15,9 +15,9 @@ Epic #773 local-first stack migration requires a browser-capable auth handshake 
 | **A — session cookies** | HttpOnly `SameSite=Lax` Better Auth session cookie on `authProfile: 'cookie'` hosts | Chromium PASS after JWT-escape remediaiton: no JS-usable sign-in/bearer tokens; `/api/auth/token` hard-denied; cookie whoami + Colyseus + CSRF PASS |
 | **B — bearer JWT** | Separate `authProfile: 'jwt'` host; JWT plugin + session-store recheck | Node/ws PASS for rows 2–7; **browser/Tauri secure store NOT RUN** |
 
-Decision package: `.qa/evidence/stack-migration-prep/GATE-02-decision-package.md` (status remains **NOT APPROVED / UNDECIDED** until human freigabe).
+Decision package: `.qa/evidence/stack-migration-prep/GATE-02-decision-package.md` (historical PoC status NOT APPROVED; human approval follows as a separate GitHub decision, and must not change observed PoC fields).
 
-## Recommendation (proposal only)
+## Approved implementation decision
 
 **Prefer Variant A (session cookies)** after Cookie-A R01 PASS under the split cookie PoC profile:
 
@@ -29,9 +29,9 @@ Decision package: `.qa/evidence/stack-migration-prep/GATE-02-decision-package.md
 
 **History:** PR #900 left `/api/auth/token` reachable on the cookie PoC (external P1). Follow-up remediaiton closes that escape; R01 was FAIL until then.
 
-This ADR **does not** grant architecture freigabe. Only an explicit human comment on #785 plus updates to `architecture-approvals.json` may set `GATE-02: APPROVED`.
+The owner confirmed Variant A. Approval is evidenced by the issue comment and architecture-approvals.json; it does not claim that NOT RUN platform tests have passed.
 
-## Consequences (if later APPROVED as Variant A)
+## Consequences of Variant A approval
 
 ### Binding
 
@@ -39,7 +39,7 @@ This ADR **does not** grant architecture freigabe. Only an explicit human commen
 2. Colyseus `onAuth` / WS upgrade continue to resolve the current session (cookie or product-equivalent) and bind seats to the exact auth session.
 3. CSRF story for cookie credentials remains mandatory for product routes (PoC foreign-origin negatives already PASS).
 
-### Still NOT approved by a future A acceptance alone
+### Still NOT approved by this A decision alone
 
 - Variant B as the browser/Tauri default
 - HTTPS `Secure` cookie / multi-engine / Tauri persistence gaps listed as NOT RUN in the decision package
@@ -52,4 +52,4 @@ This ADR **does not** grant architecture freigabe. Only an explicit human commen
 - Cookie rows 2–7 on cookie hosts and JWT Node rows 2–7 on separate jwt hosts: PASS in fixture reports (B-6 = jwt↔jwt via second independently initialized jwt host + foreign JWKS negative control; not cookie-profile Bearer denial).
 - B row 1 browser/Tauri secure JWT store: NOT RUN.
 - Opaque bearer distinction case: NOT RUN (plugin disabled; JWT isolated to jwt host).
-- Approval field in reports: always `NOT APPROVED` until human decision.
+- Fixture report preserves the historical PoC `NOT APPROVED` observation; a separate owner GitHub comment dated 2026-10-23 is the binding decision. HTTPS/Tauri platform proofs remain NOT RUN.
