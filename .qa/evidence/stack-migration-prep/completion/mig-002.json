@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-002",
+  "result": "PASS",
+  "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
+  "githubClosed": true,
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "legacy inventory matrix",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/legacy-target-matrix.md",
+      "sha256": "22f39f87e7407c14aaa4d349d2318a77caeeffce5d5f5f715190bce2a72881ef"
+    },
+    {
+      "command": "rpc inventory 57",
+      "result": "PASS",
+      "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
+      "sha256": "fc0debc333bc98432766438fd86cdbbb57559cdcc9cc78a68ecd399f7045afeb"
+    },
+    {
+      "command": "edge/infra inventory 25+13",
+      "result": "PASS",
+      "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
+      "sha256": "bdffa85c6ae93a3d32f714d0088f709f668a5b27d72981c7fbde3d623c4dd5eb"
+    }
+  ]
+}

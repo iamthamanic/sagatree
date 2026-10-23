@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 0,
-    "issuesBlockedOrNeedsDesign": 90,
+    "issuesReady": 2,
+    "issuesBlockedOrNeedsDesign": 76,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -140,7 +140,7 @@
       "title": "Evidence lock: freeze main baseline + golden fixture contract",
       "priority": "P0",
       "kind": "evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-001",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-001.md",
       "dependsOn": [],
@@ -223,9 +223,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -250,8 +251,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-001",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -260,7 +260,7 @@
       "title": "Mandatory Atlas live E2E on isolated test DB (GitHub #770)",
       "priority": "P0",
       "kind": "evidence",
-      "status": "waiting",
+      "status": "blocked",
       "featureSlug": "stack-migration-atlas-live-e2e",
       "designFile": ".qa/design/migration-issues/stack-migration-atlas-live-e2e.md",
       "dependsOn": [
@@ -346,7 +346,9 @@
       "verification": {
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
-        "blockers": [],
+        "blockers": [
+          "Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash)."
+        ],
         "approvalRequired": null
       },
       "contractSections": {
@@ -372,8 +374,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-002",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
@@ -382,7 +383,7 @@
       "title": "Complete legacy inventory matrix (SQL/RLS/RPC/Edge/Storage/Realtime/Infra)",
       "priority": "P0",
       "kind": "evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-002",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-002.md",
       "dependsOn": [
@@ -469,9 +470,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -498,8 +500,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-003",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -508,7 +509,7 @@
       "title": "PoC: Drizzle+PolicyService vs ZenStack 3 for SQLite authz",
       "priority": "P0",
       "kind": "architecture-evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-gate-01",
       "designFile": ".qa/design/migration-issues/stack-migration-gate-01.md",
       "dependsOn": [
@@ -586,9 +587,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -616,8 +618,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-004",
-        "agent-blocked",
-        "waiting-dependency",
+        "agent-done",
         "gate-issue"
       ]
     },
@@ -627,7 +628,7 @@
       "title": "PoC: Better Auth session model + Colyseus auth handshake",
       "priority": "P0",
       "kind": "architecture-evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-gate-02",
       "designFile": ".qa/design/migration-issues/stack-migration-gate-02.md",
       "dependsOn": [
@@ -705,9 +706,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -735,8 +737,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-005",
-        "agent-blocked",
-        "waiting-dependency",
+        "agent-done",
         "gate-issue"
       ]
     },
@@ -746,7 +747,7 @@
       "title": "PoC: Colyseus HTTP routes vs separate Hono API layer",
       "priority": "P0",
       "kind": "architecture-evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-gate-03",
       "designFile": ".qa/design/migration-issues/stack-migration-gate-03.md",
       "dependsOn": [
@@ -824,9 +825,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -854,8 +856,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-006",
-        "agent-blocked",
-        "waiting-dependency",
+        "agent-done",
         "gate-issue"
       ]
     },
@@ -865,7 +866,7 @@
       "title": "PoC: Preserve revision/transaction/idempotency guarantees under SQLite writer model",
       "priority": "P0",
       "kind": "architecture-evidence",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-gate-04",
       "designFile": ".qa/design/migration-issues/stack-migration-gate-04.md",
       "dependsOn": [
@@ -943,9 +944,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -973,8 +975,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-007",
-        "agent-blocked",
-        "waiting-dependency",
+        "agent-done",
         "gate-issue"
       ]
     },
@@ -984,7 +985,7 @@
       "title": "Node host skeleton (health, config, data dir)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-010",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-010.md",
       "dependsOn": [
@@ -1088,9 +1089,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1120,8 +1122,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-008",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -1130,7 +1131,7 @@
       "title": "SQLite schema bootstrap + migration runner",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-011",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-011.md",
       "dependsOn": [
@@ -1226,9 +1227,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1258,8 +1260,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-009",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -1268,7 +1269,7 @@
       "title": "SagaTree Policy Service core (deny-by-default)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-013",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-013.md",
       "dependsOn": [
@@ -1366,9 +1367,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1397,8 +1399,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-010",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -1407,7 +1408,7 @@
       "title": "Repository port pattern + first world read adapter",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-012",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-012.md",
       "dependsOn": [
@@ -1502,9 +1503,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1533,8 +1535,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-011",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -1543,7 +1544,7 @@
       "title": "Better Auth host accounts (remote-reachable mode)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-014",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-014.md",
       "dependsOn": [
@@ -1655,8 +1656,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-012",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -1665,7 +1665,7 @@
       "title": "Solo local identity without privilege transfer",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-015",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-015.md",
       "dependsOn": [
@@ -1775,8 +1775,7 @@
         "P0",
         "migration-wave-1-host-auth",
         "migration-order-013",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -1785,7 +1784,7 @@
       "title": "Local protected asset service (replace Storage buckets)",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-500",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-500.md",
       "dependsOn": [
@@ -1865,9 +1864,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -1895,8 +1895,7 @@
         "P1",
         "migration-wave-1-host-auth",
         "migration-order-014",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {
@@ -2511,7 +2510,7 @@
       "title": "Postgres→SQLite data migration dry-run tooling",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-503",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-503.md",
       "dependsOn": [
@@ -2587,9 +2586,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -2617,8 +2617,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-020",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {

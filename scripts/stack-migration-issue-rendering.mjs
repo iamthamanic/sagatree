@@ -159,15 +159,29 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
           ? [infra.verification?.status]
           : [];
     const sourceStatus = inventoryStates.some((state) => state !== 'source-verified') ? 'source-blocked' : sourceContracts.length ? 'source-verified' : 'specified';
-    // Preserve genuine progress recorded in intake; the validator rejects forged READY/DONE without verified evidence.
-    // Architecture-approved gates must never be re-stamped needs-design. Fully specified work waiting on deps → waiting.
+    // Preserve recorded completionEvidence / accepted implementation; validator rejects forged READY/DONE without hashed checks.
+    // Architecture freigabe alone is never DONE. Closed GitHub alone is never DONE. Source fingerprint alone is never DONE.
     // GATE-05 target is chosen but platform qualification is deferred → blocked until browser-host + ops acceptance.
-    // Closed GitHub issues alone never become done/ready here.
+    // Fully specified work with every predecessor DONE (+ completionEvidence) becomes READY; otherwise WAITING_DEPENDENCY.
+    blockers = unique([
+      ...blockers,
+      ...(Array.isArray(old.verification?.blockers) ? old.verification.blockers.map(text) : []),
+      ...(id === 'ATLAS-LIVE-E2E' && previous.meta?.atlasLiveE2e?.ciAcceptance === 'not-passing'
+        ? ['Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).']
+        : []),
+    ]);
+    const previousById = new Map((previous.issues ?? []).map((issue) => [issue.localId, issue]));
+    const predecessorsDone = unique(dependsOn).every((dep) => {
+      const predecessor = previousById.get(dep);
+      return predecessor?.status === 'done' && typeof predecessor.completionEvidence === 'string' && predecessor.completionEvidence.length > 0;
+    });
     let status;
-    if (old.status === 'ready' || old.status === 'done') {
-      status = old.status;
+    if (old.status === 'done') {
+      status = 'done';
     } else if (id === 'GATE-05' || blockers.length > 0 || sourceStatus === 'source-blocked') {
       status = 'blocked';
+    } else if (predecessorsDone) {
+      status = 'ready';
     } else {
       status = 'waiting';
     }
@@ -184,7 +198,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       scope: { mayChange: unique(definition.targets.filter(Boolean)), mustNotChange: ['production data', 'unrelated product flows'], nonGoals: ['Unapproved framework substitution', 'Production cutover or Supabase shutdown', 'Retirement of any reachable legacy behavior without owner sign-off'] },
       acceptance, assertions: definition.assertions,
       ...(old.completionEvidence ? { completionEvidence: old.completionEvidence } : {}),
-      verification: { sourceStatus, implementationStatus: old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
+      verification: { sourceStatus, implementationStatus: old.status === 'done' || old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
         blockers: unique(blockers), approvalRequired: id === 'GATE-05' ? 'platform-qualification-pending' : null },
       contractSections: {
         vorher: `Baseline ${baselineSha}; Quellpfade: ${definition.sources.join(', ')}. Detaillierte Aufruf-/SQL-Nachweise: ${sourceContracts.length ? sourceContracts.join(', ') : 'die unten referenzierten Anforderungen'}.`,

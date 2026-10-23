@@ -62,6 +62,10 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
 - Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
+### Bekannte Legacy-Defekte / negative Regressionen
+
+- Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).
+
 ## Edge Cases
 
 ### Fall 1
@@ -105,15 +109,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 - Depends on #782 (MIG-001)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-atlas-live-e2e`
 - Design: `.qa/design/migration-issues/stack-migration-atlas-live-e2e.md`
-- Status: waiting
+- Status: blocked
 - Reihenfolge: 2; Welle: 0
-- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-002`, `agent-blocked`, `waiting-dependency`
+- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-002`, `agent-blocked`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

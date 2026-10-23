@@ -12,26 +12,26 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 
 | Reihenfolge | Welle | Issue | Ausführung | Vorgänger |
 | --- | --- | --- | --- | --- |
-| 1 | 0 | MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | waiting | — |
-| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | waiting | #782 |
-| 3 | 0 | MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | waiting | #782 |
-| 4 | 0 | GATE-01 [#784](https://github.com/iamthamanic/sagatree/issues/784) | waiting | #782, #783 |
-| 5 | 0 | GATE-02 [#785](https://github.com/iamthamanic/sagatree/issues/785) | waiting | #782, #783 |
-| 6 | 0 | GATE-03 [#786](https://github.com/iamthamanic/sagatree/issues/786) | waiting | #782, #783 |
-| 7 | 0 | GATE-04 [#787](https://github.com/iamthamanic/sagatree/issues/787) | waiting | #782, #783 |
-| 8 | 1 | MIG-010 [#789](https://github.com/iamthamanic/sagatree/issues/789) | waiting | #782, #783, #784 |
-| 9 | 1 | MIG-011 [#790](https://github.com/iamthamanic/sagatree/issues/790) | waiting | #789, #784, #787 |
-| 10 | 1 | MIG-013 [#792](https://github.com/iamthamanic/sagatree/issues/792) | waiting | #790, #784 |
-| 11 | 1 | MIG-012 [#791](https://github.com/iamthamanic/sagatree/issues/791) | waiting | #790, #792 |
-| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | waiting | #789, #790, #792, #785 |
-| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | waiting | #789, #790, #792, #785 |
-| 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | waiting | #790, #792 |
+| 1 | 0 | MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | done | — |
+| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | blocked | #782 |
+| 3 | 0 | MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | done | #782 |
+| 4 | 0 | GATE-01 [#784](https://github.com/iamthamanic/sagatree/issues/784) | done | #782, #783 |
+| 5 | 0 | GATE-02 [#785](https://github.com/iamthamanic/sagatree/issues/785) | done | #782, #783 |
+| 6 | 0 | GATE-03 [#786](https://github.com/iamthamanic/sagatree/issues/786) | done | #782, #783 |
+| 7 | 0 | GATE-04 [#787](https://github.com/iamthamanic/sagatree/issues/787) | done | #782, #783 |
+| 8 | 1 | MIG-010 [#789](https://github.com/iamthamanic/sagatree/issues/789) | done | #782, #783, #784 |
+| 9 | 1 | MIG-011 [#790](https://github.com/iamthamanic/sagatree/issues/790) | done | #789, #784, #787 |
+| 10 | 1 | MIG-013 [#792](https://github.com/iamthamanic/sagatree/issues/792) | done | #790, #784 |
+| 11 | 1 | MIG-012 [#791](https://github.com/iamthamanic/sagatree/issues/791) | done | #790, #792 |
+| 12 | 1 | MIG-014 [#793](https://github.com/iamthamanic/sagatree/issues/793) | ready | #789, #790, #792, #785 |
+| 13 | 1 | MIG-015 [#794](https://github.com/iamthamanic/sagatree/issues/794) | ready | #789, #790, #792, #785 |
+| 14 | 1 | MIG-500 [#841](https://github.com/iamthamanic/sagatree/issues/841) | done | #790, #792 |
 | 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | waiting | #789, #792, #793, #786 |
 | 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | waiting | #790, #792, #793, #787 |
 | 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | waiting | #795, #797, #785 |
 | 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | waiting | #792, #797, #784 |
 | 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | waiting | #795, #797, #799, #785, #786 |
-| 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | waiting | #790, #783 |
+| 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | done | #790, #783 |
 | 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |
 | 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | waiting | #795, #792, #797, #799, #784, #785, #787 |
 | 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | waiting | #795, #792, #797, #799, #784, #785, #787, #871 |

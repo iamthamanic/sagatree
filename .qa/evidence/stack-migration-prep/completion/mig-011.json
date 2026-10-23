@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-011",
+  "result": "PASS",
+  "testedCommit": "87bafeac2b62db98e6774fd2ea816a79d2fe3c9a",
+  "githubClosed": true,
+  "mergeRef": "PR #887 → main; follow-up 5104e262 on main (#790)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "node scripts/mig-011-sqlite-schema.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-011.md",
+      "sha256": "d2afccb3fe3ddbf2e70e609e1e9768122808e202c5bcbada17c44df662d2cdfc"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-011.md",
+      "sha256": "ac1d0c59f210b303d38f4248e77fc41d9b91793d3a744e16bd19db568042572b"
+    }
+  ]
+}

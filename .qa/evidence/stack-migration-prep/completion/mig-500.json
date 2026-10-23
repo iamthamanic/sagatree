@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-500",
+  "result": "PASS",
+  "testedCommit": "4eb2ec00c1b7229b4fef8519c348a0427bb1d97a",
+  "githubClosed": true,
+  "mergeRef": "PR #898 → main (#841)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "node scripts/mig-500-local-assets.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-500.md",
+      "sha256": "81bb15e4c3476cc5708539547c2ce85de28c74c8eda20946f7c39d306cbf7dba"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-500.md",
+      "sha256": "00d6ff9f6a583c305c011dad3bd32db5d7d1e6725dadefba00a4af0d76c1d26e"
+    }
+  ]
+}

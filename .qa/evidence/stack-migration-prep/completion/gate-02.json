@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "GATE-02",
+  "result": "PASS",
+  "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
+  "githubClosed": false,
+  "mergeRef": "PR #906 PoC remediaiton on main; human APPROVED Variant A on #785; ADR on PR #908",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 — architecture freigabe alone does not accept those tickets.",
+  "checks": [
+    {
+      "command": "PoC report PASS",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-02/report.json",
+      "sha256": "34798d8c526dfd347ea35aaefc97e34651909a4a2b520731ca138f40d95b0b5b"
+    },
+    {
+      "command": "ADR-ST-06",
+      "result": "PASS",
+      "evidenceFile": "docs/architecture/ADR-ST-06-gate-02-auth-handshake.md",
+      "sha256": "1f939bdf5a55cd0f38807b5fef74e993aa8e150c790c21ea9d863b12760e3634"
+    },
+    {
+      "command": "architecture-approvals GATE-02",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
+      "sha256": "26bb64821d89f716ad2af50f3ef95f2977f6700ffec057aff5c1361dad3b7f9e"
+    }
+  ]
+}

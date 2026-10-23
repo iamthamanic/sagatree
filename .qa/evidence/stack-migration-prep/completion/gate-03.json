@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "GATE-03",
+  "result": "PASS",
+  "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
+  "githubClosed": false,
+  "mergeRef": "Shared GATE-02/03 PoC host on main; human APPROVED Variant B on #786; ADR on PR #908",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product HTTP/realtime host remains MIG-020/021 — freigabe alone does not accept those tickets.",
+  "checks": [
+    {
+      "command": "PoC report PASS",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-03/report.json",
+      "sha256": "9fe924945c6bc8386d8202fa34fdbec1b2bc4a0a07c50e546dddf978776c5516"
+    },
+    {
+      "command": "ADR-ST-07",
+      "result": "PASS",
+      "evidenceFile": "docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md",
+      "sha256": "d5419297d6fdcd5956f187b9e6c57a27216bcd14eabae69303721cd83d7f7b72"
+    },
+    {
+      "command": "architecture-approvals GATE-03",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
+      "sha256": "26bb64821d89f716ad2af50f3ef95f2977f6700ffec057aff5c1361dad3b7f9e"
+    }
+  ]
+}

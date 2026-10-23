@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-503",
+  "result": "PASS",
+  "testedCommit": "ba8ac5236d26c780e22a0a7275e0bfdf20ad38c2",
+  "githubClosed": true,
+  "mergeRef": "PR #901 → main (#844)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "checks": [
+    {
+      "command": "node scripts/mig-503-pg-sqlite-dry-run.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-503.md",
+      "sha256": "b720732bf27a6c362295b4270d24cadb5afdbf903235a2cf1f499d402fda17cf"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-503.md",
+      "sha256": "bddacbe4df22e5d20216ac14ff2917c298db17affaca8494958a564a834ceff2"
+    }
+  ]
+}
