@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T13:30:22.727Z",
+  "generatedAt": "2026-10-23T13:36:29.995Z",
   "branch": "docs/migration-owner-decisions-20261023",
   "headShaHint": "pre-readiness-commit",
   "meaning": "Evidence-based execution readiness for Epic #773 child issues. Architecture freigabe ≠ DONE. Source fingerprint ≠ DONE. Closed GitHub alone ≠ DONE.",
@@ -436,5 +436,6 @@
   "validator": {
     "errors": 0,
     "warnings": 76
-  }
+  },
+  "headSha": "dba12742e56044518741bdaf62633b51ffb62c8c"
 }

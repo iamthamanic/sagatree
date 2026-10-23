@@ -1,6 +1,6 @@
 # Composition Gate — migration-owner-decisions-20261023 (PR #908)
 
-- HEAD_SHA: 9905e7d3cead9bf622d080a833427d655653a339
+- HEAD_SHA: dba12742e56044518741bdaf62633b51ffb62c8c
 - BASE_SHA: 12583684993bcc38299998295662c786f09b2e53
 - Date: 2026-10-23
 - Verdict: CLEAR
