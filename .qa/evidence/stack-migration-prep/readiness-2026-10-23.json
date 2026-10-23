@@ -268,156 +268,36 @@
     }
   ],
   "waitingDependency": [
-    {
-      "localId": "MIG-023",
-      "githubIssue": 798,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-024",
-      "githubIssue": 799,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-021",
-      "githubIssue": 796,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-SAGA-AUTHORING",
-      "githubIssue": 871,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-SAGA-VERSION-READ",
-      "githubIssue": 872,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-PROJECT-MEMBERSHIP",
-      "githubIssue": 874,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-SAGA-GOVERNANCE",
-      "githubIssue": 875,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-NPC-INSTANCES",
-      "githubIssue": 877,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-351",
-      "githubIssue": 814,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-352",
-      "githubIssue": 815,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-WORLD-CREATE",
-      "githubIssue": 864,
-      "blockerCount": 0
-    },
-    {
-      "localId": "RPC-WORLD-RESTRUCTURE",
-      "githubIssue": 865,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-350",
-      "githubIssue": 813,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-421",
-      "githubIssue": 837,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-301",
-      "githubIssue": 800,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-302",
-      "githubIssue": 801,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-303",
-      "githubIssue": 802,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-304",
-      "githubIssue": 803,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-307",
-      "githubIssue": 806,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-308",
-      "githubIssue": 807,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-310",
-      "githubIssue": 809,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-313",
-      "githubIssue": 812,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-600",
-      "githubIssue": 845,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-601",
-      "githubIssue": 846,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-602",
-      "githubIssue": 847,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-603",
-      "githubIssue": 848,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-700",
-      "githubIssue": 849,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-701",
-      "githubIssue": 850,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-702",
-      "githubIssue": 851,
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-703",
-      "githubIssue": 852,
-      "blockerCount": 0
-    }
+    "MIG-023",
+    "MIG-024",
+    "MIG-021",
+    "RPC-SAGA-AUTHORING",
+    "RPC-SAGA-VERSION-READ",
+    "RPC-PROJECT-MEMBERSHIP",
+    "RPC-SAGA-GOVERNANCE",
+    "RPC-NPC-INSTANCES",
+    "MIG-351",
+    "MIG-352",
+    "RPC-WORLD-CREATE",
+    "RPC-WORLD-RESTRUCTURE",
+    "MIG-350",
+    "MIG-421",
+    "MIG-301",
+    "MIG-302",
+    "MIG-303",
+    "MIG-304",
+    "MIG-307",
+    "MIG-308",
+    "MIG-310",
+    "MIG-313",
+    "MIG-600",
+    "MIG-601",
+    "MIG-602",
+    "MIG-603",
+    "MIG-700",
+    "MIG-701",
+    "MIG-702",
+    "MIG-703"
   ],
   "blocked": [
     {
