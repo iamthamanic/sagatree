@@ -584,6 +584,18 @@ function checkRpcSagaVersionRead() {
   );
 }
 
+function checkMig502ExportImportBundles() {
+  console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-502-export-import-bundles.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -2749,6 +2761,7 @@ checkMig306MediaAdapter();
 checkMig309Rulesets();
 checkRpcSagaAuthoring();
 checkRpcSagaVersionRead();
+checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
