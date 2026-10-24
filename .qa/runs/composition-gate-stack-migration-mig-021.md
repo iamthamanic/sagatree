@@ -1,7 +1,7 @@
 # Composition Gate — stack-migration-mig-021 (#796)
 
-- HEAD_SHA: 3850da0d78e397124ead95545755c30724d30e41
-- BASE_SHA: 5c94e0f83d20fc7e5eb7ac7c28f390efe0662c7c
+- HEAD_SHA: c02d028c27e595947204201b96d4b26fbb6ca258
+- BASE_SHA: acd792154a305dda1b8752fe160dab3103a63373
 - HOP_DIGEST: 1cc7b6de0f59f8354cdaf69031d168ab452965826960ac4942d71e3e39912a55
 - Date: 2026-10-24
 - Verdict: CLEAR
@@ -33,5 +33,3 @@ After host restart, resync reconstructs confirmed revisions; onCommitted fans ou
 - Acceptance tier: host-integration
 - Deferred integration: Full Colyseus Room schema packaging → FEATURE VERIFIED via MIG-602/#847; legacy adapters MIG-311/#810
 - SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
-
-None.
