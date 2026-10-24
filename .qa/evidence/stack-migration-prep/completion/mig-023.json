@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-023",
+  "result": "PASS",
+  "testedCommit": "a6f44e1d018b996d7c1bd247d74b4ee3ee4b6c8a",
+  "githubClosed": true,
+  "mergeRef": "PR #921 → main (#798)",
+  "note": "Invite/join codes create player membership only; redeem limits atomic; expired/revoked/foreign deny.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-023-session-invites.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-023.md",
+      "sha256": "6cc225d7dab76851363e3deeb63015a50f84a19e265f003ace405b7bcc2f5f20"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-023.md",
+      "sha256": "d22979c22b6ff51f81b1e7604421004c1fe2309dd9053b67ad8094e1d63687c4"
+    }
+  ]
+}
