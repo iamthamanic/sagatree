@@ -1,6 +1,6 @@
 # Composition Gate — quality-773-composition-sync-audit
 
-- HEAD_SHA: 8356b689ef72f0db73bcb9c1df52392252f88633
+- HEAD_SHA: d0f0d7fca059a10bdac06734857ddbeef52b4c76
 - BASE_SHA: a678e6da30e87836222f141769dbe1dfd0435054
 - Date: 2026-10-24
 - Verdict: CLEAR
