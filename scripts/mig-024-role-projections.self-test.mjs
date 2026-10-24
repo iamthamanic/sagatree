@@ -40,9 +40,15 @@ try {
         id: 'MAP-1',
         visibility: 'party',
         nested: { gmOnly: marker, publicLabel: 'Forest', child: { secret: marker, ok: 1 } },
+        whisperBag: { gmOnly: true, text: marker },
       },
     ],
-    shared: { title: 'Saga', gm_notes: marker, banner: 'ok' },
+    shared: {
+      title: 'Saga',
+      gm_notes: marker,
+      banner: 'ok',
+      orphanSecret: { gmOnly: true, text: marker },
+    },
     events: [
       { id: 'EV-1', kind: 'reveal', targetId: 'NPC-PARTY' },
       { id: 'EV-GM', kind: 'whisper', gmOnly: true, text: marker },
@@ -55,7 +61,8 @@ try {
   const spectator = {
     actorId: 'spec',
     role: 'spectator',
-    revealedObjectIds: ['NPC-PUBLIC'],
+    // Party reveals must not elevate spectators beyond public objects.
+    revealedObjectIds: ['NPC-PARTY', 'MAP-1', 'NPC-PUBLIC'],
   };
 
   // --- Fall 1: per-actor projections ---
@@ -73,6 +80,9 @@ try {
   const map1 = p1View.objects.find((o) => o.id === 'MAP-1');
   assert(map1 && !('gmOnly' in map1.nested), 'nested gmOnly stripped');
   assert(map1.nested.child && !('secret' in map1.nested.child) && map1.nested.child.ok === 1, 'nested secret stripped');
+  assert(!('whisperBag' in map1), 'id-less gmOnly container dropped entirely');
+  assert(!('orphanSecret' in p1View.shared), 'shared id-less gmOnly container dropped');
+  assert(p1View.events.some((e) => e.id === 'EV-1'), 'player keeps ordinary events (event ids ≠ reveal ids)');
   assert(!p1View.events.some((e) => e.id === 'EV-GM'), 'gm-only event removed for player');
 
   const p2View = projectSessionSnapshot(base, p2);
@@ -83,7 +93,10 @@ try {
   assert(!projectionContainsSecretMarker(p2View), 'p2 no marker');
 
   const specView = projectSessionSnapshot(base, spectator);
-  assert(specView.objects.every((o) => o.id === 'NPC-PUBLIC'), 'spectator only public');
+  assert(
+    specView.objects.map((o) => o.id).join(',') === 'NPC-PUBLIC',
+    `spectator public-only despite party reveals, got ${specView.objects.map((o) => o.id)}`,
+  );
   assert(!projectionContainsSecretMarker(specView), 'spectator no marker');
   note(
     'Jeder Actor erhält ausschließlich seine freigegebenen Objekte; GM-only Inhalte fehlen rekursiv auch in verschachtelten JSON-Feldern.',

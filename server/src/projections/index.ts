@@ -44,9 +44,29 @@ function revealedSet(actor: ProjectionActor): ReadonlySet<string> {
     : new Set(actor.revealedObjectIds);
 }
 
-function objectVisible(obj: ProjectableObject, actor: ProjectionActor, revealed: ReadonlySet<string>): boolean {
+/** True when a record is itself a GM-only/secret container (with or without id). */
+export function isGmOnlyContainer(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    record.gmOnly === true ||
+    record.secret === true ||
+    record.visibility === 'gm_only' ||
+    record.__gmOnly === true
+  );
+}
+
+function objectVisible(
+  obj: ProjectableObject,
+  actor: ProjectionActor,
+  revealed: ReadonlySet<string>,
+): boolean {
   if (actor.role === 'gm') return true;
-  if (obj.gmOnly === true || obj.secret === true || obj.visibility === 'gm_only') return false;
+  if (isGmOnlyContainer(obj)) return false;
+  // Spectators: public objects only — reveal grants must not elevate to party content.
+  if (actor.role === 'spectator') {
+    return obj.visibility === 'public';
+  }
   if (obj.visibility === 'public') return true;
   if (obj.visibility === 'party' || obj.visibility === undefined) {
     return revealed.has(obj.id);
@@ -56,42 +76,87 @@ function objectVisible(obj: ProjectableObject, actor: ProjectionActor, revealed:
 
 /**
  * Recursively project a value for an actor. GM sees all; others lose gm_only/secret
- * keys and objects not in their reveal set.
+ * keys and objects not in their reveal set. Id-less GM-only containers are dropped whole.
  */
 export function projectValue(value: unknown, actor: ProjectionActor): unknown {
   const revealed = revealedSet(actor);
-  return projectInner(value, actor, revealed);
+  return projectInner(value, actor, revealed, 'value');
 }
 
-function projectInner(value: unknown, actor: ProjectionActor, revealed: ReadonlySet<string>): unknown {
+type ProjectMode = 'value' | 'objectList' | 'eventList';
+
+function projectInner(
+  value: unknown,
+  actor: ProjectionActor,
+  revealed: ReadonlySet<string>,
+  mode: ProjectMode,
+): unknown {
   if (value === null || value === undefined) return value;
   if (Array.isArray(value)) {
     const out: unknown[] = [];
     for (const item of value) {
+      if (mode === 'eventList') {
+        const projected = projectEventItem(item, actor, revealed);
+        if (projected !== undefined) out.push(projected);
+        continue;
+      }
       if (item && typeof item === 'object' && !Array.isArray(item) && 'id' in item) {
         const obj = item as ProjectableObject;
         if (!objectVisible(obj, actor, revealed)) continue;
-        out.push(projectInner(obj, actor, revealed));
+        out.push(projectInner(obj, actor, revealed, 'value'));
       } else {
-        out.push(projectInner(item, actor, revealed));
+        const projected = projectInner(item, actor, revealed, 'value');
+        if (projected !== undefined) out.push(projected);
       }
     }
     return out;
   }
   if (typeof value === 'object') {
     const record = value as Record<string, unknown>;
-    if (typeof record.id === 'string' && !objectVisible(record as ProjectableObject, actor, revealed)) {
+    // Drop GM-only containers even when they have no id (nested whispers, notes bags).
+    if (actor.role !== 'gm' && isGmOnlyContainer(record)) {
+      return undefined;
+    }
+    if (
+      typeof record.id === 'string' &&
+      mode !== 'eventList' &&
+      !objectVisible(record as ProjectableObject, actor, revealed)
+    ) {
       return undefined;
     }
     const out: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(record)) {
       if (actor.role !== 'gm' && isSecretKey(key)) continue;
-      const projected = projectInner(child, actor, revealed);
+      const projected = projectInner(child, actor, revealed, 'value');
       if (projected !== undefined) out[key] = projected;
     }
     return out;
   }
   return value;
+}
+
+/**
+ * Events are not object-grant targets: event ids are not reveal ids.
+ * Non-GM actors still lose gm-only/secret event records and nested secret keys.
+ */
+function projectEventItem(
+  item: unknown,
+  actor: ProjectionActor,
+  revealed: ReadonlySet<string>,
+): unknown {
+  if (item === null || item === undefined) return item;
+  if (typeof item !== 'object' || Array.isArray(item)) {
+    return projectInner(item, actor, revealed, 'value');
+  }
+  if (actor.role !== 'gm' && isGmOnlyContainer(item)) return undefined;
+  const record = item as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(record)) {
+    if (actor.role !== 'gm' && isSecretKey(key)) continue;
+    const projected = projectInner(child, actor, revealed, 'value');
+    if (projected !== undefined) out[key] = projected;
+  }
+  return out;
 }
 
 export type SessionProjectionInput = {
@@ -128,9 +193,13 @@ export function projectSessionSnapshot(
       events: [...(input.events ?? [])],
     };
   }
-  const objects = projectValue(input.objects, actor) as ProjectableObject[];
-  const shared = projectValue(input.shared ?? {}, actor) as Record<string, unknown>;
-  const events = projectValue(input.events ?? [], actor) as Record<string, unknown>[];
+  const revealed = revealedSet(actor);
+  const objects = projectInner(input.objects, actor, revealed, 'objectList') as ProjectableObject[];
+  const shared = projectInner(input.shared ?? {}, actor, revealed, 'value') as Record<string, unknown>;
+  const events = projectInner(input.events ?? [], actor, revealed, 'eventList') as Record<
+    string,
+    unknown
+  >[];
   return {
     revision: input.revision,
     role: actor.role,
