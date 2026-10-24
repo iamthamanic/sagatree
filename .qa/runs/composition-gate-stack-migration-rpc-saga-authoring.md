@@ -1,28 +1,28 @@
 # Composition Gate — stack-migration-rpc-saga-authoring (#871)
 
-- HEAD_SHA: 1a28dcdc95539ec8fc4440ec0572b818fd0b46c7
+- HEAD_SHA: 5bc5c22f32cbb4cf9b593d574f4587d1a647624e
 - BASE_SHA: 4aab6cd6d8a5a166ff5d04da75c66acf351acc21
 - Date: 2026-10-24
 - Verdict: CLEAR
 
 ## Event
 
-Authenticated actors author user saga definitions through application use-cases → saga ports → SQLite `saga_definitions` / `saga_definition_versions`. Native rows stay immutable; revision conflicts deny without publishing.
+Authenticated actors author user saga definitions through application use-cases → saga ports → SQLite `saga_definitions` / `saga_definition_versions`. Native rows stay immutable; revision conflicts deny without publishing. Linked remote-account actors retain owner access via `linkedSoloActorIds`.
 
 ## Hop chain
 
 1. Producer: command / use-case (`create_user_saga_definition` …)
-2. Authorize: `permissions.authorize('saga.read'|'saga.write', actor, { sagaId? })`
-3. Persist: `SagaDefinitionStore` owner/native/revision rules
+2. Authorize: `permissions.authorize('saga.read'|'saga.write', actor, { sagaId? })` (linked solo honored)
+3. Persist: `SagaDefinitionStore` owner/native/revision rules inside BEGIN IMMEDIATE
 4. Consumer: editor/publish projections; draft ensured idempotently
 
 ## Simulations
 
 | Case | Result |
 |------|--------|
-| N-actors | owner vs stranger / native immutable | pass |
+| N-actors | owner vs stranger / native immutable / linked remote-account | pass |
 | Invalid/missing | empty title, conflict 40001 | pass |
-| Two consumers / crash | draft ensure once; publish adds vN | pass |
+| Two consumers / crash | draft ensure once; publish adds vN; atomic save | pass |
 
 ## Flags
 
