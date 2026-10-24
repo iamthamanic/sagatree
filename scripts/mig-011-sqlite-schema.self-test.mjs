@@ -376,6 +376,8 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   assert(owningModuleForTable('schema_migrations') === 'ops', 'schema_migrations → ops');
   assert(owningModuleForTable('assets') === 'media', 'assets → media');
   assert(owningModuleForTable('asset_upload_sessions') === 'media', 'asset_upload_sessions → media');
+  assert(owningModuleForTable('saga_definitions') === 'saga', 'saga_definitions → saga');
+  assert(owningModuleForTable('saga_definition_versions') === 'saga', 'saga_definition_versions → saga');
   const owned = Object.keys(TABLE_OWNERSHIP);
   assert(new Set(owned).size === owned.length, 'unique table ownership');
 

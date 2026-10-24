@@ -36,6 +36,11 @@ import {
   createRulesetPortsStub,
   type RulesetPorts,
 } from '../modules/rulesets/index.ts';
+import {
+  createSagaPorts,
+  createSagaPortsStub,
+  type SagaPorts,
+} from '../modules/saga/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -66,6 +71,8 @@ export type HostInstance = {
   readonly media: MediaPorts;
   /** MIG-309 ruleset catalog ports. */
   readonly rulesets: RulesetPorts;
+  /** RPC-SAGA-AUTHORING saga definition ports (#871). */
+  readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
   readonly getAuth: () => HostBetterAuth | null;
   start: () => Promise<void>;
@@ -148,6 +155,9 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
+    const saga: SagaPorts = db
+      ? createSagaPorts({ db, authorize: permissions.authorize })
+      : createSagaPortsStub();
     createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
@@ -261,6 +271,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       uploads,
       media,
       rulesets,
+      saga,
       getAuth: () => betterAuth,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
