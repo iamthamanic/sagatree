@@ -209,6 +209,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Legacy frontend session adapter ports against host contracts. |
+| **Acceptance tier** | `adapter-integration` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none for adapter wiring; feature/browser verification MIG-602/#847. |
+| **FEATURE VERIFIED** | MIG-602/#847 + MIG-600/#845. |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #791 (MIG-012)

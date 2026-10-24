@@ -114,6 +114,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] server/ ist registriert; Bootstrap verdrahtet identity/permissions/domain-Module zentral; öffentliche Modul-APIs sind von privaten persistence/internal-Pfaden getrennt; checkRegisteredHostPackages in scripts/architecture-boundary-check.mjs (Self-Test + npm run test-gate) weist relative Private-Cross-Imports, Modulzyklen und nicht-composition http/**-Zugriffe ab und läuft zusätzlich zu späteren ORM-Import-Verboten; keine Ambient-Service-Locator nach Ready.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/bootstrap`, `server/src/config`, `server/src/modules` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none — later consumers must not silently assume host activation beyond this slice without their own evidence. |
+| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #782 (MIG-001)

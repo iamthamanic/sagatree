@@ -105,6 +105,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Die reale Produktprobe wird rot und nach Rücknahme grün; fehlende isolierte Testinfrastruktur schlägt fehl und führt nicht zu test.skip.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated Atlas product journey CI gate. |
+| **Acceptance tier** | `feature-e2e` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | Known-red until suite PASS; not greenwashed. |
+| **FEATURE VERIFIED** | self when CI acceptance passes. |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #782 (MIG-001)

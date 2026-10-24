@@ -68,7 +68,7 @@ Authorized command crosses producer → persistence.
 1. Producer
 2. Authorize
 3. Persist
-4. Consumer
+4. Consumer (createHost / bootstrap call site)
 
 ## Simulations
 
@@ -82,6 +82,9 @@ Deny paths do not persist.
 Crash leaves no orphan rows.
 
 ## Flags
+
+- Acceptance tier: host-integration
+- Deferred integration: none
 
 None.
 `;

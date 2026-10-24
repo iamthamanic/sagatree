@@ -99,6 +99,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Der Resync rekonstruiert das bestätigte Ergebnis aus persistierten Ereignissen und veröffentlicht keine zurückgerollte Mutation.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | `server/src/realtime` authorized join/resync with server-derived roles, durable event catch-up, commit fan-out hook, and host HTTP mount via createHost. |
+| **Acceptance tier** | `host-integration` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | Full Colyseus Room schema/transport adapter packaging remains activation work before FEATURE VERIFIED (MIG-602/#847); legacy Supabase channel adapters MIG-311/#810. Slice does not equal browser E2E. |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847; release MIG-700/#849. |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #795 (MIG-020)

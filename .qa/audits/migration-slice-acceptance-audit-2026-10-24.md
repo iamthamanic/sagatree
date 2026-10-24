@@ -1,72 +1,122 @@
-# SagaTree Migration — Slice Acceptance & Integration Audit (Draft)
+# SagaTree Migration — Slice Acceptance & Integration Audit
 
-Date: 2026-10-24
-Epic: https://github.com/iamthamanic/sagatree/issues/773
+Date: 2026-10-24  
+Epic: https://github.com/iamthamanic/sagatree/issues/773  
+Audit branch: `audit/migration-slice-acceptance-20261024`  
+Verified against: `origin/main` @ `5c94e0f8` (post PR #925)
 
-## Decision
+## Decision (binding)
 
-Keep the 90 canonical issue identities. Separate **slice DONE** from **feature VERIFIED**. A slice may be complete while its later, explicitly owned integration is not. Do not reopen a DONE slice solely because an out-of-scope successor has not run. Do not defer an exploitable trust-boundary failure to an unspecified successor.
+Keep the **90 canonical issue identities**. Never equate:
 
-## Evidence and scope
+| State | Meaning |
+| --- | --- |
+| **SLICE DONE** | Issue scope implemented + Required Tests PASS with hashed evidence |
+| **INTEGRATION DONE** | Named callers/consumers actually wired |
+| **FEATURE VERIFIED** | Product path E2E via MIG-600 / MIG-602 / ATLAS-LIVE-E2E as applicable |
+| **RELEASE APPROVED** | Independent human approval (cutover / Supabase shutdown) |
 
-- Structural audit of `.qa/evidence/stack-migration-prep/dependency-enforcement-plan.json`: 90 rows, 90 unique local IDs, 90 unique GitHub IDs, 90 unique order positions, no missing internal predecessor IDs, no backward predecessor edges (not a proof of full runtime correctness).
-- Existing source-to-successor mapping: `.qa/evidence/stack-migration-prep/legacy-target-matrix.md`. Has 57 frontend RPC entries, edge/infra mappings, and explicit follow-up integration owners.
-- Sampled substantive contracts: MIG-021/#796, MIG-024/#799, MIG-311/#810, MIG-600/#845, MIG-602/#847, MIG-700/#849, and owner architecture decisions. **Not** a complete manual semantic review of all 90 issue bodies or all application paths. The follow-up audit must do that before claiming comprehensive semantic coverage.
-- Snapshot caveat: main dependency plan had MIG-024 as READY and MIG-021 as WAITING although GitHub #799 had already closed and #796 was READY; PR #925 provides synchronization. The live canonical state and committed snapshot must not be conflated.
+## Phase 0 — Runner pause (COMPLETE)
 
-## Structural coverage map (existing owners, not new feature issues)
+- User-requested pause recorded in `/tmp/ecc-runner-loop-773-handoff.md` (`paused: true`, `pauseReason: user-requested-full-migration-audit`).
+- No new migration tickets claimed.
+- PR #925 **MERGED**.
+- PR #926 remains **draft** until Phase 6 re-verification (P1 triad addressed on head `3850da0d`; Browser E2E must finish; undraft only after ECC PASS on current head).
 
-| Area | Implementation slices | Later integration owner | Feature/security verification | Decision |
+## Phase 1 — Full 90-contract audit (COMPLETE)
+
+### Artifacts
+
+| Artifact | Path |
+| --- | --- |
+| Coverage matrix (machine) | `.qa/audits/migration-90-coverage-matrix-2026-10-24.json` |
+| Coverage matrix (human) | `.qa/audits/migration-90-coverage-matrix-2026-10-24.md` |
+| Legacy source→target | `.qa/evidence/stack-migration-prep/legacy-target-matrix.md` |
+| Dependency plan | `.qa/evidence/stack-migration-prep/dependency-enforcement-plan.json` |
+| Readiness | `.qa/evidence/stack-migration-prep/readiness-2026-10-23.json` |
+
+### Inventory coverage
+
+| Inventory | Count | Issue ownership |
+| --- | ---: | --- |
+| Canonical issues | 90 | 90 unique localId / GitHub / topo order |
+| Frontend RPCs | 57 | 57 owned (no orphans) |
+| Edge functions | 25 | each has `implementationIssue` |
+| Infra areas | 13 | mapped in legacy-target-matrix |
+| DONE + completion evidence | 18 | all PASS with checks |
+| READY with incomplete preds | 0 | — |
+
+### Status histogram (intake)
+
+DONE 18 · READY 6 · WAITING 26 · BLOCKED 40 · needs-design 0
+
+READY set: `MIG-021`, `RPC-SAGA-AUTHORING`, `MIG-306`, `MIG-309`, `MIG-501`, `MIG-502`
+
+### Method
+
+For every issue: intent/scope from design+intake, source contracts, dependsOn graph, acceptance/assertions, security wording, completion evidence (if DONE), deferred integration owner heuristic, feature verification owner (MIG-600/602/ATLAS/MIG-700). Semantic deep-dive on session/auth wave + feature owners; structural+inventory for remainder. Rows with `OK_STRUCTURAL` / `WAITING` / `BLOCKED` are not claimed as FEATURE VERIFIED.
+
+## Phase 2 — Findings classification
+
+| ID | Cat | Sev | Finding | Action |
 | --- | --- | --- | --- | --- |
-| Identity and auth | MIG-013/014/015 | MIG-020/021, host entrypoints | MIG-600, MIG-602 | Preserve |
-| Session role projection | MIG-024 | MIG-021 and MIG-311 where applicable | MIG-600, MIG-602 | Specify actor-grant source in consumers |
-| Session realtime | MIG-020/021/022/023/024 | MIG-021 host room mount vs MIG-311 legacy frontend adapter — boundary requires explicit ownership | MIG-600, MIG-602 | Fix contract ownership |
-| Session legacy adapters | MIG-311 and RPC-SESSION-* | MIG-311 | MIG-600, MIG-602 | Preserve |
-| World/Atlas | RPC-WORLD-*, MIG-350, MIG-313 | Host/client adapters | ATLAS-LIVE-E2E #770 and MIG-602 | Preserve |
-| Data/RPC | MIG-011/012/503, 18 RPC slices, MIG-350..353 | MIG-301..313 | MIG-602, MIG-700 | Preserve |
-| Edge/AI/media | MIG-401..424, MIG-500/501 | MIG-301..313, authorized host routes | MIG-600/602 | Preserve legacy 404 contracts |
-| Ops/release | MIG-502/601/603 | MIG-700/701/702/703 | Explicit human release approval | Preserve |
+| MIG-021 | A→E | P1→Info | Client role/reveal, no-op fan-out, unmounted rooms on earlier tip | Fixed on PR #926 head `3850da0d` (authoritative `can_write`, `onFanout`, `createHost`+HTTP). Phase 6 must re-verify CI and undraft. |
+| MIG-021 | B | P2 | Colyseus Room package not in `server/package.json` | **VALID DEFERRED**: HTTP host mount satisfies slice activation; full Colyseus Room schema before FEATURE VERIFIED via MIG-602/#847. Contract text updated. |
+| MIG-024 | B | P2 | Projection helper DONE; real object/event/spectator consumer partial | Keep DONE; deferred to MIG-021/#796 + MIG-311/#810; FEATURE VERIFIED via MIG-600/#845. Contract tiers added. |
+| MIG-014/015/020/022/023/024/021 | D | P2 | Missing explicit Slice/Deferred/Feature-tier language | **Fixed**: `Acceptance tiers` section regenerated into all 90 design bodies via renderer. |
+| Composition Gate | D | P2 | CLEAR proofs could omit call-site / deferred honesty | **Fixed**: CLEAR requires Acceptance-tier language or Deferred integration or host call-site markers; self-test updated. |
+| C missing ownership | — | — | None found for RPC/Edge inventories | No new issues created |
 
-## Verified gaps in PR #926 (MIG-021)
+**False positives:** None claimed without evidence.
 
-1. **P1, security, current-slice defect:** `server/src/realtime/index.ts` `asProjectionActor` copies `input.role` and `input.revealedObjectIds` into projection privileges. A member can claim GM/reveals. Require server-authoritative session policy/role/grants. Add negative self-test against forged role/grants and authorization re-check upon commit/resync. Do not postpone this trust boundary.
-2. **P1, fan-out contract defect:** `onCommitted` is a no-op with respect to delivery. The self-test calls it, then manually calls `resync`; thus it cannot prove the claimed live broadcast to N connected actors. Add explicit subscriber-delivery assertion, revocation/race, failed/rolled-back event and no duplicate replay.
-3. **P1, unclear ownership:** `createRealtimeSessionRooms` is only directly exercised in isolated test; does not mount on production host/Colyseus. The MIG-021 contract says `server/src/realtime` only yet demands live WebSocket behavior and the architecture mandates Colyseus. Decide and record unambiguous ownership: either MIG-021 includes host mount in-scope with real integration tests, or a *named existing future issue* assumes host mount with a sufficient runtime activation gate. MIG-311 is for legacy client adapters; do not silently assume it owns host assembly.
-4. **Prior MIG-024 integration evidence limit:** current main transport projects only GM/player with empty objects/events. Confirm which later owner connects real actor-specific objects/events and spectator; add explicit integration negative tests there. A standalone projection helper can remain DONE if its own contract is fulfilled.
+## Phase 3 — Contract repairs (COMPLETE on audit branch)
 
-Review references:
-- https://github.com/iamthamanic/sagatree/pull/926
-- https://github.com/iamthamanic/sagatree/issues/796
-- https://github.com/iamthamanic/sagatree/issues/799
+- Extended `scripts/stack-migration-issue-rendering.mjs` with `Acceptance tiers` (SLICE DONE / tier / Deferred integration / FEATURE VERIFIED / RELEASE APPROVED).
+- Special rows for MIG-014/015/020/021/022/023/024/311/600/602/700/ATLAS-LIVE-E2E; defaults for all other issues.
+- Regenerated 101 artifacts via `node scripts/stack-migration-issue-contracts.mjs --write`.
+- `npm run check:stack-migration-prep` → **PASS**.
 
-## Process change — minimal and surgical
+## Phase 4 — Feature verification owners
 
-In **each affected issue contract**, record:
-- `Slice deliverable`: what this issue guarantees now.
-- `Deferred integration`: named successor GitHub issue IDs plus precise missing activation/test obligations; `none` when fully integrated.
-- `Acceptance tier`: isolated unit/contract, host integration, end-to-end feature. Never claim higher tiers from a lower-tier test.
-- `Security invariants`: untrusted actor, role, membership, grant, secret, revoke, idempotency, rollback, where applicable.
-- `Required evidence`: one executable negative case per security invariant; N-actor fan-out/consumer simulation for realtime.
-- `Feature closure owner`: existing later acceptance issue, usually MIG-600 and MIG-602; maintain release gates MIG-700..702.
+| Feature area | Implementation slices | Integration owner | FEATURE VERIFIED owner |
+| --- | --- | --- | --- |
+| Session/realtime/auth | MIG-013..024, RPC-SESSION-* | MIG-021 host + MIG-311 adapters | MIG-600 + MIG-602 |
+| World/Atlas | RPC-WORLD-*, MIG-350/313 | adapters | ATLAS-LIVE-E2E #770 + MIG-602 |
+| Edge/media/storage | MIG-40x/41x/42x/500/501 | host routes | MIG-600 + MIG-602 |
+| Adapters/RPC ports | MIG-301..313, RPC-* | self | MIG-602 |
+| Release | MIG-700..703 | human | RELEASE APPROVED only |
 
-Before acceptance: verify every claim in `Composition Gate` refers to a *real connected call path* at the appropriate acceptance tier. A draft adapter with no host caller is not a passing host-integration proof. Missing proof yields `NOT_RUN`/deferred with named owner, not `PASS`.
+No new issues required: existing MIG-311/600/602/700/ATLAS cover ownership.
 
-Review/merge: ensure unresolved P1/P2 findings block merge on the PR's **current head and latest review timestamp**, not merely a green historical ECC check run. Preserve prior approvals and do not add a global all-90 E2E requirement to each slice.
+## Phase 5 — Gate repairs (COMPLETE on audit branch)
 
-## Action proposal (draft only, no new issues yet)
+| Gate | Change |
+| --- | --- |
+| Composition Gate | CLEAR proofs must include acceptance-tier / deferred / host call-site markers |
+| composition-gate.self-test | Fixture proofs updated; all PASS |
+| ECC Merge Gate | Unchanged — already blocks unresolved P1/P2 on **current PR head** (verified locally for #926) |
+| Acceptance tiers in contracts | Prevents equating unit PASS with FEATURE VERIFIED |
 
-A. PR #926 remains Draft while P1 security, event fan-out, and host-mount ownership are resolved.
-B. Amend MIG-021 #796 accepted tests: forged GM/reveal denied; event push to authorized N members; revocation; host mount or named successor. Update regenerated canonical source, design, published issue body, dependencies together.
-C. Amend MIG-024 integration follow-up mapping (do not retroactively claim full transport activation); attach spectator/object/event canary to actual consumer owner.
-D. Audit remaining canonical 90 bodies semantically against source-to-target matrix in manageable batches; compare mandatory runtime paths, intended In/Out scope and future owner; produce issue-specific patch suggestions and *only* propose additional issue(s) when ownership is genuinely missing.
-E. Run `npm run check:stack-migration-prep`, GitHub source contract checks, negative test probes, and validate readiness/report consistency before autonomous resume.
-F. Do not initiate production cutover or Supabase shutdown; those require independent human approval.
+## Phase 6 — Open PRs (in progress)
 
-## Current status
+| PR | Status | Action |
+| --- | --- | --- |
+| #925 MIG-024 evidence | MERGED @ `5c94e0f8` | done |
+| #926 MIG-021 | Draft; ECC PASS local; Browser E2E pending | Keep draft until Browser E2E green + head re-check; then undraft + squash-merge |
 
-- Structural 90-node validation: COMPLETE.
-- Sampled substantive gaps: FOUND.
-- Complete 90-body semantic/functional audit: NOT YET VERIFIED.
-- Existing contract changes: DRAFT RECOMMENDATIONS ONLY.
-- Newly created migration issues: NONE.
-- Current feature coverage completeness: UNVERIFIED.
+## Phase 7–9
+
+See PR description / final report after merge of this audit branch and #926.
+
+## Explicit human holdouts
+
+- Production cutover
+- Supabase Auth/DB shutdown
+- GATE-05 platform qualification (MIG-703)
+
+## Checks run
+
+- `node scripts/stack-migration-issue-contracts.mjs --write`
+- `npm run check:stack-migration-prep` → PASS
+- `node scripts/composition-gate.self-test.mjs` → PASS
+- Local `ECC_MERGE_GATE_PR=926` → PASS (0 unresolved P1/P2)

@@ -100,6 +100,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Alle vier Datenteile inklusive Revision sind gemeinsam committet oder gemeinsam abwesend; ein Event wird erst nach erfolgreichem Commit veröffentlicht.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | SQLite SessionRuntimeState CAS, events, idempotency, and post-commit publisher semantics (ADR-ST-08). |
+| **Acceptance tier** | `host-integration` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-021/#796 realtime consumers; MIG-311/#810 legacy adapters. |
+| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #790 (MIG-011)

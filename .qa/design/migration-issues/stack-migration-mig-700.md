@@ -91,6 +91,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Cutover prerequisites checklist and evidence aggregation. |
+| **Acceptance tier** | `release-gate` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | Production cutover + Supabase shutdown require independent human RELEASE APPROVED. |
+| **FEATURE VERIFIED** | human release approval (not agent-mergeable). |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #782 (MIG-001)
