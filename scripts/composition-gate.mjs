@@ -206,7 +206,10 @@ function proofOnlyChangesSince(sha) {
   if (!output) return true;
   const files = output.split('\n').filter(Boolean);
   return files.every(
-    (path) => path.startsWith('.qa/runs/') || path.startsWith('.qa/acceptance/'),
+    (path) =>
+      path.startsWith('.qa/runs/') ||
+      path.startsWith('.qa/acceptance/') ||
+      path.startsWith('.qa/evidence/stack-migration-prep/completion/'),
   );
 }
 
