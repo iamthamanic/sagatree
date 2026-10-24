@@ -36,8 +36,25 @@ try {
   });
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
 
-  const session = createSessionPorts({ db: boot.db });
-  const realtime = createRealtimeSessionRooms({ session });
+  /** @type {Array<{actorId:string,revision:number,kind:string}>} */
+  const fanout = [];
+  let realtime;
+  const session = createSessionPorts({
+    db: boot.db,
+    onCommitted: (event) => {
+      realtime.onCommitted(event);
+    },
+  });
+  realtime = createRealtimeSessionRooms({
+    session,
+    onFanout: (message) => {
+      fanout.push({
+        actorId: message.actorId,
+        revision: message.revision,
+        kind: message.kind,
+      });
+    },
+  });
 
   const sessionId = 'SE-MIG021';
   const projectId = 'PR-MIG021';
@@ -62,18 +79,26 @@ try {
   assert(cmd1.ok && cmd1.committed && cmd1.snapshot.revision === 1, 'seed command commits');
 
   // --- Fall 1 ---
-  const joinGm = realtime.join(gm, { sessionId, role: 'gm', clientRevision: 0 });
-  assert(joinGm.ok && joinGm.sync.revision === 1, 'GM join snapshot');
+  const joinGm = realtime.join(gm, { sessionId, clientRevision: 0 });
+  assert(joinGm.ok && joinGm.sync.revision === 1 && joinGm.sync.role === 'gm', 'GM join');
   assert(joinGm.sync.events.length >= 1, 'GM gets events from 0');
 
-  const joinP1Behind = realtime.join(p1, { sessionId, role: 'player', clientRevision: 0 });
-  assert(joinP1Behind.ok && joinP1Behind.sync.revision === 1, 'P1 join snapshot');
+  const joinP1Behind = realtime.join(p1, {
+    sessionId,
+    clientRevision: 0,
+    // Privilege escalation attempt — must be ignored
+    claimedRole: 'gm',
+    claimedRevealedObjectIds: ['SECRET'],
+  });
+  assert(joinP1Behind.ok && joinP1Behind.sync.role === 'player', 'P1 stays player despite claimed gm');
+  assert(joinP1Behind.sync.revision === 1, 'P1 join snapshot');
   const p1Revs = joinP1Behind.sync.events.map((e) => e.revision);
   assert(p1Revs.every((r, i) => i === 0 || r > p1Revs[i - 1]), 'P1 events ordered, no gap');
 
-  const joinP2Current = realtime.join(p2, { sessionId, role: 'player', clientRevision: 1 });
+  const joinP2Current = realtime.join(p2, { sessionId, clientRevision: 1 });
   assert(joinP2Current.ok && joinP2Current.sync.events.length === 0, 'P2 at tip gets no duplicate events');
 
+  fanout.length = 0;
   const cmd2 = session.commands.apply(gm, {
     sessionId,
     expectedRevision: 1,
@@ -81,18 +106,13 @@ try {
     op: { kind: 'presence', payload: { userId: gm.actorId, isOnline: true, characterId: 'CH-1' } },
   });
   assert(cmd2.ok && cmd2.snapshot.revision === 2, 'second command');
-  realtime.onCommitted({
-    sessionId,
-    revision: 2,
-    eventSequence: 2,
-    actorUserId: gm.actorId,
-    idempotencyKey: 'cmd-2',
-    kind: 'presence',
-    payload: { userId: gm.actorId, isOnline: true },
-    snapshot: cmd2.snapshot,
-  });
+  assert(
+    fanout.some((f) => f.actorId === p1.actorId && f.revision === 2) &&
+      fanout.some((f) => f.actorId === gm.actorId && f.revision === 2),
+    `committed fan-out to occupants, got ${JSON.stringify(fanout)}`,
+  );
 
-  const resyncP1 = realtime.resync(p1, { sessionId, role: 'player', clientRevision: 1 });
+  const resyncP1 = realtime.resync(p1, { sessionId, clientRevision: 1 });
   assert(resyncP1.ok && resyncP1.sync.revision === 2, 'resync tip');
   assert(
     resyncP1.sync.events.length === 1 && resyncP1.sync.events[0].revision === 2,
@@ -105,7 +125,6 @@ try {
   // --- Fall 2 ---
   const denyStranger = realtime.join(stranger, {
     sessionId,
-    role: 'player',
     roomId: joinGm.sync.roomId,
     clientRevision: 0,
   });
@@ -114,7 +133,6 @@ try {
   session.store.revokeMembership(sessionId, p2.actorId);
   const denyRevoked = realtime.resync(p2, {
     sessionId,
-    role: 'player',
     roomId: joinP2Current.sync.roomId,
     clientRevision: 2,
   });
@@ -122,7 +140,6 @@ try {
 
   const wrongRoom = realtime.join(p1, {
     sessionId,
-    role: 'player',
     roomId: 'session:OTHER',
     clientRevision: 0,
   });
@@ -143,7 +160,6 @@ try {
 
   const afterRestart = realtime2.resync(p1, {
     sessionId,
-    role: 'player',
     clientRevision: 0,
   });
   assert(afterRestart.ok && afterRestart.sync.reconstructed === true, 'reconstructed flag');

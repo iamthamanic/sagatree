@@ -3,7 +3,7 @@
  * Location: server/src/http/route-registry.ts
  *
  * GATE-03 Variant B: Hono owns typed HTTP; Better Auth keeps `/api/auth/*`.
- * Colyseus realtime rooms remain later MIG tickets (MIG-021+).
+ * MIG-021 mounts authorized session-room join/resync on the Hono app.
  * Credentialed CORS + remote ping auth from MIG-014/015 hardening.
  */
 import type { IncomingMessage, ServerResponse } from 'node:http';
@@ -13,6 +13,7 @@ import type { TransportUseCase } from '../application/transport/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
+import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
 import {
@@ -27,6 +28,7 @@ export type RouteRegistryDeps = {
   readonly permissions: PermissionsPorts;
   readonly identity: IdentityPorts;
   readonly transport: TransportUseCase;
+  readonly realtime?: RealtimeSessionRooms;
   /** Solo vs remote — solo-only mutation shortcuts are refused in remote mode. */
   readonly hostMode?: 'solo' | 'remote';
   /** Normalized trusted origins for credentialed CORS (empty → no CORS echo). */
@@ -92,6 +94,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     permissions: deps.permissions,
     identity: deps.identity,
     transport: deps.transport,
+    realtime: deps.realtime,
     hostMode,
     recordPing: deps.recordPing,
     tryAuthorizedProjectTouch: deps.tryAuthorizedProjectTouch,

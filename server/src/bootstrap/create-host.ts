@@ -28,6 +28,8 @@ import {
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
+import { createSessionPorts } from '../modules/session/index.ts';
+import { createRealtimeSessionRooms, type RealtimeFanoutMessage } from '../realtime/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
   bootstrapHostPersistence,
@@ -126,6 +128,36 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       acceptMutations: () => acceptingMutations,
     });
 
+    const fanoutLogPath = join(config.dataDir, 'realtime-fanout.jsonl');
+    const onFanout = (message: RealtimeFanoutMessage) => {
+      writeFileSync(
+        fanoutLogPath,
+        `${JSON.stringify({
+          at: new Date().toISOString(),
+          sessionId: message.sessionId,
+          roomId: message.roomId,
+          actorId: message.actorId,
+          revision: message.revision,
+          kind: message.kind,
+        })}\n`,
+        { flag: 'a', encoding: 'utf8' },
+      );
+    };
+
+    // Session runtime + realtime rooms share one onCommitted publisher (ADR-ST-08).
+    let realtimeRooms: ReturnType<typeof createRealtimeSessionRooms> | undefined;
+    const sessionPorts = db
+      ? createSessionPorts({
+          db,
+          onCommitted: (event) => {
+            realtimeRooms?.onCommitted(event);
+          },
+        })
+      : null;
+    realtimeRooms = sessionPorts
+      ? createRealtimeSessionRooms({ session: sessionPorts, onFanout })
+      : undefined;
+
     const recordPing = () => {
       if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
       writeFileSync(pingLogPath, `${JSON.stringify({ at: new Date().toISOString() })}\n`, {
@@ -179,6 +211,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       permissions,
       identity,
       transport,
+      realtime: realtimeRooms,
       hostMode: config.mode,
       trustedOrigins: config.auth?.trustedOrigins ?? [],
       recordPing,

@@ -108,6 +108,13 @@ export type SessionRuntimeStore = {
     | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'SESSION_NOT_FOUND' };
   /** Membership mutation for tests / revoke paths — never a client-elevated join. */
   readonly revokeMembership: (sessionId: string, actorUserId: string) => void;
+  /** Authoritative membership for projections — never trust client-claimed roles. */
+  readonly resolveMembership: (
+    actorUserId: string,
+    sessionId: string,
+  ) =>
+    | { ok: true; canWrite: boolean }
+    | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' };
 };
 
 function failure(
@@ -492,6 +499,17 @@ export function createSessionRuntimeStore(
         sessionId,
         actorUserId,
       );
+    },
+
+    resolveMembership(actorUserId, sessionId) {
+      if (!actorUserId) return { ok: false, error: 'UNAUTHENTICATED' };
+      const row = db
+        .prepare(
+          'SELECT can_write FROM session_members WHERE session_id = ? AND actor_user_id = ?',
+        )
+        .get(sessionId, actorUserId) as { can_write: number } | undefined;
+      if (!row) return { ok: false, error: 'FORBIDDEN' };
+      return { ok: true, canWrite: row.can_write === 1 };
     },
   };
 }

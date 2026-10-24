@@ -11,6 +11,7 @@ import type { TransportUseCase } from '../application/transport/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
+import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 
@@ -20,6 +21,8 @@ export type HostApiDeps = {
   readonly permissions: PermissionsPorts;
   readonly identity: IdentityPorts;
   readonly transport: TransportUseCase;
+  /** MIG-021 authorized session rooms (join/resync). */
+  readonly realtime?: RealtimeSessionRooms;
   /** Solo vs remote — solo-only mutation shortcuts are refused in remote mode. */
   readonly hostMode?: 'solo' | 'remote';
   readonly recordPing: () => { ok: true } | { ok: false; status: number; error: string };
@@ -262,6 +265,80 @@ export function createHostApi(deps: HostApiDeps): Hono {
       );
     }
     return c.json(result, 200);
+  });
+
+  /**
+   * MIG-021 realtime join — membership re-checked; client role/reveal claims ignored.
+   */
+  app.post('/api/v1/sessions/:sessionId/realtime/join', async (c) => {
+    if (!deps.realtime) {
+      return c.json({ error: 'realtime-unavailable' }, 503);
+    }
+    const sessionId = c.req.param('sessionId');
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) {
+      return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    }
+    const body =
+      parsed.body !== null && typeof parsed.body === 'object' && !Array.isArray(parsed.body)
+        ? (parsed.body as Record<string, unknown>)
+        : {};
+    const resolved = await deps.identity.resolveRemoteSession(c.req.raw.headers, {
+      allowSameOriginRead: false,
+      body,
+    });
+    if (!resolved.ok) {
+      return c.json({ error: resolved.code }, authDenyStatus(resolved.code));
+    }
+    const result = deps.realtime.join(resolved.actor, {
+      sessionId,
+      roomId: typeof body.roomId === 'string' ? body.roomId : undefined,
+      clientRevision: typeof body.clientRevision === 'number' ? body.clientRevision : 0,
+      claimedRole: typeof body.role === 'string' ? body.role : undefined,
+      claimedRevealedObjectIds: Array.isArray(body.revealedObjectIds)
+        ? body.revealedObjectIds.filter((id): id is string => typeof id === 'string')
+        : undefined,
+    });
+    if (!result.ok) {
+      const status =
+        result.error === 'UNAUTHENTICATED' ? 401 : result.error === 'INVALID_PAYLOAD' ? 422 : 403;
+      return c.json({ error: result.error }, status);
+    }
+    return c.json(result.sync, 200);
+  });
+
+  app.post('/api/v1/sessions/:sessionId/realtime/resync', async (c) => {
+    if (!deps.realtime) {
+      return c.json({ error: 'realtime-unavailable' }, 503);
+    }
+    const sessionId = c.req.param('sessionId');
+    const parsed = await readJsonSafe(c);
+    if (!parsed.ok) {
+      return c.json({ error: 'INVALID_PAYLOAD' }, 422);
+    }
+    const body =
+      parsed.body !== null && typeof parsed.body === 'object' && !Array.isArray(parsed.body)
+        ? (parsed.body as Record<string, unknown>)
+        : {};
+    const resolved = await deps.identity.resolveRemoteSession(c.req.raw.headers, {
+      allowSameOriginRead: false,
+      body,
+    });
+    if (!resolved.ok) {
+      return c.json({ error: resolved.code }, authDenyStatus(resolved.code));
+    }
+    const result = deps.realtime.resync(resolved.actor, {
+      sessionId,
+      roomId: typeof body.roomId === 'string' ? body.roomId : undefined,
+      clientRevision: typeof body.clientRevision === 'number' ? body.clientRevision : 0,
+      claimedRole: typeof body.role === 'string' ? body.role : undefined,
+    });
+    if (!result.ok) {
+      const status =
+        result.error === 'UNAUTHENTICATED' ? 401 : result.error === 'INVALID_PAYLOAD' ? 422 : 403;
+      return c.json({ error: result.error }, status);
+    }
+    return c.json(result.sync, 200);
   });
 
   /**
