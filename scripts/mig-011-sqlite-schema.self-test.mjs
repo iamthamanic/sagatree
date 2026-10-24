@@ -375,6 +375,7 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   assert(owningModuleForTable('project_members') === 'project', 'project_members → project');
   assert(owningModuleForTable('schema_migrations') === 'ops', 'schema_migrations → ops');
   assert(owningModuleForTable('assets') === 'media', 'assets → media');
+  assert(owningModuleForTable('asset_upload_sessions') === 'media', 'asset_upload_sessions → media');
   const owned = Object.keys(TABLE_OWNERSHIP);
   assert(new Set(owned).size === owned.length, 'unique table ownership');
 

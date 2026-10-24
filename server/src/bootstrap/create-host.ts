@@ -25,6 +25,11 @@ import {
   createAssetPortsStub,
   type AssetPorts,
 } from '../assets/index.ts';
+import {
+  createResumableUploadPorts,
+  createResumableUploadPortsStub,
+  type ResumableUploadPorts,
+} from '../assets/uploads/index.ts';
 import { createMediaPorts, type MediaPorts } from '../modules/media/index.ts';
 import {
   createRulesetPorts,
@@ -55,6 +60,8 @@ export type HostInstance = {
   readonly schemaVersion: number;
   readonly world: WorldPorts;
   readonly assets: AssetPorts;
+  /** MIG-501 optional resumable large uploads (capability-gated). */
+  readonly uploads: ResumableUploadPorts;
   /** MIG-306 media policy ports (browser engines stay client-side). */
   readonly media: MediaPorts;
   /** MIG-309 ruleset catalog ports. */
@@ -126,6 +133,16 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           authorize: permissions.authorize,
         })
       : createAssetPortsStub();
+    const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';
+    const uploads: ResumableUploadPorts = db
+      ? createResumableUploadPorts({
+          dataDir: config.dataDir,
+          db,
+          authorize: permissions.authorize,
+          assets,
+          enabled: largeUploadsEnabled,
+        })
+      : createResumableUploadPortsStub(false);
     // Media owns asset-table policy surface; codecs remain in browser optimizer (infra-media).
     const media = createMediaPorts();
     const rulesets: RulesetPorts = db
@@ -241,6 +258,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       schemaVersion,
       world,
       assets,
+      uploads,
       media,
       rulesets,
       getAuth: () => betterAuth,

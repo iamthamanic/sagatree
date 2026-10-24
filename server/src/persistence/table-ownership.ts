@@ -27,6 +27,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   projects: 'project',
   project_members: 'project',
   assets: 'media',
+  asset_upload_sessions: 'media',
   session_runtime: 'session',
   session_members: 'session',
   command_idempotency: 'session',

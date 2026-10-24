@@ -30,12 +30,20 @@ export type AssetMetaRow = {
   readonly created_at: string;
 };
 
-const MAX_BYTES = 16 * 1024 * 1024;
+/** Default single-shot publish ceiling (MIG-500). */
+export const DEFAULT_ASSET_MAX_BYTES = 16 * 1024 * 1024;
+/** Capability-gated resumable upload ceiling (MIG-501) — still hard-capped. */
+export const LARGE_UPLOAD_MAX_BYTES = 64 * 1024 * 1024;
 const CONTENT_TYPE_RE = /^[a-zA-Z0-9][a-zA-Z0-9!#$&\-^_.+]{0,126}\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-^_.+]{0,126}$/;
 
 export type PublishInput = {
   readonly bytes: Uint8Array;
   readonly contentType?: string;
+  /**
+   * Optional raised ceiling for capability-gated resumable finalize (MIG-501).
+   * Clamped to LARGE_UPLOAD_MAX_BYTES; never expands beyond that.
+   */
+  readonly maxBytes?: number;
 };
 
 export type PublishedAsset = {
@@ -97,7 +105,14 @@ export class LocalAssetStore {
       return { ok: false, error: 'invalid-bytes' };
     }
     if (input.bytes.byteLength === 0) return { ok: false, error: 'empty-bytes' };
-    if (input.bytes.byteLength > MAX_BYTES) return { ok: false, error: 'bytes-too-large' };
+    // When maxBytes is omitted or ≤ default, keep MIG-500 ceiling.
+    const effectiveLimit =
+      typeof input.maxBytes === 'number' &&
+      Number.isFinite(input.maxBytes) &&
+      input.maxBytes > DEFAULT_ASSET_MAX_BYTES
+        ? Math.min(Math.floor(input.maxBytes), LARGE_UPLOAD_MAX_BYTES)
+        : DEFAULT_ASSET_MAX_BYTES;
+    if (input.bytes.byteLength > effectiveLimit) return { ok: false, error: 'bytes-too-large' };
 
     const contentType =
       typeof input.contentType === 'string' && input.contentType.trim().length > 0

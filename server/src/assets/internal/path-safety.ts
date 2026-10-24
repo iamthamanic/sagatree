@@ -41,8 +41,8 @@ export function resolveUnderRoot(
     if (segment === '.' || segment === '..' || segment.includes('/') || segment.includes('\\')) {
       return { ok: false, error: 'path-traversal-denied' };
     }
-    if (!isSafeAssetToken(segment) && segment !== '.tmp') {
-      // Allow only `.tmp` as a reserved staging directory name under the root.
+    if (!isSafeAssetToken(segment) && segment !== '.tmp' && segment !== '.uploads') {
+      // Allow only reserved staging dirs under the root (never caller paths).
       return { ok: false, error: 'path-traversal-denied' };
     }
   }
