@@ -3,6 +3,7 @@
  * composition-gate.self-test — squash/push freshness, evidence-only, stale proof, missing proof.
  * Location: scripts/composition-gate.self-test.mjs
  */
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -10,6 +11,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   analyze,
+  computeHopDigest,
   evaluateCompositionGate,
 } from './composition-gate.mjs';
 
@@ -48,12 +50,13 @@ function initRepo() {
   return cwd;
 }
 
-function clearProof({ headSha, baseSha, slug = 'fixture' }) {
+function clearProof({ headSha, baseSha, hopDigest, slug = 'fixture' }) {
+  const digestLine = hopDigest ? `- HOP_DIGEST: ${hopDigest}\n` : '';
   return `# Composition Gate — ${slug}
 
 - HEAD_SHA: ${headSha}
 - BASE_SHA: ${baseSha}
-- Date: 2026-10-24
+${digestLine}- Date: 2026-10-24
 - Verdict: CLEAR
 
 ## Event
@@ -187,11 +190,21 @@ try {
 
     git(cwd, ['checkout', 'main']);
     git(cwd, ['merge', '--squash', 'pr-tip']);
-    // Keep recorded proof HEAD as the (non-ancestor after squash) PR tip SHA.
-    writeFileSync(proofPath, clearProof({ headSha: prRecorded, baseSha: base }));
+    // Keep recorded proof HEAD as the (non-ancestor after squash) PR tip SHA,
+    // and attest hop blobs so freshness survives tip GC.
+    // Attest hop blobs so freshness survives tip GC (P1).
+    const blob = git(cwd, ['hash-object', 'server/src/app.ts']);
+    const hopDigest = createHash('sha256').update(`server/src/app.ts\0${blob}\n`).digest('hex');
+    writeFileSync(
+      proofPath,
+      clearProof({ headSha: prRecorded, baseSha: base, hopDigest }),
+    );
     git(cwd, ['add', '-A']);
     git(cwd, ['commit', '-m', 'squash merge (#999)']);
     const squashHead = git(cwd, ['rev-parse', 'HEAD']);
+    const files = changed(cwd, base);
+    const expectedDigest = computeHopDigest(squashHead, files, cwd);
+    assert(expectedDigest === hopDigest, `hop digest must match staged blobs (${expectedDigest})`);
 
     let isAnc = true;
     try {
@@ -212,7 +225,6 @@ try {
       /* gc optional */
     }
 
-    const files = changed(cwd, base);
     assert(files.some((f) => f.startsWith('server/')), 'squash includes backend');
     assert(
       files.includes('.qa/runs/composition-gate-squash.md'),
@@ -226,8 +238,102 @@ try {
       files,
       cwd,
     });
-    assert(result.status === 'CLEAR', `squash push with landed proof → CLEAR, got ${result.status}`);
+    assert(result.status === 'CLEAR', `squash push with hop digest → CLEAR, got ${result.status}`);
     console.log('PASS: squash-merge push CLEAR');
+  }
+
+  // --- 4b) Squash without hop digest and tip GC'd → FLAGGED (P1 regression) ---
+  {
+    const cwd = initRepo();
+    workspaces.push(cwd);
+    const base = git(cwd, ['rev-parse', 'HEAD']);
+    const proofPath = join(cwd, '.qa', 'runs', 'composition-gate-weak.md');
+    git(cwd, ['checkout', '-b', 'pr-weak']);
+    writeFileSync(join(cwd, 'server', 'src', 'app.ts'), 'export const v = 44;\n');
+    writeFileSync(proofPath, clearProof({ headSha: base, baseSha: base }));
+    git(cwd, ['add', '.']);
+    git(cwd, ['commit', '-m', 'pr weak']);
+    const tip = git(cwd, ['rev-parse', 'HEAD']);
+    writeFileSync(proofPath, clearProof({ headSha: tip, baseSha: base }));
+    git(cwd, ['add', '.']);
+    git(cwd, ['commit', '-m', 'proof no digest']);
+    const tip2 = git(cwd, ['rev-parse', 'HEAD']);
+    git(cwd, ['checkout', 'main']);
+    git(cwd, ['merge', '--squash', 'pr-weak']);
+    writeFileSync(proofPath, clearProof({ headSha: tip2, baseSha: base }));
+    git(cwd, ['add', '-A']);
+    git(cwd, ['commit', '-m', 'squash weak']);
+    const squashHead = git(cwd, ['rev-parse', 'HEAD']);
+    git(cwd, ['branch', '-D', 'pr-weak']);
+    try {
+      git(cwd, ['reflog', 'expire', '--expire=now', '--all']);
+      git(cwd, ['gc', '--prune=now', '--quiet']);
+    } catch {
+      /* optional */
+    }
+    const files = changed(cwd, base);
+    const result = evaluateCompositionGate({
+      baseSha: base,
+      headSha: squashHead,
+      mode: 'push',
+      files,
+      cwd,
+    });
+    assert(
+      result.status === 'FLAGGED',
+      `squash without digest after tip GC → FLAGGED, got ${result.status}`,
+    );
+    console.log('PASS: squash without hop digest FLAGGED after tip GC');
+  }
+
+  // --- 4c) Ancestral proof BASE (main advanced) + hop digest → CLEAR (P2) ---
+  {
+    const cwd = initRepo();
+    workspaces.push(cwd);
+    const proofBase = git(cwd, ['rev-parse', 'HEAD']);
+    writeFileSync(join(cwd, 'README.md'), '# advanced\n');
+    git(cwd, ['add', '.']);
+    git(cwd, ['commit', '-m', 'main advances']);
+    const pushBefore = git(cwd, ['rev-parse', 'HEAD']);
+    writeFileSync(join(cwd, 'server', 'src', 'app.ts'), 'export const v = 45;\n');
+    const blob = git(cwd, ['hash-object', 'server/src/app.ts']);
+    const hopDigest = createHash('sha256').update(`server/src/app.ts\0${blob}\n`).digest('hex');
+    const proofPath = join(cwd, '.qa', 'runs', 'composition-gate-ancestor-base.md');
+    writeFileSync(
+      proofPath,
+      clearProof({
+        headSha: 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+        baseSha: proofBase,
+        hopDigest,
+      }),
+    );
+    git(cwd, ['add', '.']);
+    git(cwd, ['commit', '-m', 'squash with ancestral proof base']);
+    const head = git(cwd, ['rev-parse', 'HEAD']);
+    const files = changed(cwd, pushBefore);
+    let isAnc = false;
+    try {
+      execFileSync('git', ['merge-base', '--is-ancestor', proofBase, pushBefore], {
+        cwd,
+        stdio: 'ignore',
+      });
+      isAnc = true;
+    } catch {
+      isAnc = false;
+    }
+    assert(isAnc, 'setup: proof base must be ancestor of push-before');
+    const result = evaluateCompositionGate({
+      baseSha: pushBefore,
+      headSha: head,
+      mode: 'push',
+      files,
+      cwd,
+    });
+    assert(
+      result.status === 'CLEAR',
+      `ancestral BASE + hop digest → CLEAR, got ${result.status}`,
+    );
+    console.log('PASS: ancestral proof BASE with hop digest CLEAR');
   }
 
   // --- 5) PR mode still rejects missing proof HEAD (no silent GC path) ---

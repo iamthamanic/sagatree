@@ -8,6 +8,7 @@
  * push-before parent and that landed in the same range as the hop-relevant product code
  * (optionally with hop blob equality when the recorded proof HEAD is still resolvable).
  */
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -257,9 +258,42 @@ function hopBlobsMatch(proofHead, headSha, files, cwd = root) {
   return true;
 }
 
+/**
+ * Stable attestation of hop-relevant blobs at a commit (sorted path → git blob id).
+ * Used for squash-merge freshness when the PR tip SHA is no longer fetchable.
+ */
+export function computeHopDigest(headSha, files, cwd = root) {
+  const hopFiles = [...files.filter(isHopRelevantPath)].sort();
+  if (hopFiles.length === 0) return undefined;
+  const hash = createHash('sha256');
+  for (const file of hopFiles) {
+    try {
+      const blob = git(['rev-parse', `${headSha}:${file}`], cwd);
+      hash.update(`${file}\0${blob}\n`);
+    } catch {
+      return undefined;
+    }
+  }
+  return hash.digest('hex');
+}
+
+function hopDigestMatches(text, headSha, files, cwd = root) {
+  const claimed = extract(text, /^\s*-\s*HOP_DIGEST:\s*([0-9a-f]{64})\s*$/mi);
+  if (!claimed) return false;
+  const actual = computeHopDigest(headSha, files, cwd);
+  return Boolean(actual) && claimed === actual;
+}
+
 function proofLandedInRange(proofPath, files, cwd = root) {
   const rel = relative(cwd, proofPath).split('\\').join('/');
   return files.includes(rel);
+}
+
+function baseCompatible(proofBase, baseSha, mode, cwd = root) {
+  if (proofBase === baseSha) return true;
+  // Push after squash: main may have advanced past the PR's recorded merge-base.
+  // Accept when the proof base is a true ancestor of the push-before tip.
+  return isPushLikeMode(mode) && hasRef(proofBase, cwd) && isAncestor(proofBase, baseSha, cwd);
 }
 
 function requiredSectionsOk(text, verdict) {
@@ -298,22 +332,23 @@ export function validateProof({ path, baseSha, headSha, mode, files, cwd = root 
 
   if (!proofHead || !proofBase || !verdict) return undefined;
   if (!['CLEAR', 'SKIPPED'].includes(verdict)) return undefined;
-  if (proofBase !== baseSha) return undefined;
+  if (!baseCompatible(proofBase, baseSha, mode, cwd)) return undefined;
   if (!requiredSectionsOk(text, verdict)) return undefined;
 
   const proofHeadExists = hasRef(proofHead, cwd);
 
   const lineageFresh =
-    proofHead === headSha ||
-    (proofHeadExists && isAncestor(proofHead, headSha, cwd) && proofOnlyChangesSince(proofHead, headSha, cwd));
+    proofBase === baseSha &&
+    (proofHead === headSha ||
+      (proofHeadExists && isAncestor(proofHead, headSha, cwd) && proofOnlyChangesSince(proofHead, headSha, cwd)));
 
+  // Squash / rewritten history: require verifiable hop blob identity (digest or
+  // still-resolvable proof tip blobs). Never accept merely because a proof file landed.
   const squashFresh =
     isPushLikeMode(mode) &&
     proofLandedInRange(path, files, cwd) &&
-    (hopBlobsMatch(proofHead, headSha, files, cwd) ||
-      // After squash, the PR tip may be GC'd from the main clone; BASE match +
-      // proof landing with the hop in this push range is the attestation unit.
-      (!proofHeadExists && files.some(isHopRelevantPath)));
+    (hopDigestMatches(text, headSha, files, cwd) ||
+      (proofHeadExists && hopBlobsMatch(proofHead, headSha, files, cwd)));
 
   if (!lineageFresh && !squashFresh) return undefined;
   // Pull requests still require a resolvable proof HEAD (no silent GC path).
