@@ -504,6 +504,18 @@ function checkCompositionGateSelfTest() {
   });
 }
 
+function checkMig023SessionInvites() {
+  console.log('MIG-023 session invites (#798): join codes without privilege escalation...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-023-session-invites.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2648,6 +2660,7 @@ checkMig015SoloLocalIdentity();
 checkEccMergeGateUnit();
 checkMig020HttpTransport();
 checkMig022SessionRuntime();
+checkMig023SessionInvites();
 checkCompositionGateSelfTest();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();

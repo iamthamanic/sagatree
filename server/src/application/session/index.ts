@@ -29,3 +29,8 @@ export function createSessionRuntimeUseCase(ports: SessionPorts): SessionRuntime
     },
   };
 }
+
+export {
+  createSessionInvitesUseCase,
+  type SessionInvitesUseCase,
+} from './invites/index.ts';

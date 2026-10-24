@@ -12,6 +12,10 @@ import {
   type SessionRuntimeState,
   type SessionRuntimeStore,
 } from './internal/session-runtime-store.ts';
+import {
+  createSessionInviteStore,
+  type SessionInviteStore,
+} from './internal/session-invite-store.ts';
 
 export type {
   ApplyCommandInput,
@@ -22,6 +26,13 @@ export type {
   SessionRuntimeState,
   SessionRuntimeStore,
 } from './internal/session-runtime-store.ts';
+
+export type {
+  InviteErrorCode,
+  InviteResult,
+  ProjectMemberRow,
+  SessionInviteStore,
+} from './internal/session-invite-store.ts';
 
 export type SessionCommandPort = {
   readonly apply: (actor: Actor, command: ApplyCommandInput) => ApplyCommandResult;
@@ -41,18 +52,19 @@ export type SessionPorts = {
   readonly commands: SessionCommandPort;
   readonly queries: SessionQueryPort;
   readonly store: SessionRuntimeStore;
+  readonly invites: SessionInviteStore;
 };
 
 /**
- * Session runtime ports. Membership (and write privilege) is enforced inside
- * the SQLite transaction, including before idempotent replay (ADR-ST-08).
- * `onCommitted` runs only after a successful COMMIT (not on replay/deny).
+ * Session runtime + invite/join ports. Membership (and write privilege) is enforced
+ * inside SQLite transactions. Invite tokens / join codes are never GM proofs.
  */
 export function createSessionPorts(deps: {
   readonly db: HostDatabase;
   readonly onCommitted?: SessionCommittedPublisher;
 }): SessionPorts {
   const store = createSessionRuntimeStore(deps.db, { onCommitted: deps.onCommitted });
+  const invites = createSessionInviteStore(deps.db);
 
   return {
     moduleId: 'session',
@@ -69,5 +81,6 @@ export function createSessionPorts(deps: {
       },
     },
     store,
+    invites,
   };
 }
