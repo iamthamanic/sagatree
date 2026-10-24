@@ -11,6 +11,7 @@
 import { createHash } from 'node:crypto';
 import type { Actor } from '../../modules/identity/index.ts';
 import type { PermissionsPorts } from '../../modules/permissions/index.ts';
+import { projectSessionSnapshot, type ProjectionActor } from '../../projections/index.ts';
 
 /** Documented pipeline steps for HTTP command/query handling. */
 export const TRANSPORT_PIPELINE = ['validate', 'authorize', 'execute'] as const;
@@ -139,21 +140,42 @@ function idempotencyMapKey(sessionId: string, idempotencyKey: string): string {
   return `${sessionId}:${idempotencyKey}`;
 }
 
+/**
+ * Serialize via unified role projections (MIG-024). Client filters are not auth —
+ * gmNotes / secret keys are stripped before the HTTP response leaves the host.
+ */
 function projectFor(
   state: SessionRecord,
   role: 'gm' | 'player',
 ): TransportProjection {
-  const base: TransportProjection = {
-    sessionId: state.sessionId,
-    revision: state.revision,
-    value: state.value,
-    updatedAt: state.updatedAt,
+  const actor: ProjectionActor = { actorId: role, role };
+  const projected = projectSessionSnapshot(
+    {
+      revision: state.revision,
+      objects: [],
+      shared: {
+        sessionId: state.sessionId,
+        value: state.value,
+        updatedAt: state.updatedAt,
+        role,
+        gmNotes: state.gmNotes,
+      },
+      events: [],
+    },
+    actor,
+  );
+  const shared = projected.shared;
+  const out: TransportProjection = {
+    sessionId: String(shared.sessionId ?? state.sessionId),
+    revision: projected.revision,
+    value: typeof shared.value === 'number' ? shared.value : state.value,
+    updatedAt: String(shared.updatedAt ?? state.updatedAt),
     role,
   };
-  if (role === 'gm') {
-    return { ...base, gmNotes: state.gmNotes };
+  if (typeof shared.gmNotes === 'string') {
+    return { ...out, gmNotes: shared.gmNotes };
   }
-  return base;
+  return out;
 }
 
 export function createTransportUseCase(deps: {
