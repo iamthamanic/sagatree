@@ -516,6 +516,18 @@ function checkMig023SessionInvites() {
   );
 }
 
+function checkMig024RoleProjections() {
+  console.log('MIG-024 role projections (#799): GM/player/spectator secret filter...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-024-role-projections.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2661,6 +2673,7 @@ checkEccMergeGateUnit();
 checkMig020HttpTransport();
 checkMig022SessionRuntime();
 checkMig023SessionInvites();
+checkMig024RoleProjections();
 checkCompositionGateSelfTest();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
