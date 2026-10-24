@@ -187,6 +187,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/saga/saga-definition-service.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | TBD by dependency successors: MIG-012/#791, MIG-013/#792, MIG-020/#795, RPC-SAGA-AUTHORING/#871, RPC-SAGA-PROVISION/#873, RPC-SAGA-VERSION-READ/#872, RPC-SAGA-PROJECTIONS/#876, MIG-014/#793 |
+| **FEATURE VERIFIED** | ATLAS-LIVE-E2E/#770 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #791 (MIG-012)

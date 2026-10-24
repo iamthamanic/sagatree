@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { planContracts, typedStrictAcceptance } from './stack-migration-plan-contracts.mjs';
 import { migrationIssueIdentities, migrationRepository } from './stack-migration-identities.mjs';
 import { dependencyResolver } from './stack-migration-dependencies.mjs';
@@ -252,6 +253,141 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   return { intake, dependencyPlan };
 }
 
+/** First non-empty path list for SLICE DONE wording (empty [] must not win). */
+function sliceDeliverablePaths(issue) {
+  const candidates = [issue.scope?.mayChange, issue.after?.paths, issue.before?.paths];
+  for (const list of candidates) {
+    if (Array.isArray(list) && list.length > 0) return list.slice(0, 3);
+  }
+  return ['(see Scope)'];
+}
+
+/** Optional audit-matrix deferred/feature owners (same commit tree). */
+function matrixOwnersById() {
+  const matrixPath = '.qa/audits/migration-90-coverage-matrix-2026-10-24.json';
+  if (!existsSync(matrixPath)) return new Map();
+  try {
+    const matrix = JSON.parse(readFileSync(matrixPath, 'utf8'));
+    return new Map(
+      (matrix.rows || []).map((row) => [
+        row.localId,
+        {
+          deferred: row.deferredIntegrationOwner,
+          feature: row.featureVerificationOwner,
+          featureBucket: row.feature,
+        },
+      ]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+/**
+ * Explicit slice vs deferred integration vs feature verification owners.
+ * Prevents equating SLICE DONE with FEATURE VERIFIED / RELEASE APPROVED.
+ */
+function acceptanceTierBlock(issue, byId) {
+  const ID = issue.localId;
+  const link = (id) => {
+    const peer = byId.get(id);
+    return peer ? `${id}/#${peer.githubIssue}` : id;
+  };
+  const paths = sliceDeliverablePaths(issue);
+  const matrixRow = matrixOwnersById().get(ID);
+  const defaults = {
+    slice: `Isolated deliverable under \`${paths.join('`, `')}\` with Required Tests / Edge Cases PASS at this issue's acceptance tier.`,
+    deferred:
+      matrixRow?.deferred && matrixRow.deferred !== '—'
+        ? matrixRow.deferred
+        : 'none — later consumers must not silently assume host activation beyond this slice without their own evidence.',
+    feature:
+      matrixRow?.feature && matrixRow.feature !== '—'
+        ? matrixRow.feature
+        : `${link('MIG-600')} (security parity) and ${link('MIG-602')} (host/DB/transport/browser integration); release cutover remains ${link('MIG-700')} + human approval.`,
+    tier: 'isolated-contract',
+  };
+  const special = {
+    'MIG-014': {
+      slice: 'Cookie session resolution, revoke, and WS probe auth parity helpers on the host.',
+      deferred: `${link('MIG-020')} / ${link('MIG-021')} transport entrypoints consume this identity; browser product E2E is ${link('MIG-602')}.`,
+      tier: 'host-integration-partial',
+    },
+    'MIG-015': {
+      slice: 'Solo local identity file + account-link boundaries without elevating client claims.',
+      deferred: `${link('MIG-020')} remote auth paths; feature verify ${link('MIG-602')}.`,
+      tier: 'host-integration-partial',
+    },
+    'MIG-020': {
+      slice: 'Typed Hono HTTP command/query pipeline with revision/idempotency and role-scoped transport projection of gmNotes.',
+      deferred: `Realtime room join/resync/fan-out is ${link('MIG-021')}; Colyseus Room product surface + browser E2E ${link('MIG-602')}.`,
+      tier: 'host-integration',
+    },
+    'MIG-021': {
+      slice: '`server/src/realtime` authorized join/resync with server-derived roles, durable event catch-up, commit fan-out hook, and host HTTP mount via createHost.',
+      deferred: `Full Colyseus Room schema/transport adapter packaging remains activation work before FEATURE VERIFIED (${link('MIG-602')}); legacy Supabase channel adapters ${link('MIG-311')}. Slice does not equal browser E2E.`,
+      feature: `${link('MIG-600')} + ${link('MIG-602')}; release ${link('MIG-700')}.`,
+      tier: 'host-integration',
+    },
+    'MIG-022': {
+      slice: 'SQLite SessionRuntimeState CAS, events, idempotency, and post-commit publisher semantics (ADR-ST-08).',
+      deferred: `${link('MIG-021')} realtime consumers; ${link('MIG-311')} legacy adapters.`,
+      tier: 'host-integration',
+    },
+    'MIG-023': {
+      slice: 'Invite/join codes create player membership only; never GM proof; redeem limits and deny paths.',
+      deferred: `Product UX adapters ${link('MIG-311')}; feature verify ${link('MIG-602')}.`,
+      tier: 'host-integration',
+    },
+    'MIG-024': {
+      slice: 'Recursive GM/player/spectator projection filter in `server/src/projections` + transport gmNotes stripping.',
+      deferred: `Realtime object/event envelopes with reveal grants: ${link('MIG-021')}; legacy atlas/session adapters: ${link('MIG-311')}. Spectator path FEATURE VERIFIED only after consumer wiring + ${link('MIG-600')}.`,
+      tier: 'isolated-contract',
+    },
+    'MIG-311': {
+      slice: 'Legacy frontend session adapter ports against host contracts.',
+      deferred: `none for adapter wiring; feature/browser verification ${link('MIG-602')}.`,
+      feature: `${link('MIG-602')} + ${link('MIG-600')}.`,
+      tier: 'adapter-integration',
+    },
+    'MIG-600': {
+      slice: 'Cross-cutting permission/security parity suite across migrated host surfaces.',
+      deferred: 'none for security parity scope; release still MIG-700 human gate.',
+      feature: 'self (FEATURE VERIFIED for security parity when suite PASS).',
+      tier: 'feature-security',
+    },
+    'MIG-602': {
+      slice: 'Host/DB/transport/browser integration tests for migrated stacks.',
+      deferred: `none for integration scope; cutover ${link('MIG-700')}.`,
+      feature: 'self (FEATURE VERIFIED for covered journeys when suite PASS).',
+      tier: 'feature-e2e',
+    },
+    'MIG-700': {
+      slice: 'Cutover prerequisites checklist and evidence aggregation.',
+      deferred: 'Production cutover + Supabase shutdown require independent human RELEASE APPROVED.',
+      feature: 'human release approval (not agent-mergeable).',
+      tier: 'release-gate',
+    },
+    'ATLAS-LIVE-E2E': {
+      slice: 'Isolated Atlas product journey CI gate.',
+      deferred: 'Known-red until suite PASS; not greenwashed.',
+      feature: 'self when CI acceptance passes.',
+      tier: 'feature-e2e',
+    },
+  };
+  const row = { ...defaults, ...(special[ID] || {}) };
+  return `## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | ${row.slice} |
+| **Acceptance tier** | \`${row.tier}\` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | ${row.deferred} |
+| **FEATURE VERIFIED** | ${row.feature} |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+`;
+}
+
 export function renderIssue(issue, byId) {
   const refs = (paths) => paths.map(code).join(', ');
   const ID = issue.localId;
@@ -347,6 +483,7 @@ ${requiredTestsBlock}
 
 ${publicAcceptance.map((entry) => `- [ ] ${entry}`).join('\n')}
 
+${acceptanceTierBlock(issue, byId)}
 ## Blockers
 
 ${blocks}

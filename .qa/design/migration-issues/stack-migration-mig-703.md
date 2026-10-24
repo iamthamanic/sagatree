@@ -90,6 +90,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Die Bridge verweigert den Zugriff; ein Update-/Rollback-Drill erhält bestehende Host-Daten und ihre Berechtigungen.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `desktop`, `docs/ops/desktop` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | TBD by dependency successors: GATE-05/#788, MIG-602/#847, MIG-603/#848 |
+| **FEATURE VERIFIED** | self / MIG-700/#849 human release |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #788 (GATE-05)

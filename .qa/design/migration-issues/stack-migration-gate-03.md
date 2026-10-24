@@ -91,6 +91,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Der ADR hält Kosten und offene Messkriterien fest; ohne menschliche Entscheidung bleibt sowohl die Hono- als auch die Colyseus-only-Produkteinführung gesperrt.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `.qa/evidence/stack-migration-prep/pocs/gate-03`, `.qa/design/gates/GATE-03-colyseus-http-vs-hono.md` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-020/021 Hono+Colyseus product rooms |
+| **FEATURE VERIFIED** | PoC evidence + owner decision register |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #782 (MIG-001)

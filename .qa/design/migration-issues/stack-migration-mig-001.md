@@ -91,6 +91,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Jeder PASS nennt den tatsächlich geprüften Commit oder WORKTREE-Hash; ein vorhandener CI-PASS wird nicht als Ausführung der neuen DB-/Browser-Tests ausgegeben.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `.qa/evidence/stack-migration-prep/baseline.md`, `scripts/stack-migration-db` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none (slice closed; feature verify via MIG-602/#847) |
+| **FEATURE VERIFIED** | MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Keine Vorgänger.

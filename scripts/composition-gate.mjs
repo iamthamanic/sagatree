@@ -305,6 +305,14 @@ function requiredSectionsOk(text, verdict) {
     if (!simulations.every((simulation) => text.toLowerCase().includes(simulation.toLowerCase()))) {
       return false;
     }
+    // Acceptance-tier honesty: CLEAR proofs must declare BOTH fields independently.
+    // Host call-site markers do not bypass a missing Deferred integration line.
+    const hasTier =
+      /Acceptance tier:\s*\S+/i.test(text) ||
+      /\*\*Acceptance tier\*\*/i.test(text) ||
+      /acceptance tier:\s*`[^`]+`/i.test(text);
+    const hasDeferred = /Deferred integration:\s*\S+/i.test(text) || /\*\*Deferred integration\*\*/i.test(text);
+    if (!hasTier || !hasDeferred) return false;
   }
 
   if (verdict === 'SKIPPED') {

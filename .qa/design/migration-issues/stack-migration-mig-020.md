@@ -100,6 +100,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Die HTTP-Schicht gibt dasselbe Anwendungsergebnis zurück und führt die Mutation nicht ein zweites Mal aus.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Typed Hono HTTP command/query pipeline with revision/idempotency and role-scoped transport projection of gmNotes. |
+| **Acceptance tier** | `host-integration` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | Realtime room join/resync/fan-out is MIG-021/#796; Colyseus Room product surface + browser E2E MIG-602/#847. |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 (+ MIG-311/#810 for legacy adapters) |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #789 (MIG-010)
