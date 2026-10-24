@@ -11,8 +11,8 @@ import type {
   MediaByteBudget,
   MediaKind,
   MediaOptimizeInputMeta,
-} from './optimization-contract.ts';
-import { classifyAgainstByteBudget } from './optimization-contract.ts';
+} from './optimization-contract';
+import { classifyAgainstByteBudget } from './optimization-contract';
 
 const MiB = 1024 * 1024;
 

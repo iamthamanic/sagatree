@@ -8,13 +8,14 @@
  * upload paths can DENY before bytes are stored (MIG-500 assets remain the byte store).
  */
 import {
-  evaluateImageAgainstPolicy,
+  evaluateImageUpload,
+  isAssetProfileId,
   isMediaKind,
-  type AssetProfileId,
   type MediaKind,
   type MediaOptimizeInputMeta,
-  type MediaPolicyEvaluation,
-} from '../../../../src/domains/media/index.ts';
+} from './internal/upload-policy.ts';
+
+export type { MediaKind, MediaOptimizeInputMeta, AssetProfileId } from './internal/upload-policy.ts';
 
 export type MediaCapability =
   | { readonly kind: 'image'; readonly supported: true }
@@ -26,7 +27,7 @@ export type MediaCapability =
     };
 
 export type MediaValidateResult =
-  | { readonly ok: true; readonly kind: 'image'; readonly evaluation: Extract<MediaPolicyEvaluation, { ok: true }> }
+  | { readonly ok: true; readonly kind: 'image' }
   | {
       readonly ok: false;
       readonly error:
@@ -35,9 +36,7 @@ export type MediaValidateResult =
         | 'UNSUPPORTED_MIME'
         | 'OVER_MAX_UPLOAD'
         | 'GIF_NOT_ALLOWED'
-        | 'ANIMATION_NOT_ALLOWED'
-        | 'TOO_MANY_IMAGES'
-        | 'OVER_AGGREGATE_BUDGET';
+        | 'ANIMATION_NOT_ALLOWED';
       readonly message: string;
     };
 
@@ -46,16 +45,10 @@ export type MediaPorts = {
   /** Explicit capability matrix — audio/video/model3d stay degraded locally. */
   readonly capability: (kind: MediaKind) => MediaCapability;
   /**
-   * Evaluate upload/optimize metadata against domain asset policies.
+   * Evaluate upload/optimize metadata against host upload policy.
    * Client-claimed roles never appear here; callers pass verified Actor elsewhere.
    */
-  readonly validateUpload: (
-    input: MediaOptimizeInputMeta,
-    options?: {
-      readonly imageCountInRequest?: number;
-      readonly aggregateRequestBytes?: number;
-    },
-  ) => MediaValidateResult;
+  readonly validateUpload: (input: MediaOptimizeInputMeta) => MediaValidateResult;
 };
 
 const DEGRADED: Record<Exclude<MediaKind, 'image'>, string> = {
@@ -65,7 +58,7 @@ const DEGRADED: Record<Exclude<MediaKind, 'image'>, string> = {
 };
 
 function mapPolicyFailure(
-  reason: Extract<MediaPolicyEvaluation, { ok: false }>['reason'],
+  reason: 'unsupported-mime' | 'over-max-upload' | 'gif-not-allowed' | 'animation-not-allowed',
 ): MediaValidateResult['error'] {
   switch (reason) {
     case 'unsupported-mime':
@@ -76,10 +69,6 @@ function mapPolicyFailure(
       return 'GIF_NOT_ALLOWED';
     case 'animation-not-allowed':
       return 'ANIMATION_NOT_ALLOWED';
-    case 'too-many-images':
-      return 'TOO_MANY_IMAGES';
-    case 'over-aggregate-budget':
-      return 'OVER_AGGREGATE_BUDGET';
     default:
       return 'INVALID_PAYLOAD';
   }
@@ -107,7 +96,7 @@ export function createMediaPorts(): MediaPorts {
       };
     },
 
-    validateUpload(input, options) {
+    validateUpload(input) {
       if (!input || typeof input !== 'object') {
         return { ok: false, error: 'INVALID_PAYLOAD', message: 'Media-Metadaten fehlen.' };
       }
@@ -122,11 +111,21 @@ export function createMediaPorts(): MediaPorts {
           message: cap.supported ? 'UNSUPPORTED_KIND' : cap.message,
         };
       }
-      const profileId = input.profileId as AssetProfileId;
-      if (typeof profileId !== 'string' || profileId.length === 0) {
-        return { ok: false, error: 'INVALID_PAYLOAD', message: 'Profil fehlt.' };
+      if (!isAssetProfileId(input.profileId)) {
+        return { ok: false, error: 'INVALID_PAYLOAD', message: 'Unbekanntes oder fehlendes Asset-Profil.' };
       }
-      const evaluation = evaluateImageAgainstPolicy(input, options);
+      if (
+        typeof input.byteSize !== 'number' ||
+        !Number.isFinite(input.byteSize) ||
+        input.byteSize <= 0
+      ) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD',
+          message: 'byteSize muss eine positive endliche Zahl sein.',
+        };
+      }
+      const evaluation = evaluateImageUpload(input);
       if (!evaluation.ok) {
         return {
           ok: false,
@@ -134,7 +133,7 @@ export function createMediaPorts(): MediaPorts {
           message: evaluation.message,
         };
       }
-      return { ok: true, kind: 'image', evaluation };
+      return { ok: true, kind: 'image' };
     },
   };
 }

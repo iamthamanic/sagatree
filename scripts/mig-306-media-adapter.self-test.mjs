@@ -68,6 +68,22 @@ const okImage = media.validateUpload({
 });
 assert(okImage.ok === true, 'valid portrait accepted');
 
+// Unknown profile / non-positive size
+const badProfile = media.validateUpload({
+  kind: 'image',
+  profileId: /** @type {any} */ ('not-a-profile'),
+  mimeType: 'image/png',
+  byteSize: 1000,
+});
+assert(badProfile.ok === false && badProfile.error === 'INVALID_PAYLOAD', 'unknown profile rejected');
+const badSize = media.validateUpload({
+  kind: 'image',
+  profileId: 'character-portrait',
+  mimeType: 'image/png',
+  byteSize: -1,
+});
+assert(badSize.ok === false && badSize.error === 'INVALID_PAYLOAD', 'non-positive byteSize rejected');
+
 // Oversized reject
 const over = media.validateUpload({
   kind: 'image',
