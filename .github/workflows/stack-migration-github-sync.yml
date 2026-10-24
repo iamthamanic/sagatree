@@ -1,0 +1,41 @@
+name: Stack migration GitHub contract sync
+
+# After readiness/intake changes land on main, reconcile GitHub issue labels/bodies
+# with the canonical publish plan (agent-ready vs agent-blocked drift).
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.qa/intake/local-first-stack-migration-issues.json'
+      - '.qa/evidence/stack-migration-prep/issue-publish-plan.json'
+      - '.qa/evidence/stack-migration-prep/readiness-*.json'
+      - '.qa/evidence/stack-migration-prep/completion/**'
+      - '.qa/design/migration-issues/**'
+      - 'scripts/stack-migration-issue-publish.mjs'
+      - 'scripts/stack-migration-issue-rendering.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: stack-migration-github-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync-github-contracts:
+    name: Sync migration issue labels from registry
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Publish plan → GitHub (write + verify)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/stack-migration-issue-publish.mjs --write --verify

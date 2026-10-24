@@ -362,16 +362,21 @@ export function createSessionRuntimeStore(
         db.exec('COMMIT');
         inTransaction = false;
         // ADR-ST-08: notifications fire only after commit (never inside the TX).
-        options.onCommitted?.({
-          sessionId,
-          revision: next.revision,
-          eventSequence,
-          actorUserId,
-          idempotencyKey,
-          kind,
-          payload,
-          snapshot: next,
-        });
+        // Publisher faults must not surface as apply failures or trigger client re-mutation.
+        try {
+          options.onCommitted?.({
+            sessionId,
+            revision: next.revision,
+            eventSequence,
+            actorUserId,
+            idempotencyKey,
+            kind,
+            payload,
+            snapshot: next,
+          });
+        } catch {
+          /* commit already durable */
+        }
         return { ok: true, committed: true, snapshot: next };
       } catch (err) {
         if (inTransaction) {

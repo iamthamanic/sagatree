@@ -535,11 +535,11 @@
   "sources": [
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/package.json",
-      "sha256": "11097246edb5a42e2b71cd67be6b29ef50951cb0c3804b37f8b63703a2eae212"
+      "sha256": "26cb04a1f57a877d753f78ef52fe7f6b0c72ac8f8c9bf2b572e0c056e005b82c"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/package-lock.json",
-      "sha256": "1786da5433d10109dd010b9fb13dae4b876155966a8bf3b580d37d727b65ca88"
+      "sha256": "eb033f028eaa3f245a0f6550419d0607e6472d8b140f67e38afa401aab34eb21"
     },
     {
       "path": "scripts/stack-migration-pocs/gate-02-03/policy.mjs",

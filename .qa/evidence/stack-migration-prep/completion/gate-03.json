@@ -6,13 +6,13 @@
   "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
   "githubClosed": false,
   "mergeRef": "Shared GATE-02/03 PoC host on main; human APPROVED Variant B on #786; ADR on PR #908",
-  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product HTTP/realtime host remains MIG-020/021 \u2014 freigabe alone does not accept those tickets.",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product HTTP/realtime host remains MIG-020/021 — freigabe alone does not accept those tickets.",
   "checks": [
     {
       "command": "PoC report PASS",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-03/report.json",
-      "sha256": "80d633703b7ddebc5b98ab63c4c7efafe94d25192c2ea04ce7cc5bbeb49259c4"
+      "sha256": "4bec82d74d436096c2611948056b3f3858d87a9f31a47eb6377cd7cc894203a1"
     },
     {
       "command": "ADR-ST-07",

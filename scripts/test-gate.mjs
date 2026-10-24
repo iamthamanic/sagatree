@@ -496,6 +496,14 @@ function checkMig022SessionRuntime() {
   );
 }
 
+function checkCompositionGateSelfTest() {
+  console.log('Composition Gate: squash/push freshness regression...');
+  execFileSync(process.execPath, ['scripts/composition-gate.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkMig500LocalAssets() {
   console.log('MIG-500 local assets (#841): policy-gated publish/read + traversal self-test...');
   execFileSync(
@@ -2640,6 +2648,7 @@ checkMig015SoloLocalIdentity();
 checkEccMergeGateUnit();
 checkMig020HttpTransport();
 checkMig022SessionRuntime();
+checkCompositionGateSelfTest();
 checkMig500LocalAssets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
