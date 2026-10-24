@@ -1,8 +1,8 @@
 # Composition Gate — stack-migration-mig-021 (#796)
 
-- HEAD_SHA: d7ed9f8b98d484b4b203bda552bb35d521fa20e4
+- HEAD_SHA: 29cc6e4c70231f2e91acb14785cb7ed2274aaa4d
 - BASE_SHA: acd792154a305dda1b8752fe160dab3103a63373
-- HOP_DIGEST: 1cc7b6de0f59f8354cdaf69031d168ab452965826960ac4942d71e3e39912a55
+- HOP_DIGEST: d64fcc907568930881eae9c0d7c952d4da0090a6d691880d13dcdbf122595b83
 - Date: 2026-10-24
 - Verdict: CLEAR
 
@@ -29,6 +29,8 @@ Stranger, revoked member, mismatched room id FORBIDDEN.
 After host restart, resync reconstructs confirmed revisions; onCommitted fans out to joined occupants.
 
 ## Flags
+
+- Fan-out re-resolves membership each commit; revoked occupants evicted; tip snapshot omits folded deltas
 
 - Acceptance tier: host-integration
 - Deferred integration: Full Colyseus Room schema packaging → FEATURE VERIFIED via MIG-602/#847; legacy adapters MIG-311/#810
