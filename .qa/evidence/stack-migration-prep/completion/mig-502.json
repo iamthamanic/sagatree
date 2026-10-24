@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-502",
+  "result": "PASS",
+  "testedCommit": "857a541a685d117254dcb813db3da0799a3661a1",
+  "githubClosed": true,
+  "mergeRef": "PR #944 \u2192 main (#843)",
+  "note": "Versioned host bundles + restore drills under server/src/migration/bundles.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-502-export-import-bundles.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-502.md",
+      "sha256": "907d578bff5dcff1aacd297ba46082f1a03bc295b31deb303b64fc550eccb350"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-502.md",
+      "sha256": "e239ad306db523e0ed6b21fa8ef1b48a83bf529df1f47fe88b4ea9c00d394e74"
+    }
+  ]
+}
