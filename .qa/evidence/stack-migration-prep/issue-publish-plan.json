@@ -323,11 +323,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-023",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-version-read.md",
-      "sha256": "74bb3defbc28fcce83c8605a0694a7c974fb2a8336268164748c380994533041",
-      "payloadSha256": "257edc68775fa1e86bce8726fa64852b676b44229f199df2b6ddce6f68fe1b04"
+      "sha256": "a12f916e968e492492baa9eb613177112a7bdca617ed8323e6033eeab21fb5a3",
+      "payloadSha256": "3e191d8e3ccc49599d2b551e5c6b245e5e25a8e01266fb6cfae1bd160b7a7123"
     },
     {
       "localId": "RPC-SAGA-PROVISION",
