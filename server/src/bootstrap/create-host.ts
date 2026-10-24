@@ -126,7 +126,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const worldTouchPath = join(config.dataDir, 'world-touch.jsonl');
 
     const identity = createIdentityPorts(actorId, authRuntime, config.dataDir);
-    const permissions = createPermissionsPorts(db);
+    const project = createProjectPorts(db ?? undefined);
+    const permissions = createPermissionsPorts(db, {
+      actorHasAccessToSaga: project.actorHasAccessToSaga,
+    });
     const world: WorldPorts = db
       ? createWorldPorts({
           authorize: permissions.authorize,
@@ -156,9 +159,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
     const saga: SagaPorts = db
-      ? createSagaPorts({ db, authorize: permissions.authorize })
+      ? createSagaPorts({ db, authorize: permissions.authorize, project })
       : createSagaPortsStub();
-    createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,

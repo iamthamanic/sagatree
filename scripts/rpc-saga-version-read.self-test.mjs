@@ -43,8 +43,10 @@ const fixturesUrl = pathToFileURL(
   join(root, 'server/src/application/saga-version-read/__tests__/fixtures.ts'),
 ).href;
 
+const projectUrl = pathToFileURL(join(root, 'server/src/modules/project/index.ts')).href;
 const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { createPermissionsPorts } = await import(permissionsUrl);
+const { createProjectPorts } = await import(projectUrl);
 const { createSagaPorts } = await import(sagaUrl);
 const { get_saga_definition_version } = await import(versionCmd);
 const { get_native_saga_definition_by_slug } = await import(nativeCmd);
@@ -66,8 +68,11 @@ try {
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
   assert(boot.schemaVersion >= 8, `schema>=8 got ${boot.schemaVersion}`);
   const db = boot.db;
-  const permissions = createPermissionsPorts(db);
-  const saga = createSagaPorts({ db, authorize: permissions.authorize });
+  const project = createProjectPorts(db);
+  const permissions = createPermissionsPorts(db, {
+    actorHasAccessToSaga: project.actorHasAccessToSaga,
+  });
+  const saga = createSagaPorts({ db, authorize: permissions.authorize, project });
 
   const getVersion = get_saga_definition_version(saga);
   const getNative = get_native_saga_definition_by_slug(saga);
@@ -182,6 +187,29 @@ try {
   );
   const factsGm = gmRead.value.payload.knowledgeFacts;
   assert(factsGm.some((f) => f.id === 'gm-1'), 'GM keeps gm_only');
+
+  // P2: noncanonical visibility stays fail-closed for players
+  const weirdPayload = {
+    ...VERSION_READ_PAYLOAD_WITH_GM_FACTS,
+    title: 'Weird',
+    knowledgeFacts: [
+      { id: 'upper', visibility: 'PUBLIC', summary: 'Bad case' },
+      { id: 'trim', visibility: ' public ', summary: 'Bad trim' },
+      { id: 'ok', visibility: 'public', summary: 'Ok' },
+    ],
+  };
+  const weirdNative = saga.seedNativeForTests({
+    slug: 'weird-vis',
+    title: 'Weird',
+    payload: weirdPayload,
+  });
+  const weirdRead = getVersion(PLAYER, weirdNative.versionId);
+  assert(weirdRead.ok, 'weird native readable');
+  const weirdFacts = weirdRead.value.payload.knowledgeFacts;
+  assert(
+    weirdFacts.every((f) => f.id === 'ok') && weirdFacts.length === 1,
+    'noncanonical visibility hidden',
+  );
 
   // --- Fall 4: infrastructure decoder ---
   const decoded = parseSagaDefinitionVersion(ownerRead.value);

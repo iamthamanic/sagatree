@@ -81,11 +81,17 @@ function allow(reason: string): PolicyDecision {
   return { allow: true, reason };
 }
 
+export type SagaAccessLookup = {
+  readonly actorHasAccessToSaga: (actorId: string, sagaId: string) => boolean;
+};
+
 export class PolicyService {
   readonly #db: HostDatabase | null;
+  readonly #sagaAccess: SagaAccessLookup | null;
 
-  constructor(db: HostDatabase | null) {
+  constructor(db: HostDatabase | null, sagaAccess: SagaAccessLookup | null = null) {
     this.#db = db;
+    this.#sagaAccess = sagaAccess;
   }
 
   authorize(op: PolicyOp, actor: PolicyActor | null | undefined, resource: PolicyResource = {}): PolicyDecision {
@@ -136,21 +142,10 @@ export class PolicyService {
     if (row.owner_user_id && actorMatchesOwner(actor, row.owner_user_id)) {
       return allow('saga-owner-read');
     }
-    // Active project membership / GM on a project bound to this saga (RPC-SAGA-VERSION-READ).
-    const member = this.#db!.prepare(
-      `SELECT 1 AS ok
-       FROM projects p
-       WHERE p.saga_id = ?
-         AND (
-           p.gm_user_id = ?
-           OR EXISTS (
-             SELECT 1 FROM project_members pm
-             WHERE pm.project_id = p.id AND pm.user_id = ? AND pm.active = 1
-           )
-         )
-       LIMIT 1`,
-    ).get(sagaId, actor.actorId, actor.actorId) as { ok: number } | undefined;
-    if (member) return allow('saga-project-member-read');
+    // Active project membership / GM — via project module port (no foreign SQL here).
+    if (this.#sagaAccess?.actorHasAccessToSaga(actor.actorId, sagaId)) {
+      return allow('saga-project-member-read');
+    }
     return denyForOwnerMismatch(actor, row.owner_user_id ?? '', 'not-authorized');
   }
 

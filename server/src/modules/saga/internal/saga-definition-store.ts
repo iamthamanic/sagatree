@@ -86,7 +86,10 @@ function emptyPayload(title: string, blurb: string): SagaPayload {
   };
 }
 
-/** Host parity for `sagatree_project_saga_definition_payload` — strip gm_only facts for players. */
+/**
+ * Host parity for `sagatree_project_saga_definition_payload` — strip gm_only facts for players.
+ * Exact lowercase match only (`public`|`discovered`|`shared`); noncanonical values stay hidden.
+ */
 export function projectSagaDefinitionPayload(
   payload: Record<string, unknown>,
   isGm: boolean,
@@ -96,7 +99,7 @@ export function projectSagaDefinitionPayload(
   const filtered = facts.filter((item) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
     const visRaw = (item as { visibility?: unknown }).visibility;
-    const vis = typeof visRaw === 'string' ? visRaw.trim().toLowerCase() : 'gm_only';
+    const vis = typeof visRaw === 'string' ? visRaw : 'gm_only';
     return vis === 'public' || vis === 'discovered' || vis === 'shared';
   });
   return { ...payload, knowledgeFacts: filtered };
@@ -275,62 +278,19 @@ export class SagaDefinitionStore {
     return row?.id ?? null;
   }
 
-  #actorIsActiveProjectMemberOrGm(actorId: string, sagaId: string): boolean {
-    const row = this.#db
-      .prepare(
-        `SELECT 1 AS ok
-         FROM projects p
-         WHERE p.saga_id = ?
-           AND (
-             p.gm_user_id = ?
-             OR EXISTS (
-               SELECT 1 FROM project_members pm
-               WHERE pm.project_id = p.id AND pm.user_id = ? AND pm.active = 1
-             )
-           )
-         LIMIT 1`,
-      )
-      .get(sagaId, actorId, actorId) as { ok: number } | undefined;
-    return Boolean(row);
-  }
-
-  #actorIsProjectGmOnSaga(actorId: string, sagaId: string): boolean {
-    const row = this.#db
-      .prepare(
-        `SELECT 1 AS ok FROM projects p WHERE p.saga_id = ? AND p.gm_user_id = ? LIMIT 1`,
-      )
-      .get(sagaId, actorId) as { ok: number } | undefined;
-    return Boolean(row);
-  }
-
+  /**
+   * Project version row with caller-supplied access (membership via project ports).
+   * Does not query `projects` / `project_members` — foreign schema stays in project module.
+   */
   getVersionRead(
-    actor: SagaActorRef,
     versionId: string,
+    access: { readonly allow: boolean; readonly isGm: boolean },
   ): { ok: true; value: SagaVersionReadVm } | { ok: false; error: string } {
     const ver = this.getVersion(versionId);
     if (!ver) return { ok: false, error: 'P0002' };
     const def = this.getDefinition(ver.saga_id);
     if (!def) return { ok: false, error: 'P0002' };
-
-    let member = false;
-    let isGm = false;
-
-    if (def.origin === 'native' && ver.status === 'published') {
-      member = true;
-    } else if (actorOwnsSaga(actor, def.owner_user_id)) {
-      member = true;
-      isGm = true;
-    } else if (this.#actorIsActiveProjectMemberOrGm(actor.actorId, def.id)) {
-      member = true;
-    }
-
-    if (!member) return { ok: false, error: '42501' };
-
-    if (def.origin === 'native') {
-      isGm = this.#actorIsProjectGmOnSaga(actor.actorId, def.id);
-    } else if (!isGm) {
-      isGm = this.#actorIsProjectGmOnSaga(actor.actorId, def.id);
-    }
+    if (!access.allow) return { ok: false, error: '42501' };
 
     const rawPayload = parsePayload(ver.payload);
     return {
@@ -344,8 +304,8 @@ export class SagaDefinitionStore {
         versionId: ver.id,
         versionLabel: ver.version_label,
         status: ver.status,
-        payload: projectSagaDefinitionPayload(rawPayload, isGm),
-        isGmProjection: isGm,
+        payload: projectSagaDefinitionPayload(rawPayload, access.isGm),
+        isGmProjection: access.isGm,
       },
     };
   }

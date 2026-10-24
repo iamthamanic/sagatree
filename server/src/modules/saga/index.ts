@@ -8,9 +8,11 @@
  */
 import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
+import type { ProjectPorts } from '../project/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import {
   SagaDefinitionStore,
+  actorOwnsSaga,
   type SagaVersionReadVm,
 } from './internal/saga-definition-store.ts';
 
@@ -101,12 +103,40 @@ function requireActor(actor: Actor | null | undefined): actor is Actor {
   return Boolean(actor?.actorId);
 }
 
+function resolveVersionAccess(
+  actor: Actor,
+  store: SagaDefinitionStore,
+  project: ProjectPorts,
+  versionId: string,
+): { allow: boolean; isGm: boolean; error?: string } {
+  const ver = store.getVersion(versionId);
+  if (!ver) return { allow: false, isGm: false, error: 'P0002' };
+  const def = store.getDefinition(ver.saga_id);
+  if (!def) return { allow: false, isGm: false, error: 'P0002' };
+
+  const linked =
+    actor.kind === 'remote-account' ? actor.linkedSoloActorIds : undefined;
+  const ownerRef = { actorId: actor.actorId, linkedSoloActorIds: linked };
+
+  if (def.origin === 'native' && ver.status === 'published') {
+    return { allow: true, isGm: project.actorIsGmOnSaga(actor.actorId, def.id) };
+  }
+  if (actorOwnsSaga(ownerRef, def.owner_user_id)) {
+    return { allow: true, isGm: true };
+  }
+  if (project.actorHasAccessToSaga(actor.actorId, def.id)) {
+    return { allow: true, isGm: project.actorIsGmOnSaga(actor.actorId, def.id) };
+  }
+  return { allow: false, isGm: false, error: '42501' };
+}
+
 export function createSagaPorts(deps: {
   readonly db: HostDatabase;
   readonly authorize: AuthorizeFn;
+  readonly project: ProjectPorts;
 }): SagaPorts {
   const store = new SagaDefinitionStore(deps.db);
-  const { authorize } = deps;
+  const { authorize, project } = deps;
 
   return {
     moduleId: 'saga',
@@ -156,7 +186,9 @@ export function createSagaPorts(deps: {
       if (!decision.allow) {
         return { ok: false, error: decision.reason === 'saga-not-found' ? 'P0002' : '42501' };
       }
-      return store.getVersionRead(actor, versionId);
+      const access = resolveVersionAccess(actor, store, project, versionId);
+      if (access.error === 'P0002') return { ok: false, error: 'P0002' };
+      return store.getVersionRead(versionId, { allow: access.allow, isGm: access.isGm });
     },
 
     getNativeSagaDefinitionBySlug(actor, slug) {
@@ -169,7 +201,9 @@ export function createSagaPorts(deps: {
       if (!decision.allow) {
         return { ok: false, error: decision.reason === 'saga-not-found' ? 'P0002' : '42501' };
       }
-      return store.getVersionRead(actor, versionId);
+      const access = resolveVersionAccess(actor, store, project, versionId);
+      if (access.error === 'P0002') return { ok: false, error: 'P0002' };
+      return store.getVersionRead(versionId, { allow: access.allow, isGm: access.isGm });
     },
 
     seedNativeForTests(input) {

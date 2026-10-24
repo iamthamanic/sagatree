@@ -36,8 +36,10 @@ const publishCmd = pathToFileURL(
   join(root, 'server/src/application/commands/publish_saga_definition_version.ts'),
 ).href;
 
+const projectUrl = pathToFileURL(join(root, 'server/src/modules/project/index.ts')).href;
 const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { createPermissionsPorts } = await import(permissionsUrl);
+const { createProjectPorts } = await import(projectUrl);
 const { createSagaPorts } = await import(sagaUrl);
 const { create_user_saga_definition } = await import(createCmd);
 const { copy_native_saga_definition } = await import(copyCmd);
@@ -57,8 +59,11 @@ try {
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
   assert(boot.schemaVersion >= 7, `schema>=7 got ${boot.schemaVersion}`);
   const db = boot.db;
-  const permissions = createPermissionsPorts(db);
-  const saga = createSagaPorts({ db, authorize: permissions.authorize });
+  const project = createProjectPorts(db);
+  const permissions = createPermissionsPorts(db, {
+    actorHasAccessToSaga: project.actorHasAccessToSaga,
+  });
+  const saga = createSagaPorts({ db, authorize: permissions.authorize, project });
 
   const create = create_user_saga_definition(saga);
   const copy = copy_native_saga_definition(saga);
