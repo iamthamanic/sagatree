@@ -32,3 +32,11 @@ N/A — not a launch ticket.
 
 - Module: `server/src/migration/bundles`
 - Self-test: `scripts/mig-502-export-import-bundles.self-test.mjs`
+
+
+## Composition Gate
+
+- Verdict: CLEAR
+- Proof: `.qa/runs/composition-gate-stack-migration-mig-502.md`
+- HEAD_SHA: c834dacc85a926c87aea01118332b7a6c6ac27c7
+- Deferred integration: TBD by dependency successors: MIG-500/#841, MIG-503/#844, MIG-020/#795
