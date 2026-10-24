@@ -90,6 +90,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Kein unvollständiges Asset gilt als veröffentlicht; temporäre Dateien werden nachvollziehbar bereinigt und bestätigte Dateien bleiben erhalten.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/assets` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none (slice closed; feature verify via MIG-600/#845 + MIG-602/#847) |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #790 (MIG-011)

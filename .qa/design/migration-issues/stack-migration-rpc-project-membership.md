@@ -114,6 +114,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Änderung der Figur erfordert die eigene aktive Projektmitgliedschaft und verändert keine fremde Mitgliedschaft.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/application/project-membership/join_project_by_code/index.ts`, `server/src/application/project-membership/set_my_project_character/index.ts`, `server/src/modules/project/index.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-301..313 / MIG-311 session adapters as applicable |
+| **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #795 (MIG-020)

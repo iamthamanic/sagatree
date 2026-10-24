@@ -99,6 +99,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Presets/public catalog reads are preserved with current RLS; generated artifacts cannot resolve a foreign owner path.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `src/domains/character/avatar/animation-contract.ts`, `src/domains/character/avatar/asset-authoring-contract-v1.ts`, `src/domains/character/avatar/avatar-artifact-contract-v2.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-602 feature E2E |
+| **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #791 (MIG-012)

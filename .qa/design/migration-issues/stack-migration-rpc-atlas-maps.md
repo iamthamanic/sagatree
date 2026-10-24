@@ -123,6 +123,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] GeoJSON-FeatureCollection, 1.500.000-Byte-Limit und Revision-Konflikt sind mit echten SQL- und Decoder-Fixtures abgenommen.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/application/world-atlas/ensure_world_atlas_root/index.ts`, `server/src/application/world-atlas/list_world_atlas_maps/index.ts`, `server/src/application/world-atlas/get_world_atlas_map/index.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-301..313 / MIG-311 session adapters as applicable |
+| **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #795 (MIG-020)

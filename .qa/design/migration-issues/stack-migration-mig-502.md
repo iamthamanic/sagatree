@@ -90,6 +90,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Der neue Host besteht Owner-/Spieler-Negativtests und liefert dieselben fachlichen Prüfsummen ohne Zugriff auf die Originalinstanz.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/migration/bundles` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | TBD by dependency successors: MIG-500/#841, MIG-503/#844, MIG-020/#795 |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #841 (MIG-500)

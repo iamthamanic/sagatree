@@ -92,6 +92,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Host/DB/transport/browser integration tests for migrated stacks. |
+| **Acceptance tier** | `feature-e2e` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none for integration scope; cutover MIG-700/#849. |
+| **FEATURE VERIFIED** | self (FEATURE VERIFIED for covered journeys when suite PASS). |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #845 (MIG-600)

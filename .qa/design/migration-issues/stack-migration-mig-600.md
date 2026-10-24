@@ -92,6 +92,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Jede Zeile besitzt einen ausgeführten Positiv-/Negativfall oder einen offenen Blocker; ungetestete Fälle werden nicht als Parität ausgegeben.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Cross-cutting permission/security parity suite across migrated host surfaces. |
+| **Acceptance tier** | `feature-security` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | none for security parity scope; release still MIG-700 human gate. |
+| **FEATURE VERIFIED** | self (FEATURE VERIFIED for security parity when suite PASS). |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #796 (MIG-021)

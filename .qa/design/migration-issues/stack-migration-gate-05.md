@@ -90,6 +90,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Teilweise Smoke-Erfolge aktivieren keinen Desktop-Produktcode; MIG-703 benötigt die verlinkte menschliche GATE-05-Freigabe.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `.qa/evidence/stack-migration-prep/pocs/gate-05`, `.qa/design/gates/GATE-05-tauri-packaging.md` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-602/603 then MIG-703 platform qualification |
+| **FEATURE VERIFIED** | PoC evidence + owner decision register |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #847 (MIG-602)

@@ -120,6 +120,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Native Kopie erzeugt eigene Definition mit korrekten Draft-/Published-Versionen; Veröffentlichung überschreibt keine bestehende Version.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/application/saga-authoring/create_user_saga_definition/index.ts`, `server/src/application/saga-authoring/copy_native_saga_definition/index.ts`, `server/src/application/saga-authoring/get_saga_definition_editor/index.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-301..313 / MIG-311 session adapters as applicable |
+| **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #795 (MIG-020)

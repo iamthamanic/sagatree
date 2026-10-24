@@ -122,6 +122,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Trigger für kanonische Hierarchie, Primary-Link und Kartenabgleich sind Teil der Transaktion und der Nachfolger-Tests.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `server/src/application/world-places/list_world_places/index.ts`, `server/src/application/world-places/list_world_place_map_links/index.ts`, `server/src/application/world-places/upsert_world_place/index.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-301..313 / MIG-311 session adapters as applicable |
+| **FEATURE VERIFIED** | ATLAS-LIVE-E2E/#770 + MIG-602/#847 |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #795 (MIG-020)

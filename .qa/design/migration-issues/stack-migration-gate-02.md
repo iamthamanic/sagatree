@@ -91,6 +91,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Lokale Solo-Credentials werden nicht als Remote-Anmeldung akzeptiert; gemessene Varianten und offene Browser-/Plattformfälle stehen im ADR, dessen Freigabe menschlich bleibt.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `.qa/evidence/stack-migration-prep/pocs/gate-02`, `.qa/design/gates/GATE-02-better-auth-colyseus.md` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | MIG-014/020/021 cookie session paths |
+| **FEATURE VERIFIED** | PoC evidence + owner decision register |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #782 (MIG-001)

@@ -91,6 +91,16 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - [ ] Version, Schema-Kompatibilität und wiederhergestellte Prüfsummen sind belegt; der Bericht nennt gemessene Dauer und nötige Schreibsperre.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
+## Acceptance tiers
+
+| Tier | Owner / meaning |
+| --- | --- |
+| **SLICE DONE** | Isolated deliverable under `docs/ops/host`, `scripts/host-backup` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
+| **Deferred integration** | TBD by dependency successors: MIG-502/#843, MIG-503/#844, MIG-601/#846 |
+| **FEATURE VERIFIED** | self / MIG-700/#849 human release |
+| **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
+
 ## Blockers
 
 - Depends on #843 (MIG-502)
