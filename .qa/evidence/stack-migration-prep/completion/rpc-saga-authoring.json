@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SAGA-AUTHORING",
+  "result": "PASS",
+  "testedCommit": "084408c5f1d9ccebb662e3172789383819459209",
+  "githubClosed": true,
+  "mergeRef": "PR #936 → main (#871)",
+  "note": "Saga authoring ports: create/copy/editor/save/publish; owner+linked scope; native immutable; revision 40001; atomic txs.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-saga-authoring.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-authoring.md",
+      "sha256": "fd199108c888d47f9976d7713bb6a957bb8c69a532d3b9ea53d23ddbb6df526b"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-saga-authoring.md",
+      "sha256": "61eec7b5c329cea5db0c7eef255c15e9d9991fc9adc4dca179ff22be968a728c"
+    }
+  ]
+}

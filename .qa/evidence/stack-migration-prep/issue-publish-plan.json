@@ -309,11 +309,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-022",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-authoring.md",
-      "sha256": "65958e6fc0c593fbd17223448f84e41469de604f62fa82e7a1fda222a6e2a67d",
-      "payloadSha256": "2afc4fb31fe27a7abf69184af463aa3654ccf6e4405961bc3577556e339050e9"
+      "sha256": "2736e8674d682f8a26e63df289de2720d943494d4ae8c4b1c66843789b19e20e",
+      "payloadSha256": "e8ad500c99ec849f53fcf1db0add4ebce26387acee52009790ae6f578fca6a50"
     },
     {
       "localId": "RPC-SAGA-VERSION-READ",
@@ -323,12 +323,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-023",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-version-read.md",
-      "sha256": "055dbcbf09c12f51383955f5efcaa406a9ba8599ce14dae273a25747a0149ba2",
-      "payloadSha256": "902f881a1f2fe7663b52bab36735a2f545be222240fa6b27f40c209b923d1588"
+      "sha256": "74bb3defbc28fcce83c8605a0694a7c974fb2a8336268164748c380994533041",
+      "payloadSha256": "257edc68775fa1e86bce8726fa64852b676b44229f199df2b6ddce6f68fe1b04"
     },
     {
       "localId": "RPC-SAGA-PROVISION",

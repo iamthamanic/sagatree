@@ -27,7 +27,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 2,
-    "issuesBlockedOrNeedsDesign": 66,
+    "issuesBlockedOrNeedsDesign": 65,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -2789,7 +2789,7 @@
       "title": "Saga-Entwurf, Kopie und Veröffentlichung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-saga-authoring",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-authoring.md",
       "dependsOn": [
@@ -2951,9 +2951,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -2987,7 +2988,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-022",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -2996,7 +2997,7 @@
       "title": "Saga-Versionen und native Katalogprojektion",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-saga-version-read",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-version-read.md",
       "dependsOn": [
@@ -3218,8 +3219,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-023",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

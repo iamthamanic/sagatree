@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T16:45:25.141Z",
+  "generatedAt": "2026-10-24T19:26:06.812Z",
   "branch": "main",
-  "headSha": "9507fe534dc181e22104ebb56a05e218ac0916e4",
-  "headShaHint": "9507fe534dc1",
+  "headSha": "084408c5f1d9ccebb662e3172789383819459209",
+  "headShaHint": "084408c5f1d9",
   "meaning": "Evidence-based classification of all 90 Epic #773 child issues.",
   "counts": {
     "total": 90,
-    "done": 22,
+    "done": 23,
     "ready": 2,
-    "waiting": 26,
+    "waiting": 25,
     "blocked": 40,
     "needsDesign": 0
   },
@@ -254,6 +254,23 @@
       "blockerCount": 0
     },
     {
+      "localId": "RPC-SAGA-AUTHORING",
+      "githubIssue": 871,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0
+    },
+    {
       "localId": "MIG-306",
       "githubIssue": 805,
       "dependsOn": [
@@ -295,8 +312,8 @@
   ],
   "ready": [
     {
-      "localId": "RPC-SAGA-AUTHORING",
-      "githubIssue": 871,
+      "localId": "RPC-SAGA-VERSION-READ",
+      "githubIssue": 872,
       "dependsOn": [
         "MIG-020",
         "MIG-013",
@@ -304,7 +321,8 @@
         "MIG-024",
         "GATE-01",
         "GATE-02",
-        "GATE-04"
+        "GATE-04",
+        "RPC-SAGA-AUTHORING"
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
@@ -1550,8 +1568,8 @@
     }
   ],
   "notes": [
-    "MIG-501 DONE after PR #934 with completion/mig-501.json.",
-    "MIG-309 DONE after PR #931; MIG-306 DONE after PR #929.",
+    "RPC-SAGA-AUTHORING DONE after PR #936.",
+    "MIG-501 DONE after PR #934.",
     "SLICE DONE \u2260 FEATURE VERIFIED \u2260 RELEASE APPROVED."
   ],
   "validator": "scripts/stack-migration-prep-check.mjs"

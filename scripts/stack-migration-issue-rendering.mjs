@@ -21,6 +21,7 @@ function checksForTests(name, tests, sources) {
 export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInventory, splits }) {
   if (registry.repository !== migrationRepository || JSON.stringify(Object.entries(registry.issues).sort()) !== JSON.stringify(Object.entries(migrationIssueIdentities).sort())) throw new Error('Published registry differs from the reviewed 90 issue identities');
   const original = previous.issues.filter((issue) => !issue.localId.startsWith('RPC-'));
+  const previousByLocalId = new Map((previous.issues ?? []).map((issue) => [issue.localId, issue]));
   const byNumber = new Map(original.map((issue) => [issue.githubIssue, issue.localId]));
   const rpcByName = new Map(rpcInventory.rpcs.map((row) => [row.rpc, row]));
   const edgesByNumber = new Map();
@@ -30,7 +31,24 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     edgesByNumber.set(row.implementationIssue, list);
   }
   const infraByNumber = new Map(edgeInventory.infrastructure.map((row) => [row.implementationIssue, row]));
-  const all = [...original, ...splits.groups.map((group) => ({ localId: group.id, githubIssue: registry.issues[group.id], title: group.title, priority: 'P1', dependsOn: [] }))];
+  // Preserve prior RPC child status/completionEvidence — splits.groups alone has no DONE state.
+  const all = [
+    ...original,
+    ...splits.groups.map((group) => {
+      const prior = previousByLocalId.get(group.id) ?? {};
+      return {
+        localId: group.id,
+        githubIssue: registry.issues[group.id],
+        title: prior.title ?? group.title,
+        priority: prior.priority ?? 'P1',
+        dependsOn: [],
+        status: prior.status,
+        completionEvidence: prior.completionEvidence,
+        verification: prior.verification,
+        labels: prior.labels,
+      };
+    }),
+  ];
   if (all.length !== 90 || new Set(all.map((issue) => issue.localId)).size !== 90 || all.some((issue) => migrationIssueIdentities[issue.localId] !== issue.githubIssue)) throw new Error('Intake or split groups omit or replace a reviewed migration identity');
   const resolveDependencies = dependencyResolver({ issues: all, rpcGroups: splits.groups, edgeInventory });
   const issues = all.map((old) => {
