@@ -343,7 +343,43 @@ setInterval(() => {}, 60_000);
   );
   note('Fall 4 PASS: post-commit publisher fires only after successful COMMIT');
 
+  // --- Fall 4b: publisher throw must not fail a durable COMMIT ---
   reopened.db.close();
+  const throwOpen = openHostDatabase(dbPath);
+  assert(throwOpen.ok, 'reopen for publisher-throw case');
+  const throwPorts = createSessionPorts({
+    db: throwOpen.db,
+    onCommitted: () => {
+      throw new Error('publisher boom');
+    },
+  });
+  const beforeThrow = throwPorts.store.readSnapshot(gm.actorId, 'SE-A');
+  assert(beforeThrow.ok, 'snapshot before publisher throw');
+  const beforeThrowRev = beforeThrow.snapshot.revision;
+  const afterThrow = throwPorts.store.applyCommand(gm.actorId, {
+    sessionId: 'SE-A',
+    expectedRevision: beforeThrowRev,
+    idempotencyKey: 'k-publisher-throw',
+    op: { kind: 'status', payload: { status: 'active' } },
+  });
+  assert(afterThrow.ok === true && afterThrow.committed === true, 'publisher throw must not fail COMMIT');
+  const afterThrowSnap = throwPorts.store.readSnapshot(gm.actorId, 'SE-A');
+  assert(
+    afterThrowSnap.ok && afterThrowSnap.snapshot.revision === beforeThrowRev + 1,
+    'revision must advance despite publisher throw',
+  );
+  const replayAfterThrow = throwPorts.store.applyCommand(gm.actorId, {
+    sessionId: 'SE-A',
+    expectedRevision: beforeThrowRev,
+    idempotencyKey: 'k-publisher-throw',
+    op: { kind: 'status', payload: { status: 'active' } },
+  });
+  assert(
+    replayAfterThrow.ok === true && replayAfterThrow.committed === false,
+    'idempotent replay after publisher throw must not re-mutate',
+  );
+  throwOpen.db.close();
+  note('Fall 4b PASS: publisher exceptions do not reverse COMMIT or re-mutate');
 
   writeFileSync(
     join(root, '.qa/acceptance/stack-migration-mig-022.md'),

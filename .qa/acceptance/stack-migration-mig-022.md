@@ -6,4 +6,5 @@ Domain contract: status / roster / gameplay (src/domains/session/contracts/sessi
 - [x] Fall 2 PASS: replay / mismatch / domain status+roster+gameplay
 - [x] Fall 3 PASS: SIGKILL mid-tx leaves all four parts absent
 - [x] Fall 4 PASS: post-commit publisher fires only after successful COMMIT
+- [x] Fall 4b PASS: publisher exceptions do not reverse COMMIT or re-mutate
 - [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
