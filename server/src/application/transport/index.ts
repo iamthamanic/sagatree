@@ -11,6 +11,7 @@
 import { createHash } from 'node:crypto';
 import type { Actor } from '../../modules/identity/index.ts';
 import type { PermissionsPorts } from '../../modules/permissions/index.ts';
+import { projectValue, type ProjectionActor } from '../../projections/index.ts';
 
 /** Documented pipeline steps for HTTP command/query handling. */
 export const TRANSPORT_PIPELINE = ['validate', 'authorize', 'execute'] as const;
@@ -139,21 +140,24 @@ function idempotencyMapKey(sessionId: string, idempotencyKey: string): string {
   return `${sessionId}:${idempotencyKey}`;
 }
 
+/**
+ * Serialize via unified role projections (MIG-024). Client filters are not auth —
+ * gmNotes / secret keys are stripped before the HTTP response leaves the host.
+ */
 function projectFor(
   state: SessionRecord,
   role: 'gm' | 'player',
 ): TransportProjection {
-  const base: TransportProjection = {
+  const actor: ProjectionActor = { actorId: role, role };
+  const raw = {
     sessionId: state.sessionId,
     revision: state.revision,
     value: state.value,
     updatedAt: state.updatedAt,
     role,
+    gmNotes: state.gmNotes,
   };
-  if (role === 'gm') {
-    return { ...base, gmNotes: state.gmNotes };
-  }
-  return base;
+  return projectValue(raw, actor) as TransportProjection;
 }
 
 export function createTransportUseCase(deps: {
