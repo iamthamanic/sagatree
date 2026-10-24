@@ -1152,11 +1152,11 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-081",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-502.md",
-      "sha256": "cc6d579dc013775b8a7d66dae31e31b00ee229ac90fb05a871dd5650360508d6",
-      "payloadSha256": "64cb69fd78e1f8a203bc5d7c41ac34387d2e0923f756433ce0f6cd8028cd7599"
+      "sha256": "16f769799830a2c43a0fec777ce1f70d9478657f2af90f990d4853164f0362b3",
+      "payloadSha256": "e57d960ec5063a520bf18d3d9f11449789f531f977dc96a77e4f23de03d73835"
     },
     {
       "localId": "MIG-600",

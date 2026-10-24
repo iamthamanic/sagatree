@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 1,
+    "issuesReady": 0,
     "issuesBlockedOrNeedsDesign": 65,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -14945,7 +14945,7 @@
       "title": "Export/import versioned bundles + restore drills",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-502",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-502.md",
       "dependsOn": [
@@ -15026,9 +15026,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-502.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -15057,7 +15058,7 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-081",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

@@ -1,5 +1,5 @@
 # Stack migration readiness
 
-DONE 24 · READY 1
+DONE 25 · READY 0
 
-READY: MIG-502
+READY: (none)
