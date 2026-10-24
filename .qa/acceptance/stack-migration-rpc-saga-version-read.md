@@ -40,5 +40,5 @@ N/A — not a launch ticket.
 
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-stack-migration-rpc-saga-version-read.md`
-- HEAD_SHA: 60c66fd60b633c2bf5d9192f628b34789de7247f
+- HEAD_SHA: b8a1e6d09d0b651d39ffc09a9bb4ac8e651b7c10
 - Deferred integration: MIG-301..313 / MIG-311 session adapters as applicable
