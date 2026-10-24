@@ -1,32 +1,32 @@
 # Composition Gate — stack-migration-mig-022 (#797)
 
-- HEAD_SHA: afa4089caf4153ee1445f368ca3d1f3986cf6fed
-- BASE_SHA: 6ff844bbaea4ef58b7e8871bcdb008630a223b1d
-- Date: 2026-10-23
+- HEAD_SHA: 7eb5c2a69e92d512ef80944e5317763f8e10577d
+- BASE_SHA: ad68c8dfb95e6aaa911f9a8529eab9143a90e10d
+- Date: 2026-10-24
 - Verdict: CLEAR
 
 ## Event
 
-Authorized session command enters `application/session` → `modules/session` ports → SQLite `BEGIN IMMEDIATE` transaction that atomically updates domain-shaped `SessionRuntimeState` (status/roster/gameplay), appends `session_events`, and stores session-scoped `command_idempotency` bound to actor + operation fingerprint (`expectedRevision` excluded). Deny paths roll back with no partial persistence.
+Authorized session command enters `application/session` → `modules/session` ports → SQLite `BEGIN IMMEDIATE` atomic CAS. After successful COMMIT only, `onCommitted` publishes the durable event (ADR-ST-08 §8). Deny/replay/rollback paths never publish.
 
 ## Hop chain
 
 1. Producer: Host use-case → `SessionRuntimeUseCase.applyCommand`
-2. Authenticate/Authorize: Actor + `session_members.can_write` inside transaction (ADR-ST-08 §7)
-3. Validate domain `SessionEventKind` + payload → CAS on revision → mutate snapshot → append event → store idempotency
+2. Authenticate/Authorize: Actor + `session_members.can_write` inside transaction
+3. Validate domain kind/payload → CAS → mutate → append event row → store idempotency → COMMIT
 4. Consumer A: SQLite WAL single-writer
-5. Consumer B: Snapshot/query port reads authoritative rows only
+5. Consumer B: `onCommitted` publisher (post-commit only) + snapshot/query port
 
 ## Simulations
 
 ### N-actors
-Two worker-thread writers race the same `expectedRevision` on distinct connections: exactly one commits; the other receives `STALE_REVISION` or `DATABASE_BUSY`.
+Worker-thread writers race one revision: exactly one commit; conflict/busy for the other. Only the winner may publish.
 
 ### Invalid/missing
-Empty idempotency key → `INVALID_IDEMPOTENCY_KEY`. Non-member → `FORBIDDEN`. Payload/actor mismatch → `IDEMPOTENCY_MISMATCH`.
+Empty key / non-member / mismatch → no COMMIT → no publication.
 
 ### Two consumers / crash
-SIGKILL after BEGIN mid-write leaves revision/event/idempotency jointly absent after reopen.
+SIGKILL mid-TX leaves rows absent; publisher never runs for aborted work.
 
 ## Flags
 
