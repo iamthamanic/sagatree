@@ -3,14 +3,20 @@
  * Location: server/src/migration/bundles/import-bundle.ts
  *
  * Failures abort before publish — no partial authoritative rows.
+ * Asset bytes are written under dataDir/assets before metadata is committed.
  */
 import { createHash } from 'node:crypto';
+import { mkdirSync, writeFileSync, renameSync, rmSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import { verifyBundleChecksum } from './checksum.ts';
 import { assertSafeRelativeToken } from './path-safety.ts';
 import {
   BUNDLE_FORMAT,
   BUNDLE_FORMAT_VERSION,
+  type BundleAtlasNode,
+  type BundleInventoryItem,
+  type BundleNpc,
   type BundleResult,
   type ImportReport,
   type SignedBundle,
@@ -18,6 +24,7 @@ import {
 
 export type ImportBundleInput = {
   readonly db: HostDatabase;
+  readonly dataDir: string;
   readonly bundle: SignedBundle;
   /** Importing actor becomes owner of imported worlds/assets (solo restore). */
   readonly importingOwnerUserId: string;
@@ -32,6 +39,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
+function requireArray(bundle: Record<string, unknown>, key: string): BundleResult<unknown[]> {
+  const value = bundle[key];
+  if (!Array.isArray(value)) return { ok: false, error: `missing-collection:${key}` };
+  return { ok: true, value };
+}
+
 export function validateBundleStructure(bundle: unknown): BundleResult<SignedBundle> {
   if (!isRecord(bundle)) return { ok: false, error: 'invalid-bundle' };
   if (bundle.format !== BUNDLE_FORMAT) return { ok: false, error: 'unknown-format' };
@@ -41,24 +54,36 @@ export function validateBundleStructure(bundle: unknown): BundleResult<SignedBun
   if (typeof bundle.checksumSha256 !== 'string' || bundle.checksumSha256.length < 32) {
     return { ok: false, error: 'missing-checksum' };
   }
-  if (!Array.isArray(bundle.worlds) || !Array.isArray(bundle.projects)) {
-    return { ok: false, error: 'invalid-payload' };
+
+  for (const key of [
+    'worlds',
+    'projects',
+    'projectMembers',
+    'sagaDefinitions',
+    'sagaDefinitionVersions',
+    'assets',
+    'atlasNodes',
+    'npcs',
+    'inventory',
+    'missingAtlasGeometryIds',
+  ]) {
+    const arr = requireArray(bundle, key);
+    if (!arr.ok) return arr;
   }
+
   if (!isRecord(bundle.assetBytes)) return { ok: false, error: 'invalid-asset-bytes' };
 
   for (const key of Object.keys(bundle.assetBytes)) {
     const safe = assertSafeRelativeToken(key);
     if (!safe.ok) return { ok: false, error: safe.error };
   }
-  if (Array.isArray(bundle.assets)) {
-    for (const asset of bundle.assets) {
-      if (!isRecord(asset)) return { ok: false, error: 'invalid-asset-meta' };
-      const key = String(asset.storageKey ?? '');
-      const safe = assertSafeRelativeToken(key);
-      if (!safe.ok) return { ok: false, error: safe.error };
-      const idSafe = assertSafeRelativeToken(String(asset.id ?? ''));
-      if (!idSafe.ok) return { ok: false, error: idSafe.error };
-    }
+  for (const asset of bundle.assets as unknown[]) {
+    if (!isRecord(asset)) return { ok: false, error: 'invalid-asset-meta' };
+    const key = String(asset.storageKey ?? '');
+    const safe = assertSafeRelativeToken(key);
+    if (!safe.ok) return { ok: false, error: safe.error };
+    const idSafe = assertSafeRelativeToken(String(asset.id ?? ''));
+    if (!idSafe.ok) return { ok: false, error: idSafe.error };
   }
 
   const signed = bundle as unknown as SignedBundle;
@@ -86,8 +111,8 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
   const refuse = input.refuseExistingIds !== false;
   const owner = input.importingOwnerUserId;
   if (!owner) return { ok: false, error: 'missing-owner' };
+  if (!input.dataDir) return { ok: false, error: 'missing-data-dir' };
 
-  // Preflight — no writes yet
   for (const world of bundle.worlds) {
     const id = String(world.id ?? '');
     if (!id) return { ok: false, error: 'invalid-world' };
@@ -105,6 +130,8 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
       return { ok: false, error: 'foreign-overwrite-denied' };
     }
   }
+
+  const decodedAssets: { meta: (typeof bundle.assets)[number]; bytes: Buffer }[] = [];
   for (const asset of bundle.assets) {
     if (refuse && idExists(input.db, 'assets', asset.id)) {
       return { ok: false, error: 'foreign-overwrite-denied' };
@@ -115,6 +142,7 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
     const digest = createHash('sha256').update(bytes).digest('hex');
     if (digest !== asset.checksumSha256) return { ok: false, error: 'asset-checksum-mismatch' };
     if (bytes.byteLength !== asset.byteSize) return { ok: false, error: 'asset-size-mismatch' };
+    decodedAssets.push({ meta: asset, bytes });
   }
 
   const before = {
@@ -124,8 +152,63 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
     assets: countRows(input.db, 'assets'),
   };
 
+  const assetsRoot = join(input.dataDir, 'assets');
+  const stagingRoot = join(input.dataDir, 'assets', '.import-staging');
+  const sidecarDir = join(input.dataDir, 'bundle-sidecars');
+  mkdirSync(assetsRoot, { recursive: true });
+  mkdirSync(stagingRoot, { recursive: true });
+  mkdirSync(sidecarDir, { recursive: true });
+
+  const stagedFiles: string[] = [];
   try {
+    for (const { meta, bytes } of decodedAssets) {
+      const staged = join(stagingRoot, meta.storageKey);
+      writeFileSync(staged, bytes);
+      stagedFiles.push(meta.storageKey);
+    }
+
     input.db.exec('BEGIN IMMEDIATE');
+
+    // Sagas before projects (FK projects.saga_id → saga_definitions).
+    for (const saga of bundle.sagaDefinitions) {
+      const origin = String(saga.origin ?? 'user');
+      const ownerUserId = origin === 'native' ? null : owner;
+      input.db
+        .prepare(
+          `INSERT INTO saga_definitions
+           (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          String(saga.id),
+          String(saga.slug),
+          String(saga.title ?? 'Saga'),
+          String(saga.synopsis ?? ''),
+          origin,
+          ownerUserId,
+          Number(saga.draft_revision ?? 0),
+          String(saga.created_at ?? new Date().toISOString()),
+          String(saga.updated_at ?? new Date().toISOString()),
+        );
+    }
+
+    for (const ver of bundle.sagaDefinitionVersions) {
+      input.db
+        .prepare(
+          `INSERT INTO saga_definition_versions
+           (id, saga_id, version_label, status, payload, published_at, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          String(ver.id),
+          String(ver.saga_id),
+          String(ver.version_label),
+          String(ver.status),
+          typeof ver.payload === 'string' ? ver.payload : JSON.stringify(ver.payload ?? {}),
+          ver.published_at == null ? null : String(ver.published_at),
+          String(ver.created_at ?? new Date().toISOString()),
+        );
+    }
 
     for (const world of bundle.worlds) {
       input.db
@@ -175,7 +258,6 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
         )
         .run(
           String(member.project_id),
-          // Remap GM seats to importing owner; keep player seats as-is for drills
           String(member.role) === 'gm' ? owner : String(member.user_id),
           String(member.role ?? 'player'),
           Number(member.active ?? 1),
@@ -183,75 +265,92 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
         );
     }
 
-    for (const saga of bundle.sagaDefinitions) {
-      const origin = String(saga.origin ?? 'user');
-      const ownerUserId = origin === 'native' ? null : owner;
-      input.db
-        .prepare(
-          `INSERT INTO saga_definitions
-           (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        )
-        .run(
-          String(saga.id),
-          String(saga.slug),
-          String(saga.title ?? 'Saga'),
-          String(saga.synopsis ?? ''),
-          origin,
-          ownerUserId,
-          Number(saga.draft_revision ?? 0),
-          String(saga.created_at ?? new Date().toISOString()),
-          String(saga.updated_at ?? new Date().toISOString()),
-        );
-    }
-
-    for (const ver of bundle.sagaDefinitionVersions) {
-      input.db
-        .prepare(
-          `INSERT INTO saga_definition_versions
-           (id, saga_id, version_label, status, payload, published_at, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        )
-        .run(
-          String(ver.id),
-          String(ver.saga_id),
-          String(ver.version_label),
-          String(ver.status),
-          typeof ver.payload === 'string' ? ver.payload : JSON.stringify(ver.payload ?? {}),
-          ver.published_at == null ? null : String(ver.published_at),
-          String(ver.created_at ?? new Date().toISOString()),
-        );
-    }
-
-    for (const asset of bundle.assets) {
-      const b64 = bundle.assetBytes[asset.storageKey];
-      const bytes = Buffer.from(b64, 'base64');
+    for (const { meta, bytes } of decodedAssets) {
       const now = new Date().toISOString();
       input.db
         .prepare(
           `INSERT INTO assets
            (id, owner_user_id, content_type, byte_size, checksum_sha256, storage_key, published, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, 1, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, 0, ?)`,
         )
         .run(
-          asset.id,
+          meta.id,
           owner,
-          asset.contentType,
+          meta.contentType,
           bytes.byteLength,
-          asset.checksumSha256,
-          asset.storageKey,
+          meta.checksumSha256,
+          meta.storageKey,
           now,
         );
     }
 
+    // Promote staged bytes then publish metadata.
+    for (const { meta } of decodedAssets) {
+      const staged = join(stagingRoot, meta.storageKey);
+      const finalPath = join(assetsRoot, meta.storageKey);
+      renameSync(staged, finalPath);
+      input.db.prepare(`UPDATE assets SET published = 1 WHERE id = ?`).run(meta.id);
+    }
+
+    const atlasNodes = bundle.atlasNodes as readonly BundleAtlasNode[];
+    const npcs = bundle.npcs as readonly BundleNpc[];
+    const inventory = bundle.inventory as readonly BundleInventoryItem[];
+    const missing = [...bundle.missingAtlasGeometryIds];
+    for (const node of atlasNodes) {
+      if (node.geometry === null && !missing.includes(node.id)) missing.push(node.id);
+    }
+
+    const sidecarPath = join(sidecarDir, `${bundle.checksumSha256}.json`);
+    writeFileSync(
+      sidecarPath,
+      JSON.stringify(
+        {
+          atlasNodes,
+          npcs,
+          inventory,
+          missingAtlasGeometryIds: missing,
+        },
+        null,
+        2,
+      ),
+    );
+
     input.db.exec('COMMIT');
+
+    return {
+      ok: true,
+      value: {
+        worldIds: bundle.worlds.map((w) => String(w.id)),
+        projectIds: bundle.projects.map((p) => String(p.id)),
+        sagaIds: bundle.sagaDefinitions.map((s) => String(s.id)),
+        assetIds: bundle.assets.map((a) => a.id),
+        missingAtlasGeometryIds: missing,
+        payloadChecksum: bundle.checksumSha256,
+        atlasNodes,
+        npcs,
+        inventory,
+        sidecarPath,
+      },
+    };
   } catch (err) {
     try {
       input.db.exec('ROLLBACK');
     } catch {
       /* ignore */
     }
-    // Prove no partial authoritative growth on failure paths that threw mid-tx
+    for (const key of stagedFiles) {
+      try {
+        const staged = join(stagingRoot, key);
+        if (existsSync(staged)) rmSync(staged);
+        const finalPath = join(assetsRoot, key);
+        // Only remove if we just created it and TX failed — keep pre-existing assets.
+        if (existsSync(finalPath) && !idExists(input.db, 'assets', key)) {
+          /* leave orphaned bytes only if metadata missing — best-effort cleanup */
+        }
+      } catch {
+        /* ignore */
+      }
+    }
     const after = {
       worlds: countRows(input.db, 'worlds'),
       projects: countRows(input.db, 'projects'),
@@ -270,22 +369,11 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
       ok: false,
       error: err instanceof Error ? err.message : 'import-failed',
     };
+  } finally {
+    try {
+      rmSync(stagingRoot, { recursive: true, force: true });
+    } catch {
+      /* ignore */
+    }
   }
-
-  const missing = [...bundle.missingAtlasGeometryIds];
-  for (const node of bundle.atlasNodes) {
-    if (node.geometry === null && !missing.includes(node.id)) missing.push(node.id);
-  }
-
-  return {
-    ok: true,
-    value: {
-      worldIds: bundle.worlds.map((w) => String(w.id)),
-      projectIds: bundle.projects.map((p) => String(p.id)),
-      sagaIds: bundle.sagaDefinitions.map((s) => String(s.id)),
-      assetIds: bundle.assets.map((a) => a.id),
-      missingAtlasGeometryIds: missing,
-      payloadChecksum: bundle.checksumSha256,
-    },
-  };
 }

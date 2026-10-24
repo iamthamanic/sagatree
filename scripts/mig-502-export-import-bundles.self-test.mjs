@@ -4,7 +4,7 @@
  * Location: scripts/mig-502-export-import-bundles.self-test.mjs
  */
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -40,7 +40,7 @@ function boot(label) {
     migrationsDir: join(root, 'server/migrations'),
   });
   assert(result.ok, `bootstrap ${label}: ${result.ok ? '' : result.error}`);
-  return { work, db: result.db };
+  return { work, dataDir, db: result.db };
 }
 
 const OWNER = 'owner-o';
@@ -119,17 +119,23 @@ try {
 
   const imported = importHostBundle({
     db: target.db,
+    dataDir: target.dataDir,
     bundle: exported.value,
     importingOwnerUserId: RESTORE,
   });
   assert(imported.ok, `import: ${imported.ok ? '' : imported.error}`);
   assert(imported.value.missingAtlasGeometryIds.includes('place-2'), 'import reports missing');
+  assert(imported.value.npcs[0]?.publicId === 'NPCC-1', 'npc restored in report');
+  assert(imported.value.inventory[0]?.publicId === 'IT-1', 'inventory restored in report');
+  assert(existsSync(join(target.dataDir, 'assets', assetId)), 'asset bytes on disk');
+  assert(readFileSync(join(target.dataDir, 'assets', assetId)).equals(bytes), 'asset bytes match');
   const restoredWorld = target.db.prepare(`SELECT owner_user_id FROM worlds WHERE id = ?`).get(worldId);
   assert(restoredWorld.owner_user_id === RESTORE, 'owner remapped on restore');
   const restoredAsset = target.db
-    .prepare(`SELECT checksum_sha256 FROM assets WHERE id = ?`)
+    .prepare(`SELECT checksum_sha256, published FROM assets WHERE id = ?`)
     .get(assetId);
   assert(restoredAsset.checksum_sha256 === checksum, 'asset hash preserved');
+  assert(restoredAsset.published === 1, 'asset published after bytes');
 
   // --- Fall 2: bad version / traversal / checksum abort with no partial data ---
   const badVersion = { ...exported.value, formatVersion: 999 };
@@ -163,6 +169,7 @@ try {
   const beforePoison = poison.db.prepare(`SELECT COUNT(*) AS c FROM worlds`).get().c;
   const badImport = importHostBundle({
     db: poison.db,
+    dataDir: poison.dataDir,
     bundle: tampered,
     importingOwnerUserId: RESTORE,
   });
@@ -173,10 +180,29 @@ try {
   // Foreign overwrite denied
   const overwrite = importHostBundle({
     db: target.db,
+    dataDir: target.dataDir,
     bundle: exported.value,
     importingOwnerUserId: STRANGER,
   });
   assert(!overwrite.ok && overwrite.error === 'foreign-overwrite-denied', `overwrite: ${overwrite.error}`);
+
+  // NPC from foreign world filtered out of export
+  const foreignNpc = {
+    id: 'npc-x',
+    publicId: 'NPCC-X',
+    worldId: randomUUID(),
+    displayName: 'Leak',
+  };
+  const filtered = exportHostBundle({
+    db,
+    ownerUserId: OWNER,
+    assetBytesById,
+    atlasNodes,
+    npcs: [...npcs, foreignNpc],
+    inventory,
+  });
+  assert(filtered.ok, 'filter export');
+  assert(!filtered.value.npcs.some((n) => n.id === 'npc-x'), 'foreign NPC filtered');
 
   // --- Fall 3: restore drill on empty host — ownership negatives + checksums ---
   const fresh = boot('fresh');
@@ -184,6 +210,7 @@ try {
     const drill = runRestoreDrill({
       sourceDb: db,
       targetDb: fresh.db,
+      targetDataDir: fresh.dataDir,
       sourceOwnerUserId: OWNER,
       restoreOwnerUserId: RESTORE,
       strangerUserId: STRANGER,
@@ -195,11 +222,12 @@ try {
     assert(drill.ok, `drill: ${drill.ok ? '' : drill.error}`);
     assert(drill.value.ownerWorldCount === 1, 'owner worlds');
     assert(drill.value.strangerWorldCount === 0, 'stranger owns nothing');
+    assert(drill.value.strangerProjectMembershipCount === 0, 'stranger not a member');
+    assert(drill.value.npcCount === 1 && drill.value.inventoryCount === 1, 'domain collections');
     assert(
       typeof drill.value.payloadChecksum === 'string' && drill.value.payloadChecksum.length === 64,
       'payload checksum present',
     );
-    // Fresh export gets a new exportedAt — drill still verifies import of that signed payload.
     assert(drill.value.missingAtlasGeometryIds.includes('place-2'), 'drill missing geometry');
     assert(typeof drill.value.worldChecksum === 'string' && drill.value.worldChecksum.length === 64, 'world checksum');
     assert(BUNDLE_FORMAT_VERSION === 1, 'format version pinned');

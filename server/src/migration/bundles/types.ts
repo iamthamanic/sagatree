@@ -73,4 +73,9 @@ export type ImportReport = {
   readonly assetIds: readonly string[];
   readonly missingAtlasGeometryIds: readonly string[];
   readonly payloadChecksum: string;
+  readonly atlasNodes: readonly BundleAtlasNode[];
+  readonly npcs: readonly BundleNpc[];
+  readonly inventory: readonly BundleInventoryItem[];
+  /** Sidecar JSON under dataDir recording domain collections (no invented geometry). */
+  readonly sidecarPath: string;
 };

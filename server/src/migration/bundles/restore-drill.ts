@@ -11,13 +11,14 @@ import type { BundleAtlasNode, BundleInventoryItem, BundleNpc, BundleResult } fr
 export type RestoreDrillInput = {
   readonly sourceDb: HostDatabase;
   readonly targetDb: HostDatabase;
+  readonly targetDataDir: string;
   readonly sourceOwnerUserId: string;
   readonly restoreOwnerUserId: string;
   readonly assetBytesById: ReadonlyMap<string, Uint8Array>;
   readonly atlasNodes?: readonly BundleAtlasNode[];
   readonly npcs?: readonly BundleNpc[];
   readonly inventory?: readonly BundleInventoryItem[];
-  /** Foreign actor for negative ownership checks on the restored host. */
+  /** Foreign actor for negative ownership/membership checks on the restored host. */
   readonly strangerUserId: string;
 };
 
@@ -28,6 +29,11 @@ export type RestoreDrillReport = {
   readonly missingAtlasGeometryIds: readonly string[];
   readonly strangerWorldCount: number;
   readonly ownerWorldCount: number;
+  /** Active project memberships for stranger (must be 0 for negative drill). */
+  readonly strangerProjectMembershipCount: number;
+  readonly npcCount: number;
+  readonly inventoryCount: number;
+  readonly sidecarPath: string;
 };
 
 export function runRestoreDrill(input: RestoreDrillInput): BundleResult<RestoreDrillReport> {
@@ -43,6 +49,7 @@ export function runRestoreDrill(input: RestoreDrillInput): BundleResult<RestoreD
 
   const imported = importHostBundle({
     db: input.targetDb,
+    dataDir: input.targetDataDir,
     bundle: exported.value,
     importingOwnerUserId: input.restoreOwnerUserId,
     refuseExistingIds: true,
@@ -58,6 +65,13 @@ export function runRestoreDrill(input: RestoreDrillInput): BundleResult<RestoreD
 
   const ownerWorldCount = worlds.filter((w) => w.owner_user_id === input.restoreOwnerUserId).length;
   const strangerWorldCount = worlds.filter((w) => w.owner_user_id === input.strangerUserId).length;
+  const strangerProjectMembershipCount = (
+    input.targetDb
+      .prepare(
+        `SELECT COUNT(*) AS c FROM project_members WHERE user_id = ? AND active = 1`,
+      )
+      .get(input.strangerUserId) as { c: number }
+  ).c;
 
   return {
     ok: true,
@@ -68,6 +82,10 @@ export function runRestoreDrill(input: RestoreDrillInput): BundleResult<RestoreD
       missingAtlasGeometryIds: imported.value.missingAtlasGeometryIds,
       strangerWorldCount,
       ownerWorldCount,
+      strangerProjectMembershipCount,
+      npcCount: imported.value.npcs.length,
+      inventoryCount: imported.value.inventory.length,
+      sidecarPath: imported.value.sidecarPath,
     },
   };
 }

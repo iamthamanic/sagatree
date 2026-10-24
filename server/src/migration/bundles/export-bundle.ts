@@ -97,6 +97,9 @@ export function exportHostBundle(input: ExportBundleInput): BundleResult<SignedB
   const missingAtlasGeometryIds = atlasNodes
     .filter((n) => n.geometry === null)
     .map((n) => n.id);
+  const worldIdSet = new Set(worldIds);
+  const npcs = (input.npcs ?? []).filter((n) => worldIdSet.has(n.worldId));
+  const inventory = input.inventory ?? [];
 
   const payload: BundlePayload = {
     format: BUNDLE_FORMAT,
@@ -111,8 +114,8 @@ export function exportHostBundle(input: ExportBundleInput): BundleResult<SignedB
     assets,
     assetBytes,
     atlasNodes,
-    npcs: input.npcs ?? [],
-    inventory: input.inventory ?? [],
+    npcs,
+    inventory,
     missingAtlasGeometryIds,
   };
 
