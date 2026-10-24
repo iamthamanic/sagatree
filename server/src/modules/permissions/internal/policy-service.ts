@@ -33,6 +33,7 @@ export type PolicyResource = {
   readonly projectId?: string;
   readonly sessionId?: string;
   readonly assetId?: string;
+  readonly rulesetId?: string;
 };
 
 export type PolicyDecision = {
@@ -49,12 +50,20 @@ export type PolicyOp =
   | 'player.project.read'
   | 'asset.publish'
   | 'asset.read'
+  | 'ruleset.read'
+  | 'ruleset.write'
   | string;
 
 type WorldRow = { id: string; owner_user_id: string };
 type ProjectRow = { id: string; world_id: string; gm_user_id: string };
 type MemberRow = { project_id: string; user_id: string; role: string; active: number };
 type AssetRow = { id: string; owner_user_id: string; published: number };
+type RulesetRow = {
+  id: string;
+  creator_user_id: string | null;
+  is_official: number;
+  is_public: number;
+};
 
 function deny(reason: string): PolicyDecision {
   return { allow: false, reason };
@@ -95,9 +104,48 @@ export class PolicyService {
         return allow('asset-owner-publish');
       case 'asset.read':
         return this.#authorizeAssetOwner(actor, resource);
+      case 'ruleset.read':
+        return this.#authorizeRulesetRead(actor, resource);
+      case 'ruleset.write':
+        return this.#authorizeRulesetWrite(actor, resource);
       default:
         return deny('unknown-operation');
     }
+  }
+
+  #authorizeRulesetRead(actor: PolicyActor, resource: PolicyResource): PolicyDecision {
+    const rulesetId = resource.rulesetId?.trim();
+    if (!rulesetId) {
+      // List/catalog read: any authenticated actor may load public/official + own customs.
+      return allow('ruleset-catalog-read');
+    }
+    const row = this.#db!.prepare(
+      `SELECT id, creator_user_id, is_official, is_public FROM rulesets WHERE id = ?`,
+    ).get(rulesetId) as RulesetRow | undefined;
+    if (!row) return deny('ruleset-not-found');
+    if (row.is_official === 1 || row.is_public === 1) return allow('ruleset-public-read');
+    if (row.creator_user_id && actorMatchesOwner(actor, row.creator_user_id)) {
+      return allow('ruleset-owner-read');
+    }
+    return deny('not-ruleset-owner');
+  }
+
+  #authorizeRulesetWrite(actor: PolicyActor, resource: PolicyResource): PolicyDecision {
+    const rulesetId = resource.rulesetId?.trim();
+    if (!rulesetId) {
+      // Create custom: authenticated actor becomes owner.
+      return allow('ruleset-owner-create');
+    }
+    const row = this.#db!.prepare(
+      `SELECT id, creator_user_id, is_official, is_public FROM rulesets WHERE id = ?`,
+    ).get(rulesetId) as RulesetRow | undefined;
+    if (!row) return deny('ruleset-not-found');
+    if (row.is_official === 1) return deny('official-immutable');
+    if (!row.creator_user_id) return deny('not-ruleset-owner');
+    if (!actorMatchesOwner(actor, row.creator_user_id)) {
+      return denyForOwnerMismatch(actor, row.creator_user_id, 'not-ruleset-owner');
+    }
+    return allow('ruleset-owner-write');
   }
 
   #authorizeAssetOwner(actor: PolicyActor, resource: PolicyResource): PolicyDecision {

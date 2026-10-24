@@ -26,6 +26,11 @@ import {
   type AssetPorts,
 } from '../assets/index.ts';
 import { createMediaPorts, type MediaPorts } from '../modules/media/index.ts';
+import {
+  createRulesetPorts,
+  createRulesetPortsStub,
+  type RulesetPorts,
+} from '../modules/rulesets/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -52,6 +57,8 @@ export type HostInstance = {
   readonly assets: AssetPorts;
   /** MIG-306 media policy ports (browser engines stay client-side). */
   readonly media: MediaPorts;
+  /** MIG-309 ruleset catalog ports. */
+  readonly rulesets: RulesetPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
   readonly getAuth: () => HostBetterAuth | null;
   start: () => Promise<void>;
@@ -121,6 +128,9 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       : createAssetPortsStub();
     // Media owns asset-table policy surface; codecs remain in browser optimizer (infra-media).
     const media = createMediaPorts();
+    const rulesets: RulesetPorts = db
+      ? createRulesetPorts({ db, authorize: permissions.authorize })
+      : createRulesetPortsStub();
     createProjectPorts();
     const ops = createOpsPorts({
       isReady: () => ready,
@@ -232,6 +242,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       world,
       assets,
       media,
+      rulesets,
       getAuth: () => betterAuth,
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
