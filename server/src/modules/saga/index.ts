@@ -1,18 +1,24 @@
 /**
- * Saga module public API — definition authoring ports (RPC-SAGA-AUTHORING / #871).
+ * Saga module public API — definition authoring + version/native catalog reads.
  * Location: server/src/modules/saga/index.ts
  *
  * Owner-scoped drafts/publishes; native definitions are immutable. Client roles
  * never elevate. Revision conflicts return SQLSTATE-shaped `40001`.
+ * Version reads (#872) project GM vs player payloads via host helper.
  */
 import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
-import { SagaDefinitionStore } from './internal/saga-definition-store.ts';
+import {
+  SagaDefinitionStore,
+  type SagaVersionReadVm,
+} from './internal/saga-definition-store.ts';
 
 export type SagaResult<T> =
   | { readonly ok: true; readonly value: T }
   | { readonly ok: false; readonly error: string };
+
+export type { SagaVersionReadVm };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
 
@@ -65,12 +71,28 @@ export type SagaPorts = {
     versionLabel: string;
     revision: number;
   }>;
+  readonly getSagaDefinitionVersion: (
+    actor: Actor,
+    versionId: string,
+  ) => SagaResult<SagaVersionReadVm>;
+  readonly getNativeSagaDefinitionBySlug: (
+    actor: Actor,
+    slug: string,
+  ) => SagaResult<SagaVersionReadVm>;
   /** Test helper — seed immutable native saga with published version. */
   readonly seedNativeForTests: (input: {
     readonly id?: string;
+    readonly slug?: string;
     readonly title: string;
     readonly synopsis?: string;
-  }) => { sagaId: string; versionId: string };
+    readonly payload?: Record<string, unknown>;
+  }) => { sagaId: string; versionId: string; slug: string };
+  readonly seedPublishedVersionForTests: (input: {
+    readonly sagaId: string;
+    readonly versionLabel: string;
+    readonly payload?: Record<string, unknown>;
+    readonly publishedAt?: string;
+  }) => string;
   readonly countDraftsForTests: (sagaId: string) => number;
   readonly countPublishedForTests: (sagaId: string) => number;
 };
@@ -126,8 +148,36 @@ export function createSagaPorts(deps: {
       return store.publish(actor, sagaId, expectedRevision);
     },
 
+    getSagaDefinitionVersion(actor, versionId) {
+      if (!requireActor(actor)) return { ok: false, error: '42501' };
+      const ver = store.getVersion(versionId);
+      if (!ver) return { ok: false, error: 'P0002' };
+      const decision = authorize('saga.read', actor, { sagaId: ver.saga_id });
+      if (!decision.allow) {
+        return { ok: false, error: decision.reason === 'saga-not-found' ? 'P0002' : '42501' };
+      }
+      return store.getVersionRead(actor, versionId);
+    },
+
+    getNativeSagaDefinitionBySlug(actor, slug) {
+      if (!requireActor(actor)) return { ok: false, error: '42501' };
+      const versionId = store.findLatestPublishedNativeVersionIdBySlug(slug);
+      if (!versionId) return { ok: false, error: 'P0002' };
+      const ver = store.getVersion(versionId);
+      if (!ver) return { ok: false, error: 'P0002' };
+      const decision = authorize('saga.read', actor, { sagaId: ver.saga_id });
+      if (!decision.allow) {
+        return { ok: false, error: decision.reason === 'saga-not-found' ? 'P0002' : '42501' };
+      }
+      return store.getVersionRead(actor, versionId);
+    },
+
     seedNativeForTests(input) {
       return store.seedNative(input);
+    },
+
+    seedPublishedVersionForTests(input) {
+      return store.seedPublishedVersion(input);
     },
 
     countDraftsForTests(sagaId) {
@@ -149,7 +199,10 @@ export function createSagaPortsStub(): SagaPorts {
     getSagaDefinitionEditor: () => deny(),
     saveSagaDefinitionDraft: () => deny(),
     publishSagaDefinitionVersion: () => deny(),
-    seedNativeForTests: () => ({ sagaId: '', versionId: '' }),
+    getSagaDefinitionVersion: () => deny(),
+    getNativeSagaDefinitionBySlug: () => deny(),
+    seedNativeForTests: () => ({ sagaId: '', versionId: '', slug: '' }),
+    seedPublishedVersionForTests: () => '',
     countDraftsForTests: () => 0,
     countPublishedForTests: () => 0,
   };
