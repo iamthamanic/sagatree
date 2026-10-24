@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-021",
+  "result": "PASS",
+  "testedCommit": "7eb4f6b237a6489beea5ebb4d4e6c3af72643ae1",
+  "githubClosed": true,
+  "mergeRef": "PR #926 → main (#796)",
+  "note": "Authoritative can_write roles; createHost HTTP join/resync; onCommitted fan-out with membership recheck; tip snapshot omits folded deltas; revoke/demote negatives.",
+  "checks": [
+    {
+      "command": "node scripts/mig-021-realtime-rooms.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-021.md",
+      "sha256": "9592d9ca0847ab5469fea77965b19ac03f1fc3d31d951d127764aa62b4db823f"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-021.md",
+      "sha256": "33a5dcc0450de00c775f13d93136211a600705db145c9550f8ed071f5f88ddf0"
+    }
+  ]
+}

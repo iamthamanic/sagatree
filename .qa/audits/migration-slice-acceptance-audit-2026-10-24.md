@@ -3,7 +3,7 @@
 Date: 2026-10-24  
 Epic: https://github.com/iamthamanic/sagatree/issues/773  
 Audit branch: `audit/migration-slice-acceptance-20261024`  
-Verified against: `origin/main` @ `5c94e0f8` (post PR #925)
+Verified against: `origin/main` @ `7eb4f6b2` (post PR #926 MIG-021)
 
 ## Decision (binding)
 
@@ -21,7 +21,7 @@ Keep the **90 canonical issue identities**. Never equate:
 - User-requested pause recorded in `/tmp/ecc-runner-loop-773-handoff.md` (`paused: true`, `pauseReason: user-requested-full-migration-audit`).
 - No new migration tickets claimed.
 - PR #925 **MERGED**.
-- PR #926 remains **draft** until Phase 6 re-verification (P1 triad addressed on head `3850da0d`; Browser E2E must finish; undraft only after ECC PASS on current head).
+- PR #926 **MERGED** after Phase 6 (P1 triad + fan-out recheck + tip-delta omit; ECC PASS; Browser E2E PASS).
 
 ## Phase 1 — Full 90-contract audit (COMPLETE)
 
@@ -120,3 +120,33 @@ See PR description / final report after merge of this audit branch and #926.
 - `npm run check:stack-migration-prep` → PASS
 - `node scripts/composition-gate.self-test.mjs` → PASS
 - Local `ECC_MERGE_GATE_PR=926` → PASS (0 unresolved P1/P2)
+
+
+## Phase 6 — Open migration PRs (COMPLETE)
+
+| PR | Result |
+| --- | --- |
+| #925 MIG-024 evidence | MERGED earlier (`5c94e0f8`) |
+| #927 Audit + acceptance tiers | MERGED (`acd79215`) |
+| #926 MIG-021 realtime rooms | MERGED (`7eb4f6b2`) after P1 fixes (authoritative roles, host mount, fan-out, membership recheck, tip-delta omit) |
+
+## Phase 7 — Audit correction PR (COMPLETE)
+
+- Coverage matrix + contract repairs shipped in #927.
+- Composition CLEAR honesty: Acceptance tier **and** Deferred integration required independently.
+- Renderer empty-path fix + matrix-backed deferred owners.
+
+## Phase 8 — Runner resume
+
+Resume criteria met after MIG-021 DONE evidence lands. Next READY by topology (post-021 DONE).
+
+## Phase 9 — Closing counts (pre-evidence sync)
+
+| Metric | Value |
+| --- | ---: |
+| Issues audited | 90 |
+| Contracts structurally OK / ownership mapped | 90 |
+| New issues created | 0 |
+| Audit PR | #927 |
+| MIG-021 ship PR | #926 |
+| Human approvals still required | Cutover / Supabase shutdown / GATE-05 platform qualification |
