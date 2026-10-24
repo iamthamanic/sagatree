@@ -6,13 +6,13 @@
   "testedCommit": "12583684993bcc38299998295662c786f09b2e53",
   "githubClosed": false,
   "mergeRef": "PR #906 PoC remediaiton on main; human APPROVED Variant A on #785; ADR on PR #908",
-  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 \u2014 architecture freigabe alone does not accept those tickets.",
+  "note": "Gate PoC executed+PASS and human architecture APPROVED. Product auth implementation remains MIG-014/015 — architecture freigabe alone does not accept those tickets.",
   "checks": [
     {
       "command": "PoC report PASS",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/pocs/gate-02/report.json",
-      "sha256": "34798d8c526dfd347ea35aaefc97e34651909a4a2b520731ca138f40d95b0b5b"
+      "sha256": "1cd0cfd970149dc96f42b426b3ff76630a10d4e81133f05fa7e86ba4db16d57c"
     },
     {
       "command": "ADR-ST-06",
