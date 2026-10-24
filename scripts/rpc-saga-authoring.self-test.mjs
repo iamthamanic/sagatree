@@ -144,14 +144,18 @@ try {
   const badCopy = copy(O, created.value.sagaId);
   assert(!badCopy.ok && badCopy.error === '22023', 'only native copyable');
 
-  // Linked solo ownership (MIG-015): remote actor with linkedSoloActorIds may edit
+  // Linked solo ownership (MIG-015): remote-account with linkedSoloActorIds may edit
+  const soloOwned = create(O, 'Linked Saga', '');
+  assert(soloOwned.ok, 'solo owned create');
   const linked = {
-    kind: 'remote',
+    kind: 'remote-account',
     actorId: 'remote-r',
+    sessionId: 'sess-1',
+    email: null,
     linkedSoloActorIds: ['owner-o'],
   };
-  const linkedEd = editor(linked, created.value.sagaId);
-  assert(linkedEd.ok && linkedEd.value.canEdit === true, 'linked solo can edit');
+  const linkedEd = editor(linked, soloOwned.value.sagaId);
+  assert(linkedEd.ok && linkedEd.value.canEdit === true, `linked solo can edit: ${linkedEd.ok ? '' : linkedEd.error}`);
 
   db.close();
   console.log('PASS rpc-saga-authoring.self-test');
