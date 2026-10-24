@@ -43,14 +43,14 @@ Keep the **90 canonical issue identities**. Never equate:
 | Frontend RPCs | 57 | 57 owned (no orphans) |
 | Edge functions | 25 | each has `implementationIssue` |
 | Infra areas | 13 | mapped in legacy-target-matrix |
-| DONE + completion evidence | 18 | all PASS with checks |
+| DONE + completion evidence | 19 | all PASS with hashed checks (incl. MIG-021 after #926/#928) |
 | READY with incomplete preds | 0 | — |
 
 ### Status histogram (intake)
 
-DONE 18 · READY 6 · WAITING 26 · BLOCKED 40 · needs-design 0
+DONE 19 · READY 5 · WAITING 26 · BLOCKED 40 · needs-design 0
 
-READY set: `MIG-021`, `RPC-SAGA-AUTHORING`, `MIG-306`, `MIG-309`, `MIG-501`, `MIG-502`
+READY set: `RPC-SAGA-AUTHORING`, `MIG-306`, `MIG-309`, `MIG-501`, `MIG-502`
 
 ### Method
 
@@ -60,7 +60,7 @@ For every issue: intent/scope from design+intake, source contracts, dependsOn gr
 
 | ID | Cat | Sev | Finding | Action |
 | --- | --- | --- | --- | --- |
-| MIG-021 | A→E | P1→Info | Client role/reveal, no-op fan-out, unmounted rooms on earlier tip | Fixed on PR #926 head `3850da0d` (authoritative `can_write`, `onFanout`, `createHost`+HTTP). Phase 6 must re-verify CI and undraft. |
+| MIG-021 | A→E | P1→Info | Client role/reveal, no-op fan-out, unmounted rooms on earlier tip | Fixed and merged via #926 (authoritative `can_write`, `onFanout`, `createHost`+HTTP, fan-out membership recheck, tip-delta omit). |
 | MIG-021 | B | P2 | Colyseus Room package not in `server/package.json` | **VALID DEFERRED**: HTTP host mount satisfies slice activation; full Colyseus Room schema before FEATURE VERIFIED via MIG-602/#847. Contract text updated. |
 | MIG-024 | B | P2 | Projection helper DONE; real object/event/spectator consumer partial | Keep DONE; deferred to MIG-021/#796 + MIG-311/#810; FEATURE VERIFIED via MIG-600/#845. Contract tiers added. |
 | MIG-014/015/020/022/023/024/021 | D | P2 | Missing explicit Slice/Deferred/Feature-tier language | **Fixed**: `Acceptance tiers` section regenerated into all 90 design bodies via renderer. |
@@ -97,16 +97,38 @@ No new issues required: existing MIG-311/600/602/700/ATLAS cover ownership.
 | ECC Merge Gate | Unchanged — already blocks unresolved P1/P2 on **current PR head** (verified locally for #926) |
 | Acceptance tiers in contracts | Prevents equating unit PASS with FEATURE VERIFIED |
 
-## Phase 6 — Open PRs (in progress)
+## Phase 6 — Open migration PRs (COMPLETE)
 
-| PR | Status | Action |
-| --- | --- | --- |
-| #925 MIG-024 evidence | MERGED @ `5c94e0f8` | done |
-| #926 MIG-021 | Draft; ECC PASS local; Browser E2E pending | Keep draft until Browser E2E green + head re-check; then undraft + squash-merge |
+| PR | Result |
+| --- | --- |
+| #925 MIG-024 evidence | MERGED earlier (`5c94e0f8`) |
+| #927 Audit + acceptance tiers | MERGED (`acd79215`) |
+| #926 MIG-021 realtime rooms | MERGED (`7eb4f6b2`) after P1 fixes (authoritative roles, host mount, fan-out, membership recheck, tip-delta omit) |
+| #928 MIG-021 completion evidence | This PR — DONE 19 / READY 5 sync |
 
-## Phase 7–9
+## Phase 7 — Audit correction PR (COMPLETE)
 
-See PR description / final report after merge of this audit branch and #926.
+- Coverage matrix + contract repairs shipped in #927.
+- Composition CLEAR honesty: Acceptance tier **and** Deferred integration required independently.
+- Renderer empty-path fix + matrix-backed deferred owners.
+
+## Phase 8 — Runner resume
+
+Resume criteria met. Next READY by topology: `RPC-SAGA-AUTHORING` #871, `MIG-306` #805, `MIG-309` #808, `MIG-501` #842, `MIG-502` #843.
+
+## Phase 9 — Closing counts
+
+| Metric | Value |
+| --- | ---: |
+| Issues audited | 90 |
+| Contracts structurally OK / ownership mapped | 90 |
+| Corrected issue contracts | 90 (Acceptance tiers) + targeted MIG-021/024 |
+| New issues created | 0 |
+| Audit PR | #927 |
+| MIG-021 ship PR | #926 |
+| MIG-021 evidence PR | #928 |
+| Readiness | DONE 19 · READY 5 |
+| Human approvals still required | Cutover / Supabase shutdown / GATE-05 platform qualification |
 
 ## Explicit human holdouts
 
@@ -119,34 +141,4 @@ See PR description / final report after merge of this audit branch and #926.
 - `node scripts/stack-migration-issue-contracts.mjs --write`
 - `npm run check:stack-migration-prep` → PASS
 - `node scripts/composition-gate.self-test.mjs` → PASS
-- Local `ECC_MERGE_GATE_PR=926` → PASS (0 unresolved P1/P2)
-
-
-## Phase 6 — Open migration PRs (COMPLETE)
-
-| PR | Result |
-| --- | --- |
-| #925 MIG-024 evidence | MERGED earlier (`5c94e0f8`) |
-| #927 Audit + acceptance tiers | MERGED (`acd79215`) |
-| #926 MIG-021 realtime rooms | MERGED (`7eb4f6b2`) after P1 fixes (authoritative roles, host mount, fan-out, membership recheck, tip-delta omit) |
-
-## Phase 7 — Audit correction PR (COMPLETE)
-
-- Coverage matrix + contract repairs shipped in #927.
-- Composition CLEAR honesty: Acceptance tier **and** Deferred integration required independently.
-- Renderer empty-path fix + matrix-backed deferred owners.
-
-## Phase 8 — Runner resume
-
-Resume criteria met after MIG-021 DONE evidence lands. Next READY by topology (post-021 DONE).
-
-## Phase 9 — Closing counts (pre-evidence sync)
-
-| Metric | Value |
-| --- | ---: |
-| Issues audited | 90 |
-| Contracts structurally OK / ownership mapped | 90 |
-| New issues created | 0 |
-| Audit PR | #927 |
-| MIG-021 ship PR | #926 |
-| Human approvals still required | Cutover / Supabase shutdown / GATE-05 platform qualification |
+- Local `ECC_MERGE_GATE_PR=926` → PASS (0 unresolved P1/P2) after merge prerequisites
