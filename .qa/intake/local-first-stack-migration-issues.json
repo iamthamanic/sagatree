@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 5,
-    "issuesBlockedOrNeedsDesign": 70,
+    "issuesReady": 6,
+    "issuesBlockedOrNeedsDesign": 68,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -2028,7 +2028,7 @@
       "title": "SessionRuntimeState port (revision+idempotency)",
       "priority": "P0",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-022",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-022.md",
       "dependsOn": [
@@ -2108,9 +2108,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-022.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -2140,7 +2141,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-016",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -2149,7 +2150,7 @@
       "title": "Invite/join codes without privilege escalation",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-023",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-023.md",
       "dependsOn": [
@@ -2257,8 +2258,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-017",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -2267,7 +2267,7 @@
       "title": "Player/GM/spectator projections filter",
       "priority": "P0",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-024",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-024.md",
       "dependsOn": [
@@ -2379,8 +2379,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-018",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

@@ -8,6 +8,7 @@ import {
   createSessionRuntimeStore,
   type ApplyCommandInput,
   type ApplyCommandResult,
+  type SessionCommittedPublisher,
   type SessionRuntimeState,
   type SessionRuntimeStore,
 } from './internal/session-runtime-store.ts';
@@ -16,6 +17,8 @@ export type {
   ApplyCommandInput,
   ApplyCommandResult,
   SessionCommandOp,
+  SessionCommittedPublication,
+  SessionCommittedPublisher,
   SessionRuntimeState,
   SessionRuntimeStore,
 } from './internal/session-runtime-store.ts';
@@ -43,9 +46,13 @@ export type SessionPorts = {
 /**
  * Session runtime ports. Membership (and write privilege) is enforced inside
  * the SQLite transaction, including before idempotent replay (ADR-ST-08).
+ * `onCommitted` runs only after a successful COMMIT (not on replay/deny).
  */
-export function createSessionPorts(deps: { readonly db: HostDatabase }): SessionPorts {
-  const store = createSessionRuntimeStore(deps.db);
+export function createSessionPorts(deps: {
+  readonly db: HostDatabase;
+  readonly onCommitted?: SessionCommittedPublisher;
+}): SessionPorts {
+  const store = createSessionRuntimeStore(deps.db, { onCommitted: deps.onCommitted });
 
   return {
     moduleId: 'session',

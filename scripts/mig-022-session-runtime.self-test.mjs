@@ -148,8 +148,21 @@ try {
 
   const reopened = openHostDatabase(dbPath);
   assert(reopened.ok, 'reopen after concurrent');
-  const ports2 = createSessionPorts({ db: reopened.db });
+  /** @type {Array<{sessionId:string,revision:number,kind:string,idempotencyKey:string}>} */
+  const published = [];
+  const ports2 = createSessionPorts({
+    db: reopened.db,
+    onCommitted: (event) => {
+      published.push({
+        sessionId: event.sessionId,
+        revision: event.revision,
+        kind: event.kind,
+        idempotencyKey: event.idempotencyKey,
+      });
+    },
+  });
   const useCase2 = createSessionRuntimeUseCase(ports2);
+  const publishedBeforeFall2 = published.length;
   const snapA = useCase2.getSnapshot(gm, 'SE-A');
   assert(snapA.ok && snapA.snapshot.revision === 1, `snap after conflict ${JSON.stringify(snapA)}`);
   assert(
@@ -309,6 +322,26 @@ setInterval(() => {}, 60_000);
     op: { kind: 'status', payload: { status: 'paused' } },
   });
   assert(!missingKey.ok && missingKey.error === 'INVALID_IDEMPOTENCY_KEY', 'empty key rejected');
+
+  // --- Fall 4: post-commit publication only (ADR-ST-08 §8) ---
+  const afterFall2 = published.slice(publishedBeforeFall2);
+  assert(
+    afterFall2.some((p) => p.idempotencyKey === 'k-replay' && p.sessionId === 'SE-A' && p.revision === 2),
+    `commit published for SE-A k-replay: ${JSON.stringify(afterFall2)}`,
+  );
+  assert(
+    afterFall2.some((p) => p.idempotencyKey === 'k-replay' && p.sessionId === 'SE-B' && p.revision === 1),
+    `commit published for SE-B k-replay: ${JSON.stringify(afterFall2)}`,
+  );
+  assert(
+    afterFall2.filter((p) => p.idempotencyKey === 'k-replay' && p.sessionId === 'SE-A').length === 1,
+    'idempotent replay must not re-publish',
+  );
+  assert(
+    !afterFall2.some((p) => p.idempotencyKey === 'k-reader'),
+    'forbidden/deny paths must not publish',
+  );
+  note('Fall 4 PASS: post-commit publisher fires only after successful COMMIT');
 
   reopened.db.close();
 

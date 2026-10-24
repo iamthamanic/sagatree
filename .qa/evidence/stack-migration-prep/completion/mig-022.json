@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-022",
+  "result": "PASS",
+  "testedCommit": "ad68c8dfb95e6aaa911f9a8529eab9143a90e10d",
+  "githubClosed": true,
+  "mergeRef": "PR #916 \u2192 main (#797); post-commit publisher follow-up on #917",
+  "note": "Completion requires merge SHA + hashed check artifacts. Post-commit publication (ADR-ST-08 \u00a78) covered by self-test Fall 4.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-022-session-runtime.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-022.md",
+      "sha256": "2bb0599afcf84a738ecf18f21fe26acfcceb2c82472bdd4e7e03850ebcaf160f"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-022.md",
+      "sha256": "2dc14e10bab62a804f79b2251549cad38711d0b80b0ad9ee9b49c9cb067176c7"
+    }
+  ]
+}
