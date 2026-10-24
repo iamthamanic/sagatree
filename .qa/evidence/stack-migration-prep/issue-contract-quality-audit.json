@@ -5,13 +5,13 @@
   "canonicalBodies": 90,
   "mapped": 90,
   "statusCounts": {
-    "ready": 6,
+    "ready": 5,
     "waiting": 28,
     "blocked": 40,
     "needs-design": 0,
-    "done": 16
+    "done": 17
   },
-  "implementationAccepted": 16,
+  "implementationAccepted": 17,
   "architectureApproved": 4,
   "sourceInventory": {
     "rpc": 57,
