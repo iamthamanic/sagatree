@@ -38,5 +38,5 @@ N/A — not a launch ticket.
 
 - Verdict: CLEAR
 - Proof: `.qa/runs/composition-gate-stack-migration-mig-502.md`
-- HEAD_SHA: c834dacc85a926c87aea01118332b7a6c6ac27c7
+- HEAD_SHA: 8b3a6539ed59ea93a2538e21ca9a40d10b85d2d7
 - Deferred integration: TBD by dependency successors: MIG-500/#841, MIG-503/#844, MIG-020/#795
