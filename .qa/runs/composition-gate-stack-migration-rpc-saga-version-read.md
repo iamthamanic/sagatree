@@ -22,7 +22,7 @@ Authenticated actors resolve native saga catalog by slug and read saga definitio
 |------|--------|
 | N-actors | native reader / owner GM / stranger DENY / project player / project GM | pass (`rpc-saga-version-read.self-test`) |
 | Invalid/missing | unknown slug / missing version → `P0002`; unauthenticated → `42501` | pass |
-| Two consumers | newest published_at wins for slug; player vs GM payload cardinality | pass |
+| Two consumers / crash | newest published_at wins for slug; player vs GM payload cardinality | pass |
 
 ## Flags
 
