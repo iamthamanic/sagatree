@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-24T09:02:17.305Z",
+  "startedAt": "2026-10-24T10:06:06.503Z",
   "total": 90,
-  "updated": 1,
-  "unchanged": 89,
+  "updated": 3,
+  "unchanged": 87,
   "failed": [],
   "issues": [
     {
@@ -173,30 +173,30 @@
       "number": 798,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "7b03b3fa9305839d011c128d86f4a2e65ac81448f25afc68fe785620e2dc47b4",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-024",
       "number": 799,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "c3518f6645c4f738a7c329d7b183647036b919eb8c083cef8a847c19eef778fb",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "587f78479771eb2cc8a24377e2873de3b37bd819dd88cf7e08e3e539867943a8",
+      "action": "updated"
     },
     {
       "localId": "MIG-021",
       "number": 796,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "4985c09f7bdf1ce952c49b9c438cffa347f1b69f6042ec381d3fe044d0f0f3ce",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "e61a16839039d386a7324293823fa14e3b8698b0998475f05c13a95246d52b60",
+      "action": "updated"
     },
     {
       "localId": "MIG-503",
@@ -223,10 +223,10 @@
       "number": 871,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "b256a8e4455f936767988df2a78553b89cbd9eba5b5d15931f1d5342e3f53fd6",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "2245eafb5ed84fc9f1b0aab5f92875faab640bdb6d97f4f55cbebb8256209dcb",
+      "action": "updated"
     },
     {
       "localId": "RPC-SAGA-VERSION-READ",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-24T09:02:59.844Z"
+  "finishedAt": "2026-10-24T10:07:08.270Z"
 }

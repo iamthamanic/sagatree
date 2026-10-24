@@ -415,7 +415,7 @@
       "githubIssue": 799,
       "order": 18,
       "wave": 2,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         792,
         797,
@@ -426,7 +426,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-018",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -434,7 +434,7 @@
       "githubIssue": 796,
       "order": 19,
       "wave": 2,
-      "status": "waiting",
+      "status": "ready",
       "dependsOnGithub": [
         795,
         797,
@@ -442,13 +442,12 @@
         785,
         786
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-019",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -497,7 +496,7 @@
       "githubIssue": 871,
       "order": 22,
       "wave": 2,
-      "status": "waiting",
+      "status": "ready",
       "dependsOnGithub": [
         795,
         792,
@@ -507,13 +506,12 @@
         785,
         787
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-022",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

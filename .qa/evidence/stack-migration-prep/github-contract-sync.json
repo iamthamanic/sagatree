@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "repository": "iamthamanic/sagatree",
   "status": "synchronized-and-verified",
-  "lastVerifiedAt": "2026-10-24T09:03:38.786Z",
+  "lastVerifiedAt": "2026-10-24T10:07:46.340Z",
   "correctionOrder": "2026-10-23-readiness-evidence-sync",
   "evidenceMeaning": "Fresh verify after readiness classification (DONE/READY with completionEvidence). Not production cutover approval.",
   "syncedCount": 90,
@@ -10,8 +10,8 @@
   "focus": [],
   "mismatches": [],
   "publishProgress": {
-    "updated": 1,
-    "unchanged": 89,
+    "updated": 3,
+    "unchanged": 87,
     "failed": 0,
     "mode": "write"
   }
