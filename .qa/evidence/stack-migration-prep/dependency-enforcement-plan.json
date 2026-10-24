@@ -1781,7 +1781,7 @@
       "githubIssue": 842,
       "order": 80,
       "wave": 5,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         841,
         795
@@ -1791,7 +1791,7 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-080",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
