@@ -60,6 +60,20 @@ export type ApplyCommandFailure = {
 
 export type ApplyCommandResult = ApplyCommandSuccess | ApplyCommandFailure;
 
+/** Durable event notice — fired only after COMMIT (ADR-ST-08 §8). Never on replay/deny. */
+export type SessionCommittedPublication = {
+  readonly sessionId: string;
+  readonly revision: number;
+  readonly eventSequence: number;
+  readonly actorUserId: string;
+  readonly idempotencyKey: string;
+  readonly kind: SessionEventKind;
+  readonly payload: Record<string, unknown>;
+  readonly snapshot: SessionRuntimeState;
+};
+
+export type SessionCommittedPublisher = (event: SessionCommittedPublication) => void;
+
 export type SessionRuntimeStore = {
   readonly seedSession: (input: {
     readonly sessionId: string;
@@ -164,7 +178,10 @@ function applyOp(
   return { ...previous, updatedAt };
 }
 
-export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore {
+export function createSessionRuntimeStore(
+  db: HostDatabase,
+  options: { readonly onCommitted?: SessionCommittedPublisher } = {},
+): SessionRuntimeStore {
   return {
     seedSession(input) {
       const base = emptySnapshot(input.sessionId);
@@ -344,6 +361,17 @@ export function createSessionRuntimeStore(db: HostDatabase): SessionRuntimeStore
 
         db.exec('COMMIT');
         inTransaction = false;
+        // ADR-ST-08: notifications fire only after commit (never inside the TX).
+        options.onCommitted?.({
+          sessionId,
+          revision: next.revision,
+          eventSequence,
+          actorUserId,
+          idempotencyKey,
+          kind,
+          payload,
+          snapshot: next,
+        });
         return { ok: true, committed: true, snapshot: next };
       } catch (err) {
         if (inTransaction) {
