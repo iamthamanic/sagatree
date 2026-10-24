@@ -67,17 +67,19 @@ test('the complete published plan validates without an implementation or archite
   assert.deepEqual(errors(original), []);
   assert.equal(original.intake.coverage.legacyFrontendRpcs, 57);
   // Evidence-based READY only after transitive DONE; never a mass unlock of all 90.
-  // Post MIG-024: DONE includes MIG-014/015/020/022/023/024; READY is the small unlocked set (e.g. MIG-021, MIG-306…).
+  // After shipping the last currently unlockable READY tickets, READY may be 0 while
+  // remaining work stays waiting/blocked — still never a mass unlock.
   const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
   const done = original.intake.issues.filter((entry) => entry.status === 'done');
   assert.equal(ready.length, original.intake.coverage.issuesReady);
-  assert.ok(ready.length > 0 && ready.length < 10, `expected a small READY set, got ${ready.length}`);
+  assert.ok(ready.length < 10, `expected READY < 10 (no mass unlock), got ${ready.length}`);
   assert.ok(done.some((entry) => entry.localId === 'MIG-014'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-015'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-020'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-022'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-023'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-024'));
+  assert.ok(done.some((entry) => entry.localId === 'MIG-502'));
   assert.ok(!ready.some((entry) => entry.localId === 'MIG-024'));
   assert.ok(done.length >= 18);
 });
