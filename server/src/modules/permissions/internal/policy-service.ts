@@ -81,11 +81,17 @@ function allow(reason: string): PolicyDecision {
   return { allow: true, reason };
 }
 
+export type SagaAccessLookup = {
+  readonly actorHasAccessToSaga: (actorId: string, sagaId: string) => boolean;
+};
+
 export class PolicyService {
   readonly #db: HostDatabase | null;
+  readonly #sagaAccess: SagaAccessLookup | null;
 
-  constructor(db: HostDatabase | null) {
+  constructor(db: HostDatabase | null, sagaAccess: SagaAccessLookup | null = null) {
     this.#db = db;
+    this.#sagaAccess = sagaAccess;
   }
 
   authorize(op: PolicyOp, actor: PolicyActor | null | undefined, resource: PolicyResource = {}): PolicyDecision {
@@ -135,6 +141,10 @@ export class PolicyService {
     if (row.origin === 'native') return allow('saga-native-read');
     if (row.owner_user_id && actorMatchesOwner(actor, row.owner_user_id)) {
       return allow('saga-owner-read');
+    }
+    // Active project membership / GM — via project module port (no foreign SQL here).
+    if (this.#sagaAccess?.actorHasAccessToSaga(actor.actorId, sagaId)) {
+      return allow('saga-project-member-read');
     }
     return denyForOwnerMismatch(actor, row.owner_user_id ?? '', 'not-authorized');
   }

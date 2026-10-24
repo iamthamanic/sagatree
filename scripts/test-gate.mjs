@@ -572,6 +572,18 @@ function checkRpcSagaAuthoring() {
   );
 }
 
+function checkRpcSagaVersionRead() {
+  console.log('RPC-SAGA-VERSION-READ (#872): native slug + version ACL + GM projection...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-saga-version-read.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -2736,6 +2748,7 @@ checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig309Rulesets();
 checkRpcSagaAuthoring();
+checkRpcSagaVersionRead();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

@@ -9,16 +9,20 @@ import {
   type PolicyDecision,
   type PolicyOp,
   type PolicyResource,
+  type SagaAccessLookup,
 } from './internal/policy-service.ts';
 
-export type { PolicyDecision, PolicyOp, PolicyResource };
+export type { PolicyDecision, PolicyOp, PolicyResource, SagaAccessLookup };
 
 export type PermissionsPorts = {
   readonly authorize: (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
 };
 
-export function createPermissionsPorts(db: HostDatabase | null = null): PermissionsPorts {
-  const policy = new PolicyService(db);
+export function createPermissionsPorts(
+  db: HostDatabase | null = null,
+  sagaAccess: SagaAccessLookup | null = null,
+): PermissionsPorts {
+  const policy = new PolicyService(db, sagaAccess);
   return {
     authorize: (op, actor, resource = {}) =>
       policy.authorize(

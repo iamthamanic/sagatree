@@ -86,6 +86,38 @@ function emptyPayload(title: string, blurb: string): SagaPayload {
   };
 }
 
+/**
+ * Host parity for `sagatree_project_saga_definition_payload` — strip gm_only facts for players.
+ * Exact lowercase match only (`public`|`discovered`|`shared`); noncanonical values stay hidden.
+ */
+export function projectSagaDefinitionPayload(
+  payload: Record<string, unknown>,
+  isGm: boolean,
+): Record<string, unknown> {
+  if (isGm) return payload;
+  const facts = Array.isArray(payload.knowledgeFacts) ? payload.knowledgeFacts : [];
+  const filtered = facts.filter((item) => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+    const visRaw = (item as { visibility?: unknown }).visibility;
+    const vis = typeof visRaw === 'string' ? visRaw : 'gm_only';
+    return vis === 'public' || vis === 'discovered' || vis === 'shared';
+  });
+  return { ...payload, knowledgeFacts: filtered };
+}
+
+export type SagaVersionReadVm = {
+  readonly sagaId: string;
+  readonly sagaSlug: string;
+  readonly title: string;
+  readonly synopsis: string;
+  readonly origin: SagaOrigin;
+  readonly versionId: string;
+  readonly versionLabel: string;
+  readonly status: SagaVersionStatus;
+  readonly payload: Record<string, unknown>;
+  readonly isGmProjection: boolean;
+};
+
 export class SagaDefinitionStore {
   readonly #db: HostDatabase;
 
@@ -173,14 +205,16 @@ export class SagaDefinitionStore {
 
   seedNative(input: {
     readonly id?: string;
+    readonly slug?: string;
     readonly title: string;
     readonly synopsis?: string;
     readonly payload?: Record<string, unknown>;
-  }): { readonly sagaId: string; readonly versionId: string } {
+  }): { readonly sagaId: string; readonly versionId: string; readonly slug: string } {
     const sagaId = input.id ?? newId();
     const versionId = newId();
     const createdAt = nowIso();
     const synopsis = input.synopsis ?? '';
+    const slug = input.slug?.trim() || `native.${sagaId.replace(/-/g, '')}`;
     const payload = JSON.stringify(
       input.payload ?? emptyPayload(input.title, synopsis),
     );
@@ -190,7 +224,7 @@ export class SagaDefinitionStore {
          (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
          VALUES (?, ?, ?, ?, 'native', NULL, 0, ?, ?)`,
       )
-      .run(sagaId, `native.${sagaId.replace(/-/g, '')}`, input.title, synopsis, createdAt, createdAt);
+      .run(sagaId, slug, input.title, synopsis, createdAt, createdAt);
     this.#db
       .prepare(
         `INSERT INTO saga_definition_versions
@@ -198,7 +232,82 @@ export class SagaDefinitionStore {
          VALUES (?, ?, 'v1', 'published', ?, ?, ?)`,
       )
       .run(versionId, sagaId, payload, createdAt, createdAt);
-    return { sagaId, versionId };
+    return { sagaId, versionId, slug };
+  }
+
+  /** Insert an additional published version (tests / multi-version native). */
+  seedPublishedVersion(input: {
+    readonly sagaId: string;
+    readonly versionLabel: string;
+    readonly payload?: Record<string, unknown>;
+    readonly publishedAt?: string;
+  }): string {
+    const versionId = newId();
+    const createdAt = nowIso();
+    const publishedAt = input.publishedAt ?? createdAt;
+    const def = this.getDefinition(input.sagaId);
+    if (!def) throw new Error('saga-not-found');
+    const payload = JSON.stringify(
+      input.payload ?? emptyPayload(def.title, def.synopsis),
+    );
+    this.#db
+      .prepare(
+        `INSERT INTO saga_definition_versions
+         (id, saga_id, version_label, status, payload, published_at, created_at)
+         VALUES (?, ?, ?, 'published', ?, ?, ?)`,
+      )
+      .run(versionId, input.sagaId, input.versionLabel, payload, publishedAt, createdAt);
+    return versionId;
+  }
+
+  findLatestPublishedNativeVersionIdBySlug(slugRaw: string): string | null {
+    const slug = slugRaw.trim();
+    if (!slug) return null;
+    const row = this.#db
+      .prepare(
+        `SELECT v.id AS id
+         FROM saga_definitions d
+         JOIN saga_definition_versions v ON v.saga_id = d.id
+         WHERE d.slug = ?
+           AND d.origin = 'native'
+           AND v.status = 'published'
+         ORDER BY v.published_at DESC, v.created_at DESC
+         LIMIT 1`,
+      )
+      .get(slug) as { id: string } | undefined;
+    return row?.id ?? null;
+  }
+
+  /**
+   * Project version row with caller-supplied access (membership via project ports).
+   * Does not query `projects` / `project_members` — foreign schema stays in project module.
+   */
+  getVersionRead(
+    versionId: string,
+    access: { readonly allow: boolean; readonly isGm: boolean },
+  ): { ok: true; value: SagaVersionReadVm } | { ok: false; error: string } {
+    const ver = this.getVersion(versionId);
+    if (!ver) return { ok: false, error: 'P0002' };
+    const def = this.getDefinition(ver.saga_id);
+    if (!def) return { ok: false, error: 'P0002' };
+    if (!access.allow) return { ok: false, error: '42501' };
+
+    const rawPayload = parsePayload(ver.payload);
+    return {
+      ok: true,
+      value: {
+        sagaId: def.id,
+        sagaSlug: def.slug,
+        title: def.title,
+        synopsis: def.synopsis,
+        origin: def.origin,
+        versionId: ver.id,
+        versionLabel: ver.version_label,
+        status: ver.status,
+        payload: projectSagaDefinitionPayload(rawPayload, access.isGm),
+        isGmProjection: access.isGm,
+      },
+    };
   }
 
   createUserSaga(
