@@ -27,8 +27,8 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | done | #795, #797, #799, #785, #786 |
 | 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | done | #790, #783 |
 | 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |
-| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | ready | #795, #792, #797, #799, #784, #785, #787 |
-| 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | waiting | #795, #792, #797, #799, #784, #785, #787, #871 |
+| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | done | #795, #792, #797, #799, #784, #785, #787 |
+| 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | ready | #795, #792, #797, #799, #784, #785, #787, #871 |
 | 24 | 2 | RPC-SAGA-PROVISION [#873](https://github.com/iamthamanic/sagatree/issues/873) | blocked | #795, #792, #797, #799, #784, #785, #787, #872 |
 | 25 | 2 | RPC-PROJECT-MEMBERSHIP [#874](https://github.com/iamthamanic/sagatree/issues/874) | waiting | #795, #792, #797, #799, #784, #785, #787, #873 |
 | 26 | 2 | RPC-SAGA-GOVERNANCE [#875](https://github.com/iamthamanic/sagatree/issues/875) | waiting | #795, #792, #797, #799, #784, #785, #787, #874 |
