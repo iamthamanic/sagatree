@@ -560,6 +560,18 @@ function checkMig501ResumableUploads() {
   );
 }
 
+function checkRpcSagaAuthoring() {
+  console.log('RPC-SAGA-AUTHORING (#871): create/copy/editor/save/publish owner + revision...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-saga-authoring.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -2723,6 +2735,7 @@ checkMig500LocalAssets();
 checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig309Rulesets();
+checkRpcSagaAuthoring();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

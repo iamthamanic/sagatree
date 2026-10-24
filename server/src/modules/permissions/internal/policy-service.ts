@@ -34,6 +34,7 @@ export type PolicyResource = {
   readonly sessionId?: string;
   readonly assetId?: string;
   readonly rulesetId?: string;
+  readonly sagaId?: string;
 };
 
 export type PolicyDecision = {
@@ -52,6 +53,8 @@ export type PolicyOp =
   | 'asset.read'
   | 'ruleset.read'
   | 'ruleset.write'
+  | 'saga.read'
+  | 'saga.write'
   | string;
 
 type WorldRow = { id: string; owner_user_id: string };
@@ -63,6 +66,11 @@ type RulesetRow = {
   creator_user_id: string | null;
   is_official: number;
   is_public: number;
+};
+type SagaRow = {
+  id: string;
+  origin: string;
+  owner_user_id: string | null;
 };
 
 function deny(reason: string): PolicyDecision {
@@ -108,9 +116,44 @@ export class PolicyService {
         return this.#authorizeRulesetRead(actor, resource);
       case 'ruleset.write':
         return this.#authorizeRulesetWrite(actor, resource);
+      case 'saga.read':
+        return this.#authorizeSagaRead(actor, resource);
+      case 'saga.write':
+        return this.#authorizeSagaWrite(actor, resource);
       default:
         return deny('unknown-operation');
     }
+  }
+
+  #authorizeSagaRead(actor: PolicyActor, resource: PolicyResource): PolicyDecision {
+    const sagaId = resource.sagaId?.trim();
+    if (!sagaId) return deny('missing-saga');
+    const row = this.#db!.prepare(
+      `SELECT id, origin, owner_user_id FROM saga_definitions WHERE id = ?`,
+    ).get(sagaId) as SagaRow | undefined;
+    if (!row) return deny('saga-not-found');
+    if (row.origin === 'native') return allow('saga-native-read');
+    if (row.owner_user_id && actorMatchesOwner(actor, row.owner_user_id)) {
+      return allow('saga-owner-read');
+    }
+    return denyForOwnerMismatch(actor, row.owner_user_id ?? '', 'not-authorized');
+  }
+
+  #authorizeSagaWrite(actor: PolicyActor, resource: PolicyResource): PolicyDecision {
+    const sagaId = resource.sagaId?.trim();
+    if (!sagaId) {
+      // create / copy — any authenticated actor may author a user-owned saga.
+      return allow('saga-author-create');
+    }
+    const row = this.#db!.prepare(
+      `SELECT id, origin, owner_user_id FROM saga_definitions WHERE id = ?`,
+    ).get(sagaId) as SagaRow | undefined;
+    if (!row) return deny('saga-not-found');
+    if (row.origin === 'native') return deny('native-immutable');
+    if (row.owner_user_id && actorMatchesOwner(actor, row.owner_user_id)) {
+      return allow('saga-owner-write');
+    }
+    return denyForOwnerMismatch(actor, row.owner_user_id ?? '', 'not-authorized');
   }
 
   #authorizeRulesetRead(actor: PolicyActor, resource: PolicyResource): PolicyDecision {
