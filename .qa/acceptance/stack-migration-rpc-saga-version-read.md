@@ -35,3 +35,10 @@ N/A — not a launch ticket.
 - Ports: `getSagaDefinitionVersion`, `getNativeSagaDefinitionBySlug` on saga module
 - Use-cases: `server/src/application/saga-version-read/**` + command adapters
 - Self-test: `scripts/rpc-saga-version-read.self-test.mjs`
+
+## Composition Gate
+
+- Verdict: CLEAR
+- Proof: `.qa/runs/composition-gate-stack-migration-rpc-saga-version-read.md`
+- HEAD_SHA: 60c66fd60b633c2bf5d9192f628b34789de7247f
+- Deferred integration: MIG-301..313 / MIG-311 session adapters as applicable
