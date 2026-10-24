@@ -356,13 +356,19 @@ setInterval(() => {}, 60_000);
   const beforeThrow = throwPorts.store.readSnapshot(gm.actorId, 'SE-A');
   assert(beforeThrow.ok, 'snapshot before publisher throw');
   const beforeThrowRev = beforeThrow.snapshot.revision;
+  // Legal edge from current status (active→active is invalid and must not be used here).
+  const nextStatus = beforeThrow.snapshot.status === 'active' ? 'paused' : 'active';
+  const throwOp = { kind: 'status', payload: { status: nextStatus } };
   const afterThrow = throwPorts.store.applyCommand(gm.actorId, {
     sessionId: 'SE-A',
     expectedRevision: beforeThrowRev,
     idempotencyKey: 'k-publisher-throw',
-    op: { kind: 'status', payload: { status: 'active' } },
+    op: throwOp,
   });
-  assert(afterThrow.ok === true && afterThrow.committed === true, 'publisher throw must not fail COMMIT');
+  assert(
+    afterThrow.ok === true && afterThrow.committed === true,
+    `publisher throw must not fail COMMIT: ${JSON.stringify(afterThrow)}`,
+  );
   const afterThrowSnap = throwPorts.store.readSnapshot(gm.actorId, 'SE-A');
   assert(
     afterThrowSnap.ok && afterThrowSnap.snapshot.revision === beforeThrowRev + 1,
@@ -372,7 +378,7 @@ setInterval(() => {}, 60_000);
     sessionId: 'SE-A',
     expectedRevision: beforeThrowRev,
     idempotencyKey: 'k-publisher-throw',
-    op: { kind: 'status', payload: { status: 'active' } },
+    op: throwOp,
   });
   assert(
     replayAfterThrow.ok === true && replayAfterThrow.committed === false,
