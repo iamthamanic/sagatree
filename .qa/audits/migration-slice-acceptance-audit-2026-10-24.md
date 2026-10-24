@@ -142,3 +142,17 @@ Resume criteria met. Next READY by topology: `RPC-SAGA-AUTHORING` #871, `MIG-306
 - `npm run check:stack-migration-prep` → PASS
 - `node scripts/composition-gate.self-test.mjs` → PASS
 - Local `ECC_MERGE_GATE_PR=926` → PASS (0 unresolved P1/P2) after merge prerequisites
+
+## Phase 9 — Final status (2026-10-24 session close)
+
+| Metric | Value |
+| --- | ---: |
+| Issues audited | 90 |
+| Contracts corrected (Acceptance tiers) | 90 |
+| New issues created | 0 |
+| Coverage gaps closed (ownership) | 0 remaining unowned RPC/Edge |
+| PRs merged this audit window | #927, #926, #928, #929 |
+| Readiness after MIG-306 evidence | DONE 20 · READY 4 |
+| Runner | resumed; queue continues |
+| Human holdouts | Cutover / Supabase shutdown / GATE-05 |
+

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-306",
+  "result": "PASS",
+  "testedCommit": "2acec8588791564e1ce53faa189aa5ddc5502d73",
+  "githubClosed": true,
+  "mergeRef": "PR #929 → main (#805)",
+  "note": "Host media policy ports; no remote codecs; infra-media remains 0 RPC/storage/realtime; profileId/byteSize negatives.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-306-media-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-306.md",
+      "sha256": "647bd4c99ecfcab01fac6e4f8c446c27798733113789d6012f5a1ff93255d620"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-306.md",
+      "sha256": "bdf92ce1e5b420fc4e9cdac2a24ee5f43788aa8e080442075324af7c18f19ad9"
+    }
+  ]
+}

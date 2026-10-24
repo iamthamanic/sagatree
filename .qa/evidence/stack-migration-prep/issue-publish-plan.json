@@ -1023,11 +1023,11 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-072",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-306.md",
-      "sha256": "a2089586c500e11656927817c7f18cb63c3e30368da4cdc82f27d1130c12b837",
-      "payloadSha256": "84b0c3d2c96d51ec700f761c4642cc35ac802e4b7677c94159ed1810cdf9fed4"
+      "sha256": "e48dbc673041b47c1c21648ed9b01bd4afd5060a700eb52867637b8d9dad73a2",
+      "payloadSha256": "d92328eaf0e4c81a2c73b5a027ff11799427d3ed7111ca26f2cdfddf50933428"
     },
     {
       "localId": "MIG-307",

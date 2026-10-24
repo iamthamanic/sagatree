@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 5,
+    "issuesReady": 4,
     "issuesBlockedOrNeedsDesign": 66,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -13012,7 +13012,7 @@
       "title": "Port infrastructure/media adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-306",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-306.md",
       "dependsOn": [
@@ -13092,9 +13092,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-306.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -13122,7 +13123,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-072",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
