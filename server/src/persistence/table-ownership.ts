@@ -31,6 +31,9 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   session_members: 'session',
   command_idempotency: 'session',
   session_events: 'session',
+  play_sessions: 'session',
+  session_invites: 'session',
+  session_players: 'session',
 });
 
 export function owningModuleForTable(table: string): HostModuleId | null {
