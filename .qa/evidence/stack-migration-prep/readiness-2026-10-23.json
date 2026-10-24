@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T15:48:08.552Z",
+  "generatedAt": "2026-10-24T16:45:25.141Z",
   "branch": "main",
-  "headSha": "1d5aee0b1a97ddfd4d4fff8f00761b92754e22ae",
-  "headShaHint": "1d5aee0b1a97",
+  "headSha": "9507fe534dc181e22104ebb56a05e218ac0916e4",
+  "headShaHint": "9507fe534dc1",
   "meaning": "Evidence-based classification of all 90 Epic #773 child issues.",
   "counts": {
     "total": 90,
-    "done": 21,
-    "ready": 3,
+    "done": 22,
+    "ready": 2,
     "waiting": 26,
     "blocked": 40,
     "needsDesign": 0
@@ -279,6 +279,18 @@
       "implementationStatus": "accepted",
       "sourceStatus": "source-verified",
       "blockerCount": 0
+    },
+    {
+      "localId": "MIG-501",
+      "githubIssue": 842,
+      "dependsOn": [
+        "MIG-500",
+        "MIG-020"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-501.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0
     }
   ],
   "ready": [
@@ -297,18 +309,6 @@
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
       "sourceStatus": "source-verified",
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-501",
-      "githubIssue": 842,
-      "dependsOn": [
-        "MIG-500",
-        "MIG-020"
-      ],
-      "completionEvidence": null,
-      "implementationStatus": "not-accepted",
-      "sourceStatus": "specified",
       "blockerCount": 0
     },
     {
@@ -1550,9 +1550,9 @@
     }
   ],
   "notes": [
-    "MIG-309 DONE after PR #931 with completion/mig-309.json.",
-    "MIG-306 DONE after PR #929; MIG-021 DONE after PR #926.",
-    "SLICE DONE ≠ FEATURE VERIFIED ≠ RELEASE APPROVED."
+    "MIG-501 DONE after PR #934 with completion/mig-501.json.",
+    "MIG-309 DONE after PR #931; MIG-306 DONE after PR #929.",
+    "SLICE DONE \u2260 FEATURE VERIFIED \u2260 RELEASE APPROVED."
   ],
   "validator": "scripts/stack-migration-prep-check.mjs"
 }

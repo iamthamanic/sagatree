@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 3,
+    "issuesReady": 2,
     "issuesBlockedOrNeedsDesign": 66,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -14828,7 +14828,7 @@
       "title": "Optional tus for large uploads",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-501",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-501.md",
       "dependsOn": [
@@ -14904,9 +14904,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-501.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -14934,7 +14935,7 @@
         "P1",
         "migration-wave-5-storage-export",
         "migration-order-080",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
