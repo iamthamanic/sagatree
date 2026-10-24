@@ -9,7 +9,7 @@ Baseline: 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248. Stand: 2026-10-23 (historisc
 | Edge-Verzeichnisse | 25 | 9 erlaubte Worker, 15 nicht eingebundene Worker, 1 Dispatcher |
 | Infrastruktur-Bereiche | 13 | RPC, Tabellen, Storage, Realtime und Adapterbeziehungen |
 | Kanonische veröffentlichte Issues | 90 | 71 Migration + Atlas #770 + 18 RPC-Untertickets |
-| Ausführungsstatus ready | 5 | Runner-Status aus verifizierten Abschlussbelegen, nicht automatisch aus GitHub CLOSED |
+| Ausführungsstatus ready | 4 | Runner-Status aus verifizierten Abschlussbelegen, nicht automatisch aus GitHub CLOSED |
 | waiting (deps) | 26 | Voll spezifiziert; echte Vorgängerabnahmen fehlen noch |
 | blocked / needs-design | 40 | Source-Defekte, Plattform-Deferral oder offene Architekturfragen |
 | Menschliche Architekturfreigaben | 4 | GATE-01..04 implementation-approved; GATE-05 target selected, platform qualification deferred |

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T12:46:40.074Z",
+  "generatedAt": "2026-10-24T14:00:15.941Z",
   "branch": "main",
-  "headSha": "7eb4f6b237a6489beea5ebb4d4e6c3af72643ae1",
-  "headShaHint": "7eb4f6b237a6",
+  "headSha": "2acec8588791564e1ce53faa189aa5ddc5502d73",
+  "headShaHint": "2acec8588791",
   "meaning": "Evidence-based classification of all 90 Epic #773 child issues.",
   "counts": {
     "total": 90,
-    "done": 19,
-    "ready": 5,
+    "done": 20,
+    "ready": 4,
     "waiting": 26,
     "blocked": 40,
     "needsDesign": 0
@@ -252,6 +252,19 @@
       "implementationStatus": "accepted",
       "sourceStatus": "specified",
       "blockerCount": 0
+    },
+    {
+      "localId": "MIG-306",
+      "githubIssue": 805,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-306.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0
     }
   ],
   "ready": [
@@ -266,19 +279,6 @@
         "GATE-01",
         "GATE-02",
         "GATE-04"
-      ],
-      "completionEvidence": null,
-      "implementationStatus": "not-accepted",
-      "sourceStatus": "source-verified",
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-306",
-      "githubIssue": 805,
-      "dependsOn": [
-        "MIG-012",
-        "MIG-013",
-        "MIG-020"
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
@@ -1550,9 +1550,8 @@
     }
   ],
   "notes": [
-    "MIG-021 DONE after PR #926 with completion/mig-021.json (authoritative roles, host mount, fan-out recheck, tip-delta omit).",
-    "MIG-024 DONE after PR #923 with completion/mig-024.json.",
-    "READY remains dependency-unlocked only; next topology candidate among READY set.",
+    "MIG-306 DONE after PR #929 with completion/mig-306.json.",
+    "MIG-021 DONE after PR #926 with completion/mig-021.json.",
     "SLICE DONE ≠ FEATURE VERIFIED ≠ RELEASE APPROVED."
   ],
   "validator": "scripts/stack-migration-prep-check.mjs"
