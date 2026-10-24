@@ -1,7 +1,7 @@
 # Composition Gate — stack-migration-mig-501 (#842)
 
-- HEAD_SHA: WORKTREE (pre-commit; refresh after commit)
-- BASE_SHA: 1d5aee0b1a97ddfd4d4fff8f00761b92754e22ae
+- HEAD_SHA: ef7ee1fec3210a9eb8e9217aabaea2b00017cb80
+- BASE_SHA: 6967c8437a17a0c34c5742963376789c491bcee4
 - Date: 2026-10-24
 - Verdict: CLEAR
 
