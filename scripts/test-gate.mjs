@@ -560,6 +560,18 @@ function checkMig306MediaAdapter() {
   );
 }
 
+function checkMig309Rulesets() {
+  console.log('MIG-309 rulesets (#808): catalog load/save + ownership deny...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-309-rulesets.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -2697,6 +2709,7 @@ checkMig024RoleProjections();
 checkCompositionGateSelfTest();
 checkMig500LocalAssets();
 checkMig306MediaAdapter();
+checkMig309Rulesets();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
