@@ -67,7 +67,7 @@ test('the complete published plan validates without an implementation or archite
   assert.deepEqual(errors(original), []);
   assert.equal(original.intake.coverage.legacyFrontendRpcs, 57);
   // Evidence-based READY only after transitive DONE; never a mass unlock of all 90.
-  // Post quality-recovery + MIG-022: DONE includes MIG-014/015/020/022; READY includes MIG-024 after MIG-023 DONE.
+  // Post MIG-024: DONE includes MIG-014/015/020/022/023/024; READY is the small unlocked set (e.g. MIG-021, MIG-306…).
   const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
   const done = original.intake.issues.filter((entry) => entry.status === 'done');
   assert.equal(ready.length, original.intake.coverage.issuesReady);
@@ -77,8 +77,9 @@ test('the complete published plan validates without an implementation or archite
   assert.ok(done.some((entry) => entry.localId === 'MIG-020'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-022'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-023'));
-  assert.ok(ready.some((entry) => entry.localId === 'MIG-024'));
-  assert.ok(done.length >= 14);
+  assert.ok(done.some((entry) => entry.localId === 'MIG-024'));
+  assert.ok(!ready.some((entry) => entry.localId === 'MIG-024'));
+  assert.ok(done.length >= 18);
 });
 
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {
