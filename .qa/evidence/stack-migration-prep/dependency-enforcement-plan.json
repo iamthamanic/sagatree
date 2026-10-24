@@ -1660,7 +1660,7 @@
       "githubIssue": 808,
       "order": 75,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1672,7 +1672,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-075",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

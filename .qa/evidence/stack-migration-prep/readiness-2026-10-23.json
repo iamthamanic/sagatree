@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-24T14:00:15.941Z",
+  "generatedAt": "2026-10-24T15:48:08.552Z",
   "branch": "main",
-  "headSha": "2acec8588791564e1ce53faa189aa5ddc5502d73",
-  "headShaHint": "2acec8588791",
+  "headSha": "1d5aee0b1a97ddfd4d4fff8f00761b92754e22ae",
+  "headShaHint": "1d5aee0b1a97",
   "meaning": "Evidence-based classification of all 90 Epic #773 child issues.",
   "counts": {
     "total": 90,
-    "done": 20,
-    "ready": 4,
+    "done": 21,
+    "ready": 3,
     "waiting": 26,
     "blocked": 40,
     "needsDesign": 0
@@ -265,6 +265,20 @@
       "implementationStatus": "accepted",
       "sourceStatus": "source-verified",
       "blockerCount": 0
+    },
+    {
+      "localId": "MIG-309",
+      "githubIssue": 808,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-309.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0
     }
   ],
   "ready": [
@@ -279,20 +293,6 @@
         "GATE-01",
         "GATE-02",
         "GATE-04"
-      ],
-      "completionEvidence": null,
-      "implementationStatus": "not-accepted",
-      "sourceStatus": "source-verified",
-      "blockerCount": 0
-    },
-    {
-      "localId": "MIG-309",
-      "githubIssue": 808,
-      "dependsOn": [
-        "MIG-012",
-        "MIG-013",
-        "MIG-020",
-        "MIG-014"
       ],
       "completionEvidence": null,
       "implementationStatus": "not-accepted",
@@ -1550,8 +1550,8 @@
     }
   ],
   "notes": [
-    "MIG-306 DONE after PR #929 with completion/mig-306.json.",
-    "MIG-021 DONE after PR #926 with completion/mig-021.json.",
+    "MIG-309 DONE after PR #931 with completion/mig-309.json.",
+    "MIG-306 DONE after PR #929; MIG-021 DONE after PR #926.",
     "SLICE DONE ≠ FEATURE VERIFIED ≠ RELEASE APPROVED."
   ],
   "validator": "scripts/stack-migration-prep-check.mjs"

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-309",
+  "result": "PASS",
+  "testedCommit": "1d5aee0b1a97ddfd4d4fff8f00761b92754e22ae",
+  "githubClosed": true,
+  "mergeRef": "PR #931 → main (#808)",
+  "note": "Ruleset catalog ports: official/public read, owner custom write, official immutable, linked-solo listAll.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-309-rulesets.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-309.md",
+      "sha256": "29549c95474066d3d905c8bc8d1b0522bc54a406b1b91d292ab73de81afd8ddc"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-309.md",
+      "sha256": "ada80cffc543931124d75c94abee3f088402ce34a706921cf7a9fedd5955ee6e"
+    }
+  ]
+}

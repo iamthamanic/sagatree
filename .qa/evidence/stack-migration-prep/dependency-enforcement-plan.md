@@ -86,7 +86,7 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | done | #791, #792, #795 |
 | 73 | 4 | MIG-307 [#806](https://github.com/iamthamanic/sagatree/issues/806) | waiting | #791, #792, #795, #877, #793 |
 | 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | waiting | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
-| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | ready | #791, #792, #795, #793 |
+| 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | done | #791, #792, #795, #793 |
 | 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | waiting | #791, #792, #795, #871, #873, #872, #876, #793 |
 | 77 | 4 | MIG-311 [#810](https://github.com/iamthamanic/sagatree/issues/810) | blocked | #791, #792, #795, #867, #868, #869, #870, #836, #837, #796, #793 |
 | 78 | 4 | MIG-312 [#811](https://github.com/iamthamanic/sagatree/issues/811) | blocked | #791, #792, #795, #841, #793 |
