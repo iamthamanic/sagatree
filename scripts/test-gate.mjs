@@ -548,6 +548,18 @@ function checkMig500LocalAssets() {
   );
 }
 
+function checkMig501ResumableUploads() {
+  console.log('MIG-501 resumable uploads (#842): tus-style resume / deny / capability...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-501-resumable-uploads.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -2708,6 +2720,7 @@ checkMig023SessionInvites();
 checkMig024RoleProjections();
 checkCompositionGateSelfTest();
 checkMig500LocalAssets();
+checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig309Rulesets();
 checkMig503PgSqliteDryRun();
