@@ -1,5 +1,5 @@
 # Stack migration readiness
 
-DONE 23 · READY 2
+DONE 24 · READY 1
 
-READY: RPC-SAGA-VERSION-READ, MIG-502
+READY: MIG-502

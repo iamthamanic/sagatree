@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SAGA-VERSION-READ",
+  "result": "PASS",
+  "testedCommit": "dfed7d4a756bd0c57c28d2eeb3594588965745c0",
+  "githubClosed": true,
+  "mergeRef": "PR #942 \u2192 main (#872)",
+  "note": "Native slug + version read ports; project membership via project ports; GM/player payload projection; exact visibility match.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-saga-version-read.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-version-read.md",
+      "sha256": "2b81cb1132eca83e777e953417c69ec75f51f1321bb650291616183d1e9dd457"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-saga-version-read.md",
+      "sha256": "5711b08abc61b9a4906e7c32af852240784990ce133402566dd151f264098083"
+    }
+  ]
+}

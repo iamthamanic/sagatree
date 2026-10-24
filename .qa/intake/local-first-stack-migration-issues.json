@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 2,
+    "issuesReady": 1,
     "issuesBlockedOrNeedsDesign": 65,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -2997,7 +2997,7 @@
       "title": "Saga-Versionen und native Katalogprojektion",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-saga-version-read",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-version-read.md",
       "dependsOn": [
@@ -3182,9 +3182,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-version-read.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -3219,7 +3220,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-023",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
