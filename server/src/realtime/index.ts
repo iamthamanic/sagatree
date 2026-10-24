@@ -167,6 +167,7 @@ export function createRealtimeSessionRooms(deps: {
         ? Math.max(0, Math.floor(input.clientRevision))
         : 0;
 
+    // Membership / session existence for catch-up path (same ACL as snapshot).
     const since = deps.session.store.listEventsSince(actor.actorId, input.sessionId, clientRevision);
     if (!since.ok) {
       return {
@@ -181,14 +182,19 @@ export function createRealtimeSessionRooms(deps: {
       role,
       revealedObjectIds: [],
     };
-    const eventRecords = since.events.map((event) => ({
-      id: `EV-${event.revision}`,
-      revision: event.revision,
-      kind: event.kind,
-      actorUserId: event.actorUserId,
-      payload: event.payload,
-    }));
-    const projected = projectRuntimeSnapshot(snap.snapshot, projectionActor, eventRecords);
+    // Tip snapshot already includes all committed mutations through `revision`.
+    // Never attach those same deltas again — clients replace from snapshot (no double-apply).
+    const tipRevision = snap.snapshot.revision;
+    const trailing = since.events
+      .filter((event) => event.revision > tipRevision)
+      .map((event) => ({
+        id: `EV-${event.revision}`,
+        revision: event.revision,
+        kind: event.kind,
+        actorUserId: event.actorUserId,
+        payload: event.payload,
+      }));
+    const projected = projectRuntimeSnapshot(snap.snapshot, projectionActor, trailing);
 
     const room = ensureRoom(input.sessionId);
     room.occupants.set(actor.actorId, { actorId: actor.actorId, role });
@@ -198,7 +204,7 @@ export function createRealtimeSessionRooms(deps: {
       sync: {
         sessionId: input.sessionId,
         roomId: room.roomId,
-        revision: snap.snapshot.revision,
+        revision: tipRevision,
         role,
         snapshot: projected,
         events: projected.events,
@@ -227,10 +233,22 @@ export function createRealtimeSessionRooms(deps: {
     onCommitted(event) {
       const room = rooms.get(event.sessionId);
       if (!room || room.occupants.size === 0) return;
-      for (const occupant of room.occupants.values()) {
+      // Re-resolve membership on every fan-out — cached join role must not outlive revoke/demote.
+      for (const occupant of [...room.occupants.values()]) {
+        const role = authoritativeRole(
+          { actorId: occupant.actorId, kind: 'remote-account' },
+          event.sessionId,
+        );
+        if (!role) {
+          room.occupants.delete(occupant.actorId);
+          continue;
+        }
+        if (occupant.role !== role) {
+          room.occupants.set(occupant.actorId, { actorId: occupant.actorId, role });
+        }
         const projectionActor: ProjectionActor = {
           actorId: occupant.actorId,
-          role: occupant.role,
+          role,
           revealedObjectIds: [],
         };
         const projected = projectRuntimeSnapshot(event.snapshot, projectionActor, [
@@ -251,6 +269,7 @@ export function createRealtimeSessionRooms(deps: {
           projection: projected,
         });
       }
+      if (room.occupants.size === 0) rooms.delete(event.sessionId);
     },
 
     occupants(sessionId) {

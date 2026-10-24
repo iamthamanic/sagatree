@@ -108,6 +108,12 @@ export type SessionRuntimeStore = {
     | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'SESSION_NOT_FOUND' };
   /** Membership mutation for tests / revoke paths — never a client-elevated join. */
   readonly revokeMembership: (sessionId: string, actorUserId: string) => void;
+  /** Demote/promote write access without removing membership (fan-out recheck paths). */
+  readonly setMembershipCanWrite: (
+    sessionId: string,
+    actorUserId: string,
+    canWrite: boolean,
+  ) => void;
   /** Authoritative membership for projections — never trust client-claimed roles. */
   readonly resolveMembership: (
     actorUserId: string,
@@ -499,6 +505,12 @@ export function createSessionRuntimeStore(
         sessionId,
         actorUserId,
       );
+    },
+
+    setMembershipCanWrite(sessionId, actorUserId, canWrite) {
+      db.prepare(
+        'UPDATE session_members SET can_write = ? WHERE session_id = ? AND actor_user_id = ?',
+      ).run(canWrite ? 1 : 0, sessionId, actorUserId);
     },
 
     resolveMembership(actorUserId, sessionId) {

@@ -36,7 +36,7 @@ try {
   });
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
 
-  /** @type {Array<{actorId:string,revision:number,kind:string}>} */
+  /** @type {Array<{actorId:string,revision:number,kind:string,role:string}>} */
   const fanout = [];
   let realtime;
   const session = createSessionPorts({
@@ -52,6 +52,7 @@ try {
         actorId: message.actorId,
         revision: message.revision,
         kind: message.kind,
+        role: message.projection.role,
       });
     },
   });
@@ -81,7 +82,8 @@ try {
   // --- Fall 1 ---
   const joinGm = realtime.join(gm, { sessionId, clientRevision: 0 });
   assert(joinGm.ok && joinGm.sync.revision === 1 && joinGm.sync.role === 'gm', 'GM join');
-  assert(joinGm.sync.events.length >= 1, 'GM gets events from 0');
+  // Tip snapshot replaces local state — deltas already folded into revision must not replay.
+  assert(joinGm.sync.events.length === 0, 'GM tip snapshot omits folded deltas');
 
   const joinP1Behind = realtime.join(p1, {
     sessionId,
@@ -92,8 +94,7 @@ try {
   });
   assert(joinP1Behind.ok && joinP1Behind.sync.role === 'player', 'P1 stays player despite claimed gm');
   assert(joinP1Behind.sync.revision === 1, 'P1 join snapshot');
-  const p1Revs = joinP1Behind.sync.events.map((e) => e.revision);
-  assert(p1Revs.every((r, i) => i === 0 || r > p1Revs[i - 1]), 'P1 events ordered, no gap');
+  assert(joinP1Behind.sync.events.length === 0, 'behind client gets tip replace, not double-apply deltas');
 
   const joinP2Current = realtime.join(p2, { sessionId, clientRevision: 1 });
   assert(joinP2Current.ok && joinP2Current.sync.events.length === 0, 'P2 at tip gets no duplicate events');
@@ -114,13 +115,43 @@ try {
 
   const resyncP1 = realtime.resync(p1, { sessionId, clientRevision: 1 });
   assert(resyncP1.ok && resyncP1.sync.revision === 2, 'resync tip');
-  assert(
-    resyncP1.sync.events.length === 1 && resyncP1.sync.events[0].revision === 2,
-    'resync only follow-on event (no duplicate of rev 1)',
-  );
+  assert(resyncP1.sync.events.length === 0, 'resync tip snapshot omits deltas already in revision');
   note(
-    'Jeder erhält einen konsistenten Snapshot und die freigegebenen Folgeereignisse ohne Lücke oder doppelte Anwendung.',
+    'Jeder erhält einen konsistenten Snapshot ohne Lücke oder doppelte Anwendung der bereits im Tip enthaltenen Deltas.',
   );
+
+  // Fan-out must re-resolve membership: revoke mid-session → no further delivery.
+  fanout.length = 0;
+  session.store.revokeMembership(sessionId, p1.actorId);
+  const cmd3 = session.commands.apply(gm, {
+    sessionId,
+    expectedRevision: 2,
+    idempotencyKey: 'cmd-3',
+    op: { kind: 'presence', payload: { userId: gm.actorId, isOnline: true, characterId: 'CH-2' } },
+  });
+  assert(cmd3.ok && cmd3.snapshot.revision === 3, 'third command after revoke');
+  assert(
+    !fanout.some((f) => f.actorId === p1.actorId) &&
+      fanout.some((f) => f.actorId === gm.actorId && f.revision === 3),
+    `revoked occupant skipped on fan-out, got ${JSON.stringify(fanout)}`,
+  );
+  assert(!realtime.occupants(sessionId).includes(p1.actorId), 'revoked occupant evicted from room');
+
+  // Demote writer → subsequent fan-out projects as player (cached join role must not stick).
+  session.store.setMembershipCanWrite(sessionId, gm.actorId, false);
+  session.store.setMembershipCanWrite(sessionId, p2.actorId, true);
+  realtime.join(gm, { sessionId, clientRevision: 3 });
+  fanout.length = 0;
+  const cmd4 = session.commands.apply(p2, {
+    sessionId,
+    expectedRevision: 3,
+    idempotencyKey: 'cmd-4',
+    op: { kind: 'presence', payload: { userId: p2.actorId, isOnline: true } },
+  });
+  assert(cmd4.ok && cmd4.snapshot.revision === 4, 'fourth command by promoted p2');
+  const gmFan = fanout.find((f) => f.actorId === gm.actorId && f.revision === 4);
+  assert(gmFan && gmFan.role === 'player', `demoted gm fan-out role=player, got ${JSON.stringify(gmFan)}`);
+  note('Fan-out re-resolves membership; revoked occupants are evicted; demoted writers lose GM projection.');
 
   // --- Fall 2 ---
   const denyStranger = realtime.join(stranger, {
@@ -134,7 +165,7 @@ try {
   const denyRevoked = realtime.resync(p2, {
     sessionId,
     roomId: joinP2Current.sync.roomId,
-    clientRevision: 2,
+    clientRevision: 4,
   });
   assert(!denyRevoked.ok && denyRevoked.error === 'FORBIDDEN', 'revoked member resync denied');
 
@@ -158,23 +189,18 @@ try {
   const session2 = createSessionPorts({ db: boot2.db });
   const realtime2 = createRealtimeSessionRooms({ session: session2 });
 
-  const afterRestart = realtime2.resync(p1, {
+  // p1/p2 were revoked earlier — use remaining member (demoted gm still has membership).
+  const afterRestart = realtime2.resync(gm, {
     sessionId,
     clientRevision: 0,
   });
   assert(afterRestart.ok && afterRestart.sync.reconstructed === true, 'reconstructed flag');
-  assert(afterRestart.sync.revision === 2, 'durable tip after restart');
-  assert(
-    afterRestart.sync.events.some((e) => e.revision === 1) &&
-      afterRestart.sync.events.some((e) => e.revision === 2),
-    'both confirmed events present after restart',
-  );
-  assert(
-    afterRestart.sync.events.every((e) => e.revision === 1 || e.revision === 2),
-    'no rolled-back mutation published',
-  );
+  assert(afterRestart.sync.revision === 4, 'durable tip after restart');
+  assert(afterRestart.sync.events.length === 0, 'tip replace after restart — no folded-delta replay');
+  assert(afterRestart.sync.snapshot.revision === 4, 'projected snapshot at durable tip');
+  assert(afterRestart.sync.role === 'player', 'demotion survives host restart');
   note(
-    'Der Resync rekonstruiert das bestätigte Ergebnis aus persistierten Ereignissen und veröffentlicht keine zurückgerollte Mutation.',
+    'Der Resync rekonstruiert das bestätigte Tip-Ergebnis aus der Persistenz ohne doppelte Delta-Anwendung.',
   );
   note('Touched files: zero type escape hatches (typed-strict / Boy Scout).');
 
