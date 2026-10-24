@@ -118,6 +118,29 @@ try {
     'stranger list does not hide public rows',
   );
 
+  // Linked solo: remote account must see private customs created under linked solo id.
+  const soloId = 'solo-homebrew-1';
+  const linkedRemote = {
+    actorId: 'user-linked-remote',
+    kind: 'remote-account',
+    linkedSoloActorIds: [soloId],
+  };
+  const soloCustom = rulesets.create(
+    { actorId: soloId, kind: 'solo-local' },
+    {
+      name: 'Solo Private Pack',
+      attributesConfig: { primary: ['CHA'], derived: [] },
+      isPublic: false,
+    },
+  );
+  assert(soloCustom.ok, 'solo creates private custom');
+  // Make private again for link test (create as public=false already).
+  const linkedList = rulesets.listAll(linkedRemote);
+  assert(
+    linkedList.ok && linkedList.value.some((r) => r.id === soloCustom.value.id),
+    'linked remote listAll includes solo-owned private ruleset',
+  );
+
   note(
     'Owner can save permitted custom ruleset; foreign owner write denied and public ruleset read not accidentally restricted.',
   );

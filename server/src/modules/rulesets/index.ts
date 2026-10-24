@@ -43,6 +43,16 @@ function requireActor(actor: Actor | null | undefined): actor is Actor {
   return Boolean(actor?.actorId);
 }
 
+function actorOwnsCreator(actor: Actor, creatorUserId: string | null): boolean {
+  if (!creatorUserId) return false;
+  if (actor.actorId === creatorUserId) return true;
+  const linked =
+    'linkedSoloActorIds' in actor && Array.isArray((actor as { linkedSoloActorIds?: readonly string[] }).linkedSoloActorIds)
+      ? (actor as { linkedSoloActorIds?: readonly string[] }).linkedSoloActorIds
+      : undefined;
+  return linked?.includes(creatorUserId) === true;
+}
+
 export function createRulesetPorts(deps: {
   readonly db: HostDatabase;
   readonly authorize: AuthorizeFn;
@@ -57,12 +67,9 @@ export function createRulesetPorts(deps: {
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       const decision = authorize('ruleset.read', actor, {});
       if (!decision.allow) return { ok: false, error: 'not-authorized' };
-      // Catalog list: official/public for everyone; private customs only for owner.
+      // Catalog list: official/public for everyone; private customs for owner (+ linked solo).
       const visible = store.listAll().filter(
-        (row) =>
-          row.isOfficial ||
-          row.isPublic ||
-          (row.creatorUserId != null && row.creatorUserId === actor.actorId),
+        (row) => row.isOfficial || row.isPublic || actorOwnsCreator(actor, row.creatorUserId),
       );
       return { ok: true, value: visible };
     },
