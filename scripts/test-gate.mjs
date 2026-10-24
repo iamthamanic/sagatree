@@ -548,6 +548,18 @@ function checkMig500LocalAssets() {
   );
 }
 
+function checkMig306MediaAdapter() {
+  console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-306-media-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -2684,6 +2696,7 @@ checkMig023SessionInvites();
 checkMig024RoleProjections();
 checkCompositionGateSelfTest();
 checkMig500LocalAssets();
+checkMig306MediaAdapter();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

@@ -17,7 +17,7 @@ export type {
   MediaOptimizeStatus,
   MediaOptimizeUnchangedResult,
   MediaOptimizeUnsupportedResult,
-} from './optimization-contract';
+} from './optimization-contract.ts';
 
 export {
   ASSET_PROFILE_IDS,
@@ -28,7 +28,7 @@ export {
   isAssetProfileId,
   isMediaKind,
   isMediaOptimizeStatus,
-} from './optimization-contract';
+} from './optimization-contract.ts';
 
 export type {
   AssetPolicy,
@@ -36,7 +36,7 @@ export type {
   ImageAssetPolicy,
   MediaPolicyEvaluation,
   UnsupportedKindPolicy,
-} from './optimization-policy';
+} from './optimization-policy.ts';
 
 export {
   evaluateImageAgainstPolicy,
@@ -45,4 +45,4 @@ export {
   listImageAssetPolicies,
   mustPreserveAlpha,
   normalizeImageMime,
-} from './optimization-policy';
+} from './optimization-policy.ts';
