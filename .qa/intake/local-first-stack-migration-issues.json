@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 6,
+    "issuesReady": 5,
     "issuesBlockedOrNeedsDesign": 66,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -2390,7 +2390,7 @@
       "title": "Realtime session rooms + snapshot/resync",
       "priority": "P0",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-021",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-021.md",
       "dependsOn": [
@@ -2469,9 +2469,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-021.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "approvalRequired": null
       },
@@ -2502,7 +2503,7 @@
         "P0",
         "migration-wave-2-api-realtime",
         "migration-order-019",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
