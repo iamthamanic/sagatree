@@ -89,6 +89,25 @@ export type SessionRuntimeStore = {
   ) =>
     | { ok: true; snapshot: SessionRuntimeState; projectId: string }
     | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'SESSION_NOT_FOUND' };
+  /** Durable events with revision > afterRevision (for realtime resync). */
+  readonly listEventsSince: (
+    actorUserId: string,
+    sessionId: string,
+    afterRevision: number,
+  ) =>
+    | {
+        ok: true;
+        events: readonly {
+          readonly revision: number;
+          readonly eventSequence: number;
+          readonly actorUserId: string;
+          readonly kind: string;
+          readonly payload: Record<string, unknown>;
+        }[];
+      }
+    | { ok: false; error: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'SESSION_NOT_FOUND' };
+  /** Membership mutation for tests / revoke paths — never a client-elevated join. */
+  readonly revokeMembership: (sessionId: string, actorUserId: string) => void;
 };
 
 function failure(
@@ -427,6 +446,52 @@ export function createSessionRuntimeStore(
           updatedAt: row.updated_at,
         },
       };
+    },
+
+    listEventsSince(actorUserId, sessionId, afterRevision) {
+      if (!actorUserId) return { ok: false, error: 'UNAUTHENTICATED' };
+      if (!memberExists(db, sessionId, actorUserId)) {
+        return { ok: false, error: 'FORBIDDEN' };
+      }
+      const runtime = db
+        .prepare('SELECT 1 AS ok FROM session_runtime WHERE session_id = ?')
+        .get(sessionId) as { ok: number } | undefined;
+      if (!runtime) return { ok: false, error: 'SESSION_NOT_FOUND' };
+      const since = Number.isFinite(afterRevision) ? Math.max(0, Math.floor(afterRevision)) : 0;
+      const rows = db
+        .prepare(
+          `SELECT revision, event_sequence, actor_user_id, payload_json
+             FROM session_events
+            WHERE session_id = ? AND revision > ?
+            ORDER BY revision ASC, event_sequence ASC`,
+        )
+        .all(sessionId, since) as Array<{
+        revision: number;
+        event_sequence: number;
+        actor_user_id: string;
+        payload_json: string;
+      }>;
+      const events = rows.map((row) => {
+        const parsed = JSON.parse(row.payload_json) as {
+          kind?: string;
+          payload?: Record<string, unknown>;
+        };
+        return {
+          revision: row.revision,
+          eventSequence: row.event_sequence,
+          actorUserId: row.actor_user_id,
+          kind: typeof parsed.kind === 'string' ? parsed.kind : 'unknown',
+          payload: parsed.payload && typeof parsed.payload === 'object' ? parsed.payload : {},
+        };
+      });
+      return { ok: true, events };
+    },
+
+    revokeMembership(sessionId, actorUserId) {
+      db.prepare('DELETE FROM session_members WHERE session_id = ? AND actor_user_id = ?').run(
+        sessionId,
+        actorUserId,
+      );
     },
   };
 }

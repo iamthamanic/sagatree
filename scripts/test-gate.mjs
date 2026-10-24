@@ -526,6 +526,14 @@ function checkMig024RoleProjections() {
       stdio: 'inherit',
     },
   );
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-021-realtime-rooms.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
 }
 
 function checkMig500LocalAssets() {
