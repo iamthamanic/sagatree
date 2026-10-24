@@ -29,11 +29,11 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 15 | 2 | MIG-020 [#795](https://github.com/iamthamanic/sagatree/issues/795) | done | #789, #792, #793, #786 |
 | 16 | 2 | MIG-022 [#797](https://github.com/iamthamanic/sagatree/issues/797) | done | #790, #792, #793, #787 |
 | 17 | 2 | MIG-023 [#798](https://github.com/iamthamanic/sagatree/issues/798) | done | #795, #797, #785 |
-| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | ready | #792, #797, #784 |
-| 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | waiting | #795, #797, #799, #785, #786 |
+| 18 | 2 | MIG-024 [#799](https://github.com/iamthamanic/sagatree/issues/799) | done | #792, #797, #784 |
+| 19 | 2 | MIG-021 [#796](https://github.com/iamthamanic/sagatree/issues/796) | ready | #795, #797, #799, #785, #786 |
 | 20 | 2 | MIG-503 [#844](https://github.com/iamthamanic/sagatree/issues/844) | done | #790, #783 |
 | 21 | 2 | RPC-MARKETPLACE-COUNT [#878](https://github.com/iamthamanic/sagatree/issues/878) | blocked | #795, #792, #797, #799, #784, #785, #787 |
-| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | waiting | #795, #792, #797, #799, #784, #785, #787 |
+| 22 | 2 | RPC-SAGA-AUTHORING [#871](https://github.com/iamthamanic/sagatree/issues/871) | ready | #795, #792, #797, #799, #784, #785, #787 |
 | 23 | 2 | RPC-SAGA-VERSION-READ [#872](https://github.com/iamthamanic/sagatree/issues/872) | waiting | #795, #792, #797, #799, #784, #785, #787, #871 |
 | 24 | 2 | RPC-SAGA-PROVISION [#873](https://github.com/iamthamanic/sagatree/issues/873) | blocked | #795, #792, #797, #799, #784, #785, #787, #872 |
 | 25 | 2 | RPC-PROJECT-MEMBERSHIP [#874](https://github.com/iamthamanic/sagatree/issues/874) | waiting | #795, #792, #797, #799, #784, #785, #787, #873 |
