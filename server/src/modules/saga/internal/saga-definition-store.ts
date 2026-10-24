@@ -42,6 +42,18 @@ export type SagaPayload = {
   readonly [key: string]: unknown;
 };
 
+/** Actor identity for ownership — includes MIG-015 linked solo ids. */
+export type SagaActorRef = {
+  readonly actorId: string;
+  readonly linkedSoloActorIds?: readonly string[];
+};
+
+export function actorOwnsSaga(actor: SagaActorRef, ownerUserId: string | null): boolean {
+  if (!ownerUserId) return false;
+  if (actor.actorId === ownerUserId) return true;
+  return actor.linkedSoloActorIds?.includes(ownerUserId) === true;
+}
+
 function newId(): string {
   return randomUUID();
 }
@@ -79,6 +91,22 @@ export class SagaDefinitionStore {
 
   constructor(db: HostDatabase) {
     this.#db = db;
+  }
+
+  #withImmediateTx<T>(fn: () => T): T {
+    this.#db.exec('BEGIN IMMEDIATE');
+    try {
+      const value = fn();
+      this.#db.exec('COMMIT');
+      return value;
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      throw err;
+    }
   }
 
   getDefinition(sagaId: string): SagaDefinitionRow | null {
@@ -188,20 +216,22 @@ export class SagaDefinitionStore {
     const createdAt = nowIso();
     const payload = JSON.stringify(emptyPayload(title, blurb));
     try {
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definitions
-           (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
-           VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
-        )
-        .run(sagaId, `user.${sagaId.replace(/-/g, '')}`, title, blurb, ownerUserId, createdAt, createdAt);
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definition_versions
-           (id, saga_id, version_label, status, payload, published_at, created_at)
-           VALUES (?, ?, 'draft', 'draft', ?, NULL, ?)`,
-        )
-        .run(draftId, sagaId, payload, createdAt);
+      this.#withImmediateTx(() => {
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definitions
+             (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
+             VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
+          )
+          .run(sagaId, `user.${sagaId.replace(/-/g, '')}`, title, blurb, ownerUserId, createdAt, createdAt);
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definition_versions
+             (id, saga_id, version_label, status, payload, published_at, created_at)
+             VALUES (?, ?, 'draft', 'draft', ?, NULL, ?)`,
+          )
+          .run(draftId, sagaId, payload, createdAt);
+      });
     } catch {
       return { ok: false, error: 'create-failed' };
     }
@@ -224,35 +254,37 @@ export class SagaDefinitionStore {
     const draftId = newId();
     const createdAt = nowIso();
     try {
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definitions
-           (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
-           VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
-        )
-        .run(
-          sagaId,
-          `user.${sagaId.replace(/-/g, '')}`,
-          `${src.title} (Kopie)`,
-          src.synopsis,
-          ownerUserId,
-          createdAt,
-          createdAt,
-        );
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definition_versions
-           (id, saga_id, version_label, status, payload, published_at, created_at)
-           VALUES (?, ?, 'v1', 'published', ?, ?, ?)`,
-        )
-        .run(publishedId, sagaId, published.payload, createdAt, createdAt);
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definition_versions
-           (id, saga_id, version_label, status, payload, published_at, created_at)
-           VALUES (?, ?, 'draft', 'draft', ?, NULL, ?)`,
-        )
-        .run(draftId, sagaId, published.payload, createdAt);
+      this.#withImmediateTx(() => {
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definitions
+             (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
+             VALUES (?, ?, ?, ?, 'user', ?, 0, ?, ?)`,
+          )
+          .run(
+            sagaId,
+            `user.${sagaId.replace(/-/g, '')}`,
+            `${src.title} (Kopie)`,
+            src.synopsis,
+            ownerUserId,
+            createdAt,
+            createdAt,
+          );
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definition_versions
+             (id, saga_id, version_label, status, payload, published_at, created_at)
+             VALUES (?, ?, 'v1', 'published', ?, ?, ?)`,
+          )
+          .run(publishedId, sagaId, published.payload, createdAt, createdAt);
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definition_versions
+             (id, saga_id, version_label, status, payload, published_at, created_at)
+             VALUES (?, ?, 'draft', 'draft', ?, NULL, ?)`,
+          )
+          .run(draftId, sagaId, published.payload, createdAt);
+      });
     } catch {
       return { ok: false, error: 'copy-failed' };
     }
@@ -260,7 +292,7 @@ export class SagaDefinitionStore {
   }
 
   getEditor(
-    actorId: string,
+    actor: SagaActorRef,
     sagaId: string,
   ):
     | {
@@ -291,7 +323,7 @@ export class SagaDefinitionStore {
       if (!published) return { ok: false, error: 'P0002' };
       ver = published;
       canEdit = false;
-    } else if (def.owner_user_id === actorId) {
+    } else if (actorOwnsSaga(actor, def.owner_user_id)) {
       ver = this.ensureDraft(sagaId);
       canEdit = true;
     } else {
@@ -318,7 +350,7 @@ export class SagaDefinitionStore {
   }
 
   saveDraft(
-    actorId: string,
+    actor: SagaActorRef,
     sagaId: string,
     payload: Record<string, unknown>,
     expectedRevision: number,
@@ -331,7 +363,7 @@ export class SagaDefinitionStore {
     const def = this.getDefinition(sagaId);
     if (!def) return { ok: false, error: 'P0002' };
     if (def.origin === 'native') return { ok: false, error: '42501' };
-    if (def.owner_user_id !== actorId) return { ok: false, error: '42501' };
+    if (!actorOwnsSaga(actor, def.owner_user_id)) return { ok: false, error: '42501' };
     if (def.draft_revision !== expectedRevision) return { ok: false, error: '40001' };
 
     const titleRaw = typeof payload.title === 'string' ? payload.title : '';
@@ -345,16 +377,22 @@ export class SagaDefinitionStore {
     const draft = this.ensureDraft(sagaId);
     const updatedAt = nowIso();
     const payloadJson = JSON.stringify(payload);
-    this.#db
-      .prepare(`UPDATE saga_definition_versions SET payload = ? WHERE id = ?`)
-      .run(payloadJson, draft.id);
-    this.#db
-      .prepare(
-        `UPDATE saga_definitions
-         SET title = ?, synopsis = ?, draft_revision = draft_revision + 1, updated_at = ?
-         WHERE id = ?`,
-      )
-      .run(title, blurb, updatedAt, sagaId);
+    try {
+      this.#withImmediateTx(() => {
+        this.#db
+          .prepare(`UPDATE saga_definition_versions SET payload = ? WHERE id = ?`)
+          .run(payloadJson, draft.id);
+        this.#db
+          .prepare(
+            `UPDATE saga_definitions
+             SET title = ?, synopsis = ?, draft_revision = draft_revision + 1, updated_at = ?
+             WHERE id = ?`,
+          )
+          .run(title, blurb, updatedAt, sagaId);
+      });
+    } catch {
+      return { ok: false, error: 'save-failed' };
+    }
     const next = this.getDefinition(sagaId);
     const ver = this.getVersion(draft.id);
     if (!next || !ver) return { ok: false, error: 'save-failed' };
@@ -370,7 +408,7 @@ export class SagaDefinitionStore {
   }
 
   publish(
-    actorId: string,
+    actor: SagaActorRef,
     sagaId: string,
     expectedRevision: number,
   ):
@@ -382,7 +420,7 @@ export class SagaDefinitionStore {
     const def = this.getDefinition(sagaId);
     if (!def) return { ok: false, error: 'P0002' };
     if (def.origin === 'native') return { ok: false, error: '42501' };
-    if (def.owner_user_id !== actorId) return { ok: false, error: '42501' };
+    if (!actorOwnsSaga(actor, def.owner_user_id)) return { ok: false, error: '42501' };
     if (def.draft_revision !== expectedRevision) return { ok: false, error: '40001' };
 
     const draft = this.ensureDraft(sagaId);
@@ -405,13 +443,15 @@ export class SagaDefinitionStore {
     const createdAt = nowIso();
     const publishedCountBefore = rows.length;
     try {
-      this.#db
-        .prepare(
-          `INSERT INTO saga_definition_versions
-           (id, saga_id, version_label, status, payload, published_at, created_at)
-           VALUES (?, ?, ?, 'published', ?, ?, ?)`,
-        )
-        .run(versionId, sagaId, label, draft.payload, createdAt, createdAt);
+      this.#withImmediateTx(() => {
+        this.#db
+          .prepare(
+            `INSERT INTO saga_definition_versions
+             (id, saga_id, version_label, status, payload, published_at, created_at)
+             VALUES (?, ?, ?, 'published', ?, ?, ?)`,
+          )
+          .run(versionId, sagaId, label, draft.payload, createdAt, createdAt);
+      });
     } catch {
       return { ok: false, error: 'publish-failed' };
     }

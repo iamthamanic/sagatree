@@ -144,6 +144,15 @@ try {
   const badCopy = copy(O, created.value.sagaId);
   assert(!badCopy.ok && badCopy.error === '22023', 'only native copyable');
 
+  // Linked solo ownership (MIG-015): remote actor with linkedSoloActorIds may edit
+  const linked = {
+    kind: 'remote',
+    actorId: 'remote-r',
+    linkedSoloActorIds: ['owner-o'],
+  };
+  const linkedEd = editor(linked, created.value.sagaId);
+  assert(linkedEd.ok && linkedEd.value.canEdit === true, 'linked solo can edit');
+
   db.close();
   console.log('PASS rpc-saga-authoring.self-test');
 } finally {

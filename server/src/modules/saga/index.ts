@@ -109,21 +109,21 @@ export function createSagaPorts(deps: {
       if (!decision.allow) {
         return { ok: false, error: decision.reason === 'saga-not-found' ? 'P0002' : '42501' };
       }
-      return store.getEditor(actor.actorId, sagaId);
+      return store.getEditor(actor, sagaId);
     },
 
     saveSagaDefinitionDraft(actor, sagaId, payload, expectedRevision) {
       if (!requireActor(actor)) return { ok: false, error: '42501' };
       const decision = authorize('saga.write', actor, { sagaId });
       if (!decision.allow) return { ok: false, error: '42501' };
-      return store.saveDraft(actor.actorId, sagaId, payload, expectedRevision);
+      return store.saveDraft(actor, sagaId, payload, expectedRevision);
     },
 
     publishSagaDefinitionVersion(actor, sagaId, expectedRevision) {
       if (!requireActor(actor)) return { ok: false, error: '42501' };
       const decision = authorize('saga.write', actor, { sagaId });
       if (!decision.allow) return { ok: false, error: '42501' };
-      return store.publish(actor.actorId, sagaId, expectedRevision);
+      return store.publish(actor, sagaId, expectedRevision);
     },
 
     seedNativeForTests(input) {
