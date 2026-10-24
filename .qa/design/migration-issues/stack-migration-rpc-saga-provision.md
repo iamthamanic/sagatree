@@ -127,8 +127,8 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | --- | --- |
 | **SLICE DONE** | Isolated deliverable under `server/src/application/saga-provision/create_project_from_saga_version/index.ts`, `server/src/application/saga-provision/duplicate_saga_playthrough/index.ts`, `server/src/application/saga-provision/ensure_native_starter_project/index.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none — later consumers must not silently assume host activation beyond this slice without their own evidence. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **Deferred integration** | MIG-301..313 / MIG-311 session adapters as applicable |
+| **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

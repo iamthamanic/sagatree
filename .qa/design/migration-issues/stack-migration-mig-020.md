@@ -107,7 +107,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | **SLICE DONE** | Typed Hono HTTP command/query pipeline with revision/idempotency and role-scoped transport projection of gmNotes. |
 | **Acceptance tier** | `host-integration` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | Realtime room join/resync/fan-out is MIG-021/#796; Colyseus Room product surface + browser E2E MIG-602/#847. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 (+ MIG-311/#810 for legacy adapters) |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

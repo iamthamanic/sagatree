@@ -106,7 +106,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | **SLICE DONE** | Recursive GM/player/spectator projection filter in `server/src/projections` + transport gmNotes stripping. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | Realtime object/event envelopes with reveal grants: MIG-021/#796; legacy atlas/session adapters: MIG-311/#810. Spectator path FEATURE VERIFIED only after consumer wiring + MIG-600/#845. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 (+ MIG-311/#810 for legacy adapters) |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

@@ -107,10 +107,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Isolated deliverable under `supabase/functions/_shared/cors.ts`, `supabase/functions/_shared/edge-dispatcher-allowlist.ts`, `supabase/functions/_shared/edge-jwt-gate.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none — later consumers must not silently assume host activation beyond this slice without their own evidence. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **Deferred integration** | authorized host routes + MIG-600 |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

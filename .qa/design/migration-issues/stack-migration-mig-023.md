@@ -106,7 +106,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | **SLICE DONE** | Invite/join codes create player membership only; never GM proof; redeem limits and deny paths. |
 | **Acceptance tier** | `host-integration` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | Product UX adapters MIG-311/#810; feature verify MIG-602/#847. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **FEATURE VERIFIED** | MIG-600/#845 + MIG-602/#847 (+ MIG-311/#810 for legacy adapters) |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

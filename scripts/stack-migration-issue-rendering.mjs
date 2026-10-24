@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { planContracts, typedStrictAcceptance } from './stack-migration-plan-contracts.mjs';
 import { migrationIssueIdentities, migrationRepository } from './stack-migration-identities.mjs';
 import { dependencyResolver } from './stack-migration-dependencies.mjs';
@@ -252,6 +253,36 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   return { intake, dependencyPlan };
 }
 
+/** First non-empty path list for SLICE DONE wording (empty [] must not win). */
+function sliceDeliverablePaths(issue) {
+  const candidates = [issue.scope?.mayChange, issue.after?.paths, issue.before?.paths];
+  for (const list of candidates) {
+    if (Array.isArray(list) && list.length > 0) return list.slice(0, 3);
+  }
+  return ['(see Scope)'];
+}
+
+/** Optional audit-matrix deferred/feature owners (same commit tree). */
+function matrixOwnersById() {
+  const matrixPath = '.qa/audits/migration-90-coverage-matrix-2026-10-24.json';
+  if (!existsSync(matrixPath)) return new Map();
+  try {
+    const matrix = JSON.parse(readFileSync(matrixPath, 'utf8'));
+    return new Map(
+      (matrix.rows || []).map((row) => [
+        row.localId,
+        {
+          deferred: row.deferredIntegrationOwner,
+          feature: row.featureVerificationOwner,
+          featureBucket: row.feature,
+        },
+      ]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
 /**
  * Explicit slice vs deferred integration vs feature verification owners.
  * Prevents equating SLICE DONE with FEATURE VERIFIED / RELEASE APPROVED.
@@ -262,10 +293,18 @@ function acceptanceTierBlock(issue, byId) {
     const peer = byId.get(id);
     return peer ? `${id}/#${peer.githubIssue}` : id;
   };
+  const paths = sliceDeliverablePaths(issue);
+  const matrixRow = matrixOwnersById().get(ID);
   const defaults = {
-    slice: `Isolated deliverable under \`${(issue.scope?.mayChange || issue.after?.paths || ['(see Scope)']).slice(0, 3).join('`, `')}\` with Required Tests / Edge Cases PASS at this issue's acceptance tier.`,
-    deferred: 'none — later consumers must not silently assume host activation beyond this slice without their own evidence.',
-    feature: `${link('MIG-600')} (security parity) and ${link('MIG-602')} (host/DB/transport/browser integration); release cutover remains ${link('MIG-700')} + human approval.`,
+    slice: `Isolated deliverable under \`${paths.join('`, `')}\` with Required Tests / Edge Cases PASS at this issue's acceptance tier.`,
+    deferred:
+      matrixRow?.deferred && matrixRow.deferred !== '—'
+        ? matrixRow.deferred
+        : 'none — later consumers must not silently assume host activation beyond this slice without their own evidence.',
+    feature:
+      matrixRow?.feature && matrixRow.feature !== '—'
+        ? matrixRow.feature
+        : `${link('MIG-600')} (security parity) and ${link('MIG-602')} (host/DB/transport/browser integration); release cutover remains ${link('MIG-700')} + human approval.`,
     tier: 'isolated-contract',
   };
   const special = {

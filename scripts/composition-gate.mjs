@@ -305,16 +305,14 @@ function requiredSectionsOk(text, verdict) {
     if (!simulations.every((simulation) => text.toLowerCase().includes(simulation.toLowerCase()))) {
       return false;
     }
-    // Acceptance-tier honesty: CLEAR proofs must state the tier and not claim feature E2E
-    // from an isolated unit surface. Deferred integration must name a successor or "none".
-    if (!/Acceptance tier|acceptance tier|SLICE DONE|host-integration|isolated-contract/i.test(text)) {
-      // Soft-require via Hop chain / Flags language: allow legacy proofs that declare
-      // explicit "Deferred integration:" or host mount call sites instead.
-      const hasDeferred = /Deferred integration:\s*\S+/i.test(text);
-      const hasCallSite =
-        /createHost|bootstrap\/|create-app|route-registry|onCommitted|attachSession/i.test(text);
-      if (!hasDeferred && !hasCallSite) return false;
-    }
+    // Acceptance-tier honesty: CLEAR proofs must declare BOTH fields independently.
+    // Host call-site markers do not bypass a missing Deferred integration line.
+    const hasTier =
+      /Acceptance tier:\s*\S+/i.test(text) ||
+      /\*\*Acceptance tier\*\*/i.test(text) ||
+      /acceptance tier:\s*`[^`]+`/i.test(text);
+    const hasDeferred = /Deferred integration:\s*\S+/i.test(text) || /\*\*Deferred integration\*\*/i.test(text);
+    if (!hasTier || !hasDeferred) return false;
   }
 
   if (verdict === 'SKIPPED') {

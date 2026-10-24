@@ -85,8 +85,6 @@ Crash leaves no orphan rows.
 
 - Acceptance tier: host-integration
 - Deferred integration: none
-
-None.
 `;
 }
 

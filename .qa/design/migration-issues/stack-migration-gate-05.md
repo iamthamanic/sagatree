@@ -96,8 +96,8 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | --- | --- |
 | **SLICE DONE** | Isolated deliverable under `.qa/evidence/stack-migration-prep/pocs/gate-05`, `.qa/design/gates/GATE-05-tauri-packaging.md` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none — later consumers must not silently assume host activation beyond this slice without their own evidence. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **Deferred integration** | MIG-602/603 then MIG-703 platform qualification |
+| **FEATURE VERIFIED** | PoC evidence + owner decision register |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

@@ -96,8 +96,8 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 | --- | --- |
 | **SLICE DONE** | Isolated deliverable under `desktop`, `docs/ops/desktop` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none — later consumers must not silently assume host activation beyond this slice without their own evidence. |
-| **FEATURE VERIFIED** | MIG-600/#845 (security parity) and MIG-602/#847 (host/DB/transport/browser integration); release cutover remains MIG-700/#849 + human approval. |
+| **Deferred integration** | TBD by dependency successors: GATE-05/#788, MIG-602/#847, MIG-603/#848 |
+| **FEATURE VERIFIED** | self / MIG-700/#849 human release |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers
