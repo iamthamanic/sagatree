@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-024",
+  "result": "PASS",
+  "testedCommit": "9ddd487824429516f7b1271c91e6d4841f273d91",
+  "githubClosed": true,
+  "mergeRef": "PR #923 → main (#799)",
+  "note": "Role projections strip gm_only recursively; spectators public-only; transport serializes via projectSessionSnapshot; negative canary fails when filter disabled.",
+  "checks": [
+    {
+      "command": "node scripts/mig-024-role-projections.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-024.md",
+      "sha256": "c52f21e02403bdae11c1e6cb8865d14553d4ec2c0e9b6f33a0fcc021ddc8cbd8"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-024.md",
+      "sha256": "9f21a39e8eddcf0311ad7855bae869603c1425b28667cc2a972789fd59eb11a4"
+    }
+  ]
+}
