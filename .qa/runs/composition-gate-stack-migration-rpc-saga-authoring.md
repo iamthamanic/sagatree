@@ -26,8 +26,9 @@ Authenticated actors author user saga definitions through application use-cases 
 
 ## Flags
 
-- Acceptance tier: isolated-contract
-- Deferred: frontend adapter cutover + feature E2E → MIG-600/602
+- Acceptance tier: `isolated-contract`
+- Deferred integration: Frontend adapter cutover + feature E2E → MIG-600/#845 + MIG-602/#847
+- SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
 
 ## Non-claims
 
