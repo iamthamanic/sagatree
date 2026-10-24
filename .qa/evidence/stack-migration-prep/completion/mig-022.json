@@ -18,7 +18,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-022.md",
-      "sha256": "92b75c76439ea0a5e350ed87776f238a664e83eca742afc63eb08b170530598a"
+      "sha256": "4fa3fb2e44790cbded8bb26d95eb75f9008ea742c2c8dce4c8097bca0e940b58"
     }
   ]
 }
