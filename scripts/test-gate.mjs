@@ -716,6 +716,18 @@ function checkMig413LorekeeperQuarantine() {
   );
 }
 
+function checkMig415MarketplaceQuarantine() {
+  console.log('MIG-415 (#831): marketplace stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-415-marketplace-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2904,6 +2916,7 @@ checkMig408ExportQuarantine();
 checkMig411ItemsQuarantine();
 checkMig412LookReferenceAnalysis();
 checkMig413LorekeeperQuarantine();
+checkMig415MarketplaceQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
