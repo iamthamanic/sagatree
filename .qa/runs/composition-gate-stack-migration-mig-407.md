@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-mig-407 (#823)
 
-- HEAD_SHA: 6befdb39ead90b81416d02180068a750c97dfcd4
+- HEAD_SHA: 81de7abf77e5c65af5935c9098027ad8b826cbf7
 - BASE_SHA: d2d5d0e57daf77d9d18bdc484de7e96ec0d11303
 - Date: 2026-10-25
 - Verdict: CLEAR
 
 ## Event
 
-Legacy dm-tools stays unmounted; seeded dice/combat quarantine fixtures and live 404 probes without a public HTTP mount.
+Legacy dm-tools stays unmounted; seeded dice/combat quarantine fixtures and live 404 probes (including /functions/v1 child paths) without a public HTTP mount.
 
 ## Hop chain
 
@@ -23,7 +23,7 @@ Legacy dm-tools stays unmounted; seeded dice/combat quarantine fixtures and live
 | N-actors | Public path stays 404 | createRouteHandler probes | pass |
 | Invalid/missing | Bad notation / missing target | throws | pass |
 | Two consumers / crash | No Redis durability; activation denied | flags false | pass |
-| Legacy defects | Unauth authority; unbounded dice count | fixtures | pass |
+| Legacy defects | Unauth authority; unbounded dice; lethal→unconscious; completed status | fixtures | pass |
 
 ## Flags
 
