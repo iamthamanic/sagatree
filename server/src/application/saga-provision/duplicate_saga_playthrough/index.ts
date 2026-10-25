@@ -1,19 +1,18 @@
 /**
  * duplicate_saga_playthrough use-case (RPC-SAGA-PROVISION / #873).
  * Location: server/src/application/saga-provision/duplicate_saga_playthrough/index.ts
- *
- * fresh → initialAdventure from version payload; with_progress → copy adventure_runtime.
- * Never reuses session identities (sessions are out of scope for this slice).
  */
 import type { Actor } from '../../../modules/identity/index.ts';
 import type { ProjectPorts } from '../../../modules/project/index.ts';
 import type { SagaPorts } from '../../../modules/saga/index.ts';
+import type { WorldPorts } from '../../../modules/world/index.ts';
 
 export function duplicateSagaPlaythroughUseCase(deps: {
   readonly saga: SagaPorts;
   readonly project: ProjectPorts;
+  readonly world: WorldPorts;
 }) {
-  const { saga, project } = deps;
+  const { saga, project, world } = deps;
 
   return (actor: Actor, projectId: string, modeRaw?: string | null) => {
     if (!actor?.actorId) return { ok: false as const, error: '42501' };
@@ -50,7 +49,13 @@ export function duplicateSagaPlaythroughUseCase(deps: {
       copyTitle = `${src.value.title.slice(0, 110)} · Kopie`;
     }
 
+    const ownedWorld = world.createOwnedWorld(actor, copyTitle);
+    if (!ownedWorld.ok) {
+      return { ok: false as const, error: ownedWorld.error === 'missing-actor' ? '42501' : 'P0001' };
+    }
+
     const created = project.createFromSagaVersion(actor, {
+      worldId: ownedWorld.value.id,
       sagaId: src.value.sagaId,
       sagaVersionId: src.value.sagaVersionId,
       title: copyTitle,

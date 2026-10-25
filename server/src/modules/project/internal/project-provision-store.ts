@@ -5,6 +5,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+import { generateSagaPublicId } from './public-project-id.ts';
 
 export type ProvisionedProject = {
   readonly id: string;
@@ -26,11 +27,6 @@ function newId(): string {
 
 function nowIso(): string {
   return new Date().toISOString();
-}
-
-function publicIdFor(projectId: string): string {
-  // SA-style short public id — stable from project uuid prefix (not authz).
-  return `SA-${projectId.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
 }
 
 function parseRuntime(raw: string | null | undefined): Record<string, unknown> {
@@ -113,7 +109,7 @@ export class ProjectProvisionStore {
   toVm(row: ProjectRow): ProvisionedProject {
     return {
       id: row.id,
-      publicId: row.public_id ?? publicIdFor(row.id),
+      publicId: row.public_id ?? generateSagaPublicId(),
       title: row.title,
       description: row.description,
       gmUserId: row.gm_user_id,
@@ -127,11 +123,11 @@ export class ProjectProvisionStore {
   }
 
   /**
-   * Atomically: world + project + GM membership.
-   * Host `world_id` is NOT NULL — allocate an owner world for the new play group.
+   * Atomically: project + GM membership for a world already allocated by world module.
    */
   createFromSagaVersion(input: {
     readonly actorId: string;
+    readonly worldId: string;
     readonly sagaId: string;
     readonly sagaVersionId: string;
     readonly title: string;
@@ -139,19 +135,14 @@ export class ProjectProvisionStore {
     readonly adventureRuntime: Record<string, unknown>;
   }): { ok: true; value: ProvisionedProject } | { ok: false; error: string } {
     if (!input.actorId) return { ok: false, error: '42501' };
+    if (!input.worldId) return { ok: false, error: '22023' };
     const projectId = newId();
-    const worldId = newId();
     const createdAt = nowIso();
-    const pub = publicIdFor(projectId);
+    const pub = generateSagaPublicId();
     const runtimeJson = JSON.stringify(input.adventureRuntime ?? {});
 
     try {
       this.#withImmediateTx(() => {
-        this.#db
-          .prepare(
-            `INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`,
-          )
-          .run(worldId, input.actorId, input.title, createdAt);
         this.#db
           .prepare(
             `INSERT INTO projects (
@@ -161,7 +152,7 @@ export class ProjectProvisionStore {
           )
           .run(
             projectId,
-            worldId,
+            input.worldId,
             input.actorId,
             input.title,
             createdAt,

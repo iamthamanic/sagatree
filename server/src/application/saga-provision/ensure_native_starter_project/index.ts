@@ -2,20 +2,23 @@
  * ensure_native_starter_project use-case (RPC-SAGA-PROVISION / #873).
  * Location: server/src/application/saga-provision/ensure_native_starter_project/index.ts
  *
- * Isolated-contract: idempotent native slug → one GM project. Full Dornhain character/
- * atlas seed repair is deferred to MIG-600/#845 (documented in acceptance).
+ * Delegates create through create_project_from_saga_version semantics (initialAdventure).
  */
 import type { Actor } from '../../../modules/identity/index.ts';
 import type { ProjectPorts } from '../../../modules/project/index.ts';
 import type { SagaPorts } from '../../../modules/saga/index.ts';
+import type { WorldPorts } from '../../../modules/world/index.ts';
+import { createProjectFromSagaVersionUseCase } from '../create_project_from_saga_version/index.ts';
 
 const DEFAULT_SLUG = 'dornhain.whisper';
 
 export function ensureNativeStarterProjectUseCase(deps: {
   readonly saga: SagaPorts;
   readonly project: ProjectPorts;
+  readonly world: WorldPorts;
 }) {
-  const { saga, project } = deps;
+  const { saga, project, world } = deps;
+  const create = createProjectFromSagaVersionUseCase({ saga, project, world });
 
   return (actor: Actor, slugRaw?: string | null) => {
     if (!actor?.actorId) return { ok: false as const, error: '42501' };
@@ -41,13 +44,7 @@ export function ensureNativeStarterProjectUseCase(deps: {
       };
     }
 
-    const created = project.createFromSagaVersion(actor, {
-      sagaId: native.value.sagaId,
-      sagaVersionId: native.value.versionId,
-      title: native.value.title,
-      description: null,
-      adventureRuntime: {},
-    });
+    const created = create(actor, native.value.sagaId, native.value.versionId, native.value.title);
     if (!created.ok) return created;
 
     return {

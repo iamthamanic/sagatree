@@ -28,6 +28,7 @@ export type ProjectPorts = {
   readonly createFromSagaVersion: (
     actor: Actor,
     input: {
+      readonly worldId: string;
       readonly sagaId: string;
       readonly sagaVersionId: string;
       readonly title: string;

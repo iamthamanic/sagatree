@@ -220,8 +220,33 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
 
     for (const project of bundle.projects) {
       const cols = input.db.prepare(`PRAGMA table_info(projects)`).all() as { name: string }[];
-      const hasSaga = cols.some((c) => c.name === 'saga_id');
-      if (hasSaga) {
+      const colNames = new Set(cols.map((c) => c.name));
+      const hasSaga = colNames.has('saga_id');
+      const hasProvision = colNames.has('saga_version_id') && colNames.has('adventure_runtime');
+      if (hasProvision) {
+        input.db
+          .prepare(
+            `INSERT INTO projects (
+               id, world_id, gm_user_id, title, created_at, saga_id, saga_version_id,
+               adventure_runtime, public_id, status, description
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .run(
+            String(project.id),
+            String(project.world_id),
+            owner,
+            String(project.title ?? 'Project'),
+            String(project.created_at ?? new Date().toISOString()),
+            project.saga_id == null ? null : String(project.saga_id),
+            project.saga_version_id == null ? null : String(project.saga_version_id),
+            typeof project.adventure_runtime === 'string'
+              ? project.adventure_runtime
+              : JSON.stringify(project.adventure_runtime ?? {}),
+            project.public_id == null ? null : String(project.public_id),
+            String(project.status ?? 'active'),
+            project.description == null ? null : String(project.description),
+          );
+      } else if (hasSaga) {
         input.db
           .prepare(
             `INSERT INTO projects (id, world_id, gm_user_id, title, created_at, saga_id)

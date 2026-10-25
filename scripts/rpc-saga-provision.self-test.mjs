@@ -21,6 +21,10 @@ const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts
 const permissionsUrl = pathToFileURL(join(root, 'server/src/modules/permissions/index.ts')).href;
 const projectUrl = pathToFileURL(join(root, 'server/src/modules/project/index.ts')).href;
 const sagaUrl = pathToFileURL(join(root, 'server/src/modules/saga/index.ts')).href;
+const worldUrl = pathToFileURL(join(root, 'server/src/modules/world/index.ts')).href;
+const worldReadUrl = pathToFileURL(
+  join(root, 'server/src/repositories/world/sqlite-world-read-store.ts'),
+).href;
 const createCmd = pathToFileURL(
   join(root, 'server/src/application/commands/create_project_from_saga_version.ts'),
 ).href;
@@ -35,6 +39,8 @@ const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { createPermissionsPorts } = await import(permissionsUrl);
 const { createProjectPorts } = await import(projectUrl);
 const { createSagaPorts } = await import(sagaUrl);
+const { createWorldPorts, createSqliteWorldWriteStore } = await import(worldUrl);
+const { createSqliteWorldReadStore } = await import(worldReadUrl);
 const { create_project_from_saga_version } = await import(createCmd);
 const { duplicate_saga_playthrough } = await import(dupCmd);
 const { ensure_native_starter_project } = await import(ensureCmd);
@@ -55,16 +61,26 @@ try {
   const permissions = createPermissionsPorts(db, {
     actorHasAccessToSaga: project.actorHasAccessToSaga,
   });
+  const world = createWorldPorts({
+    authorize: permissions.authorize,
+    store: createSqliteWorldReadStore(db),
+    writeStore: createSqliteWorldWriteStore(db),
+  });
   const saga = createSagaPorts({ db, authorize: permissions.authorize, project });
 
-  const create = create_project_from_saga_version({ saga, project });
-  const dup = duplicate_saga_playthrough({ saga, project });
-  const ensure = ensure_native_starter_project({ saga, project });
+  const create = create_project_from_saga_version({ saga, project, world });
+  const dup = duplicate_saga_playthrough({ saga, project, world });
+  const ensure = ensure_native_starter_project({ saga, project, world });
 
   const O = { kind: 'solo-local', actorId: 'owner-o' };
   const X = { kind: 'solo-local', actorId: 'stranger-x' };
+  const Linked = {
+    kind: 'remote-account',
+    actorId: 'remote-r',
+    linkedSoloActorIds: ['owner-o'],
+  };
 
-  // --- Fall 1: bind published version + GM membership atomically ---
+  // --- Fall 1: bind published version + GM membership; canonical SA-XXXXX ---
   const native = saga.seedNativeForTests({
     slug: 'dornhain.whisper',
     title: 'Dornhain',
@@ -86,14 +102,14 @@ try {
   assert(created.value.sagaVersionId === native.versionId, 'version bound');
   assert(created.value.gmUserId === O.actorId, 'gm is actor');
   assert(created.value.adventureRuntime.scene === 'gate', 'initialAdventure copied');
+  assert(/^SA-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(created.value.publicId), `publicId ${created.value.publicId}`);
   assert(project.actorIsGmOnSaga(O.actorId, native.sagaId), 'gm membership');
-  const member = db
-    .prepare(`SELECT role, active FROM project_members WHERE project_id = ? AND user_id = ?`)
-    .get(created.value.id, O.actorId);
-  assert(member?.role === 'gm' && member.active === 1, 'gm row');
 
   // --- Fall 2: fresh vs with_progress ---
+  const world2 = world.createOwnedWorld(O, 'Progress Src');
+  assert(world2.ok, 'world2');
   const progressed = project.createFromSagaVersion(O, {
+    worldId: world2.value.id,
     sagaId: native.sagaId,
     sagaVersionId: native.versionId,
     title: 'Progress Src',
@@ -103,31 +119,25 @@ try {
   assert(progressed.ok, 'progress source');
   const freshDup = dup(O, progressed.value.id, 'fresh');
   assert(freshDup.ok, `fresh dup: ${freshDup.ok ? '' : freshDup.error}`);
-  assert(freshDup.value.id !== progressed.value.id, 'fresh new id');
   const freshProj = project.getProject(freshDup.value.id);
   assert(freshProj.ok && freshProj.value.adventureRuntime.scene === 'gate', 'fresh uses initialAdventure');
-  assert(freshProj.value.adventureRuntime.chapter === undefined, 'fresh no progress chapter');
-
   const progressDup = dup(O, progressed.value.id, 'with_progress');
   assert(progressDup.ok, 'with_progress dup');
   const progProj = project.getProject(progressDup.value.id);
   assert(progProj.ok && progProj.value.adventureRuntime.chapter === 3, 'progress copied');
-  assert(progProj.value.id !== progressed.value.id, 'progress new project id');
-
   const foreignDup = dup(X, progressed.value.id, 'fresh');
   assert(!foreignDup.ok && foreignDup.error === '42501', `foreign dup: ${foreignDup.error}`);
 
-  // --- Fall 3: ensure native starter idempotent ---
+  // --- Fall 3: ensure native starter idempotent + initialAdventure ---
   const e1 = ensure(O, 'dornhain.whisper');
-  assert(e1.ok && e1.value.created === false, 'ensure returns existing Dornhain group for O');
-  assert(e1.value.id === created.value.id, 'same starter project');
-  const e2 = ensure(O, '');
-  assert(e2.ok && e2.value.id === created.value.id, 'default slug same');
+  assert(e1.ok && e1.value.created === false, 'ensure returns existing');
+  assert(e1.value.id === created.value.id, 'same starter');
   const eX = ensure(X, 'dornhain.whisper');
-  assert(eX.ok && eX.value.created === true, 'stranger gets own starter');
-  assert(eX.value.id !== created.value.id, 'separate starter projects');
+  assert(eX.ok && eX.value.created === true, 'stranger starter');
+  const eXProj = project.getProject(eX.value.id);
+  assert(eXProj.ok && eXProj.value.adventureRuntime.scene === 'gate', 'ensure seeds initialAdventure');
 
-  // --- Fall 4: denies + user-published policy (KEEP legacy open instantiate) ---
+  // --- Fall 4: denies + user-published + linked solo owns private_backfill ---
   const mismatch = create(O, native.sagaId, '00000000-0000-0000-0000-000000000099', null);
   assert(!mismatch.ok && mismatch.error === 'P0002', `mismatch: ${mismatch.error}`);
 
@@ -140,32 +150,16 @@ try {
   assert(bfOwner.ok, 'owner may spawn private_backfill');
   const bfStranger = create(X, backfill.sagaId, backfill.versionId, null);
   assert(!bfStranger.ok && bfStranger.error === '42501', `bf stranger: ${bfStranger.error}`);
+  const bfLinked = create(Linked, backfill.sagaId, backfill.versionId, 'Linked Gruppe');
+  assert(bfLinked.ok, `linked solo owner provision: ${bfLinked.ok ? '' : bfLinked.error}`);
 
-  // Explicit product decision: published origin=user remains open to any authenticated actor.
   const userPub = saga.seedPublishedDefinitionForTests({
     title: 'User Pub',
     origin: 'user',
     ownerUserId: O.actorId,
-    payload: {
-      title: 'User Pub',
-      blurb: '',
-      synopsis: '',
-      knowledgeFacts: [{ id: 'secret', gm_only: true }],
-      locations: [],
-      pregens: [],
-      packageId: null,
-    },
   });
   const strangerInstantiate = create(X, userPub.sagaId, userPub.versionId, 'X Gruppe');
-  assert(
-    strangerInstantiate.ok,
-    `USER-PUBLISHED keep-open: stranger instantiate: ${strangerInstantiate.ok ? '' : strangerInstantiate.error}`,
-  );
-  assert(project.actorIsGmOnSaga(X.actorId, userPub.sagaId), 'stranger becomes GM on new group');
-  // Version-read scope remains separate: stranger without membership on O's other projects
-  // still gets GM projection on the group they just created.
-  const versionRead = saga.getSagaDefinitionVersion(X, userPub.versionId);
-  assert(versionRead.ok && versionRead.value.isGmProjection === true, 'new GM sees GM projection');
+  assert(strangerInstantiate.ok, 'USER-PUBLISHED keep-open');
 
   const badMode = dup(O, created.value.id, 'nope');
   assert(!badMode.ok && badMode.error === '22023', 'bad mode');

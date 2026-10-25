@@ -17,6 +17,7 @@ import { createOpsPorts } from '../modules/ops/index.ts';
 import {
   createWorldPorts,
   createWorldPortsStub,
+  createSqliteWorldWriteStore,
   type WorldPorts,
 } from '../modules/world/index.ts';
 import { createProjectPorts } from '../modules/project/index.ts';
@@ -134,6 +135,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ? createWorldPorts({
           authorize: permissions.authorize,
           store: createSqliteWorldReadStore(db),
+          writeStore: createSqliteWorldWriteStore(db),
         })
       : createWorldPortsStub();
     const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';

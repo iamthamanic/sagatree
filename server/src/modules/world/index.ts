@@ -1,12 +1,16 @@
 /**
- * world module public API — policy-guarded read port (MIG-012).
+ * world module public API — policy-guarded read + owned create (MIG-012 / #873).
  * Location: server/src/modules/world/index.ts
  */
+import { randomUUID } from 'node:crypto';
 import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
 import type { WorldReadStore } from './internal/world-read-store.ts';
+import type { WorldWriteStore } from './internal/world-write-store.ts';
 
 export type { WorldReadStore, WorldStoredRow } from './internal/world-read-store.ts';
+export type { WorldWriteStore } from './internal/world-write-store.ts';
+export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
 
 /** Public world read DTO — no owner id / ORM / HTTP types. */
 export type WorldReadDto = {
@@ -27,6 +31,11 @@ export type WorldReadPort = {
 export type WorldPorts = {
   readonly moduleId: 'world';
   readonly read: WorldReadPort;
+  /** Allocate an owner-bound world for a new play group (use-case coordinated). */
+  readonly createOwnedWorld: (
+    actor: Actor,
+    title: string,
+  ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
 };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
@@ -36,14 +45,15 @@ function toDto(row: { id: string; title: string; createdAt: string }): WorldRead
 }
 
 /**
- * Guarded world read port. Callers outside this module must not import
+ * Guarded world read/write port. Callers outside this module must not import
  * `world/internal` or `world/persistence` — only this barrel.
  */
 export function createWorldPorts(deps: {
   readonly authorize: AuthorizeFn;
   readonly store: WorldReadStore;
+  readonly writeStore?: WorldWriteStore;
 }): WorldPorts {
-  const { authorize, store } = deps;
+  const { authorize, store, writeStore } = deps;
 
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
@@ -70,7 +80,29 @@ export function createWorldPorts(deps: {
     },
   };
 
-  return { moduleId: 'world', read };
+  return {
+    moduleId: 'world',
+    read,
+    createOwnedWorld(actor, title) {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      if (!writeStore) return { ok: false, error: 'store-unavailable' };
+      // Owner is always the authenticated actor — no client-supplied owner elevation.
+      const id = randomUUID();
+      const createdAt = new Date().toISOString();
+      const safeTitle = typeof title === 'string' && title.trim() ? title.trim() : 'World';
+      try {
+        writeStore.insertOwned({
+          id,
+          ownerUserId: actor.actorId,
+          title: safeTitle,
+          createdAt,
+        });
+      } catch {
+        return { ok: false, error: 'P0001' };
+      }
+      return { ok: true, value: { id, title: safeTitle, createdAt } };
+    },
+  };
 }
 
 /** Stub ports when persistence is unavailable (tests / boot failure paths). */
@@ -81,5 +113,6 @@ export function createWorldPortsStub(): WorldPorts {
       listOwnedWorlds: () => ({ ok: false, error: 'store-unavailable' }),
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
     },
+    createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
   };
 }
