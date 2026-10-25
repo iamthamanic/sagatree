@@ -86,7 +86,14 @@ assert(isEdgeDispatcherAllowed('dm-tools') === false, 'allowlist deny');
 assert(!EDGE_DISPATCHER_ALLOWLIST.includes('dm-tools'), 'not in allowlist values');
 
 await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
-  for (const path of ['/dm-tools', '/dm-tools/dice', '/dm-tools/health', '/functions/v1/dm-tools']) {
+  for (const path of [
+    '/dm-tools',
+    '/dm-tools/dice',
+    '/dm-tools/health',
+    '/functions/v1/dm-tools',
+    '/functions/v1/dm-tools/dice',
+    '/functions/v1/dm-tools/health',
+  ]) {
     for (const method of ['GET', 'POST', 'OPTIONS']) {
       const res = await fetch(`${base}${path}`, {
         method,
@@ -134,7 +141,17 @@ const afterRound = nextTurn(afterNext, '2026-01-01T00:00:02.000Z');
 assert(afterRound.round === 2 && afterRound.log.some((e) => e.type === 'round_start'), 'next-round log');
 
 const ended = endCombat(afterRound, '2026-01-01T00:00:03.000Z');
-assert(ended.status === 'ended' && ended.log.some((e) => e.type === 'combat_end'), 'end-combat log');
+assert(ended.status === 'completed' && ended.log.some((e) => e.type === 'combat_end'), 'end-combat log');
+
+const lethal = applyDamage(
+  { ...combat, participants: combat.participants.map((p) => ({ ...p, conditions: [], hp: 3 })) },
+  'p1',
+  10,
+  '2026-01-01T00:00:04.000Z',
+);
+const downed = lethal.participants.find((p) => p.id === 'p1');
+assert(downed?.hp === 0 && downed.conditions.includes('unconscious'), 'lethal → unconscious');
+assert(lethal.log.some((e) => e.type === 'condition_applied'), 'condition_applied log');
 
 // --- Fall 3: invalid notation / missing target → isolated 500-shaped errors ---
 let invalidThrown = false;

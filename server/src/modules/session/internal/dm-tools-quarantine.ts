@@ -59,7 +59,7 @@ export type CombatState = {
   currentTurn: number;
   participants: CombatParticipant[];
   log: CombatLogEntry[];
-  status: 'active' | 'ended';
+  status: 'active' | 'completed';
   readonly startedAt: string;
   endedAt?: string;
 };
@@ -196,7 +196,7 @@ export function nextTurn(combat: CombatState, nowIso: string): CombatState {
 export function endCombat(combat: CombatState, nowIso: string): CombatState {
   return {
     ...combat,
-    status: 'ended',
+    status: 'completed',
     endedAt: nowIso,
     log: [
       ...combat.log,
@@ -218,6 +218,7 @@ export function applyDamage(
   };
   const target = next.participants.find((p) => p.id === targetId);
   if (!target) throw new Error('Target not found in combat');
+  const previousHp = target.hp;
   target.hp = Math.max(0, target.hp - damage);
   next.log.push({
     type: 'damage',
@@ -225,6 +226,16 @@ export function applyDamage(
     round: next.round,
     turn: next.currentTurn,
   });
+  if (target.hp === 0 && previousHp > 0) {
+    target.conditions.push('unconscious');
+    next.log.push({
+      type: 'condition_applied',
+      timestamp: nowIso,
+      round: next.round,
+      turn: next.currentTurn,
+      actor: target.name,
+    });
+  }
   return next;
 }
 
