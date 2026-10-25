@@ -41,23 +41,31 @@ try {
   assert(boot.schemaVersion >= 9, `schemaVersion>=9 got ${boot.schemaVersion}`);
   const db = boot.db;
   const permissions = createPermissionsPorts(db);
-  const assets = createAssetPorts({
+  const assetsOn = createAssetPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
+    allowElevatedPublish: true,
   });
+  const assetsOff = createAssetPorts({
+    dataDir,
+    db,
+    authorize: permissions.authorize,
+    allowElevatedPublish: false,
+  });
+  const assets = assetsOn;
   const uploadsOn = createResumableUploadPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
-    assets,
+    assets: assetsOn,
     enabled: true,
   });
   const uploadsOff = createResumableUploadPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
-    assets,
+    assets: assetsOff,
     enabled: false,
   });
 
@@ -145,6 +153,61 @@ try {
     `capability deny: ${deniedCreate.error}`,
   );
   assert(uploadsOff.largeUploadsEnabled === false, 'flag false');
+
+  // --- #939: public maxBytes cannot raise DEFAULT 16 MiB ceiling ---
+  const seventeenMiB = new Uint8Array(17 * 1024 * 1024);
+  seventeenMiB[0] = 0x41;
+  seventeenMiB[seventeenMiB.length - 1] = 0x5a;
+  const sneaky = assets.publish(O, {
+    bytes: seventeenMiB,
+    contentType: 'application/octet-stream',
+    // @ts-expect-error — runtime strip; callers must not raise ceiling
+    maxBytes: 64 * 1024 * 1024,
+  });
+  assert(
+    !sneaky.ok && sneaky.error === 'bytes-too-large',
+    `939 direct maxBytes bypass denied: ${sneaky.error}`,
+  );
+  const sixteenOk = assets.publish(O, {
+    bytes: new Uint8Array(16 * 1024 * 1024),
+    contentType: 'application/octet-stream',
+  });
+  assert(sixteenOk.ok, `939 ≤16 MiB direct publish: ${sixteenOk.ok ? '' : sixteenOk.error}`);
+
+  // Elevated path only via resumable finalize (capability on)
+  const largeBody = new Uint8Array(17 * 1024 * 1024);
+  largeBody.fill(7);
+  const cLarge = uploadsOn.create(O, {
+    uploadLength: largeBody.byteLength,
+    contentType: 'application/octet-stream',
+  });
+  assert(cLarge.ok, `939 large create: ${cLarge.ok ? '' : cLarge.error}`);
+  const patchLarge = uploadsOn.patch(O, {
+    uploadId: cLarge.value.uploadId,
+    offset: 0,
+    bytes: largeBody,
+  });
+  assert(
+    patchLarge.ok && patchLarge.value.complete && patchLarge.value.asset.byteSize === largeBody.byteLength,
+    `939 resumable 17 MiB finalize: ${patchLarge.ok ? '' : patchLarge.error}`,
+  );
+  // Direct publishResumableFinalize without going through uploads still requires auth —
+  // but public publish must still reject the same bytes.
+  const stillDenied = assets.publish(O, {
+    bytes: largeBody,
+    contentType: 'application/octet-stream',
+  });
+  assert(!stillDenied.ok && stillDenied.error === 'bytes-too-large', '939 public path still capped');
+
+  // Capability off: elevated finalize is capability-disabled even with auth (#939 P1)
+  const elevatedOff = assetsOff.publishResumableFinalize(O, {
+    bytes: largeBody,
+    contentType: 'application/octet-stream',
+  });
+  assert(
+    !elevatedOff.ok && elevatedOff.error === 'capability-disabled',
+    `939 elevated gated off: ${elevatedOff.error}`,
+  );
 
   // --- #938: lost final response → retry returns same asset, no duplicate ---
   const body938 = new TextEncoder().encode('finalize-retry-idempotent-body');

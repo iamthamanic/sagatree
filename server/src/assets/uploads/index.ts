@@ -11,7 +11,6 @@ import type { Actor } from '../../modules/identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../../modules/permissions/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import type { AssetPorts, AssetResult, PublishedAsset } from '../index.ts';
-import { LARGE_UPLOAD_MAX_BYTES } from '../internal/local-asset-store.ts';
 import { ensureDir, isSafeAssetToken, resolveUnderRoot } from '../internal/path-safety.ts';
 import { UploadSessionStore } from './internal/upload-session-store.ts';
 
@@ -101,10 +100,10 @@ export function createResumableUploadPorts(deps: {
       if (!bound.ok) return { ok: false, error: bound.error };
     }
 
-    const published = assets.publish(actor, {
+    // Elevated ceiling only via publishResumableFinalize — never public maxBytes (#939).
+    const published = assets.publishResumableFinalize(actor, {
       bytes: payload.bytes,
       contentType: payload.contentType,
-      maxBytes: LARGE_UPLOAD_MAX_BYTES,
       assetId,
     });
     if (!published.ok) return published;
