@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-mig-408 (#824)
 
-- HEAD_SHA: 382373854f8e36bbcd3a4f2f66031239e3dc078b
+- HEAD_SHA: 51a1f1d8049aa2950b7fa695d0a2da35428aa0f8
 - BASE_SHA: 313df17aa088d4673605296a3ec1f725945d6d6a
 - Date: 2026-10-25
 - Verdict: CLEAR
 
 ## Event
 
-Legacy export stays unmounted; format conversion quarantine fixtures and live 404 probes without a public HTTP mount or import persistence.
+Legacy export stays unmounted; format conversion quarantine fixtures (incl. falsy || defaults) and live 404 probes without a public HTTP mount or import persistence.
 
 ## Hop chain
 
@@ -23,7 +23,7 @@ Legacy export stays unmounted; format conversion quarantine fixtures and live 40
 | N-actors | Public path stays 404 | createRouteHandler probes | pass |
 | Invalid/missing | Invalid format / Invalid JSON | 400 results | pass |
 | Two consumers / crash | Import not persisted; activation denied | flags | pass |
-| Legacy defects | Arbitrary content; minimal PDF | fixtures | pass |
+| Legacy defects | Arbitrary content; falsy || defaults; minimal PDF | fixtures | pass |
 
 ## Flags
 
