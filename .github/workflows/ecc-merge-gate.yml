@@ -36,8 +36,11 @@ permissions:
   pull-requests: read
 
 concurrency:
+  # Do not cancel-in-progress: a cancelled ECC Merge Gate can become the latest
+  # required check and stick red while a review event races the initial PR run
+  # (#937). Overlapping runs are cheap; the newest successful findings check wins.
   group: ecc-merge-gate-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.sha }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   ecc-merge-gate:
