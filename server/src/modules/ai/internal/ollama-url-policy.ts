@@ -30,6 +30,10 @@ export function assertSafeOllamaBaseUrl(raw: string): { ok: true; url: string } 
   const host = parsed.hostname.toLowerCase();
   const cloudHost = new URL(OLLAMA_CLOUD_OPENAI_BASE).hostname.toLowerCase();
   const isLoopback = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  const isPrivateLan =
+    host.startsWith('10.') ||
+    host.startsWith('192.168.') ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
   const isCloud = host === cloudHost;
   if (!isLoopback && !isCloud && (host.endsWith('.internal') || host.endsWith('.local') || host === '0.0.0.0')) {
     return { ok: false, message: 'Base-URL nicht erlaubt.' };
@@ -37,6 +41,10 @@ export function assertSafeOllamaBaseUrl(raw: string): { ok: true; url: string } 
   // Block link-local / metadata style hosts
   if (host.startsWith('169.254.') || host === 'metadata.google.internal') {
     return { ok: false, message: 'Base-URL nicht erlaubt.' };
+  }
+  // Non-local endpoints must be HTTPS (legacy ollama-url-policy).
+  if (!isLoopback && !isPrivateLan && parsed.protocol !== 'https:') {
+    return { ok: false, message: 'Nicht-lokale Base-URLs erfordern HTTPS.' };
   }
   return { ok: true, url: trimmed.replace(/\/+$/, '') };
 }

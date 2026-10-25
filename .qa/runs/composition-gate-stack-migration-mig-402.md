@@ -27,7 +27,7 @@ Authenticated actor manages own Meshy BYOK / Ollama prefs; ciphertext never proj
 ## Flags
 
 - Acceptance tier: isolated-contract
-- Deferred: HTTP mount → MIG-600; FEATURE → MIG-602
+- Deferred integration: HTTP mount → MIG-600; FEATURE → MIG-602/#847
 - Co-ownership ollama + credentials stays on #818 until human allocates MIG-4xx
 
 ## Non-claims

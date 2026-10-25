@@ -164,7 +164,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       : createResumableUploadPortsStub(false);
     // Media owns asset-table policy surface; codecs remain in browser optimizer (infra-media).
     const media = createMediaPorts();
-    const ai: AiPorts = db ? createAiPorts({ db, env: process.env }) : createAiPortsStub();
+    const ai: AiPorts = db ? createAiPorts({ db, env }) : createAiPortsStub();
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();

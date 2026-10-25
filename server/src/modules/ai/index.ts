@@ -116,10 +116,14 @@ export type AiPorts = {
   readonly testOllamaSettings: (
     actor: Actor,
     input?: { useCloud?: boolean; baseUrl?: string; model?: string; apiKey?: string },
-  ) => Promise<AiResult<{ status: 'ok'; ok: boolean; message: string }>>;
+  ) => Promise<AiResult<{ status: 'ok'; ok: true; message: string; models: readonly string[] }>>;
   readonly listOllamaModels: (
     actor: Actor,
+    input?: { useCloud?: boolean; baseUrl?: string; apiKey?: string },
   ) => Promise<AiResult<{ status: 'ok'; models: readonly string[] }>>;
+  readonly clearOllamaSettings: (
+    actor: Actor,
+  ) => Promise<AiResult<{ status: 'ok'; settings: OllamaSettingsView }>>;
 };
 
 export function createAiPorts(deps: {
@@ -405,14 +409,29 @@ export function createAiPorts(deps: {
           code: 'not-configured',
         };
       }
-      const model = typeof input.model === 'string' ? input.model.trim().slice(0, 128) : '';
+      const model = typeof input.model === 'string' ? input.model.trim() : '';
+      if (!model || model.length > 128) {
+        return { ok: false, error: 'Modell-ID fehlt oder ist zu lang.', status: 400 };
+      }
       const existing = store.loadWithSecret(userId, OLLAMA_PROVIDER_ID);
       let ciphertext = existing?.secretCiphertext ?? OLLAMA_NONE_SECRET;
       let keyHint = existing?.keyHint ?? '••••none';
+      let draftKey: string | null = null;
       if (typeof input.apiKey === 'string' && input.apiKey.trim()) {
-        const key = input.apiKey.trim().slice(0, 512);
-        ciphertext = await encryptProviderSecret(key, encRaw);
-        keyHint = buildKeyHint(key);
+        draftKey = input.apiKey.trim().slice(0, 512);
+        ciphertext = await encryptProviderSecret(draftKey, encRaw);
+        keyHint = buildKeyHint(draftKey);
+      } else if (ciphertext !== OLLAMA_NONE_SECRET) {
+        try {
+          draftKey = await decryptProviderSecret(ciphertext, encRaw);
+        } catch {
+          return { ok: false, error: 'Entschlüsselung fehlgeschlagen.', status: 500 };
+        }
+      }
+      const probed = await fetchModels(safe.url, draftKey);
+      if (!probed.ok) return { ok: false, error: probed.message, status: 400 };
+      if (!probed.models.includes(model)) {
+        return { ok: false, error: 'Modell ist auf dem Endpoint nicht verfügbar.', status: 400 };
       }
       const meta = {
         useCloud: input.useCloud === true,
@@ -449,15 +468,37 @@ export function createAiPorts(deps: {
       const baseUrl = input?.baseUrl?.trim() || current.baseUrl;
       const safe = assertSafeOllamaBaseUrl(baseUrl);
       if (!safe.ok) return { ok: false, error: safe.message, status: 400 };
-      // No outbound until URL passes — fetchModels may be injected for tests.
-      const models = await fetchModels(safe.url, null);
-      if (!models.ok) {
-        return { ok: true, value: { status: 'ok', ok: false, message: models.message } };
+      const encRaw = encKey();
+      let apiKey: string | null = null;
+      if (typeof input?.apiKey === 'string' && input.apiKey.trim()) {
+        apiKey = input.apiKey.trim().slice(0, 512);
+      } else {
+        const row = store.loadWithSecret(userId, OLLAMA_PROVIDER_ID);
+        if (row?.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
+          if (!encRaw) {
+            return {
+              ok: false,
+              error: 'Server-Verschlüsselung nicht konfiguriert (CREDENTIALS_ENCRYPTION_KEY).',
+              status: 503,
+              code: 'not-configured',
+            };
+          }
+          try {
+            apiKey = await decryptProviderSecret(row.secretCiphertext, encRaw);
+          } catch {
+            return { ok: false, error: 'Entschlüsselung fehlgeschlagen.', status: 500 };
+          }
+        }
       }
-      return { ok: true, value: { status: 'ok', ok: true, message: 'Verbindung ok.' } };
+      const models = await fetchModels(safe.url, apiKey);
+      if (!models.ok) return { ok: false, error: models.message, status: 400 };
+      return {
+        ok: true,
+        value: { status: 'ok', ok: true, message: 'Verbindung ok.', models: models.models },
+      };
     },
 
-    async listOllamaModels(actor) {
+    async listOllamaModels(actor, input) {
       const userId = actorUserId(actor);
       if (!userId) return { ok: false, error: 'Nicht angemeldet.', status: 401 };
       if (!store.consumeRateLimit(userId, getRateLimit(env), RATE_WINDOW_SECONDS)) {
@@ -469,29 +510,42 @@ export function createAiPorts(deps: {
         };
       }
       const settings = await ollamaView(userId);
-      const safe = assertSafeOllamaBaseUrl(settings.baseUrl);
+      const baseUrl = input?.baseUrl?.trim() || settings.baseUrl;
+      const safe = assertSafeOllamaBaseUrl(baseUrl);
       if (!safe.ok) return { ok: false, error: safe.message, status: 400 };
       const encRaw = encKey();
       let apiKey: string | null = null;
-      const row = store.loadWithSecret(userId, OLLAMA_PROVIDER_ID);
-      if (row?.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
-        if (!encRaw) {
-          return {
-            ok: false,
-            error: 'Server-Verschlüsselung nicht konfiguriert (CREDENTIALS_ENCRYPTION_KEY).',
-            status: 503,
-            code: 'not-configured',
-          };
-        }
-        try {
-          apiKey = await decryptProviderSecret(row.secretCiphertext, encRaw);
-        } catch {
-          return { ok: false, error: 'Entschlüsselung fehlgeschlagen.', status: 500 };
+      if (typeof input?.apiKey === 'string' && input.apiKey.trim()) {
+        apiKey = input.apiKey.trim().slice(0, 512);
+      } else {
+        const row = store.loadWithSecret(userId, OLLAMA_PROVIDER_ID);
+        if (row?.secretCiphertext && row.secretCiphertext !== OLLAMA_NONE_SECRET) {
+          if (!encRaw) {
+            return {
+              ok: false,
+              error: 'Server-Verschlüsselung nicht konfiguriert (CREDENTIALS_ENCRYPTION_KEY).',
+              status: 503,
+              code: 'not-configured',
+            };
+          }
+          try {
+            apiKey = await decryptProviderSecret(row.secretCiphertext, encRaw);
+          } catch {
+            return { ok: false, error: 'Entschlüsselung fehlgeschlagen.', status: 500 };
+          }
         }
       }
       const models = await fetchModels(safe.url, apiKey);
       if (!models.ok) return { ok: false, error: models.message, status: 400 };
       return { ok: true, value: { status: 'ok', models: models.models } };
+    },
+
+    async clearOllamaSettings(actor) {
+      const userId = actorUserId(actor);
+      if (!userId) return { ok: false, error: 'Nicht angemeldet.', status: 401 };
+      store.delete(userId, OLLAMA_PROVIDER_ID);
+      const settings = await ollamaView(userId);
+      return { ok: true, value: { status: 'ok', settings } };
     },
   };
 }
@@ -509,5 +563,6 @@ export function createAiPortsStub(): AiPorts {
     upsertOllamaSettings: deny,
     testOllamaSettings: deny,
     listOllamaModels: deny,
+    clearOllamaSettings: deny,
   };
 }

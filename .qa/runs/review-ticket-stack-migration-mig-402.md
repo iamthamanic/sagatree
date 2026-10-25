@@ -1,6 +1,3 @@
 # Review — stack-migration-mig-402
 Verdict: APPROVE
-Findings:
-- Low: Meshy validate / model fetch injected in tests; live outbound not claimed at isolated-contract.
-- Info: Ollama prefs reuse credentials table with provider_id=ollama (legacy parity).
-No Critical/Important blockers.
+Findings addressed: test returns models; draft/stored API key forwarded; probe failures are errors; model validated on upsert; listModels accepts candidates; clear port; createHost env wiring; HTTPS for non-local URLs.

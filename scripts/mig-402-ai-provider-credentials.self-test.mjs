@@ -187,8 +187,14 @@ try {
   assert(!badUrl.ok && badUrl.status === 400, `SSRF reject before fetch: ${badUrl.status} ${badUrl.error}`);
   const fetchesBefore = modelFetches;
   const badTest = await ollama2.test(SSRF, { baseUrl: 'http://169.254.169.254/' });
-  assert(!badTest.ok && badTest.status === 400, 'test rejects bad URL');
+  assert(!badTest.ok && badTest.status === 400, `test rejects bad URL: ${badTest.status}`);
   assert(modelFetches === fetchesBefore, 'no outbound on bad URL');
+
+  // fetchModels returns ok for 127.0.0.1 — use evil host via https public to force fail
+  const failProbe = await ollama2.test(actor('probe-fail'), {
+    baseUrl: 'https://evil.example/',
+  });
+  assert(!failProbe.ok && failProbe.status === 400, 'failed probe is error not ok-wrapper');
 
   const ENC = actor('enc-user');
   const oNoEnc = createOllamaSettingsUseCases(

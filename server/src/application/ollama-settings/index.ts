@@ -16,6 +16,10 @@ export function createOllamaSettingsUseCases(ai: AiPorts) {
       actor: Actor,
       input?: { useCloud?: boolean; baseUrl?: string; model?: string; apiKey?: string },
     ) => ai.testOllamaSettings(actor, input),
-    listModels: (actor: Actor) => ai.listOllamaModels(actor),
+    listModels: (
+      actor: Actor,
+      input?: { useCloud?: boolean; baseUrl?: string; apiKey?: string },
+    ) => ai.listOllamaModels(actor, input),
+    clear: (actor: Actor) => ai.clearOllamaSettings(actor),
   };
 }
