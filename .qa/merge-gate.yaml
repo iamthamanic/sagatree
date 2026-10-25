@@ -18,6 +18,12 @@ requiredChecks:
 
 # Ambient known-red migration baselines are NOT merge-blocking unless listed above.
 # Unresolved Codex/Bugbot P1/P2 review findings always block (see ecc-merge-gate-check).
+#
+# #937 fail-closed review race: workflow re-runs on pull_request_review and
+# pull_request_review_comment so a late P1/P2 on an unchanged HEAD replaces a
+# prior green ECC Merge Gate with FAIL. GraphQL reviewThreads.isResolved is
+# authoritative; API errors and pending reviews for the current HEAD → FAIL.
+# Do not weaken severity thresholds or skip findings evaluation to unblock merges.
 
 blockOnUnresolvedReviewSeverities:
   - P1

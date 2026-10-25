@@ -7,26 +7,31 @@
  * Also verifies required GitHub check conclusions for the PR head SHA.
  * Used by `.github/workflows/ecc-merge-gate.yml` and local `@pr-merge-safe`.
  *
+ * Fail-closed (#937): late review findings on an unchanged HEAD must invalidate
+ * a prior green run; GraphQL review-thread resolution is authoritative; API
+ * errors or unclear review state → FAIL (never PASS).
+ *
  * Exit 0 = PASS, exit 1 = FAIL (must not merge).
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, appendFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SEVERITY_RE =
+
+export const SEVERITY_RE =
   /!\[[^\]]*\]\([^)]*badge\/(P1|P2|Critical|Important)[^)]*\)|\b(P1|P2)\b.*(?:Badge|finding)|Severity:\s*(P1|P2|Critical|Important)/i;
 
-const RESOLVED_MARKERS = [
+export const RESOLVED_MARKERS = [
   /fixed in\s+`?[0-9a-f]{7,40}`?/i,
   /resolved by\s+`?[0-9a-f]{7,40}`?/i,
   /addressed in\s+(?:commit\s+)?`?[0-9a-f]{7,40}`?/i,
   /<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i,
 ];
 
-function loadMergeGateConfig() {
-  const path = join(root, '.qa/merge-gate.yaml');
+export function loadMergeGateConfig(configRoot = root) {
+  const path = join(configRoot, '.qa/merge-gate.yaml');
   if (!existsSync(path)) {
     return {
       requiredChecks: ['Test Gate', 'Composition Gate', 'ECC Merge Gate'],
@@ -67,24 +72,23 @@ function loadMergeGateConfig() {
   };
 }
 
-function ghJson(args) {
-  const out = execFileSync('gh', args, {
-    encoding: 'utf8',
-    cwd: root,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  return JSON.parse(out);
+export function ghJson(args, { cwd = root } = {}) {
+  try {
+    const out = execFileSync('gh', args, {
+      encoding: 'utf8',
+      cwd,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    return JSON.parse(out);
+  } catch (err) {
+    const stderr = err?.stderr?.toString?.() ?? err?.message ?? String(err);
+    const error = new Error(`GitHub API failed (fail-closed): ${stderr}`);
+    error.cause = err;
+    throw error;
+  }
 }
 
-function isResolvedThread(comment, replies) {
-  const bodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
-  if (RESOLVED_MARKERS.some((re) => re.test(bodies))) return true;
-  // GitHub "resolved" conversation state when present on review threads API
-  if (comment.isResolved === true || comment.resolved === true) return true;
-  return false;
-}
-
-function findingSeverity(body, allowed) {
+export function findingSeverity(body, allowed) {
   const m = body.match(SEVERITY_RE);
   if (!m) return null;
   const sev = (m[1] || m[2] || m[3] || '').toUpperCase();
@@ -93,14 +97,154 @@ function findingSeverity(body, allowed) {
   return normalized;
 }
 
-function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
+export function bodiesIndicateResolved(bodiesJoined) {
+  return RESOLVED_MARKERS.some((re) => re.test(bodiesJoined));
+}
+
+/**
+ * Pure decision used by CI and by the #934/#935 regression self-test:
+ * a prior green gate on HEAD H is insufficient once an unresolved blocking
+ * finding exists for that same HEAD (or any finding without commit if HEAD-bound
+ * resolution is unknown — fail-closed).
+ */
+export function evaluateMergeGate({
+  unresolvedFindings,
+  checkFailures,
+  apiError = null,
+  pendingReviewsForHead = [],
+}) {
+  if (apiError) {
+    return {
+      ok: false,
+      reason: 'api-error',
+      detail: String(apiError.message ?? apiError),
+    };
+  }
+  if (pendingReviewsForHead.length > 0) {
+    return {
+      ok: false,
+      reason: 'pending-review',
+      detail: `Pending reviews for current HEAD: ${pendingReviewsForHead.length}`,
+    };
+  }
+  if (unresolvedFindings.length > 0) {
+    return {
+      ok: false,
+      reason: 'unresolved-findings',
+      detail: `${unresolvedFindings.length} unresolved blocking finding(s)`,
+    };
+  }
+  if (checkFailures.length > 0) {
+    return {
+      ok: false,
+      reason: 'required-checks',
+      detail: `${checkFailures.length} required check failure(s)`,
+    };
+  }
+  return { ok: true, reason: 'pass', detail: 'ECC Merge Gate PASS' };
+}
+
+/**
+ * Simulate #934/#935: gate was green, then P1/P2 lands on the same HEAD → must FAIL.
+ */
+export function lateFindingInvalidatesPriorPass({ headSha, findingCommitSha, severity }) {
+  const sameHead =
+    !findingCommitSha ||
+    String(findingCommitSha).toLowerCase() === String(headSha).toLowerCase() ||
+    String(headSha).toLowerCase().startsWith(String(findingCommitSha).toLowerCase()) ||
+    String(findingCommitSha).toLowerCase().startsWith(String(headSha).toLowerCase().slice(0, 7));
+  if (!sameHead) return { blocks: false, reason: 'finding-on-other-sha' };
+  const allowed = ['P1', 'P2', 'Critical', 'Important'];
+  if (!allowed.map((s) => s.toUpperCase()).includes(String(severity).toUpperCase())) {
+    return { blocks: false, reason: 'non-blocking-severity' };
+  }
+  return { blocks: true, reason: 'late-blocking-finding-on-same-head' };
+}
+
+export function isResolvedThread(comment, replies) {
+  const bodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
+  if (bodiesIndicateResolved(bodies)) return true;
+  if (comment.isResolved === true || comment.resolved === true) return true;
+  return false;
+}
+
+/**
+ * Authoritative path: GraphQL reviewThreads.isResolved + comment bodies.
+ * Fail-closed callers must catch thrown API errors.
+ */
+export function collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, allowedSeverities) {
+  const query = `
+    query($owner: String!, $name: String!, $number: Int!) {
+      repository(owner: $owner, name: $name) {
+        pullRequest(number: $number) {
+          reviewThreads(first: 100) {
+            nodes {
+              isResolved
+              comments(first: 30) {
+                nodes {
+                  databaseId
+                  body
+                  path
+                  url
+                  author { login }
+                  commit { oid }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+  const payload = ghJson([
+    'api',
+    'graphql',
+    '-f',
+    `query=${query}`,
+    '-F',
+    `owner=${owner}`,
+    '-F',
+    `name=${repo}`,
+    '-F',
+    `number=${pullNumber}`,
+  ]);
+  if (payload.errors?.length) {
+    throw new Error(`GraphQL errors: ${JSON.stringify(payload.errors)}`);
+  }
+  const pr = payload.data?.repository?.pullRequest;
+  if (!pr) {
+    throw new Error('GraphQL returned no pullRequest (fail-closed)');
+  }
+  const threads = pr.reviewThreads?.nodes ?? [];
+  const unresolved = [];
+  for (const thread of threads) {
+    const comments = thread.comments?.nodes ?? [];
+    if (!comments.length) continue;
+    const root = comments[0];
+    const sev = findingSeverity(root.body ?? '', allowedSeverities);
+    if (!sev) continue;
+    const bodies = comments.map((c) => c.body ?? '').join('\n');
+    if (thread.isResolved === true || bodiesIndicateResolved(bodies)) continue;
+    unresolved.push({
+      id: root.databaseId,
+      path: root.path,
+      severity: sev,
+      user: root.author?.login,
+      url: root.url,
+      commit: root.commit?.oid,
+      source: 'graphql-review-thread',
+    });
+  }
+  return unresolved;
+}
+
+/** REST fallback used only after GraphQL succeeded empty — still applied for non-thread inline comments. */
+export function collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities) {
   const comments = ghJson([
     'api',
     `repos/${owner}/${repo}/pulls/${pullNumber}/comments`,
     '--paginate',
   ]);
-  // Group replies by in_reply_to_id
-  const byId = new Map(comments.map((c) => [c.id, c]));
   const repliesByParent = new Map();
   for (const c of comments) {
     if (c.in_reply_to_id) {
@@ -112,7 +256,7 @@ function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
 
   const unresolved = [];
   for (const c of comments) {
-    if (c.in_reply_to_id) continue; // only top-level findings
+    if (c.in_reply_to_id) continue;
     const sev = findingSeverity(c.body ?? '', allowedSeverities);
     if (!sev) continue;
     const replies = repliesByParent.get(c.id) ?? [];
@@ -124,13 +268,46 @@ function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
       user: c.user?.login,
       url: c.html_url,
       commit: c.commit_id,
+      source: 'rest-inline-comment',
     });
   }
   return unresolved;
 }
 
-function collectCheckFailures(owner, repo, headSha, requiredChecks) {
-  // Prefer combined status + check runs for the head SHA
+/**
+ * Union GraphQL (authoritative resolution) + REST (catches non-thread comments).
+ * Dedupes by comment id. Any API throw propagates (fail-closed).
+ */
+export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
+  const fromGql = collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, allowedSeverities);
+  const fromRest = collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities);
+  const byId = new Map();
+  for (const f of [...fromGql, ...fromRest]) {
+    const key = String(f.id ?? `${f.path}:${f.url}`);
+    if (!byId.has(key)) byId.set(key, f);
+  }
+  return [...byId.values()];
+}
+
+export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
+  const reviews = ghJson([
+    'api',
+    `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+    '--paginate',
+  ]);
+  const list = Array.isArray(reviews) ? reviews : [];
+  return list.filter((r) => {
+    if (String(r.state).toUpperCase() !== 'PENDING') return false;
+    const commitId = r.commit_id ?? r.commit?.sha;
+    if (!commitId) return true; // unknown commit → fail-closed treat as pending for head
+    return (
+      String(commitId).toLowerCase() === String(headSha).toLowerCase() ||
+      String(headSha).toLowerCase().startsWith(String(commitId).toLowerCase().slice(0, 7))
+    );
+  });
+}
+
+export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
   const runs = ghJson([
     'api',
     `repos/${owner}/${repo}/commits/${headSha}/check-runs`,
@@ -163,12 +340,13 @@ function collectCheckFailures(owner, repo, headSha, requiredChecks) {
   return failures;
 }
 
-function resolvePrContext() {
+export function resolvePrContext() {
   const eventPath = process.env.GITHUB_EVENT_PATH;
   if (eventPath && existsSync(eventPath)) {
     const event = JSON.parse(readFileSync(eventPath, 'utf8'));
-    const pr = event.pull_request;
-    if (pr) {
+    // pull_request | pull_request_review | pull_request_review_comment all expose pull_request
+    const pr = event.pull_request ?? null;
+    if (pr?.number && pr.head?.sha) {
       return {
         owner: event.repository.owner.login,
         repo: event.repository.name,
@@ -193,57 +371,108 @@ function resolvePrContext() {
   };
 }
 
-const config = loadMergeGateConfig();
-const ctx = resolvePrContext();
+export function runMergeGateCheck({
+  ctx,
+  config,
+  skipChecks = process.env.ECC_MERGE_GATE_SKIP_CHECKS === '1',
+} = {}) {
+  let apiError = null;
+  let unresolved = [];
+  let pendingReviewsForHead = [];
+  let checkFailures = [];
 
-const unresolved = collectUnresolvedFindings(
-  ctx.owner,
-  ctx.repo,
-  ctx.pullNumber,
-  config.blockOnUnresolvedReviewSeverities,
-);
-
-let checkFailures = [];
-if (process.env.ECC_MERGE_GATE_SKIP_CHECKS !== '1') {
-  checkFailures = collectCheckFailures(
-    ctx.owner,
-    ctx.repo,
-    ctx.headSha,
-    config.requiredChecks,
-  );
-}
-
-const lines = [
-  '## ECC Merge Gate',
-  `- PR: #${ctx.pullNumber}`,
-  `- HEAD: ${ctx.headSha}`,
-  `- Unresolved P1/P2 findings: ${unresolved.length}`,
-  `- Required check failures: ${checkFailures.length}`,
-];
-
-if (unresolved.length > 0) {
-  lines.push('', '### Unresolved findings');
-  for (const f of unresolved) {
-    lines.push(`- **${f.severity}** ${f.path} (${f.user}) ${f.url}`);
+  try {
+    unresolved = collectUnresolvedFindings(
+      ctx.owner,
+      ctx.repo,
+      ctx.pullNumber,
+      config.blockOnUnresolvedReviewSeverities,
+    );
+    pendingReviewsForHead = collectPendingReviewsForHead(
+      ctx.owner,
+      ctx.repo,
+      ctx.pullNumber,
+      ctx.headSha,
+    );
+    if (!skipChecks) {
+      checkFailures = collectCheckFailures(
+        ctx.owner,
+        ctx.repo,
+        ctx.headSha,
+        config.requiredChecks,
+      );
+    }
+  } catch (err) {
+    apiError = err;
   }
-}
-if (checkFailures.length > 0) {
-  lines.push('', '### Required check failures');
-  for (const f of checkFailures) {
-    lines.push(`- ${f.name}: ${f.reason}`);
+
+  const decision = evaluateMergeGate({
+    unresolvedFindings: unresolved,
+    checkFailures,
+    apiError,
+    pendingReviewsForHead,
+  });
+
+  const lines = [
+    '## ECC Merge Gate',
+    `- PR: #${ctx.pullNumber}`,
+    `- HEAD: ${ctx.headSha}`,
+    `- Unresolved P1/P2 findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
+    `- Pending reviews for HEAD: ${apiError ? 'unknown' : pendingReviewsForHead.length}`,
+    `- Required check failures: ${apiError ? 'unknown' : checkFailures.length}`,
+    `- Decision: ${decision.reason}${decision.detail ? ` — ${decision.detail}` : ''}`,
+  ];
+
+  if (unresolved.length > 0) {
+    lines.push('', '### Unresolved findings');
+    for (const f of unresolved) {
+      lines.push(`- **${f.severity}** ${f.path} (${f.user}) ${f.url}`);
+    }
   }
+  if (pendingReviewsForHead.length > 0) {
+    lines.push('', '### Pending reviews (current HEAD)');
+    for (const r of pendingReviewsForHead) {
+      lines.push(`- ${r.user?.login ?? r.author?.login ?? 'unknown'} state=${r.state} id=${r.id}`);
+    }
+  }
+  if (checkFailures.length > 0) {
+    lines.push('', '### Required check failures');
+    for (const f of checkFailures) {
+      lines.push(`- ${f.name}: ${f.reason}`);
+    }
+  }
+  if (apiError) {
+    lines.push('', '### API error (fail-closed)', `- ${apiError.message}`);
+  }
+
+  return { decision, lines, unresolved, checkFailures, pendingReviewsForHead, apiError };
 }
 
-console.log(lines.join('\n'));
-if (process.env.GITHUB_STEP_SUMMARY) {
-  const { appendFileSync } = await import('node:fs');
-  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
-}
+const isMainModule =
+  Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
 
-if (unresolved.length > 0 || checkFailures.length > 0) {
-  console.error('ECC Merge Gate FAIL — do not merge');
-  process.exit(1);
-}
+if (isMainModule) {
+  const config = loadMergeGateConfig();
+  let ctx;
+  try {
+    ctx = resolvePrContext();
+  } catch (err) {
+    console.error('ECC Merge Gate FAIL — do not merge');
+    console.error(`Could not resolve PR context (fail-closed): ${err.message}`);
+    process.exit(1);
+  }
 
-console.log('ECC Merge Gate PASS');
-process.exit(0);
+  const { decision, lines } = runMergeGateCheck({ ctx, config });
+  console.log(lines.join('\n'));
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
+  }
+
+  if (!decision.ok) {
+    console.error('ECC Merge Gate FAIL — do not merge');
+    process.exit(1);
+  }
+
+  console.log('ECC Merge Gate PASS');
+  process.exit(0);
+}

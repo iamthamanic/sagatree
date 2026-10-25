@@ -4,6 +4,10 @@ name: ECC Merge Gate
 # - Unresolved Codex/Bugbot P1/P2 (Critical/Important) review findings → FAIL
 # - Required quality checks must be green on the PR head SHA
 #
+# #937 fail-closed race: a green run BEFORE late review findings must NOT remain
+# mergeable. Re-run on review / review_comment so a new FAIL invalidates the
+# prior PASS on the same HEAD (required-check freshness).
+#
 # Ambient known-red migration baselines (Atlas E2E, PG baseline, GATE-01/02/03
 # isolated candidates) are intentionally NOT in requiredChecks — see
 # .qa/merge-gate.yaml. Do not weaken this job to silence unresolved P1/P2.
@@ -12,6 +16,12 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
+  # Late Codex/Bugbot findings arrive as reviews / review comments after the
+  # first green gate (#934/#935). Re-evaluate findings on the current HEAD.
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
   # Allow re-check after other workflows finish (same SHA).
   workflow_run:
     workflows:
@@ -37,6 +47,8 @@ jobs:
     # On workflow_run, only evaluate the originating PR.
     if: >
       github.event_name == 'pull_request' ||
+      github.event_name == 'pull_request_review' ||
+      github.event_name == 'pull_request_review_comment' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != '')
 
     steps:
@@ -46,7 +58,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          EVENT="${{ github.event_name }}"
+          if [ "$EVENT" = "pull_request" ] || [ "$EVENT" = "pull_request_review" ] || [ "$EVENT" = "pull_request_review_comment" ]; then
             echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
           else
@@ -79,6 +92,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
           # On first pull_request event, sibling checks may still be pending —
-          # only enforce review findings; workflow_run recheck enforces checks.
+          # only enforce review findings; review / workflow_run recheck enforces checks.
+          # Review events always evaluate findings (never skip) so late P1/P2 fail-closes.
           ECC_MERGE_GATE_SKIP_CHECKS: ${{ github.event_name == 'pull_request' && '1' || '0' }}
         run: node scripts/ecc-merge-gate-check.mjs
