@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-411 (#827)
 
-- HEAD_SHA: PENDING_FEATURE_COMMIT
+- HEAD_SHA: dc385e6b16045b7981d735bb53b09db627b74688
 - BASE_SHA: dbe2e713daed52f4a688867a3fe58d2e19a2a440
 - Date: 2026-10-25
 - Verdict: CLEAR
