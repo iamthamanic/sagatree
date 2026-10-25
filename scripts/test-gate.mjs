@@ -680,6 +680,18 @@ function checkMig408ExportQuarantine() {
   );
 }
 
+function checkMig411ItemsQuarantine() {
+  console.log('MIG-411 (#827): items stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-411-items-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2865,6 +2877,7 @@ checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
 checkMig407DmToolsQuarantine();
 checkMig408ExportQuarantine();
+checkMig411ItemsQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

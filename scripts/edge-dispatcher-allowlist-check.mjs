@@ -72,6 +72,7 @@ for (const legacy of [
   'rulesets',
   'bestiary',
   'export',
+  'items',
 ]) {
   if (new RegExp(`['"]${legacy}['"]`).test(allowlistBlock)) {
     fail(`legacy mount ${legacy} must not be on the allowlist`);
