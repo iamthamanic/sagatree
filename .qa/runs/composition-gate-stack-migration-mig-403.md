@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-403 (#819)
 
-- HEAD_SHA: bd6beb4c6db4f611081ed43ed4f6ad1ddde67bb9
+- HEAD_SHA: 9c8dcde6265740e82060b2b416e5c8e7ad0b1259
 - BASE_SHA: e573eb950e7d545be471ebfb602a87c39ac6d66f
 - Date: 2026-10-25
 - Verdict: CLEAR
@@ -20,8 +20,8 @@ Legacy bestiary stays unmounted; quarantine fixtures characterize encounter XP/l
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| N-actors | Public path stays 404 for any caller | allowlist + create-app + registry | pass |
-| Invalid/missing | Unknown monster / empty q / bad CR | quarantine fixtures | pass |
+| N-actors | Public path stays 404 for any caller | allowlist values + create-app + registry | pass |
+| Invalid/missing | Unknown monster / empty q / bad CR / falsy fields | quarantine fixtures | pass |
 | Two consumers / crash | No shared host mount; activation denied | flag false; no route | pass |
 | Legacy defects | XP vs multiplier count mismatch; nonpositive unbounded | fixtures characterize | pass |
 
