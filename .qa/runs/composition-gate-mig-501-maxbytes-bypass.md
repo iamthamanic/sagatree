@@ -1,24 +1,36 @@
-# Composition Gate — mig-501-maxbytes-bypass
+# Composition Gate — mig-501-maxbytes-bypass (#939)
 
-## Status
-CLEAR
+- HEAD_SHA: e20d665d9ccffd3c5f437122f590da655dca4525
+- BASE_SHA: a6f6b148ccf3eecbbeea038a26c4e7230e948d0e
+- Date: 2026-10-25
+- Verdict: CLEAR
 
-## HEAD_SHA
-PLACEHOLDER
+## Event
 
-## BASE_SHA
-PLACEHOLDER
+MIG-501 maxBytes bypass hardening: public `assets.publish` always uses DEFAULT 16 MiB; elevated LARGE ceiling only via `publishResumableFinalize` on the capability-gated resumable path. No UI composition changes.
 
-## Scope
-MIG-501 maxBytes bypass hardening (#939): public `assets.publish` always DEFAULT 16 MiB; elevated LARGE only via `publishResumableFinalize` used by resumable uploads after capability/owner checks.
+## Hop chain
 
-## Composition path
-1. Caller → `assets.publish(actor, input)` → strip fields → `LocalAssetStore.publish(..., DEFAULT)`
-2. Resumable finalize → `assets.publishResumableFinalize` → `LocalAssetStore.publish(..., LARGE)`
-3. Capability off → uploads create `capability-disabled`; direct publish unchanged at 16 MiB
+1. Producer: direct `assets.publish(actor, input)` or resumable `uploads.patch` finalize
+2. Authorize: `permissions.authorize('asset.publish', actor)` (owner on upload session)
+3. Ceiling: public publish → `LocalAssetStore.publish(..., DEFAULT)`; strip caller maxBytes
+4. Elevated finalize: `assets.publishResumableFinalize` → `LocalAssetStore.publish(..., LARGE)`
+5. Consumer: `assets.get` / head.assetId for owner; strangers denied
 
-## Non-goals proved out of scope
-No cutover, no Supabase shutdown, no desktop release, no UI.
+## Simulations
 
-## Evidence
-`node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs` → PASS
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | Owner resume/finalize; stranger denied | self-test Fall 2 | pass |
+| Invalid/missing | 17 MiB direct + sneaky maxBytes → bytes-too-large; capability off create denied | #939 + Fall 3 | pass |
+| Two consumers / crash | ≤16 MiB direct OK; resumable 17 MiB OK; public path still capped | #939 probes | pass |
+
+## Flags
+
+- Acceptance tier: isolated-contract
+- Deferred integration: HTTP tus routes + feature E2E → MIG-600/#845 + MIG-602/#847
+- SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
+
+## Non-claims
+
+No production Storage cutover. No public HTTP tus endpoints. No Supabase shutdown. No desktop release.
