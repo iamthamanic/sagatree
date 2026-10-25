@@ -596,6 +596,18 @@ function checkRpcSagaProvision() {
   );
 }
 
+function checkRpcSessionRuntime() {
+  console.log('RPC-SESSION-RUNTIME (#867): apply/snapshot/presence facades...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-session-runtime.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2774,6 +2786,7 @@ checkMig309Rulesets();
 checkRpcSagaAuthoring();
 checkRpcSagaVersionRead();
 checkRpcSagaProvision();
+checkRpcSessionRuntime();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
