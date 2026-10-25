@@ -20,10 +20,10 @@ Legacy bestiary stays unmounted; quarantine fixtures characterize encounter XP/l
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| Public path | 404 / unmounted | allowlist + create-app + registry | pass |
-| Isolated fixtures | defaults/CR/list/XP | quarantine helpers | pass |
-| Legacy defects | mismatch + unbounded counts documented | fixtures assert characterization | pass |
-| Activation | denied | flag false | pass |
+| N-actors | Public path stays 404 for any caller | allowlist + create-app + registry | pass |
+| Invalid/missing | Unknown monster / empty q / bad CR | quarantine fixtures | pass |
+| Two consumers / crash | No shared host mount; activation denied | flag false; no route | pass |
+| Legacy defects | XP vs multiplier count mismatch; nonpositive unbounded | fixtures characterize | pass |
 
 ## Flags
 
