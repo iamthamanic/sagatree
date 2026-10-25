@@ -13,6 +13,7 @@ import {
   lateFindingInvalidatesPriorPass,
   findingSeverity,
   bodiesIndicateResolved,
+  mergeGraphqlAndRestFindings,
 } from './ecc-merge-gate-check.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,6 +41,8 @@ assert(
   'review events keep findings enforcement with SKIP_CHECKS for sibling timing',
 );
 assert(src.includes('waitForRequiredChecks'), 'workflow_run path polls sibling checks');
+assert(src.includes('--slurp'), 'paginate uses --slurp so multi-page reviews parse');
+assert(src.includes('skipCommentIds') || src.includes('graphqlThreadCommentIds'), 'REST skips GraphQL thread ids');
 
 const p1 = '**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>  Keep idempotency';
 const p2 = '**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Exclude expectedRevision';
@@ -138,5 +141,23 @@ const afterResolved = evaluateMergeGate({
   pendingReviewsForHead: [],
 });
 assert(afterResolved.ok === true, 'Gegenprobe: resolved findings + green checks → PASS');
+
+// P1: GraphQL-resolved thread must not be re-added by REST union (no text marker)
+const gqlOnly = [{ id: 111, severity: 'P1', path: 'a.ts', source: 'graphql-review-thread' }];
+const restReintroducesResolved = [
+  { id: 222, severity: 'P1', path: 'b.ts', source: 'rest-inline-comment' },
+];
+// Simulate collector: REST skipped id 111 because it was in a resolved GraphQL thread
+const merged = mergeGraphqlAndRestFindings(gqlOnly, restReintroducesResolved);
+assert(merged.length === 2, 'union keeps distinct unresolved ids');
+const restSkippedResolved = mergeGraphqlAndRestFindings(
+  [], // GraphQL excluded resolved thread from unresolved list
+  [], // REST skipped the GraphQL thread comment id
+);
+assert(restSkippedResolved.length === 0, 'resolved GraphQL thread + REST skip → empty unresolved');
+assert(
+  mergeGraphqlAndRestFindings([], [{ id: 111, severity: 'P1', path: 'a.ts' }]).length === 1,
+  'REST-only comment (no GraphQL thread) still blocks',
+);
 
 console.log('PASS: ecc-merge-gate-check.self-test');

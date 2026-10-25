@@ -72,14 +72,33 @@ export function loadMergeGateConfig(configRoot = root) {
   };
 }
 
+/**
+ * Parse `gh api` JSON. When `--paginate` is used without `--slurp`, gh emits
+ * one JSON document per page; concatenate via `--slurp` automatically.
+ */
 export function ghJson(args, { cwd = root } = {}) {
+  const finalArgs = [...args];
+  if (finalArgs.includes('--paginate') && !finalArgs.includes('--slurp')) {
+    finalArgs.push('--slurp');
+  }
   try {
-    const out = execFileSync('gh', args, {
+    const out = execFileSync('gh', finalArgs, {
       encoding: 'utf8',
       cwd,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
-    return JSON.parse(out);
+    const parsed = JSON.parse(out);
+    // --slurp wraps each page in an array; flatten common list shapes.
+    if (Array.isArray(parsed) && finalArgs.includes('--slurp')) {
+      if (parsed.every((page) => Array.isArray(page))) {
+        return parsed.flat();
+      }
+      // check-runs style: [{ check_runs: [...] }, ...]
+      if (parsed.every((page) => page && typeof page === 'object' && Array.isArray(page.check_runs))) {
+        return { check_runs: parsed.flatMap((page) => page.check_runs) };
+      }
+    }
+    return parsed;
   } catch (err) {
     const stderr = err?.stderr?.toString?.() ?? err?.message ?? String(err);
     const error = new Error(`GitHub API failed (fail-closed): ${stderr}`);
@@ -217,9 +236,14 @@ export function collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, al
   }
   const threads = pr.reviewThreads?.nodes ?? [];
   const unresolved = [];
+  /** Comment database IDs that GraphQL already classified (resolved or not). */
+  const graphqlThreadCommentIds = new Set();
   for (const thread of threads) {
     const comments = thread.comments?.nodes ?? [];
     if (!comments.length) continue;
+    for (const c of comments) {
+      if (c.databaseId != null) graphqlThreadCommentIds.add(String(c.databaseId));
+    }
     const root = comments[0];
     const sev = findingSeverity(root.body ?? '', allowedSeverities);
     if (!sev) continue;
@@ -235,11 +259,21 @@ export function collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, al
       source: 'graphql-review-thread',
     });
   }
-  return unresolved;
+  return { unresolved, graphqlThreadCommentIds };
 }
 
-/** REST fallback used only after GraphQL succeeded empty — still applied for non-thread inline comments. */
-export function collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities) {
+/**
+ * REST fallback for inline comments that are NOT part of any GraphQL review
+ * thread. GraphQL isResolved is authoritative — never re-add a thread that
+ * GraphQL already resolved just because REST lacks resolution state (#937 P1).
+ */
+export function collectUnresolvedFindingsFromRest(
+  owner,
+  repo,
+  pullNumber,
+  allowedSeverities,
+  { skipCommentIds = new Set() } = {},
+) {
   const comments = ghJson([
     'api',
     `repos/${owner}/${repo}/pulls/${pullNumber}/comments`,
@@ -257,6 +291,7 @@ export function collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allow
   const unresolved = [];
   for (const c of comments) {
     if (c.in_reply_to_id) continue;
+    if (skipCommentIds.has(String(c.id))) continue;
     const sev = findingSeverity(c.body ?? '', allowedSeverities);
     if (!sev) continue;
     const replies = repliesByParent.get(c.id) ?? [];
@@ -275,18 +310,33 @@ export function collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allow
 }
 
 /**
- * Union GraphQL (authoritative resolution) + REST (catches non-thread comments).
- * Dedupes by comment id. Any API throw propagates (fail-closed).
+ * Merge GraphQL findings with REST-only comments. GraphQL thread membership
+ * (including resolved threads) suppresses REST re-introduction of the same id.
  */
-export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
-  const fromGql = collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, allowedSeverities);
-  const fromRest = collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities);
+export function mergeGraphqlAndRestFindings(fromGql, fromRest) {
   const byId = new Map();
   for (const f of [...fromGql, ...fromRest]) {
     const key = String(f.id ?? `${f.path}:${f.url}`);
     if (!byId.has(key)) byId.set(key, f);
   }
   return [...byId.values()];
+}
+
+/**
+ * Union GraphQL (authoritative resolution) + REST (non-thread comments only).
+ * Any API throw propagates (fail-closed).
+ */
+export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
+  const { unresolved: fromGql, graphqlThreadCommentIds } = collectUnresolvedFindingsFromGraphql(
+    owner,
+    repo,
+    pullNumber,
+    allowedSeverities,
+  );
+  const fromRest = collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities, {
+    skipCommentIds: graphqlThreadCommentIds,
+  });
+  return mergeGraphqlAndRestFindings(fromGql, fromRest);
 }
 
 export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
