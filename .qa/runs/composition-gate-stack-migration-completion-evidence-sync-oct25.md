@@ -1,6 +1,6 @@
 # Composition Gate — completion-evidence-sync-oct25
 
-- HEAD_SHA: f86fa40b3659b6263a2ceb115cb062463c8117bb
+- HEAD_SHA: f6f9391343582bfa6d2ad70366eeeae0d2565540
 - BASE_SHA: f86fa40b3659b6263a2ceb115cb062463c8117bb
 - Date: 2026-10-25
 - Verdict: SKIPPED
