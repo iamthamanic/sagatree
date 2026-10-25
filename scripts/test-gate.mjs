@@ -608,6 +608,18 @@ function checkRpcSessionRuntime() {
   );
 }
 
+function checkRpcWorldMap() {
+  console.log('RPC-WORLD-MAP (#861): get/save + player pin filter...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-world-map.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2787,6 +2799,7 @@ checkRpcSagaAuthoring();
 checkRpcSagaVersionRead();
 checkRpcSagaProvision();
 checkRpcSessionRuntime();
+checkRpcWorldMap();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

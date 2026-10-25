@@ -7,9 +7,12 @@ import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
 import type { WorldReadStore } from './internal/world-read-store.ts';
 import type { WorldWriteStore } from './internal/world-write-store.ts';
+import { WorldMapStore, type WorldMapDto } from './internal/world-map-store.ts';
+import type { HostDatabase } from '../../persistence/open-database.ts';
 
 export type { WorldReadStore, WorldStoredRow } from './internal/world-read-store.ts';
 export type { WorldWriteStore } from './internal/world-write-store.ts';
+export type { WorldMapDto } from './internal/world-map-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
 
 /** Public world read DTO — no owner id / ORM / HTTP types. */
@@ -36,6 +39,17 @@ export type WorldPorts = {
     actor: Actor,
     title: string,
   ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
+  readonly getWorldMap: (
+    actor: Actor,
+    worldProfileId: string,
+    playerView?: boolean,
+  ) => WorldReadResult<WorldMapDto>;
+  readonly saveWorldMap: (
+    actor: Actor,
+    worldProfileId: string,
+    expectedRevision: number | null,
+    mapData: Record<string, unknown>,
+  ) => WorldReadResult<WorldMapDto>;
 };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
@@ -52,8 +66,10 @@ export function createWorldPorts(deps: {
   readonly authorize: AuthorizeFn;
   readonly store: WorldReadStore;
   readonly writeStore?: WorldWriteStore;
+  readonly db?: HostDatabase;
 }): WorldPorts {
-  const { authorize, store, writeStore } = deps;
+  const { authorize, store, writeStore, db } = deps;
+  const maps = db ? new WorldMapStore(db) : null;
 
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
@@ -102,6 +118,31 @@ export function createWorldPorts(deps: {
       }
       return { ok: true, value: { id, title: safeTitle, createdAt } };
     },
+
+    getWorldMap(actor, worldProfileId, playerView = false) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!maps) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      if (!maps.worldExists(id)) return { ok: false, error: 'P0002' };
+      if (!maps.canReadWorld(actor.actorId, id)) return { ok: false, error: '42501' };
+      const canEdit = maps.canEditWorld(actor.actorId, id);
+      const forcePlayer = !canEdit || playerView === true;
+      return { ok: true, value: maps.getMap(id, forcePlayer) };
+    },
+
+    saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!maps) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      if (!maps.worldExists(id)) return { ok: false, error: 'P0002' };
+      if (!maps.canEditWorld(actor.actorId, id)) return { ok: false, error: '42501' };
+      if (!mapData || typeof mapData !== 'object' || Array.isArray(mapData)) {
+        return { ok: false, error: '22023' };
+      }
+      return maps.saveMap(id, expectedRevision, mapData);
+    },
   };
 }
 
@@ -114,5 +155,7 @@ export function createWorldPortsStub(): WorldPorts {
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
     },
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
+    saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
   };
 }
