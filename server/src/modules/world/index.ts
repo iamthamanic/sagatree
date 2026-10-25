@@ -15,6 +15,18 @@ export type { WorldWriteStore } from './internal/world-write-store.ts';
 export type { WorldMapDto } from './internal/world-map-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
 
+function actorIdentityIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds) &&
+    actor.linkedSoloActorIds.length > 0
+  ) {
+    return [...ids, ...actor.linkedSoloActorIds];
+  }
+  return ids;
+}
+
 /** Public world read DTO — no owner id / ORM / HTTP types. */
 export type WorldReadDto = {
   readonly id: string;
@@ -67,9 +79,16 @@ export function createWorldPorts(deps: {
   readonly store: WorldReadStore;
   readonly writeStore?: WorldWriteStore;
   readonly db?: HostDatabase;
+  /** Project-module read: GM/member on a project bound to the world. */
+  readonly actorCanAccessWorld?: (actorIds: readonly string[], worldId: string) => boolean;
 }): WorldPorts {
-  const { authorize, store, writeStore, db } = deps;
-  const maps = db ? new WorldMapStore(db) : null;
+  const { authorize, store, writeStore, db, actorCanAccessWorld } = deps;
+  const maps =
+    db && actorCanAccessWorld
+      ? new WorldMapStore(db, actorCanAccessWorld)
+      : db
+        ? new WorldMapStore(db, () => false)
+        : null;
 
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
@@ -124,9 +143,12 @@ export function createWorldPorts(deps: {
       if (!maps) return { ok: false, error: 'store-unavailable' };
       const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
       if (!id) return { ok: false, error: '22023' };
-      if (!maps.worldExists(id)) return { ok: false, error: 'P0002' };
-      if (!maps.canReadWorld(actor.actorId, id)) return { ok: false, error: '42501' };
-      const canEdit = maps.canEditWorld(actor.actorId, id);
+      const ids = actorIdentityIds(actor);
+      // Do not reveal existence: missing and unauthorized both → 42501 (legacy parity).
+      if (!maps.worldExists(id) || !maps.canReadWorld(ids, id)) {
+        return { ok: false, error: '42501' };
+      }
+      const canEdit = maps.canEditWorld(ids, id);
       const forcePlayer = !canEdit || playerView === true;
       return { ok: true, value: maps.getMap(id, forcePlayer) };
     },
@@ -136,8 +158,10 @@ export function createWorldPorts(deps: {
       if (!maps) return { ok: false, error: 'store-unavailable' };
       const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
       if (!id) return { ok: false, error: '22023' };
-      if (!maps.worldExists(id)) return { ok: false, error: 'P0002' };
-      if (!maps.canEditWorld(actor.actorId, id)) return { ok: false, error: '42501' };
+      const ids = actorIdentityIds(actor);
+      if (!maps.worldExists(id) || !maps.canEditWorld(ids, id)) {
+        return { ok: false, error: '42501' };
+      }
       if (!mapData || typeof mapData !== 'object' || Array.isArray(mapData)) {
         return { ok: false, error: '22023' };
       }

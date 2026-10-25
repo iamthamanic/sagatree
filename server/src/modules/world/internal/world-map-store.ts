@@ -2,6 +2,9 @@
  * Legacy world_maps persistence (RPC-WORLD-MAP / #861).
  * Private — import only from world public API.
  * Location: server/src/modules/world/internal/world-map-store.ts
+ *
+ * Owns only `worlds` / `world_maps`. Project membership is injected via callback
+ * from the project module public port (no foreign SQL).
  */
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 
@@ -32,21 +35,35 @@ function parseMapData(raw: string | null | undefined): Record<string, unknown> {
   return { ...EMPTY_MAP };
 }
 
+/** Legacy jsonb→boolean: false / "false" / 0 hide the pin from players. */
+function pinDiscovered(pin: Record<string, unknown>): boolean {
+  const discovered = pin.discovered;
+  if (discovered === false || discovered === 0 || discovered === 'false' || discovered === '0') {
+    return false;
+  }
+  if (discovered === undefined || discovered === null) return true;
+  return Boolean(discovered);
+}
+
 function filterPlayerPins(mapData: Record<string, unknown>): Record<string, unknown> {
   const pins = Array.isArray(mapData.pins) ? mapData.pins : [];
   const visible = pins.filter((pin) => {
     if (!pin || typeof pin !== 'object' || Array.isArray(pin)) return false;
-    const discovered = (pin as { discovered?: unknown }).discovered;
-    return discovered !== false;
+    return pinDiscovered(pin as Record<string, unknown>);
   });
   return { ...mapData, pins: visible };
 }
 
 export class WorldMapStore {
   readonly #db: HostDatabase;
+  readonly #canAccessWorld: (actorIds: readonly string[], worldId: string) => boolean;
 
-  constructor(db: HostDatabase) {
+  constructor(
+    db: HostDatabase,
+    canAccessWorld: (actorIds: readonly string[], worldId: string) => boolean,
+  ) {
     this.#db = db;
+    this.#canAccessWorld = canAccessWorld;
   }
 
   worldExists(worldId: string): boolean {
@@ -56,36 +73,26 @@ export class WorldMapStore {
     return Boolean(row);
   }
 
-  isWorldOwner(actorId: string, worldId: string): boolean {
-    const row = this.#db
-      .prepare(`SELECT 1 AS ok FROM worlds WHERE id = ? AND owner_user_id = ?`)
-      .get(worldId, actorId) as { ok: number } | undefined;
-    return Boolean(row);
-  }
-
-  /** Owner or active member/GM on a project bound to this world. */
-  canReadWorld(actorId: string, worldId: string): boolean {
-    if (this.isWorldOwner(actorId, worldId)) return true;
+  /** Owner match including linked solo actor ids. */
+  isWorldOwner(actorIds: readonly string[], worldId: string): boolean {
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return false;
+    const placeholders = ids.map(() => '?').join(',');
     const row = this.#db
       .prepare(
-        `SELECT 1 AS ok
-         FROM projects p
-         WHERE p.world_id = ?
-           AND (
-             p.gm_user_id = ?
-             OR EXISTS (
-               SELECT 1 FROM project_members pm
-               WHERE pm.project_id = p.id AND pm.user_id = ? AND pm.active = 1
-             )
-           )
-         LIMIT 1`,
+        `SELECT 1 AS ok FROM worlds WHERE id = ? AND owner_user_id IN (${placeholders})`,
       )
-      .get(worldId, actorId, actorId) as { ok: number } | undefined;
+      .get(worldId, ...ids) as { ok: number } | undefined;
     return Boolean(row);
   }
 
-  canEditWorld(actorId: string, worldId: string): boolean {
-    return this.isWorldOwner(actorId, worldId);
+  canReadWorld(actorIds: readonly string[], worldId: string): boolean {
+    if (this.isWorldOwner(actorIds, worldId)) return true;
+    return this.#canAccessWorld(actorIds, worldId);
+  }
+
+  canEditWorld(actorIds: readonly string[], worldId: string): boolean {
+    return this.isWorldOwner(actorIds, worldId);
   }
 
   getMap(worldId: string, forcePlayerView: boolean): WorldMapDto {
@@ -135,14 +142,15 @@ export class WorldMapStore {
       }
     }
 
-    const existing = this.#db
-      .prepare(`SELECT revision FROM world_maps WHERE world_id = ?`)
-      .get(worldId) as { revision: number } | undefined;
     const updatedAt = new Date().toISOString();
     const json = JSON.stringify(mapData);
 
+    // BEGIN IMMEDIATE before revision read — single-writer CAS (GATE-04).
     this.#db.exec('BEGIN IMMEDIATE');
     try {
+      const existing = this.#db
+        .prepare(`SELECT revision FROM world_maps WHERE world_id = ?`)
+        .get(worldId) as { revision: number } | undefined;
       if (existing) {
         const expected = expectedRevision ?? -1;
         if (expected >= 0 && existing.revision !== expected) {

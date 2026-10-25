@@ -74,6 +74,7 @@ try {
     store: createSqliteWorldReadStore(db),
     writeStore: createSqliteWorldWriteStore(db),
     db,
+    actorCanAccessWorld: project.actorCanAccessWorld,
   });
   const getMap = get_world_map(world);
   const saveMap = save_world_map(world);
@@ -164,7 +165,33 @@ try {
   assert(!strangerGet.ok && strangerGet.error === '42501', `stranger: ${strangerGet.error}`);
 
   const missing = getMap(OWNER, 'no-such-world', false);
-  assert(!missing.ok && missing.error === 'P0002', `missing world: ${missing.error}`);
+  assert(!missing.ok && missing.error === '42501', `missing world: ${missing.error}`);
+
+  // Linked solo remote can edit world still owned by solo id
+  const linked = {
+    kind: 'remote-account',
+    actorId: 'remote-r',
+    sessionId: 'auth-remote-r',
+    email: null,
+    linkedSoloActorIds: [OWNER.actorId],
+  };
+  const linkedGet = getMap(linked, worldId, false);
+  assert(linkedGet.ok && linkedGet.value.mapData.pins.length === 2, 'linked solo full map');
+  const linkedSave = saveMap(linked, worldId, null, { ...VALID_MAP, size: 28 });
+  assert(linkedSave.ok && linkedSave.value.revision === 5, `linked save: ${linkedSave.ok ? linkedSave.value.revision : linkedSave.error}`);
+
+  // String "false" discovery must stay hidden for players
+  const coerced = saveMap(OWNER, worldId, null, {
+    ...VALID_MAP,
+    pins: [
+      { id: 'vis', discovered: true, imagePath: 'a.png' },
+      { id: 'hid', discovered: 'false', imagePath: 'b.png' },
+    ],
+  });
+  assert(coerced.ok, 'coerced save');
+  const playerCoerced = getMap(PLAYER, worldId, false);
+  assert(playerCoerced.ok && playerCoerced.value.mapData.pins.length === 1, 'string false hidden');
+  assert(playerCoerced.value.mapData.pins[0].id === 'vis', 'visible pin only');
 
   db.close();
   console.log('PASS rpc-world-map.self-test');

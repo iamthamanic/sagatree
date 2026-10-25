@@ -1,6 +1,9 @@
 # Review — stack-migration-rpc-world-map
 Verdict: APPROVE
-Findings:
-- Info: world-map-store reads `projects`/`project_members` for membership (same pattern as session-invite). Prefer project read-port in a follow-up if boundary tightening lands.
-- Low: empty-map response returns a shallow copy of EMPTY_MAP constants; pins arrays are new via filter path only when forcePlayerView — OK for isolated-contract.
-No Critical/Important blockers. RPC-SEC-LEGACY-MAP-FLAG fixed (non-editors always filtered).
+Findings (addressed on branch):
+- P1 CAS: revision read moved inside `BEGIN IMMEDIATE`.
+- P1 linked solo: ownership/read uses `actorId` + `linkedSoloActorIds`.
+- P1 foreign SQL: membership via `project.actorCanAccessWorld` port.
+- P2 existence leak: missing/unauthorized → `42501`.
+- P2 discovered coercion: `"false"` / `0` hidden for players.
+No open Critical/Important blockers. RPC-SEC-LEGACY-MAP-FLAG fixed.
