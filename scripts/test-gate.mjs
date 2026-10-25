@@ -644,6 +644,18 @@ function checkMig403BestiaryQuarantine() {
   );
 }
 
+function checkMig406CharactersQuarantine() {
+  console.log('MIG-406 (#822): characters stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-406-characters-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2826,6 +2838,7 @@ checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
+checkMig406CharactersQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
