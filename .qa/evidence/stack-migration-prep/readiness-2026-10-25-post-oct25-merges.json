@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-25T22:07:40.803Z",
+  "generatedAt": "2026-10-25T23:09:04.724Z",
   "branch": "chore/773-completion-evidence-sync-oct25",
   "headSha": "f6f9391343582bfa6d2ad70366eeeae0d2565540",
   "headShaHint": "f6f939134358",
   "meaning": "Evidence-based classification after recording hashed completionEvidence for 11 merged Oct-25 migration slices (RPC-SAGA-PROVISION…MIG-413). Closed GitHub alone is not DONE.",
   "counts": {
     "total": 90,
-    "done": 36,
-    "ready": 20,
+    "done": 37,
+    "ready": 19,
     "waiting": 30,
     "blocked": 4,
     "needsDesign": 0
@@ -481,6 +481,20 @@
       "requiredRegressionCount": 1
     },
     {
+      "localId": "MIG-415",
+      "githubIssue": 831,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-415.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
       "localId": "MIG-306",
       "githubIssue": 805,
       "dependsOn": [
@@ -653,17 +667,6 @@
       ],
       "blockerCount": 0,
       "requiredRegressionCount": 2
-    },
-    {
-      "localId": "MIG-415",
-      "githubIssue": 831,
-      "dependsOn": [
-        "MIG-020",
-        "MIG-013",
-        "MIG-014"
-      ],
-      "blockerCount": 0,
-      "requiredRegressionCount": 1
     },
     {
       "localId": "MIG-416",

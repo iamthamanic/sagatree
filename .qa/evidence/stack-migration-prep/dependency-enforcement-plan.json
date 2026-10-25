@@ -1260,7 +1260,7 @@
       "githubIssue": 831,
       "order": 56,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1271,7 +1271,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-056",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

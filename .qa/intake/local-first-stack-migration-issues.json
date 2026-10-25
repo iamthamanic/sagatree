@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 20,
+    "issuesReady": 19,
     "issuesBlockedOrNeedsDesign": 34,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -11017,7 +11017,7 @@
       "title": "Port Edge Function `marketplace` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-415",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-415.md",
       "dependsOn": [
@@ -11106,9 +11106,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-415.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence."
@@ -11141,7 +11142,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-056",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
