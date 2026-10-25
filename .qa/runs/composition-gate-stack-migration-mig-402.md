@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-402 (#818)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: cd8b4cbff502acb923d5027b72271be0c92592d1
 - BASE_SHA: d6569a1df1071b93aa3cfbad1906263e3cc1a3a6
 - Date: 2026-10-25
 - Verdict: CLEAR
