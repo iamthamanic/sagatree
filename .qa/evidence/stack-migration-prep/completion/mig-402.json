@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-402",
+  "result": "PASS",
+  "testedCommit": "e573eb950e7d545be471ebfb602a87c39ac6d66f",
+  "githubClosed": true,
+  "mergeRef": "PR #957 → main (#818)",
+  "note": "AI provider credentials + ollama-settings host ports; list DB errors → 500; refresh persist_failed.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-402-ai-provider-credentials.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-402.md",
+      "sha256": "5cf34240bf56d773e73bd3f140917e6252fe9070bebe5b4be5a3ae84a34c77e4"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-402.md",
+      "sha256": "cb932b5a6203d353700d5bc65ccce49895ca1bbf17db4a24bfb7146295ebd6a6"
+    }
+  ]
+}

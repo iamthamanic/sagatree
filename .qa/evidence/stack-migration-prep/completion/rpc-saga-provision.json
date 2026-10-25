@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SAGA-PROVISION",
+  "result": "PASS",
+  "testedCommit": "d0f5af5c62f5543f74c658f1a9840167a71a031c",
+  "githubClosed": true,
+  "mergeRef": "PR #954 → main (#873)",
+  "note": "Saga provision create/duplicate/ensure with actor GM membership; Dornhain seed repair deferred MIG-600.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-saga-provision.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-provision.md",
+      "sha256": "440312e985e9505b32bdbd08e55967d2b8a1f36d5c122da397adfb08f95eb3f4"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-saga-provision.md",
+      "sha256": "afd0c706a320894f5018e36ccd10899d3d4eb0ed765ccc6da08df05c20479067"
+    }
+  ]
+}

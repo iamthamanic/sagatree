@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-406",
+  "result": "PASS",
+  "testedCommit": "d2d5d0e57daf77d9d18bdc484de7e96ec0d11303",
+  "githubClosed": true,
+  "mergeRef": "PR #959 → main (#822)",
+  "note": "Characters quarantine keeps 404; addExperience loop guarded fixture.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-406-characters-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-406.md",
+      "sha256": "b7ccf11e51b415dfe577a9f785f77da6c44e94db62b6f3499e2e79082c30fb6e"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-406.md",
+      "sha256": "abb099cf8d14c8bd15dbd7e65890919a791abac6bc88e4087064c4138e787b0d"
+    }
+  ]
+}

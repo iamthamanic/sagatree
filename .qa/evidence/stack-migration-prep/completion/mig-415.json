@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-415",
+  "result": "PASS",
+  "testedCommit": "e5f20bd2d5b44b726c387341198462485a0617c8",
+  "githubClosed": true,
+  "mergeRef": "PR #967 → main (#831)",
+  "note": "Marketplace Map quarantine keeps 404; distinct from durable marketplace_items.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-415-marketplace-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-415.md",
+      "sha256": "dc0b6d1596f376403a4f7eb0b499a3d8643d807484c3cb47f62cbd0810678ca1"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-415.md",
+      "sha256": "7b9531e278c1bbce0b3a28c1118833ebf7319dd095c83068a1c245ed5a7bdcb7"
+    }
+  ]
+}

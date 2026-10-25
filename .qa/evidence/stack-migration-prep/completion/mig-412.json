@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-412",
+  "result": "PASS",
+  "testedCommit": "284bfacea3e1c0953ca9884f269edfda530a42b7",
+  "githubClosed": true,
+  "mergeRef": "PR #964 → main (#828)",
+  "note": "look-reference-analysis isolated use-case; no LookProfile persist; no HTTP mount.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-412-look-reference-analysis.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-412.md",
+      "sha256": "d5202ba0faf1c3e29b93a9de7806d5432fc364c36edf63ceee3060ef22aa42dc"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-412.md",
+      "sha256": "51d2c4c7f7941159754d647135091875a0a97d15cba78feef2b72fc5137a52f0"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-408",
+  "result": "PASS",
+  "testedCommit": "dbe2e713daed52f4a688867a3fe58d2e19a2a440",
+  "githubClosed": true,
+  "mergeRef": "PR #962 → main (#824)",
+  "note": "export quarantine keeps 404; conversion ≠ persistence.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-408-export-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-408.md",
+      "sha256": "55d1af7b92922edd5d4e707d845b9604e13015c6116bc9b836f8df86eeb96ac8"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-408.md",
+      "sha256": "5d459ae26fda98a86b7bdbdb8623b4c1a874d96da78d8f39c1e44554c2151f5f"
+    }
+  ]
+}

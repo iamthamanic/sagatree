@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-407",
+  "result": "PASS",
+  "testedCommit": "313df17aa088d4673605296a3ec1f725945d6d6a",
+  "githubClosed": true,
+  "mergeRef": "PR #961 → main (#823)",
+  "note": "dm-tools quarantine keeps 404; seeded dice/combat fixtures.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-407-dm-tools-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-407.md",
+      "sha256": "c0fa5f00d9b734097e04339431a43c4d88e0aaa6b6cefd67d0175454cbe4eeee"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-407.md",
+      "sha256": "2d5151bec000837672072a9985fa7611a07c34ffd69e4558afff8ca377cd0e9d"
+    }
+  ]
+}

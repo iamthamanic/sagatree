@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-411",
+  "result": "PASS",
+  "testedCommit": "482c1e571cbcae6a438aee60c53b3eb3afd4bedd",
+  "githubClosed": true,
+  "mergeRef": "PR #963 → main (#827)",
+  "note": "items quarantine keeps 404; Map catalog ≠ durable inventory.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-411-items-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-411.md",
+      "sha256": "adc884e85560465c3b2e97b9fa22c39d2d2c9936b32abdaf0625c029cbab557f"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-411.md",
+      "sha256": "a7ee2f6da635906dd4d3423d887a1f9ecc2fc7f631eabb1bd23ebfeedfd6a942"
+    }
+  ]
+}

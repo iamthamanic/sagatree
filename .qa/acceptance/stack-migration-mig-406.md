@@ -16,6 +16,8 @@ authorized host routes + MIG-600; public activation remains unauthorized (`CHARA
 - [x] Legacy regression: addExperience const nextLevel/nextThreshold never advance → indefinite loop at threshold (guarded fixture).
 - [x] Legacy regression: no user authentication; client supplies ownerId; level-up body can target a different path ID.
 - [x] Touched files: zero type escape hatches.
+- [x] scripts/mig-406-characters-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `node --experimental-strip-types scripts/mig-406-characters-quarantine.self-test.mjs` → PASS (wired into `npm run test-gate`).

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SESSION-RUNTIME",
+  "result": "PASS",
+  "testedCommit": "12cc8db0ede3f03f270a5d6d5a070abdc8673231",
+  "githubClosed": true,
+  "mergeRef": "PR #955 → main (#867)",
+  "note": "Session runtime apply/presence/snapshot facades over MIG-022; no public append_session_event.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-session-runtime.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-session-runtime.md",
+      "sha256": "5ccc2ffc6de0964800a97b0778178d32e66c46b2c7239d4fd5288d4d3c0bd21a"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-session-runtime.md",
+      "sha256": "c63fa583ebbeb8babd77fc0be717d3485e7b0987d38d3fdd9206288677d1e28f"
+    }
+  ]
+}

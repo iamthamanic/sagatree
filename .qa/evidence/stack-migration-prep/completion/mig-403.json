@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-403",
+  "result": "PASS",
+  "testedCommit": "ef2ebc09ecd3232e6d0adb9f6ac2d9c5e1674095",
+  "githubClosed": true,
+  "mergeRef": "PR #958 → main (#819)",
+  "note": "Bestiary quarantine keeps 404; isolated Monster fixtures.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-403-bestiary-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-403.md",
+      "sha256": "565b50d2ddd003d5d9304f5caea82f8177b4724c166c4fbea401bb31ec0ea16e"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-403.md",
+      "sha256": "6584d7fee3737903d69c6723821467fd2097ca7823727913082aecce2a73a9f0"
+    }
+  ]
+}

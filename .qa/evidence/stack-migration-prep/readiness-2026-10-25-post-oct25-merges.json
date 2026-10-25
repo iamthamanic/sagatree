@@ -1,0 +1,1401 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T23:09:04.724Z",
+  "branch": "chore/773-completion-evidence-sync-oct25",
+  "headSha": "f6f9391343582bfa6d2ad70366eeeae0d2565540",
+  "headShaHint": "f6f939134358",
+  "meaning": "Evidence-based classification after recording hashed completionEvidence for 11 merged Oct-25 migration slices (RPC-SAGA-PROVISION…MIG-413). Closed GitHub alone is not DONE.",
+  "counts": {
+    "total": 90,
+    "done": 37,
+    "ready": 19,
+    "waiting": 30,
+    "blocked": 4,
+    "needsDesign": 0
+  },
+  "done": [
+    {
+      "localId": "MIG-001",
+      "githubIssue": 782,
+      "dependsOn": [],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-002",
+      "githubIssue": 783,
+      "dependsOn": [
+        "MIG-001"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "GATE-01",
+      "githubIssue": 784,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "GATE-02",
+      "githubIssue": 785,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "GATE-03",
+      "githubIssue": 786,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "GATE-04",
+      "githubIssue": 787,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-010",
+      "githubIssue": 789,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-011",
+      "githubIssue": 790,
+      "dependsOn": [
+        "MIG-010",
+        "GATE-01",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-013",
+      "githubIssue": 792,
+      "dependsOn": [
+        "MIG-011",
+        "GATE-01"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-012",
+      "githubIssue": 791,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-014",
+      "githubIssue": 793,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-014.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-015",
+      "githubIssue": 794,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-015.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-500",
+      "githubIssue": 841,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-020",
+      "githubIssue": 795,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-03"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-020.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-022",
+      "githubIssue": 797,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013",
+        "MIG-014",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-022.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-023",
+      "githubIssue": 798,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-022",
+        "GATE-02"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-023.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-024",
+      "githubIssue": 799,
+      "dependsOn": [
+        "MIG-013",
+        "MIG-022",
+        "GATE-01"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-024.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-021",
+      "githubIssue": 796,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-022",
+        "MIG-024",
+        "GATE-02",
+        "GATE-03"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-021.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-503",
+      "githubIssue": 844,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-002"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "RPC-SAGA-AUTHORING",
+      "githubIssue": 871,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "RPC-SAGA-VERSION-READ",
+      "githubIssue": 872,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-AUTHORING"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-version-read.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "RPC-SAGA-PROVISION",
+      "githubIssue": 873,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-VERSION-READ"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-provision.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "RPC-SESSION-RUNTIME",
+      "githubIssue": 867,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-runtime.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 3
+    },
+    {
+      "localId": "RPC-WORLD-MAP",
+      "githubIssue": 861,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-map.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-402",
+      "githubIssue": 818,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-402.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2
+    },
+    {
+      "localId": "MIG-403",
+      "githubIssue": 819,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-403.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-406",
+      "githubIssue": 822,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-406.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2
+    },
+    {
+      "localId": "MIG-407",
+      "githubIssue": 823,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-407.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-408",
+      "githubIssue": 824,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-408.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-411",
+      "githubIssue": 827,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-411.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-412",
+      "githubIssue": 828,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-412.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-413",
+      "githubIssue": 829,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-413.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-415",
+      "githubIssue": 831,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-415.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-306",
+      "githubIssue": 805,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-306.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-309",
+      "githubIssue": 808,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-014"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-309.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-501",
+      "githubIssue": 842,
+      "dependsOn": [
+        "MIG-500",
+        "MIG-020"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-501.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-502",
+      "githubIssue": 843,
+      "dependsOn": [
+        "MIG-500",
+        "MIG-503",
+        "MIG-020"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-502.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    }
+  ],
+  "ready": [
+    {
+      "localId": "RPC-PROJECT-MEMBERSHIP",
+      "githubIssue": 874,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-PROVISION"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "RPC-SESSION-LIFECYCLE",
+      "githubIssue": 868,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-RUNTIME"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "githubIssue": 862,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-MAP"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 2
+    },
+    {
+      "localId": "MIG-401",
+      "githubIssue": 817,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-404",
+      "githubIssue": 820,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 2
+    },
+    {
+      "localId": "MIG-405",
+      "githubIssue": 821,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-409",
+      "githubIssue": 825,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 3
+    },
+    {
+      "localId": "MIG-410",
+      "githubIssue": 826,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 2
+    },
+    {
+      "localId": "MIG-416",
+      "githubIssue": 832,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-417",
+      "githubIssue": 833,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-418",
+      "githubIssue": 834,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-419",
+      "githubIssue": 835,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-420",
+      "githubIssue": 836,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-422",
+      "githubIssue": 838,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-423",
+      "githubIssue": 839,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-424",
+      "githubIssue": 840,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    },
+    {
+      "localId": "MIG-301",
+      "githubIssue": 800,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-402",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-304",
+      "githubIssue": 803,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-412",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 0
+    },
+    {
+      "localId": "MIG-312",
+      "githubIssue": 811,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-500",
+        "MIG-014"
+      ],
+      "blockerCount": 0,
+      "requiredRegressionCount": 1
+    }
+  ],
+  "waiting": [
+    {
+      "localId": "RPC-SAGA-GOVERNANCE",
+      "githubIssue": 875,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-PROJECT-MEMBERSHIP"
+      ]
+    },
+    {
+      "localId": "RPC-NPC-INSTANCES",
+      "githubIssue": 877,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-ACCESS",
+      "githubIssue": 869,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-RECAP",
+      "githubIssue": 870,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ]
+    },
+    {
+      "localId": "MIG-351",
+      "githubIssue": 814,
+      "dependsOn": [
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-PROJECTIONS",
+      "githubIssue": 876,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SESSION-RECAP"
+      ]
+    },
+    {
+      "localId": "MIG-352",
+      "githubIssue": 815,
+      "dependsOn": [
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-PLACES",
+      "githubIssue": 863,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-ATLAS-MAPS"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-CREATE",
+      "githubIssue": 864,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-PLACES"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-RESTRUCTURE",
+      "githubIssue": 865,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-CREATE"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-DESTRUCTIVE",
+      "githubIssue": 866,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-RESTRUCTURE"
+      ]
+    },
+    {
+      "localId": "MIG-350",
+      "githubIssue": 813,
+      "dependsOn": [
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE"
+      ]
+    },
+    {
+      "localId": "MIG-421",
+      "githubIssue": 837,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "RPC-SESSION-RECAP",
+        "MIG-012"
+      ]
+    },
+    {
+      "localId": "MIG-414",
+      "githubIssue": 830,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-404",
+        "MIG-405",
+        "MIG-409",
+        "MIG-410",
+        "MIG-412",
+        "MIG-420",
+        "MIG-421"
+      ]
+    },
+    {
+      "localId": "MIG-302",
+      "githubIssue": 801,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-404",
+        "MIG-405",
+        "MIG-500",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-303",
+      "githubIssue": 802,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-409",
+        "MIG-410",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-305",
+      "githubIssue": 804,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-MARKETPLACE-COUNT",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-307",
+      "githubIssue": 806,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-NPC-INSTANCES",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-308",
+      "githubIssue": 807,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SAGA-PROVISION",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-PROJECT-MEMBERSHIP",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-310",
+      "githubIssue": 809,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-PROVISION",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROJECTIONS",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-311",
+      "githubIssue": 810,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "MIG-420",
+        "MIG-421",
+        "MIG-021",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-313",
+      "githubIssue": 812,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-MAP",
+        "RPC-WORLD-PLACES",
+        "MIG-500",
+        "MIG-014"
+      ]
+    },
+    {
+      "localId": "MIG-600",
+      "githubIssue": 845,
+      "dependsOn": [
+        "MIG-021",
+        "MIG-023",
+        "MIG-024",
+        "MIG-500",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ]
+    },
+    {
+      "localId": "MIG-601",
+      "githubIssue": 846,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-014",
+        "MIG-015",
+        "MIG-500",
+        "MIG-414"
+      ]
+    },
+    {
+      "localId": "MIG-602",
+      "githubIssue": 847,
+      "dependsOn": [
+        "MIG-600",
+        "MIG-601",
+        "ATLAS-LIVE-E2E",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ]
+    },
+    {
+      "localId": "MIG-603",
+      "githubIssue": 848,
+      "dependsOn": [
+        "MIG-502",
+        "MIG-503",
+        "MIG-601"
+      ]
+    },
+    {
+      "localId": "MIG-700",
+      "githubIssue": 849,
+      "dependsOn": [
+        "MIG-001",
+        "ATLAS-LIVE-E2E",
+        "MIG-002",
+        "GATE-01",
+        "GATE-02",
+        "GATE-03",
+        "GATE-04",
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "MIG-012",
+        "MIG-014",
+        "MIG-015",
+        "MIG-500",
+        "MIG-020",
+        "MIG-022",
+        "MIG-023",
+        "MIG-024",
+        "MIG-021",
+        "MIG-503",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "MIG-502",
+        "MIG-600",
+        "MIG-601",
+        "MIG-602",
+        "MIG-603",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ]
+    },
+    {
+      "localId": "MIG-701",
+      "githubIssue": 850,
+      "dependsOn": [
+        "MIG-700"
+      ]
+    },
+    {
+      "localId": "MIG-702",
+      "githubIssue": 851,
+      "dependsOn": [
+        "MIG-700",
+        "MIG-701",
+        "ATLAS-LIVE-E2E",
+        "MIG-603"
+      ]
+    },
+    {
+      "localId": "MIG-703",
+      "githubIssue": 852,
+      "dependsOn": [
+        "GATE-05",
+        "MIG-602",
+        "MIG-603"
+      ]
+    }
+  ],
+  "blocked": [
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "githubIssue": 770,
+      "blockers": [
+        "Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash)."
+      ]
+    },
+    {
+      "localId": "RPC-MARKETPLACE-COUNT",
+      "githubIssue": 878,
+      "blockers": []
+    },
+    {
+      "localId": "MIG-353",
+      "githubIssue": 816,
+      "blockers": []
+    },
+    {
+      "localId": "GATE-05",
+      "githubIssue": 788,
+      "blockers": []
+    }
+  ]
+}

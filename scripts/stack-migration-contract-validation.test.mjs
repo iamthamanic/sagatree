@@ -105,7 +105,8 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.ok(runtime, 'RPC-SESSION-RUNTIME present');
   assert.ok((runtime.verification.requiredRegressions ?? []).length > 0, 'legacy defects captured as regressions');
   assert.equal((runtime.verification.blockers ?? []).length, 0, 'legacy defects must not be execution blockers');
-  assert.equal(runtime.status, 'ready', 'deps-done + source-verified + only legacy defects → READY');
+  // After verified completionEvidence, DONE is preserved; legacy defects still must not re-block.
+  assert.ok(['ready', 'done'].includes(runtime.status), 'deps-done + source-verified + only legacy defects → READY/DONE');
   const atlas = intake.issues.find((entry) => entry.localId === 'ATLAS-LIVE-E2E');
   assert.equal(atlas.status, 'blocked');
   assert.ok((atlas.verification.blockers ?? []).some((entry) => /Atlas live product E2E/i.test(entry)));
@@ -114,7 +115,11 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
 });
 
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {
-  const input = clone(); setStatus(input, 'MIG-301', 'ready');
+  const input = clone();
+  // Strip a hard predecessor so READY cannot ride on stale labels alone.
+  delete issue(input, 'MIG-012').completionEvidence;
+  setStatus(input, 'MIG-012', 'waiting');
+  setStatus(input, 'MIG-301', 'ready');
   rejects(input, /MIG-301: ready despite incomplete predecessor/);
 });
 
@@ -283,9 +288,13 @@ test('a malformed human claim is rejected even when architecture approval is aut
   // Existing comment URL but nonexistent evidence file
   input.approvals.decisions['GATE-01'] = { status: 'APPROVED', actorType: 'human', actor: 'claimed-human', sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/784#issuecomment-123', evidenceFile: 'nonexistent-adr.md' };
   rejects(input, /GATE-01: missing explicit human architecture approval/);
-  // Runner may be authorized for accepted slices, but agent-ready still requires real predecessor evidence.
+  // Corrupted GATE-01 must keep READY/DONE descendants locked (approval check), even when deps look complete.
   setStatus(input, 'MIG-301', 'ready');
-  rejects(input, /MIG-301: ready despite incomplete predecessor/);
+  rejects(input, /MIG-301: missing explicit human architecture approval for GATE-01/);
+  // Restore valid GATE-01; agent-ready still requires real predecessor evidence for cutover.
+  input.approvals.decisions['GATE-01'] = structuredClone(original.approvals.decisions['GATE-01']);
+  setStatus(input, 'MIG-700', 'ready');
+  rejects(input, /MIG-700: ready despite incomplete predecessor/);
 });
 
 test('architecture-approved gates must not remain needs-design after owner decisions', () => {
@@ -491,6 +500,39 @@ test('publication binds labels, title, repository, issue number and content toge
     (value) => { value.body += '\nChanged body'; },
   ];
   for (const mutate of mutations) { const value = structuredClone(base); mutate(value); assert.throws(() => validatePublicationEntry(value)); }
+});
+
+test('verified Oct-25 completions stay DONE with agent-done labels and unlock dependents', () => {
+  const doneIds = [
+    'RPC-SAGA-PROVISION',
+    'RPC-SESSION-RUNTIME',
+    'RPC-WORLD-MAP',
+    'MIG-402',
+    'MIG-403',
+    'MIG-406',
+    'MIG-407',
+    'MIG-408',
+    'MIG-411',
+    'MIG-412',
+    'MIG-413',
+    'MIG-415',
+  ];
+  for (const id of doneIds) {
+    const entry = original.intake.issues.find((issue) => issue.localId === id);
+    assert.equal(entry.status, 'done', `${id} must be DONE after completionEvidence sync`);
+    assert.ok(entry.completionEvidence, `${id} completionEvidence path`);
+    assert.ok(entry.labels.includes('agent-done'), `${id} must carry agent-done`);
+    assert.ok(!entry.labels.includes('agent-ready'), `${id} must not stay agent-ready`);
+  }
+  assert.equal(errors(original).length, 0);
+  const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
+  assert.ok(ready.some((entry) => entry.localId === 'MIG-416'), 'MIG-416 unlocks after MIG-415 DONE');
+  assert.ok(ready.some((entry) => entry.localId === 'RPC-ATLAS-MAPS'), 'RPC-ATLAS-MAPS unlocks after RPC-WORLD-MAP DONE');
+  assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
+  assert.equal(original.intake.coverage.issuesReady, ready.length);
+  const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
+  assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  assert.ok(blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
 });
 
 test('MIG-402/#818 preserves every requiredTest from both co-owned Edge contracts (no bullet-count truncation)', () => {

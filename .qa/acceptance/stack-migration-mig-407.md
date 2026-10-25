@@ -15,6 +15,8 @@ authorized host routes + MIG-600; `DM_TOOLS_PUBLIC_ACTIVATION_AUTHORIZED === fal
 - [x] Invalid notation / missing target throw; no authenticated combat or durable Redis claim.
 - [x] Legacy regression: unauthenticated client authority; unbounded dice-count; REDIS_URL unused.
 - [x] Touched files: zero type escape hatches.
+- [x] scripts/mig-407-dm-tools-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `node --experimental-strip-types scripts/mig-407-dm-tools-quarantine.self-test.mjs` → PASS (wired into `npm run test-gate`).

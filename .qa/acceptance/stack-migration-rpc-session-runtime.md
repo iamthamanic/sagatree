@@ -13,6 +13,8 @@ SQLSTATE-shaped facades for apply_session_runtime_command, get_session_runtime_s
 - [x] Foreign snapshot denied 42501; presence facade works for member
 - [x] No public append_session_event helper (RPC-SEC-ANON-EVENT-HELPER)
 - [x] Touched files: zero type escape hatches
+- [x] scripts/rpc-session-runtime.self-test.mjs → PASS
+
 
 ## Deferred
 Full PAR-08 roll owner_user_id character table, adventure helper surface → follow-up when character module lands; HTTP → MIG-311.
