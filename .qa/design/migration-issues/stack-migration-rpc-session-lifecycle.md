@@ -148,15 +148,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #787 (GATE-04)
 - Depends on #867 (RPC-SESSION-RUNTIME)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-rpc-session-lifecycle`
 - Design: `.qa/design/migration-issues/stack-migration-rpc-session-lifecycle.md`
-- Status: waiting
+- Status: ready
 - Reihenfolge: 28; Welle: 2
-- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-028`, `agent-blocked`, `waiting-dependency`
+- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-028`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

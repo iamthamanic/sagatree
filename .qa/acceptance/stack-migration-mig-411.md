@@ -15,6 +15,8 @@ authorized host routes + MIG-600; `ITEMS_PUBLIC_ACTIVATION_AUTHORIZED === false`
 - [x] Map catalog ≠ durable inventory_item_definitions.
 - [x] No auth/schema/durable inventory (legacy regression).
 - [x] Zero type escape hatches.
+- [x] scripts/mig-411-items-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `scripts/mig-411-items-quarantine.self-test.mjs` → PASS.

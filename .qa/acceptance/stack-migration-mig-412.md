@@ -17,6 +17,8 @@ authorized host routes + MIG-600. FEATURE VERIFIED → MIG-600/#845 + MIG-602/#8
 - [x] Content-Length 12MiB envelope; 8MiB image cap.
 - [x] Legacy: Content-Length trust; nested secrets not recursive.
 - [x] Zero type escape hatches.
+- [x] scripts/mig-412-look-reference-analysis.self-test.mjs → PASS
+
 
 ## Evidence
 `scripts/mig-412-look-reference-analysis.self-test.mjs` → PASS.

@@ -15,6 +15,8 @@ authorized host routes + MIG-600; `LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED === f
 - [x] Session-context all-node scan and ignored NPC session filter recorded; no public role-safe projection yet.
 - [x] Legacy regression: getSessionContext returns every NPC/location/event; only memories filter sessionId; getNPCContext ignores sessionId; no auth/GM filter.
 - [x] Touched files: zero type escape hatches.
+- [x] scripts/mig-413-lorekeeper-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `scripts/mig-413-lorekeeper-quarantine.self-test.mjs` → PASS.

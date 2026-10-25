@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-413",
+  "result": "PASS",
+  "testedCommit": "f86fa40b3659b6263a2ceb115cb062463c8117bb",
+  "githubClosed": true,
+  "mergeRef": "PR #965 → main (#829)",
+  "note": "lorekeeper quarantine keeps 404; NPC memory rank/cap matched legacy getMemories(10).",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-413-lorekeeper-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-413.md",
+      "sha256": "036b46599369645700f10337c6ff1fa67a2a6833faedd54db2c22dece5086d03"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-413.md",
+      "sha256": "e2128f861cf19c6a8ca225e2c609c0390b5e55a9499234c8c1c62c75282e1f31"
+    }
+  ]
+}

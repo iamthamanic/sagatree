@@ -15,6 +15,8 @@ Port create_project_from_saga_version, duplicate_saga_playthrough, ensure_native
 - [x] ensure_native_starter_project idempotent per actor+slug (Dornhain character/atlas seed repair deferred MIG-600/#845)
 - [x] Denies: mismatch, private_backfill stranger, bad mode; user-published keep-open proven
 - [x] Touched files: zero type escape hatches
+- [x] scripts/rpc-saga-provision.self-test.mjs → PASS
+
 
 ## Deferred
 Full Dornhain character/atlas seed repair → MIG-600/#845. HTTP adapter → MIG-311.

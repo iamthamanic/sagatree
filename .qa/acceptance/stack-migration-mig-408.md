@@ -15,6 +15,8 @@ authorized host routes + MIG-600; `EXPORT_PUBLIC_ACTIVATION_AUTHORIZED === false
 - [x] Import parse sets persisted=false; conversion ≠ persistence.
 - [x] Legacy: no auth; arbitrary content; PDF not validated pipeline.
 - [x] Touched files: zero type escape hatches.
+- [x] scripts/mig-408-export-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `scripts/mig-408-export-quarantine.self-test.mjs` → PASS (in test-gate).

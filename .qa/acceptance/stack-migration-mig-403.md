@@ -15,6 +15,8 @@ authorized host routes + MIG-600; public activation remains unauthorized (`BESTI
 - [x] Negative count/XP/party size and unknown difficulty require bounded validation in any separately approved replacement; generator not authorized for public deployment.
 - [x] Legacy regression characterized: no auth/schema in historical worker; requested vs known count mismatch for XP multiplier; nonpositive counts unbounded in quarantine fixtures.
 - [x] Touched files: zero type escape hatches.
+- [x] scripts/mig-403-bestiary-quarantine.self-test.mjs → PASS
+
 
 ## Evidence
 `node --experimental-strip-types scripts/mig-403-bestiary-quarantine.self-test.mjs` → PASS (wired into `npm run test-gate`).

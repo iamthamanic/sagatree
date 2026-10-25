@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 21,
-    "issuesBlockedOrNeedsDesign": 44,
+    "issuesReady": 20,
+    "issuesBlockedOrNeedsDesign": 34,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -3272,7 +3272,7 @@
       "title": "Spielgruppe aus Version und Starter-Provisionierung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-saga-provision",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-provision.md",
       "dependsOn": [
@@ -3631,9 +3631,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-provision.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-POLICY-USER-PUBLISHED\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Veröffentlichte User-Sagas können von anderen authentifizierten Nutzern als eigene GM-Spielgruppe instanziert werden.\",\"sourceEvidence\":\"supabase/migrations/063_saga_definitions.sql: create_project_from_saga_version erlaubt origin IN (native,user), während get_saga_definition_version einen anderen Lesescope hat.\",\"requiredSuccessorAcceptance\":\"Öffentlichkeits-/Lizenzregel für user-Veröffentlichungen explizit festlegen; die durch neue GM-Mitgliedschaft erweiterte Payload-Lesbarkeit im Negativ-/Positivtest abnehmen.\",\"deployedExploitVerified\":false}"
@@ -3672,7 +3673,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-024",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -3681,7 +3682,7 @@
       "title": "Projektbeitritt und eigener Charakter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-project-membership",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-project-membership.md",
       "dependsOn": [
@@ -3939,8 +3940,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-025",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -4192,7 +4192,7 @@
       "title": "Session-Runtime, Snapshot und Presence",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-session-runtime",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-runtime.md",
       "dependsOn": [
@@ -4520,9 +4520,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-runtime.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-RUNTIME-ROLL-OWNER-COLUMN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-GM-Roll-Aufruf greift auf v_character.user_id zu, obwohl characters.owner_user_id die wirksame Spalte ist; Baseline scheitert statt zu würfeln.\",\"sourceEvidence\":\"supabase/migrations/042_session_shared_rolls.sql:212; spätere073/079/085 benennen den Helper um, korrigieren aber nicht den Feldzugriff. Isolierter PostgreSQL15-Player-Roll reproduziert record has no field user_id.\",\"requiredSuccessorAcceptance\":\"Owner-Prüfung gegen owner_user_id; positiver eigenerPlayer-Roll und negativerFremdcharakter-Roll müssen vor Runtime-Abnahme bestehen. Fehler darf keine Revision/Event erzeugen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"PAR-08\"}}",
@@ -4564,7 +4565,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-027",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -4573,7 +4574,7 @@
       "title": "Session anlegen und Status wechseln",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-session-lifecycle",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-lifecycle.md",
       "dependsOn": [
@@ -4861,8 +4862,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-028",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -7053,7 +7053,7 @@
       "title": "Legacy-Weltkarte lesen und speichern",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-world-map",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-map.md",
       "dependsOn": [
@@ -7237,9 +7237,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-map.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-SEC-LEGACY-MAP-FLAG\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.\",\"sourceEvidence\":\"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.\",\"requiredSuccessorAcceptance\":\"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-LEGACY-MAP\"}}"
@@ -7277,7 +7278,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-036",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -7286,7 +7287,7 @@
       "title": "Atlas-Kartenprojektion und Revision",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-atlas-maps",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-atlas-maps.md",
       "dependsOn": [
@@ -7590,8 +7591,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-037",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -8857,7 +8857,7 @@
       "title": "Port Edge Function `ai-provider-credentials` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-402",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-402.md",
       "dependsOn": [
@@ -9052,9 +9052,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-402.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
@@ -9098,7 +9099,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-043",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -9107,7 +9108,7 @@
       "title": "Port Edge Function `ai-gm` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-401",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-401.md",
       "dependsOn": [
@@ -9255,8 +9256,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-044",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -9265,7 +9265,7 @@
       "title": "Port Edge Function `bestiary` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-403",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-403.md",
       "dependsOn": [
@@ -9354,9 +9354,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-403.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded."
@@ -9389,7 +9390,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-045",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -9398,7 +9399,7 @@
       "title": "Port Edge Function `character-avatar-meshy` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-404",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-404.md",
       "dependsOn": [
@@ -9576,8 +9577,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-046",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -9586,7 +9586,7 @@
       "title": "Port Edge Function `character-lore` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-405",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-405.md",
       "dependsOn": [
@@ -9750,8 +9750,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-047",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -9760,7 +9759,7 @@
       "title": "Port Edge Function `characters` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-406",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-406.md",
       "dependsOn": [
@@ -9859,9 +9858,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-406.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
@@ -9896,7 +9896,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-048",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -9905,7 +9905,7 @@
       "title": "Port Edge Function `dm-tools` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-407",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-407.md",
       "dependsOn": [
@@ -9994,9 +9994,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-407.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence."
@@ -10029,7 +10030,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-049",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10038,7 +10039,7 @@
       "title": "Port Edge Function `export` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-408",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-408.md",
       "dependsOn": [
@@ -10128,9 +10129,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-408.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline."
@@ -10164,7 +10166,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-050",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10173,7 +10175,7 @@
       "title": "Port Edge Function `item-model3d` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-409",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-409.md",
       "dependsOn": [
@@ -10373,8 +10375,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-051",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -10383,7 +10384,7 @@
       "title": "Port Edge Function `item-thumbnail` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-410",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-410.md",
       "dependsOn": [
@@ -10573,8 +10574,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-052",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -10583,7 +10583,7 @@
       "title": "Port Edge Function `items` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-411",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-411.md",
       "dependsOn": [
@@ -10672,9 +10672,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-411.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions."
@@ -10707,7 +10708,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-053",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10716,7 +10717,7 @@
       "title": "Port Edge Function `look-reference-analysis` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-412",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-412.md",
       "dependsOn": [
@@ -10834,9 +10835,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-412.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed."
@@ -10872,7 +10874,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-054",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10881,7 +10883,7 @@
       "title": "Port Edge Function `lorekeeper` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-413",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-413.md",
       "dependsOn": [
@@ -10970,9 +10972,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-413.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter."
@@ -11005,7 +11008,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-055",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -12583,7 +12586,7 @@
       "title": "Port infrastructure/ai adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-301",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-301.md",
       "dependsOn": [
@@ -12699,8 +12702,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-067",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -13324,7 +13326,7 @@
       "title": "Port infrastructure/look adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-304",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-304.md",
       "dependsOn": [
@@ -13468,8 +13470,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-070",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

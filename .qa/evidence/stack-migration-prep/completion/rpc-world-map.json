@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-WORLD-MAP",
+  "result": "PASS",
+  "testedCommit": "d6569a1df1071b93aa3cfbad1906263e3cc1a3a6",
+  "githubClosed": true,
+  "mergeRef": "PR #956 → main (#861)",
+  "note": "World map get/save with server-side player pin filter (RPC-SEC-LEGACY-MAP-FLAG closed).",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-world-map.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-world-map.md",
+      "sha256": "b788fa0b53239b49679bbd08e52772a44cb49e8175f9ab2d129b50c3fbd24598"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-world-map.md",
+      "sha256": "e2fb30c3d217d0cf13a350dbf6f145626c7466fd8aaa3806464c24c3e6d68634"
+    }
+  ]
+}
