@@ -137,3 +137,14 @@ export function createMediaPorts(): MediaPorts {
     },
   };
 }
+
+/** MIG-408 quarantine surface — not a public host route. */
+export {
+  EXPORT_PDF_IS_VALIDATED_PIPELINE,
+  EXPORT_PUBLIC_ACTIVATION_AUTHORIZED,
+  buildExport,
+  exportJson,
+  exportMarkdown,
+  exportPdf,
+  parseImportContent,
+} from './internal/export-quarantine.ts';
