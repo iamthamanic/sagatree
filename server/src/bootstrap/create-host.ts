@@ -136,6 +136,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           authorize: permissions.authorize,
           store: createSqliteWorldReadStore(db),
           writeStore: createSqliteWorldWriteStore(db),
+          db,
+          actorCanAccessWorld: project.actorCanAccessWorld,
         })
       : createWorldPortsStub();
     const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';

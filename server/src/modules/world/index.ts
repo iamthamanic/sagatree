@@ -7,10 +7,25 @@ import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
 import type { WorldReadStore } from './internal/world-read-store.ts';
 import type { WorldWriteStore } from './internal/world-write-store.ts';
+import { WorldMapStore, type WorldMapDto } from './internal/world-map-store.ts';
+import type { HostDatabase } from '../../persistence/open-database.ts';
 
 export type { WorldReadStore, WorldStoredRow } from './internal/world-read-store.ts';
 export type { WorldWriteStore } from './internal/world-write-store.ts';
+export type { WorldMapDto } from './internal/world-map-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
+
+function actorIdentityIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds) &&
+    actor.linkedSoloActorIds.length > 0
+  ) {
+    return [...ids, ...actor.linkedSoloActorIds];
+  }
+  return ids;
+}
 
 /** Public world read DTO — no owner id / ORM / HTTP types. */
 export type WorldReadDto = {
@@ -36,6 +51,17 @@ export type WorldPorts = {
     actor: Actor,
     title: string,
   ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
+  readonly getWorldMap: (
+    actor: Actor,
+    worldProfileId: string,
+    playerView?: boolean,
+  ) => WorldReadResult<WorldMapDto>;
+  readonly saveWorldMap: (
+    actor: Actor,
+    worldProfileId: string,
+    expectedRevision: number | null,
+    mapData: Record<string, unknown>,
+  ) => WorldReadResult<WorldMapDto>;
 };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
@@ -52,8 +78,17 @@ export function createWorldPorts(deps: {
   readonly authorize: AuthorizeFn;
   readonly store: WorldReadStore;
   readonly writeStore?: WorldWriteStore;
+  readonly db?: HostDatabase;
+  /** Project-module read: GM/member on a project bound to the world. */
+  readonly actorCanAccessWorld?: (actorIds: readonly string[], worldId: string) => boolean;
 }): WorldPorts {
-  const { authorize, store, writeStore } = deps;
+  const { authorize, store, writeStore, db, actorCanAccessWorld } = deps;
+  const maps =
+    db && actorCanAccessWorld
+      ? new WorldMapStore(db, actorCanAccessWorld)
+      : db
+        ? new WorldMapStore(db, () => false)
+        : null;
 
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
@@ -102,6 +137,36 @@ export function createWorldPorts(deps: {
       }
       return { ok: true, value: { id, title: safeTitle, createdAt } };
     },
+
+    getWorldMap(actor, worldProfileId, playerView = false) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!maps) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      // Do not reveal existence: missing and unauthorized both → 42501 (legacy parity).
+      if (!maps.worldExists(id) || !maps.canReadWorld(ids, id)) {
+        return { ok: false, error: '42501' };
+      }
+      const canEdit = maps.canEditWorld(ids, id);
+      const forcePlayer = !canEdit || playerView === true;
+      return { ok: true, value: maps.getMap(id, forcePlayer) };
+    },
+
+    saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!maps) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      if (!maps.worldExists(id) || !maps.canEditWorld(ids, id)) {
+        return { ok: false, error: '42501' };
+      }
+      if (!mapData || typeof mapData !== 'object' || Array.isArray(mapData)) {
+        return { ok: false, error: '22023' };
+      }
+      return maps.saveMap(id, expectedRevision, mapData);
+    },
   };
 }
 
@@ -114,5 +179,7 @@ export function createWorldPortsStub(): WorldPorts {
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
     },
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
+    saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
   };
 }

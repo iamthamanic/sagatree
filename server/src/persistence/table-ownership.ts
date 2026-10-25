@@ -24,6 +24,7 @@ export type HostModuleId =
 export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.freeze({
   schema_migrations: 'ops',
   worlds: 'world',
+  world_maps: 'world',
   projects: 'project',
   project_members: 'project',
   assets: 'media',

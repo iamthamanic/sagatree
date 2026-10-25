@@ -25,6 +25,8 @@ export type ProjectPorts = {
   readonly actorHasAccessToSaga: (actorId: string, sagaId: string) => boolean;
   /** Project GM (`gm_user_id`) for a saga-linked project. */
   readonly actorIsGmOnSaga: (actorId: string, sagaId: string) => boolean;
+  /** GM or active member on a project bound to `worldId` (actorId + optional linked solos). */
+  readonly actorCanAccessWorld: (actorIds: readonly string[], worldId: string) => boolean;
   readonly createFromSagaVersion: (
     actor: Actor,
     input: {
@@ -49,6 +51,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       moduleId: 'project',
       actorHasAccessToSaga: () => false,
       actorIsGmOnSaga: () => false,
+      actorCanAccessWorld: () => false,
       createFromSagaVersion: () => ({ ok: false, error: 'store-unavailable' }),
       getProject: () => ({ ok: false, error: 'store-unavailable' }),
       findActiveGmProjectForSaga: () => ({ ok: false, error: 'P0002' }),
@@ -60,6 +63,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
     moduleId: 'project',
     actorHasAccessToSaga: (actorId, sagaId) => membership.actorHasAccessToSaga(actorId, sagaId),
     actorIsGmOnSaga: (actorId, sagaId) => membership.actorIsGmOnSaga(actorId, sagaId),
+    actorCanAccessWorld: (actorIds, worldId) => membership.actorCanAccessWorld(actorIds, worldId),
     createFromSagaVersion(actor, input) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       return provision.createFromSagaVersion({ ...input, actorId: actor.actorId });
