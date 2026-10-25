@@ -28,6 +28,7 @@ export type UploadSessionRow = {
   readonly byte_offset: number;
   readonly storage_key: string;
   readonly finalized_asset_id: string | null;
+  readonly pending_asset_id: string | null;
   readonly created_at: string;
 };
 
@@ -85,8 +86,8 @@ export class UploadSessionStore {
       this.#db
         .prepare(
           `INSERT INTO asset_upload_sessions
-           (id, owner_user_id, content_type, upload_length, byte_offset, storage_key, finalized_asset_id, created_at)
-           VALUES (?, ?, ?, ?, 0, ?, NULL, ?)`,
+           (id, owner_user_id, content_type, upload_length, byte_offset, storage_key, finalized_asset_id, pending_asset_id, created_at)
+           VALUES (?, ?, ?, ?, 0, ?, NULL, NULL, ?)`,
         )
         .run(uploadId, input.ownerUserId, contentType, input.uploadLength, storageKey, createdAt);
     } catch {
@@ -108,12 +109,69 @@ export class UploadSessionStore {
     if (!isSafeAssetToken(uploadId)) return { ok: false, error: 'not-found' };
     const row = this.#db
       .prepare(
-        `SELECT id, owner_user_id, content_type, upload_length, byte_offset, storage_key, finalized_asset_id, created_at
+        `SELECT id, owner_user_id, content_type, upload_length, byte_offset, storage_key,
+                finalized_asset_id, pending_asset_id, created_at
          FROM asset_upload_sessions WHERE id = ?`,
       )
       .get(uploadId) as UploadSessionRow | undefined;
     if (!row) return { ok: false, error: 'not-found' };
-    return { ok: true, value: row };
+    return {
+      ok: true,
+      value: {
+        ...row,
+        pending_asset_id: row.pending_asset_id ?? null,
+      },
+    };
+  }
+
+  /** Read staged bytes when the session is fully received but not yet finalized. */
+  readAssembledBytes(uploadId: string, ownerUserId: string):
+    | { ok: true; value: { bytes: Uint8Array; contentType: string; uploadLength: number; pendingAssetId: string | null } }
+    | { ok: false; error: string } {
+    const session = this.get(uploadId);
+    if (!session.ok) return session;
+    const row = session.value;
+    if (row.owner_user_id !== ownerUserId) return { ok: false, error: 'not-authorized' };
+    if (row.finalized_asset_id) return { ok: false, error: 'already-finalized' };
+    if (row.byte_offset !== row.upload_length) return { ok: false, error: 'incomplete' };
+    const file = resolveUnderRoot(this.#uploadsRoot, [row.storage_key]);
+    if (!file.ok || !existsSync(file.path)) return { ok: false, error: 'not-found' };
+    try {
+      const assembled = readFileSync(file.path);
+      if (assembled.byteLength !== row.upload_length) return { ok: false, error: 'length-mismatch' };
+      return {
+        ok: true,
+        value: {
+          bytes: new Uint8Array(assembled),
+          contentType: row.content_type,
+          uploadLength: row.upload_length,
+          pendingAssetId: row.pending_asset_id,
+        },
+      };
+    } catch {
+      return { ok: false, error: 'read-failed' };
+    }
+  }
+
+  setPendingAssetId(uploadId: string, assetId: string): { ok: true } | { ok: false; error: string } {
+    if (!isSafeAssetToken(uploadId) || !isSafeAssetToken(assetId)) {
+      return { ok: false, error: 'invalid-id' };
+    }
+    try {
+      this.#db
+        .prepare(
+          `UPDATE asset_upload_sessions SET pending_asset_id = ?
+           WHERE id = ? AND finalized_asset_id IS NULL`,
+        )
+        .run(assetId, uploadId);
+      const row = this.get(uploadId);
+      if (!row.ok || row.value.pending_asset_id !== assetId) {
+        return { ok: false, error: 'pending-bind-failed' };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'pending-bind-failed' };
+    }
   }
 
   appendChunk(input: {
@@ -142,6 +200,29 @@ export class UploadSessionStore {
     }
     if (row.finalized_asset_id) {
       return { ok: false, error: 'already-finalized' };
+    }
+    // Full payload already on disk (lost finalize response / publish crash): allow
+    // empty finalize retry or re-send of the completing chunk without rewriting.
+    if (row.byte_offset === row.upload_length) {
+      const completingRetry =
+        (input.bytes?.byteLength ?? 0) === 0 ||
+        input.offset + (input.bytes?.byteLength ?? 0) === row.upload_length ||
+        input.offset === row.upload_length;
+      if (!completingRetry) {
+        return { ok: false, error: 'offset-mismatch' };
+      }
+      const assembled = this.readAssembledBytes(input.uploadId, input.ownerUserId);
+      if (!assembled.ok) return assembled;
+      return {
+        ok: true,
+        value: {
+          offset: row.upload_length,
+          uploadLength: row.upload_length,
+          complete: true,
+          contentType: assembled.value.contentType,
+          bytes: assembled.value.bytes,
+        },
+      };
     }
     if (
       typeof input.offset !== 'number' ||

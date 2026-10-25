@@ -4,7 +4,7 @@
  * Location: scripts/mig-501-resumable-uploads.self-test.mjs
  */
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -38,7 +38,7 @@ try {
     migrationsDir: join(root, 'server/migrations'),
   });
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
-  assert(boot.schemaVersion >= 6, `schemaVersion>=6 got ${boot.schemaVersion}`);
+  assert(boot.schemaVersion >= 9, `schemaVersion>=9 got ${boot.schemaVersion}`);
   const db = boot.db;
   const permissions = createPermissionsPorts(db);
   const assets = createAssetPorts({
@@ -145,6 +145,81 @@ try {
     `capability deny: ${deniedCreate.error}`,
   );
   assert(uploadsOff.largeUploadsEnabled === false, 'flag false');
+
+  // --- #938: lost final response → retry returns same asset, no duplicate ---
+  const body938 = new TextEncoder().encode('finalize-retry-idempotent-body');
+  const c938 = uploadsOn.create(O, {
+    uploadLength: body938.byteLength,
+    contentType: 'text/plain',
+  });
+  assert(c938.ok, '938 create');
+  const firstFinalize = uploadsOn.patch(O, {
+    uploadId: c938.value.uploadId,
+    offset: 0,
+    bytes: body938,
+  });
+  assert(firstFinalize.ok && firstFinalize.value.complete, `938 first finalize: ${firstFinalize.ok ? '' : firstFinalize.error}`);
+  const assetId938 = firstFinalize.value.asset.assetId;
+
+  // Client lost response: HEAD then re-PATCH last chunk (same offset 0) or empty finalize.
+  const head938 = uploadsOn.head(O, c938.value.uploadId);
+  assert(head938.ok && head938.value.complete === true, '938 head complete after finalize');
+  assert(head938.value.assetId === assetId938, '938 head exposes assetId');
+
+  const retryLastChunk = uploadsOn.patch(O, {
+    uploadId: c938.value.uploadId,
+    offset: 0,
+    bytes: body938,
+  });
+  assert(retryLastChunk.ok && retryLastChunk.value.complete, `938 retry last chunk: ${retryLastChunk.ok ? '' : retryLastChunk.error}`);
+  assert(retryLastChunk.value.asset.assetId === assetId938, '938 retry same asset id');
+
+  const emptyFinalize = uploadsOn.patch(O, {
+    uploadId: c938.value.uploadId,
+    offset: body938.byteLength,
+    bytes: new Uint8Array(0),
+  });
+  assert(emptyFinalize.ok && emptyFinalize.value.asset.assetId === assetId938, '938 empty finalize retry');
+
+  // Foreign actor cannot head/retry finalized session
+  const foreignHead = uploadsOn.head(X, c938.value.uploadId);
+  assert(!foreignHead.ok && foreignHead.error === 'not-authorized', '938 foreign head denied');
+
+  // Crash between publish and markFinalized: session full + pending id + published
+  // asset, but finalized_asset_id still NULL and staging file restored.
+  const bodyCrash = new TextEncoder().encode('crash-between-publish-and-mark');
+  const cCrash = uploadsOn.create(O, {
+    uploadLength: bodyCrash.byteLength,
+    contentType: 'text/plain',
+  });
+  assert(cCrash.ok, 'crash create');
+  const crashPatch = uploadsOn.patch(O, {
+    uploadId: cCrash.value.uploadId,
+    offset: 0,
+    bytes: bodyCrash,
+  });
+  assert(crashPatch.ok && crashPatch.value.complete, 'crash initial finalize');
+  const crashAssetId = crashPatch.value.asset.assetId;
+  const sessionRow = db
+    .prepare(`SELECT storage_key, pending_asset_id FROM asset_upload_sessions WHERE id = ?`)
+    .get(cCrash.value.uploadId);
+  assert(sessionRow.pending_asset_id === crashAssetId, 'pending bound before finalize');
+  db.prepare(`UPDATE asset_upload_sessions SET finalized_asset_id = NULL WHERE id = ?`).run(
+    cCrash.value.uploadId,
+  );
+  // Restage bytes as if markFinalized never deleted the upload file.
+  const stagePath = join(dataDir, 'assets', '.uploads', sessionRow.storage_key);
+  writeFileSync(stagePath, bodyCrash);
+  const afterCrash = uploadsOn.patch(O, {
+    uploadId: cCrash.value.uploadId,
+    offset: bodyCrash.byteLength,
+    bytes: new Uint8Array(0),
+  });
+  assert(afterCrash.ok && afterCrash.value.asset.assetId === crashAssetId, `crash retry: ${afterCrash.ok ? afterCrash.value.asset.assetId : afterCrash.error}`);
+  const publishedCount = db
+    .prepare(`SELECT COUNT(*) AS n FROM assets WHERE owner_user_id = ? AND checksum_sha256 = ? AND published = 1`)
+    .get(O.actorId, crashPatch.value.asset.checksumSha256);
+  assert(publishedCount.n === 1, `exactly one published asset for crash payload, got ${publishedCount.n}`);
 
   db.close();
   console.log('PASS mig-501-resumable-uploads.self-test');

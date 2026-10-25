@@ -44,6 +44,11 @@ export type PublishInput = {
    * Clamped to LARGE_UPLOAD_MAX_BYTES; never expands beyond that.
    */
   readonly maxBytes?: number;
+  /**
+   * Optional stable asset id for idempotent resumable finalize (#938).
+   * When an identical published asset already exists for this owner, returns it.
+   */
+  readonly assetId?: string;
 };
 
 export type PublishedAsset = {
@@ -122,13 +127,40 @@ export class LocalAssetStore {
       return { ok: false, error: 'invalid-content-type' };
     }
 
-    const assetId = randomUUID().replace(/-/g, '');
-    if (!isSafeAssetToken(assetId)) return { ok: false, error: 'invalid-asset-id' };
+    const checksumSha256 = createHash('sha256').update(input.bytes).digest('hex');
+
+    let assetId: string;
+    if (typeof input.assetId === 'string' && input.assetId.length > 0) {
+      if (!isSafeAssetToken(input.assetId)) return { ok: false, error: 'invalid-asset-id' };
+      assetId = input.assetId;
+      const existing = this.#db
+        .prepare(
+          `SELECT id, owner_user_id, content_type, byte_size, checksum_sha256, storage_key, published, created_at
+           FROM assets WHERE id = ?`,
+        )
+        .get(assetId) as AssetMetaRow | undefined;
+      if (existing) {
+        if (existing.owner_user_id !== ownerUserId) return { ok: false, error: 'not-authorized' };
+        if (existing.published === 1 && existing.checksum_sha256 === checksumSha256) {
+          return {
+            ok: true,
+            value: {
+              assetId: existing.id,
+              contentType: existing.content_type,
+              byteSize: existing.byte_size,
+              checksumSha256: existing.checksum_sha256,
+            },
+          };
+        }
+        return { ok: false, error: 'asset-id-conflict' };
+      }
+    } else {
+      assetId = randomUUID().replace(/-/g, '');
+      if (!isSafeAssetToken(assetId)) return { ok: false, error: 'invalid-asset-id' };
+    }
 
     // storage_key is an opaque token under assets/ — never a caller path.
     const storageKey = assetId;
-
-    const checksumSha256 = createHash('sha256').update(input.bytes).digest('hex');
     const createdAt = new Date().toISOString();
 
     const tmpName = `${assetId}${randomUUID().replace(/-/g, '')}`;
