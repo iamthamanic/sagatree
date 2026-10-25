@@ -632,6 +632,18 @@ function checkMig402AiProviderCredentials() {
   );
 }
 
+function checkMig403BestiaryQuarantine() {
+  console.log('MIG-403 (#819): bestiary stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-403-bestiary-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2813,6 +2825,7 @@ checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkMig402AiProviderCredentials();
+checkMig403BestiaryQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

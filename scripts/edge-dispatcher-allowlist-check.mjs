@@ -63,8 +63,16 @@ const allowlistBlock = allowSrc.slice(
   allowSrc.indexOf('EDGE_DISPATCHER_ALLOWLIST'),
   allowSrc.indexOf('] as const'),
 );
-for (const legacy of ['characters', 'sessions', 'ai-gm', 'marketplace', 'dm-tools', 'rulesets']) {
-  if (allowlistBlock.includes(`'${legacy}'`)) {
+for (const legacy of [
+  'characters',
+  'sessions',
+  'ai-gm',
+  'marketplace',
+  'dm-tools',
+  'rulesets',
+  'bestiary',
+]) {
+  if (new RegExp(`['"]${legacy}['"]`).test(allowlistBlock)) {
     fail(`legacy mount ${legacy} must not be on the allowlist`);
   }
 }
