@@ -584,6 +584,18 @@ function checkRpcSagaVersionRead() {
   );
 }
 
+function checkRpcSagaProvision() {
+  console.log('RPC-SAGA-PROVISION (#873): create/duplicate/ensure + user-published policy...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-saga-provision.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2761,6 +2773,7 @@ checkMig306MediaAdapter();
 checkMig309Rulesets();
 checkRpcSagaAuthoring();
 checkRpcSagaVersionRead();
+checkRpcSagaProvision();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

@@ -81,6 +81,25 @@ export type SagaPorts = {
     actor: Actor,
     slug: string,
   ) => SagaResult<SagaVersionReadVm>;
+  /**
+   * Existence + published lookup for provision ACL (not version-read scope).
+   * Caller applies create_project_from_saga_version origin rules.
+   */
+  readonly lookupPublishedVersionForProvision: (
+    sagaId: string,
+    versionId: string,
+  ) => SagaResult<{
+    readonly sagaId: string;
+    readonly versionId: string;
+    readonly origin: string;
+    readonly ownerUserId: string | null;
+    readonly title: string;
+    readonly synopsis: string;
+    readonly adventureRuntime: Record<string, unknown>;
+  }>;
+  readonly findLatestPublishedNativeBySlug: (
+    slug: string,
+  ) => SagaResult<{ sagaId: string; versionId: string; title: string }>;
   /** Test helper — seed immutable native saga with published version. */
   readonly seedNativeForTests: (input: {
     readonly id?: string;
@@ -88,6 +107,15 @@ export type SagaPorts = {
     readonly title: string;
     readonly synopsis?: string;
     readonly payload?: Record<string, unknown>;
+  }) => { sagaId: string; versionId: string; slug: string };
+  readonly seedPublishedDefinitionForTests: (input: {
+    readonly id?: string;
+    readonly slug?: string;
+    readonly title: string;
+    readonly synopsis?: string;
+    readonly payload?: Record<string, unknown>;
+    readonly origin: 'native' | 'user' | 'private_backfill';
+    readonly ownerUserId: string | null;
   }) => { sagaId: string; versionId: string; slug: string };
   readonly seedPublishedVersionForTests: (input: {
     readonly sagaId: string;
@@ -206,8 +234,25 @@ export function createSagaPorts(deps: {
       return store.getVersionRead(versionId, { allow: access.allow, isGm: access.isGm });
     },
 
+    lookupPublishedVersionForProvision(sagaId, versionId) {
+      return store.lookupPublishedVersionForProvision(sagaId, versionId);
+    },
+
+    findLatestPublishedNativeBySlug(slug) {
+      const versionId = store.findLatestPublishedNativeVersionIdBySlug(slug);
+      if (!versionId) return { ok: false, error: 'P0002' };
+      const ver = store.getVersion(versionId);
+      const def = ver ? store.getDefinition(ver.saga_id) : null;
+      if (!ver || !def) return { ok: false, error: 'P0002' };
+      return { ok: true, value: { sagaId: def.id, versionId: ver.id, title: def.title } };
+    },
+
     seedNativeForTests(input) {
       return store.seedNative(input);
+    },
+
+    seedPublishedDefinitionForTests(input) {
+      return store.seedPublishedDefinition(input);
     },
 
     seedPublishedVersionForTests(input) {
@@ -235,7 +280,10 @@ export function createSagaPortsStub(): SagaPorts {
     publishSagaDefinitionVersion: () => deny(),
     getSagaDefinitionVersion: () => deny(),
     getNativeSagaDefinitionBySlug: () => deny(),
+    lookupPublishedVersionForProvision: () => deny(),
+    findLatestPublishedNativeBySlug: () => deny(),
     seedNativeForTests: () => ({ sagaId: '', versionId: '', slug: '' }),
+    seedPublishedDefinitionForTests: () => ({ sagaId: '', versionId: '', slug: '' }),
     seedPublishedVersionForTests: () => '',
     countDraftsForTests: () => 0,
     countPublishedForTests: () => 0,
