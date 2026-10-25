@@ -39,6 +39,8 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   rulesets: 'rulesets',
   saga_definitions: 'saga',
   saga_definition_versions: 'saga',
+  user_ai_provider_credentials: 'ai',
+  ai_provider_credential_rate_limits: 'ai',
 });
 
 export function owningModuleForTable(table: string): HostModuleId | null {

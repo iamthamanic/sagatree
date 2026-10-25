@@ -620,6 +620,18 @@ function checkRpcWorldMap() {
   );
 }
 
+function checkMig402AiProviderCredentials() {
+  console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-402-ai-provider-credentials.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2800,6 +2812,7 @@ checkRpcSagaVersionRead();
 checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
+checkMig402AiProviderCredentials();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
