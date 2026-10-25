@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-mig-412 (#828)
 
-- HEAD_SHA: b40051f1f1c8ecc04c3e5f88e55903f1ca1bf773
+- HEAD_SHA: f682607c355134378be72ef1e1ed7b38906d1e6e
 - BASE_SHA: 482c1e571cbcae6a438aee60c53b3eb3afd4bedd
 - Date: 2026-10-25
 - Verdict: CLEAR
 
 ## Event
 
-Authenticated actor analyzes 1..10 look references via injectable ports; secrets stripped top-level; no LookProfile persistence; no host HTTP mount this slice.
+Authenticated actor analyzes 1..10 look references via injectable ports; secrets stripped top-level; vision failures become 500 results; no LookProfile persistence; no host HTTP mount this slice.
 
 ## Hop chain
 
@@ -21,9 +21,9 @@ Authenticated actor analyzes 1..10 look references via injectable ports; secrets
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors | Per-user rate Map | rateLimit store | pass |
-| Invalid/missing | Bad refs / foreign path / envelope | 400/413 | pass |
+| Invalid/missing | Bad refs / foreign path / envelope / vision throw | 400/413/500 | pass |
 | Two consumers / crash | No LookProfile write; nested secrets retained | stripTopLevelSecrets | pass |
-| Legacy defects | Content-Length trust; nested keys | fixtures | pass |
+| Legacy defects | Content-Length trust; nested keys; NaN rate → default | fixtures | pass |
 
 ## Flags
 
