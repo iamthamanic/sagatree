@@ -66,12 +66,37 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     }
   }
 
+  /**
+   * Acceptance markdown with a "## Required Tests" section must have every
+   * checkbox checked. Hash-only evidence must not launder unchecked `[ ]` as PASS (#940).
+   * Non-acceptance artifacts (composition proofs, txt) without that section stay hash-bound.
+   */
+  const acceptanceChecklistConsistent = (check, body) => {
+    const content = body.toString('utf8');
+    if (!/##\s+Required Tests\b/i.test(content)) return true;
+    const section = content.match(/##\s+Required Tests\s*\n([\s\S]*?)(?=\n##\s|$)/i)?.[1] ?? '';
+    const boxes = [...section.matchAll(/^\s*-\s*\[([ xX])\]\s+(\S.*)$/gm)];
+    if (boxes.length === 0) return false;
+    if (boxes.some(([, mark]) => mark === ' ')) return false;
+    const script = typeof check.command === 'string' ? check.command.match(/scripts\/[\w./-]+\.mjs/)?.[0] : null;
+    if (script && !boxes.some(([, mark, item]) => mark !== ' ' && item.includes(script))) return false;
+    return true;
+  };
+
   const hasCompletionEvidence = (issue) => {
     if (!text(issue.completionEvidence) || !io.exists(issue.completionEvidence)) return false;
     try {
       const proof = JSON.parse(io.read(issue.completionEvidence).toString());
       if (proof.schemaVersion !== 1 || proof.kind !== 'migration-acceptance' || proof.localId !== issue.localId || proof.result !== 'PASS' || !COMMIT.test(proof.testedCommit ?? '') || !Array.isArray(proof.checks) || proof.checks.length === 0) return false;
-      return proof.checks.every((check) => text(check.command) && check.result === 'PASS' && text(check.evidenceFile) && SHA.test(check.sha256 ?? '') && io.exists(check.evidenceFile) && createHash('sha256').update(io.read(check.evidenceFile)).digest('hex') === check.sha256);
+      // NOT RUN / SKIPPED / FAIL must never count as PASS (strict equality already).
+      return proof.checks.every((check) => {
+        if (!text(check.command) || check.result !== 'PASS' || !text(check.evidenceFile) || !SHA.test(check.sha256 ?? '') || !io.exists(check.evidenceFile)) {
+          return false;
+        }
+        const body = io.read(check.evidenceFile);
+        if (createHash('sha256').update(body).digest('hex') !== check.sha256) return false;
+        return acceptanceChecklistConsistent(check, body);
+      });
     } catch { return false; }
   };
 

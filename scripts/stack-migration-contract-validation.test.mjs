@@ -317,6 +317,78 @@ test('nonexistent completion evidence and unrelated existing prose are not accep
   rejects(input, /done without completion evidence/);
 });
 
+test('PASS completion evidence with unchecked Required Tests is rejected (#940 / #935 repro)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const acceptance = `${dir}/mig-940-unchecked.md`;
+  writeFileSync(
+    acceptance,
+    `# Acceptance — synthetic\n\n## Required Tests\n\n- [ ] \`node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs\`\n- [ ] Touched files: zero type escape hatches\n\n## Other\n\nok\n`,
+  );
+  const proofPath = `${dir}/mig-940-unchecked.json`;
+  const body = readFileSync(acceptance);
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'b'.repeat(40),
+        checks: [
+          {
+            command: 'node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs',
+            result: 'PASS',
+            evidenceFile: acceptance,
+            sha256: createHash('sha256').update(body).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
+  rejects(input, /done without completion evidence/);
+});
+
+test('NOT RUN check result never counts as PASS completion evidence (#940)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const artifact = `${dir}/mig-940-notrun.txt`;
+  writeFileSync(artifact, 'not-run\n');
+  const proofPath = `${dir}/mig-940-notrun.json`;
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'c'.repeat(40),
+        checks: [
+          {
+            command: 'synthetic',
+            result: 'NOT RUN',
+            evidenceFile: artifact,
+            sha256: createHash('sha256').update(readFileSync(artifact)).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
+  rejects(input, /done without completion evidence/);
+});
+
 test('Edge prerequisites retain repository and internal Recap ownership', () => {
   const input = clone();
   issue(input, 'MIG-421').dependsOn = issue(input, 'MIG-421').dependsOn.filter((id) => !['MIG-012', 'RPC-SESSION-RECAP'].includes(id));

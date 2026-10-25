@@ -3,16 +3,16 @@
   "kind": "migration-acceptance",
   "localId": "MIG-501",
   "result": "PASS",
-  "testedCommit": "9507fe534dc181e22104ebb56a05e218ac0916e4",
+  "testedCommit": "1bc870ca4c882ccd3bb7f7ee7b05663e78e6f70f",
   "githubClosed": true,
-  "mergeRef": "PR #934 → main (#842)",
-  "note": "Optional capability-gated resumable uploads under server/src/assets/uploads; finalize via MIG-500 publish; resume/offset/foreign/capability denies.",
+  "mergeRef": "PR #934/#950/#951 → main (#842 + #938 + #939)",
+  "note": "Optional capability-gated resumable uploads; finalize via publishResumableFinalize; resume/offset/foreign/capability/maxBytes denies; finalize retry #938.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-501.md",
-      "sha256": "fe8f9776870fa29ccef8e58dfef649364bec78fbc37fcecce7af6afb45ab914c"
+      "sha256": "428a22d68e0e2d57c45ee9644c2c5fe8108a6f77b4529eaf77e57ca53780c37a"
     },
     {
       "command": "composition-gate CLEAR",
