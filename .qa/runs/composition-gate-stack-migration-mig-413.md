@@ -1,0 +1,35 @@
+# Composition Gate — stack-migration-mig-413 (#829)
+
+- HEAD_SHA: ab438fe34ddc12dfd3fdf0ef921ea408e77aab01
+- BASE_SHA: 284bfacea3e1c0953ca9884f269edfda530a42b7
+- Date: 2026-10-25
+- Verdict: CLEAR
+
+## Event
+
+Legacy lorekeeper Map-graph characterized in world quarantine; host/dispatcher keep 404; no public mount; session-context all-node + ignored NPC sessionId preserved as required regressions; NPC memories ranked/capped like legacy getMemories(10).
+
+## Hop chain
+
+1. Producer: lorekeeper-quarantine fixtures (createLoreGraphStore / getWorldGraph / createRelationship / getSessionContext / getNPCContext / getMemories)
+2. Authorize: none (legacy unmounted; LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED=false)
+3. Persist: none (in-memory Maps only; no Neo4j/SQLite/Supabase)
+4. Consumer: self-test / future MIG-600 HTTP after activation
+
+## Simulations
+
+| Case | Intended | Composed | Result |
+|------|----------|----------|--------|
+| N-actors | No shared public route | allowlist deny + host 404 | pass |
+| Invalid/missing | Missing root / missing edge endpoint | null graph / throw | pass |
+| Two consumers / crash | No durable write; orphan excluded from BFS | Maps only | pass |
+| Legacy defects | Session all-node scan; NPC ignores sessionId; memory rank/cap 10 | fixtures | pass |
+
+## Flags
+
+- Acceptance tier: isolated-contract
+- Deferred integration: authorized host routes + MIG-600; LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED=false
+
+## Non-claims
+
+No cutover, no Supabase shutdown, no desktop release, no FEATURE VERIFIED.

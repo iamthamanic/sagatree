@@ -704,6 +704,18 @@ function checkMig412LookReferenceAnalysis() {
   );
 }
 
+function checkMig413LorekeeperQuarantine() {
+  console.log('MIG-413 (#829): lorekeeper stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-413-lorekeeper-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2891,6 +2903,7 @@ checkMig407DmToolsQuarantine();
 checkMig408ExportQuarantine();
 checkMig411ItemsQuarantine();
 checkMig412LookReferenceAnalysis();
+checkMig413LorekeeperQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
