@@ -20,19 +20,25 @@ const npcUrl = pathToFileURL(join(root, 'server/src/modules/npc-creature/index.t
 const {
   BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED,
   applyMonsterDefaults,
+  calculateXp,
   computeEncounterXp,
   filterMonsters,
   parseChallengeRating,
+  searchMonsters,
 } = await import(npcUrl);
+
+const allowUrl = pathToFileURL(
+  join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
+).href;
+const { isEdgeDispatcherAllowed, EDGE_DISPATCHER_ALLOWLIST } = await import(allowUrl);
 
 // --- Fall 1 / Test 1: dispatcher + host keep bestiary unmounted ---
 assert(BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED === false, 'public activation denied');
-
-const allowlist = readFileSync(
-  join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
-  'utf8',
+assert(isEdgeDispatcherAllowed('bestiary') === false, 'isEdgeDispatcherAllowed(bestiary) false');
+assert(
+  !EDGE_DISPATCHER_ALLOWLIST.includes('bestiary'),
+  'bestiary absent from EDGE_DISPATCHER_ALLOWLIST values',
 );
-assert(!allowlist.includes("'bestiary'"), 'bestiary not on EDGE_DISPATCHER_ALLOWLIST');
 
 const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
 assert(!/bestiary/i.test(createApp), 'create-app has no bestiary route');
@@ -41,22 +47,70 @@ assert(!/bestiary/i.test(routeRegistry), 'route-registry has no bestiary route')
 
 // --- Fall 2 / Test 2: isolated create/list/search/encounter fixtures ---
 const defaults = applyMonsterDefaults({});
-assert(defaults.name === 'Unknown' && defaults.type === 'beast' && defaults.size === 'medium', 'defaults');
-assert(defaults.challengeRating === 0 && defaults.hp === 10, 'default CR/hp');
+assert(defaults.name === 'Unknown' && defaults.type === 'beast' && defaults.size === 'medium', 'defaults identity');
+assert(defaults.challengeRating === 0 && defaults.hp === 10 && defaults.ac === 10, 'default CR/hp/ac');
+assert(defaults.hitDice === '2d6' && defaults.speed.walk === 30, 'default hitDice/speed');
+assert(
+  defaults.strength === 10 &&
+    defaults.dexterity === 10 &&
+    defaults.constitution === 10 &&
+    defaults.intelligence === 10 &&
+    defaults.wisdom === 10 &&
+    defaults.charisma === 10,
+  'default abilities',
+);
+assert(defaults.senses[0] === 'passive Perception 10', 'default senses');
+assert(Array.isArray(defaults.languages) && defaults.languages.length === 0, 'default languages');
+assert(Array.isArray(defaults.actions) && defaults.actions.length === 0, 'default actions');
+assert(defaults.source === 'custom' && defaults.challengeRatingText === '0', 'default source/CR text');
+assert(defaults.xp === calculateXp(0) && defaults.xp === 10, 'default XP from table');
+
+const cr2 = applyMonsterDefaults({ challengeRating: 2 });
+assert(cr2.xp === 450, 'CR2 XP table = 450');
+assert(cr2.challengeRatingText === '2', 'CR text from number');
+
+const falsy = applyMonsterDefaults({ xp: 0, hp: 0, name: '', type: '', ac: 0 });
+assert(falsy.name === 'Unknown' && falsy.type === 'beast' && falsy.hp === 10 && falsy.ac === 10, 'falsy || fallbacks');
+assert(falsy.xp === 10, 'falsy xp falls back via calculateXp(0)');
 
 assert(parseChallengeRating('0.25') === 0.25, 'CR parse');
 assert(parseChallengeRating('nope') === null, 'CR invalid');
 
 const listCatalog = [
-  { id: 'goblin', name: 'Goblin', challengeRating: 0.25, xp: 50, type: 'humanoid', size: 'small' },
-  { id: 'ogre', name: 'Ogre', challengeRating: 2, xp: 450, type: 'giant', size: 'large' },
-  { id: 'wolf', name: 'Wolf', challengeRating: 0.25, xp: 50, type: 'beast', size: 'medium' },
+  applyMonsterDefaults({
+    id: 'goblin',
+    name: 'Goblin',
+    challengeRating: 0.25,
+    xp: 50,
+    type: 'humanoid',
+    size: 'small',
+  }),
+  applyMonsterDefaults({
+    id: 'ogre',
+    name: 'Ogre',
+    challengeRating: 2,
+    xp: 450,
+    type: 'giant',
+    size: 'large',
+    description: 'smelly cave brute',
+  }),
+  applyMonsterDefaults({
+    id: 'wolf',
+    name: 'Wolf',
+    challengeRating: 0.25,
+    xp: 50,
+    type: 'beast',
+    size: 'medium',
+  }),
 ];
 assert(filterMonsters(listCatalog, { type: 'beast' }).length === 1, 'list by type');
+assert(filterMonsters(listCatalog, { type: 'BEAST' }).length === 1, 'list type case-insensitive');
 assert(filterMonsters(listCatalog, { cr: 0.25 }).length === 2, 'list by CR');
 assert(filterMonsters(listCatalog, { size: 'large' })[0]?.id === 'ogre', 'list by size');
-assert(filterMonsters(listCatalog, { q: 'gob' })[0]?.id === 'goblin', 'search q');
-assert(filterMonsters(listCatalog, { q: '' }).length === 3, 'empty q returns all');
+assert(searchMonsters(listCatalog, 'gob')[0]?.id === 'goblin', 'search name');
+assert(searchMonsters(listCatalog, 'giant')[0]?.id === 'ogre', 'search type field');
+assert(searchMonsters(listCatalog, 'cave')[0]?.id === 'ogre', 'search description');
+assert(searchMonsters(listCatalog, '').length === 3, 'empty q matches all via includes');
 
 const catalog = new Map([
   ['goblin', { id: 'goblin', name: 'Goblin', challengeRating: 0.25, xp: 50 }],
@@ -74,7 +128,6 @@ assert(known.totalXP === 50 * 2 + 450, `totalXP=${known.totalXP}`);
 assert(known.requestedCount === 3 && known.multiplier === 2, 'multiplier for 3');
 assert(known.adjustedXP === Math.floor(known.totalXP * 2), 'adjusted');
 
-// Unknown monster skipped for XP/list contribution but count still multiplies
 const mixed = computeEncounterXp({
   catalog,
   monsters: [

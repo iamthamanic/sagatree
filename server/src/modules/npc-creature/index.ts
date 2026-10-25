@@ -8,8 +8,10 @@
 export {
   BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED,
   applyMonsterDefaults,
+  calculateXp,
   computeEncounterXp,
   filterMonsters,
   parseChallengeRating,
+  searchMonsters,
   type QuarantineMonster,
 } from './internal/bestiary-quarantine.ts';
