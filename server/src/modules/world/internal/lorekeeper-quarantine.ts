@@ -127,7 +127,23 @@ export function getSessionContext(
 }
 
 /**
- * Legacy getNPCContext: accepts sessionId but ignores it.
+ * Legacy getMemories: sort importance desc, then timestamp desc; optional limit.
+ */
+export function getMemories(
+  store: LoreGraphStore,
+  npcId: string,
+  limit?: number,
+): Memory[] {
+  const npcMemories = Array.from(store.memories.values()).filter((m) => m.npcId === npcId);
+  npcMemories.sort((a, b) => {
+    if (a.importance !== b.importance) return b.importance - a.importance;
+    return b.timestamp.localeCompare(a.timestamp);
+  });
+  return limit !== undefined ? npcMemories.slice(0, limit) : npcMemories;
+}
+
+/**
+ * Legacy getNPCContext: accepts sessionId but ignores it; memories capped at 10.
  */
 export function getNPCContext(
   store: LoreGraphStore,
@@ -136,7 +152,7 @@ export function getNPCContext(
 ): { npc: WorldNode | null; memories: Memory[]; relationships: Edge[] } {
   void sessionId;
   const npc = store.nodes.get(npcId) || null;
-  const memories = Array.from(store.memories.values()).filter((m) => m.npcId === npcId);
+  const memories = getMemories(store, npcId, 10);
   const relationships = Array.from(store.edges.values()).filter(
     (e) => e.from === npcId || e.to === npcId,
   );

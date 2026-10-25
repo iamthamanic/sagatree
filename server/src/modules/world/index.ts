@@ -22,6 +22,7 @@ export {
   LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED,
   createLoreGraphStore,
   createRelationship,
+  getMemories,
   getNPCContext,
   getSessionContext,
   getWorldGraph,

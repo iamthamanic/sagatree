@@ -22,6 +22,7 @@ const {
   LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED,
   createLoreGraphStore,
   createRelationship,
+  getMemories,
   getNPCContext,
   getSessionContext,
   getWorldGraph,
@@ -185,6 +186,32 @@ assert(npcS1.npc?.id === 'a', 'npc found');
 assert(npcS1.memories.length === 2, 'NPC memories ignore sessionId');
 assert(npcS2.memories.length === 2, 'same memories for other sessionId');
 assert(npcS1.relationships.length === 2, 'relationships for npc');
+
+// Legacy getMemories(npcId, 10): importance desc, timestamp desc, cap 10
+for (let i = 0; i < 12; i += 1) {
+  store.memories.set(`bulk-${i}`, {
+    id: `bulk-${i}`,
+    npcId: 'a',
+    sessionId: 's-bulk',
+    type: 'fact',
+    content: `m${i}`,
+    importance: i % 3,
+    timestamp: `2026-01-01T00:00:${String(i).padStart(2, '0')}.000Z`,
+  });
+}
+const ranked = getMemories(store, 'a', 10);
+assert(ranked.length === 10, `getMemories cap 10, got ${ranked.length}`);
+for (let i = 1; i < ranked.length; i += 1) {
+  const prev = ranked[i - 1];
+  const cur = ranked[i];
+  const ok =
+    prev.importance > cur.importance ||
+    (prev.importance === cur.importance && prev.timestamp >= cur.timestamp);
+  assert(ok, `ordered importance/timestamp at ${i}`);
+}
+const capped = getNPCContext(store, 'a', 'ignored');
+assert(capped.memories.length === 10, 'getNPCContext caps at 10');
+assert(capped.memories[0].importance >= capped.memories[9].importance, 'NPC context ranked');
 
 const quarantineSrc = readFileSync(
   join(root, 'server/src/modules/world/internal/lorekeeper-quarantine.ts'),
