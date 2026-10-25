@@ -656,6 +656,18 @@ function checkMig406CharactersQuarantine() {
   );
 }
 
+function checkMig407DmToolsQuarantine() {
+  console.log('MIG-407 (#823): dm-tools stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-407-dm-tools-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2839,6 +2851,7 @@ checkRpcWorldMap();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
+checkMig407DmToolsQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

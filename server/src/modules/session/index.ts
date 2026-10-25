@@ -84,3 +84,19 @@ export function createSessionPorts(deps: {
     invites,
   };
 }
+
+/** MIG-407 quarantine surface — not a public host route. */
+export {
+  DM_TOOLS_PUBLIC_ACTIVATION_AUTHORIZED,
+  DM_TOOLS_REDIS_PROVIDES_PERSISTENCE,
+  acceptUnauthenticatedCombatAuthority,
+  applyDamage,
+  createSeededRng,
+  endCombat,
+  initCombat,
+  nextTurn,
+  parseDiceNotation,
+  rollDice,
+  type CombatState,
+  type DiceResult,
+} from './internal/dm-tools-quarantine.ts';
