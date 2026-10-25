@@ -63,8 +63,8 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.
-- No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.
+- (Acceptance/Regression, sperrt READY nicht) Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.
+- (Acceptance/Regression, sperrt READY nicht) No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.
 
 ## Edge Cases
 
@@ -138,6 +138,20 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
 
+### Fall 11
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json`, `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
+
+### Fall 12
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json`, `.qa/intake/edge-infra-contracts/edge-ollama-settings.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -152,11 +166,13 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 8. Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.
 9. Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.
 10. Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.
-11. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+11. Verpflichtende Legacy-Regression: Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.
+12. Verpflichtende Legacy-Regression: No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.
+13. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 10 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 12 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -179,15 +195,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-402`
 - Design: `.qa/design/migration-issues/stack-migration-mig-402.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 43; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-043`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-043`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.
+- (Acceptance/Regression, sperrt READY nicht) Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.
 
 ## Edge Cases
 
@@ -101,6 +101,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Generated story is nonempty and <=12000, and errors do not return provider/API secrets.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-character-lore.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json`
 
+### Fall 6
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-character-lore.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -110,11 +117,12 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 3. Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.
 4. Seventh request inside default window returns429; missing persistent store returns503 before provider use.
 5. Generated story is nonempty and <=12000, and errors do not return provider/API secrets.
-6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+6. Verpflichtende Legacy-Regression: Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.
+7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -137,15 +145,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #818 (MIG-402)
 - Depends on #791 (MIG-012)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-405`
 - Design: `.qa/design/migration-issues/stack-migration-mig-405.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 47; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-047`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-047`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

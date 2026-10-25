@@ -62,9 +62,9 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.
-- Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.
-- LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.
+- (Acceptance/Regression, sperrt READY nicht) Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.
+- (Acceptance/Regression, sperrt READY nicht) Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.
+- (Acceptance/Regression, sperrt READY nicht) LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.
 
 ## Edge Cases
 
@@ -180,6 +180,27 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
 
+### Fall 17
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 18
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
+### Fall 19
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-session.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-session.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -200,11 +221,14 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 14. Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 15. Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 16. Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-17. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+17. Verpflichtende Legacy-Regression: Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.
+18. Verpflichtende Legacy-Regression: Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.
+19. Verpflichtende Legacy-Regression: LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.
+20. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 16 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 19 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -233,15 +257,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #796 (MIG-021)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-311`
 - Design: `.qa/design/migration-issues/stack-migration-mig-311.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 77; Welle: 4
-- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-077`, `agent-blocked`
+- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-077`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

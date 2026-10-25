@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.
+- (Acceptance/Regression, sperrt READY nicht) No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-npcs.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-npcs.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-npcs.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-npcs.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. npcs worker all CRUD/social/export/generator paths remain404.
 2. Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.
 3. Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] npcs worker all CRUD/social/export/generator paths remain404.
 - [ ] Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.
 - [ ] Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy.
+- [ ] Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-417`
 - Design: `.qa/design/migration-issues/stack-migration-mig-417.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 58; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-058`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-058`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

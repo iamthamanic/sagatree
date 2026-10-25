@@ -62,9 +62,9 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.
-- Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.
-- GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.
+- (Acceptance/Regression, sperrt READY nicht) Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.
+- (Acceptance/Regression, sperrt READY nicht) Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.
+- (Acceptance/Regression, sperrt READY nicht) GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.
 
 ## Edge Cases
 
@@ -110,6 +110,27 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
 
+### Fall 7
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
+
+### Fall 8
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
+
+### Fall 9
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-item-model3d.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -120,11 +141,14 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 4. Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.
 5. Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.
 6. Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.
-7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+7. Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.
+8. Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.
+9. Verpflichtende Legacy-Regression: GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.
+10. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 9 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -148,15 +172,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-409`
 - Design: `.qa/design/migration-issues/stack-migration-mig-409.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 51; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-051`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-051`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

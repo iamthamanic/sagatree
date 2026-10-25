@@ -68,7 +68,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- {"id":"RPC-SEC-LEGACY-MAP-FLAG","severity":"High","status":"blocked-successor-acceptance","summary":"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.","sourceEvidence":"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.","requiredSuccessorAcceptance":"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.","deployedExploitVerified":false,"isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-LEGACY-MAP"}}
+- (Acceptance/Regression, sperrt READY nicht) {"id":"RPC-SEC-LEGACY-MAP-FLAG","severity":"High","status":"blocked-successor-acceptance","summary":"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.","sourceEvidence":"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.","requiredSuccessorAcceptance":"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.","deployedExploitVerified":false,"isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-LEGACY-MAP"}}
 
 ## Edge Cases
 
@@ -100,6 +100,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Player-Ansicht schützt verborgene Pins serverseitig unabhängig von einem manipulierbaren p_player_view-Flag; unsichere Legacy-Parität ist gesperrt.
 - Quelle: `src/infrastructure/world/world-map-service.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/004_project_membership_security.sql`, `supabase/migrations/008_world_profiles.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/019_world_profiles_read_for_adventure.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/068_world_maps.sql`, `supabase/migrations/083_world_profiles_public_id.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: {"id":"RPC-SEC-LEGACY-MAP-FLAG","severity":"High","status":"blocked-successor-acceptance","summary":"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.","sourceEvidence":"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.","requiredSuccessorAcceptance":"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.","deployedExploitVerified":false,"isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-LEGACY-MAP"}}
+- Quelle: `.qa/intake/rpc-contracts/get_world_map.md`, `.qa/intake/rpc-contracts/save_world_map.md`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -108,14 +115,14 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 2. Nur Welt-Editoren speichern; Größe 1–60, Bildpfad-Grenzen und JSON-Objekt-Validierung bleiben geprüft.
 3. Revision-Konflikt führt zu SQLSTATE 40001 ohne Teilupdate; expliziter Legacy-Bypass bei NULL/negativer Erwartungsrevision ist entschieden.
 4. Player-Ansicht schützt verborgene Pins serverseitig unabhängig von einem manipulierbaren p_player_view-Flag; unsichere Legacy-Parität ist gesperrt.
-5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+5. Verpflichtende Legacy-Regression: {"id":"RPC-SEC-LEGACY-MAP-FLAG","severity":"High","status":"blocked-successor-acceptance","summary":"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.","sourceEvidence":"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.","requiredSuccessorAcceptance":"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.","deployedExploitVerified":false,"isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-LEGACY-MAP"}}
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Leere Weltkarte liefert revision 0 und size 24; gespeicherte JSON-Payload und Client-Decoding sind belegt.
-- [ ] Nur Welt-Editoren speichern; Größe 1–60, Bildpfad-Grenzen und JSON-Objekt-Validierung bleiben geprüft.
-- [ ] Revision-Konflikt führt zu SQLSTATE 40001 ohne Teilupdate; expliziter Legacy-Bypass bei NULL/negativer Erwartungsrevision ist entschieden.
-- [ ] Player-Ansicht schützt verborgene Pins serverseitig unabhängig von einem manipulierbaren p_player_view-Flag; unsichere Legacy-Parität ist gesperrt.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -138,15 +145,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #785 (GATE-02)
 - Depends on #787 (GATE-04)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-rpc-world-map`
 - Design: `.qa/design/migration-issues/stack-migration-rpc-world-map.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 36; Welle: 2
-- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-036`, `agent-blocked`
+- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-036`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

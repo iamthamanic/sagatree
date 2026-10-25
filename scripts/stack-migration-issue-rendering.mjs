@@ -13,6 +13,47 @@ export const featureSlug = (id) => `stack-migration-${id.toLowerCase()}`;
 const evidenceRoot = '.qa/evidence/stack-migration-prep';
 const contractRoot = '.qa/design/migration-issues';
 
+const ATLAS_E2E_EXECUTION_BLOCKER =
+  'Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).';
+
+/**
+ * True execution locks (keep ticket blocked) vs inventory legacyDefects
+ * (mandatory in-ticket acceptance / negative regressions — must NOT block READY).
+ */
+export function isExecutionBlockerText(value) {
+  const s = text(value);
+  if (s === ATLAS_E2E_EXECUTION_BLOCKER || s.startsWith('Atlas live product E2E CI remains not-passing')) return true;
+  if (/platform-qualification-pending|NEEDS_HUMAN|human architecture approval pending|cutover.*freigabe|supabase shutdown.*freigabe/i.test(s)) return true;
+  try {
+    const parsed = JSON.parse(s);
+    if (parsed && typeof parsed === 'object' && parsed.executionLock === true) return true;
+  } catch {
+    /* plain text */
+  }
+  return false;
+}
+
+/**
+ * Positively identified legacy-defect payloads only. Unknown plain-text or
+ * novel structured locks must remain execution blockers (fail-closed) unless
+ * they exactly match current inventory `legacyDefects` text.
+ */
+export function isLegacyDefectPayload(value) {
+  if (isExecutionBlockerText(value)) return false;
+  const s = text(value);
+  try {
+    const parsed = JSON.parse(s);
+    if (parsed && typeof parsed === 'object') {
+      if (parsed.status === 'blocked-successor-acceptance') return true;
+      if (typeof parsed.requiredSuccessorAcceptance === 'string') return true;
+      if (typeof parsed.id === 'string' && /^(RPC-|EDGE-|INFRA-)/.test(parsed.id)) return true;
+    }
+  } catch {
+    /* plain text is not auto-legacy — require inventory match at call site */
+  }
+  return false;
+}
+
 /** Every inventoried requiredTest becomes a binding assertion — no bullet-count truncation. */
 function checksForTests(name, tests, sources) {
   return (tests ?? []).map((test) => ({ given: `Der eingefrorene Quellvertrag für ${name} und isolierte positive/negative Fixtures`, when: `Der Nachfolger den dokumentierten Fall für ${name} ausführt`, then: test, sourceRefs: sources }));
@@ -61,7 +102,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     const ownedGroups = splits.groups.filter((entry) => entry.parentIssue === old.githubIssue);
     let definition;
     let sourceContracts = [];
-    let blockers = [];
+    let inventoryLegacyDefects = [];
     let dependsOn = [];
     let rpcNames;
     let integrationWith = [];
@@ -74,7 +115,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     } else if (group) {
       rpcNames = group.rpcNames;
       sourceContracts = rpcNames.map((rpc) => `.qa/intake/rpc-contracts/${rpc}.md`);
-      blockers = rpcNames.flatMap((rpc) => (rpcByName.get(rpc)?.legacyDefects ?? []).map(text));
+      inventoryLegacyDefects = rpcNames.flatMap((rpc) => (rpcByName.get(rpc)?.legacyDefects ?? []).map(text));
       definition = {
         intent: `${group.title}: ${rpcNames.join(', ')} als zusammengehörigen Anwendungsfall mit unveränderter sicherer Fachsemantik portieren.`,
         sources: group.sourcePaths,
@@ -105,7 +146,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
         `.qa/intake/edge-infra-contracts/edge-${entry.function}.md`,
         entry.sourceContract,
       ].filter(Boolean)));
-      blockers = edges.flatMap((entry) => (entry.legacyDefects ?? []).map(text));
+      inventoryLegacyDefects = edges.flatMap((entry) => (entry.legacyDefects ?? []).map(text));
       const names = edges.map((entry) => entry.function).sort();
       const behaviorParts = edges.map((entry) => {
         const behavior = entry.exposure?.dispatcherAllowed
@@ -152,7 +193,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       }
     } else if (infra) {
       sourceContracts = [`.qa/intake/edge-infra-contracts/infra-${infra.area}.md`, infra.sourceContract].filter(Boolean);
-      blockers = (infra.legacyDefects ?? []).map(text);
+      inventoryLegacyDefects = (infra.legacyDefects ?? []).map(text);
       definition = {
         intent: `src/infrastructure/${infra.area}: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.`,
         sources: infra.verification?.sourceFiles?.map((entry) => entry.path) ?? infra.files,
@@ -169,7 +210,6 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     } else throw new Error(`No source-specific contract for ${id}`);
 
     const slug = featureSlug(id);
-    const acceptance = [...definition.assertions.map((entry) => entry.then), typedStrictAcceptance];
     const inventoryStates = rpcNames
       ? rpcNames.map((rpc) => rpcByName.get(rpc)?.verification?.status)
       : edges.length
@@ -182,13 +222,38 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     // Architecture freigabe alone is never DONE. Closed GitHub alone is never DONE. Source fingerprint alone is never DONE.
     // GATE-05 target is chosen but platform qualification is deferred → blocked until browser-host + ops acceptance.
     // Fully specified work with every predecessor DONE (+ completionEvidence) becomes READY; otherwise WAITING_DEPENDENCY.
-    blockers = unique([
-      ...blockers,
-      ...(Array.isArray(old.verification?.blockers) ? old.verification.blockers.map(text) : []),
+    // Legacy defects are required in-ticket regressions — never execution blockers (queue deadlock after 25/90).
+    const priorBlockers = Array.isArray(old.verification?.blockers) ? old.verification.blockers.map(text) : [];
+    const priorRegressions = Array.isArray(old.verification?.requiredRegressions)
+      ? old.verification.requiredRegressions.map(text)
+      : [];
+    const inventoryLegacySet = new Set(inventoryLegacyDefects.map(text));
+    const requiredRegressions = unique([
+      ...inventoryLegacyDefects,
+      ...priorRegressions,
+      ...priorBlockers.filter((entry) => isLegacyDefectPayload(entry)),
+    ]);
+    const blockers = unique([
+      ...priorBlockers.filter((entry) => {
+        const s = text(entry);
+        if (isExecutionBlockerText(s)) return true;
+        if (isLegacyDefectPayload(s)) return false;
+        if (inventoryLegacySet.has(s)) return false;
+        // Unknown prior blocker wording → keep as execution lock (fail-closed).
+        return true;
+      }),
       ...(id === 'ATLAS-LIVE-E2E' && previous.meta?.atlasLiveE2e?.ciAcceptance === 'not-passing'
-        ? ['Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).']
+        ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
     ]);
+    const regressionAssertions = requiredRegressions.map((defect) => ({
+      given: 'Der eingefrorene Legacy-Defekt aus dem Quellinventar',
+      when: 'Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt',
+      then: `Verpflichtende Legacy-Regression: ${defect}`,
+      sourceRefs: sourceContracts.length ? sourceContracts : definition.sources,
+    }));
+    definition.assertions = [...definition.assertions, ...regressionAssertions];
+    const acceptance = [...definition.assertions.map((entry) => entry.then), typedStrictAcceptance];
     const previousById = new Map((previous.issues ?? []).map((issue) => [issue.localId, issue]));
     const predecessorsDone = unique(dependsOn).every((dep) => {
       const predecessor = previousById.get(dep);
@@ -217,8 +282,13 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       scope: { mayChange: unique(definition.targets.filter(Boolean)), mustNotChange: ['production data', 'unrelated product flows'], nonGoals: ['Unapproved framework substitution', 'Production cutover or Supabase shutdown', 'Retirement of any reachable legacy behavior without owner sign-off'] },
       acceptance, assertions: definition.assertions,
       ...(old.completionEvidence ? { completionEvidence: old.completionEvidence } : {}),
-      verification: { sourceStatus, implementationStatus: old.status === 'done' || old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
-        blockers: unique(blockers), approvalRequired: id === 'GATE-05' ? 'platform-qualification-pending' : null },
+      verification: {
+        sourceStatus,
+        implementationStatus: old.status === 'done' || old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
+        blockers: unique(blockers),
+        requiredRegressions: unique(requiredRegressions),
+        approvalRequired: id === 'GATE-05' ? 'platform-qualification-pending' : null,
+      },
       contractSections: {
         vorher: `Baseline ${baselineSha}; Quellpfade: ${definition.sources.join(', ')}. Detaillierte Aufruf-/SQL-Nachweise: ${sourceContracts.length ? sourceContracts.join(', ') : 'die unten referenzierten Anforderungen'}.`,
         nachher: `${definition.intent} Zielpfade: ${definition.targets.filter(Boolean).join(', ')}.`,
@@ -421,8 +491,14 @@ export function renderIssue(issue, byId) {
   const blocks = issue.dependsOn.map((id) => `- Depends on #${byId.get(id)?.githubIssue ?? 'unpublished'} (${id})`).join('\n') || '- Keine Vorgänger.';
   const detailedCases = issue.assertions.map((entry, index) =>
     `### Fall ${index + 1}\n\n- Gegeben: ${entry.given}\n- Wenn: ${entry.when}\n- Dann: ${entry.then}\n- Quelle: ${refs(entry.sourceRefs)}\n`).join('\n');
-  const knownDefects = issue.verification.blockers.length
-    ? `\n### Bekannte Legacy-Defekte / negative Regressionen\n\n${issue.verification.blockers.map((entry) => `- ${entry}`).join('\n')}\n` : '';
+  const regressions = issue.verification.requiredRegressions ?? [];
+  const executionLocks = issue.verification.blockers ?? [];
+  const knownDefects = regressions.length || executionLocks.length
+    ? `\n### Bekannte Legacy-Defekte / negative Regressionen\n\n${[
+        ...regressions.map((entry) => `- (Acceptance/Regression, sperrt READY nicht) ${entry}`),
+        ...executionLocks.map((entry) => `- (Ausführungssperre) ${entry}`),
+      ].join('\n')}\n`
+    : '';
   const runtime = ID === 'MIG-703' || ID === 'GATE-05'
     ? '| Desktop macOS/Windows/Linux | Tauri+Node-Sidecar; echte Plattformtests erforderlich |\n| Browser/VPS | bestehender gemeinsamer Host unverändert; keine zweite Runtime |'
     : '| Local / Solo | ein Node-Host mit SQLite, keine obligatorische Cloud |\n| VPS / Remote Browser | derselbe Node-Host, sichere Cookie-Sitzungen + Hono/Colyseus wenn Auth/Transport betroffen |\n| Desktop (später) | derselbe Host als Tauri-Sidecar; kein Desktop-Release-Beleg aus diesem Issue |';

@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.
+- (Acceptance/Regression, sperrt READY nicht) Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.
 
 ## Edge Cases
 
@@ -101,6 +101,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-look-reference-analysis.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json`
 
+### Fall 6
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-look-reference-analysis.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -110,11 +117,12 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 3. Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.
 4. Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.
 5. Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.
-6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+6. Verpflichtende Legacy-Regression: Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.
+7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -136,15 +144,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #793 (MIG-014)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-412`
 - Design: `.qa/design/migration-issues/stack-migration-mig-412.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 54; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-054`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-054`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

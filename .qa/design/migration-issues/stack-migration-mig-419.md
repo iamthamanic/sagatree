@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.
+- (Acceptance/Regression, sperrt READY nicht) No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-rulesets.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-rulesets.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-rulesets.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-rulesets.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. rulesets and supplemental routes stay dispatcher404.
 2. Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.
 3. HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] rulesets and supplemental routes stay dispatcher404.
 - [ ] Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.
 - [ ] HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records.
+- [ ] Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-419`
 - Design: `.qa/design/migration-issues/stack-migration-mig-419.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 60; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-060`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-060`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

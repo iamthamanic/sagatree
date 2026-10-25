@@ -62,8 +62,8 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.
-- meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.
+- (Acceptance/Regression, sperrt READY nicht) start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.
+- (Acceptance/Regression, sperrt READY nicht) meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.
 
 ## Edge Cases
 
@@ -102,6 +102,20 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json`
 
+### Fall 6
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json`
+
+### Fall 7
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -111,11 +125,13 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 3. Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.
 4. Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.
 5. Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.
-6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+6. Verpflichtende Legacy-Regression: start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.
+7. Verpflichtende Legacy-Regression: meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.
+8. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 7 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -139,15 +155,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-404`
 - Design: `.qa/design/migration-issues/stack-migration-mig-404.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 46; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-046`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-046`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

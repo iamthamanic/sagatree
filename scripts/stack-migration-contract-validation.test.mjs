@@ -67,12 +67,18 @@ test('the complete published plan validates without an implementation or archite
   assert.deepEqual(errors(original), []);
   assert.equal(original.intake.coverage.legacyFrontendRpcs, 57);
   // Evidence-based READY only after transitive DONE; never a mass unlock of all 90.
-  // After shipping the last currently unlockable READY tickets, READY may be 0 while
-  // remaining work stays waiting/blocked — still never a mass unlock.
+  // Legacy defects are required regressions inside READY tickets — they must not
+  // artificially zero the READY queue (deadlock after 25/90). Human gates stay blocked.
   const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
   const done = original.intake.issues.filter((entry) => entry.status === 'done');
+  const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
   assert.equal(ready.length, original.intake.coverage.issuesReady);
-  assert.ok(ready.length < 10, `expected READY < 10 (no mass unlock), got ${ready.length}`);
+  assert.ok(ready.length < 50, `expected READY < 50 (no mass unlock of full queue), got ${ready.length}`);
+  assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'));
+  assert.ok(!ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
+  assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'));
+  assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  assert.ok(blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-014'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-015'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-020'));
@@ -82,6 +88,26 @@ test('the complete published plan validates without an implementation or archite
   assert.ok(done.some((entry) => entry.localId === 'MIG-502'));
   assert.ok(!ready.some((entry) => entry.localId === 'MIG-024'));
   assert.ok(done.length >= 18);
+});
+
+test('legacyDefects become requiredRegressions and do not alone force blocked', () => {
+  const { intake } = buildMigrationPlan({
+    previous: original.intake,
+    registry: original.registry,
+    rpcInventory: original.rpcInventory,
+    edgeInventory: original.edgeInventory,
+    splits: read('.qa/intake/rpc-contracts/split-groups.json'),
+  });
+  const runtime = intake.issues.find((entry) => entry.localId === 'RPC-SESSION-RUNTIME');
+  assert.ok(runtime, 'RPC-SESSION-RUNTIME present');
+  assert.ok((runtime.verification.requiredRegressions ?? []).length > 0, 'legacy defects captured as regressions');
+  assert.equal((runtime.verification.blockers ?? []).length, 0, 'legacy defects must not be execution blockers');
+  assert.equal(runtime.status, 'ready', 'deps-done + source-verified + only legacy defects → READY');
+  const atlas = intake.issues.find((entry) => entry.localId === 'ATLAS-LIVE-E2E');
+  assert.equal(atlas.status, 'blocked');
+  assert.ok((atlas.verification.blockers ?? []).some((entry) => /Atlas live product E2E/i.test(entry)));
+  const gate05 = intake.issues.find((entry) => entry.localId === 'GATE-05');
+  assert.equal(gate05.status, 'blocked');
 });
 
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {

@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.
+- (Acceptance/Regression, sperrt READY nicht) No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-bestiary.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-bestiary.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-bestiary.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-bestiary.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. All bestiary paths remain dispatcher404 without Map initialization.
 2. Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.
 3. Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] All bestiary paths remain dispatcher404 without Map initialization.
 - [ ] Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.
 - [ ] Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment.
+- [ ] Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-403`
 - Design: `.qa/design/migration-issues/stack-migration-mig-403.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 45; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-045`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-045`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

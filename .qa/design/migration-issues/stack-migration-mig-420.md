@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.
+- (Acceptance/Regression, sperrt READY nicht) No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.
 
 ## Edge Cases
 
@@ -101,6 +101,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
 
+### Fall 6
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-session-media-token.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -110,11 +117,12 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 3. No project_members row403 even if legacy session_players fixture exists; inactive member403.
 4. Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.
 5. Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.
-6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+6. Verpflichtende Legacy-Regression: No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.
+7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
 - [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
 - [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
@@ -137,15 +145,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #791 (MIG-012)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-420`
 - Design: `.qa/design/migration-issues/stack-migration-mig-420.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 61; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-061`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-061`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

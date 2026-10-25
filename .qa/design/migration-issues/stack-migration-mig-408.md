@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.
+- (Acceptance/Regression, sperrt READY nicht) No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-export.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-export.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-export.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-export.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. export/import routes remain dispatcher404.
 2. Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.
 3. Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] export/import routes remain dispatcher404.
 - [ ] Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.
 - [ ] Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts.
+- [ ] Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -120,15 +129,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #793 (MIG-014)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-408`
 - Design: `.qa/design/migration-issues/stack-migration-mig-408.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 50; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-050`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-050`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

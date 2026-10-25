@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.
+- (Acceptance/Regression, sperrt READY nicht) Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-marketplace.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-marketplace.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. marketplace worker stays404 including download/rate.
 2. Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.
 3. Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] marketplace worker stays404 including download/rate.
 - [ ] Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.
 - [ ] Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker.
+- [ ] Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-415`
 - Design: `.qa/design/migration-issues/stack-migration-mig-415.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 56; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-056`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-056`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

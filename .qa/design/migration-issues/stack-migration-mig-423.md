@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.
+- (Acceptance/Regression, sperrt READY nicht) No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-spellbook.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-spellbook.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-spellbook.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-spellbook.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. All spellbook routes remain dispatcher404.
 2. Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.
 3. Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] All spellbook routes remain dispatcher404.
 - [ ] Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.
 - [ ] Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation.
+- [ ] Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-423`
 - Design: `.qa/design/migration-issues/stack-migration-mig-423.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 65; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-065`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-065`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.
+- (Acceptance/Regression, sperrt READY nicht) Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-dm-tools.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-dm-tools.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-dm-tools.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-dm-tools.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. dm-tools all routes remain404 at dispatcher, including dice and health.
 2. Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.
 3. Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] dm-tools all routes remain404 at dispatcher, including dice and health.
 - [ ] Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.
 - [ ] Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state.
+- [ ] Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-407`
 - Design: `.qa/design/migration-issues/stack-migration-mig-407.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 49; Welle: 3
-- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-049`, `agent-blocked`
+- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-049`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
