@@ -64,7 +64,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).
+- (Ausführungssperre) Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).
 
 ## Edge Cases
 

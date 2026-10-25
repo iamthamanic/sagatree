@@ -72,7 +72,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- {"id":"RPC-SEC-ANON-EVENT-HELPER","severity":"Critical","status":"blocked-successor-acceptance","summary":"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.","sourceEvidence":"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.","requiredSuccessorAcceptance":"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.","isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-EVENT-HELPER-ANON"},"deployedExploitVerified":false}
+- (Acceptance/Regression, sperrt READY nicht) {"id":"RPC-SEC-ANON-EVENT-HELPER","severity":"Critical","status":"blocked-successor-acceptance","summary":"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.","sourceEvidence":"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.","requiredSuccessorAcceptance":"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.","isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-EVENT-HELPER-ANON"},"deployedExploitVerified":false}
 
 ## Edge Cases
 
@@ -104,6 +104,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Nicht-GM, fehlende Konsequenz und Wiederholung haben explizite Fixtures ohne fremde Zustandsänderung.
 - Quelle: `src/domains/project/contracts/saga-overview.ts`, `src/domains/saga/permissions/lore-timeline.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/project/saga-overview-service.ts`, `src/infrastructure/project/saga-permission-service.ts`, `src/infrastructure/saga/session-outcome-promotion-service.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`, `supabase/migrations/001_initial.sql`, `supabase/migrations/002_character_trait_arrays.sql`, `supabase/migrations/004_project_membership_security.sql`, `supabase/migrations/005_character_ruleset_metadata.sql`, `supabase/migrations/007_sagadrive_character_profile.sql`, `supabase/migrations/008_world_profiles.sql`, `supabase/migrations/010_characters_v3_columns.sql`, `supabase/migrations/014_character_abilities_emotion_profiles.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/016_character_inventory_v2.sql`, `supabase/migrations/019_world_profiles_read_for_adventure.sql`, `supabase/migrations/029_character_sheet_status.sql`, `supabase/migrations/039_public_resource_ids_and_session_numbers.sql`, `supabase/migrations/040_session_join_code_security.sql`, `supabase/migrations/041_session_runtime_state.sql`, `supabase/migrations/047_session_program_presentation.sql`, `supabase/migrations/048_session_knowledge_reveals.sql`, `supabase/migrations/050_session_adventure_runtime.sql`, `supabase/migrations/051_session_director_runtime.sql`, `supabase/migrations/052_projects_look_settings.sql`, `supabase/migrations/053_sessions_look_override.sql`, `supabase/migrations/059_saga_state_column_privileges.sql`, `supabase/migrations/060_saga_overview.sql`, `supabase/migrations/061_session_recaps_and_handover.sql`, `supabase/migrations/062_session_recap_ai_summary.sql`, `supabase/migrations/063_saga_definitions.sql`, `supabase/migrations/064_saga_editor_v1.sql`, `supabase/migrations/066_saga_between_sessions_bote.sql`, `supabase/migrations/069_party_location_overview.sql`, `supabase/migrations/070_saga_promote_session_outcomes.sql`, `supabase/migrations/072_dornhain_seed_and_character_rls.sql`, `supabase/migrations/073_sagatree_schema_rename_compat.sql`, `supabase/migrations/075_saga_permission_grants.sql`, `supabase/migrations/079_drop_sagadrive_aliases.sql`, `supabase/migrations/083_world_profiles_public_id.sql`, `supabase/migrations/085_fix_function_bodies_sagatree.sql`, `supabase/migrations/089_gm_presence_character_type.sql`, `supabase/migrations/091_saga_overview_world_profile_id.sql`, `supabase/migrations/092_fix_projects_rls_recursion.sql`, `supabase/migrations/093_fix_saga_overview_shared_adventure.sql`, `supabase/migrations/095_donalu_world_places.sql`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: {"id":"RPC-SEC-ANON-EVENT-HELPER","severity":"Critical","status":"blocked-successor-acceptance","summary":"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.","sourceEvidence":"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.","requiredSuccessorAcceptance":"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.","isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-EVENT-HELPER-ANON"},"deployedExploitVerified":false}
+- Quelle: `.qa/intake/rpc-contracts/get_saga_overview.md`, `.qa/intake/rpc-contracts/get_saga_lore_timeline.md`, `.qa/intake/rpc-contracts/promote_session_outcome_to_saga.md`, `.qa/intake/rpc-contracts/promote_session_outcome_to_world.md`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -112,14 +119,14 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 2. Beide Promotion-Namen werden über die TypeScript-Literal-Union vollständig erfasst; Request p_session_id/p_consequence_id und Decoder bleiben belegt.
 3. Outcome-Übernahme ergänzt genau die gewählte Konsequenz im Saga-Draft bzw. Weltmodul; nur ein neuer Saga-Fact erhöht draft_revision, die Session-Revision bleibt unverändert.
 4. Nicht-GM, fehlende Konsequenz und Wiederholung haben explizite Fixtures ohne fremde Zustandsänderung.
-5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+5. Verpflichtende Legacy-Regression: {"id":"RPC-SEC-ANON-EVENT-HELPER","severity":"Critical","status":"blocked-successor-acceptance","summary":"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.","sourceEvidence":"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.","requiredSuccessorAcceptance":"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.","isolatedPostgresReproduced":true,"observation":{"path":".qa/intake/rpc-contracts/legacy-observations.json","testId":"BASELINE-SEC-EVENT-HELPER-ANON"},"deployedExploitVerified":false}
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Übersicht und Lore berücksichtigen aktive Mitgliedschaft, geheimen Inhalt und freigegebenen Session-/Adventure-Fortschritt.
-- [ ] Beide Promotion-Namen werden über die TypeScript-Literal-Union vollständig erfasst; Request p_session_id/p_consequence_id und Decoder bleiben belegt.
-- [ ] Outcome-Übernahme ergänzt genau die gewählte Konsequenz im Saga-Draft bzw. Weltmodul; nur ein neuer Saga-Fact erhöht draft_revision, die Session-Revision bleibt unverändert.
-- [ ] Nicht-GM, fehlende Konsequenz und Wiederholung haben explizite Fixtures ohne fremde Zustandsänderung.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -144,15 +151,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #875 (RPC-SAGA-GOVERNANCE)
 - Depends on #870 (RPC-SESSION-RECAP)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-rpc-saga-projections`
 - Design: `.qa/design/migration-issues/stack-migration-rpc-saga-projections.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 34; Welle: 2
-- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-034`, `agent-blocked`
+- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-034`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

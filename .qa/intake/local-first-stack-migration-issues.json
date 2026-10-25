@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 0,
-    "issuesBlockedOrNeedsDesign": 65,
+    "issuesReady": 21,
+    "issuesBlockedOrNeedsDesign": 44,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -228,6 +228,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -349,6 +350,7 @@
         "blockers": [
           "Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash)."
         ],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -475,6 +477,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -592,6 +595,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -711,6 +715,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -830,6 +835,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -949,6 +955,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1094,6 +1101,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1232,6 +1240,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1372,6 +1381,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1508,6 +1518,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1629,6 +1640,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1749,6 +1761,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1871,6 +1884,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -1991,6 +2005,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2113,6 +2128,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2232,6 +2248,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2354,6 +2371,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2474,6 +2492,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2593,6 +2612,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -2693,6 +2713,8 @@
         "Vorhandenes Item erhöht downloads atomar um eins, unbekanntes Item bleibt No-op; NULL-Verhalten ist belegt.",
         "Öffentliche Ausführbarkeit, fehlender search_path und fehlende Akteurprüfung sind explizite Legacy-Entscheidungen und werden nicht still als sicher übernommen.",
         "Client-RPC-Fehler und fehlende Funktion aktivieren den dokumentierten direkten Tabellenfallback; dessen Race-/RLS-Verhalten ist geprüft.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -2739,12 +2761,29 @@
             "src/supabase/add_marketplace_rpc.sql",
             "src/supabase/deploy_marketplace.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/increment_marketplace_downloads.md"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/increment_marketplace_downloads.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-blocked",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
           "{\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}"
         ],
@@ -2760,6 +2799,8 @@
           "Vorhandenes Item erhöht downloads atomar um eins, unbekanntes Item bleibt No-op; NULL-Verhalten ist belegt.",
           "Öffentliche Ausführbarkeit, fehlender search_path und fehlende Akteurprüfung sind explizite Legacy-Entscheidungen und werden nicht still als sicher übernommen.",
           "Client-RPC-Fehler und fehlende Funktion aktivieren den dokumentierten direkten Tabellenfallback; dessen Race-/RLS-Verhalten ist geprüft.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -2956,6 +2997,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -3187,6 +3229,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -3229,7 +3272,7 @@
       "title": "Spielgruppe aus Version und Starter-Provisionierung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-saga-provision",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-provision.md",
       "dependsOn": [
@@ -3353,6 +3396,7 @@
         "fresh und with_progress erzeugen neue Projekte; nur with_progress übernimmt laufenden Fortschritt, keine Session-Identitäten werden wiederverwendet.",
         "Dornhain-Starter-Aufrufe liefern dieselbe vorhandene Spielgruppe und reparieren definierte Seed-/Binding-/Charakterdaten idempotent.",
         "Fremde private_backfill-Versionen, unpassende Saga/Version und unzulässige Duplizierung werden abgewiesen; Zugriffsregel für user-Veröffentlichungen ist ausdrücklich entschieden.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-POLICY-USER-PUBLISHED\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Veröffentlichte User-Sagas können von anderen authentifizierten Nutzern als eigene GM-Spielgruppe instanziert werden.\",\"sourceEvidence\":\"supabase/migrations/063_saga_definitions.sql: create_project_from_saga_version erlaubt origin IN (native,user), während get_saga_definition_version einen anderen Lesescope hat.\",\"requiredSuccessorAcceptance\":\"Öffentlichkeits-/Lizenzregel für user-Veröffentlichungen explizit festlegen; die durch neue GM-Mitgliedschaft erweiterte Payload-Lesbarkeit im Negativ-/Positivtest abnehmen.\",\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -3575,12 +3619,23 @@
             "supabase/migrations/102_world_atlas_player_redaction_force.sql",
             "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-POLICY-USER-PUBLISHED\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Veröffentlichte User-Sagas können von anderen authentifizierten Nutzern als eigene GM-Spielgruppe instanziert werden.\",\"sourceEvidence\":\"supabase/migrations/063_saga_definitions.sql: create_project_from_saga_version erlaubt origin IN (native,user), während get_saga_definition_version einen anderen Lesescope hat.\",\"requiredSuccessorAcceptance\":\"Öffentlichkeits-/Lizenzregel für user-Veröffentlichungen explizit festlegen; die durch neue GM-Mitgliedschaft erweiterte Payload-Lesbarkeit im Negativ-/Positivtest abnehmen.\",\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/create_project_from_saga_version.md",
+            ".qa/intake/rpc-contracts/duplicate_saga_playthrough.md",
+            ".qa/intake/rpc-contracts/ensure_native_starter_project.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-POLICY-USER-PUBLISHED\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Veröffentlichte User-Sagas können von anderen authentifizierten Nutzern als eigene GM-Spielgruppe instanziert werden.\",\"sourceEvidence\":\"supabase/migrations/063_saga_definitions.sql: create_project_from_saga_version erlaubt origin IN (native,user), während get_saga_definition_version einen anderen Lesescope hat.\",\"requiredSuccessorAcceptance\":\"Öffentlichkeits-/Lizenzregel für user-Veröffentlichungen explizit festlegen; die durch neue GM-Mitgliedschaft erweiterte Payload-Lesbarkeit im Negativ-/Positivtest abnehmen.\",\"deployedExploitVerified\":false}"
         ],
         "approvalRequired": null
@@ -3595,6 +3650,7 @@
           "fresh und with_progress erzeugen neue Projekte; nur with_progress übernimmt laufenden Fortschritt, keine Session-Identitäten werden wiederverwendet.",
           "Dornhain-Starter-Aufrufe liefern dieselbe vorhandene Spielgruppe und reparieren definierte Seed-/Binding-/Charakterdaten idempotent.",
           "Fremde private_backfill-Versionen, unpassende Saga/Version und unzulässige Duplizierung werden abgewiesen; Zugriffsregel für user-Veröffentlichungen ist ausdrücklich entschieden.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-POLICY-USER-PUBLISHED\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Veröffentlichte User-Sagas können von anderen authentifizierten Nutzern als eigene GM-Spielgruppe instanziert werden.\",\"sourceEvidence\":\"supabase/migrations/063_saga_definitions.sql: create_project_from_saga_version erlaubt origin IN (native,user), während get_saga_definition_version einen anderen Lesescope hat.\",\"requiredSuccessorAcceptance\":\"Öffentlichkeits-/Lizenzregel für user-Veröffentlichungen explizit festlegen; die durch neue GM-Mitgliedschaft erweiterte Payload-Lesbarkeit im Negativ-/Positivtest abnehmen.\",\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -3616,7 +3672,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-024",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -3849,6 +3905,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -4091,6 +4148,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -4134,7 +4192,7 @@
       "title": "Session-Runtime, Snapshot und Presence",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-session-runtime",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-runtime.md",
       "dependsOn": [
@@ -4245,6 +4303,9 @@
         "Session-Lock, erwartete Revision, Event und Helper-Effekte committen atomar; konkurrierende veraltete Revisionen liefern 40001.",
         "Idempotenz ist sessionbezogen; Replay liefert die aktuelle erlaubte Projektion und erzeugt kein zweites Event.",
         "GM/Director/Player-Projektionen und Presence erlauben weder fremde Figurensteuerung noch verborgene Scene-/Adventure-Daten.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-RUNTIME-ROLL-OWNER-COLUMN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-GM-Roll-Aufruf greift auf v_character.user_id zu, obwohl characters.owner_user_id die wirksame Spalte ist; Baseline scheitert statt zu würfeln.\",\"sourceEvidence\":\"supabase/migrations/042_session_shared_rolls.sql:212; spätere073/079/085 benennen den Helper um, korrigieren aber nicht den Feldzugriff. Isolierter PostgreSQL15-Player-Roll reproduziert record has no field user_id.\",\"requiredSuccessorAcceptance\":\"Owner-Prüfung gegen owner_user_id; positiver eigenerPlayer-Roll und negativerFremdcharakter-Roll müssen vor Runtime-Abnahme bestehen. Fehler darf keine Revision/Event erzeugen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"PAR-08\"}}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-ADVENTURE-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann im öffentlichen Adventure-Helper p_is_gm=true behaupten und fremde Projekt-Adventure-Daten schreiben.\",\"sourceEvidence\":\"supabase/migrations/065_saga_simulation_ops.sql plus 073/079/085-Transformationen; Helper vertraut übergebenem GM-Boolean bei erhaltenen anon-Defaultprivilegien.\",\"requiredSuccessorAcceptance\":\"Helper nicht öffentlich exponieren oder Actor/Projekt-GM selbst prüfen; frei gelieferte Booleans dürfen kein Recht verleihen. Anon/Fremdnutzer-Flags müssen unverändert bleiben.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-ADVENTURE-HELPER-ANON\"},\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -4427,12 +4488,43 @@
             "supabase/migrations/089_gm_presence_character_type.sql",
             "supabase/migrations/092_fix_projects_rls_recursion.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-RUNTIME-ROLL-OWNER-COLUMN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-GM-Roll-Aufruf greift auf v_character.user_id zu, obwohl characters.owner_user_id die wirksame Spalte ist; Baseline scheitert statt zu würfeln.\",\"sourceEvidence\":\"supabase/migrations/042_session_shared_rolls.sql:212; spätere073/079/085 benennen den Helper um, korrigieren aber nicht den Feldzugriff. Isolierter PostgreSQL15-Player-Roll reproduziert record has no field user_id.\",\"requiredSuccessorAcceptance\":\"Owner-Prüfung gegen owner_user_id; positiver eigenerPlayer-Roll und negativerFremdcharakter-Roll müssen vor Runtime-Abnahme bestehen. Fehler darf keine Revision/Event erzeugen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"PAR-08\"}}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/apply_session_runtime_command.md",
+            ".qa/intake/rpc-contracts/get_session_runtime_snapshot.md",
+            ".qa/intake/rpc-contracts/set_session_player_presence.md"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/apply_session_runtime_command.md",
+            ".qa/intake/rpc-contracts/get_session_runtime_snapshot.md",
+            ".qa/intake/rpc-contracts/set_session_player_presence.md"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-ADVENTURE-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann im öffentlichen Adventure-Helper p_is_gm=true behaupten und fremde Projekt-Adventure-Daten schreiben.\",\"sourceEvidence\":\"supabase/migrations/065_saga_simulation_ops.sql plus 073/079/085-Transformationen; Helper vertraut übergebenem GM-Boolean bei erhaltenen anon-Defaultprivilegien.\",\"requiredSuccessorAcceptance\":\"Helper nicht öffentlich exponieren oder Actor/Projekt-GM selbst prüfen; frei gelieferte Booleans dürfen kein Recht verleihen. Anon/Fremdnutzer-Flags müssen unverändert bleiben.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-ADVENTURE-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/apply_session_runtime_command.md",
+            ".qa/intake/rpc-contracts/get_session_runtime_snapshot.md",
+            ".qa/intake/rpc-contracts/set_session_player_presence.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-RUNTIME-ROLL-OWNER-COLUMN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-GM-Roll-Aufruf greift auf v_character.user_id zu, obwohl characters.owner_user_id die wirksame Spalte ist; Baseline scheitert statt zu würfeln.\",\"sourceEvidence\":\"supabase/migrations/042_session_shared_rolls.sql:212; spätere073/079/085 benennen den Helper um, korrigieren aber nicht den Feldzugriff. Isolierter PostgreSQL15-Player-Roll reproduziert record has no field user_id.\",\"requiredSuccessorAcceptance\":\"Owner-Prüfung gegen owner_user_id; positiver eigenerPlayer-Roll und negativerFremdcharakter-Roll müssen vor Runtime-Abnahme bestehen. Fehler darf keine Revision/Event erzeugen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"PAR-08\"}}",
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
           "{\"id\":\"RPC-SEC-ANON-ADVENTURE-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann im öffentlichen Adventure-Helper p_is_gm=true behaupten und fremde Projekt-Adventure-Daten schreiben.\",\"sourceEvidence\":\"supabase/migrations/065_saga_simulation_ops.sql plus 073/079/085-Transformationen; Helper vertraut übergebenem GM-Boolean bei erhaltenen anon-Defaultprivilegien.\",\"requiredSuccessorAcceptance\":\"Helper nicht öffentlich exponieren oder Actor/Projekt-GM selbst prüfen; frei gelieferte Booleans dürfen kein Recht verleihen. Anon/Fremdnutzer-Flags müssen unverändert bleiben.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-ADVENTURE-HELPER-ANON\"},\"deployedExploitVerified\":false}"
@@ -4449,6 +4541,9 @@
           "Session-Lock, erwartete Revision, Event und Helper-Effekte committen atomar; konkurrierende veraltete Revisionen liefern 40001.",
           "Idempotenz ist sessionbezogen; Replay liefert die aktuelle erlaubte Projektion und erzeugt kein zweites Event.",
           "GM/Director/Player-Projektionen und Presence erlauben weder fremde Figurensteuerung noch verborgene Scene-/Adventure-Daten.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-RUNTIME-ROLL-OWNER-COLUMN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-GM-Roll-Aufruf greift auf v_character.user_id zu, obwohl characters.owner_user_id die wirksame Spalte ist; Baseline scheitert statt zu würfeln.\",\"sourceEvidence\":\"supabase/migrations/042_session_shared_rolls.sql:212; spätere073/079/085 benennen den Helper um, korrigieren aber nicht den Feldzugriff. Isolierter PostgreSQL15-Player-Roll reproduziert record has no field user_id.\",\"requiredSuccessorAcceptance\":\"Owner-Prüfung gegen owner_user_id; positiver eigenerPlayer-Roll und negativerFremdcharakter-Roll müssen vor Runtime-Abnahme bestehen. Fehler darf keine Revision/Event erzeugen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"PAR-08\"}}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-ADVENTURE-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann im öffentlichen Adventure-Helper p_is_gm=true behaupten und fremde Projekt-Adventure-Daten schreiben.\",\"sourceEvidence\":\"supabase/migrations/065_saga_simulation_ops.sql plus 073/079/085-Transformationen; Helper vertraut übergebenem GM-Boolean bei erhaltenen anon-Defaultprivilegien.\",\"requiredSuccessorAcceptance\":\"Helper nicht öffentlich exponieren oder Actor/Projekt-GM selbst prüfen; frei gelieferte Booleans dürfen kein Recht verleihen. Anon/Fremdnutzer-Flags müssen unverändert bleiben.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-ADVENTURE-HELPER-ANON\"},\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -4469,7 +4564,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-027",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -4478,7 +4573,7 @@
       "title": "Session anlegen und Status wechseln",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-session-lifecycle",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-lifecycle.md",
       "dependsOn": [
@@ -4578,6 +4673,7 @@
         "Parallele Erzeugung vergibt eindeutige Session-Nummern und Join-Codes; scheduled/waiting und Kopie des letzten Abschlusswissens bleiben korrekt.",
         "Nur erlaubte waiting/active/paused/completed-Übergänge verändern Status und Revision; completed ist terminal.",
         "Abschluss erzeugt Recap/Handover und Status-Event atomar; Fehler in einem Helper rollen alles zurück.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -4712,12 +4808,23 @@
             "supabase/migrations/085_fix_function_bodies_sagatree.sql",
             "supabase/migrations/092_fix_projects_rls_recursion.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/create_play_session.md",
+            ".qa/intake/rpc-contracts/create_project_session.md",
+            ".qa/intake/rpc-contracts/set_session_status.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}"
         ],
         "approvalRequired": null
@@ -4732,6 +4839,7 @@
           "Parallele Erzeugung vergibt eindeutige Session-Nummern und Join-Codes; scheduled/waiting und Kopie des letzten Abschlusswissens bleiben korrekt.",
           "Nur erlaubte waiting/active/paused/completed-Übergänge verändern Status und Revision; completed ist terminal.",
           "Abschluss erzeugt Recap/Handover und Status-Event atomar; Fehler in einem Helper rollen alles zurück.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -4753,7 +4861,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-028",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -5024,6 +5133,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -5223,6 +5333,7 @@
         "sourceStatus": "source-blocked",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -5258,7 +5369,7 @@
       "title": "Session-Beitritt, Austritt und Einladung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-session-access",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-access.md",
       "dependsOn": [
@@ -5378,6 +5489,8 @@
         "Fremdnutzer-Austritt darf weder Session-Revision noch Events verändern; der bekannte Legacy-Defekt ist explizit behoben.",
         "Einladung erzeugen/widerrufen verlangt Session-GM; Erneuern widerruft vorherige aktive Tokens.",
         "Abgelaufenes/widerrufenes/fehlendes Token und abgeschlossene Session liefern die belegten Fehlercodes; reine Auflösung tritt der Session nicht bei.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEAVE-FOREIGN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Authentifizierter Fremdnutzer kann bei bekannter Session-UUID Revision erhöhen und leave-Event einfügen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql: leave_play_session prüft keine Teilnahme; append_session_event ist SECURITY DEFINER ohne eigene Akteurprüfung.\",\"requiredSuccessorAcceptance\":\"Nachfolger blockiert den Fremdnutzer vor jeglichem Event-/Revision-Write; isolierter Negativtest und getrennte Sicherheitsfreigabe erforderlich.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-FOREIGN-LEAVE\"}}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -5544,12 +5657,37 @@
             "supabase/migrations/089_gm_presence_character_type.sql",
             "supabase/migrations/092_fix_projects_rls_recursion.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/join_session_by_code.md",
+            ".qa/intake/rpc-contracts/leave_play_session.md",
+            ".qa/intake/rpc-contracts/create_session_invite.md",
+            ".qa/intake/rpc-contracts/resolve_session_invite.md",
+            ".qa/intake/rpc-contracts/revoke_session_invite.md"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEAVE-FOREIGN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Authentifizierter Fremdnutzer kann bei bekannter Session-UUID Revision erhöhen und leave-Event einfügen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql: leave_play_session prüft keine Teilnahme; append_session_event ist SECURITY DEFINER ohne eigene Akteurprüfung.\",\"requiredSuccessorAcceptance\":\"Nachfolger blockiert den Fremdnutzer vor jeglichem Event-/Revision-Write; isolierter Negativtest und getrennte Sicherheitsfreigabe erforderlich.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-FOREIGN-LEAVE\"}}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/join_session_by_code.md",
+            ".qa/intake/rpc-contracts/leave_play_session.md",
+            ".qa/intake/rpc-contracts/create_session_invite.md",
+            ".qa/intake/rpc-contracts/resolve_session_invite.md",
+            ".qa/intake/rpc-contracts/revoke_session_invite.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
           "{\"id\":\"RPC-SEC-LEAVE-FOREIGN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Authentifizierter Fremdnutzer kann bei bekannter Session-UUID Revision erhöhen und leave-Event einfügen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql: leave_play_session prüft keine Teilnahme; append_session_event ist SECURITY DEFINER ohne eigene Akteurprüfung.\",\"requiredSuccessorAcceptance\":\"Nachfolger blockiert den Fremdnutzer vor jeglichem Event-/Revision-Write; isolierter Negativtest und getrennte Sicherheitsfreigabe erforderlich.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-FOREIGN-LEAVE\"}}"
         ],
@@ -5565,6 +5703,8 @@
           "Fremdnutzer-Austritt darf weder Session-Revision noch Events verändern; der bekannte Legacy-Defekt ist explizit behoben.",
           "Einladung erzeugen/widerrufen verlangt Session-GM; Erneuern widerruft vorherige aktive Tokens.",
           "Abgelaufenes/widerrufenes/fehlendes Token und abgeschlossene Session liefern die belegten Fehlercodes; reine Auflösung tritt der Session nicht bei.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEAVE-FOREIGN\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Authentifizierter Fremdnutzer kann bei bekannter Session-UUID Revision erhöhen und leave-Event einfügen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql: leave_play_session prüft keine Teilnahme; append_session_event ist SECURITY DEFINER ohne eigene Akteurprüfung.\",\"requiredSuccessorAcceptance\":\"Nachfolger blockiert den Fremdnutzer vor jeglichem Event-/Revision-Write; isolierter Negativtest und getrennte Sicherheitsfreigabe erforderlich.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-FOREIGN-LEAVE\"}}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -5586,7 +5726,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-031",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -5595,7 +5736,7 @@
       "title": "Recap-Projektion und Zusammenfassung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-session-recap",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-recap.md",
       "dependsOn": [
@@ -5684,6 +5825,7 @@
         "Beide SQL-Overloads und die mögliche Zweiparameter-Auflösungsambiguität werden gegen PostgreSQL geprüft; Zielaufruf ist eindeutig.",
         "Draft/approved/none-Speicherung verändert nur Summary-Felder eines vorhandenen Recaps und erhält Highlights/Snapshot.",
         "Fremdprojekt, nicht teilnehmender Akteur und ungültiger Status scheitern ohne Summary-Änderung.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-OVERLOAD-RECAP-AMBIGUITY\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zweierwrapper plus Dreierfunktion mit Default mehrdeutig (SQLSTATE 42725). get_session_recap(uuid) besitzt dagegen nur einen wirksamen Overload und ist von diesem Befund nicht betroffen.\",\"sourceEvidence\":\"supabase/migrations/061_session_recaps_and_handover.sql und 062_session_recap_ai_summary.sql; BASELINE-RPC-RECAP-OVERLOAD reproduziert für public.save_session_recap_summary(uuid, text) den Fehler function is not unique / ambiguous_function.\",\"requiredSuccessorAcceptance\":\"Nachfolger besitzt eine eindeutig auflösbare Signatur. Der vorhandene Client sendet drei benannteParameter inklusivep_status; diesen Pfad erhalten und Zweierpfad bewusst beseitigen/kompatibel behandeln.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-RPC-RECAP-OVERLOAD\"}}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -5798,12 +5940,22 @@
             "supabase/migrations/085_fix_function_bodies_sagatree.sql",
             "supabase/migrations/092_fix_projects_rls_recursion.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-OVERLOAD-RECAP-AMBIGUITY\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zweierwrapper plus Dreierfunktion mit Default mehrdeutig (SQLSTATE 42725). get_session_recap(uuid) besitzt dagegen nur einen wirksamen Overload und ist von diesem Befund nicht betroffen.\",\"sourceEvidence\":\"supabase/migrations/061_session_recaps_and_handover.sql und 062_session_recap_ai_summary.sql; BASELINE-RPC-RECAP-OVERLOAD reproduziert für public.save_session_recap_summary(uuid, text) den Fehler function is not unique / ambiguous_function.\",\"requiredSuccessorAcceptance\":\"Nachfolger besitzt eine eindeutig auflösbare Signatur. Der vorhandene Client sendet drei benannteParameter inklusivep_status; diesen Pfad erhalten und Zweierpfad bewusst beseitigen/kompatibel behandeln.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-RPC-RECAP-OVERLOAD\"}}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/get_session_recap.md",
+            ".qa/intake/rpc-contracts/save_session_recap_summary.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-OVERLOAD-RECAP-AMBIGUITY\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zweierwrapper plus Dreierfunktion mit Default mehrdeutig (SQLSTATE 42725). get_session_recap(uuid) besitzt dagegen nur einen wirksamen Overload und ist von diesem Befund nicht betroffen.\",\"sourceEvidence\":\"supabase/migrations/061_session_recaps_and_handover.sql und 062_session_recap_ai_summary.sql; BASELINE-RPC-RECAP-OVERLOAD reproduziert für public.save_session_recap_summary(uuid, text) den Fehler function is not unique / ambiguous_function.\",\"requiredSuccessorAcceptance\":\"Nachfolger besitzt eine eindeutig auflösbare Signatur. Der vorhandene Client sendet drei benannteParameter inklusivep_status; diesen Pfad erhalten und Zweierpfad bewusst beseitigen/kompatibel behandeln.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-RPC-RECAP-OVERLOAD\"}}"
         ],
         "approvalRequired": null
@@ -5818,6 +5970,7 @@
           "Beide SQL-Overloads und die mögliche Zweiparameter-Auflösungsambiguität werden gegen PostgreSQL geprüft; Zielaufruf ist eindeutig.",
           "Draft/approved/none-Speicherung verändert nur Summary-Felder eines vorhandenen Recaps und erhält Highlights/Snapshot.",
           "Fremdprojekt, nicht teilnehmender Akteur und ungültiger Status scheitern ohne Summary-Änderung.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-OVERLOAD-RECAP-AMBIGUITY\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zweierwrapper plus Dreierfunktion mit Default mehrdeutig (SQLSTATE 42725). get_session_recap(uuid) besitzt dagegen nur einen wirksamen Overload und ist von diesem Befund nicht betroffen.\",\"sourceEvidence\":\"supabase/migrations/061_session_recaps_and_handover.sql und 062_session_recap_ai_summary.sql; BASELINE-RPC-RECAP-OVERLOAD reproduziert für public.save_session_recap_summary(uuid, text) den Fehler function is not unique / ambiguous_function.\",\"requiredSuccessorAcceptance\":\"Nachfolger besitzt eine eindeutig auflösbare Signatur. Der vorhandene Client sendet drei benannteParameter inklusivep_status; diesen Pfad erhalten und Zweierpfad bewusst beseitigen/kompatibel behandeln.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-RPC-RECAP-OVERLOAD\"}}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -5839,7 +5992,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-032",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -6078,6 +6232,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -6116,7 +6271,7 @@
       "title": "Saga-Übersicht, Lore und Outcome-Übernahme",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-saga-projections",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-projections.md",
       "dependsOn": [
@@ -6246,6 +6401,7 @@
         "Beide Promotion-Namen werden über die TypeScript-Literal-Union vollständig erfasst; Request p_session_id/p_consequence_id und Decoder bleiben belegt.",
         "Outcome-Übernahme ergänzt genau die gewählte Konsequenz im Saga-Draft bzw. Weltmodul; nur ein neuer Saga-Fact erhöht draft_revision, die Session-Revision bleibt unverändert.",
         "Nicht-GM, fehlende Konsequenz und Wiederholung haben explizite Fixtures ohne fremde Zustandsänderung.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -6472,12 +6628,24 @@
             "supabase/migrations/093_fix_saga_overview_shared_adventure.sql",
             "supabase/migrations/095_donalu_world_places.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/get_saga_overview.md",
+            ".qa/intake/rpc-contracts/get_saga_lore_timeline.md",
+            ".qa/intake/rpc-contracts/promote_session_outcome_to_saga.md",
+            ".qa/intake/rpc-contracts/promote_session_outcome_to_world.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}"
         ],
         "approvalRequired": null
@@ -6492,6 +6660,7 @@
           "Beide Promotion-Namen werden über die TypeScript-Literal-Union vollständig erfasst; Request p_session_id/p_consequence_id und Decoder bleiben belegt.",
           "Outcome-Übernahme ergänzt genau die gewählte Konsequenz im Saga-Draft bzw. Weltmodul; nur ein neuer Saga-Fact erhöht draft_revision, die Session-Revision bleibt unverändert.",
           "Nicht-GM, fehlende Konsequenz und Wiederholung haben explizite Fixtures ohne fremde Zustandsänderung.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -6514,7 +6683,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-034",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -6842,6 +7012,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -6882,7 +7053,7 @@
       "title": "Legacy-Weltkarte lesen und speichern",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-world-map",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-map.md",
       "dependsOn": [
@@ -6964,6 +7135,7 @@
         "Nur Welt-Editoren speichern; Größe 1–60, Bildpfad-Grenzen und JSON-Objekt-Validierung bleiben geprüft.",
         "Revision-Konflikt führt zu SQLSTATE 40001 ohne Teilupdate; expliziter Legacy-Bypass bei NULL/negativer Erwartungsrevision ist entschieden.",
         "Player-Ansicht schützt verborgene Pins serverseitig unabhängig von einem manipulierbaren p_player_view-Flag; unsichere Legacy-Parität ist gesperrt.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEGACY-MAP-FLAG\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.\",\"sourceEvidence\":\"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.\",\"requiredSuccessorAcceptance\":\"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-LEGACY-MAP\"}}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -7054,12 +7226,22 @@
             "supabase/migrations/083_world_profiles_public_id.sql",
             "supabase/migrations/092_fix_projects_rls_recursion.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEGACY-MAP-FLAG\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.\",\"sourceEvidence\":\"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.\",\"requiredSuccessorAcceptance\":\"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-LEGACY-MAP\"}}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/get_world_map.md",
+            ".qa/intake/rpc-contracts/save_world_map.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-LEGACY-MAP-FLAG\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.\",\"sourceEvidence\":\"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.\",\"requiredSuccessorAcceptance\":\"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-LEGACY-MAP\"}}"
         ],
         "approvalRequired": null
@@ -7074,6 +7256,7 @@
           "Nur Welt-Editoren speichern; Größe 1–60, Bildpfad-Grenzen und JSON-Objekt-Validierung bleiben geprüft.",
           "Revision-Konflikt führt zu SQLSTATE 40001 ohne Teilupdate; expliziter Legacy-Bypass bei NULL/negativer Erwartungsrevision ist entschieden.",
           "Player-Ansicht schützt verborgene Pins serverseitig unabhängig von einem manipulierbaren p_player_view-Flag; unsichere Legacy-Parität ist gesperrt.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-LEGACY-MAP-FLAG\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Nicht-Editor mit Welt-Leserecht kann undiscovered Pins mit p_player_view=false lesen.\",\"sourceEvidence\":\"supabase/migrations/068_world_maps.sql: get_world_map filtert nur innerhalb IF p_player_view; current_user_can_read_world_profile erlaubt Projekt-Player.\",\"requiredSuccessorAcceptance\":\"Player-Filter serverseitig anhand Editor-Recht erzwingen; true/false/NULL als Player prüfen. Unsicheren Legacy-Response nicht als Parität übernehmen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-LEGACY-MAP\"}}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -7094,7 +7277,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-036",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -7103,7 +7286,7 @@
       "title": "Atlas-Kartenprojektion und Revision",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-atlas-maps",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-atlas-maps.md",
       "dependsOn": [
@@ -7208,6 +7391,8 @@
         "Player-Liste und Detail liefern nur im konkreten Saga-Kontext freigegebene kanonische Orte; GM-Daten, Parent-IDs und Azgaar-Pfade bleiben geschützt.",
         "Root-Erzeugung ist bei Wiederholung stabil; Parent-Karte muss dieselbe Welt besitzen.",
         "GeoJSON-FeatureCollection, 1.500.000-Byte-Limit und Revision-Konflikt sind mit echten SQL- und Decoder-Fixtures abgenommen.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"}}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -7338,12 +7523,35 @@
             "supabase/migrations/105_atlas_worldbuilder_player_projection.sql",
             "supabase/migrations/106_atlas_get_map_overload_fix.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"}}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/ensure_world_atlas_root.md",
+            ".qa/intake/rpc-contracts/list_world_atlas_maps.md",
+            ".qa/intake/rpc-contracts/get_world_atlas_map.md",
+            ".qa/intake/rpc-contracts/upsert_world_atlas_map.md"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/ensure_world_atlas_root.md",
+            ".qa/intake/rpc-contracts/list_world_atlas_maps.md",
+            ".qa/intake/rpc-contracts/get_world_atlas_map.md",
+            ".qa/intake/rpc-contracts/upsert_world_atlas_map.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"}}",
           "{\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}"
         ],
@@ -7359,6 +7567,8 @@
           "Player-Liste und Detail liefern nur im konkreten Saga-Kontext freigegebene kanonische Orte; GM-Daten, Parent-IDs und Azgaar-Pfade bleiben geschützt.",
           "Root-Erzeugung ist bei Wiederholung stabil; Parent-Karte muss dieselbe Welt besitzen.",
           "GeoJSON-FeatureCollection, 1.500.000-Byte-Limit und Revision-Konflikt sind mit echten SQL- und Decoder-Fixtures abgenommen.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"}}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -7380,7 +7590,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-037",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -7389,7 +7600,7 @@
       "title": "Orte und Kartenverknüpfungen",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-world-places",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-places.md",
       "dependsOn": [
@@ -7493,6 +7704,7 @@
         "Orte, Parent und Karte gehören derselben Welt; fremde IDs scheitern ohne verwaiste Verknüpfung.",
         "UPSERT über place/map/usage aktualisiert genau eine Verknüpfung und liefert die belegten JSON-Felder.",
         "Trigger für kanonische Hierarchie, Primary-Link und Kartenabgleich sind Teil der Transaktion und der Nachfolger-Tests.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -7619,12 +7831,24 @@
             "supabase/migrations/102_world_atlas_player_redaction_force.sql",
             "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/list_world_places.md",
+            ".qa/intake/rpc-contracts/list_world_place_map_links.md",
+            ".qa/intake/rpc-contracts/upsert_world_place.md",
+            ".qa/intake/rpc-contracts/upsert_world_place_map_link.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}"
         ],
         "approvalRequired": null
@@ -7639,6 +7863,7 @@
           "Orte, Parent und Karte gehören derselben Welt; fremde IDs scheitern ohne verwaiste Verknüpfung.",
           "UPSERT über place/map/usage aktualisiert genau eine Verknüpfung und liefert die belegten JSON-Felder.",
           "Trigger für kanonische Hierarchie, Primary-Link und Kartenabgleich sind Teil der Transaktion und der Nachfolger-Tests.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":false,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"},\"reproductionScope\":\"The linked isolated reproduction exercises list_world_atlas_maps; this RPC shares the source-verified missing saga-membership check and still needs its own negative runtime fixture.\"}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -7660,7 +7885,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-038",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -7843,6 +8069,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -8060,6 +8287,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -8103,7 +8331,7 @@
       "title": "Folgenvorschau, Archivierung und Löschung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-rpc-world-destructive",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-destructive.md",
       "dependsOn": [
@@ -8192,6 +8420,7 @@
         "Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.",
         "Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.",
         "Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8282,12 +8511,23 @@
             "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
             "supabase/migrations/104_atlas_worldbuilder_mutations.sql"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
+          "sourceRefs": [
+            ".qa/intake/rpc-contracts/preview_world_node_consequences.md",
+            ".qa/intake/rpc-contracts/archive_world_node_subtree.md",
+            ".qa/intake/rpc-contracts/delete_world_node.md"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "{\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}"
         ],
         "approvalRequired": null
@@ -8302,6 +8542,7 @@
           "Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.",
           "Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.",
           "Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8323,7 +8564,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-041",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -8574,6 +8816,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -8614,7 +8857,7 @@
       "title": "Port Edge Function `ai-provider-credentials` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-402",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-402.md",
       "dependsOn": [
@@ -8691,6 +8934,8 @@
         "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
         "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
         "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.",
+        "Verpflichtende Legacy-Regression: Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
+        "Verpflichtende Legacy-Regression: No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8783,12 +9028,35 @@
             ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json",
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-provider-credentials.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-provider-credentials.json",
+            ".qa/intake/edge-infra-contracts/edge-ollama-settings.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ollama-settings.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
           "No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities."
         ],
@@ -8810,6 +9078,8 @@
           "Ninth upsert/test/listModels inside the default 60s window returns 429; get does not consume quota.",
           "Rejected custom base URL fails before outbound fetch; missing encryption key yields 503 on decrypt/encrypt paths.",
           "Co-ownership with MIG-402/#818 is inventory-only until a human allocates a dedicated Edge ticket; do not silently retire ai-provider-credentials.",
+          "Verpflichtende Legacy-Regression: Refresh PATCH responses are ignored; list DB errors become an empty credential list. Successor failure semantics require an explicit test-backed decision, not a silent compatibility assumption.",
+          "Verpflichtende Legacy-Regression: No dedicated MIG-4xx GitHub identity yet; bound to MIG-402/#818 to preserve the fixed 90-issue registry after #879. Dedicated ticket allocation is a human decision, not agent inventing identities.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8828,7 +9098,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-043",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -8837,7 +9107,7 @@
       "title": "Port Edge Function `ai-gm` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-401",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-401.md",
       "dependsOn": [
@@ -8897,6 +9167,7 @@
         "Any future enablement requires separate reviewed GM/player projection and explicit replacement for blocked lorekeeper/sessions fan-out.",
         "Isolated fixture validates action max5000, membership rejection before LLM,13th default quota request429.",
         "If retained internally, pin NDJSON-under-text/event-stream framing and nonstream metadata shape; chunk-boundary/error/failed state write tests must pass.",
+        "Verpflichtende Legacy-Regression: Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -8935,12 +9206,22 @@
             ".qa/intake/edge-infra-contracts/edge-ai-gm.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-ai-gm.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-ai-gm.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions."
         ],
         "approvalRequired": null
@@ -8955,6 +9236,7 @@
           "Any future enablement requires separate reviewed GM/player projection and explicit replacement for blocked lorekeeper/sessions fan-out.",
           "Isolated fixture validates action max5000, membership rejection before LLM,13th default quota request429.",
           "If retained internally, pin NDJSON-under-text/event-stream framing and nonstream metadata shape; chunk-boundary/error/failed state write tests must pass.",
+          "Verpflichtende Legacy-Regression: Unmounted; no public activation authorization. Role-safe NPC context, correct context-index pairing, durable world mutation, stream framing across chunks and error-stack redaction require explicit successor decisions.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -8973,7 +9255,8 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-044",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -8982,7 +9265,7 @@
       "title": "Port Edge Function `bestiary` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-403",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-403.md",
       "dependsOn": [
@@ -9030,6 +9313,7 @@
         "All bestiary paths remain dispatcher404 without Map initialization.",
         "Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.",
         "Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment.",
+        "Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9059,12 +9343,22 @@
             ".qa/intake/edge-infra-contracts/edge-bestiary.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-bestiary.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-bestiary.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-bestiary.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded."
         ],
         "approvalRequired": null
@@ -9078,6 +9372,7 @@
           "All bestiary paths remain dispatcher404 without Map initialization.",
           "Isolated create/list/search/encounter fixture checks every Monster default, CR parsing, unknown monster skipping and requested-count multiplier.",
           "Negative count/XP/party size and unknown difficulty require bounded explicit validation in any separately approved replacement; generator is not authorized for public deployment.",
+          "Verpflichtende Legacy-Regression: No authentication or schema validation; requested monster count and known monster list differ in XP adjustment. Nonpositive/invalid generator data is unbounded.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9094,7 +9389,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-045",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -9103,7 +9398,7 @@
       "title": "Port Edge Function `character-avatar-meshy` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-404",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-404.md",
       "dependsOn": [
@@ -9170,6 +9465,8 @@
         "Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.",
         "Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.",
         "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.",
+        "Verpflichtende Legacy-Regression: start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
+        "Verpflichtende Legacy-Regression: meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9217,12 +9514,31 @@
             ".qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-character-avatar-meshy.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-character-avatar-meshy.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
           "meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic."
         ],
@@ -9239,6 +9555,8 @@
           "Identical start key replays existing own row, but third start attempt inside60s is429 even if replay; do not claim durable quota.",
           "Two concurrent polls do not both start remesh/rig task; retry with existing provider task resumes without paid create.",
           "Provider failure is a provider_unavailable pseudo-job, missing provider not-configured; all GLB downloads/paths obey allowlist and size limits.",
+          "Verpflichtende Legacy-Regression: start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
+          "Verpflichtende Legacy-Regression: meshyConfigured can be true from an active credential row without proving successful decryption; config is availability metadata, not a verified provider request. Avatar image validation checks data-URI grammar and approximate byte count, not decoded image magic.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9258,7 +9576,8 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-046",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -9267,7 +9586,7 @@
       "title": "Port Edge Function `character-lore` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-405",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-405.md",
       "dependsOn": [
@@ -9333,6 +9652,7 @@
         "Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.",
         "Seventh request inside default window returns429; missing persistent store returns503 before provider use.",
         "Generated story is nonempty and <=12000, and errors do not return provider/API secrets.",
+        "Verpflichtende Legacy-Regression: Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9380,12 +9700,22 @@
             ".qa/intake/edge-infra-contracts/edge-character-lore.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-character-lore.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-character-lore.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior."
         ],
         "approvalRequired": null
@@ -9401,6 +9731,7 @@
           "Provider absence returns HTTP200 not-configured; output is a draft and no characters row is mutated.",
           "Seventh request inside default window returns429; missing persistent store returns503 before provider use.",
           "Generated story is nonempty and <=12000, and errors do not return provider/API secrets.",
+          "Verpflichtende Legacy-Regression: Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9419,7 +9750,8 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-047",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -9428,7 +9760,7 @@
       "title": "Port Edge Function `characters` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-406",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-406.md",
       "dependsOn": [
@@ -9476,6 +9808,8 @@
         "All characters methods stay dispatcher404, including cross-owner body and import payload.",
         "Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.",
         "Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested.",
+        "Verpflichtende Legacy-Regression: addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
+        "Verpflichtende Legacy-Regression: No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9505,12 +9839,31 @@
             ".qa/intake/edge-infra-contracts/edge-characters.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-characters.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-characters.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-characters.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-characters.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-characters.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
           "No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields."
         ],
@@ -9525,6 +9878,8 @@
           "All characters methods stay dispatcher404, including cross-owner body and import payload.",
           "Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.",
           "Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested.",
+          "Verpflichtende Legacy-Regression: addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.",
+          "Verpflichtende Legacy-Regression: No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9541,7 +9896,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-048",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -9550,7 +9905,7 @@
       "title": "Port Edge Function `dm-tools` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-407",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-407.md",
       "dependsOn": [
@@ -9598,6 +9953,7 @@
         "dm-tools all routes remain404 at dispatcher, including dice and health.",
         "Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.",
         "Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state.",
+        "Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9627,12 +9983,22 @@
             ".qa/intake/edge-infra-contracts/edge-dm-tools.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-dm-tools.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-dm-tools.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-dm-tools.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence."
         ],
         "approvalRequired": null
@@ -9646,6 +10012,7 @@
           "dm-tools all routes remain404 at dispatcher, including dice and health.",
           "Seeded random fixture pins d20 advantage, notation modifier handling, initiative ordering, next-round and end-combat log shapes.",
           "Invalid notation/missing participant/target follows isolated500 behavior; no claim of authenticated combat or durable Redis state.",
+          "Verpflichtende Legacy-Regression: Unauthenticated client combat/session/character authority and unbounded dice-count input make this unsuitable for activation. REDIS_URL does not provide persistence.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9662,7 +10029,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-049",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -9671,7 +10038,7 @@
       "title": "Port Edge Function `export` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-408",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-408.md",
       "dependsOn": [
@@ -9720,6 +10087,7 @@
         "export/import routes remain dispatcher404.",
         "Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.",
         "Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts.",
+        "Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9749,12 +10117,22 @@
             ".qa/intake/edge-infra-contracts/edge-export.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-export.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-export.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-export.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline."
         ],
         "approvalRequired": null
@@ -9768,6 +10146,7 @@
           "export/import routes remain dispatcher404.",
           "Isolated fixture compares JSON indentation, Markdown output, PDF header/content and filename for each format; invalid format/content returns400.",
           "Successor import must not treat parsed JSON as persisted resource; format conversion and persistence are separate explicit contracts.",
+          "Verpflichtende Legacy-Regression: No authentication, arbitrary typed-as-any content and minimal PDF serializer; current PDF is not a validated document pipeline.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9785,7 +10164,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-050",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -9794,7 +10173,7 @@
       "title": "Port Edge Function `item-model3d` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-409",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-409.md",
       "dependsOn": [
@@ -9861,6 +10240,9 @@
         "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
         "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
         "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+        "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+        "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
+        "Verpflichtende Legacy-Regression: GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -9917,12 +10299,40 @@
             ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-model3d.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-model3d.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
           "Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
           "GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure."
@@ -9941,6 +10351,9 @@
           "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
           "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
           "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+          "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+          "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
+          "Verpflichtende Legacy-Regression: GLB validator checks magic, size and MIME only; it does not validate GLB version/declared length/chunk structure.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -9960,7 +10373,8 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-051",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -9969,7 +10383,7 @@
       "title": "Port Edge Function `item-thumbnail` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-410",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-410.md",
       "dependsOn": [
@@ -10038,6 +10452,8 @@
         "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
         "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
         "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+        "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+        "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10094,12 +10510,31 @@
             ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-item-thumbnail.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-item-thumbnail.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
           "Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented."
         ],
@@ -10117,6 +10552,8 @@
           "Concurrent status requests and provider-create/DB-insert failure must have explicit successor idempotency/compensation semantics; the current code does not guarantee single materialization or rollback.",
           "Foreign jobId404, foreign resolve403; remove of absent pointer succeeds and cannot delete a different owner's object; traversal/off-allowlist provider redirect/oversize asset never materializes.",
           "Provider failure and unchecked job PATCH persistence failure are distinguished in the tested successor contract; no API keys in public failure bodies.",
+          "Verpflichtende Legacy-Regression: Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
+          "Verpflichtende Legacy-Regression: Task error_message from provider is returned in job responses. Generic catch hides many other errors, but universal recursive provider-secret redaction is not implemented.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10136,7 +10573,8 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-052",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -10145,7 +10583,7 @@
       "title": "Port Edge Function `items` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-411",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-411.md",
       "dependsOn": [
@@ -10193,6 +10631,7 @@
         "items worker remains404 for list/create/generate.",
         "Isolated fixture pins Item defaults, rarity/type filters and generated range behavior; invalid nested data records current lack of validation.",
         "Actual inventory_item_definitions adapter is migrated independently; do not route it to this Map catalog.",
+        "Verpflichtende Legacy-Regression: No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10222,12 +10661,22 @@
             ".qa/intake/edge-infra-contracts/edge-items.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-items.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-items.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-items.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions."
         ],
         "approvalRequired": null
@@ -10241,6 +10690,7 @@
           "items worker remains404 for list/create/generate.",
           "Isolated fixture pins Item defaults, rarity/type filters and generated range behavior; invalid nested data records current lack of validation.",
           "Actual inventory_item_definitions adapter is migrated independently; do not route it to this Map catalog.",
+          "Verpflichtende Legacy-Regression: No auth/schema validation or durable inventory; this legacy catalog is distinct from persistent definitions.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10257,7 +10707,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-053",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10266,7 +10716,7 @@
       "title": "Port Edge Function `look-reference-analysis` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-412",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-412.md",
       "dependsOn": [
@@ -10325,6 +10775,7 @@
         "Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.",
         "Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.",
         "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.",
+        "Verpflichtende Legacy-Regression: Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10372,12 +10823,22 @@
             ".qa/intake/edge-infra-contracts/edge-look-reference-analysis.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-look-reference-analysis.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-look-reference-analysis.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed."
         ],
         "approvalRequired": null
@@ -10393,6 +10854,7 @@
           "Fifth request in default worker window429; process restart behavior explicitly recorded as memory-only.",
           "Provider absence200 not-configured; successful payload strips top-level secret-like keys and never persists a LookProfile.",
           "Pin current header-only12MiB envelope and <=8MiB validated image behavior; future stronger actual-body/recursive-redaction behavior must be explicit.",
+          "Verpflichtende Legacy-Regression: Envelope size limit trusts Content-Length; nested secret-like provider keys are not recursively removed.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10410,7 +10872,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-054",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10419,7 +10881,7 @@
       "title": "Port Edge Function `lorekeeper` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-413",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-413.md",
       "dependsOn": [
@@ -10467,6 +10929,7 @@
         "Graph,context,NPC and consistency routes remain dispatcher404.",
         "Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.",
         "Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment.",
+        "Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10496,12 +10959,22 @@
             ".qa/intake/edge-infra-contracts/edge-lorekeeper.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-lorekeeper.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-lorekeeper.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-lorekeeper.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter."
         ],
         "approvalRequired": null
@@ -10515,6 +10988,7 @@
           "Graph,context,NPC and consistency routes remain dispatcher404.",
           "Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.",
           "Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment.",
+          "Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10531,7 +11005,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-055",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10540,7 +11014,7 @@
       "title": "Port Edge Function `marketplace` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-415",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-415.md",
       "dependsOn": [
@@ -10588,6 +11062,7 @@
         "marketplace worker stays404 including download/rate.",
         "Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.",
         "Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker.",
+        "Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10617,12 +11092,22 @@
             ".qa/intake/edge-infra-contracts/edge-marketplace.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-marketplace.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-marketplace.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-marketplace.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence."
         ],
         "approvalRequired": null
@@ -10636,6 +11121,7 @@
           "marketplace worker stays404 including download/rate.",
           "Isolated fixture pins list/search/tag filtering, count increment and rating denominator; no numeric-rating validation is claimed.",
           "Persistent marketplace_items and increment_marketplace_downloads migration remains linked to infrastructure/marketplace; no substitution by legacy Map worker.",
+          "Verpflichtende Legacy-Regression: Rating average uses downloads as vote count and accepts unbounded caller rating; no author/owner authorization or persistence.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10652,7 +11138,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-056",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10661,7 +11147,7 @@
       "title": "Port Edge Function `media` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-416",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-416.md",
       "dependsOn": [
@@ -10710,6 +11196,7 @@
         "media worker stays404.",
         "Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.",
         "Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract.",
+        "Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10739,12 +11226,22 @@
             ".qa/intake/edge-infra-contracts/edge-media.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-media.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-media.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-media.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled."
         ],
         "approvalRequired": null
@@ -10758,6 +11255,7 @@
           "media worker stays404.",
           "Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.",
           "Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract.",
+          "Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10775,7 +11273,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-057",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10784,7 +11282,7 @@
       "title": "Port Edge Function `npcs` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-417",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-417.md",
       "dependsOn": [
@@ -10832,6 +11330,7 @@
         "npcs worker all CRUD/social/export/generator paths remain404.",
         "Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.",
         "Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy.",
+        "Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10861,12 +11360,22 @@
             ".qa/intake/edge-infra-contracts/edge-npcs.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-npcs.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-npcs.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-npcs.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime."
         ],
         "approvalRequired": null
@@ -10880,6 +11389,7 @@
           "npcs worker all CRUD/social/export/generator paths remain404.",
           "Isolated fixture pins defaults, generated ranges, memory slicing, replacement relationships and dialogue shape.",
           "Request prompt does not trigger external provider; legacy NPC structure is not substituted for npc_creature_definitions/instances/controller policy.",
+          "Verpflichtende Legacy-Regression: No auth/ownership/session visibility, generated prompt is unused; object spreads may override nominally generated dialogue fields at runtime.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -10896,7 +11406,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-058",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -10905,7 +11415,7 @@
       "title": "Port Edge Function `quests` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-418",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-418.md",
       "dependsOn": [
@@ -10953,6 +11463,7 @@
         "quests worker all routes remain404.",
         "Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.",
         "Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement.",
+        "Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -10982,12 +11493,22 @@
             ".qa/intake/edge-infra-contracts/edge-quests.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-quests.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-quests.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-quests.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards."
         ],
         "approvalRequired": null
@@ -11001,6 +11522,7 @@
           "quests worker all routes remain404.",
           "Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.",
           "Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement.",
+          "Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11017,7 +11539,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-059",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -11026,7 +11548,7 @@
       "title": "Port Edge Function `rulesets` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-419",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-419.md",
       "dependsOn": [
@@ -11074,6 +11596,7 @@
         "rulesets and supplemental routes stay dispatcher404.",
         "Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.",
         "HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records.",
+        "Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11103,12 +11626,22 @@
             ".qa/intake/edge-infra-contracts/edge-rulesets.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-rulesets.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-rulesets.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-rulesets.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry."
         ],
         "approvalRequired": null
@@ -11122,6 +11655,7 @@
           "rulesets and supplemental routes stay dispatcher404.",
           "Isolated fixture checks defaults, enrich=true behavior and exact Open5e mapping; no network request during ordinary non-enrich catalog read.",
           "HTTP failure/bad JSON produces empty supplement arrays; no assumption that limit500 follows pagination or includes all remote records.",
+          "Verpflichtende Legacy-Regression: No auth, owner model or creation validation; Open5e fetches have no explicit timeout/status check/pagination. Caller-supplied ID can overwrite a Map entry.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11138,7 +11672,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-060",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -11147,7 +11681,7 @@
       "title": "Port Edge Function `session-media-token` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-420",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-420.md",
       "dependsOn": [
@@ -11205,6 +11739,7 @@
         "No project_members row403 even if legacy session_players fixture exists; inactive member403.",
         "Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.",
         "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.",
+        "Verpflichtende Legacy-Regression: No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11252,12 +11787,22 @@
             ".qa/intake/edge-infra-contracts/edge-session-media-token.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-session-media-token.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-session-media-token.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps."
         ],
         "approvalRequired": null
@@ -11273,6 +11818,7 @@
           "No project_members row403 even if legacy session_players fixture exists; inactive member403.",
           "Missing LIVEKIT_URL/API_KEY/API_SECRET503 degraded and no secret values in response; gameplay state unchanged.",
           "Record null-body/nonfinite-TTL and network-exception source gaps as required successor input/error tests.",
+          "Verpflichtende Legacy-Regression: No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11291,7 +11837,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-061",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -11421,6 +11967,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -11463,7 +12010,7 @@
       "title": "Port Edge Function `main` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-414",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-414.md",
       "dependsOn": [
@@ -11523,6 +12070,7 @@
         "Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.",
         "JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.",
         "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.",
+        "Verpflichtende Legacy-Regression: Dispatcher verifies signature and optional exp but not complete JWT claims; worker-side account authentication remains mandatory. Raw exception messages can escape in500 body.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11570,12 +12118,22 @@
             ".qa/intake/edge-infra-contracts/edge-main.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-main.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Dispatcher verifies signature and optional exp but not complete JWT claims; worker-side account authentication remains mandatory. Raw exception messages can escape in500 body.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-main.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-main.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Dispatcher verifies signature and optional exp but not complete JWT claims; worker-side account authentication remains mandatory. Raw exception messages can escape in500 body."
         ],
         "approvalRequired": null
@@ -11591,6 +12149,7 @@
           "Allowed non-OPTIONS rejects absent/wrong/expired/HS512 JWT; no JWT_SECRET500; default JWT verification on; OPTIONS forwards to worker.",
           "JWT gate acceptance alone never grants end-user authorization: anon/service-role credentials must still fail owner user authentication at worker boundary.",
           "Preserve512MiB/300s worker resource limits and record existing dispatcher raw-message error behavior.",
+          "Verpflichtende Legacy-Regression: Dispatcher verifies signature and optional exp but not complete JWT claims; worker-side account authentication remains mandatory. Raw exception messages can escape in500 body.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11615,7 +12174,8 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-063",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -11624,7 +12184,7 @@
       "title": "Port Edge Function `sessions` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-422",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-422.md",
       "dependsOn": [
@@ -11672,6 +12232,7 @@
         "All sessions methods,including world-state and import, remain dispatcher404.",
         "Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.",
         "Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker.",
+        "Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11701,12 +12262,22 @@
             ".qa/intake/edge-infra-contracts/edge-sessions.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-sessions.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-sessions.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-sessions.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees."
         ],
         "approvalRequired": null
@@ -11720,6 +12291,7 @@
           "All sessions methods,including world-state and import, remain dispatcher404.",
           "Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.",
           "Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker.",
+          "Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11736,7 +12308,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-064",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -11745,7 +12317,7 @@
       "title": "Port Edge Function `spellbook` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-423",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-423.md",
       "dependsOn": [
@@ -11793,6 +12365,7 @@
         "All spellbook routes remain dispatcher404.",
         "Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.",
         "Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation.",
+        "Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11822,12 +12395,22 @@
             ".qa/intake/edge-infra-contracts/edge-spellbook.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-spellbook.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-spellbook.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-spellbook.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership."
         ],
         "approvalRequired": null
@@ -11841,6 +12424,7 @@
           "All spellbook routes remain dispatcher404.",
           "Isolated GET creates empty book, repeated learn deduplicates spellId, prepare only changes known record and restore resets all used slots.",
           "Explicitly capture cast accepting unknown/unprepared spells; a retained successor must test its chosen game rule and owner scope independently before any activation.",
+          "Verpflichtende Legacy-Regression: No owner check; cast ignores spellId and known/prepared state, uses fixed slot table independent of character/class. No persistent spell ownership.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11857,7 +12441,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-065",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -11866,7 +12450,7 @@
       "title": "Port Edge Function `world` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-424",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-424.md",
       "dependsOn": [
@@ -11914,6 +12498,7 @@
         "world routes remain dispatcher404,including settings and clock writes.",
         "Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.",
         "Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies.",
+        "Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -11943,12 +12528,22 @@
             ".qa/intake/edge-infra-contracts/edge-world.md",
             ".qa/intake/edge-infra-contracts/source-contracts/edge-world.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/edge-world.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/edge-world.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds."
         ],
         "approvalRequired": null
@@ -11962,6 +12557,7 @@
           "world routes remain dispatcher404,including settings and clock writes.",
           "Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.",
           "Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies.",
+          "Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -11978,7 +12574,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-066",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -12073,6 +12669,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -12487,6 +13084,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -12685,6 +13283,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -12839,6 +13438,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -12878,7 +13478,7 @@
       "title": "Port infrastructure/marketplace adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-305",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-305.md",
       "dependsOn": [
@@ -12927,6 +13527,8 @@
         "RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.",
         "Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.",
         "Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.",
+        "Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -12965,12 +13567,31 @@
             ".qa/intake/edge-infra-contracts/infra-marketplace.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-marketplace.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-marketplace.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.",
           "Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested."
         ],
@@ -12986,6 +13607,8 @@
           "RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.",
           "Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.",
           "Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.",
+          "Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -13004,7 +13627,8 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-071",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -13098,6 +13722,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -13297,6 +13922,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -13547,6 +14173,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -13675,6 +14302,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -13910,6 +14538,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -13963,7 +14592,7 @@
       "title": "Port infrastructure/session adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "waiting",
       "featureSlug": "stack-migration-mig-311",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-311.md",
       "dependsOn": [
@@ -14053,6 +14682,9 @@
         "Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
         "Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+        "Verpflichtende Legacy-Regression: Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.",
+        "Verpflichtende Legacy-Regression: Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.",
+        "Verpflichtende Legacy-Regression: LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -14199,12 +14831,40 @@
             ".qa/intake/edge-infra-contracts/infra-session.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-session.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.",
           "Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.",
           "LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification."
@@ -14233,6 +14893,9 @@
           "Contract fixture for save_session_recap_summary: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Contract fixture for set_session_player_presence: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
           "Contract fixture for set_session_status: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.",
+          "Verpflichtende Legacy-Regression: Lobby broadcasts accept caller userId without identity binding; ready must remain non-authoritative.",
+          "Verpflichtende Legacy-Regression: Runtime has a snapshot/subscription gap and overlapping refreshes have no explicit revision ordering or catch; initial code does not guarantee automatic gap-free reconnect.",
+          "Verpflichtende Legacy-Regression: LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -14257,7 +14920,8 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-077",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ]
     },
     {
@@ -14266,7 +14930,7 @@
       "title": "Port infrastructure/user-profile adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-312",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-312.md",
       "dependsOn": [
@@ -14340,6 +15004,7 @@
         "Own row race23505 succeeds; actual select/insert errors fail with formatted details.",
         "Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.",
         "Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.",
+        "Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -14369,12 +15034,22 @@
             ".qa/intake/edge-infra-contracts/infra-user-profile.md",
             ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json"
           ]
+        },
+        {
+          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
+          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
+          "then": "Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.",
+          "sourceRefs": [
+            ".qa/intake/edge-infra-contracts/infra-user-profile.md",
+            ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json"
+          ]
         }
       ],
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
-        "blockers": [
+        "blockers": [],
+        "requiredRegressions": [
           "Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade."
         ],
         "approvalRequired": null
@@ -14388,6 +15063,7 @@
           "Own row race23505 succeeds; actual select/insert errors fail with formatted details.",
           "Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.",
           "Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.",
+          "Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -14406,7 +15082,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-078",
-        "agent-blocked"
+        "agent-ready"
       ]
     },
     {
@@ -14767,6 +15443,7 @@
         "sourceStatus": "source-verified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -14910,6 +15587,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15031,6 +15709,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15212,6 +15891,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15394,6 +16074,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15581,6 +16262,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15764,6 +16446,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -15883,6 +16566,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": "platform-qualification-pending"
       },
       "contractSections": {
@@ -16083,6 +16767,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -16282,6 +16967,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -16399,6 +17085,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {
@@ -16520,6 +17207,7 @@
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
         "blockers": [],
+        "requiredRegressions": [],
         "approvalRequired": null
       },
       "contractSections": {

@@ -62,8 +62,8 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
-- Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
+- (Acceptance/Regression, sperrt READY nicht) incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
+- (Acceptance/Regression, sperrt READY nicht) Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
 
 ## Edge Cases
 
@@ -95,6 +95,20 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`
+
+### Fall 6
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -103,14 +117,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 2. RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.
 3. Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.
 4. Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
-5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+5. Verpflichtende Legacy-Regression: incrementDownloads uses non-atomic direct-table fallback for every RPC error and ignores fallback write results; fulfilled Promise<void> does not prove a stored increment.
+6. Verpflichtende Legacy-Regression: Search string is interpolated into PostgREST or expression; successor parser/escaping behavior must be decided and tested.
+7. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] List filters, sort defaults, single-read errors and featured fallback retain exact request/result behavior.
-- [ ] RPC increment succeeds atomically when installed; unavailable/denied RPC exercises read+update fallback and explicitly reports race, RLS and swallowed-error behavior.
-- [ ] Create cannot use a client author_id; update/delete foreign-author attempts are denied by effective server policy; delete returnsfalse on its documented failures.
-- [ ] Contract fixture for increment_marketplace_downloads: exact caller argument/default and decoded result/error union from source evidence; effective SQL policy/side effects from RPC contract; unauthorized and rollback/reload cases remain required.
+- [ ] Alle 6 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -131,15 +146,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #878 (RPC-MARKETPLACE-COUNT)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-305`
 - Design: `.qa/design/migration-issues/stack-migration-mig-305.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 71; Welle: 4
-- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-071`, `agent-blocked`
+- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-071`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

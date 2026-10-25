@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.
+- (Acceptance/Regression, sperrt READY nicht) No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-sessions.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-sessions.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-sessions.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-sessions.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. All sessions methods,including world-state and import, remain dispatcher404.
 2. Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.
 3. Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] All sessions methods,including world-state and import, remain dispatcher404.
 - [ ] Isolated fixture verifies per-Map numbering,start/pause/end,chat limits and save/load object shapes; another worker/process loses these records.
 - [ ] Body userId,type:dm and arbitrary world-state are not authority; current create_play_session/apply_session_runtime_command transport must not call this worker.
+- [ ] Verpflichtende Legacy-Regression: No membership/GM/owner validation; body spreads can alter session authority/state. In-memory numbering/chat/savepoints do not provide durable or concurrent runtime guarantees.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-422`
 - Design: `.qa/design/migration-issues/stack-migration-mig-422.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 64; Welle: 3
-- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-064`, `agent-blocked`
+- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-064`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

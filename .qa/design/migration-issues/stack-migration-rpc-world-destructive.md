@@ -70,7 +70,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- {"id":"RPC-DATA-SHARED-MAP-DELETE","severity":"Medium","status":"blocked-successor-acceptance","summary":"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.","sourceEvidence":"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.","requiredSuccessorAcceptance":"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.","deployedExploitVerified":false}
+- (Acceptance/Regression, sperrt READY nicht) {"id":"RPC-DATA-SHARED-MAP-DELETE","severity":"Medium","status":"blocked-successor-acceptance","summary":"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.","sourceEvidence":"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.","requiredSuccessorAcceptance":"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.","deployedExploitVerified":false}
 
 ## Edge Cases
 
@@ -102,6 +102,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.
 - Quelle: `src/infrastructure/world/world-place-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`, `supabase/migrations/008_world_profiles.sql`, `supabase/migrations/015_inventory_item_definitions.sql`, `supabase/migrations/019_world_profiles_read_for_adventure.sql`, `supabase/migrations/075_saga_permission_grants.sql`, `supabase/migrations/083_world_profiles_public_id.sql`, `supabase/migrations/094_world_atlas.sql`, `supabase/migrations/095_donalu_world_places.sql`, `supabase/migrations/101_world_places_select_editor_only.sql`, `supabase/migrations/102_world_atlas_player_redaction_force.sql`, `supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql`, `supabase/migrations/104_atlas_worldbuilder_mutations.sql`
 
+### Fall 5
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: {"id":"RPC-DATA-SHARED-MAP-DELETE","severity":"Medium","status":"blocked-successor-acceptance","summary":"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.","sourceEvidence":"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.","requiredSuccessorAcceptance":"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.","deployedExploitVerified":false}
+- Quelle: `.qa/intake/rpc-contracts/preview_world_node_consequences.md`, `.qa/intake/rpc-contracts/archive_world_node_subtree.md`, `.qa/intake/rpc-contracts/delete_world_node.md`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -110,14 +117,14 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 2. Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.
 3. Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.
 4. Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.
-5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+5. Verpflichtende Legacy-Regression: {"id":"RPC-DATA-SHARED-MAP-DELETE","severity":"Medium","status":"blocked-successor-acceptance","summary":"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.","sourceEvidence":"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.","requiredSuccessorAcceptance":"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.","deployedExploitVerified":false}
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] Die Vorschau zählt Nachfahren und Saga-Bindings exakt und gibt requiresConfirm für die betroffene Struktur zurück.
-- [ ] Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.
-- [ ] Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.
-- [ ] Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -141,15 +148,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #787 (GATE-04)
 - Depends on #865 (RPC-WORLD-RESTRUCTURE)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-rpc-world-destructive`
 - Design: `.qa/design/migration-issues/stack-migration-rpc-world-destructive.md`
-- Status: blocked
+- Status: waiting
 - Reihenfolge: 41; Welle: 2
-- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-041`, `agent-blocked`
+- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-041`, `agent-blocked`, `waiting-dependency`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

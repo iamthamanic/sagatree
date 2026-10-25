@@ -62,8 +62,8 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.
-- No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.
+- (Acceptance/Regression, sperrt READY nicht) addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.
+- (Acceptance/Regression, sperrt READY nicht) No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.
 
 ## Edge Cases
 
@@ -88,6 +88,20 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-characters.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-characters.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-characters.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-characters.json`
+
+### Fall 5
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-characters.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-characters.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -95,13 +109,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. All characters methods stay dispatcher404, including cross-owner body and import payload.
 2. Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.
 3. Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: addExperience sets const nextLevel/nextThreshold then while never advances either: XP reaching threshold can loop indefinitely.
+5. Verpflichtende Legacy-Regression: No user authentication; client supplies ownerId. level-up body can target a different path ID. Type assertions do not validate nested fields.
+6. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
-- [ ] All characters methods stay dispatcher404, including cross-owner body and import payload.
-- [ ] Record that PUT can overwrite ownerId and level-up uses body.characterId in isolated fixture; neither becomes a successor authorization rule.
-- [ ] Source check identifies non-advancing addExperience loop; never execute XP-at-threshold fixture without hard timeout. Any retained progression must terminate and be separately tested.
+- [ ] Alle 5 quellenabgeleiteten Given/When/Then-Fälle unter Edge Cases und Required Tests müssen im echten zuständigen Test-Stack nachweislich PASS sein; keine RequiredTests aus dem Inventar verlieren.
+- [ ] Jeder negative Berechtigungs-, Schema-, State- und Retry-Test ist einzeln ausgeführt und mit Commit/Fixture und Logs belegbar; ein Legacy-Defekt wird nicht als sichere Parität akzeptiert.
+- [ ] Alle Signaturen, Owner-/GM-/Membership- und Persistenz-Nebenwirkungen werden mit dem bestehenden Quellvertrag verglichen; ungetestete Pfade bleiben NOT RUN.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -120,15 +136,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-406`
 - Design: `.qa/design/migration-issues/stack-migration-mig-406.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 48; Welle: 3
-- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-048`, `agent-blocked`
+- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-048`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

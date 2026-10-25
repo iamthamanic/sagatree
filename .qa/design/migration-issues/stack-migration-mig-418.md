@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.
+- (Acceptance/Regression, sperrt READY nicht) Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-quests.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-quests.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-quests.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-quests.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. quests worker all routes remain404.
 2. Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.
 3. Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] quests worker all routes remain404.
 - [ ] Isolated objective completion proves missing objective is no-op and final completed objective changes status; no actual reward/character XP side effect.
 - [ ] Unknown generator type and negative/invalid level require explicit validation before any separately authorized replacement.
+- [ ] Verpflichtende Legacy-Regression: Unauthenticated quest/project writes and generated quests default to empty projectId; completion does not grant rewards.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-418`
 - Design: `.qa/design/migration-issues/stack-migration-mig-418.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 59; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-059`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-059`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

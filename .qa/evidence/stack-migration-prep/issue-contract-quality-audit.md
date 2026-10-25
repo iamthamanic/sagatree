@@ -2,7 +2,7 @@
 
 Stand: 2026-10-23. 90 kanonische Bodies mit Runner, Design, konkreten Given/When/Then-Fällen; Intake-`acceptance` enthält alle inventorisierten requiredTests (öffentliche Acceptance darf ≤5 zusammenfassen; Required Tests / Edge Cases bleiben vollständig).
 
-- 0 ready, 25 waiting, 40 blocked, 0 needs-design, 25 done.
+- 21 ready, 40 waiting, 4 blocked, 0 needs-design, 25 done.
 - 57 RPC-, 25 Edge- und 13 Infrastruktur-Verträge.
 - 25 als implementiert abgenommene Migrationstickets; 4 menschlich freigegebene Architekturentscheidungen.
 - Explizite Source-Defekte in 38 Tickets; die konkreten Befunde stehen im jeweiligen Vertrag.

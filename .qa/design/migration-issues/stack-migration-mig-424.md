@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.
+- (Acceptance/Regression, sperrt READY nicht) No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-world.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-world.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-world.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. world routes remain dispatcher404,including settings and clock writes.
 2. Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.
 3. Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] world routes remain dispatcher404,including settings and clock writes.
 - [ ] Isolated fixture pins create defaults,discovery,event filtering,faction relationship and30-day calendar rollover.
 - [ ] Negative/nonfinite/huge hours must be bounded in any replacement; persistent world_profiles/world-atlas APIs remain separate and preserve their visibility policies.
+- [ ] Verpflichtende Legacy-Regression: No authentication or project ownership; arbitrary shallow updates allowed. Clock labels Gregorian but uses30-day months and lacks numeric bounds.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-424`
 - Design: `.qa/design/migration-issues/stack-migration-mig-424.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 66; Welle: 3
-- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-066`, `agent-blocked`
+- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-066`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

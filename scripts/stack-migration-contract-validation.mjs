@@ -241,7 +241,13 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
       }
     } catch (cause) { error(`Dependency resolution failed: ${cause.message}`); }
   }
-  const readiness = issues.map((issue) => ({ localId: issue.localId, sourceStatus: issue.verification?.sourceStatus ?? 'unspecified', execution: issue.status, blockers: issue.verification?.blockers ?? [] }));
+  const readiness = issues.map((issue) => ({
+    localId: issue.localId,
+    sourceStatus: issue.verification?.sourceStatus ?? 'unspecified',
+    execution: issue.status,
+    blockers: issue.verification?.blockers ?? [],
+    requiredRegressions: issue.verification?.requiredRegressions ?? [],
+  }));
   return { errors: [...new Set(errors)], warnings, readiness };
 }
 

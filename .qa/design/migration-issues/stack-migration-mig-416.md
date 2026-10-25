@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.
+- (Acceptance/Regression, sperrt READY nicht) Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-media.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-media.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-media.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-media.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. media worker stays404.
 2. Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.
 3. Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] media worker stays404.
 - [ ] Isolated metadata upload records calculated URL/MIME/size but makes zero storage calls; delete never claims physical object deletion.
 - [ ] Filename/path and spoofed uploadedBy are unvalidated historical inputs; successor storage API requires its independent owner-path contract.
+- [ ] Verpflichtende Legacy-Regression: Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -120,15 +129,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #793 (MIG-014)
 - Depends on #841 (MIG-500)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-416`
 - Design: `.qa/design/migration-issues/stack-migration-mig-416.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 57; Welle: 3
-- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-057`, `agent-blocked`
+- Labels: `P1`, `migration-wave-3-edge-services`, `migration-order-057`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

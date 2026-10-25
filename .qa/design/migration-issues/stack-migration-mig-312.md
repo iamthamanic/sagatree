@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
+- (Acceptance/Regression, sperrt READY nicht) Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.
 - Quelle: `.qa/intake/edge-infra-contracts/infra-user-profile.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
+- Quelle: `.qa/intake/edge-infra-contracts/infra-user-profile.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. Own row race23505 succeeds; actual select/insert errors fail with formatted details.
 2. Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.
 3. Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] Own row race23505 succeeds; actual select/insert errors fail with formatted details.
 - [ ] Batch IDs are trimmed/deduplicated, absent rows omitted, signing failures returnavatarUrl null, and visible teammate profiles remain displayable.
 - [ ] Valid<=5MiB avatar replaces own path and emits cache/event update; foreign writes denied; invalid magic/MIME/size rejected; DB update failure cleans new object while retaining previous row.
+- [ ] Verpflichtende Legacy-Regression: Object deletion is best effort/asynchronous and separate from profile row update; no atomic storage+DB transaction. There is no standalone delete-avatar or display-name mutation method in this facade.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -121,15 +130,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #841 (MIG-500)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-312`
 - Design: `.qa/design/migration-issues/stack-migration-mig-312.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 78; Welle: 4
-- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-078`, `agent-blocked`
+- Labels: `P1`, `migration-wave-4-adapter-ports`, `migration-order-078`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

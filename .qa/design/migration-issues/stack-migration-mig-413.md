@@ -62,7 +62,7 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 
 ### Bekannte Legacy-Defekte / negative Regressionen
 
-- getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.
+- (Acceptance/Regression, sperrt READY nicht) getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.
 
 ## Edge Cases
 
@@ -87,6 +87,13 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Dann: Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment.
 - Quelle: `.qa/intake/edge-infra-contracts/edge-lorekeeper.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-lorekeeper.json`
 
+### Fall 4
+
+- Gegeben: Der eingefrorene Legacy-Defekt aus dem Quellinventar
+- Wenn: Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt
+- Dann: Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.
+- Quelle: `.qa/intake/edge-infra-contracts/edge-lorekeeper.md`, `.qa/intake/edge-infra-contracts/source-contracts/edge-lorekeeper.json`
+
 ## Required Tests
 
 Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assertions`). Öffentliche Acceptance-Checkboxen dürfen zusammenfassen; kein Pflichttest darf hier fehlen.
@@ -94,13 +101,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. Graph,context,NPC and consistency routes remain dispatcher404.
 2. Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.
 3. Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] Graph,context,NPC and consistency routes remain dispatcher404.
 - [ ] Isolated graph traversal and missing-root results match source; edge endpoint existence is enforced by createRelationship.
 - [ ] Record session-context all-node scan and ignored NPC session filter; any retained role-safe projection must filter before response/provider enrichment.
+- [ ] Verpflichtende Legacy-Regression: getSessionContext returns every NPC/location/event regardless of requested session/project; only memories filter sessionId. getNPCContext accepts sessionId but ignores it. No auth or GM visibility filter.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
@@ -119,15 +128,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #792 (MIG-013)
 - Depends on #793 (MIG-014)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-413`
 - Design: `.qa/design/migration-issues/stack-migration-mig-413.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 55; Welle: 3
-- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-055`, `agent-blocked`
+- Labels: `P2`, `migration-wave-3-edge-services`, `migration-order-055`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
