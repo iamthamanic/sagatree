@@ -668,6 +668,18 @@ function checkMig407DmToolsQuarantine() {
   );
 }
 
+function checkMig408ExportQuarantine() {
+  console.log('MIG-408 (#824): export stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-408-export-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2852,6 +2864,7 @@ checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
 checkMig407DmToolsQuarantine();
+checkMig408ExportQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
