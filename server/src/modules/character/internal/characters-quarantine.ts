@@ -108,13 +108,24 @@ export function addExperienceLegacyUnsafe(
   return { character: next, leveledUp, stoppedByGuard };
 }
 
-/** Client-supplied ownerId on create — no authentication in historical worker. */
+/**
+ * Client-supplied ownerId on create — no authentication in historical worker.
+ * Nested payloads (attributes/equipment/…) are accepted without schema validation
+ * (legacy type assertions do not validate nested fields).
+ */
 export function createCharacterRecord(input: {
   readonly ownerId: string;
   readonly name: string;
   readonly id: string;
   readonly nowIso: string;
-}): QuarantineCharacter {
+  readonly attributes?: unknown;
+  readonly equipment?: unknown;
+  readonly proficiencies?: unknown;
+}): QuarantineCharacter & {
+  readonly attributes?: unknown;
+  readonly equipment?: unknown;
+  readonly proficiencies?: unknown;
+} {
   return {
     id: input.id,
     ownerId: input.ownerId,
@@ -123,5 +134,19 @@ export function createCharacterRecord(input: {
     experience: 0,
     proficiencyBonus: 2,
     updatedAt: input.nowIso,
+    attributes: input.attributes,
+    equipment: input.equipment,
+    proficiencies: input.proficiencies,
   };
+}
+
+/**
+ * Shallow merge of nested Partial payloads without validating nested field shapes.
+ * Characterizes legacy "type assertions do not validate nested fields".
+ */
+export function mergeNestedPartial(
+  existing: Record<string, unknown>,
+  nested: Record<string, unknown>,
+): Record<string, unknown> {
+  return { ...existing, ...nested };
 }

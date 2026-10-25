@@ -13,6 +13,7 @@ export {
   createCharacterRecord,
   describeNonAdvancingXpLoopDefect,
   getXpThreshold,
+  mergeNestedPartial,
   resolveLevelUpTargetId,
   type QuarantineCharacter,
 } from './internal/characters-quarantine.ts';
