@@ -108,27 +108,34 @@ assert(JSON.stringify(defaults.properties) === '{}', 'empty properties');
 
 const falsy = applyItemDefaults({ name: '', weight: 0, properties: { nested: { bad: true } } }, 'y');
 assert(falsy.name === 'Unknown', 'falsy name');
-assert(falsy.properties.nested?.bad === true, 'invalid nested accepted without schema');
+assert(falsy.properties?.nested?.bad === true, 'invalid nested accepted without schema');
+const untyped = applyItemDefaults({ weight: 'heavy', properties: 7 }, 'z');
+assert(untyped.weight === 'heavy' && untyped.properties === 7, 'no runtime coercion of bad types');
 
+assert(SEED_ITEMS.length === 6, 'full legacy seed catalog size');
+assert(SEED_ITEMS.some((i) => i.id === 'shield') && SEED_ITEMS.some((i) => i.id === 'bag-holding'), 'shield+bag');
 assert(filterItems(SEED_ITEMS, { type: 'weapon' }).every((i) => i.type === 'weapon'), 'type filter');
 assert(filterItems(SEED_ITEMS, { rarity: 'uncommon' }).every((i) => i.rarity === 'uncommon'), 'rarity filter');
 
 const rng = createSeededRng(1);
 const gen = generateItem(rng, 'g1');
-assert(gen.weight >= 0 && gen.weight < 50, 'weight range');
-assert(gen.value >= 0 && gen.value < 50000, 'value range');
-assert(gen.name.startsWith('Magic '), 'generated name');
+assert(typeof gen.weight === 'number' && gen.weight >= 0 && gen.weight < 50, 'weight range');
+assert(typeof gen.value === 'number' && gen.value >= 0 && gen.value < 50000, 'value range');
+assert(String(gen.name).startsWith('Magic '), 'generated name');
 
-// --- Fall 3: durable inventory definitions are separate ---
+// --- Fall 3: durable inventory definitions are separate (do not ban future TABLE_OWNERSHIP) ---
 assert(ITEMS_MAP_IS_DURABLE_INVENTORY === false, 'Map ≠ durable inventory');
 assert(
   !existsSync(join(root, 'server/src/modules/inventory/internal/item-definitions-store.ts')),
-  'no durable definitions store under quarantine path',
+  'quarantine path is not the durable definitions store',
 );
-const ownership = readFileSync(join(root, 'server/src/persistence/table-ownership.ts'), 'utf8');
+const quarantineSrc = readFileSync(
+  join(root, 'server/src/modules/inventory/internal/items-quarantine.ts'),
+  'utf8',
+);
 assert(
-  !/inventory_item_definitions/.test(ownership),
-  'inventory_item_definitions not yet owned by Map catalog (migrated independently)',
+  !/inventory_item_definitions/.test(quarantineSrc),
+  'quarantine module does not route to inventory_item_definitions',
 );
 
 // --- Fall 4: no auth / no schema / not durable ---

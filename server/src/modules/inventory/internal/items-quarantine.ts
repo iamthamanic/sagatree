@@ -3,6 +3,7 @@
  * Location: server/src/modules/inventory/internal/items-quarantine.ts
  *
  * NOT a public host route. Distinct from durable inventory_item_definitions.
+ * Field types mirror legacy lack of schema validation (unknowns preserved).
  */
 
 export const ITEMS_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
@@ -10,16 +11,20 @@ export const ITEMS_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 /** Legacy Map catalog is not the durable inventory definitions adapter. */
 export const ITEMS_MAP_IS_DURABLE_INVENTORY = false as const;
 
+/**
+ * Legacy item shape — fields are unvalidated (typed-as-any in Edge).
+ * Using `unknown` preserves that characterization without pretending validation.
+ */
 export type QuarantineItem = {
   readonly id: string;
-  readonly name: string;
-  readonly type: string;
-  readonly rarity: string;
-  readonly weight: number;
-  readonly value: number;
-  readonly description: string;
-  readonly properties: Record<string, unknown>;
-  readonly source: string;
+  readonly name: unknown;
+  readonly type: unknown;
+  readonly rarity: unknown;
+  readonly weight: unknown;
+  readonly value: unknown;
+  readonly description: unknown;
+  readonly properties: unknown;
+  readonly source: unknown;
 };
 
 export const SEED_ITEMS: ReadonlyArray<QuarantineItem> = Object.freeze([
@@ -41,8 +46,20 @@ export const SEED_ITEMS: ReadonlyArray<QuarantineItem> = Object.freeze([
     rarity: 'common',
     weight: 55,
     value: 75,
-    description: 'Made of interlocking metal rings.',
+    description:
+      'Made of interlocking metal rings, chain mail includes a layer of quilted fabric underneath to prevent painful chafing.',
     properties: { ac: 16, strength: 13, stealth: 'disadvantage' },
+    source: 'SRD',
+  },
+  {
+    id: 'shield',
+    name: 'Shield',
+    type: 'shield',
+    rarity: 'common',
+    weight: 6,
+    value: 10,
+    description: 'A shield made of wood or metal.',
+    properties: { ac: 2 },
     source: 'SRD',
   },
   {
@@ -67,22 +84,31 @@ export const SEED_ITEMS: ReadonlyArray<QuarantineItem> = Object.freeze([
     properties: { spell: 'fireball', level: 3 },
     source: 'SRD',
   },
+  {
+    id: 'bag-holding',
+    name: 'Bag of Holding',
+    type: 'wondrous',
+    rarity: 'uncommon',
+    weight: 15,
+    value: 4000,
+    description: 'This bag has an interior space considerably larger than its outside dimensions.',
+    properties: { capacity: 500, weightLimit: 500 },
+    source: 'SRD',
+  },
 ]);
 
-export function applyItemDefaults(
-  data: Record<string, unknown>,
-  id: string,
-): QuarantineItem {
+/** Legacy falsy || defaults — no schema coercion. */
+export function applyItemDefaults(data: Record<string, unknown>, id: string): QuarantineItem {
   return {
     id,
-    name: (data.name as string) || 'Unknown',
-    type: (data.type as string) || 'other',
-    rarity: (data.rarity as string) || 'common',
-    weight: (data.weight as number) || 0,
-    value: (data.value as number) || 0,
-    description: (data.description as string) || '',
-    properties: (data.properties as Record<string, unknown>) || {},
-    source: (data.source as string) || 'custom',
+    name: data.name || 'Unknown',
+    type: data.type || 'other',
+    rarity: data.rarity || 'common',
+    weight: data.weight || 0,
+    value: data.value || 0,
+    description: data.description || '',
+    properties: data.properties || {},
+    source: data.source || 'custom',
   };
 }
 
@@ -99,21 +125,23 @@ export function filterItems(
 const GEN_TYPES = ['weapon', 'armor', 'potion', 'scroll', 'wondrous'] as const;
 const GEN_RARITIES = ['common', 'uncommon', 'rare', 'very rare', 'legendary'] as const;
 
-/** Seeded generate — legacy ignores request body type/rarity and rolls both independently. */
-export function generateItem(
-  rng: () => number,
-  id: string,
-): QuarantineItem {
+/**
+ * Seeded generate — matches legacy Math.random draw order:
+ * name-type, type, rarity, weight, value (body type/rarity ignored).
+ */
+export function generateItem(rng: () => number, id: string): QuarantineItem {
+  const nameType = GEN_TYPES[Math.floor(rng() * GEN_TYPES.length)]!;
   const type = GEN_TYPES[Math.floor(rng() * GEN_TYPES.length)]!;
   const rarity = GEN_RARITIES[Math.floor(rng() * GEN_RARITIES.length)]!;
-  const nameType = GEN_TYPES[Math.floor(rng() * GEN_TYPES.length)]!;
+  const weight = Math.floor(rng() * 50);
+  const value = Math.floor(rng() * 50000);
   return applyItemDefaults(
     {
       name: `Magic ${nameType}`,
       type,
       rarity,
-      weight: Math.floor(rng() * 50),
-      value: Math.floor(rng() * 50000),
+      weight,
+      value,
     },
     id,
   );
