@@ -692,6 +692,18 @@ function checkMig411ItemsQuarantine() {
   );
 }
 
+function checkMig412LookReferenceAnalysis() {
+  console.log('MIG-412 (#828): look-reference-analysis isolated-contract...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-412-look-reference-analysis.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2878,6 +2890,7 @@ checkMig406CharactersQuarantine();
 checkMig407DmToolsQuarantine();
 checkMig408ExportQuarantine();
 checkMig411ItemsQuarantine();
+checkMig412LookReferenceAnalysis();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
