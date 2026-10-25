@@ -134,9 +134,10 @@ const quarantineSrc = readFileSync(
   'utf8',
 );
 assert(
-  !/inventory_item_definitions/.test(quarantineSrc),
-  'quarantine module does not route to inventory_item_definitions',
+  !/from ['"].*inventory_item_definitions|TABLE_OWNERSHIP|openDatabase/.test(quarantineSrc),
+  'quarantine module does not import or wire durable inventory persistence',
 );
+assert(ITEMS_MAP_IS_DURABLE_INVENTORY === false, 'explicit product flag: Map is not durable');
 
 // --- Fall 4: no auth / no schema / not durable ---
 assert(ITEMS_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no auth activation');
