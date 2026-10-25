@@ -42,9 +42,15 @@ export function createAssetPorts(deps: {
   readonly dataDir: string;
   readonly db: HostDatabase;
   readonly authorize: AuthorizeFn;
+  /**
+   * When false (default), `publishResumableFinalize` returns `capability-disabled`.
+   * Only the host composition that enables `SAGATREE_LARGE_UPLOADS` may set true (#939 P1).
+   */
+  readonly allowElevatedPublish?: boolean;
 }): AssetPorts {
   const store = new LocalAssetStore(deps.db, deps.dataDir);
   const { authorize } = deps;
+  const allowElevatedPublish = deps.allowElevatedPublish === true;
 
   return {
     moduleId: 'assets',
@@ -67,6 +73,7 @@ export function createAssetPorts(deps: {
     },
 
     publishResumableFinalize(actor: Actor, input: PublishInput): AssetResult<PublishedAsset> {
+      if (!allowElevatedPublish) return { ok: false, error: 'capability-disabled' };
       if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
       const decision = authorize('asset.publish', actor, {});
       if (!decision.allow) {

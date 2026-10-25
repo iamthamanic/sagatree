@@ -41,23 +41,31 @@ try {
   assert(boot.schemaVersion >= 9, `schemaVersion>=9 got ${boot.schemaVersion}`);
   const db = boot.db;
   const permissions = createPermissionsPorts(db);
-  const assets = createAssetPorts({
+  const assetsOn = createAssetPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
+    allowElevatedPublish: true,
   });
+  const assetsOff = createAssetPorts({
+    dataDir,
+    db,
+    authorize: permissions.authorize,
+    allowElevatedPublish: false,
+  });
+  const assets = assetsOn;
   const uploadsOn = createResumableUploadPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
-    assets,
+    assets: assetsOn,
     enabled: true,
   });
   const uploadsOff = createResumableUploadPorts({
     dataDir,
     db,
     authorize: permissions.authorize,
-    assets,
+    assets: assetsOff,
     enabled: false,
   });
 
@@ -190,6 +198,16 @@ try {
     contentType: 'application/octet-stream',
   });
   assert(!stillDenied.ok && stillDenied.error === 'bytes-too-large', '939 public path still capped');
+
+  // Capability off: elevated finalize is capability-disabled even with auth (#939 P1)
+  const elevatedOff = assetsOff.publishResumableFinalize(O, {
+    bytes: largeBody,
+    contentType: 'application/octet-stream',
+  });
+  assert(
+    !elevatedOff.ok && elevatedOff.error === 'capability-disabled',
+    `939 elevated gated off: ${elevatedOff.error}`,
+  );
 
   // --- #938: lost final response → retry returns same asset, no duplicate ---
   const body938 = new TextEncoder().encode('finalize-retry-idempotent-body');

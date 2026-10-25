@@ -136,14 +136,16 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           store: createSqliteWorldReadStore(db),
         })
       : createWorldPortsStub();
+    const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';
     const assets: AssetPorts = db
       ? createAssetPorts({
           dataDir: config.dataDir,
           db,
           authorize: permissions.authorize,
+          // Elevated finalize only when large-upload capability is on (#939).
+          allowElevatedPublish: largeUploadsEnabled,
         })
       : createAssetPortsStub();
-    const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';
     const uploads: ResumableUploadPorts = db
       ? createResumableUploadPorts({
           dataDir: config.dataDir,
