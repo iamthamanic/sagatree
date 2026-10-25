@@ -35,6 +35,11 @@ assert(src.includes('fail-closed') || src.includes('fail closed') || src.include
 
 assert(workflow.includes('pull_request_review:'), 'workflow re-runs on review');
 assert(workflow.includes('pull_request_review_comment:'), 'workflow re-runs on review comments');
+assert(
+  workflow.includes('pull_request_review_comment') && workflow.includes('ECC_MERGE_GATE_SKIP_CHECKS'),
+  'review events keep findings enforcement with SKIP_CHECKS for sibling timing',
+);
+assert(src.includes('waitForRequiredChecks'), 'workflow_run path polls sibling checks');
 
 const p1 = '**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>  Keep idempotency';
 const p2 = '**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Exclude expectedRevision';

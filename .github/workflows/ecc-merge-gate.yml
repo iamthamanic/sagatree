@@ -91,8 +91,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
-          # On first pull_request event, sibling checks may still be pending —
-          # only enforce review findings; review / workflow_run recheck enforces checks.
-          # Review events always evaluate findings (never skip) so late P1/P2 fail-closes.
-          ECC_MERGE_GATE_SKIP_CHECKS: ${{ github.event_name == 'pull_request' && '1' || '0' }}
+          # Findings always evaluated. Skip sibling-check enforcement on
+          # pull_request + review events so (1) early PR open is not sticky-red
+          # while Quality Gates queue and (2) late review findings still
+          # fail-close by replacing a prior green run (#937). workflow_run
+          # enforces required checks (with poll) once siblings are underway.
+          ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment') && '1' || '0' }}
         run: node scripts/ecc-merge-gate-check.mjs

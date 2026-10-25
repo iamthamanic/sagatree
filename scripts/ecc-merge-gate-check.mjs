@@ -307,7 +307,7 @@ export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
   });
 }
 
-export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
+export function classifyRequiredChecks(owner, repo, headSha, requiredChecks) {
   const runs = ghJson([
     'api',
     `repos/${owner}/${repo}/commits/${headSha}/check-runs`,
@@ -322,22 +322,66 @@ export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
     }
   }
   const failures = [];
+  const pending = [];
   for (const name of requiredChecks) {
     if (name === 'ECC Merge Gate') continue; // this job — avoid self-deadlock
     const run = byName.get(name);
     if (!run) {
-      failures.push({ name, reason: 'missing' });
+      pending.push({ name, reason: 'missing' });
       continue;
     }
     if (run.status !== 'completed') {
-      failures.push({ name, reason: `status=${run.status}` });
+      pending.push({ name, reason: `status=${run.status}` });
       continue;
     }
     if (run.conclusion !== 'success' && run.conclusion !== 'skipped' && run.conclusion !== 'neutral') {
       failures.push({ name, reason: `conclusion=${run.conclusion}` });
     }
   }
-  return failures;
+  return { failures, pending };
+}
+
+/** @deprecated Prefer classifyRequiredChecks + waitForRequiredChecks */
+export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
+  const { failures, pending } = classifyRequiredChecks(owner, repo, headSha, requiredChecks);
+  return [...failures, ...pending];
+}
+
+/**
+ * Wait for sibling required checks to settle. Early workflow_run events must not
+ * leave a sticky FAIL while Test Gate / Composition Gate / Browser E2E are still
+ * queued — that FAIL would become the latest required check and block merges.
+ */
+export function waitForRequiredChecks(
+  owner,
+  repo,
+  headSha,
+  requiredChecks,
+  {
+    timeoutMs = Number(process.env.ECC_MERGE_GATE_CHECK_WAIT_MS || 480_000),
+    intervalMs = Number(process.env.ECC_MERGE_GATE_CHECK_POLL_MS || 20_000),
+    sleep = (ms) => {
+      try {
+        execFileSync('sleep', [String(Math.max(1, Math.ceil(ms / 1000)))], { stdio: 'ignore' });
+      } catch {
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+      }
+    },
+    log = (msg) => console.error(msg),
+  } = {},
+) {
+  const started = Date.now();
+  let last = classifyRequiredChecks(owner, repo, headSha, requiredChecks);
+  while (last.pending.length > 0 && last.failures.length === 0 && Date.now() - started < timeoutMs) {
+    log(
+      `ECC Merge Gate: waiting for ${last.pending.length} required check(s): ${last.pending
+        .map((p) => `${p.name} (${p.reason})`)
+        .join(', ')}`,
+    );
+    sleep(intervalMs);
+    last = classifyRequiredChecks(owner, repo, headSha, requiredChecks);
+  }
+  return [...last.failures, ...last.pending];
 }
 
 export function resolvePrContext() {
@@ -395,12 +439,21 @@ export function runMergeGateCheck({
       ctx.headSha,
     );
     if (!skipChecks) {
-      checkFailures = collectCheckFailures(
-        ctx.owner,
-        ctx.repo,
-        ctx.headSha,
-        config.requiredChecks,
-      );
+      // Findings first: if already blocked, do not wait on sibling checks.
+      const early = evaluateMergeGate({
+        unresolvedFindings: unresolved,
+        checkFailures: [],
+        apiError: null,
+        pendingReviewsForHead,
+      });
+      if (early.ok) {
+        checkFailures = waitForRequiredChecks(
+          ctx.owner,
+          ctx.repo,
+          ctx.headSha,
+          config.requiredChecks,
+        );
+      }
     }
   } catch (err) {
     apiError = err;
