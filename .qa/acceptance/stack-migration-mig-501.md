@@ -19,11 +19,13 @@ Optionalen fortsetzbaren Großdatei-Upload (tus-style) an denselben Asset-Publis
 1. Resume am bestätigten Offset nach Unterbrechung → ein Asset, Checksumme korrekt
 2. Falscher Offset / fremder Actor / Limit überschritten → Chunk denied, keine unvollständige Publish
 3. Capability aus → kleiner `assets.publish` OK; resumable `create` → `capability-disabled`
+4. Finalize/retry idempotent (#938): lost final response / crash before markFinalized → same assetId
+5. Public `maxBytes` cannot raise 16 MiB ceiling (#939); elevated only via gated `publishResumableFinalize`
 
 ## Required Tests
 
-- [ ] `node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs`
-- [ ] Touched files: zero type escape hatches
+- [x] `node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs`
+- [x] Touched files: zero type escape hatches
 
 ## Security Coverage
 
@@ -32,7 +34,7 @@ Optionalen fortsetzbaren Großdatei-Upload (tus-style) an denselben Asset-Publis
 | B-01 / B-04 | Upload-IDs owner-bound; each chunk re-authorizes `asset.publish`; foreign actor → `not-authorized` |
 | B-07 | Path resolve only under `dataDir/assets/.uploads` via safe tokens; no caller paths |
 | B-08 / B-09 | Finalize goes through Policy Service + LocalAssetStore; no elevated origins |
-| P-04 | Capability flag default off (`SAGATREE_LARGE_UPLOADS` unset) |
+| P-04 | Capability flag default off (`SAGATREE_LARGE_UPLOADS` unset); elevated finalize gated by `allowElevatedPublish` |
 | F-03 | N/A — no new frontend surface in this slice |
 
 ## Launch Checklist (SC)
@@ -42,5 +44,6 @@ N/A — not a launch ticket. Inline: SC-01/02/03/06 covered by actor binding + d
 ## Implementation Notes
 
 - Ports: `createResumableUploadPorts` / host `uploads` field
-- Migration: `0006_asset_uploads.sql` → `asset_upload_sessions`
-- Raise publish ceiling only via `PublishInput.maxBytes` clamped to 64 MiB when finalizing resumable uploads
+- Migrations: `0006_asset_uploads.sql`, `0009_upload_finalize_idempotency.sql` (`pending_asset_id`)
+- Elevated ceiling only via `publishResumableFinalize` when `allowElevatedPublish` / `SAGATREE_LARGE_UPLOADS=1` (#939) — never public `PublishInput.maxBytes`
+- Follow-up quality recovery: #938 finalize/retry, #939 maxBytes bypass, #940 evidence integrity

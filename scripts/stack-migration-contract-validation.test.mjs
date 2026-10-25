@@ -10,8 +10,11 @@ import { validatePublicationEntry } from './stack-migration-publish-payload.mjs'
 function writeSyntheticCompletion(localId) {
   const dir = '.qa/tmp/migration-completion-fixtures';
   mkdirSync(dir, { recursive: true });
-  const artifact = `${dir}/${localId.toLowerCase()}-check.txt`;
-  writeFileSync(artifact, `synthetic-pass:${localId}\n`);
+  const acceptance = `${dir}/${localId.toLowerCase()}-acceptance.md`;
+  writeFileSync(
+    acceptance,
+    `# Acceptance — ${localId}\n\n## Required Tests\n\n- [x] synthetic ${localId}\n- [x] Touched files: zero type escape hatches\n`,
+  );
   const path = `${dir}/${localId.toLowerCase()}.json`;
   writeFileSync(path, `${JSON.stringify({
     schemaVersion: 1,
@@ -19,7 +22,7 @@ function writeSyntheticCompletion(localId) {
     localId,
     result: 'PASS',
     testedCommit: 'a'.repeat(40),
-    checks: [{ command: `synthetic ${localId}`, result: 'PASS', evidenceFile: artifact, sha256: createHash('sha256').update(readFileSync(artifact)).digest('hex') }],
+    checks: [{ command: `synthetic ${localId}`, result: 'PASS', evidenceFile: acceptance, sha256: createHash('sha256').update(readFileSync(acceptance)).digest('hex') }],
   }, null, 2)}\n`);
   return path;
 }
@@ -314,6 +317,149 @@ test('nonexistent completion evidence and unrelated existing prose are not accep
   issue(input, 'MIG-002').completionEvidence = 'nonexistent.json';
   rejects(input, /done without completion evidence/);
   issue(input, 'MIG-002').completionEvidence = 'AGENTS.md';
+  rejects(input, /done without completion evidence/);
+});
+
+test('PASS completion evidence with unchecked Required Tests is rejected (#940 / #935 repro)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const acceptance = `${dir}/mig-940-unchecked.md`;
+  writeFileSync(
+    acceptance,
+    `# Acceptance — synthetic\n\n## Required Tests\n\n- [ ] \`node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs\`\n- [ ] Touched files: zero type escape hatches\n\n## Other\n\nok\n`,
+  );
+  const proofPath = `${dir}/mig-940-unchecked.json`;
+  const body = readFileSync(acceptance);
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'b'.repeat(40),
+        checks: [
+          {
+            command: 'node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs',
+            result: 'PASS',
+            evidenceFile: acceptance,
+            sha256: createHash('sha256').update(body).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
+  rejects(input, /done without completion evidence/);
+});
+
+test('hash-only txt evidence without Required Tests cannot forge DONE (#940 P1)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const artifact = `${dir}/mig-940-txt-only.txt`;
+  writeFileSync(artifact, 'synthetic-pass-without-checklist\n');
+  const proofPath = `${dir}/mig-940-txt-only.json`;
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'd'.repeat(40),
+        checks: [
+          {
+            command: 'synthetic',
+            result: 'PASS',
+            evidenceFile: artifact,
+            sha256: createHash('sha256').update(readFileSync(artifact)).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
+  rejects(input, /done without completion evidence/);
+});
+
+test('asterisk/plus unchecked Required Tests are rejected (#940 P2)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const acceptance = `${dir}/mig-940-mixed-markers.md`;
+  writeFileSync(
+    acceptance,
+    `# Acceptance\n\n## Required Tests\n\n- [x] \`node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs\`\n* [ ] Touched files: zero type escape hatches\n+ [ ] Extra unchecked\n`,
+  );
+  const proofPath = `${dir}/mig-940-mixed-markers.json`;
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'e'.repeat(40),
+        checks: [
+          {
+            command: 'node --experimental-strip-types scripts/mig-501-resumable-uploads.self-test.mjs',
+            result: 'PASS',
+            evidenceFile: acceptance,
+            sha256: createHash('sha256').update(readFileSync(acceptance)).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
+  rejects(input, /done without completion evidence/);
+});
+
+test('NOT RUN check result never counts as PASS completion evidence (#940)', () => {
+  const dir = '.qa/tmp/migration-completion-fixtures';
+  mkdirSync(dir, { recursive: true });
+  const artifact = `${dir}/mig-940-notrun.txt`;
+  writeFileSync(artifact, 'not-run\n');
+  const proofPath = `${dir}/mig-940-notrun.json`;
+  writeFileSync(
+    proofPath,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        kind: 'migration-acceptance',
+        localId: 'MIG-002',
+        result: 'PASS',
+        testedCommit: 'c'.repeat(40),
+        checks: [
+          {
+            command: 'synthetic',
+            result: 'NOT RUN',
+            evidenceFile: artifact,
+            sha256: createHash('sha256').update(readFileSync(artifact)).digest('hex'),
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const input = clone();
+  setStatus(input, 'MIG-002', 'done');
+  issue(input, 'MIG-002').completionEvidence = proofPath;
   rejects(input, /done without completion evidence/);
 });
 
