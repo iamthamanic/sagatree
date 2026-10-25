@@ -1,6 +1,9 @@
 /**
  * world module public API — policy-guarded read + owned create (MIG-012 / #873).
  * Location: server/src/modules/world/index.ts
+ *
+ * Lorekeeper Map-graph quarantine is exported for MIG-413 fixtures only —
+ * not a public HTTP activation surface.
  */
 import { randomUUID } from 'node:crypto';
 import type { Actor } from '../identity/index.ts';
@@ -14,6 +17,19 @@ export type { WorldReadStore, WorldStoredRow } from './internal/world-read-store
 export type { WorldWriteStore } from './internal/world-write-store.ts';
 export type { WorldMapDto } from './internal/world-map-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
+
+export {
+  LOREKEEPER_PUBLIC_ACTIVATION_AUTHORIZED,
+  createLoreGraphStore,
+  createRelationship,
+  getNPCContext,
+  getSessionContext,
+  getWorldGraph,
+  type Edge,
+  type LoreGraphStore,
+  type Memory,
+  type WorldNode,
+} from './internal/lorekeeper-quarantine.ts';
 
 function actorIdentityIds(actor: Actor): readonly string[] {
   const ids = [actor.actorId];
