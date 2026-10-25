@@ -1,6 +1,6 @@
 # Migration readiness — post Oct-25 merges
 
-HEAD: `f86fa40b3659b6263a2ceb115cb062463c8117bb`
+HEAD: `f6f9391343582bfa6d2ad70366eeeae0d2565540`
 
 | Status | Count |
 | --- | ---: |
