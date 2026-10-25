@@ -40,16 +40,17 @@ export type PublishInput = {
   readonly bytes: Uint8Array;
   readonly contentType?: string;
   /**
-   * Optional raised ceiling for capability-gated resumable finalize (MIG-501).
-   * Clamped to LARGE_UPLOAD_MAX_BYTES; never expands beyond that.
-   */
-  readonly maxBytes?: number;
-  /**
    * Optional stable asset id for idempotent resumable finalize (#938).
    * When an identical published asset already exists for this owner, returns it.
    */
   readonly assetId?: string;
 };
+
+/**
+ * Trusted size ceiling — never taken from caller-controlled PublishInput (#939).
+ * Only DEFAULT or LARGE; LARGE is reserved for capability-gated resumable finalize.
+ */
+export type TrustedPublishCeiling = typeof DEFAULT_ASSET_MAX_BYTES | typeof LARGE_UPLOAD_MAX_BYTES;
 
 export type PublishedAsset = {
   readonly assetId: string;
@@ -102,7 +103,11 @@ export class LocalAssetStore {
     }
   }
 
-  publish(ownerUserId: string, input: PublishInput): { ok: true; value: PublishedAsset } | { ok: false; error: string } {
+  publish(
+    ownerUserId: string,
+    input: PublishInput,
+    ceiling: TrustedPublishCeiling = DEFAULT_ASSET_MAX_BYTES,
+  ): { ok: true; value: PublishedAsset } | { ok: false; error: string } {
     if (!ownerUserId || typeof ownerUserId !== 'string') {
       return { ok: false, error: 'missing-actor' };
     }
@@ -110,13 +115,9 @@ export class LocalAssetStore {
       return { ok: false, error: 'invalid-bytes' };
     }
     if (input.bytes.byteLength === 0) return { ok: false, error: 'empty-bytes' };
-    // When maxBytes is omitted or ≤ default, keep MIG-500 ceiling.
+    // Ceiling is server-trusted only — never from PublishInput.maxBytes (#939).
     const effectiveLimit =
-      typeof input.maxBytes === 'number' &&
-      Number.isFinite(input.maxBytes) &&
-      input.maxBytes > DEFAULT_ASSET_MAX_BYTES
-        ? Math.min(Math.floor(input.maxBytes), LARGE_UPLOAD_MAX_BYTES)
-        : DEFAULT_ASSET_MAX_BYTES;
+      ceiling === LARGE_UPLOAD_MAX_BYTES ? LARGE_UPLOAD_MAX_BYTES : DEFAULT_ASSET_MAX_BYTES;
     if (input.bytes.byteLength > effectiveLimit) return { ok: false, error: 'bytes-too-large' };
 
     const contentType =

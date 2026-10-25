@@ -9,6 +9,8 @@ import type { Actor } from '../modules/identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../modules/permissions/index.ts';
 import type { HostDatabase } from '../persistence/open-database.ts';
 import {
+  DEFAULT_ASSET_MAX_BYTES,
+  LARGE_UPLOAD_MAX_BYTES,
   LocalAssetStore,
   type PublishInput,
   type PublishedAsset,
@@ -16,12 +18,19 @@ import {
 } from './internal/local-asset-store.ts';
 
 export type { PublishInput, PublishedAsset, ReadAsset };
+export { DEFAULT_ASSET_MAX_BYTES, LARGE_UPLOAD_MAX_BYTES };
 
 export type AssetResult<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: string };
 
 export type AssetPorts = {
   readonly moduleId: 'assets';
+  /** Direct publish — always DEFAULT_ASSET_MAX_BYTES; ignores any caller maxBytes. */
   readonly publish: (actor: Actor, input: PublishInput) => AssetResult<PublishedAsset>;
+  /**
+   * Capability-gated resumable finalize only (#939). Raises ceiling to LARGE_UPLOAD_MAX_BYTES.
+   * Not for general callers — uploads module after owner/capability checks.
+   */
+  readonly publishResumableFinalize: (actor: Actor, input: PublishInput) => AssetResult<PublishedAsset>;
   readonly get: (actor: Actor, assetId: string) => AssetResult<ReadAsset>;
   /** Negative-path helper for self-tests — rejects traversal before any IO. */
   readonly tryResolveCallerPath: (relative: string) => AssetResult<{ path: string }>;
@@ -46,7 +55,29 @@ export function createAssetPorts(deps: {
       if (!decision.allow) {
         return { ok: false, error: decision.reason === 'missing-actor' ? 'missing-actor' : 'not-authorized' };
       }
-      const result = store.publish(actor.actorId, input);
+      // Strip sneaky maxBytes / unknown fields — public path never raises ceiling (#939).
+      const safe: PublishInput = {
+        bytes: input.bytes,
+        contentType: input.contentType,
+        assetId: input.assetId,
+      };
+      const result = store.publish(actor.actorId, safe, DEFAULT_ASSET_MAX_BYTES);
+      if (!result.ok) return result;
+      return { ok: true, value: result.value };
+    },
+
+    publishResumableFinalize(actor: Actor, input: PublishInput): AssetResult<PublishedAsset> {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      const decision = authorize('asset.publish', actor, {});
+      if (!decision.allow) {
+        return { ok: false, error: decision.reason === 'missing-actor' ? 'missing-actor' : 'not-authorized' };
+      }
+      const safe: PublishInput = {
+        bytes: input.bytes,
+        contentType: input.contentType,
+        assetId: input.assetId,
+      };
+      const result = store.publish(actor.actorId, safe, LARGE_UPLOAD_MAX_BYTES);
       if (!result.ok) return result;
       return { ok: true, value: result.value };
     },
@@ -85,6 +116,7 @@ export function createAssetPortsStub(): AssetPorts {
   return {
     moduleId: 'assets',
     publish: () => ({ ok: false, error: 'store-unavailable' }),
+    publishResumableFinalize: () => ({ ok: false, error: 'store-unavailable' }),
     get: () => ({ ok: false, error: 'store-unavailable' }),
     tryResolveCallerPath: () => ({ ok: false, error: 'store-unavailable' }),
   };
