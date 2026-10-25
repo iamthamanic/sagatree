@@ -372,6 +372,8 @@ console.log(JSON.stringify({ ok: true, schemaVersion: result.schemaVersion, jour
   // --- AC4: ownership registry + boundary private persistence ---
   assert(owningModuleForTable('worlds') === 'world', 'worlds → world');
   assert(owningModuleForTable('world_maps') === 'world', 'world_maps → world');
+  assert(owningModuleForTable('user_ai_provider_credentials') === 'ai', 'credentials → ai');
+  assert(owningModuleForTable('ai_provider_credential_rate_limits') === 'ai', 'rate limits → ai');
   assert(owningModuleForTable('projects') === 'project', 'projects → project');
   assert(owningModuleForTable('project_members') === 'project', 'project_members → project');
   assert(owningModuleForTable('schema_migrations') === 'ops', 'schema_migrations → ops');

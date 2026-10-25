@@ -32,6 +32,7 @@ import {
   type ResumableUploadPorts,
 } from '../assets/uploads/index.ts';
 import { createMediaPorts, type MediaPorts } from '../modules/media/index.ts';
+import { createAiPorts, createAiPortsStub, type AiPorts } from '../modules/ai/index.ts';
 import {
   createRulesetPorts,
   createRulesetPortsStub,
@@ -70,6 +71,8 @@ export type HostInstance = {
   readonly uploads: ResumableUploadPorts;
   /** MIG-306 media policy ports (browser engines stay client-side). */
   readonly media: MediaPorts;
+  /** MIG-402 AI provider credentials + Ollama prefs. */
+  readonly ai: AiPorts;
   /** MIG-309 ruleset catalog ports. */
   readonly rulesets: RulesetPorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
@@ -161,6 +164,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       : createResumableUploadPortsStub(false);
     // Media owns asset-table policy surface; codecs remain in browser optimizer (infra-media).
     const media = createMediaPorts();
+    const ai: AiPorts = db ? createAiPorts({ db, env }) : createAiPortsStub();
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
@@ -278,6 +282,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       assets,
       uploads,
       media,
+      ai,
       rulesets,
       saga,
       getAuth: () => betterAuth,
