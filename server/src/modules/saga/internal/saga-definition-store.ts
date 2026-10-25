@@ -210,11 +210,30 @@ export class SagaDefinitionStore {
     readonly synopsis?: string;
     readonly payload?: Record<string, unknown>;
   }): { readonly sagaId: string; readonly versionId: string; readonly slug: string } {
+    return this.seedPublishedDefinition({
+      ...input,
+      origin: 'native',
+      ownerUserId: null,
+    });
+  }
+
+  /** Test helper — published definition with explicit origin (e.g. private_backfill). */
+  seedPublishedDefinition(input: {
+    readonly id?: string;
+    readonly slug?: string;
+    readonly title: string;
+    readonly synopsis?: string;
+    readonly payload?: Record<string, unknown>;
+    readonly origin: SagaOrigin;
+    readonly ownerUserId: string | null;
+  }): { readonly sagaId: string; readonly versionId: string; readonly slug: string } {
     const sagaId = input.id ?? newId();
     const versionId = newId();
     const createdAt = nowIso();
     const synopsis = input.synopsis ?? '';
-    const slug = input.slug?.trim() || `native.${sagaId.replace(/-/g, '')}`;
+    const slug =
+      input.slug?.trim() ||
+      `${input.origin}.${sagaId.replace(/-/g, '').slice(0, 12)}`;
     const payload = JSON.stringify(
       input.payload ?? emptyPayload(input.title, synopsis),
     );
@@ -222,9 +241,18 @@ export class SagaDefinitionStore {
       .prepare(
         `INSERT INTO saga_definitions
          (id, slug, title, synopsis, origin, owner_user_id, draft_revision, created_at, updated_at)
-         VALUES (?, ?, ?, ?, 'native', NULL, 0, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,
       )
-      .run(sagaId, slug, input.title, synopsis, createdAt, createdAt);
+      .run(
+        sagaId,
+        slug,
+        input.title,
+        synopsis,
+        input.origin,
+        input.ownerUserId,
+        createdAt,
+        createdAt,
+      );
     this.#db
       .prepare(
         `INSERT INTO saga_definition_versions
@@ -233,6 +261,52 @@ export class SagaDefinitionStore {
       )
       .run(versionId, sagaId, payload, createdAt, createdAt);
     return { sagaId, versionId, slug };
+  }
+
+  /**
+   * Provision lookup — existence + published only; ACL is applied by the use-case
+   * (create_project rules differ from get_saga_definition_version read scope).
+   */
+  lookupPublishedVersionForProvision(
+    sagaId: string,
+    versionId: string,
+  ):
+    | {
+        readonly ok: true;
+        readonly value: {
+          readonly sagaId: string;
+          readonly versionId: string;
+          readonly origin: SagaOrigin;
+          readonly ownerUserId: string | null;
+          readonly title: string;
+          readonly synopsis: string;
+          readonly adventureRuntime: Record<string, unknown>;
+        };
+      }
+    | { readonly ok: false; readonly error: string } {
+    const def = this.getDefinition(sagaId);
+    if (!def) return { ok: false, error: 'P0002' };
+    const ver = this.getVersion(versionId);
+    if (!ver || ver.saga_id !== sagaId) return { ok: false, error: 'P0002' };
+    if (ver.status !== 'published') return { ok: false, error: '22023' };
+    const payload = parsePayload(ver.payload);
+    const initial = payload.initialAdventure;
+    const adventureRuntime =
+      initial && typeof initial === 'object' && !Array.isArray(initial)
+        ? (initial as Record<string, unknown>)
+        : {};
+    return {
+      ok: true,
+      value: {
+        sagaId: def.id,
+        versionId: ver.id,
+        origin: def.origin,
+        ownerUserId: def.owner_user_id,
+        title: def.title,
+        synopsis: def.synopsis,
+        adventureRuntime,
+      },
+    };
   }
 
   /** Insert an additional published version (tests / multi-version native). */
