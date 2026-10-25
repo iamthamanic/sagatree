@@ -240,4 +240,40 @@ assert(big.ok === false && big.status === 413, 'Content-Length trust → 413');
 const okEnv = checkContentLengthEnvelope(null);
 assert(okEnv.ok === true, 'missing Content-Length allowed (legacy)');
 
+// Vision provider failure → 500 error result (not thrown)
+const ucFail = createLookReferenceAnalysisUseCase({
+  rateLimit: createLookReferenceRateLimitStore(),
+  providerConfigured: true,
+  analyzeVision: async () => {
+    throw new Error('provider down');
+  },
+});
+const failed = await ucFail.analyze({
+  actorId: 'u',
+  contentLengthHeader: null,
+  body: { action: 'analyze', references: [ref('r')] },
+});
+assert(failed.status === 'error' && failed.httpStatus === 500, 'vision failure → 500 result');
+
+const ucNaN = createLookReferenceAnalysisUseCase({
+  rateLimit: createLookReferenceRateLimitStore(),
+  rateLimitPerMinute: Number.NaN,
+  providerConfigured: true,
+  analyzeVision: async () => ({}),
+});
+for (let i = 0; i < 4; i += 1) {
+  const r = await ucNaN.analyze({
+    actorId: 'nan-user',
+    contentLengthHeader: null,
+    body: { action: 'analyze', references: [ref(`n${i}`)] },
+  });
+  assert(r.status === 'ok', `NaN rate config uses default; req ${i + 1}`);
+}
+const nanFifth = await ucNaN.analyze({
+  actorId: 'nan-user',
+  contentLengthHeader: null,
+  body: { action: 'analyze', references: [ref('n4')] },
+});
+assert(nanFifth.status === 'error' && nanFifth.httpStatus === 429, 'NaN config still enforces default 4');
+
 console.log('PASS mig-412-look-reference-analysis.self-test');

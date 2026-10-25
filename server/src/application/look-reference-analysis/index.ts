@@ -142,10 +142,14 @@ export function createLookReferenceAnalysisUseCase(deps: AnalyzeDeps) {
         return { status: 'error', message: envelope.message, httpStatus: 413 };
       }
 
-      const limit = deps.rateLimitPerMinute ?? LOOK_REF_DEFAULT_RATE_LIMIT;
+      const configured = deps.rateLimitPerMinute;
+      const limit =
+        typeof configured === 'number' && Number.isFinite(configured) && configured > 0
+          ? Math.min(configured, 30)
+          : LOOK_REF_DEFAULT_RATE_LIMIT;
       const rate = deps.rateLimit.consume({
         userId: input.actorId,
-        limit: Math.min(Math.max(limit, 1), 30),
+        limit,
         windowSeconds: LOOK_REF_RATE_WINDOW_SECONDS,
       });
       if (rate.ok === false) {
@@ -236,7 +240,16 @@ export function createLookReferenceAnalysisUseCase(deps: AnalyzeDeps) {
         };
       }
 
-      const payload = await deps.analyzeVision(visionImages, displayNameHint);
+      let payload: Record<string, unknown>;
+      try {
+        payload = await deps.analyzeVision(visionImages, displayNameHint);
+      } catch {
+        return {
+          status: 'error',
+          message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',
+          httpStatus: 500,
+        };
+      }
       const safePayload = stripTopLevelSecrets(payload);
       return {
         status: 'ok',
