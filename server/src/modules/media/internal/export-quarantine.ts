@@ -27,33 +27,34 @@ export function exportJson(data: Record<string, unknown>): string {
 export function exportMarkdown(data: Record<string, unknown>, type: string): string {
   let md = '';
   if (type === 'character') {
-    md = `# ${typeof data.name === 'string' ? data.name : 'Character'}\n\n`;
-    md += `**Race:** ${typeof data.race === 'string' ? data.race : 'Unknown'}\n\n`;
-    md += `**Class:** ${typeof data.class === 'string' ? data.class : 'Unknown'}\n\n`;
-    md += `**Level:** ${typeof data.level === 'number' ? data.level : 1}\n\n`;
+    // Legacy uses falsy || fallbacks ('' / 0 → defaults), not typeof checks.
+    md = `# ${(data.name as string) || 'Character'}\n\n`;
+    md += `**Race:** ${(data.race as string) || 'Unknown'}\n\n`;
+    md += `**Class:** ${(data.class as string) || 'Unknown'}\n\n`;
+    md += `**Level:** ${(data.level as number) || 1}\n\n`;
     md += `## Attributes\n\n`;
-    if (data.attributes && typeof data.attributes === 'object') {
+    if (data.attributes) {
       for (const [key, value] of Object.entries(data.attributes as Record<string, unknown>)) {
         md += `- **${key}:** ${String(value)}\n`;
       }
     }
     md += `\n## Equipment\n\n`;
-    if (Array.isArray(data.equipment)) {
+    if (data.equipment) {
       for (const item of data.equipment as Array<{ name?: string; equipped?: boolean }>) {
-        md += `- ${item.name ?? ''}${item.equipped ? ' (equipped)' : ''}\n`;
+        md += `- ${item.name}${item.equipped ? ' (equipped)' : ''}\n`;
       }
     }
   } else if (type === 'session') {
-    md = `# Session: ${typeof data.name === 'string' ? data.name : 'Unknown'}\n\n`;
-    md += `**Date:** ${typeof data.createdAt === 'string' ? data.createdAt : 'Unknown'}\n\n`;
+    md = `# Session: ${(data.name as string) || 'Unknown'}\n\n`;
+    md += `**Date:** ${(data.createdAt as string) || 'Unknown'}\n\n`;
     md += `## Players\n\n`;
-    if (Array.isArray(data.players)) {
+    if (data.players) {
       for (const player of data.players as Array<{ name?: string }>) {
-        md += `- ${player.name ?? ''}\n`;
+        md += `- ${player.name}\n`;
       }
     }
   } else {
-    md = `# ${typeof data.name === 'string' ? data.name : 'Export'}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
+    md = `# ${(data.name as string) || 'Export'}\n\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``;
   }
   return md;
 }

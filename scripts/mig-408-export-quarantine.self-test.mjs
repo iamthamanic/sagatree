@@ -117,6 +117,9 @@ assert(json.includes('\n  "name"'), 'pretty-printed');
 const md = exportMarkdown(data, 'character');
 assert(md.startsWith('# Hero'), 'md title');
 assert(md.includes('**Race:** Elf') && md.includes('Staff (equipped)'), 'md fields');
+const falsyMd = exportMarkdown({ name: '', race: '', class: '', level: 0 }, 'character');
+assert(falsyMd.startsWith('# Character'), 'falsy name → Character');
+assert(falsyMd.includes('**Race:** Unknown') && falsyMd.includes('**Level:** 1'), 'falsy || defaults');
 
 const pdf = exportPdf(data, 'character');
 const pdfText = new TextDecoder().decode(pdf);
