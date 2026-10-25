@@ -1,19 +1,19 @@
 # Composition Gate — stack-migration-mig-411 (#827)
 
-- HEAD_SHA: dc385e6b16045b7981d735bb53b09db627b74688
+- HEAD_SHA: 35279e14bb39489882f4833da800a655b0a43484
 - BASE_SHA: dbe2e713daed52f4a688867a3fe58d2e19a2a440
 - Date: 2026-10-25
 - Verdict: CLEAR
 
 ## Event
 
-Legacy items Map catalog stays unmounted; quarantine fixtures characterize defaults/filters/generate without durable inventory coupling.
+Legacy items Map catalog stays unmounted; quarantine fixtures characterize defaults/filters/generate without coupling to durable inventory_item_definitions.
 
 ## Hop chain
 
 1. Producer: none
 2. Authorize: N/A — deny-by-default + `ITEMS_PUBLIC_ACTIVATION_AUTHORIZED=false`
-3. Persist: none (in-memory Map only; not inventory_item_definitions)
+3. Persist: none (in-memory Map only)
 4. Consumer: self-test createRouteHandler probes only
 
 ## Simulations
@@ -21,9 +21,9 @@ Legacy items Map catalog stays unmounted; quarantine fixtures characterize defau
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors | Public path stays 404 | createRouteHandler | pass |
-| Invalid/missing | Nested garbage accepted | applyItemDefaults | pass |
-| Two consumers / crash | Map ≠ durable definitions | flags | pass |
-| Legacy defects | No auth/schema/durable | fixtures | pass |
+| Invalid/missing | Untyped nested/weight accepted | applyItemDefaults | pass |
+| Two consumers / crash | Map ≠ durable definitions | flags; no TABLE_OWNERSHIP ban | pass |
+| Legacy defects | No auth/schema; full seed; RNG order | fixtures | pass |
 
 ## Flags
 
