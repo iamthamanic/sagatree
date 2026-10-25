@@ -67,15 +67,35 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   }
 
   /**
-   * Acceptance markdown with a "## Required Tests" section must have every
-   * checkbox checked. Hash-only evidence must not launder unchecked `[ ]` as PASS (#940).
-   * Non-acceptance artifacts (composition proofs, txt) without that section stay hash-bound.
+   * Completion proofs must bind at least one acceptance artifact
+   * (`.qa/acceptance/**` or markdown with `## Required Tests`). Pure hashed
+   * `.txt` / non-acceptance prose cannot forge DONE (#940 P1 / #935).
+   * Task lists use `-`/`*`/`+` markers (#940 P2).
    */
-  const acceptanceChecklistConsistent = (check, body) => {
+  const TASK_BOX = /^\s*[-*+]\s*\[([ xX])\]\s+(\S.*)$/gm;
+
+  const hasRequiredTestsHeading = (body) => /##\s+Required Tests\b/i.test(body.toString('utf8'));
+
+  const isAcceptanceArtifact = (path, body) => {
+    if (hasRequiredTestsHeading(body)) return true;
+    if (typeof path !== 'string') return false;
+    if (path.includes('.qa/acceptance/')) return true;
+    if (/^docs\/architecture\/ADR-/i.test(path)) return true;
+    // Legacy prep narratives for earliest DONE slices (MIG-001/002).
+    if (path.startsWith('.qa/evidence/stack-migration-prep/') && path.endsWith('.md')) return true;
+    return false;
+  };
+
+  const acceptanceChecklistConsistent = (check, body, path) => {
+    if (!isAcceptanceArtifact(path, body)) return true;
+    // Only the dedicated "## Required Tests" section is fail-closed for unchecked
+    // boxes (#935/#940). Legacy narrative acceptances may still list criteria as
+    // unchecked templates without that heading — they cannot launder a Required
+    // Tests section that remains open.
+    if (!hasRequiredTestsHeading(body)) return true;
     const content = body.toString('utf8');
-    if (!/##\s+Required Tests\b/i.test(content)) return true;
     const section = content.match(/##\s+Required Tests\s*\n([\s\S]*?)(?=\n##\s|$)/i)?.[1] ?? '';
-    const boxes = [...section.matchAll(/^\s*-\s*\[([ xX])\]\s+(\S.*)$/gm)];
+    const boxes = [...section.matchAll(TASK_BOX)];
     if (boxes.length === 0) return false;
     if (boxes.some(([, mark]) => mark === ' ')) return false;
     const script = typeof check.command === 'string' ? check.command.match(/scripts\/[\w./-]+\.mjs/)?.[0] : null;
@@ -88,6 +108,11 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     try {
       const proof = JSON.parse(io.read(issue.completionEvidence).toString());
       if (proof.schemaVersion !== 1 || proof.kind !== 'migration-acceptance' || proof.localId !== issue.localId || proof.result !== 'PASS' || !COMMIT.test(proof.testedCommit ?? '') || !Array.isArray(proof.checks) || proof.checks.length === 0) return false;
+      const acceptanceBound = proof.checks.some((check) => {
+        if (!text(check.evidenceFile) || !io.exists(check.evidenceFile)) return false;
+        return isAcceptanceArtifact(check.evidenceFile, io.read(check.evidenceFile));
+      });
+      if (!acceptanceBound) return false;
       // NOT RUN / SKIPPED / FAIL must never count as PASS (strict equality already).
       return proof.checks.every((check) => {
         if (!text(check.command) || check.result !== 'PASS' || !text(check.evidenceFile) || !SHA.test(check.sha256 ?? '') || !io.exists(check.evidenceFile)) {
@@ -95,7 +120,7 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
         }
         const body = io.read(check.evidenceFile);
         if (createHash('sha256').update(body).digest('hex') !== check.sha256) return false;
-        return acceptanceChecklistConsistent(check, body);
+        return acceptanceChecklistConsistent(check, body, check.evidenceFile);
       });
     } catch { return false; }
   };
