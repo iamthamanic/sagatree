@@ -33,6 +33,11 @@ export function isExecutionBlockerText(value) {
   return false;
 }
 
+/**
+ * Positively identified legacy-defect payloads only. Unknown plain-text or
+ * novel structured locks must remain execution blockers (fail-closed) unless
+ * they exactly match current inventory `legacyDefects` text.
+ */
 export function isLegacyDefectPayload(value) {
   if (isExecutionBlockerText(value)) return false;
   const s = text(value);
@@ -44,9 +49,9 @@ export function isLegacyDefectPayload(value) {
       if (typeof parsed.id === 'string' && /^(RPC-|EDGE-|INFRA-)/.test(parsed.id)) return true;
     }
   } catch {
-    /* plain inventory gap prose → treat as required regression, not execution lock */
+    /* plain text is not auto-legacy — require inventory match at call site */
   }
-  return s.length > 0;
+  return false;
 }
 
 /** Every inventoried requiredTest becomes a binding assertion — no bullet-count truncation. */
@@ -222,13 +227,21 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     const priorRegressions = Array.isArray(old.verification?.requiredRegressions)
       ? old.verification.requiredRegressions.map(text)
       : [];
+    const inventoryLegacySet = new Set(inventoryLegacyDefects.map(text));
     const requiredRegressions = unique([
       ...inventoryLegacyDefects,
       ...priorRegressions,
       ...priorBlockers.filter((entry) => isLegacyDefectPayload(entry)),
     ]);
     const blockers = unique([
-      ...priorBlockers.filter((entry) => isExecutionBlockerText(entry)),
+      ...priorBlockers.filter((entry) => {
+        const s = text(entry);
+        if (isExecutionBlockerText(s)) return true;
+        if (isLegacyDefectPayload(s)) return false;
+        if (inventoryLegacySet.has(s)) return false;
+        // Unknown prior blocker wording → keep as execution lock (fail-closed).
+        return true;
+      }),
       ...(id === 'ATLAS-LIVE-E2E' && previous.meta?.atlasLiveE2e?.ciAcceptance === 'not-passing'
         ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
