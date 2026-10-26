@@ -1,7 +1,7 @@
 # Composition Gate — stack-migration-rpc-atlas-maps (#862)
 
-- HEAD_SHA: f6f861a3a0d7b92e0fc50a4bb711888f8f03e089
-- BASE_SHA: 10e0843694c15d51f9f80e88da7e8661cdd280ca
+- HEAD_SHA: bf376100fdba1ec1b4a9fc5560ca607dbe2a93df
+- BASE_SHA: d5b6a4d329d921477ba0d2281d68ed10f5404bf5
 - Date: 2026-10-26
 - Verdict: CLEAR
 - note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
