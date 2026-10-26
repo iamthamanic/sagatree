@@ -2,7 +2,7 @@
 
 - generatedAt: 2026-10-26T13:09:21Z
 - branch: `chore/773-rpc-session-recap-done-evidence`
-- headSha: `7488932cce60a6b9784ac9634ac87097547559cd`
+- headSha: `9df561c14fb8cd5597da3389d9aac59b7dbb9927`
 - hint: post plan-regen after SESSION-RECAP + MIG-351 coordinator DONE
 
 ## Counts
