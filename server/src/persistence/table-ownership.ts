@@ -41,6 +41,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   command_idempotency: 'session',
   session_events: 'session',
   play_sessions: 'session',
+  session_recaps: 'session',
   session_invites: 'session',
   session_players: 'session',
   rulesets: 'rulesets',
