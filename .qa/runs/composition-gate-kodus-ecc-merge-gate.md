@@ -1,6 +1,6 @@
 # Composition Gate — kodus-ecc-merge-gate
 
-- HEAD_SHA: PLACEHOLDER
+- HEAD_SHA: 3d7e2dbfe78345729e1e395de51ef603f85e5993
 - BASE_SHA: d5b6a4d329d921477ba0d2281d68ed10f5404bf5
 - Date: 2026-10-26
 - Verdict: CLEAR
