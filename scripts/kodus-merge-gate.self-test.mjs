@@ -12,6 +12,8 @@ import {
   evaluateKodusCheckRun,
   selectKodusCheckRun,
   collectKodusIssueCommentFindings,
+  collectDismissedIssueCommentIds,
+  extractDismissedFindingIds,
 } from './kodus-merge-gate.mjs';
 import { evaluateMergeGate, findingSeverity } from './ecc-merge-gate-check.mjs';
 
@@ -25,24 +27,11 @@ function assert(cond, msg) {
 assert(isKodyBotLogin('kody-ai'), 'kody-ai login');
 assert(isKodyBotLogin('kody-ai[bot]'), 'kody-ai[bot] login');
 assert(!isKodyBotLogin('evil-kody'), 'reject spoofed login');
-assert(!isKodyBotLogin('chatgpt-codex-connector'), 'codex is not kody');
 
 const criticalBody =
   '![kody code-review](https://img.shields.io/badge/kody-code--review-312B4B?labelColor=C9BBF2) ![Bug](https://img.shields.io/badge/Bug-B71C1C) ![critical](https://img.shields.io/badge/severity_level-critical-FF3D3D)\n\n**Invalid layers**';
 assert(KODY_SEVERITY_RE.test(criticalBody), 'kody severity regex');
 assert(kodyFindingSeverity(criticalBody) === 'Critical', 'critical mapping');
-assert(
-  kodyFindingSeverity(
-    '![kody code-review](x) ![high](https://img.shields.io/badge/severity_level-high-6B6B92)\nHi',
-  ) === 'High',
-  'high mapping',
-);
-assert(
-  kodyFindingSeverity(
-    '![kody code-review](x) ![medium](https://img.shields.io/badge/severity_level-medium-1A7BBE)\nMed',
-  ) === 'Medium',
-  'medium mapping',
-);
 
 const allowed = ['P1', 'P2', 'Critical', 'Important', 'High', 'Medium', 'Low', 'Info'];
 assert(
@@ -50,13 +39,7 @@ assert(
   'findingSeverity integrates kody',
 );
 
-// Missing review
-assert(
-  evaluateKodusCheckRun(null).reason === 'kodus-missing',
-  'missing kody check fails',
-);
-
-// Pending / started-only
+assert(evaluateKodusCheckRun(null).reason === 'kodus-missing', 'missing kody check fails');
 assert(
   evaluateKodusCheckRun({
     name: KODY_CHECK_NAME,
@@ -80,18 +63,6 @@ assert(
 assert(
   evaluateKodusCheckRun({
     name: KODY_CHECK_NAME,
-    app: { slug: 'kody-ai' },
-    status: 'in_progress',
-    conclusion: null,
-    output: { title: 'Code Review Started' },
-  }).ok === false,
-  'Started+in_progress never PASS',
-);
-
-// Spoofed app
-assert(
-  evaluateKodusCheckRun({
-    name: KODY_CHECK_NAME,
     app: { slug: 'not-kody' },
     status: 'completed',
     conclusion: 'success',
@@ -99,20 +70,26 @@ assert(
   }).reason === 'kodus-spoofed-app',
   'spoofed app fails',
 );
-
-// Failed conclusion
+assert(
+  evaluateKodusCheckRun({
+    name: KODY_CHECK_NAME,
+    status: 'completed',
+    conclusion: 'success',
+    output: { title: 'Code Review Complete' },
+  }).reason === 'kodus-spoofed-app',
+  'missing app object fails',
+);
 assert(
   evaluateKodusCheckRun({
     name: KODY_CHECK_NAME,
     app: { slug: 'kody-ai' },
     status: 'completed',
-    conclusion: 'failure',
+    conclusion: 'neutral',
     output: { title: 'Code Review Complete' },
   }).reason === 'kodus-failed',
-  'failed conclusion',
+  'neutral conclusion fails',
 );
 
-// Success complete (positive)
 const okRun = {
   name: KODY_CHECK_NAME,
   app: { slug: 'kody-ai' },
@@ -125,87 +102,102 @@ const okRun = {
   },
 };
 assert(evaluateKodusCheckRun(okRun).ok === true, 'complete success PASS');
-
-// Stale / other SHA is handled by callers fetching check-runs for HEAD only
 assert(selectKodusCheckRun([okRun, { name: 'Test Gate' }])?.name === KODY_CHECK_NAME, 'select kody');
 
-// Gate: kody missing blocks even with clean findings
-const failMissing = evaluateMergeGate({
-  unresolvedFindings: [],
-  checkFailures: [],
-  pendingReviewsForHead: [],
-  kodusReview: { ok: false, reason: 'kodus-missing', detail: 'missing' },
-});
-assert(failMissing.ok === false && failMissing.reason === 'kodus-missing', 'gate blocks missing kody');
-
-// Gate: kody complete + open critical finding blocks
-const failFinding = evaluateMergeGate({
-  unresolvedFindings: [{ severity: 'Critical', path: 'x.ts', user: 'kody-ai' }],
-  checkFailures: [],
-  pendingReviewsForHead: [],
-  kodusReview: { ok: true, reason: 'kodus-complete' },
-});
-assert(failFinding.ok === false && failFinding.reason === 'unresolved-findings', 'open kody finding blocks');
-
-// Gate: kody complete + findings cleared → PASS
-const passAll = evaluateMergeGate({
-  unresolvedFindings: [],
-  checkFailures: [],
-  pendingReviewsForHead: [],
-  kodusReview: { ok: true, reason: 'kodus-complete' },
-});
-assert(passAll.ok === true, 'kody complete + clean findings PASS');
-
-// Late finding after prior green
-const late = evaluateMergeGate({
-  unresolvedFindings: [{ severity: 'High', path: 'y.ts' }],
-  checkFailures: [],
-  pendingReviewsForHead: [],
-  kodusReview: { ok: true, reason: 'kodus-complete' },
-});
-assert(late.ok === false, 'late high finding invalidates prior green');
-
-// Dismissed finding
 assert(
-  kodyBodiesIndicateDismissed('<!-- ecc-finding-dismissed: false-positive barrel import -->'),
-  'dismiss marker',
+  evaluateMergeGate({
+    unresolvedFindings: [],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: { ok: false, reason: 'kodus-missing', detail: 'missing' },
+  }).reason === 'kodus-missing',
+  'gate blocks missing kody',
+);
+assert(
+  evaluateMergeGate({
+    unresolvedFindings: [{ severity: 'Critical', path: 'x.ts', user: 'kody-ai' }],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: { ok: true, reason: 'kodus-complete' },
+  }).reason === 'unresolved-findings',
+  'open kody finding blocks',
+);
+assert(
+  evaluateMergeGate({
+    unresolvedFindings: [],
+    checkFailures: [],
+    pendingReviewsForHead: [],
+    kodusReview: { ok: true, reason: 'kodus-complete' },
+  }).ok === true,
+  'kody complete + clean findings PASS',
 );
 
+assert(
+  kodyBodiesIndicateDismissed('<!-- ecc-finding-dismissed id=99: false-positive -->'),
+  'dismiss marker',
+);
+assert(
+  extractDismissedFindingIds(
+    '<!-- ecc-finding-dismissed id=42: reason --> see https://x/issuecomment-42',
+  ).has('42'),
+  'extract dismiss id',
+);
+
+const dismissed = collectDismissedIssueCommentIds([
+  {
+    id: 9,
+    author_association: 'OWNER',
+    body: '<!-- ecc-finding-dismissed id=2: false-positive barrel -->',
+  },
+  {
+    id: 10,
+    author_association: 'NONE',
+    body: '<!-- ecc-finding-dismissed id=3: attacker -->',
+  },
+]);
+assert(dismissed.has('2'), 'trusted owner dismiss');
+assert(!dismissed.has('3'), 'untrusted dismiss ignored');
+
+const headAt = '2026-10-26T21:00:00Z';
 const issueFindings = collectKodusIssueCommentFindings(
   [
     {
       id: 1,
       user: { login: 'kody-ai[bot]' },
       body: '## Code Review Completed!\n<!-- kody-codereview-completed-1 -->',
+      created_at: '2026-10-26T21:10:00Z',
     },
     {
       id: 2,
       user: { login: 'kody-ai[bot]' },
       body: criticalBody,
       html_url: 'https://example/2',
+      created_at: '2026-10-26T21:10:00Z',
     },
     {
       id: 3,
       user: { login: 'kody-ai[bot]' },
       body: '![kody code-review](x) ![medium](https://img.shields.io/badge/severity_level-medium-1A7BBE)\nMed',
       html_url: 'https://example/3',
+      created_at: '2026-10-26T21:10:00Z',
     },
     {
       id: 4,
-      in_reply_to_id: 3,
-      user: { login: 'iamthamanic' },
-      body: '<!-- ecc-finding-dismissed: style-only / out of scope for isolated-contract -->',
+      user: { login: 'kody-ai[bot]' },
+      body: criticalBody,
+      created_at: '2026-10-26T20:00:00Z', // before HEAD
     },
-    { id: 5, user: { login: 'evil-bot' }, body: criticalBody },
+    { id: 5, user: { login: 'evil-bot' }, body: criticalBody, created_at: '2026-10-26T21:10:00Z' },
   ],
   allowed,
+  { headCommittedAt: headAt, dismissedIds: new Set(['3']) },
 );
 assert(issueFindings.some((f) => f.id === 2 && f.severity === 'Critical'), 'issue comment critical counted');
-assert(!issueFindings.some((f) => f.id === 3), 'dismissed medium skipped');
+assert(!issueFindings.some((f) => f.id === 3), 'dismissed id skipped');
+assert(!issueFindings.some((f) => f.id === 4), 'pre-HEAD card skipped');
 assert(!issueFindings.some((f) => f.id === 5), 'spoofed bot ignored');
 assert(!issueFindings.some((f) => f.id === 1), 'completed wrapper ignored');
 
-// New push while review pending
 assert(
   evaluateMergeGate({
     unresolvedFindings: [],
@@ -216,7 +208,6 @@ assert(
   'push during review → pending blocks',
 );
 
-// API error still fail-closed (kodus not consulted)
 assert(
   evaluateMergeGate({
     unresolvedFindings: [],

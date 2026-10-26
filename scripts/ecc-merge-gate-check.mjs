@@ -30,6 +30,7 @@ import {
   evaluateKodusCheckRun,
   selectKodusCheckRun,
   collectKodusIssueCommentFindings,
+  collectDismissedIssueCommentIds,
 } from './kodus-merge-gate.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -236,8 +237,21 @@ export function lateFindingInvalidatesPriorPass({ headSha, findingCommitSha, sev
 }
 
 export function isResolvedThread(comment, replies) {
-  const bodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
-  if (bodiesIndicateResolved(bodies)) return true;
+  // Trusted dismissals: root or a trusted-association reply carrying the HTML marker.
+  const trustedBodies = [
+    comment.body,
+    ...replies
+      .filter((r) => {
+        const assoc = String(r.author_association ?? '').toUpperCase();
+        return ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(assoc);
+      })
+      .map((r) => r.body),
+  ].join('\n');
+  if (bodiesIndicateResolved(trustedBodies)) return true;
+  // Untrusted free-text must not clear findings; still honor SHA resolve markers on any body
+  // when they include an explicit ecc-finding-resolved HTML tag (already in RESOLVED_MARKERS).
+  const allBodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
+  if (/<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i.test(allBodies)) return true;
   if (comment.isResolved === true || comment.resolved === true) return true;
   return false;
 }
@@ -385,7 +399,13 @@ export function mergeGraphqlAndRestFindings(fromGql, fromRest) {
  * Union GraphQL (authoritative resolution) + REST (non-thread comments only).
  * Any API throw propagates (fail-closed).
  */
-export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
+export function collectUnresolvedFindings(
+  owner,
+  repo,
+  pullNumber,
+  allowedSeverities,
+  { headSha = null } = {},
+) {
   const { unresolved: fromGql, graphqlThreadCommentIds } = collectUnresolvedFindingsFromGraphql(
     owner,
     repo,
@@ -400,7 +420,21 @@ export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeveri
     `repos/${owner}/${repo}/issues/${pullNumber}/comments`,
     '--paginate',
   ]);
-  const fromKodusIssues = collectKodusIssueCommentFindings(issueComments, allowedSeverities);
+  let headCommittedAt = null;
+  if (headSha) {
+    try {
+      const commit = ghJson(['api', `repos/${owner}/${repo}/commits/${headSha}`]);
+      headCommittedAt =
+        commit.commit?.committer?.date ?? commit.commit?.author?.date ?? commit.committer?.date ?? null;
+    } catch {
+      headCommittedAt = null;
+    }
+  }
+  const dismissedIds = collectDismissedIssueCommentIds(issueComments);
+  const fromKodusIssues = collectKodusIssueCommentFindings(issueComments, allowedSeverities, {
+    headCommittedAt,
+    dismissedIds,
+  });
   return mergeGraphqlAndRestFindings(
     mergeGraphqlAndRestFindings(fromGql, fromRest),
     fromKodusIssues,
@@ -420,6 +454,31 @@ export function resolveKodusReviewForHead(owner, repo, headSha, { required = tru
   ]);
   const selected = selectKodusCheckRun(runs);
   return evaluateKodusCheckRun(selected);
+}
+
+/**
+ * Publish / refresh the ECC Merge Gate check-run on a specific SHA.
+ * Required for check_run / issue_comment workflow triggers (default-branch association).
+ */
+export function publishEccCheckRun(owner, repo, headSha, { conclusion, title, summary }) {
+  return ghJson([
+    'api',
+    '--method',
+    'POST',
+    `repos/${owner}/${repo}/check-runs`,
+    '-f',
+    `name=ECC Merge Gate`,
+    '-f',
+    `head_sha=${headSha}`,
+    '-f',
+    'status=completed',
+    '-f',
+    `conclusion=${conclusion}`,
+    '-f',
+    `output[title]=${title}`,
+    '-f',
+    `output[summary]=${summary}`,
+  ]);
 }
 
 export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
@@ -568,6 +627,7 @@ export function runMergeGateCheck({
       ctx.repo,
       ctx.pullNumber,
       config.blockOnUnresolvedReviewSeverities,
+      { headSha: ctx.headSha },
     );
     pendingReviewsForHead = collectPendingReviewsForHead(
       ctx.owner,

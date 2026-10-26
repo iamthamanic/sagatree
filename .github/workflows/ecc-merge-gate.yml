@@ -40,7 +40,7 @@ on:
 
 permissions:
   contents: read
-  checks: read
+  checks: write
   pull-requests: read
   issues: read
 
@@ -117,6 +117,7 @@ jobs:
           node-version: 22
 
       - name: Run ECC Merge Gate check
+        id: gate
         if: steps.pr.outputs.number != ''
         env:
           GH_TOKEN: ${{ github.token }}
@@ -126,5 +127,38 @@ jobs:
           # while Quality Gates queue and (2) late review findings still
           # fail-close by replacing a prior green run (#937). workflow_run
           # enforces required checks (with poll) once siblings are underway.
+          # check_run/issue_comment still evaluate Kodus+findings; sibling waits stay on workflow_run.
           ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment' || github.event_name == 'issue_comment' || github.event_name == 'check_run') && '1' || '0' }}
-        run: node scripts/ecc-merge-gate-check.mjs
+        run: |
+          set +e
+          node scripts/ecc-merge-gate-check.mjs
+          CODE=$?
+          set -e
+          echo "exit_code=$CODE" >> "$GITHUB_OUTPUT"
+          exit "$CODE"
+
+      # check_run / issue_comment workflows associate with the default branch tip.
+      # Always (re)publish the gate conclusion onto the PR head SHA so branch
+      # protection sees the fresh result (Codex/Kody P1 on association).
+      - name: Publish ECC Merge Gate on PR HEAD
+        if: always() && steps.pr.outputs.number != '' && steps.pr.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.pr.outputs.sha }}
+          GATE_EXIT: ${{ steps.gate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          if [ "${GATE_EXIT:-1}" = "0" ]; then
+            CONCL=success
+            TITLE='ECC Merge Gate PASS'
+          else
+            CONCL=failure
+            TITLE='ECC Merge Gate FAIL'
+          fi
+          gh api --method POST "repos/${{ github.repository }}/check-runs" \
+            -f name='ECC Merge Gate' \
+            -f head_sha="$HEAD_SHA" \
+            -f status='completed' \
+            -f conclusion="$CONCL" \
+            -f "output[title]=$TITLE" \
+            -f "output[summary]=Published onto PR HEAD ${HEAD_SHA} (event=${{ github.event_name }}). See workflow run ${{ github.run_id }}."

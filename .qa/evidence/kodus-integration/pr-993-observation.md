@@ -1,4 +1,4 @@
-# Kodus observation — PR #993 (RPC-ATLAS-MAPS)
+# Kodus Observation — PR #993 (RPC-ATLAS-MAPS)
 
 Observed 2026-10-26 against HEAD `80e3ccc2a6a952fa5493f4e5f70c1a8b9d50120a`.
 

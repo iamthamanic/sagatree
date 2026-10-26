@@ -1,4 +1,4 @@
-# Runner adapter — Kodus in `@ecc-runner-loop` / `@pr-merge-safe` / `@babysit`
+# Runner Adapter — Kodus In `@ecc-runner-loop` / `@pr-merge-safe` / `@babysit`
 
 Project-local contract. Do **not** patch global skills unless this file is insufficient.
 

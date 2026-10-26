@@ -1,4 +1,4 @@
-# Acceptance — Kodus ECC Merge Gate integration
+# Acceptance — Kodus ECC Merge Gate Integration
 
 ## Intent
 Extend ECC Merge Gate to require completed Kodus (kody-ai) review on PR HEAD and to block on unresolved Kodus severities (Critical→Info) while preserving Codex P1/P2 fail-closed behavior.
