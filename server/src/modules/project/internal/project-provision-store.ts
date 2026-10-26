@@ -6,6 +6,7 @@
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import { generateSagaPublicId } from './public-project-id.ts';
+import { generateProjectJoinCode } from './project-membership-store.ts';
 
 export type ProvisionedProject = {
   readonly id: string;
@@ -139,6 +140,8 @@ export class ProjectProvisionStore {
     const projectId = newId();
     const createdAt = nowIso();
     const pub = generateSagaPublicId();
+    const joinCode = generateProjectJoinCode();
+    const memberId = newId();
     const runtimeJson = JSON.stringify(input.adventureRuntime ?? {});
 
     try {
@@ -147,8 +150,8 @@ export class ProjectProvisionStore {
           .prepare(
             `INSERT INTO projects (
                id, world_id, gm_user_id, title, created_at, saga_id, saga_version_id,
-               adventure_runtime, public_id, status, description
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)`,
+               adventure_runtime, public_id, status, description, code
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`,
           )
           .run(
             projectId,
@@ -161,13 +164,14 @@ export class ProjectProvisionStore {
             runtimeJson,
             pub,
             input.description,
+            joinCode,
           );
         this.#db
           .prepare(
-            `INSERT INTO project_members (project_id, user_id, role, active, joined_at)
-             VALUES (?, ?, 'gm', 1, ?)`,
+            `INSERT INTO project_members (project_id, user_id, role, active, joined_at, id, character_id)
+             VALUES (?, ?, 'gm', 1, ?, ?, NULL)`,
           )
-          .run(projectId, input.actorId, createdAt);
+          .run(projectId, input.actorId, createdAt, memberId);
       });
     } catch {
       return { ok: false, error: 'P0001' };
