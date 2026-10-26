@@ -620,6 +620,18 @@ function checkRpcWorldMap() {
   );
 }
 
+function checkRpcProjectMembership() {
+  console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-project-membership.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2920,6 +2932,7 @@ checkRpcSagaVersionRead();
 checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
+checkRpcProjectMembership();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();

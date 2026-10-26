@@ -5,7 +5,7 @@
  * Codes/tokens are never GM proofs. Membership is always role=player from this path.
  * Client-supplied role claims in payloads are ignored.
  */
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import { isSqliteBusyError } from '../../../persistence/open-database.ts';
 
@@ -174,8 +174,8 @@ function ensureActiveProjectPlayer(
     return { member: existing, created: false };
   }
   db.prepare(
-    'INSERT INTO project_members (project_id, user_id, role, active, joined_at) VALUES (?, ?, ?, 1, ?)',
-  ).run(projectId, userId, 'player', nowIso());
+    'INSERT INTO project_members (project_id, user_id, role, active, joined_at, id, character_id) VALUES (?, ?, ?, 1, ?, ?, NULL)',
+  ).run(projectId, userId, 'player', nowIso(), randomUUID());
   return {
     member: { projectId, userId, role: 'player', active: true },
     created: true,
@@ -225,8 +225,8 @@ export function createSessionInviteStore(db: HostDatabase): SessionInviteStore {
         'INSERT OR IGNORE INTO projects (id, world_id, gm_user_id, title, created_at) VALUES (?, ?, ?, ?, ?)',
       ).run(input.projectId, input.worldId, input.gmUserId, 'Project', createdAt);
       db.prepare(
-        "INSERT OR IGNORE INTO project_members (project_id, user_id, role, active, joined_at) VALUES (?, ?, 'gm', 1, ?)",
-      ).run(input.projectId, input.gmUserId, createdAt);
+        "INSERT OR IGNORE INTO project_members (project_id, user_id, role, active, joined_at, id, character_id) VALUES (?, ?, 'gm', 1, ?, ?, NULL)",
+      ).run(input.projectId, input.gmUserId, createdAt, randomUUID());
       db.prepare(
         'INSERT OR REPLACE INTO play_sessions (session_id, project_id, public_id, join_code, status, created_at) VALUES (?, ?, ?, ?, ?, ?)',
       ).run(
