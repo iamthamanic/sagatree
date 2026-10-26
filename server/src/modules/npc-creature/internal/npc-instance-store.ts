@@ -142,7 +142,7 @@ export class NpcInstanceStore {
     return null;
   }
 
-  #decodeJsonObject(raw: string, field: 'snapshot' | 'runtime'): Record<string, unknown> | null {
+  #decodeJsonObject(raw: string): Record<string, unknown> | null {
     try {
       const parsed: unknown = JSON.parse(raw);
       if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
@@ -166,8 +166,8 @@ export class NpcInstanceStore {
       )
       .get(id) as NpcInstanceDbRow | undefined;
     if (!row) return null;
-    const snapshot = this.#decodeJsonObject(row.snapshot, 'snapshot');
-    const runtime = this.#decodeJsonObject(row.runtime, 'runtime');
+    const snapshot = this.#decodeJsonObject(row.snapshot);
+    const runtime = this.#decodeJsonObject(row.runtime);
     if (!snapshot || !runtime) return null;
     return {
       id: row.id,
