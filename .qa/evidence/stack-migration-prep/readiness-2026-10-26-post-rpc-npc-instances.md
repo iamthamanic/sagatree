@@ -2,7 +2,7 @@
 
 - generatedAt: 2026-10-26T09:25:30Z
 - branch: `chore/773-rpc-npc-instances-done-evidence`
-- headSha: `33a52ad691b9c25f5aec80ce0c12fbd037356450`
+- headSha: `75a7b41b497685f5a75dde12b6d681cebcfbe276`
 - hint: post plan-regen after RPC-NPC-INSTANCES DONE evidence
 
 ## Counts
