@@ -335,12 +335,11 @@ export class SessionAccessStore {
             .run(current.sessionId, actorIds[0], boundCharacter);
         }
 
-        // Players need write for presence/runtime self-commands after join.
+        // Reader membership; presence is authorized separately in SessionRuntimeStore.
         this.#db
           .prepare(
-            `INSERT INTO session_members (session_id, actor_user_id, can_write)
-             VALUES (?, ?, 1)
-             ON CONFLICT(session_id, actor_user_id) DO UPDATE SET can_write = 1`,
+            `INSERT OR IGNORE INTO session_members (session_id, actor_user_id, can_write)
+             VALUES (?, ?, 0)`,
           )
           .run(current.sessionId, actorIds[0]);
 
@@ -386,6 +385,12 @@ export class SessionAccessStore {
             value: { left: false, runtimeRevision: current.runtimeRevision },
           };
         }
+        // Revoke runtime membership so leftover can_write cannot persist after leave.
+        this.#db
+          .prepare(
+            `DELETE FROM session_members WHERE session_id = ? AND actor_user_id = ?`,
+          )
+          .run(sessionId, actorIds[0]);
 
         const now = nowIso();
         this.#ensureRuntime(sessionId, current.projectId, now);

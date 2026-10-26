@@ -289,7 +289,10 @@ export function createSessionRuntimeStore(
         inTransaction = true;
 
         const writeAccess = memberCanWrite(db, sessionId, actorUserId);
-        if (writeAccess === null || !writeAccess) {
+        // Presence: any session member (including can_write=0) may update own presence.
+        // All other commands remain GM/writer-only.
+        const presenceAllowed = kind === 'presence' && writeAccess !== null;
+        if (writeAccess === null || (!writeAccess && !presenceAllowed)) {
           db.exec('ROLLBACK');
           inTransaction = false;
           return failure('FORBIDDEN');
