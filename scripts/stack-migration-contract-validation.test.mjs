@@ -538,7 +538,14 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  assert.ok(ready.some((entry) => entry.localId === 'RPC-ATLAS-MAPS'), 'RPC-ATLAS-MAPS unlocks after RPC-WORLD-MAP DONE');
+  // RPC-ATLAS-MAPS shipped via PR #993; dependent RPC-WORLD-PLACES is the unlock probe.
+  const atlas = original.intake.issues.find((issue) => issue.localId === 'RPC-ATLAS-MAPS');
+  assert.equal(atlas?.status, 'done', 'RPC-ATLAS-MAPS must be DONE after #993');
+  assert.ok(atlas?.labels?.includes('agent-done'), 'RPC-ATLAS-MAPS agent-done');
+  assert.ok(
+    ready.some((entry) => entry.localId === 'RPC-WORLD-PLACES'),
+    'RPC-WORLD-PLACES unlocks after RPC-ATLAS-MAPS DONE',
+  );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');

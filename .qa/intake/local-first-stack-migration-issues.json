@@ -27,7 +27,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 20,
-    "issuesBlockedOrNeedsDesign": 23,
+    "issuesBlockedOrNeedsDesign": 22,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -7289,7 +7289,7 @@
       "title": "Atlas-Kartenprojektion und Revision",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-atlas-maps",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-atlas-maps.md",
       "dependsOn": [
@@ -7550,9 +7550,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-atlas-maps.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-SEC-CROSS-SAGA-REVEAL\",\"severity\":\"High\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Welt-Leser können einen fremden Saga-Public-ID derselben Welt angeben und dessen Party-Reveals auslesen.\",\"sourceEvidence\":\"supabase/migrations/097_donalu_player_place_projection.sql und 105_atlas_worldbuilder_player_projection.sql: Projekt wird nach public_id+world_profile_id aufgelöst, aber Mitgliedschaft im gewählten Projekt wird nicht geprüft.\",\"requiredSuccessorAcceptance\":\"Vor Party-Projektion die Mitgliedschaft/GM-Berechtigung genau im angeforderten Saga-Projekt nachweisen; A-Mitglied darf keine nur in B freigegebenen Orte/Karten/Links sehen.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-CROSS-SAGA\"}}",
@@ -7593,7 +7594,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-037",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -7602,7 +7603,7 @@
       "title": "Orte und Kartenverknüpfungen",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-world-places",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-places.md",
       "dependsOn": [
@@ -7887,8 +7888,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-038",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
