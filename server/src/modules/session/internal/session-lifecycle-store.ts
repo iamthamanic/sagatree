@@ -240,8 +240,9 @@ export class SessionLifecycleStore {
     this.#db
       .prepare(
         `INSERT INTO session_recaps (
-           session_id, summary_text, highlight_lines, snapshot, created_at, updated_at
-         ) VALUES (?, NULL, ?, ?, ?, ?)
+           session_id, summary_text, summary_status, highlight_lines, snapshot,
+           created_at, updated_at
+         ) VALUES (?, NULL, 'none', ?, ?, ?, ?)
          ON CONFLICT(session_id) DO UPDATE SET
            highlight_lines = excluded.highlight_lines,
            snapshot = excluded.snapshot,

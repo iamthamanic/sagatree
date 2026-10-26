@@ -28,6 +28,11 @@ import {
   type InviteResolveFail,
   type InviteResolveOk,
 } from './internal/session-access-store.ts';
+import {
+  SessionRecapStore,
+  type RecapOk,
+  type RecapError,
+} from './internal/session-recap-store.ts';
 
 export type {
   ApplyCommandInput,
@@ -52,7 +57,14 @@ export type {
   InviteResolveFail,
   InviteResolveOk,
 } from './internal/session-access-store.ts';
+export type {
+  RecapDto,
+  RecapError,
+  RecapHighlightLine,
+  RecapOk,
+} from './internal/session-recap-store.ts';
 export { appendSessionEventIsExported };
+export { buildRecapHighlightLines } from './internal/session-recap-store.ts';
 
 export type SessionCommandPort = {
   readonly apply: (actor: Actor, command: ApplyCommandInput) => ApplyCommandResult;
@@ -119,6 +131,19 @@ export type SessionAccessPort = {
   ) => InviteResolveOk | InviteResolveFail | { readonly ok: false; readonly error: string };
 };
 
+export type SessionRecapPort = {
+  readonly getSessionRecap: (
+    actor: Actor,
+    sessionId: string,
+  ) => RecapOk | RecapError;
+  readonly saveSessionRecapSummary: (
+    actor: Actor,
+    sessionId: string,
+    summaryText: string | null,
+    status: string,
+  ) => RecapOk | RecapError;
+};
+
 export type SessionPorts = {
   readonly moduleId: 'session';
   readonly commands: SessionCommandPort;
@@ -127,6 +152,7 @@ export type SessionPorts = {
   readonly invites: SessionInviteStore;
   readonly lifecycle: SessionLifecyclePort;
   readonly access: SessionAccessPort;
+  readonly recap: SessionRecapPort;
 };
 
 function unavailableLifecycle(): SessionLifecyclePort {
@@ -146,6 +172,14 @@ function unavailableAccess(): SessionAccessPort {
     createSessionInvite: fail,
     revokeSessionInvite: fail,
     resolveSessionInvite: fail,
+  };
+}
+
+function unavailableRecap(): SessionRecapPort {
+  const fail = (): RecapError => ({ ok: false, error: 'store-unavailable' });
+  return {
+    getSessionRecap: fail,
+    saveSessionRecapSummary: fail,
   };
 }
 
@@ -178,6 +212,9 @@ export function createSessionPorts(deps: {
     : null;
   const accessStore = deps.project
     ? new SessionAccessStore(deps.db, deps.project)
+    : null;
+  const recapStore = deps.project
+    ? new SessionRecapStore(deps.db, deps.project)
     : null;
 
   const lifecycle: SessionLifecyclePort = lifecycleStore
@@ -235,6 +272,26 @@ export function createSessionPorts(deps: {
       }
     : unavailableAccess();
 
+  const recap: SessionRecapPort = recapStore
+    ? {
+        getSessionRecap(actor, sessionId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501:not authenticated' };
+          return recapStore.getSessionRecap(ids, sessionId);
+        },
+        saveSessionRecapSummary(actor, sessionId, summaryText, status) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501:not authenticated' };
+          return recapStore.saveSessionRecapSummary(
+            ids,
+            sessionId,
+            summaryText,
+            status,
+          );
+        },
+      }
+    : unavailableRecap();
+
   return {
     moduleId: 'session',
     commands: {
@@ -253,6 +310,7 @@ export function createSessionPorts(deps: {
     invites,
     lifecycle,
     access,
+    recap,
   };
 }
 
