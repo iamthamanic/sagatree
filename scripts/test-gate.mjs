@@ -644,6 +644,18 @@ function checkRpcSagaGovernance() {
   );
 }
 
+function checkRpcSessionLifecycle() {
+  console.log('RPC-SESSION-LIFECYCLE (#868): create play/project session + set status...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-session-lifecycle.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2946,6 +2958,7 @@ checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
+checkRpcSessionLifecycle();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
