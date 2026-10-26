@@ -2,12 +2,17 @@
   "schemaVersion": 2,
   "repository": "iamthamanic/sagatree",
   "status": "synchronized-and-verified",
-  "lastVerifiedAt": "2026-10-26T03:53:54.352Z",
-  "correctionOrder": "2026-10-23-readiness-evidence-sync",
-  "evidenceMeaning": "Fresh verify after readiness classification (DONE/READY with completionEvidence). Not production cutover approval.",
+  "lastVerifiedAt": "2026-10-26T05:23:17.079Z",
+  "correctionOrder": "2026-10-26-rpc-session-lifecycle-done",
+  "evidenceMeaning": "Fresh verify after RPC-SESSION-LIFECYCLE DONE (#974/#868).",
   "syncedCount": 90,
   "pendingCount": 0,
-  "focus": [],
+  "focus": [
+    "RPC-SESSION-LIFECYCLE",
+    "RPC-SESSION-ACCESS",
+    "RPC-SESSION-RECAP",
+    "RPC-NPC-INSTANCES"
+  ],
   "mismatches": [],
   "publishProgress": {
     "updated": 1,

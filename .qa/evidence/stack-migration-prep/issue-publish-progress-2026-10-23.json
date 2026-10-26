@@ -281,12 +281,14 @@
     {
       "localId": "RPC-SESSION-LIFECYCLE",
       "number": 868,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
       "sha256": "801785d986ad0dbccf3e3b8332d51b517301360fbc08876ea642acaaec6f845c",
-      "action": "unchanged"
+      "action": "unchanged",
+      "closed": true,
+      "status": "done"
     },
     {
       "localId": "RPC-NPC-INSTANCES",
