@@ -81,6 +81,11 @@ export type WorldPorts = {
   ) => WorldReadResult<WorldMapDto>;
   /** Owner-only world edit check (promote-to-world / map write parity). */
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
+  /** Append a promoted lore fact into worlds.payload.modules.promotedLore (#876). */
+  readonly appendPromotedLoreFact: (
+    worldId: string,
+    fact: Record<string, unknown>,
+  ) => { readonly ok: true } | { readonly ok: false; readonly error: string };
 };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
@@ -193,6 +198,55 @@ export function createWorldPorts(deps: {
       if (!id) return false;
       return maps.canEditWorld(actorIds, id);
     },
+
+    appendPromotedLoreFact(worldId, fact) {
+      if (!db) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      const world = db
+        .prepare(`SELECT payload FROM worlds WHERE id = ?`)
+        .get(id) as { payload: string } | undefined;
+      if (!world) return { ok: false, error: '22023' };
+      let payload: Record<string, unknown> = {};
+      try {
+        const parsed: unknown = JSON.parse(world.payload || '{}');
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          payload = { ...(parsed as Record<string, unknown>) };
+        }
+      } catch {
+        payload = {};
+      }
+      const modules =
+        payload.modules && typeof payload.modules === 'object' && !Array.isArray(payload.modules)
+          ? { ...(payload.modules as Record<string, unknown>) }
+          : {};
+      const promotedLore =
+        modules.promotedLore &&
+        typeof modules.promotedLore === 'object' &&
+        !Array.isArray(modules.promotedLore)
+          ? { ...(modules.promotedLore as Record<string, unknown>) }
+          : {};
+      const facts = Array.isArray(promotedLore.facts) ? [...promotedLore.facts] : [];
+      const factId = String(fact.id ?? '');
+      const exists = facts.some(
+        (f) =>
+          f &&
+          typeof f === 'object' &&
+          !Array.isArray(f) &&
+          String((f as { id?: unknown }).id ?? '') === factId,
+      );
+      if (!exists) {
+        facts.push(fact);
+        promotedLore.facts = facts;
+        modules.promotedLore = promotedLore;
+        payload.modules = modules;
+        db.prepare(`UPDATE worlds SET payload = ? WHERE id = ?`).run(
+          JSON.stringify(payload),
+          id,
+        );
+      }
+      return { ok: true };
+    },
   };
 }
 
@@ -208,5 +262,6 @@ export function createWorldPortsStub(): WorldPorts {
     getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     canEditWorld: () => false,
+    appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
   };
 }

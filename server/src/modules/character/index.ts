@@ -33,6 +33,8 @@ export type CharacterPorts = {
     ownerUserId: string,
     characterId: string,
   ) => CharacterMembershipCheck;
+  /** Display name for projections (ensemble); null when missing. */
+  readonly getDisplayName: (characterId: string) => string | null;
   /** Test / fixture helper — not a product HTTP API. */
   readonly seedPcForTests: (input: {
     readonly ownerUserId: string;
@@ -47,6 +49,7 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     return {
       moduleId: 'character',
       assertOwnedCompletePc: () => ({ ok: false, error: '42501' }),
+      getDisplayName: () => null,
       seedPcForTests: () => {
         throw new Error('store-unavailable');
       },
@@ -57,6 +60,7 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     moduleId: 'character',
     assertOwnedCompletePc: (ownerUserId, characterId) =>
       store.assertOwnedCompletePc(ownerUserId, characterId),
+    getDisplayName: (characterId) => store.getDisplayName(characterId),
     seedPcForTests: (input) => store.seedPcForTests(input),
   };
 }

@@ -33,6 +33,13 @@ import {
   type RecapOk,
   type RecapError,
 } from './internal/session-recap-store.ts';
+import {
+  SessionOutcomeStore,
+  type SessionPromoteLookup,
+} from './internal/session-outcome-store.ts';
+
+export type { SessionPromoteLookup } from './internal/session-outcome-store.ts';
+export { SessionOutcomeStore } from './internal/session-outcome-store.ts';
 
 export type {
   ApplyCommandInput,

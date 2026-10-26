@@ -2,16 +2,20 @@
  * Saga overview / lore / outcome promotion RPCs (#876). Private — saga public API.
  * Location: server/src/modules/saga/internal/saga-projections-store.ts
  */
-import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import type { ProjectPorts } from '../../project/index.ts';
+import type { SessionPromoteLookup } from '../../session/index.ts';
 import { SagaDefinitionStore } from './saga-definition-store.ts';
 
 export type ProjError = { readonly ok: false; readonly error: string };
 export type ProjOk<T> = { readonly ok: true; readonly value: T };
 
-export type WorldEditLookup = {
+export type WorldPromoteLookup = {
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
+  readonly appendPromotedLoreFact: (
+    worldId: string,
+    fact: Record<string, unknown>,
+  ) => { readonly ok: true } | { readonly ok: false; readonly error: string };
 };
 
 /** Narrow lore ACL — avoids importing permissions/internal from saga. */
@@ -21,7 +25,30 @@ export type SagaLorePermissionLookup = {
     actorIds: readonly string[],
     key: string,
   ) => boolean;
+  readonly listBindings?: (
+    actorIds: readonly string[],
+    publicId: string,
+    assetKind: string | null,
+  ) =>
+    | {
+        readonly ok: true;
+        readonly value: readonly {
+          readonly id: string;
+          readonly assetKind: string;
+          readonly assetId: string;
+          readonly reveal: string;
+          readonly label: string | null;
+        }[];
+      }
+    | { readonly ok: false; readonly error: string };
 };
+
+export type CharacterNameLookup = {
+  readonly getDisplayName: (characterId: string) => string | null;
+};
+
+/** @deprecated alias kept for call-site clarity */
+export type WorldEditLookup = WorldPromoteLookup;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -40,18 +67,52 @@ function parseJson(raw: string | null | undefined): Record<string, unknown> {
   return {};
 }
 
-function filterVisible(
-  items: unknown,
-  isGm: boolean,
-  canHidden: boolean,
-): unknown[] {
-  if (!Array.isArray(items)) return [];
-  return items.filter((item) => {
+function asItemList(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) return raw;
+  if (raw && typeof raw === 'object') return Object.values(raw as Record<string, unknown>);
+  return [];
+}
+
+function adventureVisibility(raw: unknown): string {
+  if (typeof raw === 'string' && ['public', 'shared', 'gm_only'].includes(raw)) return raw;
+  return 'gm_only';
+}
+
+/** Player/viewer audience: only public|shared. Missing/malformed → gm_only (fail closed). */
+function filterAdventureVisible(items: unknown, isGm: boolean): unknown[] {
+  return asItemList(items).filter((item) => {
     if (item === null || typeof item !== 'object' || Array.isArray(item)) return false;
-    const vis = String((item as { visibility?: unknown }).visibility ?? 'public');
+    const vis = adventureVisibility((item as { visibility?: unknown }).visibility);
+    if (isGm) return true;
+    return vis === 'public' || vis === 'shared';
+  });
+}
+
+function filterLoreVisible(items: unknown, isGm: boolean, canHidden: boolean): unknown[] {
+  return asItemList(items).filter((item) => {
+    if (item === null || typeof item !== 'object' || Array.isArray(item)) return false;
+    const vis = String((item as { visibility?: unknown }).visibility ?? 'gm_only');
     if (isGm || canHidden) return true;
     return vis === 'public' || vis === 'shared' || vis === 'discovered';
   });
+}
+
+function flagCount(raw: unknown): number {
+  if (Array.isArray(raw)) return raw.length;
+  if (raw && typeof raw === 'object') return Object.keys(raw as Record<string, unknown>).length;
+  return Number((raw as { length?: unknown } | null)?.length ?? 0) || 0;
+}
+
+function openDeadlines(raw: unknown, isGm: boolean): unknown[] {
+  const list = asItemList(raw);
+  return filterAdventureVisible(
+    list.filter((item) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return false;
+      const status = String((item as { status?: unknown }).status ?? 'open');
+      return status !== 'fired' && status !== 'resolved' && status !== 'closed';
+    }),
+    isGm,
+  );
 }
 
 export class SagaProjectionsStore {
@@ -59,20 +120,26 @@ export class SagaProjectionsStore {
   readonly #project: ProjectPorts;
   readonly #defs: SagaDefinitionStore;
   readonly #loreAcl: SagaLorePermissionLookup | null;
-  readonly #world: WorldEditLookup;
+  readonly #world: WorldPromoteLookup;
+  readonly #sessionPromote: SessionPromoteLookup;
+  readonly #characterNames: CharacterNameLookup | null;
 
   constructor(
     db: HostDatabase,
     project: ProjectPorts,
     defs: SagaDefinitionStore,
     loreAcl: SagaLorePermissionLookup | null,
-    world: WorldEditLookup,
+    world: WorldPromoteLookup,
+    sessionPromote: SessionPromoteLookup,
+    characterNames: CharacterNameLookup | null = null,
   ) {
     this.#db = db;
     this.#project = project;
     this.#defs = defs;
     this.#loreAcl = loreAcl;
     this.#world = world;
+    this.#sessionPromote = sessionPromote;
+    this.#characterNames = characterNames;
   }
 
   #withImmediateTx<T>(fn: () => T): T {
@@ -139,15 +206,18 @@ export class SagaProjectionsStore {
     projectId: string,
     consequenceId: string,
   ): Record<string, unknown> | null {
+    // Prefer the selected session's immutable recap snapshot, then live project runtime.
     const sources: string[] = [];
+    const recap = this.#db
+      .prepare(`SELECT snapshot FROM session_recaps WHERE session_id = ?`)
+      .get(sessionId) as { snapshot: string } | undefined;
+    if (recap?.snapshot && recap.snapshot !== '{}' && recap.snapshot.trim()) {
+      sources.push(recap.snapshot);
+    }
     const proj = this.#db
       .prepare(`SELECT adventure_runtime AS a FROM projects WHERE id = ?`)
       .get(projectId) as { a: string } | undefined;
     if (proj?.a) sources.push(proj.a);
-    const recap = this.#db
-      .prepare(`SELECT snapshot FROM session_recaps WHERE session_id = ?`)
-      .get(sessionId) as { snapshot: string } | undefined;
-    if (recap?.snapshot) sources.push(recap.snapshot);
     for (const raw of sources) {
       const obj = parseJson(raw);
       const list = obj.consequences;
@@ -160,37 +230,6 @@ export class SagaProjectionsStore {
       }
     }
     return null;
-  }
-
-  #appendPromoteEvent(
-    sessionId: string,
-    actorId: string,
-    payload: Record<string, unknown>,
-  ): void {
-    const rt = this.#db
-      .prepare(`SELECT revision FROM session_runtime WHERE session_id = ?`)
-      .get(sessionId) as { revision: number } | undefined;
-    const revision = Number(rt?.revision ?? 0);
-    const seqRow = this.#db
-      .prepare(
-        `SELECT COALESCE(MAX(event_sequence), 0) AS m FROM session_events WHERE session_id = ?`,
-      )
-      .get(sessionId) as { m: number };
-    const nextSeq = Number(seqRow.m) + 1;
-    this.#db
-      .prepare(
-        `INSERT INTO session_events
-           (session_id, event_sequence, revision, actor_user_id, idempotency_key, payload_json)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-      )
-      .run(
-        sessionId,
-        nextSeq,
-        revision,
-        actorId,
-        `promote:${actorId}:${revision}:${nextSeq}`,
-        JSON.stringify({ kind: 'adventure', payload }),
-      );
   }
 
   getSagaOverview(
@@ -215,15 +254,24 @@ export class SagaProjectionsStore {
         )?.role ?? 'player';
 
     const adv = parseJson(project.adventureRuntime);
-    const clocks = filterVisible(adv.clocks, isGm, false);
-    const consequences = filterVisible(adv.consequences, isGm, false).slice(0, 20);
-    const deadlines = filterVisible(adv.openDeadlines ?? adv.deadlines, isGm, false);
-    const flags = Array.isArray(adv.flags) ? adv.flags.length : Number(adv.flagCount ?? 0);
+    const clocks = filterAdventureVisible(adv.clocks, isGm);
+    const consequences = filterAdventureVisible(adv.consequences, isGm)
+      .slice()
+      .sort((a, b) => {
+        const at = String((a as { createdAt?: unknown }).createdAt ?? '');
+        const bt = String((b as { createdAt?: unknown }).createdAt ?? '');
+        return bt.localeCompare(at);
+      })
+      .slice(0, 20);
+    const deadlines = openDeadlines(adv.openDeadlines ?? adv.deadlines, isGm);
+    const flags = flagCount(adv.flags);
 
     const sessions = this.#db
       .prepare(
         `SELECT session_id AS sessionId, public_id AS sessionPublicId, session_number AS sessionNumber,
-                name, status, created_at AS startedAt
+                name, status,
+                COALESCE(started_at, created_at) AS startedAt,
+                ended_at AS endedAt
          FROM play_sessions WHERE project_id = ? ORDER BY session_number ASC`,
       )
       .all(project.id) as Array<{
@@ -232,7 +280,8 @@ export class SagaProjectionsStore {
       sessionNumber: number | null;
       name: string | null;
       status: string;
-      startedAt: string;
+      startedAt: string | null;
+      endedAt: string | null;
     }>;
 
     const episodes = sessions.map((s) => {
@@ -252,7 +301,7 @@ export class SagaProjectionsStore {
         name: s.name,
         status: s.status,
         startedAt: s.startedAt,
-        endedAt: null,
+        endedAt: s.endedAt,
         recapSnippet: snippet,
       };
     });
@@ -264,11 +313,14 @@ export class SagaProjectionsStore {
           `SELECT character_id AS c FROM project_members WHERE project_id = ? AND user_id = ?`,
         )
         .get(project.id, m.userId) as { c: string | null } | undefined;
+      const characterId = char?.c ?? null;
       return {
         userId: m.userId,
         role: m.role,
-        characterId: char?.c ?? null,
-        characterName: null,
+        characterId,
+        characterName: characterId
+          ? (this.#characterNames?.getDisplayName(characterId) ?? null)
+          : null,
         isSelf: actorIds.includes(m.userId),
       };
     });
@@ -293,9 +345,15 @@ export class SagaProjectionsStore {
 
     let versionLabel: string | null = null;
     let newerVersionAvailable = false;
-    if (project.sagaVersionId) {
+    if (project.sagaVersionId && project.sagaId) {
       const ver = this.#defs.getVersion(project.sagaVersionId);
       versionLabel = ver?.version_label ?? null;
+      const latest = this.#defs.latestPublished(project.sagaId);
+      if (latest && latest.id !== project.sagaVersionId) {
+        const pinnedAt = ver?.published_at ?? ver?.created_at ?? '';
+        const latestAt = latest.published_at ?? latest.created_at ?? '';
+        newerVersionAvailable = latestAt > pinnedAt || Boolean(latest.id);
+      }
     }
 
     return {
@@ -354,30 +412,16 @@ export class SagaProjectionsStore {
 
     const entries: Array<Record<string, unknown>> = [];
 
-    if (project.sagaVersionId) {
-      const ver = this.#defs.getVersion(project.sagaVersionId);
-      if (ver?.status === 'published') {
-        const payload = parseJson(ver.payload);
-        for (const fact of filterVisible(payload.knowledgeFacts, isGm, canHidden)) {
-          const f = fact as Record<string, unknown>;
-          entries.push({
-            id: `saga:${String(f.id ?? '')}`,
-            source: 'saga',
-            title: String(f.summary ?? f.title ?? ''),
-            visibility: String(f.visibility ?? 'public'),
-            at: null,
-          });
-        }
-      }
-    }
-
     const recaps = this.#db
       .prepare(
         `SELECT r.session_id AS sessionId, r.summary_text AS summary, r.summary_status AS status,
-                r.updated_at AS updatedAt, s.public_id AS sessionPublicId
+                r.updated_at AS updatedAt, s.public_id AS sessionPublicId, s.name AS sessionName,
+                s.session_number AS sessionNumber
          FROM session_recaps r
          JOIN play_sessions s ON s.session_id = r.session_id
-         WHERE s.project_id = ?`,
+         WHERE s.project_id = ?
+         ORDER BY COALESCE(s.session_number, 0) DESC, r.updated_at DESC
+         LIMIT 40`,
       )
       .all(project.id) as Array<{
       sessionId: string;
@@ -385,18 +429,62 @@ export class SagaProjectionsStore {
       status: string;
       updatedAt: string;
       sessionPublicId: string;
+      sessionName: string | null;
+      sessionNumber: number | null;
     }>;
     for (const r of recaps) {
       if (!isGm && r.status !== 'approved') continue;
       if (!r.summary) continue;
       entries.push({
-        id: `recap:${r.sessionId}`,
-        source: 'recap',
-        title: r.summary.slice(0, 200),
-        visibility: r.status === 'approved' ? 'public' : 'gm_only',
-        at: r.updatedAt,
-        sessionPublicId: r.sessionPublicId,
+        id: `recap:${r.sessionPublicId || r.sessionId}`,
+        kind: 'recap',
+        title: r.sessionName || 'Episode',
+        summary: r.summary.slice(0, 200),
+        visibility: r.status === 'approved' ? 'shared' : 'gm_only',
+        occurredAt: r.updatedAt,
+        meta: {
+          sessionPublicId: r.sessionPublicId,
+          sessionNumber: r.sessionNumber,
+        },
       });
+    }
+
+    if (project.sagaVersionId) {
+      const ver = this.#defs.getVersion(project.sagaVersionId);
+      if (ver?.status === 'published') {
+        const payload = parseJson(ver.payload);
+        for (const fact of filterLoreVisible(payload.knowledgeFacts, isGm, canHidden)) {
+          const f = fact as Record<string, unknown>;
+          const fid = String(f.id ?? '');
+          entries.push({
+            id: `fact:${fid || 'unknown'}`,
+            kind: 'knowledge',
+            title: fid || 'Wissen',
+            summary: String(f.summary ?? ''),
+            visibility: String(f.visibility ?? 'gm_only'),
+            occurredAt: null,
+            meta: {},
+          });
+        }
+      }
+    }
+
+    if (this.#loreAcl?.listBindings) {
+      const bindings = this.#loreAcl.listBindings(actorIds, project.publicId, 'lore');
+      if (bindings.ok) {
+        for (const b of bindings.value) {
+          if (b.reveal === 'gm_only' && !isGm && !canHidden) continue;
+          entries.push({
+            id: `binding:${b.id}`,
+            kind: 'lore_binding',
+            title: b.label || b.assetId || 'Lore',
+            summary: '',
+            visibility: b.reveal === 'party' ? 'shared' : b.reveal,
+            occurredAt: null,
+            meta: { assetId: b.assetId, reveal: b.reveal },
+          });
+        }
+      }
     }
 
     return {
@@ -514,16 +602,15 @@ export class SagaProjectionsStore {
             .run(now, project.sagaId);
         }
 
-        const now = nowIso();
-        this.#db
-          .prepare(
-            `INSERT INTO session_outcome_promotions
-               (id, project_id, session_id, source_kind, source_id, target_kind, target_ref, created_by, created_at)
-             VALUES (?, ?, ?, 'consequence', ?, 'saga_fact', ?, ?, ?)`,
-          )
-          .run(randomUUID(), session.projectId, sid, cid, factId, actorId, now);
-
-        this.#appendPromoteEvent(sid, actorId, {
+        this.#sessionPromote.recordOutcomePromotion({
+          projectId: session.projectId,
+          sessionId: sid,
+          sourceId: cid,
+          targetKind: 'saga_fact',
+          targetRef: factId,
+          createdBy: actorId,
+        });
+        this.#sessionPromote.appendPromoteAuditEvent(sid, actorId, {
           op: 'promote_outcome',
           target: 'saga',
           consequenceId: cid,
@@ -604,58 +691,25 @@ export class SagaProjectionsStore {
     const visibility = String(cons.visibility ?? 'shared');
     const factId = `promoted:${cid.slice(0, 64)}`;
 
-    const world = this.#db
-      .prepare(`SELECT payload FROM worlds WHERE id = ?`)
-      .get(project.worldId) as { payload: string } | undefined;
-    if (!world) return { ok: false, error: '22023:Welt nicht gefunden' };
-
     try {
       this.#withImmediateTx(() => {
-        const payload = parseJson(world.payload);
-        const modules =
-          payload.modules && typeof payload.modules === 'object' && !Array.isArray(payload.modules)
-            ? ({ ...(payload.modules as Record<string, unknown>) } as Record<string, unknown>)
-            : {};
-        const promotedLore =
-          modules.promotedLore &&
-          typeof modules.promotedLore === 'object' &&
-          !Array.isArray(modules.promotedLore)
-            ? ({ ...(modules.promotedLore as Record<string, unknown>) } as Record<string, unknown>)
-            : {};
-        const facts = Array.isArray(promotedLore.facts) ? [...promotedLore.facts] : [];
-        const exists = facts.some(
-          (f) =>
-            f &&
-            typeof f === 'object' &&
-            !Array.isArray(f) &&
-            String((f as { id?: unknown }).id ?? '') === factId,
-        );
-        if (!exists) {
-          facts.push({
-            id: factId,
-            summary: summary.slice(0, 200),
-            visibility,
-            sourceSessionId: sid,
-            sourceConsequenceId: cid,
-          });
-          promotedLore.facts = facts;
-          modules.promotedLore = promotedLore;
-          payload.modules = modules;
-          this.#db
-            .prepare(`UPDATE worlds SET payload = ? WHERE id = ?`)
-            .run(JSON.stringify(payload), project.worldId);
-        }
-
-        const now = nowIso();
-        this.#db
-          .prepare(
-            `INSERT INTO session_outcome_promotions
-               (id, project_id, session_id, source_kind, source_id, target_kind, target_ref, created_by, created_at)
-             VALUES (?, ?, ?, 'consequence', ?, 'world_fact', ?, ?, ?)`,
-          )
-          .run(randomUUID(), session.projectId, sid, cid, factId, actorId, now);
-
-        this.#appendPromoteEvent(sid, actorId, {
+        const wrote = this.#world.appendPromotedLoreFact(project.worldId, {
+          id: factId,
+          summary: summary.slice(0, 200),
+          visibility,
+          sourceSessionId: sid,
+          sourceConsequenceId: cid,
+        });
+        if (!wrote.ok) throw new Error(wrote.error);
+        this.#sessionPromote.recordOutcomePromotion({
+          projectId: session.projectId,
+          sessionId: sid,
+          sourceId: cid,
+          targetKind: 'world_fact',
+          targetRef: factId,
+          createdBy: actorId,
+        });
+        this.#sessionPromote.appendPromoteAuditEvent(sid, actorId, {
           op: 'promote_outcome',
           target: 'world',
           consequenceId: cid,

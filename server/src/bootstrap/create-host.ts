@@ -43,6 +43,7 @@ import {
   createSagaPortsStub,
   type SagaPorts,
 } from '../modules/saga/index.ts';
+import { createCharacterPorts } from '../modules/character/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -170,13 +171,19 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
+    const character = db ? createCharacterPorts(db) : createCharacterPorts();
     const saga: SagaPorts = db
       ? createSagaPorts({
           db,
           authorize: permissions.authorize,
           project,
           loreAcl: permissions.sagaGovernance,
-          world: { canEditWorld: (ids, worldId) => world.canEditWorld(ids, worldId) },
+          world: {
+            canEditWorld: (ids, worldId) => world.canEditWorld(ids, worldId),
+            appendPromotedLoreFact: (worldId, fact) =>
+              world.appendPromotedLoreFact(worldId, fact),
+          },
+          characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
         })
       : createSagaPortsStub();
     const ops = createOpsPorts({

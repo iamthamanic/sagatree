@@ -17,9 +17,12 @@ import {
 } from './internal/saga-definition-store.ts';
 import {
   SagaProjectionsStore,
+  type CharacterNameLookup,
   type SagaLorePermissionLookup,
-  type WorldEditLookup,
+  type WorldPromoteLookup,
 } from './internal/saga-projections-store.ts';
+import type { SessionPromoteLookup } from '../session/index.ts';
+import { SessionOutcomeStore } from '../session/index.ts';
 
 export type SagaResult<T> =
   | { readonly ok: true; readonly value: T }
@@ -197,16 +200,25 @@ export function createSagaPorts(deps: {
   readonly authorize: AuthorizeFn;
   readonly project: ProjectPorts;
   readonly loreAcl?: SagaLorePermissionLookup | null;
-  readonly world?: WorldEditLookup | null;
+  readonly world?: WorldPromoteLookup | null;
+  readonly sessionPromote?: SessionPromoteLookup | null;
+  readonly characterNames?: CharacterNameLookup | null;
 }): SagaPorts {
   const store = new SagaDefinitionStore(deps.db);
   const { authorize, project } = deps;
+  const worldLookup: WorldPromoteLookup = deps.world ?? {
+    canEditWorld: () => false,
+    appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
+  };
+  const sessionPromote = deps.sessionPromote ?? new SessionOutcomeStore(deps.db);
   const projections = new SagaProjectionsStore(
     deps.db,
     project,
     store,
     deps.loreAcl ?? null,
-    deps.world ?? { canEditWorld: () => false },
+    worldLookup,
+    sessionPromote,
+    deps.characterNames ?? null,
   );
 
   return {

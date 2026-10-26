@@ -99,7 +99,11 @@ try {
     authorize: permissions.authorize,
     project,
     loreAcl: permissions.sagaGovernance,
-    world: { canEditWorld: (ids, wid) => world.canEditWorld(ids, wid) },
+    world: {
+      canEditWorld: (ids, wid) => world.canEditWorld(ids, wid),
+      appendPromotedLoreFact: (wid, fact) => world.appendPromotedLoreFact(wid, fact),
+    },
+    characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
   });
   const session = createSessionPorts({ db, project });
 
