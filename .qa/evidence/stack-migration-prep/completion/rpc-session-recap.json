@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SESSION-RECAP",
+  "result": "PASS",
+  "testedCommit": "15065e05c23ae047d33ec162a5ea5c9f132a7cd5",
+  "githubClosed": true,
+  "mergeRef": "PR #986 → main (#870)",
+  "note": "get_session_recap / save_session_recap_summary host ports; role-projected highlights; unique 3-arg save (no 2-arg overload). HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-session-recap.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-session-recap.md",
+      "sha256": "ff34914d32930d472afab3ab316cf54af94a2595d96ab78809fd9b5df0522efb"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-session-recap.md",
+      "sha256": "2daafca5841ad32c7f039f02706cc696d42e2bf49094ee4685ccb6a7085b27b5"
+    }
+  ]
+}

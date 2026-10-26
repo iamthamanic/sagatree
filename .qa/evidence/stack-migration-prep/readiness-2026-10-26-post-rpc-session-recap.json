@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-26T13:09:21Z",
+  "headSha": "9df561c14fb8cd5597da3389d9aac59b7dbb9927",
+  "branch": "chore/773-rpc-session-recap-done-evidence",
+  "counts": {
+    "total": 90,
+    "DONE": 45,
+    "READY": 19,
+    "WAITING": 22,
+    "BLOCKED": 4
+  },
+  "hint": "post RPC-SESSION-RECAP + MIG-351 DONE"
+}

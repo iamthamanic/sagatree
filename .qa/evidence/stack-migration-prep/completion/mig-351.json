@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-351",
+  "result": "PASS",
+  "testedCommit": "15065e05c23ae047d33ec162a5ea5c9f132a7cd5",
+  "githubClosed": true,
+  "mergeRef": "children #867/#868/#869/#870 \u2192 main; coordinator #814",
+  "note": "Session/runtime RPC cluster coordinator; implementation exclusively in four child tickets with hashed DONE evidence.",
+  "checks": [
+    {
+      "command": "child RPC-SESSION-RUNTIME completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-session-runtime.json",
+      "sha256": "993a65ccfe2840234862853d372245c02400a959748e36c376b38b2ab83f3d1a"
+    },
+    {
+      "command": "child RPC-SESSION-LIFECYCLE completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-session-lifecycle.json",
+      "sha256": "cafa6dd79910580106082306d8813b572eb9a4406f4ca73495968e1bca0e59b0"
+    },
+    {
+      "command": "child RPC-SESSION-ACCESS completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-session-access.json",
+      "sha256": "44a4d0a95ad0d2ae6ce11b2369460e2042d0152f93442fc894c4b5ced06782c2"
+    },
+    {
+      "command": "child RPC-SESSION-RECAP completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-session-recap.json",
+      "sha256": "6448b6aa785a6bfd52965930b183233207f7f90441a43882a4084fa9f44050c5"
+    },
+    {
+      "command": "coordinator acceptance",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-351.md",
+      "sha256": "756f61711cb21d6dd39952acc3d34e9cfa0b72733bc883cb73a7332f8e63adc5"
+    }
+  ]
+}
