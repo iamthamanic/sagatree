@@ -692,6 +692,18 @@ function checkRpcSessionRecap() {
   );
 }
 
+function checkRpcSagaProjections() {
+  console.log('RPC-SAGA-PROJECTIONS (#876): overview / lore / promote...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-saga-projections.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2998,6 +3010,7 @@ checkRpcSessionLifecycle();
 checkRpcNpcInstances();
 checkRpcSessionAccess();
 checkRpcSessionRecap();
+checkRpcSagaProjections();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();

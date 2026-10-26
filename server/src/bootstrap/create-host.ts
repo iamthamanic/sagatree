@@ -131,9 +131,11 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
 
     const identity = createIdentityPorts(actorId, authRuntime, config.dataDir);
     const project = createProjectPorts(db ?? undefined);
-    const permissions = createPermissionsPorts(db, {
-      actorHasAccessToSaga: project.actorHasAccessToSaga,
-    });
+    const permissions = createPermissionsPorts(
+      db,
+      { actorHasAccessToSaga: project.actorHasAccessToSaga },
+      project,
+    );
     const world: WorldPorts = db
       ? createWorldPorts({
           authorize: permissions.authorize,
@@ -169,7 +171,13 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
     const saga: SagaPorts = db
-      ? createSagaPorts({ db, authorize: permissions.authorize, project })
+      ? createSagaPorts({
+          db,
+          authorize: permissions.authorize,
+          project,
+          loreAcl: permissions.sagaGovernance,
+          world: { canEditWorld: (ids, worldId) => world.canEditWorld(ids, worldId) },
+        })
       : createSagaPortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,

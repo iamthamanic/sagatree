@@ -79,6 +79,8 @@ export type WorldPorts = {
     expectedRevision: number | null,
     mapData: Record<string, unknown>,
   ) => WorldReadResult<WorldMapDto>;
+  /** Owner-only world edit check (promote-to-world / map write parity). */
+  readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
 };
 
 type AuthorizeFn = (op: PolicyOp, actor: Actor, resource?: PolicyResource) => PolicyDecision;
@@ -184,6 +186,13 @@ export function createWorldPorts(deps: {
       }
       return maps.saveMap(id, expectedRevision, mapData);
     },
+
+    canEditWorld(actorIds, worldId) {
+      if (!maps) return false;
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return false;
+      return maps.canEditWorld(actorIds, id);
+    },
   };
 }
 
@@ -198,5 +207,6 @@ export function createWorldPortsStub(): WorldPorts {
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
+    canEditWorld: () => false,
   };
 }

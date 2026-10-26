@@ -15,6 +15,11 @@ import {
   actorOwnsSaga,
   type SagaVersionReadVm,
 } from './internal/saga-definition-store.ts';
+import {
+  SagaProjectionsStore,
+  type SagaLorePermissionLookup,
+  type WorldEditLookup,
+} from './internal/saga-projections-store.ts';
 
 export type SagaResult<T> =
   | { readonly ok: true; readonly value: T }
@@ -125,7 +130,36 @@ export type SagaPorts = {
   }) => string;
   readonly countDraftsForTests: (sagaId: string) => number;
   readonly countPublishedForTests: (sagaId: string) => number;
+  /** RPC-SAGA-PROJECTIONS (#876) */
+  readonly getSagaOverview: (
+    actor: Actor,
+    publicId: string,
+  ) => SagaResult<Record<string, unknown>>;
+  readonly getSagaLoreTimeline: (
+    actor: Actor,
+    publicId: string,
+  ) => SagaResult<Record<string, unknown>>;
+  readonly promoteSessionOutcomeToSaga: (
+    actor: Actor,
+    sessionId: string,
+    consequenceId: string,
+  ) => SagaResult<Record<string, unknown>>;
+  readonly promoteSessionOutcomeToWorld: (
+    actor: Actor,
+    sessionId: string,
+    consequenceId: string,
+  ) => SagaResult<Record<string, unknown>>;
 };
+
+function actorIdsOf(actor: Actor): readonly string[] {
+  if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
+    return [
+      actor.actorId,
+      ...actor.linkedSoloActorIds.filter((id) => typeof id === 'string' && id.length > 0),
+    ];
+  }
+  return [actor.actorId];
+}
 
 function requireActor(actor: Actor | null | undefined): actor is Actor {
   return Boolean(actor?.actorId);
@@ -162,9 +196,18 @@ export function createSagaPorts(deps: {
   readonly db: HostDatabase;
   readonly authorize: AuthorizeFn;
   readonly project: ProjectPorts;
+  readonly loreAcl?: SagaLorePermissionLookup | null;
+  readonly world?: WorldEditLookup | null;
 }): SagaPorts {
   const store = new SagaDefinitionStore(deps.db);
   const { authorize, project } = deps;
+  const projections = new SagaProjectionsStore(
+    deps.db,
+    project,
+    store,
+    deps.loreAcl ?? null,
+    deps.world ?? { canEditWorld: () => false },
+  );
 
   return {
     moduleId: 'saga',
@@ -266,6 +309,31 @@ export function createSagaPorts(deps: {
     countPublishedForTests(sagaId) {
       return store.countPublished(sagaId);
     },
+
+    getSagaOverview(actor, publicId) {
+      if (!requireActor(actor)) return { ok: false, error: '42501:not authenticated' };
+      return projections.getSagaOverview(actorIdsOf(actor), publicId);
+    },
+    getSagaLoreTimeline(actor, publicId) {
+      if (!requireActor(actor)) return { ok: false, error: '42501:not authenticated' };
+      return projections.getSagaLoreTimeline(actorIdsOf(actor), publicId);
+    },
+    promoteSessionOutcomeToSaga(actor, sessionId, consequenceId) {
+      if (!requireActor(actor)) return { ok: false, error: '42501:not authenticated' };
+      return projections.promoteSessionOutcomeToSaga(
+        actorIdsOf(actor),
+        sessionId,
+        consequenceId,
+      );
+    },
+    promoteSessionOutcomeToWorld(actor, sessionId, consequenceId) {
+      if (!requireActor(actor)) return { ok: false, error: '42501:not authenticated' };
+      return projections.promoteSessionOutcomeToWorld(
+        actorIdsOf(actor),
+        sessionId,
+        consequenceId,
+      );
+    },
   };
 }
 
@@ -287,5 +355,9 @@ export function createSagaPortsStub(): SagaPorts {
     seedPublishedVersionForTests: () => '',
     countDraftsForTests: () => 0,
     countPublishedForTests: () => 0,
+    getSagaOverview: () => deny(),
+    getSagaLoreTimeline: () => deny(),
+    promoteSessionOutcomeToSaga: () => deny(),
+    promoteSessionOutcomeToWorld: () => deny(),
   };
 }
