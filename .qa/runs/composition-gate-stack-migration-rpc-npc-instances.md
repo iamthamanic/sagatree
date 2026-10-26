@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-rpc-npc-instances
 
-- HEAD_SHA: a02f522379379623afe393191255044fe6ffe113
+- HEAD_SHA: 021c27bd7383fca2d78d66f1d59e6c4149231ff9
 - BASE_SHA: c3d6f1004545252e9c853fad39d5d76afbbde87f
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-NPC spawn/update/assign/clear with decoded JSON rows and strict controller IDs.
+NPC spawn/update/assign/clear; idempotent temp-controller cleanup to JSON null.
 
 ## Hop chain
 
@@ -22,8 +22,8 @@ NPC spawn/update/assign/clear with decoded JSON rows and strict controller IDs.
 |------|----------|----------|--------|
 | N-actors | GM spawn/update; foreign denied | store | pass |
 | Invalid/missing | empty controller; bad temp | error codes | pass |
-| Two consumers / crash | session-scoped clear | pass | pass |
-| Legacy defects | JSON text leak fixed | pass | pass |
+| Two consumers / crash | session-scoped clear idempotent | pass | pass |
+| Legacy defects | JSON text leak + null cleanup fixed | pass | pass |
 
 ## Flags
 
