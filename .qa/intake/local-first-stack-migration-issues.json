@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 18,
-    "issuesBlockedOrNeedsDesign": 29,
+    "issuesReady": 20,
+    "issuesBlockedOrNeedsDesign": 26,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -5738,7 +5738,7 @@
       "title": "Recap-Projektion und Zusammenfassung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-session-recap",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-recap.md",
       "dependsOn": [
@@ -5953,9 +5953,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-recap.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-OVERLOAD-RECAP-AMBIGUITY\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Der zweiparametrige Aufruf save_session_recap_summary(uuid, text) ist durch Zweierwrapper plus Dreierfunktion mit Default mehrdeutig (SQLSTATE 42725). get_session_recap(uuid) besitzt dagegen nur einen wirksamen Overload und ist von diesem Befund nicht betroffen.\",\"sourceEvidence\":\"supabase/migrations/061_session_recaps_and_handover.sql und 062_session_recap_ai_summary.sql; BASELINE-RPC-RECAP-OVERLOAD reproduziert für public.save_session_recap_summary(uuid, text) den Fehler function is not unique / ambiguous_function.\",\"requiredSuccessorAcceptance\":\"Nachfolger besitzt eine eindeutig auflösbare Signatur. Der vorhandene Client sendet drei benannteParameter inklusivep_status; diesen Pfad erhalten und Zweierpfad bewusst beseitigen/kompatibel behandeln.\",\"deployedExploitVerified\":false,\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-RPC-RECAP-OVERLOAD\"}}"
@@ -5994,7 +5995,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-032",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -6003,7 +6004,7 @@
       "title": "Replace Postgres RPC cluster: session/runtime RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-351",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-351.md",
       "dependsOn": [
@@ -6262,8 +6263,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-033",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -6272,7 +6272,7 @@
       "title": "Saga-Übersicht, Lore und Outcome-Übernahme",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-saga-projections",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-projections.md",
       "dependsOn": [
@@ -6684,8 +6684,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-034",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -11852,7 +11851,7 @@
       "title": "Port Edge Function `session-recap` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-421",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-421.md",
       "dependsOn": [
@@ -12006,8 +12005,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-062",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

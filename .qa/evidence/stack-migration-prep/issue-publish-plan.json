@@ -449,11 +449,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-032",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-session-recap.md",
-      "sha256": "dcea411cc09ef5d8d0d85c328b694cd121e9582f48b589535dda931ad008bd40",
-      "payloadSha256": "83b9461a6816694609dade9f5349723bd1a5c10f73f763929e3e236087097f54"
+      "sha256": "b254e43c85b2f3efdb46b4d674fba967945839d90e9a1b85c3f32997c07e7649",
+      "payloadSha256": "20856ec197a4a677913a20bd7ef725b33f0c13a7d6767e7ef1c04d453dd09d7b"
     },
     {
       "localId": "MIG-351",
@@ -463,12 +463,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-033",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-351.md",
-      "sha256": "4a0257a06ffae2c327a8baf87c7139dd9a4d376875aef431cf148b58dc0cc77e",
-      "payloadSha256": "af689a02b1fa2e463496697116665b58de8f6d52e58b03e3d0adb3d4168f69d7"
+      "sha256": "957a92d5202a53c6822521575f1aa9dfa9d9ae092f801a499336b598691ac986",
+      "payloadSha256": "5533251e8518b1f0e2af84d0339df76afc51c6327fb09ba019235d6dcd39eb8e"
     },
     {
       "localId": "RPC-SAGA-PROJECTIONS",
@@ -478,12 +477,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-034",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-projections.md",
-      "sha256": "f34a445fec60618deedec02a22adf3773134064ce9df41f269111f22e32e23a6",
-      "payloadSha256": "c66707c600b7482d474fcb7bd34a0ee60342e03b604587aa65c93ea0b4672b4c"
+      "sha256": "fd28f8a74e67d507ac4e27a64595ca806874eacaff75e6b269e51e1ec5207483",
+      "payloadSha256": "a45c07ca377423d46e693e6fd98199657098f58d67d0ca3bb1234805b35794ca"
     },
     {
       "localId": "MIG-352",
@@ -877,12 +875,11 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-062",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-421.md",
-      "sha256": "a7a19eb0de3aaa03c5421e6c0aeb33738ebee49e1e9e1b47a2127315fe30dd13",
-      "payloadSha256": "b8ef7e59c8174a16f8fb4d488acc0bc114a954e14aee905cd242e8fadef9757b"
+      "sha256": "529c0ca3029c42781f300a4bc8d8132eb5fdc4c25679273385bce106a2126e65",
+      "payloadSha256": "374c6f0e28a08d6c36952e9d14e411393f6956dda85a38e2a5ed10d4fee8c162"
     },
     {
       "localId": "MIG-414",

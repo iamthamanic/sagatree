@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-26T13:05:31Z",
+  "headSha": "15065e05c23ae047d33ec162a5ea5c9f132a7cd5",
+  "branch": "chore/773-rpc-session-recap-done-evidence",
+  "counts": {
+    "total": 90,
+    "DONE": 44,
+    "READY": 20,
+    "WAITING": 22,
+    "BLOCKED": 4
+  },
+  "hint": "post RPC-SESSION-RECAP DONE"
+}

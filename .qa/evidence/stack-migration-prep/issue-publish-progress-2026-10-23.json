@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T10:07:46.198Z",
+  "startedAt": "2026-10-26T13:05:34.631Z",
   "total": 90,
-  "updated": 1,
-  "unchanged": 89,
+  "updated": 4,
+  "unchanged": 86,
   "failed": [],
   "issues": [
     {
@@ -313,40 +313,40 @@
       "number": 869,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "69c17af5da2baf2585d4e6cfc3613987a2107384f836d49dd2a233d8a331af90",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SESSION-RECAP",
       "number": 870,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "dcea411cc09ef5d8d0d85c328b694cd121e9582f48b589535dda931ad008bd40",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "b254e43c85b2f3efdb46b4d674fba967945839d90e9a1b85c3f32997c07e7649",
+      "action": "updated"
     },
     {
       "localId": "MIG-351",
       "number": 814,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "4a0257a06ffae2c327a8baf87c7139dd9a4d376875aef431cf148b58dc0cc77e",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "957a92d5202a53c6822521575f1aa9dfa9d9ae092f801a499336b598691ac986",
+      "action": "updated"
     },
     {
       "localId": "RPC-SAGA-PROJECTIONS",
       "number": 876,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "f34a445fec60618deedec02a22adf3773134064ce9df41f269111f22e32e23a6",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "fd28f8a74e67d507ac4e27a64595ca806874eacaff75e6b269e51e1ec5207483",
+      "action": "updated"
     },
     {
       "localId": "MIG-352",
@@ -623,10 +623,10 @@
       "number": 837,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "a7a19eb0de3aaa03c5421e6c0aeb33738ebee49e1e9e1b47a2127315fe30dd13",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "529c0ca3029c42781f300a4bc8d8132eb5fdc4c25679273385bce106a2126e65",
+      "action": "updated"
     },
     {
       "localId": "MIG-414",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T10:08:35.887Z"
+  "finishedAt": "2026-10-26T13:06:57.643Z"
 }
