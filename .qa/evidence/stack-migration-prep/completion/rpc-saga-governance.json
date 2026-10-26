@@ -5,14 +5,14 @@
   "result": "PASS",
   "testedCommit": "fbd2fb95a5992bc2d51a8d322edb73ab0201804b",
   "githubClosed": true,
-  "mergeRef": "PR #972 → main (#875)",
-  "note": "Saga permissions/bundles/bindings isolated host ports; HTTP deferred.",
+  "mergeRef": "PR #972 \u2192 main (#875)",
+  "note": "Saga permissions/bundles/bindings isolated host ports; ordering/metadata, canSetBundle viewer, cross-project isolation, grant/bundle atomicity + rollback covered; HTTP deferred.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/rpc-saga-governance.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-governance.md",
-      "sha256": "28f1572abd49f0b5741e3748bb876ed449bf786ea384d6b77d6000defab67b0d"
+      "sha256": "4d328484ea3ac7cb1e095faf2918ac2ab80eabd8e63e68d48b6ae475ac403fc3"
     },
     {
       "command": "composition-gate CLEAR",

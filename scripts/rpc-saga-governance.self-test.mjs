@@ -201,6 +201,105 @@ try {
   const members = listMembersState(GM, publicId);
   assert(members.ok && members.value.length >= 2, `members: ${JSON.stringify(members)}`);
   assert(members.value.every((m) => typeof m.canSetBundle === 'boolean'), 'canSetBundle present');
+  assert(members.value.every((m) => m.canSetBundle === true), 'GM viewer canSetBundle');
+
+  // Read-only member: canSetBundle=false for the listing actor
+  const playerMembers = listMembersState(Player, publicId);
+  assert(playerMembers.ok, `player members: ${JSON.stringify(playerMembers)}`);
+  assert(
+    playerMembers.value.every((m) => m.canSetBundle === false),
+    'player viewer canSetBundle=false',
+  );
+
+  // Binding ordering + decoded metadata
+  store.seedBindingForTests({
+    projectId,
+    assetKind: 'npc',
+    assetId: 'z-last',
+    reveal: 'party',
+    label: 'Zeta',
+  });
+  store.seedBindingForTests({
+    projectId,
+    assetKind: 'npc',
+    assetId: 'a-first',
+    reveal: 'party',
+    label: 'Alpha',
+  });
+  const ordered = listBindings(GM, publicId, 'npc');
+  assert(ordered.ok, 'ordered list');
+  const labels = ordered.value.map((b) => b.label);
+  const alphaIdx = labels.indexOf('Alpha');
+  const zetaIdx = labels.indexOf('Zeta');
+  assert(alphaIdx >= 0 && zetaIdx > alphaIdx, `label order Alpha before Zeta: ${labels}`);
+  assert(
+    ordered.value.every((b) => b.metadata !== null && typeof b.metadata === 'object'),
+    'metadata decoded',
+  );
+
+  // Cross-project binding isolation
+  const other = create(GM, native.sagaId, native.versionId, 'Andere Gruppe');
+  assert(other.ok, `other project: ${other.ok ? '' : other.error}`);
+  const otherId = other.value.id;
+  const otherPublic = other.value.publicId;
+  const foreignBinding = store.seedBindingForTests({
+    projectId: otherId,
+    assetKind: 'npc',
+    assetId: 'foreign',
+    reveal: 'party',
+    label: 'Foreign NPC',
+  });
+  const homeList = listBindings(GM, publicId, 'npc');
+  assert(homeList.ok, 'home list');
+  assert(
+    !homeList.value.some((b) => b.id === foreignBinding),
+    'foreign binding not in home project list',
+  );
+  const otherList = listBindings(GM, otherPublic, 'npc');
+  assert(otherList.ok && otherList.value.some((b) => b.id === foreignBinding), 'other sees own');
+
+  // Bundle+grants atomic: after set, grants match bundle and bundle row exists (no orphan grants)
+  const grants = db
+    .prepare(
+      `SELECT permission_key AS k, source_bundle_id AS b
+       FROM project_member_saga_grants WHERE member_id = ?`,
+    )
+    .all(playerMember.id);
+  assert(grants.length > 0, 'player has grants');
+  assert(
+    grants.every((g) => g.b === 'bundle.saga.player'),
+    'grants tied to source bundle',
+  );
+  const bundleRow = db
+    .prepare(`SELECT bundle_id AS b FROM project_member_saga_bundles WHERE member_id = ?`)
+    .get(playerMember.id);
+  assert(bundleRow?.b === 'bundle.saga.player', 'bundle assignment present with grants');
+
+  // Rollback after grant-insert failure (forced trigger) leaves prior state intact
+  const beforeGrants = db
+    .prepare(`SELECT COUNT(*) AS c FROM project_member_saga_grants WHERE member_id = ?`)
+    .get(playerMember.id).c;
+  const beforeBundle = db
+    .prepare(`SELECT bundle_id AS b FROM project_member_saga_bundles WHERE member_id = ?`)
+    .get(playerMember.id).b;
+  db.exec(`
+    CREATE TEMP TRIGGER force_grant_fail
+    AFTER INSERT ON project_member_saga_grants
+    BEGIN
+      SELECT RAISE(ABORT, 'forced-grant-fail');
+    END;
+  `);
+  const rolled = setMemberBundle(GM, projectId, playerMember.id, 'bundle.saga.gm');
+  assert(!rolled.ok, `expected rollback fail got ${JSON.stringify(rolled)}`);
+  db.exec(`DROP TRIGGER IF EXISTS force_grant_fail`);
+  const afterGrants = db
+    .prepare(`SELECT COUNT(*) AS c FROM project_member_saga_grants WHERE member_id = ?`)
+    .get(playerMember.id).c;
+  const afterBundle = db
+    .prepare(`SELECT bundle_id AS b FROM project_member_saga_bundles WHERE member_id = ?`)
+    .get(playerMember.id).b;
+  assert(afterGrants === beforeGrants, 'grant count unchanged after rollback');
+  assert(afterBundle === beforeBundle, 'bundle unchanged after rollback');
 
   const strangerPerms = getPerms(Stranger, publicId);
   assert(!strangerPerms.ok && strangerPerms.error === 'not a member', 'stranger denied');
