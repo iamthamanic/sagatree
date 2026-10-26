@@ -96,7 +96,24 @@ try {
   });
   const saga = createSagaPorts({ db, authorize: permissions.authorize, project });
   const session = createSessionPorts({ db, project });
-  const npc = createNpcCreaturePorts({ db, project });
+  const npc = createNpcCreaturePorts({
+    db,
+    project,
+    session: {
+      sessionProjectId(sessionId) {
+        const row = db
+          .prepare(`SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`)
+          .get(sessionId);
+        return row?.projectId ?? null;
+      },
+      sessionBelongsToProject(sessionId, projectId) {
+        const row = db
+          .prepare(`SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`)
+          .get(sessionId);
+        return Boolean(row && row.projectId === projectId);
+      },
+    },
+  });
 
   const create = create_project_from_saga_version({ saga, project, world });
   const joinByCode = join_project_by_code({ project, character });

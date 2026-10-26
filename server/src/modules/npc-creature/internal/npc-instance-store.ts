@@ -36,13 +36,23 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+export type NpcSessionLookup = {
+  readonly sessionBelongsToProject: (
+    sessionId: string,
+    projectId: string,
+  ) => boolean;
+  readonly sessionProjectId: (sessionId: string) => string | null;
+};
+
 export class NpcInstanceStore {
   readonly #db: HostDatabase;
   readonly #project: ProjectPorts;
+  readonly #session: NpcSessionLookup;
 
-  constructor(db: HostDatabase, project: ProjectPorts) {
+  constructor(db: HostDatabase, project: ProjectPorts, session: NpcSessionLookup) {
     this.#db = db;
     this.#project = project;
+    this.#session = session;
   }
 
   /** Narrow GM: projects.gm_user_id AND active membership (source contract). */
@@ -81,15 +91,7 @@ export class NpcInstanceStore {
       return Boolean(def.ownerUserId && actorIds.includes(def.ownerUserId));
     }
     if (def.scope === 'world' && def.worldProfileId) {
-      const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
-      if (ids.length === 0) return false;
-      const placeholders = ids.map(() => '?').join(',');
-      const owner = this.#db
-        .prepare(
-          `SELECT 1 AS ok FROM worlds WHERE id = ? AND owner_user_id IN (${placeholders})`,
-        )
-        .get(def.worldProfileId, ...ids) as { ok: number } | undefined;
-      if (owner) return true;
+      // World ownership/ACL via project read port — no direct worlds-table SQL.
       return this.#project.actorCanAccessWorld(actorIds, def.worldProfileId);
     }
     return false;
@@ -259,10 +261,7 @@ export class NpcInstanceStore {
       return { ok: false, error: 'P0001:persistent instances must not bind a session' };
     }
     if (input.sessionId) {
-      const sess = this.#db
-        .prepare(`SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`)
-        .get(input.sessionId) as { projectId: string } | undefined;
-      if (!sess || sess.projectId !== input.projectId) {
+      if (!this.#session.sessionBelongsToProject(input.sessionId, input.projectId)) {
         return { ok: false, error: 'P0001:session does not belong to project' };
       }
     }
@@ -348,11 +347,10 @@ export class NpcInstanceStore {
     sessionId: string,
   ): Ok<{ readonly cleared: number }> | NpcError {
     if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
-    const sess = this.#db
-      .prepare(`SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`)
-      .get(sessionId) as { projectId: string } | undefined;
-    if (!sess) return { ok: false, error: 'P0001:session not found' };
-    if (!this.#isNarrowGm(sess.projectId, actorIds)) {
+    // Session project resolved via injected session port (no foreign play_sessions SQL).
+    const projectId = this.#session.sessionProjectId(sessionId);
+    if (!projectId) return { ok: false, error: 'P0001:session not found' };
+    if (!this.#isNarrowGm(projectId, actorIds)) {
       return { ok: false, error: 'P0001:only gm may clear temp controllers' };
     }
     try {
