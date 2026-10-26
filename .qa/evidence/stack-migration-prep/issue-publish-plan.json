@@ -463,11 +463,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-033",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-351.md",
-      "sha256": "957a92d5202a53c6822521575f1aa9dfa9d9ae092f801a499336b598691ac986",
-      "payloadSha256": "5533251e8518b1f0e2af84d0339df76afc51c6327fb09ba019235d6dcd39eb8e"
+      "sha256": "6673ab0d3de3135e4b0388f5fcd413924505ca7d92ef182cff973a51efbdae3f",
+      "payloadSha256": "06cfa786da2c0c74956a679ab0e739d55ff186feab0947967a80092b04bf14b3"
     },
     {
       "localId": "RPC-SAGA-PROJECTIONS",

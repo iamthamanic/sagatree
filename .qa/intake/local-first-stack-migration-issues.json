@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 20,
+    "issuesReady": 19,
     "issuesBlockedOrNeedsDesign": 26,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -6004,7 +6004,7 @@
       "title": "Replace Postgres RPC cluster: session/runtime RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-351",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-351.md",
       "dependsOn": [
@@ -6230,9 +6230,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-351.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -6263,7 +6264,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-033",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T13:05:34.631Z",
+  "startedAt": "2026-10-26T13:09:21.318Z",
   "total": 90,
-  "updated": 4,
-  "unchanged": 86,
+  "updated": 1,
+  "unchanged": 89,
   "failed": [],
   "issues": [
     {
@@ -323,19 +323,19 @@
       "number": 870,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "b254e43c85b2f3efdb46b4d674fba967945839d90e9a1b85c3f32997c07e7649",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-351",
       "number": 814,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": false,
       "labelsOk": false,
-      "sha256": "957a92d5202a53c6822521575f1aa9dfa9d9ae092f801a499336b598691ac986",
+      "sha256": "6673ab0d3de3135e4b0388f5fcd413924505ca7d92ef182cff973a51efbdae3f",
       "action": "updated"
     },
     {
@@ -343,10 +343,10 @@
       "number": 876,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "fd28f8a74e67d507ac4e27a64595ca806874eacaff75e6b269e51e1ec5207483",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-352",
@@ -623,10 +623,10 @@
       "number": 837,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "529c0ca3029c42781f300a4bc8d8132eb5fdc4c25679273385bce106a2126e65",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-414",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T13:06:57.643Z"
+  "finishedAt": "2026-10-26T13:10:15.494Z"
 }
