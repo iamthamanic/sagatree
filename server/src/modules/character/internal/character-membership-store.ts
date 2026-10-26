@@ -5,6 +5,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+import { generateCharacterPublicId } from './public-character-id.ts';
 
 export type CharacterMembershipCheck =
   | { readonly ok: true }
@@ -56,12 +57,25 @@ export class CharacterMembershipStore {
     const id = input.id ?? randomUUID();
     const sheetStatus = input.sheetStatus ?? 'complete';
     const name = input.name ?? 'Test PC';
+    const publicId = this.#uniquePublicId();
     this.#db
       .prepare(
-        `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at)
-         VALUES (?, ?, 'pc', ?, ?, ?)`,
+        `INSERT INTO characters
+           (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
+         VALUES (?, ?, 'pc', ?, ?, ?, ?)`,
       )
-      .run(id, input.ownerUserId, sheetStatus, name, nowIso());
+      .run(id, input.ownerUserId, sheetStatus, name, nowIso(), publicId);
     return { id, ownerUserId: input.ownerUserId, sheetStatus, name };
+  }
+
+  #uniquePublicId(): string {
+    for (let i = 0; i < 16; i += 1) {
+      const publicId = generateCharacterPublicId();
+      const hit = this.#db
+        .prepare(`SELECT 1 AS o FROM characters WHERE public_id = ? LIMIT 1`)
+        .get(publicId);
+      if (!hit) return publicId;
+    }
+    return generateCharacterPublicId();
   }
 }

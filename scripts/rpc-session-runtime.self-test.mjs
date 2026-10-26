@@ -69,7 +69,8 @@ try {
   session.store.seedSession({
     sessionId,
     projectId: 'proj-1',
-    writers: [GM.actorId, P.actorId],
+    writers: [GM.actorId],
+    readers: [P.actorId],
   });
 
   // --- Fall 1: all 15 runtime kinds via apply (presence ≠ separate lifecycle RPCs) ---
@@ -146,6 +147,15 @@ try {
     presence: { userId: P.actorId, characterId: 'ch-own', isOnline: true },
   });
   assert(setP.ok && setP.value.committed, `presence: ${setP.ok ? '' : setP.error}`);
+  rev = setP.value.snapshot.revision;
+  // Reader cannot forge another member's presence (can_write=0 path).
+  const forged = presence(P, {
+    sessionId,
+    expectedRevision: rev,
+    idempotencyKey: `pres-forge-${rev}`,
+    presence: { userId: GM.actorId, characterId: 'ch-forge', isOnline: true },
+  });
+  assert(!forged.ok && forged.error === '42501', `forge presence: ${forged.ok ? 'ok' : forged.error}`);
 
   // No public append_session_event helper on SessionPorts (RPC-SEC-ANON-EVENT-HELPER).
   assert(typeof session.appendSessionEvent !== 'function', 'no public event helper');

@@ -191,10 +191,21 @@ export class ProjectMembershipStore {
     const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
     if (ids.length === 0) return false;
     const placeholders = ids.map(() => '?').join(',');
-    const row = this.#db
+    const owner = this.#db
       .prepare(`SELECT 1 AS ok FROM projects WHERE id = ? AND gm_user_id IN (${placeholders})`)
       .get(projectId, ...ids) as { ok: number } | undefined;
-    return Boolean(row);
+    if (owner) return true;
+    // Canonical is_project_gm: active project_members.role = 'gm' also counts.
+    const memberGm = this.#db
+      .prepare(
+        `SELECT 1 AS ok FROM project_members
+         WHERE project_id = ?
+           AND user_id IN (${placeholders})
+           AND active = 1
+           AND role = 'gm'`,
+      )
+      .get(projectId, ...ids) as { ok: number } | undefined;
+    return Boolean(memberGm);
   }
 
   isActiveMember(projectId: string, actorIds: readonly string[]): boolean {

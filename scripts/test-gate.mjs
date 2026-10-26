@@ -668,6 +668,18 @@ function checkRpcNpcInstances() {
   );
 }
 
+function checkRpcSessionAccess() {
+  console.log('RPC-SESSION-ACCESS (#869): join/leave/invite...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-session-access.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2972,6 +2984,7 @@ checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();
 checkRpcNpcInstances();
+checkRpcSessionAccess();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
