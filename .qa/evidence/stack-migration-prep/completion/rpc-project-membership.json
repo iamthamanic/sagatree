@@ -6,7 +6,7 @@
   "testedCommit": "00e537eb6813374631327057e27a92444a3fb128",
   "githubClosed": true,
   "mergeRef": "PR #970 → main (#874)",
-  "note": "join_project_by_code + set_my_project_character isolated host ports; HTTP deferred.",
+  "note": "join_project_by_code + set_my_project_character isolated host ports; HTTP deferred. Issue #874 closed after merge.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/rpc-project-membership.self-test.mjs",
