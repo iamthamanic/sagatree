@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 19,
-    "issuesBlockedOrNeedsDesign": 26,
+    "issuesReady": 21,
+    "issuesBlockedOrNeedsDesign": 23,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -6273,7 +6273,7 @@
       "title": "Saga-Übersicht, Lore und Outcome-Übernahme",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-saga-projections",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-projections.md",
       "dependsOn": [
@@ -6643,9 +6643,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-projections.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}"
@@ -6685,7 +6686,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-034",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -6694,7 +6695,7 @@
       "title": "Replace Postgres RPC cluster: saga/project RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-352",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-352.md",
       "dependsOn": [
@@ -7044,8 +7045,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-035",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -13968,7 +13968,7 @@
       "title": "Port infrastructure/project adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-308",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-308.md",
       "dependsOn": [
@@ -14220,8 +14220,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-074",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -14341,7 +14340,7 @@
       "title": "Port infrastructure/saga adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-310",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-310.md",
       "dependsOn": [
@@ -14584,8 +14583,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-076",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
