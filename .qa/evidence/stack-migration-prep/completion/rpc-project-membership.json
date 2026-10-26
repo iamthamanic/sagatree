@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-PROJECT-MEMBERSHIP",
+  "result": "PASS",
+  "testedCommit": "00e537eb6813374631327057e27a92444a3fb128",
+  "githubClosed": true,
+  "mergeRef": "PR #970 → main (#874)",
+  "note": "join_project_by_code + set_my_project_character isolated host ports; HTTP deferred. Issue #874 closed after merge.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-project-membership.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-project-membership.md",
+      "sha256": "dd8657d8650e48b7d8e8bd26a6e433f10eb1f3f570814765aa9a4d09cc51d572"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-project-membership.md",
+      "sha256": "74ad12de362117bed2d1a467b0adcf6a405f63a7d13215f6226b72c758591d0e"
+    }
+  ]
+}

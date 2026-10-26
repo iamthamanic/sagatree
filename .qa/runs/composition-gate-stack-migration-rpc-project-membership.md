@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-project-membership (#874)
 
-- HEAD_SHA: a1ea70d200af7a1b3e5d98c737ef8407cd5c4131
+- HEAD_SHA: 00e537eb6813374631327057e27a92444a3fb128
 - BASE_SHA: adf94b2f175aedc0ec540bd54d6f1b0bc91743e9
 - Date: 2026-10-26
 - Verdict: CLEAR
