@@ -297,6 +297,16 @@ export function createSessionRuntimeStore(
           inTransaction = false;
           return failure('FORBIDDEN');
         }
+        // Readers may only mutate their own roster entry — never forge another userId.
+        if (kind === 'presence' && writeAccess === false) {
+          const claimed =
+            typeof payload.userId === 'string' ? payload.userId.trim() : '';
+          if (!claimed || claimed !== actorUserId) {
+            db.exec('ROLLBACK');
+            inTransaction = false;
+            return failure('FORBIDDEN');
+          }
+        }
 
         const existing = db
           .prepare(
