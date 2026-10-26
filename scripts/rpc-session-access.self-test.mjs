@@ -50,6 +50,9 @@ const resolveCmd = pathToFileURL(
 const revokeCmd = pathToFileURL(
   join(root, 'server/src/application/commands/revoke_session_invite.ts'),
 ).href;
+const presenceCmd = pathToFileURL(
+  join(root, 'server/src/application/commands/set_session_player_presence.ts'),
+).href;
 
 const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { createPermissionsPorts } = await import(permissionsUrl);
@@ -67,6 +70,7 @@ const { leave_play_session } = await import(leaveCmd);
 const { create_session_invite } = await import(inviteCmd);
 const { resolve_session_invite } = await import(resolveCmd);
 const { revoke_session_invite } = await import(revokeCmd);
+const { set_session_player_presence } = await import(presenceCmd);
 
 const work = mkdtempSync(join(tmpdir(), 'rpc-sess-access-'));
 const dataDir = join(work, 'data');
@@ -102,6 +106,7 @@ try {
   const createInvite = create_session_invite(session);
   const resolveInvite = resolve_session_invite(session);
   const revokeInvite = revoke_session_invite(session);
+  const setPresence = set_session_player_presence(session);
 
   const GM = { kind: 'solo-local', actorId: 'gm-owner' };
   const Player = { kind: 'solo-local', actorId: 'player-a' };
@@ -210,6 +215,22 @@ try {
 
   // Re-join for invite tests
   assert(joinSess(Player, joinCode, 'char-complete').ok, 'rejoin');
+
+  // Presence must persist to session_players (roster rebuild source).
+  const revForPresence = db
+    .prepare(`SELECT revision AS r FROM session_runtime WHERE session_id = ?`)
+    .get(sessionId);
+  const offline = setPresence(Player, {
+    sessionId,
+    expectedRevision: revForPresence.r,
+    idempotencyKey: `pres-off-${revForPresence.r}`,
+    presence: { userId: Player.actorId, characterId: 'char-complete', isOnline: false },
+  });
+  assert(offline.ok && offline.value.committed, `offline presence: ${offline.ok ? '' : offline.error}`);
+  const onlineRow = db
+    .prepare(`SELECT is_online AS o FROM session_players WHERE session_id = ? AND user_id = ?`)
+    .get(sessionId, Player.actorId);
+  assert(onlineRow?.o === 0, `session_players.is_online synced got ${onlineRow?.o}`);
 
   // --- Fall 3: invite create/revoke GM-only; rotate prior tokens ---
   assert(!createInvite(Player, sessionId).ok, 'player cannot create invite');

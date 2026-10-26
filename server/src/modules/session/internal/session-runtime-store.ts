@@ -372,6 +372,32 @@ export function createSessionRuntimeStore(
         }
         next = { ...next, revision: current.revision + 1, updatedAt };
 
+        // Keep session_players in lockstep with roster so join/leave rebuilds
+        // (#rosterFromPlayers) cannot resurrect a stale is_online / character_id.
+        // Only UPDATE existing player rows (join/invite create them); skip if absent
+        // so isolated runtime seeds without play_sessions FKs still work.
+        if (kind === 'presence') {
+          const targetUserId =
+            typeof payload.userId === 'string' && payload.userId.trim()
+              ? payload.userId.trim()
+              : actorUserId;
+          const entry = next.roster.find((r) => r.userId === targetUserId);
+          if (entry) {
+            db.prepare(
+              `UPDATE session_players
+                 SET is_online = ?, character_id = COALESCE(?, character_id),
+                     left_at = CASE WHEN ? = 1 THEN NULL ELSE left_at END
+               WHERE session_id = ? AND user_id = ?`,
+            ).run(
+              entry.isOnline ? 1 : 0,
+              entry.characterId,
+              entry.isOnline ? 1 : 0,
+              sessionId,
+              targetUserId,
+            );
+          }
+        }
+
         const stateJson = canonicalJson({
           status: next.status,
           roster: next.roster,
