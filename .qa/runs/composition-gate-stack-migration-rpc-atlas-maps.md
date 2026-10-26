@@ -24,7 +24,7 @@ Atlas map RPC port: WorldPorts → WorldAtlasStore with project saga resolve + a
 |------|----------|----------|--------|
 | N-actors | Owner upsert; player party list; cross-saga 42501 | self-test | pass |
 | Invalid/missing | kind/layers/size 22023; CAS 40001; missing P0002 | self-test | pass |
-| Legacy root | legacy_tiles when world_maps row exists; stable root id | self-test | pass |
+| Two consumers / crash | Upsert CAS under concurrent revision; second writer sees 40001 | self-test | pass |
 
 ## Flags
 
