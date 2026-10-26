@@ -437,8 +437,10 @@ export class NpcInstanceStore {
         } catch {
           continue;
         }
-        if (Object.prototype.hasOwnProperty.call(runtime, 'temporaryControllerUserId')) {
-          delete runtime.temporaryControllerUserId;
+        const temp = runtime.temporaryControllerUserId;
+        if (typeof temp === 'string' && temp.trim() !== '') {
+          // Canonical cleared representation is JSON null (not key deletion).
+          runtime.temporaryControllerUserId = null;
           this.#db
             .prepare(
               `UPDATE npc_creature_instances SET runtime = ?, updated_at = ? WHERE id = ?`,
