@@ -1,4 +1,4 @@
-# Live positive — Kodus Complete (PR #995)
+# Live Positive — Kodus Complete (PR #995)
 
 - observedAt: 2026-10-26T22:37:18Z
 - PR: https://github.com/iamthamanic/sagatree/pull/995
@@ -17,7 +17,7 @@
 - output.title: `Code Review Skipped`
 - output.summary: `No changed files in this pull request.`
 - Cause: empty nudge commit. Gate correctly fail-closed (`kodus-failed`).
-- Fix: push a non-empty commit so Kody re-reviews PR file set.
+- Fix: request `@kody start-review` on a non-empty HEAD (or push substantive code); docs-only commits do not re-review prior code diffs.
 
 ## Gate rollout
 

@@ -1,4 +1,4 @@
-# Hard blocker (resolved root cause) — PR #994 Kodus Skipped
+# Hard Blocker (Resolved Root Cause) — PR #994 Kodus Skipped
 
 - observed: 2026-10-26
 - HEAD samples: ea1b72e5, af8e4e77
