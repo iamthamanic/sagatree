@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-416",
+  "result": "PASS",
+  "testedCommit": "82e55c451242222980c3a8a48d70037ece2b4e0e",
+  "githubClosed": true,
+  "mergeRef": "PR #968 → main (#832)",
+  "note": "Media Edge Map quarantine keeps 404; distinct from durable host media/MIG-306.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-416-media-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-416.md",
+      "sha256": "ceb20c270791084ab625ea0103390d884c1fba892826a1340004f0d1713bbc5d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-416.md",
+      "sha256": "8d2e71d5b3340ff1f835dfce1f18fb6ff3ffcbb96a33ab48a8894e83af16a3d6"
+    }
+  ]
+}

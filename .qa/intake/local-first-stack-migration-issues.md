@@ -62,7 +62,7 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 54 | 3 | MIG-412 [#828](https://github.com/iamthamanic/sagatree/issues/828) | done | #795, #792, #793, #841 |
 | 55 | 3 | MIG-413 [#829](https://github.com/iamthamanic/sagatree/issues/829) | done | #795, #792, #793 |
 | 56 | 3 | MIG-415 [#831](https://github.com/iamthamanic/sagatree/issues/831) | done | #795, #792, #793 |
-| 57 | 3 | MIG-416 [#832](https://github.com/iamthamanic/sagatree/issues/832) | ready | #795, #792, #793, #841 |
+| 57 | 3 | MIG-416 [#832](https://github.com/iamthamanic/sagatree/issues/832) | done | #795, #792, #793, #841 |
 | 58 | 3 | MIG-417 [#833](https://github.com/iamthamanic/sagatree/issues/833) | ready | #795, #792, #793 |
 | 59 | 3 | MIG-418 [#834](https://github.com/iamthamanic/sagatree/issues/834) | ready | #795, #792, #793 |
 | 60 | 3 | MIG-419 [#835](https://github.com/iamthamanic/sagatree/issues/835) | ready | #795, #792, #793 |
