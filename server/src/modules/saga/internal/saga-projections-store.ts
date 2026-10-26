@@ -38,6 +38,8 @@ export type SagaLorePermissionLookup = {
           readonly assetId: string;
           readonly reveal: string;
           readonly label: string | null;
+          readonly metadata?: unknown;
+          readonly updatedAt?: string | null;
         }[];
       }
     | { readonly ok: false; readonly error: string };
@@ -407,7 +409,8 @@ export class SagaProjectionsStore {
     const canHidden =
       isGm ||
       Boolean(
-        this.#loreAcl?.hasSagaPermission(project.id, actorIds, 'saga.lore.read_hidden'),
+        this.#loreAcl?.hasSagaPermission(project.id, actorIds, 'saga.lore.read_hidden') ||
+          this.#loreAcl?.hasSagaPermission(project.id, actorIds, 'saga.secrets.read'),
       );
 
     const entries: Array<Record<string, unknown>> = [];
@@ -474,14 +477,24 @@ export class SagaProjectionsStore {
       if (bindings.ok) {
         for (const b of bindings.value) {
           if (b.reveal === 'gm_only' && !isGm && !canHidden) continue;
+          const meta =
+            b.metadata && typeof b.metadata === 'object' && !Array.isArray(b.metadata)
+              ? (b.metadata as Record<string, unknown>)
+              : {};
+          const summary =
+            typeof meta.summary === 'string'
+              ? meta.summary
+              : typeof meta.description === 'string'
+                ? meta.description
+                : '';
           entries.push({
             id: `binding:${b.id}`,
             kind: 'lore_binding',
             title: b.label || b.assetId || 'Lore',
-            summary: '',
+            summary,
             visibility: b.reveal === 'party' ? 'shared' : b.reveal,
-            occurredAt: null,
-            meta: { assetId: b.assetId, reveal: b.reveal },
+            occurredAt: typeof b.updatedAt === 'string' ? b.updatedAt : null,
+            meta: { assetId: b.assetId, reveal: b.reveal, ...meta },
           });
         }
       }
