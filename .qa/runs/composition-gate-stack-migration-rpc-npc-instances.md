@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-npc-instances (#877)
 
-- HEAD_SHA: e747ef5e2726388ae1cea075623519c938598ff0
+- HEAD_SHA: 875f14c8dd8ef1c3d7f851f3aad462a0bd4d4b14
 - BASE_SHA: 71e6248ed7a9091db7d311f5049d1bb2e513270a
 - Date: 2026-10-26
 - Verdict: CLEAR
