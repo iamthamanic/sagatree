@@ -17,6 +17,21 @@ export type NpcInstanceRow = {
   readonly displayName: string;
   readonly instanceKind: string;
   readonly sequenceNumber: number;
+  readonly snapshot: Record<string, unknown>;
+  readonly runtime: Record<string, unknown>;
+  readonly createdBy: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+type NpcInstanceDbRow = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly sessionId: string | null;
+  readonly definitionId: string;
+  readonly displayName: string;
+  readonly instanceKind: string;
+  readonly sequenceNumber: number;
   readonly snapshot: string;
   readonly runtime: string;
   readonly createdBy: string;
@@ -117,11 +132,26 @@ export class NpcInstanceStore {
       return null;
     }
     const temp = (runtime as { temporaryControllerUserId?: unknown }).temporaryControllerUserId;
-    if (typeof temp !== 'string' || temp.trim() === '') return null;
+    if (temp === undefined || temp === null) return null;
+    if (typeof temp !== 'string' || temp.trim() === '') {
+      return { ok: false, error: 'P0001:invalid temporary controller' };
+    }
     if (!this.#isActiveMember(projectId, temp.trim())) {
       return { ok: false, error: 'P0001:temporary controller is not an active project member' };
     }
     return null;
+  }
+
+  #decodeJsonObject(raw: string, field: 'snapshot' | 'runtime'): Record<string, unknown> | null {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed as Record<string, unknown>;
+    } catch {
+      return null;
+    }
   }
 
   #readInstance(id: string): NpcInstanceRow | null {
@@ -134,8 +164,25 @@ export class NpcInstanceStore {
                 created_at AS createdAt, updated_at AS updatedAt
          FROM npc_creature_instances WHERE id = ?`,
       )
-      .get(id) as NpcInstanceRow | undefined;
-    return row ?? null;
+      .get(id) as NpcInstanceDbRow | undefined;
+    if (!row) return null;
+    const snapshot = this.#decodeJsonObject(row.snapshot, 'snapshot');
+    const runtime = this.#decodeJsonObject(row.runtime, 'runtime');
+    if (!snapshot || !runtime) return null;
+    return {
+      id: row.id,
+      projectId: row.projectId,
+      sessionId: row.sessionId,
+      definitionId: row.definitionId,
+      displayName: row.displayName,
+      instanceKind: row.instanceKind,
+      sequenceNumber: row.sequenceNumber,
+      snapshot,
+      runtime,
+      createdBy: row.createdBy,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    };
   }
 
   seedDefinitionForTests(input: {
@@ -184,8 +231,14 @@ export class NpcInstanceStore {
       }
       return { ok: false, error: 'P0001:actor is not an active project member' };
     }
-    if (controllerUserId && !this.#isActiveMember(projectId, controllerUserId)) {
-      return { ok: false, error: 'P0001:controller is not an active project member' };
+    if (controllerUserId !== null) {
+      if (typeof controllerUserId !== 'string' || controllerUserId.trim() === '') {
+        return { ok: false, error: 'P0001:invalid controller id' };
+      }
+      if (!this.#isActiveMember(projectId, controllerUserId.trim())) {
+        return { ok: false, error: 'P0001:controller is not an active project member' };
+      }
+      controllerUserId = controllerUserId.trim();
     }
     if (
       (definitionId.startsWith('personal:') || definitionId.startsWith('world:')) &&
@@ -337,7 +390,7 @@ export class NpcInstanceStore {
       .run(JSON.stringify(runtime), now, instanceId);
     const row = this.#readInstance(instanceId);
     if (!row) return { ok: false, error: 'P0001' };
-    if (row.snapshot !== current.snapshot) {
+    if (JSON.stringify(row.snapshot) !== JSON.stringify(current.snapshot)) {
       return { ok: false, error: 'P0001:snapshot mutated' };
     }
     return { ok: true, value: row };
@@ -384,10 +437,7 @@ export class NpcInstanceStore {
         } catch {
           continue;
         }
-        if (
-          typeof runtime.temporaryControllerUserId === 'string' &&
-          runtime.temporaryControllerUserId.trim() !== ''
-        ) {
+        if (Object.prototype.hasOwnProperty.call(runtime, 'temporaryControllerUserId')) {
           delete runtime.temporaryControllerUserId;
           this.#db
             .prepare(

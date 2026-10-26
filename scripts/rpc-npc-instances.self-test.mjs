@@ -247,16 +247,28 @@ try {
   assert(!updateRt(Player, inst.value.id, { hp: 3 }).ok, 'controller cannot update runtime');
   const updated = updateRt(GM, inst.value.id, { stance: 'aggressive' });
   assert(updated.ok, `update: ${updated.ok ? '' : updated.error}`);
-  assert(updated.value.snapshot === snapBefore, 'snapshot unchanged');
-  assert(JSON.parse(updated.value.runtime).stance === 'aggressive', 'runtime replaced');
+  assert(
+    JSON.stringify(updated.value.snapshot) === JSON.stringify(snapBefore),
+    'snapshot unchanged',
+  );
+  assert(updated.value.runtime.stance === 'aggressive', 'runtime replaced');
   // P2: inactive/nonmember temporary controller rejected on runtime update
   assert(
     !updateRt(GM, inst.value.id, { temporaryControllerUserId: Stranger.actorId }).ok,
     'nonmember temp controller on update denied',
   );
+  assert(
+    !updateRt(GM, inst.value.id, { temporaryControllerUserId: 123 }).ok,
+    'non-string temp controller denied',
+  );
+  assert(
+    !updateRt(GM, inst.value.id, { temporaryControllerUserId: '' }).ok,
+    'empty temp controller denied',
+  );
 
   // --- Fall 3: assign controller — active member; full-sheet definition ---
   assert(!assign(Player, projectId, defId, Player.actorId).ok, 'player cannot assign');
+  assert(!assign(GM, projectId, defId, '').ok, 'empty controller id denied');
   const assigned = assign(GM, projectId, defId, Player.actorId);
   assert(assigned.ok, `assign: ${assigned.ok ? '' : assigned.error}`);
   assert(assigned.value.controllerUserId === Player.actorId, 'controller set');
