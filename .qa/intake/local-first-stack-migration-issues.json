@@ -4822,6 +4822,7 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-lifecycle.json",
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
@@ -4864,8 +4865,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-028",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-lifecycle.json"
+      ]
     },
     {
       "localId": "RPC-NPC-INSTANCES",

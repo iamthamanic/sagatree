@@ -107,8 +107,7 @@
         "migration-wave-0-evidence",
         "migration-order-001",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json"
+      ]
     },
     {
       "localId": "ATLAS-LIVE-E2E",
@@ -142,8 +141,7 @@
         "migration-wave-0-evidence",
         "migration-order-003",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json"
+      ]
     },
     {
       "localId": "GATE-01",
@@ -162,8 +160,7 @@
         "migration-order-004",
         "agent-done",
         "gate-issue"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json"
+      ]
     },
     {
       "localId": "GATE-02",
@@ -182,8 +179,7 @@
         "migration-order-005",
         "agent-done",
         "gate-issue"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json"
+      ]
     },
     {
       "localId": "GATE-03",
@@ -202,8 +198,7 @@
         "migration-order-006",
         "agent-done",
         "gate-issue"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json"
+      ]
     },
     {
       "localId": "GATE-04",
@@ -222,8 +217,7 @@
         "migration-order-007",
         "agent-done",
         "gate-issue"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json"
+      ]
     },
     {
       "localId": "MIG-010",
@@ -242,8 +236,7 @@
         "migration-wave-1-host-auth",
         "migration-order-008",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json"
+      ]
     },
     {
       "localId": "MIG-011",
@@ -262,8 +255,7 @@
         "migration-wave-1-host-auth",
         "migration-order-009",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json"
+      ]
     },
     {
       "localId": "MIG-013",
@@ -281,8 +273,7 @@
         "migration-wave-1-host-auth",
         "migration-order-010",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json"
+      ]
     },
     {
       "localId": "MIG-012",
@@ -300,8 +291,7 @@
         "migration-wave-1-host-auth",
         "migration-order-011",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json"
+      ]
     },
     {
       "localId": "MIG-014",
@@ -321,8 +311,7 @@
         "migration-wave-1-host-auth",
         "migration-order-012",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-014.json"
+      ]
     },
     {
       "localId": "MIG-015",
@@ -342,8 +331,7 @@
         "migration-wave-1-host-auth",
         "migration-order-013",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-015.json"
+      ]
     },
     {
       "localId": "MIG-500",
@@ -361,8 +349,7 @@
         "migration-wave-1-host-auth",
         "migration-order-014",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json"
+      ]
     },
     {
       "localId": "MIG-020",
@@ -382,8 +369,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-015",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-020.json"
+      ]
     },
     {
       "localId": "MIG-022",
@@ -403,8 +389,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-016",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-022.json"
+      ]
     },
     {
       "localId": "MIG-023",
@@ -423,8 +408,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-017",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-023.json"
+      ]
     },
     {
       "localId": "MIG-024",
@@ -443,8 +427,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-018",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-024.json"
+      ]
     },
     {
       "localId": "MIG-021",
@@ -465,8 +448,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-019",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-021.json"
+      ]
     },
     {
       "localId": "MIG-503",
@@ -484,8 +466,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-020",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json"
+      ]
     },
     {
       "localId": "RPC-MARKETPLACE-COUNT",
@@ -531,8 +512,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-022",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json"
+      ]
     },
     {
       "localId": "RPC-SAGA-VERSION-READ",
@@ -556,8 +536,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-023",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-version-read.json"
+      ]
     },
     {
       "localId": "RPC-SAGA-PROVISION",
@@ -581,8 +560,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-024",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-provision.json"
+      ]
     },
     {
       "localId": "RPC-PROJECT-MEMBERSHIP",
@@ -606,8 +584,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-025",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-project-membership.json"
+      ]
     },
     {
       "localId": "RPC-SAGA-GOVERNANCE",
@@ -631,8 +608,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-026",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-governance.json"
+      ]
     },
     {
       "localId": "RPC-SESSION-RUNTIME",
@@ -655,8 +631,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-027",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-runtime.json"
+      ]
     },
     {
       "localId": "RPC-SESSION-LIFECYCLE",
@@ -679,9 +654,8 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-028",
-        "agent-ready"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-lifecycle.json"
+        "agent-done"
+      ]
     },
     {
       "localId": "RPC-NPC-INSTANCES",
@@ -699,13 +673,12 @@
         787,
         868
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-029",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -742,13 +715,12 @@
         787,
         868
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-031",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -767,13 +739,12 @@
         787,
         868
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-032",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -867,8 +838,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-036",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-map.json"
+      ]
     },
     {
       "localId": "RPC-ATLAS-MAPS",
@@ -1036,8 +1006,7 @@
         "migration-wave-3-edge-services",
         "migration-order-043",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-402.json"
+      ]
     },
     {
       "localId": "MIG-401",
@@ -1077,8 +1046,7 @@
         "migration-wave-3-edge-services",
         "migration-order-045",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-403.json"
+      ]
     },
     {
       "localId": "MIG-404",
@@ -1140,8 +1108,7 @@
         "migration-wave-3-edge-services",
         "migration-order-048",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-406.json"
+      ]
     },
     {
       "localId": "MIG-407",
@@ -1160,8 +1127,7 @@
         "migration-wave-3-edge-services",
         "migration-order-049",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-407.json"
+      ]
     },
     {
       "localId": "MIG-408",
@@ -1181,8 +1147,7 @@
         "migration-wave-3-edge-services",
         "migration-order-050",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-408.json"
+      ]
     },
     {
       "localId": "MIG-409",
@@ -1245,8 +1210,7 @@
         "migration-wave-3-edge-services",
         "migration-order-053",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-411.json"
+      ]
     },
     {
       "localId": "MIG-412",
@@ -1266,8 +1230,7 @@
         "migration-wave-3-edge-services",
         "migration-order-054",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-412.json"
+      ]
     },
     {
       "localId": "MIG-413",
@@ -1286,8 +1249,7 @@
         "migration-wave-3-edge-services",
         "migration-order-055",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-413.json"
+      ]
     },
     {
       "localId": "MIG-415",
@@ -1306,8 +1268,7 @@
         "migration-wave-3-edge-services",
         "migration-order-056",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-415.json"
+      ]
     },
     {
       "localId": "MIG-416",
@@ -1327,8 +1288,7 @@
         "migration-wave-3-edge-services",
         "migration-order-057",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-416.json"
+      ]
     },
     {
       "localId": "MIG-417",
@@ -1644,8 +1604,7 @@
         "migration-wave-4-adapter-ports",
         "migration-order-072",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-306.json"
+      ]
     },
     {
       "localId": "MIG-307",
@@ -1713,8 +1672,7 @@
         "migration-wave-4-adapter-ports",
         "migration-order-075",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-309.json"
+      ]
     },
     {
       "localId": "MIG-310",
@@ -1834,8 +1792,7 @@
         "migration-wave-5-storage-export",
         "migration-order-080",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-501.json"
+      ]
     },
     {
       "localId": "MIG-502",
@@ -1854,8 +1811,7 @@
         "migration-wave-5-storage-export",
         "migration-order-081",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-502.json"
+      ]
     },
     {
       "localId": "MIG-600",
