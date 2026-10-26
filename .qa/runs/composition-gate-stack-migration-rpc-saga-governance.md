@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-saga-governance (#875)
 
-- HEAD_SHA: 3bde60626b1c46eeae91ee7c8d48cb6bbd994b50
+- HEAD_SHA: be571847744d508e677c36f989ce0ab63908dc2c
 - BASE_SHA: bc804a4522232036a4aa6abc42cada9aef756ac5
 - Date: 2026-10-26
 - Verdict: CLEAR
