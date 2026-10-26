@@ -10,9 +10,10 @@ import {
   type ControllerAssignmentRow,
   type NpcInstanceRow,
   type NpcSessionLookup,
+  type NpcWorldLookup,
 } from './internal/npc-instance-store.ts';
 
-export type { NpcSessionLookup };
+export type { NpcSessionLookup, NpcWorldLookup };
 
 export {
   BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -96,8 +97,9 @@ export function createNpcCreaturePorts(deps: {
   readonly db: HostDatabase;
   readonly project: ProjectPorts;
   readonly session: NpcSessionLookup;
+  readonly world: NpcWorldLookup;
 }): NpcCreaturePorts {
-  const store = new NpcInstanceStore(deps.db, deps.project, deps.session);
+  const store = new NpcInstanceStore(deps.db, deps.project, deps.session, deps.world);
   return {
     moduleId: 'npc-creature',
     assignController(actor, projectId, definitionId, controllerUserId) {

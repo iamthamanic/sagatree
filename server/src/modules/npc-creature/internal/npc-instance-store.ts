@@ -44,15 +44,30 @@ export type NpcSessionLookup = {
   readonly sessionProjectId: (sessionId: string) => string | null;
 };
 
+/** World ACL via owning module / composition — no worlds SQL inside npc-creature. */
+export type NpcWorldLookup = {
+  readonly canReadWorldProfile: (
+    actorIds: readonly string[],
+    worldProfileId: string,
+  ) => boolean;
+};
+
 export class NpcInstanceStore {
   readonly #db: HostDatabase;
   readonly #project: ProjectPorts;
   readonly #session: NpcSessionLookup;
+  readonly #world: NpcWorldLookup;
 
-  constructor(db: HostDatabase, project: ProjectPorts, session: NpcSessionLookup) {
+  constructor(
+    db: HostDatabase,
+    project: ProjectPorts,
+    session: NpcSessionLookup,
+    world: NpcWorldLookup,
+  ) {
     this.#db = db;
     this.#project = project;
     this.#session = session;
+    this.#world = world;
   }
 
   /** Narrow GM: projects.gm_user_id AND active membership (source contract). */
@@ -91,8 +106,8 @@ export class NpcInstanceStore {
       return Boolean(def.ownerUserId && actorIds.includes(def.ownerUserId));
     }
     if (def.scope === 'world' && def.worldProfileId) {
-      // World ownership/ACL via project read port — no direct worlds-table SQL.
-      return this.#project.actorCanAccessWorld(actorIds, def.worldProfileId);
+      // World ownership/ACL via injected world port — no direct worlds-table SQL.
+      return this.#world.canReadWorldProfile(actorIds, def.worldProfileId);
     }
     return false;
   }

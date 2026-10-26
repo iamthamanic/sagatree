@@ -113,6 +113,15 @@ try {
         return Boolean(row && row.projectId === projectId);
       },
     },
+    world: {
+      canReadWorldProfile(actorIds, worldProfileId) {
+        if (project.actorCanAccessWorld(actorIds, worldProfileId)) return true;
+        const owner = db
+          .prepare(`SELECT owner_user_id AS ownerUserId FROM worlds WHERE id = ?`)
+          .get(worldProfileId);
+        return Boolean(owner && actorIds.includes(owner.ownerUserId));
+      },
+    },
   });
 
   const create = create_project_from_saga_version({ saga, project, world });
