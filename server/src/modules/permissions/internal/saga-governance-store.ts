@@ -1,26 +1,37 @@
 /**
  * Saga permission grants/bundles/bindings (#875). Private — permissions public API only.
  * Location: server/src/modules/permissions/internal/saga-governance-store.ts
+ *
+ * Project membership / public-id resolution MUST come from project ports (no cross-module SQL).
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+import type { ProjectPorts } from '../../project/index.ts';
 
 export type GovernanceError = { readonly ok: false; readonly error: string };
 export type Ok<T> = { readonly ok: true; readonly value: T };
+
+export type ActorIds = readonly string[];
 
 function nowIso(): string {
   return new Date().toISOString();
 }
 
-function normalizePublicId(raw: string): string {
-  return raw.trim().toUpperCase();
-}
+const ASSET_READ_KEYS: Record<string, { party: string; hidden: string }> = {
+  npc: { party: 'saga.npc.read', hidden: 'saga.npc.read_hidden' },
+  item: { party: 'saga.items.read', hidden: 'saga.items.read_hidden' },
+  quest: { party: 'saga.quests.read', hidden: 'saga.quests.read_hidden' },
+  lore: { party: 'saga.lore.read', hidden: 'saga.lore.read_hidden' },
+  secret: { party: 'saga.secrets.read', hidden: 'saga.secrets.read' },
+};
 
 export class SagaGovernanceStore {
   readonly #db: HostDatabase;
+  readonly #project: ProjectPorts;
 
-  constructor(db: HostDatabase) {
+  constructor(db: HostDatabase, project: ProjectPorts) {
     this.#db = db;
+    this.#project = project;
   }
 
   #withImmediateTx<T>(fn: () => T): T {
@@ -39,47 +50,28 @@ export class SagaGovernanceStore {
     }
   }
 
-  resolveProjectByPublicId(publicId: string): { id: string; gmUserId: string } | null {
-    const normalized = normalizePublicId(publicId);
-    if (!normalized) return null;
-    return (
-      (this.#db
-        .prepare(
-          `SELECT id, gm_user_id AS gmUserId FROM projects WHERE public_id IS NOT NULL AND UPPER(TRIM(public_id)) = ?`,
-        )
-        .get(normalized) as { id: string; gmUserId: string } | undefined) ?? null
-    );
-  }
-
-  isProjectGm(projectId: string, actorId: string): boolean {
-    const row = this.#db
-      .prepare(`SELECT 1 AS ok FROM projects WHERE id = ? AND gm_user_id = ?`)
-      .get(projectId, actorId) as { ok: number } | undefined;
-    return Boolean(row);
-  }
-
-  isActiveMember(projectId: string, actorId: string): boolean {
+  hasSagaPermission(projectId: string, actorIds: ActorIds, key: string): boolean {
+    if (this.#project.isProjectGm(projectId, actorIds)) return true;
+    // Grants only apply while the actor still has an active project membership (via project port).
+    if (!this.#project.isActiveMember(projectId, actorIds)) return false;
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return false;
+    const placeholders = ids.map(() => '?').join(',');
     const row = this.#db
       .prepare(
-        `SELECT 1 AS ok FROM project_members WHERE project_id = ? AND user_id = ? AND active = 1`,
+        `SELECT 1 AS ok
+         FROM project_member_saga_grants g
+         WHERE g.project_id = ?
+           AND g.user_id IN (${placeholders})
+           AND g.permission_key = ?
+         LIMIT 1`,
       )
-      .get(projectId, actorId) as { ok: number } | undefined;
-    return Boolean(row);
-  }
-
-  hasSagaPermission(projectId: string, actorId: string, key: string): boolean {
-    if (this.isProjectGm(projectId, actorId)) return true;
-    const row = this.#db
-      .prepare(
-        `SELECT 1 AS ok FROM project_member_saga_grants
-         WHERE project_id = ? AND user_id = ? AND permission_key = ?`,
-      )
-      .get(projectId, actorId, key) as { ok: number } | undefined;
+      .get(projectId, ...ids, key) as { ok: number } | undefined;
     return Boolean(row);
   }
 
   getMyPermissions(
-    actorId: string,
+    actorIds: ActorIds,
     publicId: string,
   ): Ok<{
     projectId: string;
@@ -87,19 +79,21 @@ export class SagaGovernanceStore {
     isGm: boolean;
     keys: string[];
   }> | GovernanceError {
-    if (!actorId) return { ok: false, error: 'not authenticated' };
-    const project = this.resolveProjectByPublicId(publicId);
+    if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
+    const project = this.#project.resolveByPublicId(publicId);
     if (!project) return { ok: false, error: 'saga not found' };
-    const isGm = project.gmUserId === actorId;
-    if (!isGm && !this.isActiveMember(project.id, actorId)) {
+    const isGm = this.#project.isProjectGm(project.id, actorIds);
+    if (!isGm && !this.#project.isActiveMember(project.id, actorIds)) {
       return { ok: false, error: 'not a member' };
     }
+    const placeholders = actorIds.map(() => '?').join(',');
     const bundleRow = this.#db
       .prepare(
         `SELECT bundle_id AS bundleId FROM project_member_saga_bundles
-         WHERE project_id = ? AND user_id = ?`,
+         WHERE project_id = ? AND user_id IN (${placeholders})
+         LIMIT 1`,
       )
-      .get(project.id, actorId) as { bundleId: string } | undefined;
+      .get(project.id, ...actorIds) as { bundleId: string } | undefined;
     let keys: string[];
     let bundleId = bundleRow?.bundleId ?? null;
     if (isGm) {
@@ -113,11 +107,13 @@ export class SagaGovernanceStore {
       keys = (
         this.#db
           .prepare(
-            `SELECT permission_key AS key FROM project_member_saga_grants
-             WHERE project_id = ? AND user_id = ?
-             ORDER BY permission_key`,
+            `SELECT DISTINCT g.permission_key AS key
+             FROM project_member_saga_grants g
+             WHERE g.project_id = ?
+               AND g.user_id IN (${placeholders})
+             ORDER BY g.permission_key`,
           )
-          .all(project.id, actorId) as { key: string }[]
+          .all(project.id, ...actorIds) as { key: string }[]
       ).map((r) => r.key);
     }
     return {
@@ -127,7 +123,7 @@ export class SagaGovernanceStore {
   }
 
   listMemberPermissionState(
-    actorId: string,
+    actorIds: ActorIds,
     publicId: string,
   ): Ok<
     readonly {
@@ -139,59 +135,49 @@ export class SagaGovernanceStore {
       canSetBundle: boolean;
     }[]
   > | GovernanceError {
-    if (!actorId) return { ok: false, error: 'not authenticated' };
-    const project = this.resolveProjectByPublicId(publicId);
+    if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
+    const project = this.#project.resolveByPublicId(publicId);
     if (!project) return { ok: false, error: 'saga not found' };
     if (
-      !this.hasSagaPermission(project.id, actorId, 'saga.members.read') &&
-      !this.isProjectGm(project.id, actorId)
+      !this.hasSagaPermission(project.id, actorIds, 'saga.members.read') &&
+      !this.#project.isProjectGm(project.id, actorIds)
     ) {
       return { ok: false, error: 'missing saga.members.read' };
     }
     const canSetBundle =
-      this.hasSagaPermission(project.id, actorId, 'saga.members.set_bundle') ||
-      this.isProjectGm(project.id, actorId);
-    const rows = this.#db
-      .prepare(
-        `SELECT m.id AS memberId, m.user_id AS userId, m.role AS role,
-                CASE WHEN m.active = 1 THEN 'active' ELSE 'inactive' END AS status,
-                b.bundle_id AS bundleId, m.joined_at AS joinedAt
-         FROM project_members m
-         LEFT JOIN project_member_saga_bundles b ON b.member_id = m.id
-         WHERE m.project_id = ? AND m.active = 1
-         ORDER BY m.joined_at`,
-      )
-      .all(project.id) as {
-      memberId: string;
-      userId: string;
-      role: string;
-      status: string;
-      bundleId: string | null;
-      joinedAt: string | null;
-    }[];
+      this.hasSagaPermission(project.id, actorIds, 'saga.members.set_bundle') ||
+      this.#project.isProjectGm(project.id, actorIds);
+    const members = this.#project.listActiveMembers(project.id);
     return {
       ok: true,
-      value: rows.map((r) => ({
-        memberId: r.memberId,
-        userId: r.userId,
-        role: r.role,
-        status: r.status,
-        bundleId: r.bundleId,
-        canSetBundle,
-      })),
+      value: members.map((m) => {
+        const bundle = this.#db
+          .prepare(
+            `SELECT bundle_id AS bundleId FROM project_member_saga_bundles WHERE member_id = ?`,
+          )
+          .get(m.memberId) as { bundleId: string } | undefined;
+        return {
+          memberId: m.memberId,
+          userId: m.userId,
+          role: m.role,
+          status: m.status,
+          bundleId: bundle?.bundleId ?? null,
+          canSetBundle,
+        };
+      }),
     };
   }
 
   setMemberBundle(
-    actorId: string,
+    actorIds: ActorIds,
     projectId: string,
     memberId: string,
     bundleId: string,
   ): Ok<{ memberId: string; bundleId: string; grantCount: number }> | GovernanceError {
-    if (!actorId) return { ok: false, error: 'not authenticated' };
+    if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
     if (
-      !this.hasSagaPermission(projectId, actorId, 'saga.members.set_bundle') &&
-      !this.isProjectGm(projectId, actorId)
+      !this.hasSagaPermission(projectId, actorIds, 'saga.members.set_bundle') &&
+      !this.#project.isProjectGm(projectId, actorIds)
     ) {
       return { ok: false, error: 'missing saga.members.set_bundle' };
     }
@@ -202,33 +188,27 @@ export class SagaGovernanceStore {
 
     try {
       return this.#withImmediateTx(() => {
-        const member = this.#db
-          .prepare(
-            `SELECT id, user_id AS userId FROM project_members
-             WHERE id = ? AND project_id = ? AND active = 1`,
-          )
-          .get(memberId, projectId) as { id: string; userId: string } | undefined;
+        const member = this.#project.getActiveMemberById(projectId, memberId);
         if (!member) return { ok: false, error: 'member not found' };
 
         if (bundleId !== 'bundle.saga.gm') {
-          const governanceLeft = this.#db
+          const activeMembers = this.#project.listActiveMembers(projectId);
+          const activeMemberIds = new Set(activeMembers.map((m) => m.memberId));
+          const governanceHolders = this.#db
             .prepare(
-              `SELECT COUNT(DISTINCT g.user_id) AS c
-               FROM project_member_saga_grants g
-               JOIN project_members m ON m.id = g.member_id
-               WHERE g.project_id = ?
-                 AND g.permission_key = 'saga.members.set_bundle'
-                 AND m.active = 1
-                 AND g.member_id <> ?`,
+              `SELECT member_id AS memberId, user_id AS userId
+               FROM project_member_saga_grants
+               WHERE project_id = ?
+                 AND permission_key = 'saga.members.set_bundle'`,
             )
-            .get(projectId, memberId) as { c: number };
-          const targetHas = this.#db
-            .prepare(
-              `SELECT 1 AS ok FROM project_member_saga_grants
-               WHERE member_id = ? AND permission_key = 'saga.members.set_bundle'`,
-            )
-            .get(memberId) as { ok: number } | undefined;
-          if ((governanceLeft?.c ?? 0) < 1 && targetHas) {
+            .all(projectId) as { memberId: string; userId: string }[];
+          const otherActive = new Set(
+            governanceHolders
+              .filter((g) => g.memberId !== memberId && activeMemberIds.has(g.memberId))
+              .map((g) => g.userId),
+          );
+          const targetHas = governanceHolders.some((g) => g.memberId === memberId);
+          if (otherActive.size < 1 && targetHas) {
             return { ok: false, error: 'cannot revoke last saga.members.set_bundle grant' };
           }
         }
@@ -245,7 +225,7 @@ export class SagaGovernanceStore {
            VALUES (?, ?, ?, ?, ?, ?)`,
         );
         for (const { key } of keys) {
-          insertGrant.run(projectId, memberId, member.userId, key, bundleId, actorId);
+          insertGrant.run(projectId, memberId, member.userId, key, bundleId, actorIds[0]);
         }
         this.#db
           .prepare(
@@ -257,7 +237,7 @@ export class SagaGovernanceStore {
                assigned_by = excluded.assigned_by,
                updated_at = excluded.updated_at`,
           )
-          .run(memberId, projectId, member.userId, bundleId, actorId, nowIso());
+          .run(memberId, projectId, member.userId, bundleId, actorIds[0], nowIso());
 
         const count = this.#db
           .prepare(`SELECT COUNT(*) AS c FROM project_member_saga_grants WHERE member_id = ?`)
@@ -272,8 +252,31 @@ export class SagaGovernanceStore {
     }
   }
 
+  #canViewBinding(
+    projectId: string,
+    actorIds: ActorIds,
+    assetKind: string,
+    reveal: string,
+  ): boolean {
+    if (reveal === 'unlisted') return false;
+    const map = ASSET_READ_KEYS[assetKind] ?? ASSET_READ_KEYS.secret;
+    if (reveal === 'party') {
+      return (
+        this.#project.isProjectGm(projectId, actorIds) ||
+        this.hasSagaPermission(projectId, actorIds, map.party)
+      );
+    }
+    if (reveal === 'gm_only') {
+      return (
+        this.#project.isProjectGm(projectId, actorIds) ||
+        this.hasSagaPermission(projectId, actorIds, map.hidden)
+      );
+    }
+    return false;
+  }
+
   listBindings(
-    actorId: string,
+    actorIds: ActorIds,
     publicId: string,
     assetKind: string | null,
   ): Ok<
@@ -287,13 +290,15 @@ export class SagaGovernanceStore {
       worldPlaceId: string | null;
     }[]
   > | GovernanceError {
-    if (!actorId) return { ok: false, error: 'not authenticated' };
-    const project = this.resolveProjectByPublicId(publicId);
+    if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
+    const project = this.#project.resolveByPublicId(publicId);
     if (!project) return { ok: false, error: 'saga not found' };
-    if (!this.isActiveMember(project.id, actorId) && !this.isProjectGm(project.id, actorId)) {
+    if (
+      !this.#project.isActiveMember(project.id, actorIds) &&
+      !this.#project.isProjectGm(project.id, actorIds)
+    ) {
       return { ok: false, error: 'not a member' };
     }
-    const isGm = this.isProjectGm(project.id, actorId);
     const rows = this.#db
       .prepare(
         `SELECT id, asset_kind AS assetKind, asset_id AS assetId, reveal, label, metadata,
@@ -313,11 +318,9 @@ export class SagaGovernanceStore {
       metadata: string;
       worldPlaceId: string | null;
     }[];
-    const filtered = rows.filter((r) => {
-      if (r.reveal === 'party') return true;
-      if (r.reveal === 'gm_only') return isGm || this.hasSagaPermission(project.id, actorId, 'saga.secrets.read');
-      return false;
-    });
+    const filtered = rows.filter((r) =>
+      this.#canViewBinding(project.id, actorIds, r.assetKind, r.reveal),
+    );
     return {
       ok: true,
       value: filtered.map((r) => {
@@ -341,7 +344,7 @@ export class SagaGovernanceStore {
   }
 
   setBindingReveal(
-    actorId: string,
+    actorIds: ActorIds,
     projectId: string,
     bindingId: string,
     reveal: string,
@@ -352,13 +355,13 @@ export class SagaGovernanceStore {
     reveal: string;
     label: string | null;
   }> | GovernanceError {
-    if (!actorId) return { ok: false, error: 'not authenticated' };
+    if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
     if (!['gm_only', 'party', 'unlisted'].includes(reveal)) {
       return { ok: false, error: `invalid reveal ${reveal}` };
     }
     if (
-      !this.hasSagaPermission(projectId, actorId, 'saga.secrets.reveal') &&
-      !this.isProjectGm(projectId, actorId)
+      !this.hasSagaPermission(projectId, actorIds, 'saga.secrets.reveal') &&
+      !this.#project.isProjectGm(projectId, actorIds)
     ) {
       return { ok: false, error: 'missing saga.secrets.reveal' };
     }
@@ -376,7 +379,6 @@ export class SagaGovernanceStore {
     return { ok: true, value: updated };
   }
 
-  /** Test helper: seed a binding row. */
   seedBindingForTests(input: {
     readonly projectId: string;
     readonly assetKind: string;
@@ -391,7 +393,15 @@ export class SagaGovernanceStore {
            (id, project_id, asset_kind, asset_id, reveal, label, metadata, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, '{}', ?)`,
       )
-      .run(id, input.projectId, input.assetKind, input.assetId, input.reveal, input.label ?? null, nowIso());
+      .run(
+        id,
+        input.projectId,
+        input.assetKind,
+        input.assetId,
+        input.reveal,
+        input.label ?? null,
+        nowIso(),
+      );
     return id;
   }
 }

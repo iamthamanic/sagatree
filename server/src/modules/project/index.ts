@@ -74,6 +74,23 @@ export type ProjectPorts = {
     readonly active: number;
     readonly characterId: string | null;
   } | null;
+  /** Governance projection (#875) — ownership stays in project module. */
+  readonly resolveByPublicId: (
+    publicId: string,
+  ) => { id: string; gmUserId: string; publicId: string } | null;
+  readonly isProjectGm: (projectId: string, actorIds: readonly string[]) => boolean;
+  readonly isActiveMember: (projectId: string, actorIds: readonly string[]) => boolean;
+  readonly listActiveMembers: (projectId: string) => readonly {
+    memberId: string;
+    userId: string;
+    role: string;
+    status: string;
+    joinedAt: string | null;
+  }[];
+  readonly getActiveMemberById: (
+    projectId: string,
+    memberId: string,
+  ) => { id: string; userId: string } | null;
 };
 
 export function createProjectPorts(db?: HostDatabase): ProjectPorts {
@@ -90,6 +107,11 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       setMyCharacter: () => ({ ok: false, error: 'store-unavailable' }),
       setProjectCodeForTests: () => undefined,
       getMemberForTests: () => null,
+      resolveByPublicId: () => null,
+      isProjectGm: () => false,
+      isActiveMember: () => false,
+      listActiveMembers: () => [],
+      getActiveMemberById: () => null,
     };
   }
   const membership = new SagaMembershipStore(db);
@@ -120,5 +142,11 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       projectMembership.setProjectCodeForTests(projectId, code),
     getMemberForTests: (projectId, userId) =>
       projectMembership.getMemberForTests(projectId, userId),
+    resolveByPublicId: (publicId) => projectMembership.resolveByPublicId(publicId),
+    isProjectGm: (projectId, actorIds) => projectMembership.isProjectGm(projectId, actorIds),
+    isActiveMember: (projectId, actorIds) => projectMembership.isActiveMember(projectId, actorIds),
+    listActiveMembers: (projectId) => projectMembership.listActiveMembers(projectId),
+    getActiveMemberById: (projectId, memberId) =>
+      projectMembership.getActiveMemberById(projectId, memberId),
   };
 }

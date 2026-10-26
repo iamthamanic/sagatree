@@ -76,9 +76,11 @@ try {
   const db = boot.db;
   const project = createProjectPorts(db);
   const character = createCharacterPorts(db);
-  const permissions = createPermissionsPorts(db, {
-    actorHasAccessToSaga: project.actorHasAccessToSaga,
-  });
+  const permissions = createPermissionsPorts(
+    db,
+    { actorHasAccessToSaga: project.actorHasAccessToSaga },
+    project,
+  );
   const world = createWorldPorts({
     authorize: permissions.authorize,
     store: createSqliteWorldReadStore(db),

@@ -173,4 +173,79 @@ export class ProjectMembershipStore {
       | undefined;
     return row ?? null;
   }
+
+  resolveByPublicId(publicId: string): { id: string; gmUserId: string; publicId: string } | null {
+    const normalized = normalizeCode(publicId);
+    if (!normalized) return null;
+    return (
+      (this.#db
+        .prepare(
+          `SELECT id, gm_user_id AS gmUserId, public_id AS publicId FROM projects
+           WHERE public_id IS NOT NULL AND UPPER(TRIM(public_id)) = ?`,
+        )
+        .get(normalized) as { id: string; gmUserId: string; publicId: string } | undefined) ?? null
+    );
+  }
+
+  isProjectGm(projectId: string, actorIds: readonly string[]): boolean {
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return false;
+    const placeholders = ids.map(() => '?').join(',');
+    const row = this.#db
+      .prepare(`SELECT 1 AS ok FROM projects WHERE id = ? AND gm_user_id IN (${placeholders})`)
+      .get(projectId, ...ids) as { ok: number } | undefined;
+    return Boolean(row);
+  }
+
+  isActiveMember(projectId: string, actorIds: readonly string[]): boolean {
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return false;
+    const placeholders = ids.map(() => '?').join(',');
+    const row = this.#db
+      .prepare(
+        `SELECT 1 AS ok FROM project_members
+         WHERE project_id = ? AND user_id IN (${placeholders}) AND active = 1`,
+      )
+      .get(projectId, ...ids) as { ok: number } | undefined;
+    return Boolean(row);
+  }
+
+  listActiveMembers(projectId: string): readonly {
+    memberId: string;
+    userId: string;
+    role: string;
+    status: string;
+    joinedAt: string | null;
+  }[] {
+    return this.#db
+      .prepare(
+        `SELECT id AS memberId, user_id AS userId, role,
+                CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status,
+                joined_at AS joinedAt
+         FROM project_members
+         WHERE project_id = ? AND active = 1
+         ORDER BY joined_at`,
+      )
+      .all(projectId) as {
+      memberId: string;
+      userId: string;
+      role: string;
+      status: string;
+      joinedAt: string | null;
+    }[];
+  }
+
+  getActiveMemberById(
+    projectId: string,
+    memberId: string,
+  ): { id: string; userId: string } | null {
+    return (
+      (this.#db
+        .prepare(
+          `SELECT id, user_id AS userId FROM project_members
+           WHERE id = ? AND project_id = ? AND active = 1`,
+        )
+        .get(memberId, projectId) as { id: string; userId: string } | undefined) ?? null
+    );
+  }
 }
