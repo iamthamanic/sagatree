@@ -1,9 +1,7 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-26T05:21:48.311Z",
-  "branch": "chore/773-rpc-session-lifecycle-done-evidence",
-  "headSha": "f8cee8809d3cac479a2fdcded1edf42d06bedcf2",
-  "headShaHint": "f8cee8809d3c",
+  "generatedAt": "2026-10-26T05:29:37Z",
+  "headShaHint": "post plan-regen after RPC-SESSION-LIFECYCLE DONE evidence",
   "meaning": "Evidence after RPC-SESSION-LIFECYCLE (#974/#868). Unlocks RPC-SESSION-ACCESS, RPC-SESSION-RECAP, RPC-NPC-INSTANCES.",
   "counts": {
     "total": 90,
@@ -1998,5 +1996,7 @@
         "agent-blocked"
       ]
     }
-  ]
+  ],
+  "headSha": "f59460ead98935320cb659b126455808d6e5bdc9",
+  "branch": "chore/773-rpc-session-lifecycle-done-evidence"
 }
