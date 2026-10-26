@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T03:52:26.316Z",
+  "startedAt": "2026-10-26T05:30:10.308Z",
   "total": 90,
-  "updated": 1,
-  "unchanged": 89,
+  "updated": 4,
+  "unchanged": 86,
   "failed": [],
   "issues": [
     {
@@ -263,10 +263,10 @@
       "number": 875,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "5705096e55a66cc3e99e6338ae700ab12024899228d12a30274fe84b16f17087",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SESSION-RUNTIME",
@@ -283,22 +283,20 @@
       "number": 868,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "801785d986ad0dbccf3e3b8332d51b517301360fbc08876ea642acaaec6f845c",
-      "action": "unchanged",
-      "closed": true,
-      "status": "done"
+      "sha256": "23c9d8ab37c58f06509b777f801cf6af990de26ddf42447256c8462677dc5259",
+      "action": "updated"
     },
     {
       "localId": "RPC-NPC-INSTANCES",
       "number": 877,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "91ab554a16b73c60738fc0d359db0aeb414b216ddd6040909de462ce1e4643e9",
-      "action": "unchanged"
+      "sha256": "b2ac3999fa9778eb05f3e3b2cea6c205e207ce6022072f71c97fff79587729e4",
+      "action": "updated"
     },
     {
       "localId": "MIG-353",
@@ -315,20 +313,20 @@
       "number": 869,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "c333ecfeb046e2d0b71d8dd4283f00b9722df3c639d50e2d63456f2cad655be7",
-      "action": "unchanged"
+      "sha256": "4b8d5e672753b5c6337d2b8bdd46cbd01f4f221bdc6e2537e886e7cafdcf5c91",
+      "action": "updated"
     },
     {
       "localId": "RPC-SESSION-RECAP",
       "number": 870,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
+      "bodyOk": false,
       "labelsOk": true,
-      "sha256": "7ce86101d09a39f6cdc908fd0795658a93c714e6a162fe10682143b978a01dc3",
-      "action": "unchanged"
+      "sha256": "dcea411cc09ef5d8d0d85c328b694cd121e9582f48b589535dda931ad008bd40",
+      "action": "updated"
     },
     {
       "localId": "MIG-351",
@@ -911,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T03:53:14.943Z"
+  "finishedAt": "2026-10-26T05:31:04.593Z"
 }
