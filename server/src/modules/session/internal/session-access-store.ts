@@ -98,17 +98,74 @@ export class SessionAccessStore {
          VALUES (?, ?, 0, ?, ?)
          ON CONFLICT(session_id) DO NOTHING`,
       )
-      .run(sessionId, projectId, JSON.stringify({ status: 'waiting', roster: {}, gameplay: {} }), now);
+      .run(
+        sessionId,
+        projectId,
+        JSON.stringify({
+          status: 'waiting',
+          roster: [],
+          gameplay: { sceneId: null, combatActive: false, shared: {} },
+        }),
+        now,
+      );
   }
 
-  /** Keep play_sessions.runtime_revision and session_runtime.revision in lockstep. */
-  #bumpRevision(sessionId: string, revision: number, now: string): void {
+  /** Rebuild authoritative roster array from session_players (array, not object). */
+  #rosterFromPlayers(sessionId: string): Array<{
+    userId: string;
+    characterId: string | null;
+    isOnline: boolean;
+    joinedAt: string;
+  }> {
+    const rows = this.#db
+      .prepare(
+        `SELECT user_id AS userId, character_id AS characterId, is_online AS isOnline
+         FROM session_players WHERE session_id = ? AND left_at IS NULL`,
+      )
+      .all(sessionId) as Array<{
+      userId: string;
+      characterId: string | null;
+      isOnline: number;
+    }>;
+    const joinedAt = nowIso();
+    return rows.map((row) => ({
+      userId: row.userId,
+      characterId: row.characterId,
+      isOnline: row.isOnline === 1,
+      joinedAt,
+    }));
+  }
+
+  /** Keep play_sessions + session_runtime revision/roster in lockstep. */
+  #bumpRevision(sessionId: string, revision: number, now: string, status: string): void {
     this.#db
       .prepare(`UPDATE play_sessions SET runtime_revision = ? WHERE session_id = ?`)
       .run(revision, sessionId);
+    const existing = this.#db
+      .prepare(`SELECT state_json AS stateJson FROM session_runtime WHERE session_id = ?`)
+      .get(sessionId) as { stateJson: string } | undefined;
+    let state: Record<string, unknown> = {
+      status,
+      roster: [],
+      gameplay: { sceneId: null, combatActive: false, shared: {} },
+    };
+    if (existing?.stateJson) {
+      try {
+        const parsed = JSON.parse(existing.stateJson) as Record<string, unknown>;
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          state = parsed;
+        }
+      } catch {
+        /* keep default */
+      }
+    }
+    state.status = status;
+    state.roster = this.#rosterFromPlayers(sessionId);
     this.#db
-      .prepare(`UPDATE session_runtime SET revision = ?, updated_at = ? WHERE session_id = ?`)
-      .run(revision, now, sessionId);
+      .prepare(
+        `UPDATE session_runtime SET revision = ?, state_json = ?, updated_at = ? WHERE session_id = ?`,
+      )
+      .run(revision, JSON.stringify(state), now, sessionId);
   }
 
   #runtimeRevision(sessionId: string): number {
@@ -274,7 +331,7 @@ export class SessionAccessStore {
           .run(current.sessionId, actorIds[0]);
 
         const revision = this.#runtimeRevision(current.sessionId) + 1;
-        this.#bumpRevision(current.sessionId, revision, now);
+        this.#bumpRevision(current.sessionId, revision, now, current.status);
         this.#appendEvent(current.sessionId, actorIds[0], 'join', { characterId: boundCharacter }, revision);
 
         const row = this.#readSession(current.sessionId);
@@ -319,7 +376,7 @@ export class SessionAccessStore {
         const now = nowIso();
         this.#ensureRuntime(sessionId, current.projectId, now);
         const revision = this.#runtimeRevision(sessionId) + 1;
-        this.#bumpRevision(sessionId, revision, now);
+        this.#bumpRevision(sessionId, revision, now, current.status);
         this.#appendEvent(sessionId, actorIds[0], 'leave', {}, revision);
         return { ok: true, value: { left: true, runtimeRevision: revision } };
       });

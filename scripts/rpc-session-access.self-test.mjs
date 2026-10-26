@@ -135,18 +135,29 @@ try {
 
   assert(boot.schemaVersion >= 17, `schema>=17 got ${boot.schemaVersion}`);
   const now = new Date().toISOString();
-  db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
-     VALUES (?, ?, 'pc', 'complete', 'Hero', ?, ?)`,
-  ).run('char-complete', Player.actorId, now, 'CH-HERO1');
-  db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
-     VALUES (?, ?, 'pc', 'incomplete', 'Draft', ?, ?)`,
-  ).run('char-draft', Player.actorId, now, 'CH-DRAFT');
-  db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
-     VALUES (?, ?, 'pc', 'complete', 'Stolen', ?, ?)`,
-  ).run('char-other', Stranger.actorId, now, 'CH-OTHER');
+  const hero = character.seedPcForTests({
+    ownerUserId: Player.actorId,
+    name: 'Hero',
+    sheetStatus: 'complete',
+    id: 'char-complete',
+  });
+  character.seedPcForTests({
+    ownerUserId: Player.actorId,
+    name: 'Draft',
+    sheetStatus: 'incomplete',
+    id: 'char-draft',
+  });
+  character.seedPcForTests({
+    ownerUserId: Stranger.actorId,
+    name: 'Stolen',
+    sheetStatus: 'complete',
+    id: 'char-other',
+  });
+  const heroPub = db
+    .prepare(`SELECT public_id AS p FROM characters WHERE id = ?`)
+    .get('char-complete');
+  assert(heroPub?.p && String(heroPub.p).startsWith('CH-'), `auto public_id got ${heroPub?.p}`);
+  void hero;
 
   const play = createPlay(GM, projectId, 'Abend');
   assert(play.ok, `play: ${play.ok ? '' : play.error}`);
@@ -164,6 +175,12 @@ try {
     .prepare(`SELECT revision AS r FROM session_runtime WHERE session_id = ?`)
     .get(sessionId);
   assert(rtRev?.r === 1, `session_runtime.revision synced got ${rtRev?.r}`);
+  const stateRow = db
+    .prepare(`SELECT state_json AS s FROM session_runtime WHERE session_id = ?`)
+    .get(sessionId);
+  const state = JSON.parse(stateRow.s);
+  assert(Array.isArray(state.roster), 'roster is array');
+  assert(state.roster.some((e) => e.userId === Player.actorId), 'roster includes player');
   const roster = db
     .prepare(`SELECT character_id AS c FROM session_players WHERE session_id = ? AND user_id = ?`)
     .get(sessionId, Player.actorId);
@@ -229,7 +246,10 @@ try {
   const memberResolve = resolveInvite(Player, fresh.value.token);
   assert(memberResolve.ok === true, 'member resolve');
   assert(memberResolve.already_member === true, 'already member');
-  assert(memberResolve.character_public_id === 'CH-HERO1', `char pub=${memberResolve.character_public_id}`);
+  assert(
+    memberResolve.character_public_id === String(heroPub.p).toUpperCase(),
+    `char pub=${memberResolve.character_public_id}`,
+  );
 
   // Co-GM via project_members.role=gm (not gm_user_id) may create invites
   const CoGm = { kind: 'solo-local', actorId: 'co-gm-user' };
