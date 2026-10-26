@@ -22,6 +22,12 @@ import {
   appendSessionEventIsExported,
   type PlaySessionRow,
 } from './internal/session-lifecycle-store.ts';
+import {
+  SessionAccessStore,
+  type InviteCreateResult,
+  type InviteResolveFail,
+  type InviteResolveOk,
+} from './internal/session-access-store.ts';
 
 export type {
   ApplyCommandInput,
@@ -41,6 +47,11 @@ export type {
 } from './internal/session-invite-store.ts';
 
 export type { PlaySessionRow } from './internal/session-lifecycle-store.ts';
+export type {
+  InviteCreateResult,
+  InviteResolveFail,
+  InviteResolveOk,
+} from './internal/session-access-store.ts';
 export { appendSessionEventIsExported };
 
 export type SessionCommandPort = {
@@ -79,6 +90,35 @@ export type SessionLifecyclePort = {
   ) => LifecycleResult;
 };
 
+export type AccessLeaveResult =
+  | { readonly ok: true; readonly value: { readonly left: boolean; readonly runtimeRevision: number } }
+  | { readonly ok: false; readonly error: string };
+
+export type SessionAccessPort = {
+  readonly joinSessionByCode: (
+    actor: Actor,
+    code: string,
+    characterId?: string | null,
+  ) => LifecycleResult;
+  readonly leavePlaySession: (actor: Actor, sessionId: string) => AccessLeaveResult;
+  readonly createSessionInvite: (
+    actor: Actor,
+    sessionId: string,
+  ) =>
+    | { readonly ok: true; readonly value: InviteCreateResult }
+    | { readonly ok: false; readonly error: string };
+  readonly revokeSessionInvite: (
+    actor: Actor,
+    token: string,
+  ) =>
+    | { readonly ok: true; readonly value: { readonly ok: true; readonly id: string } }
+    | { readonly ok: false; readonly error: string };
+  readonly resolveSessionInvite: (
+    actor: Actor,
+    token: string,
+  ) => InviteResolveOk | InviteResolveFail | { readonly ok: false; readonly error: string };
+};
+
 export type SessionPorts = {
   readonly moduleId: 'session';
   readonly commands: SessionCommandPort;
@@ -86,6 +126,7 @@ export type SessionPorts = {
   readonly store: SessionRuntimeStore;
   readonly invites: SessionInviteStore;
   readonly lifecycle: SessionLifecyclePort;
+  readonly access: SessionAccessPort;
 };
 
 function unavailableLifecycle(): SessionLifecyclePort {
@@ -94,6 +135,17 @@ function unavailableLifecycle(): SessionLifecyclePort {
     createPlaySession: fail,
     createProjectSession: fail,
     setSessionStatus: fail,
+  };
+}
+
+function unavailableAccess(): SessionAccessPort {
+  const fail = (): LifecycleResult => ({ ok: false, error: 'store-unavailable' });
+  return {
+    joinSessionByCode: fail,
+    leavePlaySession: () => ({ ok: false, error: 'store-unavailable' }),
+    createSessionInvite: fail,
+    revokeSessionInvite: fail,
+    resolveSessionInvite: fail,
   };
 }
 
@@ -124,6 +176,9 @@ export function createSessionPorts(deps: {
   const lifecycleStore = deps.project
     ? new SessionLifecycleStore(deps.db, deps.project)
     : null;
+  const accessStore = deps.project
+    ? new SessionAccessStore(deps.db, deps.project)
+    : null;
 
   const lifecycle: SessionLifecyclePort = lifecycleStore
     ? {
@@ -150,6 +205,36 @@ export function createSessionPorts(deps: {
       }
     : unavailableLifecycle();
 
+  const access: SessionAccessPort = accessStore
+    ? {
+        joinSessionByCode(actor, code, characterId = null) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return accessStore.joinSessionByCode(ids, code, characterId ?? null);
+        },
+        leavePlaySession(actor, sessionId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return accessStore.leavePlaySession(ids, sessionId);
+        },
+        createSessionInvite(actor, sessionId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return accessStore.createSessionInvite(ids, sessionId);
+        },
+        revokeSessionInvite(actor, token) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return accessStore.revokeSessionInvite(ids, token);
+        },
+        resolveSessionInvite(actor, token) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return accessStore.resolveSessionInvite(ids, token);
+        },
+      }
+    : unavailableAccess();
+
   return {
     moduleId: 'session',
     commands: {
@@ -167,6 +252,7 @@ export function createSessionPorts(deps: {
     store,
     invites,
     lifecycle,
+    access,
   };
 }
 
