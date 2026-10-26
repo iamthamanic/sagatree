@@ -1,0 +1,2002 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T05:29:37Z",
+  "headShaHint": "post plan-regen after RPC-SESSION-LIFECYCLE DONE evidence",
+  "meaning": "Evidence after RPC-SESSION-LIFECYCLE (#974/#868). Unlocks RPC-SESSION-ACCESS, RPC-SESSION-RECAP, RPC-NPC-INSTANCES.",
+  "counts": {
+    "total": 90,
+    "done": 41,
+    "ready": 19,
+    "waiting": 26,
+    "blocked": 4,
+    "needsDesign": 0
+  },
+  "done": [
+    {
+      "localId": "MIG-001",
+      "githubIssue": 782,
+      "dependsOn": [],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-001.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-002",
+      "githubIssue": 783,
+      "dependsOn": [
+        "MIG-001"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-002.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "GATE-01",
+      "githubIssue": 784,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-01.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "GATE-02",
+      "githubIssue": 785,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-02.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "GATE-03",
+      "githubIssue": 786,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-03.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "GATE-04",
+      "githubIssue": 787,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-04.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-010",
+      "githubIssue": 789,
+      "dependsOn": [
+        "MIG-001",
+        "MIG-002",
+        "GATE-01"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-010.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-011",
+      "githubIssue": 790,
+      "dependsOn": [
+        "MIG-010",
+        "GATE-01",
+        "GATE-04"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-011.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-013",
+      "githubIssue": 792,
+      "dependsOn": [
+        "MIG-011",
+        "GATE-01"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-013.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-012",
+      "githubIssue": 791,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-012.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-014",
+      "githubIssue": 793,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-014.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-015",
+      "githubIssue": 794,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "GATE-02"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-015.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-500",
+      "githubIssue": 841,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-500.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-020",
+      "githubIssue": 795,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-013",
+        "MIG-014",
+        "GATE-03"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-020.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-022",
+      "githubIssue": 797,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-013",
+        "MIG-014",
+        "GATE-04"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-022.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-023",
+      "githubIssue": 798,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-022",
+        "GATE-02"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-023.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-024",
+      "githubIssue": 799,
+      "dependsOn": [
+        "MIG-013",
+        "MIG-022",
+        "GATE-01"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-024.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-021",
+      "githubIssue": 796,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-022",
+        "MIG-024",
+        "GATE-02",
+        "GATE-03"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-021.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-503",
+      "githubIssue": 844,
+      "dependsOn": [
+        "MIG-011",
+        "MIG-002"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-503.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-AUTHORING",
+      "githubIssue": 871,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-VERSION-READ",
+      "githubIssue": 872,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-AUTHORING"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-version-read.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-PROVISION",
+      "githubIssue": 873,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-VERSION-READ"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-provision.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-PROJECT-MEMBERSHIP",
+      "githubIssue": 874,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-PROVISION"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-project-membership.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-GOVERNANCE",
+      "githubIssue": 875,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-PROJECT-MEMBERSHIP"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-governance.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-RUNTIME",
+      "githubIssue": 867,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-runtime.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 3,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-LIFECYCLE",
+      "githubIssue": 868,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-RUNTIME"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-lifecycle.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-MAP",
+      "githubIssue": 861,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-map.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-402",
+      "githubIssue": 818,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-402.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-403",
+      "githubIssue": 819,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-403.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-406",
+      "githubIssue": 822,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-406.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-407",
+      "githubIssue": 823,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-407.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-408",
+      "githubIssue": 824,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-408.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-411",
+      "githubIssue": 827,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-411.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-412",
+      "githubIssue": 828,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-412.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-413",
+      "githubIssue": 829,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-413.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-415",
+      "githubIssue": 831,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-415.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-416",
+      "githubIssue": 832,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-500"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-416.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-306",
+      "githubIssue": 805,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-306.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-309",
+      "githubIssue": 808,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-014"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-309.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-501",
+      "githubIssue": 842,
+      "dependsOn": [
+        "MIG-500",
+        "MIG-020"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-501.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    },
+    {
+      "localId": "MIG-502",
+      "githubIssue": 843,
+      "dependsOn": [
+        "MIG-500",
+        "MIG-503",
+        "MIG-020"
+      ],
+      "status": "done",
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-502.json",
+      "implementationStatus": "accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-done"
+      ]
+    }
+  ],
+  "ready": [
+    {
+      "localId": "RPC-NPC-INSTANCES",
+      "githubIssue": 877,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-ACCESS",
+      "githubIssue": 869,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "RPC-SESSION-RECAP",
+      "githubIssue": 870,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SESSION-LIFECYCLE"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "githubIssue": 862,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-MAP"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-401",
+      "githubIssue": 817,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-404",
+      "githubIssue": 820,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-405",
+      "githubIssue": 821,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-409",
+      "githubIssue": 825,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 3,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-410",
+      "githubIssue": 826,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-417",
+      "githubIssue": 833,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-418",
+      "githubIssue": 834,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-419",
+      "githubIssue": 835,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-420",
+      "githubIssue": 836,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-012",
+        "MIG-500"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-422",
+      "githubIssue": 838,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-423",
+      "githubIssue": 839,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-424",
+      "githubIssue": 840,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-301",
+      "githubIssue": 800,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-402",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-304",
+      "githubIssue": 803,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-412",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-ready"
+      ]
+    },
+    {
+      "localId": "MIG-312",
+      "githubIssue": 811,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-500",
+        "MIG-014"
+      ],
+      "status": "ready",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-ready"
+      ]
+    }
+  ],
+  "waiting": [
+    {
+      "localId": "MIG-351",
+      "githubIssue": 814,
+      "dependsOn": [
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-SAGA-PROJECTIONS",
+      "githubIssue": 876,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SESSION-RECAP"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-352",
+      "githubIssue": 815,
+      "dependsOn": [
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-PLACES",
+      "githubIssue": 863,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-ATLAS-MAPS"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-CREATE",
+      "githubIssue": 864,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-PLACES"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-RESTRUCTURE",
+      "githubIssue": 865,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-CREATE"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-WORLD-DESTRUCTIVE",
+      "githubIssue": 866,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04",
+        "RPC-WORLD-RESTRUCTURE"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-350",
+      "githubIssue": 813,
+      "dependsOn": [
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-421",
+      "githubIssue": 837,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "RPC-SESSION-RECAP",
+        "MIG-012"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-414",
+      "githubIssue": 830,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-014",
+        "MIG-402",
+        "MIG-404",
+        "MIG-405",
+        "MIG-409",
+        "MIG-410",
+        "MIG-412",
+        "MIG-420",
+        "MIG-421"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 1,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-302",
+      "githubIssue": 801,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-404",
+        "MIG-405",
+        "MIG-500",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-303",
+      "githubIssue": 802,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "MIG-409",
+        "MIG-410",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-305",
+      "githubIssue": 804,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-MARKETPLACE-COUNT",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-307",
+      "githubIssue": 806,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-NPC-INSTANCES",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-308",
+      "githubIssue": 807,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SAGA-PROVISION",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-PROJECT-MEMBERSHIP",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-310",
+      "githubIssue": 809,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-PROVISION",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROJECTIONS",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-311",
+      "githubIssue": 810,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "MIG-420",
+        "MIG-421",
+        "MIG-021",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 3,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-313",
+      "githubIssue": 812,
+      "dependsOn": [
+        "MIG-012",
+        "MIG-013",
+        "MIG-020",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-MAP",
+        "RPC-WORLD-PLACES",
+        "MIG-500",
+        "MIG-014"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-verified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-600",
+      "githubIssue": 845,
+      "dependsOn": [
+        "MIG-021",
+        "MIG-023",
+        "MIG-024",
+        "MIG-500",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-601",
+      "githubIssue": 846,
+      "dependsOn": [
+        "MIG-010",
+        "MIG-014",
+        "MIG-015",
+        "MIG-500",
+        "MIG-414"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-602",
+      "githubIssue": 847,
+      "dependsOn": [
+        "MIG-600",
+        "MIG-601",
+        "ATLAS-LIVE-E2E",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-603",
+      "githubIssue": 848,
+      "dependsOn": [
+        "MIG-502",
+        "MIG-503",
+        "MIG-601"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-700",
+      "githubIssue": 849,
+      "dependsOn": [
+        "MIG-001",
+        "ATLAS-LIVE-E2E",
+        "MIG-002",
+        "GATE-01",
+        "GATE-02",
+        "GATE-03",
+        "GATE-04",
+        "MIG-010",
+        "MIG-011",
+        "MIG-013",
+        "MIG-012",
+        "MIG-014",
+        "MIG-015",
+        "MIG-500",
+        "MIG-020",
+        "MIG-022",
+        "MIG-023",
+        "MIG-024",
+        "MIG-021",
+        "MIG-503",
+        "MIG-353",
+        "MIG-351",
+        "MIG-352",
+        "MIG-350",
+        "MIG-402",
+        "MIG-401",
+        "MIG-403",
+        "MIG-404",
+        "MIG-405",
+        "MIG-406",
+        "MIG-407",
+        "MIG-408",
+        "MIG-409",
+        "MIG-410",
+        "MIG-411",
+        "MIG-412",
+        "MIG-413",
+        "MIG-415",
+        "MIG-416",
+        "MIG-417",
+        "MIG-418",
+        "MIG-419",
+        "MIG-420",
+        "MIG-421",
+        "MIG-414",
+        "MIG-422",
+        "MIG-423",
+        "MIG-424",
+        "MIG-301",
+        "MIG-302",
+        "MIG-303",
+        "MIG-304",
+        "MIG-305",
+        "MIG-306",
+        "MIG-307",
+        "MIG-308",
+        "MIG-309",
+        "MIG-310",
+        "MIG-311",
+        "MIG-312",
+        "MIG-313",
+        "MIG-502",
+        "MIG-600",
+        "MIG-601",
+        "MIG-602",
+        "MIG-603",
+        "RPC-WORLD-MAP",
+        "RPC-ATLAS-MAPS",
+        "RPC-WORLD-PLACES",
+        "RPC-WORLD-CREATE",
+        "RPC-WORLD-RESTRUCTURE",
+        "RPC-WORLD-DESTRUCTIVE",
+        "RPC-SESSION-RUNTIME",
+        "RPC-SESSION-LIFECYCLE",
+        "RPC-SESSION-ACCESS",
+        "RPC-SESSION-RECAP",
+        "RPC-SAGA-AUTHORING",
+        "RPC-SAGA-VERSION-READ",
+        "RPC-SAGA-PROVISION",
+        "RPC-PROJECT-MEMBERSHIP",
+        "RPC-SAGA-GOVERNANCE",
+        "RPC-SAGA-PROJECTIONS",
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-701",
+      "githubIssue": 850,
+      "dependsOn": [
+        "MIG-700"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-702",
+      "githubIssue": 851,
+      "dependsOn": [
+        "MIG-700",
+        "MIG-701",
+        "ATLAS-LIVE-E2E",
+        "MIG-603"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-703",
+      "githubIssue": 852,
+      "dependsOn": [
+        "GATE-05",
+        "MIG-602",
+        "MIG-603"
+      ],
+      "status": "waiting",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    }
+  ],
+  "blocked": [
+    {
+      "localId": "ATLAS-LIVE-E2E",
+      "githubIssue": 770,
+      "dependsOn": [
+        "MIG-001"
+      ],
+      "status": "blocked",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 1,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "RPC-MARKETPLACE-COUNT",
+      "githubIssue": 878,
+      "dependsOn": [
+        "MIG-020",
+        "MIG-013",
+        "MIG-022",
+        "MIG-024",
+        "GATE-01",
+        "GATE-02",
+        "GATE-04"
+      ],
+      "status": "blocked",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-blocked",
+      "blockerCount": 0,
+      "requiredRegressionCount": 2,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "MIG-353",
+      "githubIssue": 816,
+      "dependsOn": [
+        "RPC-NPC-INSTANCES",
+        "RPC-MARKETPLACE-COUNT"
+      ],
+      "status": "blocked",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "source-blocked",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    },
+    {
+      "localId": "GATE-05",
+      "githubIssue": 788,
+      "dependsOn": [
+        "MIG-602",
+        "MIG-603"
+      ],
+      "status": "blocked",
+      "completionEvidence": null,
+      "implementationStatus": "not-accepted",
+      "sourceStatus": "specified",
+      "blockerCount": 0,
+      "requiredRegressionCount": 0,
+      "labels": [
+        "agent-blocked"
+      ]
+    }
+  ],
+  "headSha": "f59460ead98935320cb659b126455808d6e5bdc9",
+  "branch": "chore/773-rpc-session-lifecycle-done-evidence"
+}

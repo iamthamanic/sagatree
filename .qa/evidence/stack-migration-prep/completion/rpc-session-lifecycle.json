@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SESSION-LIFECYCLE",
+  "result": "PASS",
+  "testedCommit": "e49e32cb59edd46f477c4f2019014a50862f0201",
+  "githubClosed": true,
+  "mergeRef": "PR #974 → main (#868)",
+  "note": "create_play_session / create_project_session / set_session_status isolated host ports; SE-XXXXX + 6-char join codes; runtime seed; no public append_session_event. HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-session-lifecycle.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-session-lifecycle.md",
+      "sha256": "fb894ebc01d577ddd70b21d84ca3473f7ef73c457c56574f59532e6fdf8293c0"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-session-lifecycle.md",
+      "sha256": "da905ed098f51ae43357e3d3270e7fa0c8ed3a301210f262c3b7198f81017c41"
+    }
+  ]
+}
