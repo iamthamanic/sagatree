@@ -187,6 +187,23 @@ export class ProjectMembershipStore {
     );
   }
 
+  /** Atlas saga context: project public id scoped to a world (#862). */
+  resolveProjectIdForWorldAndPublicId(worldId: string, publicId: string): string | null {
+    const normalized = normalizeCode(publicId);
+    const wid = typeof worldId === 'string' ? worldId.trim() : '';
+    if (!normalized || !wid) return null;
+    const row = this.#db
+      .prepare(
+        `SELECT id FROM projects
+         WHERE world_id = ?
+           AND public_id IS NOT NULL
+           AND UPPER(TRIM(public_id)) = ?
+         LIMIT 1`,
+      )
+      .get(wid, normalized) as { id: string } | undefined;
+    return row?.id ?? null;
+  }
+
   isProjectGm(projectId: string, actorIds: readonly string[]): boolean {
     const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
     if (ids.length === 0) return false;

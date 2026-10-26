@@ -11,11 +11,23 @@ import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/in
 import type { WorldReadStore } from './internal/world-read-store.ts';
 import type { WorldWriteStore } from './internal/world-write-store.ts';
 import { WorldMapStore, type WorldMapDto } from './internal/world-map-store.ts';
+import {
+  WorldAtlasStore,
+  type UpsertWorldAtlasMapInput,
+  type WorldAtlasMapSummary,
+  type WorldAtlasMapVm,
+} from './internal/world-atlas-store.ts';
+import { createPartyRevealedAtlasMapIds } from './internal/atlas-party-projection.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 
 export type { WorldReadStore, WorldStoredRow } from './internal/world-read-store.ts';
 export type { WorldWriteStore } from './internal/world-write-store.ts';
 export type { WorldMapDto } from './internal/world-map-store.ts';
+export type {
+  UpsertWorldAtlasMapInput,
+  WorldAtlasMapSummary,
+  WorldAtlasMapVm,
+} from './internal/world-atlas-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
 
 export {
@@ -79,6 +91,26 @@ export type WorldPorts = {
     expectedRevision: number | null,
     mapData: Record<string, unknown>,
   ) => WorldReadResult<WorldMapDto>;
+  readonly ensureWorldAtlasRoot: (
+    actor: Actor,
+    worldProfileId: string,
+  ) => WorldReadResult<readonly WorldAtlasMapSummary[]>;
+  readonly listWorldAtlasMaps: (
+    actor: Actor,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => WorldReadResult<readonly WorldAtlasMapSummary[]>;
+  readonly getWorldAtlasMap: (
+    actor: Actor,
+    mapId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => WorldReadResult<WorldAtlasMapVm>;
+  readonly upsertWorldAtlasMap: (
+    actor: Actor,
+    input: UpsertWorldAtlasMapInput,
+  ) => WorldReadResult<WorldAtlasMapVm>;
   /** Owner-only world edit check (promote-to-world / map write parity). */
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
   /** Append a promoted lore fact into worlds.payload.modules.promotedLore (#876). */
@@ -105,14 +137,33 @@ export function createWorldPorts(deps: {
   readonly db?: HostDatabase;
   /** Project-module read: GM/member on a project bound to the world. */
   readonly actorCanAccessWorld?: (actorIds: readonly string[], worldId: string) => boolean;
+  readonly resolveSagaProjectForWorld?: (worldId: string, sagaPublicId: string) => string | null;
+  readonly isActiveProjectMember?: (projectId: string, actorIds: readonly string[]) => boolean;
 }): WorldPorts {
-  const { authorize, store, writeStore, db, actorCanAccessWorld } = deps;
+  const {
+    authorize,
+    store,
+    writeStore,
+    db,
+    actorCanAccessWorld,
+    resolveSagaProjectForWorld,
+    isActiveProjectMember,
+  } = deps;
   const maps =
     db && actorCanAccessWorld
       ? new WorldMapStore(db, actorCanAccessWorld)
       : db
         ? new WorldMapStore(db, () => false)
         : null;
+  const atlas =
+    db && actorCanAccessWorld && resolveSagaProjectForWorld && isActiveProjectMember
+      ? new WorldAtlasStore(db, {
+          canAccessWorld: actorCanAccessWorld,
+          resolveSagaProject: resolveSagaProjectForWorld,
+          isActiveProjectMember,
+          partyRevealedMapIds: createPartyRevealedAtlasMapIds(db),
+        })
+      : null;
 
   const read: WorldReadPort = {
     listOwnedWorlds(actor: Actor): WorldReadResult<readonly WorldReadDto[]> {
@@ -175,6 +226,34 @@ export function createWorldPorts(deps: {
       const canEdit = maps.canEditWorld(ids, id);
       const forcePlayer = !canEdit || playerView === true;
       return { ok: true, value: maps.getMap(id, forcePlayer) };
+    },
+
+    ensureWorldAtlasRoot(actor, worldProfileId) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const ids = actorIdentityIds(actor);
+      return atlas.ensureRoot(ids, worldProfileId);
+    },
+
+    listWorldAtlasMaps(actor, worldProfileId, playerView = false, sagaPublicId = null) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const ids = actorIdentityIds(actor);
+      return atlas.listMaps(ids, worldProfileId, playerView, sagaPublicId);
+    },
+
+    getWorldAtlasMap(actor, mapId, playerView = false, sagaPublicId = null) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const ids = actorIdentityIds(actor);
+      return atlas.getMap(ids, mapId, playerView, sagaPublicId);
+    },
+
+    upsertWorldAtlasMap(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const ids = actorIdentityIds(actor);
+      return atlas.upsertMap(ids, input);
     },
 
     saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
@@ -261,6 +340,10 @@ export function createWorldPortsStub(): WorldPorts {
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
+    ensureWorldAtlasRoot: () => ({ ok: false, error: 'store-unavailable' }),
+    listWorldAtlasMaps: () => ({ ok: false, error: 'store-unavailable' }),
+    getWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
+    upsertWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
     canEditWorld: () => false,
     appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
   };
