@@ -4,9 +4,10 @@
  *
  * Direct append_session_event is NOT exported (RPC-SEC-ANON-EVENT-HELPER deny).
  */
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import type { ProjectPorts } from '../../project/index.ts';
+import { generateSessionJoinCode, generateSessionPublicId } from './public-session-id.ts';
 
 export type LifecycleError = { readonly ok: false; readonly error: string };
 export type Ok<T> = { readonly ok: true; readonly value: T };
@@ -29,14 +30,6 @@ export type PlaySessionRow = {
 
 function nowIso(): string {
   return new Date().toISOString();
-}
-
-function newJoinCode(): string {
-  return randomBytes(4).toString('hex').toUpperCase();
-}
-
-function newPublicId(): string {
-  return `SE-${randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
 const ALLOWED: Record<string, readonly string[]> = {
@@ -87,8 +80,22 @@ export class SessionLifecycleStore {
     return this.#project.isProjectGm(projectId, actorIds);
   }
 
-  #isActiveMember(projectId: string, actorIds: readonly string[]): boolean {
-    return this.#project.isActiveMember(projectId, actorIds);
+  /** Active gm/player member (legacy role IN ('gm','player')); observers denied. */
+  #isActiveGmOrPlayer(projectId: string, actorIds: readonly string[]): boolean {
+    if (this.#isGm(projectId, actorIds)) return true;
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return false;
+    const placeholders = ids.map(() => '?').join(',');
+    const row = this.#db
+      .prepare(
+        `SELECT 1 AS ok FROM project_members
+         WHERE project_id = ?
+           AND user_id IN (${placeholders})
+           AND active = 1
+           AND role IN ('gm', 'player')`,
+      )
+      .get(projectId, ...ids) as { ok: number } | undefined;
+    return Boolean(row);
   }
 
   #nextSessionNumber(projectId: string): number {
@@ -102,13 +109,48 @@ export class SessionLifecycleStore {
 
   #uniqueJoinCode(): string {
     for (let i = 0; i < 16; i += 1) {
-      const code = newJoinCode();
+      const code = generateSessionJoinCode();
       const hit = this.#db
         .prepare(`SELECT 1 AS o FROM play_sessions WHERE join_code = ? LIMIT 1`)
         .get(code);
       if (!hit) return code;
     }
     throw new Error('join-code-exhausted');
+  }
+
+  #uniquePublicId(): string {
+    for (let i = 0; i < 16; i += 1) {
+      const publicId = generateSessionPublicId();
+      const hit = this.#db
+        .prepare(`SELECT 1 AS o FROM play_sessions WHERE public_id = ? LIMIT 1`)
+        .get(publicId);
+      if (!hit) return publicId;
+    }
+    throw new Error('public-id-exhausted');
+  }
+
+  /** Seed runtime + GM writer so join-before-activate works (MIG-022 membership). */
+  #ensureRuntimeSeed(sessionId: string, projectId: string, gmActorId: string, now: string): void {
+    this.#db
+      .prepare(
+        `INSERT INTO session_runtime (session_id, project_id, revision, state_json, updated_at)
+         VALUES (?, ?, 0, ?, ?)
+         ON CONFLICT(session_id) DO NOTHING`,
+      )
+      .run(sessionId, projectId, JSON.stringify({ status: 'waiting', roster: {}, gameplay: {} }), now);
+    this.#db
+      .prepare(
+        `INSERT OR IGNORE INTO session_members (session_id, actor_user_id, can_write)
+         VALUES (?, ?, 1)`,
+      )
+      .run(sessionId, gmActorId);
+  }
+
+  #runtimeRevision(sessionId: string): number {
+    const row = this.#db
+      .prepare(`SELECT revision FROM session_runtime WHERE session_id = ?`)
+      .get(sessionId) as { revision: number } | undefined;
+    return Number(row?.revision ?? 0);
   }
 
   #buildProjectSessionWorld(projectId: string): string {
@@ -125,16 +167,17 @@ export class SessionLifecycleStore {
       adventure = {};
     }
 
-    const prior = this.#db
+    // Prefer newest completed session that actually carries object knowledge.
+    const priors = this.#db
       .prepare(
         `SELECT world_state AS worldState FROM play_sessions
          WHERE project_id = ? AND status = 'completed'
-         ORDER BY session_number DESC LIMIT 1`,
+         ORDER BY session_number DESC`,
       )
-      .get(projectId) as { worldState: string } | undefined;
+      .all(projectId) as { worldState: string }[];
 
     let knowledge: unknown = null;
-    if (prior?.worldState) {
+    for (const prior of priors) {
       try {
         const ws = JSON.parse(prior.worldState) as {
           shared?: { knowledge?: unknown };
@@ -142,9 +185,10 @@ export class SessionLifecycleStore {
         const k = ws?.shared?.knowledge;
         if (k !== null && typeof k === 'object' && !Array.isArray(k)) {
           knowledge = k;
+          break;
         }
       } catch {
-        knowledge = null;
+        /* continue */
       }
     }
 
@@ -156,17 +200,32 @@ export class SessionLifecycleStore {
   }
 
   #upsertCompletionRecap(sessionId: string, projectId: string, now: string): void {
-    const proj = this.#db
-      .prepare(`SELECT adventure_runtime AS adventureRuntime FROM projects WHERE id = ?`)
-      .get(projectId) as { adventureRuntime: string } | undefined;
+    const session = this.#read(sessionId);
     let adventure: Record<string, unknown> = {};
     try {
-      const parsed = JSON.parse(proj?.adventureRuntime ?? '{}') as unknown;
-      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        adventure = parsed as Record<string, unknown>;
+      const ws = JSON.parse(session?.worldState ?? '{}') as {
+        shared?: { adventure?: unknown };
+      };
+      const adv = ws?.shared?.adventure;
+      if (adv !== null && typeof adv === 'object' && !Array.isArray(adv)) {
+        adventure = adv as Record<string, unknown>;
       }
     } catch {
       adventure = {};
+    }
+    // Fallback to project adventure_runtime when session has no adventure object.
+    if (Object.keys(adventure).length === 0) {
+      const proj = this.#db
+        .prepare(`SELECT adventure_runtime AS adventureRuntime FROM projects WHERE id = ?`)
+        .get(projectId) as { adventureRuntime: string } | undefined;
+      try {
+        const parsed = JSON.parse(proj?.adventureRuntime ?? '{}') as unknown;
+        if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          adventure = parsed as Record<string, unknown>;
+        }
+      } catch {
+        adventure = {};
+      }
     }
 
     const schemaVersion = Number(adventure.schemaVersion ?? 0);
@@ -205,7 +264,7 @@ export class SessionLifecycleStore {
         const createdAt = nowIso();
         const sessionNumber = this.#nextSessionNumber(projectId);
         const joinCode = this.#uniqueJoinCode();
-        const publicId = newPublicId();
+        const publicId = this.#uniquePublicId();
         const trimmed =
           typeof name === 'string' && name.trim() !== '' ? name.trim() : null;
         this.#db
@@ -225,6 +284,7 @@ export class SessionLifecycleStore {
             trimmed,
             createdAt,
           );
+        this.#ensureRuntimeSeed(sessionId, projectId, actorIds[0], createdAt);
         const row = this.#read(sessionId);
         if (!row) return { ok: false, error: 'P0001' };
         return { ok: true, value: row };
@@ -246,7 +306,7 @@ export class SessionLifecycleStore {
   ): Ok<PlaySessionRow> | LifecycleError {
     if (!actorIds[0]) return { ok: false, error: '42501' };
     if (!projectId) return { ok: false, error: '22023' };
-    if (!this.#isGm(projectId, actorIds) && !this.#isActiveMember(projectId, actorIds)) {
+    if (!this.#isActiveGmOrPlayer(projectId, actorIds)) {
       return { ok: false, error: '42501' };
     }
     try {
@@ -255,7 +315,7 @@ export class SessionLifecycleStore {
         const createdAt = nowIso();
         const sessionNumber = this.#nextSessionNumber(projectId);
         const joinCode = this.#uniqueJoinCode();
-        const publicId = newPublicId();
+        const publicId = this.#uniquePublicId();
         const trimmed =
           typeof name === 'string' && name.trim() !== '' ? name.trim() : null;
         const noteTrimmed =
@@ -280,6 +340,7 @@ export class SessionLifecycleStore {
             worldState,
             createdAt,
           );
+        this.#ensureRuntimeSeed(sessionId, projectId, actorIds[0], createdAt);
         const row = this.#read(sessionId);
         if (!row) return { ok: false, error: 'P0001' };
         return { ok: true, value: row };
@@ -308,8 +369,9 @@ export class SessionLifecycleStore {
         if (from === 'completed') return { ok: false, error: '22023' };
         const allowed = ALLOWED[from] ?? [];
         if (!allowed.includes(status)) return { ok: false, error: '22023' };
-        const revision = Number(current.runtimeRevision ?? 0) + 1;
         const now = nowIso();
+        this.#ensureRuntimeSeed(sessionId, current.projectId, actorIds[0], now);
+        const revision = this.#runtimeRevision(sessionId) + 1;
         const startedAt =
           status === 'active' && !current.startedAt ? now : current.startedAt;
         const endedAt = status === 'completed' ? now : current.endedAt;
@@ -321,23 +383,20 @@ export class SessionLifecycleStore {
              WHERE session_id = ?`,
           )
           .run(status, revision, now, startedAt, endedAt, sessionId);
-        // Ensure runtime row exists so the internal status event can land (FK).
         this.#db
           .prepare(
-            `INSERT INTO session_runtime (session_id, project_id, revision, state_json, updated_at)
-             VALUES (?, ?, ?, '{}', ?)
-             ON CONFLICT(session_id) DO UPDATE SET
-               revision = excluded.revision,
-               updated_at = excluded.updated_at`,
+            `UPDATE session_runtime
+             SET revision = ?, updated_at = ?
+             WHERE session_id = ?`,
           )
-          .run(sessionId, current.projectId, revision, now);
+          .run(revision, now, sessionId);
         const seqRow = this.#db
           .prepare(
             `SELECT COALESCE(MAX(event_sequence), 0) AS m FROM session_events WHERE session_id = ?`,
           )
           .get(sessionId) as { m: number };
         const nextSeq = Number(seqRow.m) + 1;
-        // Status event is internal-only — no public append_session_event helper.
+        // Runtime envelope: { kind, payload } — matches SessionRuntimeStore.listEventsSince.
         this.#db
           .prepare(
             `INSERT INTO session_events (
@@ -350,7 +409,7 @@ export class SessionLifecycleStore {
             revision,
             actorIds[0],
             `status:${from}:${status}:${revision}`,
-            JSON.stringify({ type: 'status', from, to: status }),
+            JSON.stringify({ kind: 'status', payload: { from, to: status } }),
           );
         if (status === 'completed') {
           this.#upsertCompletionRecap(sessionId, current.projectId, now);

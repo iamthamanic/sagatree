@@ -131,7 +131,21 @@ try {
   assert(play1.ok, `play1: ${play1.ok ? '' : play1.error}`);
   assert(play1.value.status === 'waiting', 'play waiting');
   assert(play1.value.sessionNumber === 1, 'play number 1');
-  assert(typeof play1.value.joinCode === 'string' && play1.value.joinCode.length > 0, 'join code');
+  assert(
+    typeof play1.value.joinCode === 'string' && play1.value.joinCode.length === 6,
+    `join code len6 got ${play1.value.joinCode}`,
+  );
+  assert(/^SE-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{5}$/.test(play1.value.publicId), 'SE-XXXXX');
+  const runtimeSeed = db
+    .prepare(`SELECT revision FROM session_runtime WHERE session_id = ?`)
+    .get(play1.value.sessionId);
+  assert(runtimeSeed, 'runtime seeded on create');
+  const gmMember = db
+    .prepare(
+      `SELECT can_write AS w FROM session_members WHERE session_id = ? AND actor_user_id = ?`,
+    )
+    .get(play1.value.sessionId, GM.actorId);
+  assert(gmMember?.w === 1, 'GM writer membership on create');
 
   const denyProjStranger = createProjSess(Stranger, projectId, 'X');
   assert(!denyProjStranger.ok && denyProjStranger.error === '42501', 'proj sess deny stranger');
@@ -146,9 +160,14 @@ try {
   assert(play2.value.sessionNumber === 3, 'number 3');
   assert(play2.value.joinCode !== play1.value.joinCode, 'distinct join codes');
 
-  // Complete play1 with knowledge in world_state, then create_project_session carries it.
+  // Complete play1 with knowledge + adventure in world_state.
   db.prepare(`UPDATE play_sessions SET world_state = ? WHERE session_id = ?`).run(
-    JSON.stringify({ shared: { knowledge: { fact: 'altar' }, adventure: {} } }),
+    JSON.stringify({
+      shared: {
+        knowledge: { fact: 'altar' },
+        adventure: { schemaVersion: 1, step: 'boss' },
+      },
+    }),
     play1.value.sessionId,
   );
   const toActive = setStatus(GM, play1.value.sessionId, 'active');
@@ -156,12 +175,18 @@ try {
   const toDone = setStatus(GM, play1.value.sessionId, 'completed');
   assert(toDone.ok, `to completed: ${toDone.ok ? '' : toDone.error}`);
   assert(toDone.value.status === 'completed', 'completed');
-  assert(toDone.value.runtimeRevision >= 2, 'revision bumped');
+  assert(toDone.value.runtimeRevision >= 1, 'revision bumped from runtime');
+
+  // Newer completed without knowledge must not hide older knowledge.
+  const emptyDone = createPlay(GM, projectId, 'Empty complete');
+  assert(emptyDone.ok, 'emptyDone');
+  assert(setStatus(GM, emptyDone.value.sessionId, 'active').ok, 'empty active');
+  assert(setStatus(GM, emptyDone.value.sessionId, 'completed').ok, 'empty completed');
 
   const withKnowledge = createProjSess(GM, projectId, 'Nachfolger');
   assert(withKnowledge.ok, 'with knowledge');
   const ws = JSON.parse(withKnowledge.value.worldState);
-  assert(ws.shared?.knowledge?.fact === 'altar', 'knowledge carried');
+  assert(ws.shared?.knowledge?.fact === 'altar', 'knowledge carried from earlier completed');
   assert(ws.shared?.adventure?.schemaVersion === 1, 'adventure carried');
 
   // --- Fall 3: transitions; completed terminal ---
@@ -184,7 +209,7 @@ try {
     .get(play1.value.sessionId);
   assert(recap?.id === play1.value.sessionId, 'recap row');
   const snap = JSON.parse(recap.snapshot);
-  assert(snap.schemaVersion === 1, 'recap snapshot');
+  assert(snap.schemaVersion === 1 && snap.step === 'boss', 'recap from session adventure');
   const evt = db
     .prepare(
       `SELECT payload_json AS payload FROM session_events
@@ -193,7 +218,7 @@ try {
     .get(play1.value.sessionId);
   assert(evt, 'status event');
   const payload = JSON.parse(evt.payload);
-  assert(payload.to === 'completed' || payload.type === 'status', 'status payload');
+  assert(payload.kind === 'status' && payload.payload?.to === 'completed', 'runtime envelope');
 
   // Atomic rollback: force helper failure by dropping recaps mid-tx via invalid session — already covered by catch→P0001.
   // Simulate failure path: invalid status rolls nothing.
