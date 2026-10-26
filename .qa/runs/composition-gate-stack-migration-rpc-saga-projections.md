@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-saga-projections
 
-- HEAD_SHA: 47354762010577d8e5717fadd800a4286ec9fed3
+- HEAD_SHA: 2641131a233f6745dfcb57b71bd5c0c143d6bafd
 - BASE_SHA: a9948455cd76ea2c21ba66879a6ab40d7616f877
 - Date: 2026-10-26
 - Verdict: CLEAR
@@ -13,7 +13,7 @@ Saga overview / lore timeline / outcome promote with membership and world-owner 
 
 1. Producer: saga-projections use-cases
 2. Authorize: project membership / GM; lore ACL; world owner for world promote
-3. Persist: saga draft facts, worlds.payload, session_outcome_promotions, session_events (no revision bump)
+3. Persist: saga draft facts via saga store; worlds.payload via world port; session_outcome_promotions + session_events via session outcome port (no revision bump)
 4. Consumer: self-test / future HTTP adapters
 
 ## Simulations
