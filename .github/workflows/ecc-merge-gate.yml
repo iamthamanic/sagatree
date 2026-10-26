@@ -6,31 +6,23 @@ name: ECC Merge Gate
 # - Kodus "Kody Code Review" check-run must succeed for current HEAD (Complete)
 # - Required quality checks must be green on the PR head SHA
 #
-# #937 fail-closed race: a green run BEFORE late review findings must NOT remain
-# mergeable. Re-run on review / review_comment / Kodus check_run / issue_comment
-# so a new FAIL invalidates the prior PASS on the same HEAD.
-#
-# Ambient known-red migration baselines (Atlas E2E, PG baseline, GATE-01/02/03
-# isolated candidates) are intentionally NOT in requiredChecks — see
-# .qa/merge-gate.yaml. Do not weaken this job to silence unresolved findings.
+# Privilege split: evaluate job checks out PR head with checks:read only.
+# Publish job (check_run / issue_comment / workflow_run only) has checks:write
+# but never checks out PR-controlled code — it only mirrors the evaluate exit
+# code onto the PR head SHA via the Checks API.
 
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
-  # Late Codex/Bugbot/Kodus findings arrive as reviews / review comments after the
-  # first green gate (#934/#935). Re-evaluate findings on the current HEAD.
   pull_request_review:
     types: [submitted, edited, dismissed]
   pull_request_review_comment:
     types: [created, edited, deleted]
-  # Kodus posts/edits issue comments (Completed card + finding cards).
   issue_comment:
     types: [created, edited]
-  # Kodus publishes the "Kody Code Review" check-run.
   check_run:
     types: [completed, rerequested]
-  # Allow re-check after other workflows finish (same SHA).
   workflow_run:
     workflows:
       - Quality Gates
@@ -38,26 +30,26 @@ on:
       - Stack migration source contracts
     types: [completed]
 
-permissions:
-  contents: read
-  checks: write
-  pull-requests: read
-  issues: read
+permissions: {}
 
 concurrency:
-  # Do not cancel-in-progress: a cancelled ECC Merge Gate can become the latest
-  # required check and stick red while a review event races the initial PR run
-  # (#937). Overlapping runs are cheap; the newest successful findings check wins.
   group: ecc-merge-gate-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.event.issue.number || github.event.check_run.head_sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
-  ecc-merge-gate:
+  evaluate:
     name: ECC Merge Gate
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # On workflow_run, only evaluate the originating PR.
-    # issue_comment / check_run: only when they relate to a pull request + Kodus.
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
+      issues: read
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+      sha: ${{ steps.pr.outputs.sha }}
+      exit_code: ${{ steps.gate.outputs.exit_code }}
     if: >
       github.event_name == 'pull_request' ||
       github.event_name == 'pull_request_review' ||
@@ -103,7 +95,7 @@ jobs:
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout
+      - name: Checkout PR head
         if: steps.pr.outputs.number != ''
         uses: actions/checkout@v4
         with:
@@ -122,12 +114,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
-          # Findings always evaluated. Skip sibling-check enforcement on
-          # pull_request + review + Kodus events so (1) early PR open is not sticky-red
-          # while Quality Gates queue and (2) late review findings still
-          # fail-close by replacing a prior green run (#937). workflow_run
-          # enforces required checks (with poll) once siblings are underway.
-          # check_run/issue_comment still evaluate Kodus+findings; sibling waits stay on workflow_run.
           ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment' || github.event_name == 'issue_comment' || github.event_name == 'check_run') && '1' || '0' }}
         run: |
           set +e
@@ -137,15 +123,27 @@ jobs:
           echo "exit_code=$CODE" >> "$GITHUB_OUTPUT"
           exit "$CODE"
 
-      # check_run / issue_comment workflows associate with the default branch tip.
-      # Always (re)publish the gate conclusion onto the PR head SHA so branch
-      # protection sees the fresh result (Codex/Kody P1 on association).
+  # Mirrors evaluate onto the PR head SHA for events whose workflow check-runs
+  # associate with the default branch (check_run / issue_comment / workflow_run).
+  # Never checks out PR code; only uses evaluate outputs + gh api.
+  publish:
+    name: ECC Merge Gate Publish
+    needs: evaluate
+    if: >
+      always() &&
+      needs.evaluate.outputs.number != '' &&
+      needs.evaluate.outputs.sha != '' &&
+      (github.event_name == 'check_run' || github.event_name == 'issue_comment' || github.event_name == 'workflow_run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+    steps:
       - name: Publish ECC Merge Gate on PR HEAD
-        if: always() && steps.pr.outputs.number != '' && steps.pr.outputs.sha != ''
         env:
           GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ steps.pr.outputs.sha }}
-          GATE_EXIT: ${{ steps.gate.outputs.exit_code }}
+          HEAD_SHA: ${{ needs.evaluate.outputs.sha }}
+          GATE_EXIT: ${{ needs.evaluate.outputs.exit_code }}
         run: |
           set -euo pipefail
           if [ "${GATE_EXIT:-1}" = "0" ]; then
@@ -161,4 +159,4 @@ jobs:
             -f status='completed' \
             -f conclusion="$CONCL" \
             -f "output[title]=$TITLE" \
-            -f "output[summary]=Published onto PR HEAD ${HEAD_SHA} (event=${{ github.event_name }}). See workflow run ${{ github.run_id }}."
+            -f "output[summary]=Mirrored from evaluate job (event=${{ github.event_name }}, run=${{ github.run_id }}). PR-controlled scripts did not hold checks:write."

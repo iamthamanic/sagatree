@@ -236,15 +236,14 @@ export function lateFindingInvalidatesPriorPass({ headSha, findingCommitSha, sev
   return { blocks: true, reason: 'late-blocking-finding-on-same-head' };
 }
 
+const TRUSTED_REVIEW_ASSOCIATIONS = new Set(['OWNER', 'MEMBER', 'COLLABORATOR']);
+
 export function isResolvedThread(comment, replies) {
   // Trusted dismissals: root or a trusted-association reply carrying the HTML marker.
   const trustedBodies = [
     comment.body,
     ...replies
-      .filter((r) => {
-        const assoc = String(r.author_association ?? '').toUpperCase();
-        return ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(assoc);
-      })
+      .filter((r) => TRUSTED_REVIEW_ASSOCIATIONS.has(String(r.author_association ?? '').toUpperCase()))
       .map((r) => r.body),
   ].join('\n');
   if (bodiesIndicateResolved(trustedBodies)) return true;
