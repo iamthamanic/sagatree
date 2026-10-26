@@ -338,7 +338,13 @@ try {
 
   const editorGet = getMap(OWNER, mapA, false, null);
   assert(editorGet.ok && editorGet.value.azgaarMapStoragePath !== null, 'editor azgaar path');
-  assert(editorGet.value.layers.features.length === 3, 'editor full layers');
+  assert(editorGet.value.layers.features.length === 6, 'editor full layers');
+  assert(
+    playerGetA.value.layers.features.every(
+      (f) => f?.properties?.label === 'sichtbar' || f?.properties?.discovered === true,
+    ),
+    'party only non-secret discovered features (incl. coerced flags)',
+  );
 
   // get uses three-arg path; missing map → P0002
   const missing = getMap(OWNER, randomUUID(), false, null);

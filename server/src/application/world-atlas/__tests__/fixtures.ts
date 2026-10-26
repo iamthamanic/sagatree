@@ -20,6 +20,22 @@ export const VALID_LAYERS = {
       properties: { discovered: false },
       geometry: { type: 'Point', coordinates: [2, 2] },
     },
+    // Postgres ::boolean textual / numeric equivalents must redact for party view
+    {
+      type: 'Feature',
+      properties: { secret: 'true', discovered: true, label: 'secret-str' },
+      geometry: { type: 'Point', coordinates: [3, 3] },
+    },
+    {
+      type: 'Feature',
+      properties: { secret: 1, discovered: true, label: 'secret-num' },
+      geometry: { type: 'Point', coordinates: [4, 4] },
+    },
+    {
+      type: 'Feature',
+      properties: { discovered: 'FALSE', label: 'undiscovered-str' },
+      geometry: { type: 'Point', coordinates: [5, 5] },
+    },
   ],
 } as const;
 

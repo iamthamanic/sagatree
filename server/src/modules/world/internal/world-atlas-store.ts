@@ -98,13 +98,34 @@ function isAllowedKind(kind: string): kind is WorldAtlasMapKind {
   return (ALLOWED_KINDS as readonly string[]).includes(kind);
 }
 
-function featureDiscovered(props: Record<string, unknown>): boolean {
-  const discovered = props.discovered;
-  if (discovered === false || discovered === 0 || discovered === 'false' || discovered === '0') {
-    return false;
+/**
+ * Parity with PostgreSQL `(json->>'flag')::boolean` + COALESCE defaults used in
+ * get/list_world_atlas_map player redaction (094/102/105).
+ */
+function coercePgBoolean(value: unknown, whenNull: boolean): boolean {
+  if (value === undefined || value === null) return whenNull;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') {
+    if (value === 1) return true;
+    if (value === 0) return false;
+    return whenNull;
   }
-  if (discovered === undefined || discovered === null) return true;
-  return Boolean(discovered);
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === '') return whenNull;
+    if (['true', 't', 'yes', 'y', 'on', '1'].includes(normalized)) return true;
+    if (['false', 'f', 'no', 'n', 'off', '0'].includes(normalized)) return false;
+    return whenNull;
+  }
+  return whenNull;
+}
+
+function featureIsSecret(props: Record<string, unknown>): boolean {
+  return coercePgBoolean(props.secret, false) === true;
+}
+
+function featureDiscovered(props: Record<string, unknown>): boolean {
+  return coercePgBoolean(props.discovered, true) === true;
 }
 
 function filterPartyLayers(layers: Record<string, unknown>): Record<string, unknown> {
@@ -114,7 +135,7 @@ function filterPartyLayers(layers: Record<string, unknown>): Record<string, unkn
     const props = (feat as { properties?: unknown }).properties;
     if (!props || typeof props !== 'object' || Array.isArray(props)) return true;
     const p = props as Record<string, unknown>;
-    if (p.secret === true) return false;
+    if (featureIsSecret(p)) return false;
     return featureDiscovered(p);
   });
   return { type: 'FeatureCollection', features: visible };
