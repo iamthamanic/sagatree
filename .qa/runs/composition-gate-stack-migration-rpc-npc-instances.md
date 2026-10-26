@@ -1,18 +1,19 @@
 # Composition Gate — stack-migration-rpc-npc-instances (#877)
 
-- HEAD_SHA: a083d7c9620c05c328787b9bd41b37b0e8753d0f
+- HEAD_SHA: e747ef5e2726388ae1cea075623519c938598ff0
 - BASE_SHA: 71e6248ed7a9091db7d311f5049d1bb2e513270a
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-Host NPC instance spawn/assign/runtime/remove/clear with project/session guards.
+Host NPC instance spawn/assign/runtime/remove/clear with project/session guards,
+definition readability (personal/world), and temp-controller membership on update.
 
 ## Hop chain
 
 1. Producer: npc-instances use-cases / command barrels
-2. Authorize: narrow GM (gm_user_id + active member) via project ports
+2. Authorize: narrow GM + definition readability + active-member temp controller
 3. Persist: npc_creature_* tables (npc-creature-owned)
 4. Consumer: self-test / future HTTP adapters
 
@@ -21,7 +22,7 @@ Host NPC instance spawn/assign/runtime/remove/clear with project/session guards.
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
 | N-actors | GM spawn/update; player denied | project ports + store | pass |
-| Invalid/missing | foreign session / lite sheet | P0001 | pass |
+| Invalid/missing | foreign personal def / lite sheet / nonmember temp | P0001 | pass |
 | Two consumers / crash | clear temp count scoped | pass | pass |
 | Legacy defects | none required | n/a | pass |
 
