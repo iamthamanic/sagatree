@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-25T22:09:04.947Z",
+  "startedAt": "2026-10-26T01:02:25.256Z",
   "total": 90,
-  "updated": 21,
-  "unchanged": 69,
+  "updated": 1,
+  "unchanged": 89,
   "failed": [],
   "issues": [
     {
@@ -243,20 +243,20 @@
       "number": 873,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "eaa12f693d9d2d9f0f7ad4ec48b397347d4801db338981acd4dc77f260d8f505",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-PROJECT-MEMBERSHIP",
       "number": 874,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "3ea01ffc09128744310927122c92ed1ed1601e1d9b4ea4f10bcf78ca6e121557",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SAGA-GOVERNANCE",
@@ -273,20 +273,20 @@
       "number": 867,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "5b422feeb7ebcc347cad1b7e9a151ae34ae8d96c46a679c39f5363f45f46610f",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SESSION-LIFECYCLE",
       "number": 868,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "801785d986ad0dbccf3e3b8332d51b517301360fbc08876ea642acaaec6f845c",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-NPC-INSTANCES",
@@ -363,20 +363,20 @@
       "number": 861,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "4acef9a4bcf54020f6675dcc1a5b066e853770f0014b15ab35d307ed01940039",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-ATLAS-MAPS",
       "number": 862,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "f8be00af1f8846726e4bed1cdc454aaeaf20e38568762813e72c62b5294beaaf",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-WORLD-PLACES",
@@ -433,150 +433,150 @@
       "number": 818,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "d505b605be042f149056d85c149472c1a7a3d86c745678cc255dc337dfe148ff",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-401",
       "number": 817,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "340e96f08491859cb308b6b228278cb83752c26fc4f71c7d89369d4f68c57c5c",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-403",
       "number": 819,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "7f2b03518dcc5c09ce9cf937a4b4d03cbda2a69299673772d0053f27e2075f3e",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-404",
       "number": 820,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "917d9cd0dd8c8fb2afd23a29a6a0a6ab8427a9773c7cf8a26bd0f2d953cab80c",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-405",
       "number": 821,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "9477a209dc914b237df6c63309d1af12ee0183db96ec338c81d44b59e27f423c",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-406",
       "number": 822,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "487ea99134104f8f5c6247025aced8d1a7399b24689351f71461c088d0abadf7",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-407",
       "number": 823,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "e8e513defd589abece0b23c940dd302cb0fd8cdcc1828fd428a9e5d7c66fa06e",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-408",
       "number": 824,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "075c9999b8e315080bde0f6b93e213aca8ee79e77ace3f666dd3910722b63d3b",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-409",
       "number": 825,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "4a30364f8cdcd3357c2d5a73ebdcbdb9d34a3948c6f32e11158a3d5ec451648e",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-410",
       "number": 826,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "535d94189a49bf351da0d28bdb0fd9874476955d2f9e1f4513ea06a72370ce15",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-411",
       "number": 827,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "04414e64947feffccf5d7220fed708d776c7c8089c78f26c960d389dd22d2b85",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-412",
       "number": 828,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "20286d4f84993160d9ba021a27c5de3b86b927f07cef4e536a9dc8c2809344aa",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-413",
       "number": 829,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "7f87b666fd37881b27002f4af2925a1c12859b2ecc060095d34c919da23a4e94",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-415",
       "number": 831,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "191bb13d59b527dd7b9c0bfb43b4696ceb02b849c774a50606fae1aa9bccf701",
+      "sha256": "2a9d751a307579f20ba70991907000bf767b2476dc7f1109f0a9133de3b527bd",
       "action": "unchanged"
     },
     {
       "localId": "MIG-416",
       "number": 832,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "a5bd2ef1f60273d2ed95fb4c1ca8a1a88d14e2af18381512402768981a093eae",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "f5340807c35363635c564a69419adf7b36b46404d3eddffdbad1f806af1a6af4",
+      "action": "updated"
     },
     {
       "localId": "MIG-417",
@@ -673,10 +673,10 @@
       "number": 800,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "3fdeca00db14f7b3fafb3a0c69ae8593730bc56e5bf6797d8489ed7bcc3aa950",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-302",
@@ -703,10 +703,10 @@
       "number": 803,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "175acf0df057936b4ec0176cbe40b9434a261df27e76fe1752380dd70b4274fc",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-305",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-25T22:11:52.826Z"
+  "finishedAt": "2026-10-26T01:03:12.665Z"
 }

@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 19,
+    "issuesReady": 18,
     "issuesBlockedOrNeedsDesign": 34,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -11151,7 +11151,7 @@
       "title": "Port Edge Function `media` to Node host service/adapter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-416",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-416.md",
       "dependsOn": [
@@ -11241,9 +11241,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-416.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Upload response points at an object that this worker never creates; content is not decoded/validated, and uploadedBy is client-controlled."
@@ -11277,7 +11278,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-057",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

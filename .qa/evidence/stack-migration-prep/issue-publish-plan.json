@@ -811,11 +811,11 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-057",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-416.md",
-      "sha256": "a5bd2ef1f60273d2ed95fb4c1ca8a1a88d14e2af18381512402768981a093eae",
-      "payloadSha256": "b9afa090fac3ff288add2a9f68e49d024cb70f1bd54bad25d4a215ecac71050d"
+      "sha256": "f5340807c35363635c564a69419adf7b36b46404d3eddffdbad1f806af1a6af4",
+      "payloadSha256": "bacf4609bc5e39bc900b0b9c971aeca4a7e29a6949398f44776838997a027095"
     },
     {
       "localId": "MIG-417",

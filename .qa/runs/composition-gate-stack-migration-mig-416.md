@@ -1,13 +1,13 @@
 # Composition Gate — stack-migration-mig-416 (#832)
 
-- HEAD_SHA: 9de8a7c84a0fd7da4674f4f913ef4b65ccbd9226
+- HEAD_SHA: 82e55c451242222980c3a8a48d70037ece2b4e0e
 - BASE_SHA: d820f2366805372b3a4ffe5ab9b7a9e01e06a9f8
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-Legacy Edge media Map quarantined under media module; host/dispatcher keep 404; URL without bytes; no public mount.
+Legacy Edge media Map quarantined under media module; host/dispatcher keep 404; URL without bytes; no public mount. Squash merge #968 → main `82e55c451242`. Feature-branch CLEAR was proven on `9de8a7c84a0f` / tip `bf4004ef` before squash.
 
 ## Hop chain
 
