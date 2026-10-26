@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-26T10:07:44Z",
+  "headSha": "268352cea79ca191865f6ab45ccd41b31f6ad72b",
+  "branch": "chore/773-rpc-npc-instances-done-evidence",
+  "counts": {
+    "total": 90,
+    "DONE": 43,
+    "READY": 18,
+    "WAITING": 25,
+    "BLOCKED": 4
+  },
+  "hint": "post RPC-NPC-INSTANCES + RPC-SESSION-ACCESS DONE"
+}

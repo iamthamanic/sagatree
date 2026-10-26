@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SESSION-ACCESS",
+  "result": "PASS",
+  "testedCommit": "37f596b17547178822bb9d57a556e4529c103adf",
+  "githubClosed": true,
+  "mergeRef": "PR #977 → main (#869)",
+  "note": "join/leave/invite session ports; reader membership can_write=0; presence actor-bound and synced to session_players; unique CH- public_id backfill. HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-session-access.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-session-access.md",
+      "sha256": "10f38f4cade21b3035ce32d82b15aa2f9136fe7d7d4aa765ae125acfcddbadd5"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-session-access.md",
+      "sha256": "76060e6d796bbb6d49f26132487d4dab3d17af02cc1217bf9dfce234f0323cd8"
+    }
+  ]
+}
