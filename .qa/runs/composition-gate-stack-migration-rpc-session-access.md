@@ -1,7 +1,7 @@
 # Composition Gate — stack-migration-rpc-session-access
 
-- HEAD_SHA: e128c611b276436023d2a0ba502ee8a348cabe35
-- BASE_SHA: c3d6f1004545252e9c853fad39d5d76afbbde87f
+- HEAD_SHA: b44aa221342626423009867b306cb4337be88a45
+- BASE_SHA: 33a52ad691b9c25f5aec80ce0c12fbd037356450
 - Date: 2026-10-26
 - Verdict: CLEAR
 
