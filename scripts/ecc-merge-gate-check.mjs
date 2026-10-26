@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
  * ecc-merge-gate-check — machine gate: block merge when unresolved P1/P2
- * (or Critical/Important) review findings remain on the PR tip.
+ * (or Critical/Important/High/Medium/…) review findings remain on the PR tip,
+ * and (when configured) when Kodus (kody-ai) has not completed successfully
+ * for the current HEAD.
  * Location: scripts/ecc-merge-gate-check.mjs
  *
  * Also verifies required GitHub check conclusions for the PR head SHA.
@@ -11,12 +13,24 @@
  * a prior green run; GraphQL review-thread resolution is authoritative; API
  * errors or unclear review state → FAIL (never PASS).
  *
+ * Kodus: see scripts/kodus-merge-gate.mjs — completion is the "Kody Code Review"
+ * check-run (app kody-ai) with a Complete title; never treat Started as PASS.
+ *
  * Exit 0 = PASS, exit 1 = FAIL (must not merge).
  */
 import { readFileSync, existsSync, appendFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import {
+  KODY_CHECK_NAME,
+  isKodyBotLogin,
+  kodyFindingSeverity,
+  kodyBodiesIndicateDismissed,
+  evaluateKodusCheckRun,
+  selectKodusCheckRun,
+  collectKodusIssueCommentFindings,
+} from './kodus-merge-gate.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -28,6 +42,7 @@ export const RESOLVED_MARKERS = [
   /resolved by\s+`?[0-9a-f]{7,40}`?/i,
   /addressed in\s+(?:commit\s+)?`?[0-9a-f]{7,40}`?/i,
   /<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i,
+  /<!--\s*ecc-finding-dismissed:\s*.+?\s*-->/i,
 ];
 
 export function loadMergeGateConfig(configRoot = root) {
@@ -35,7 +50,17 @@ export function loadMergeGateConfig(configRoot = root) {
   if (!existsSync(path)) {
     return {
       requiredChecks: ['Test Gate', 'Composition Gate', 'ECC Merge Gate'],
-      blockOnUnresolvedReviewSeverities: ['P1', 'P2', 'Critical', 'Important'],
+      blockOnUnresolvedReviewSeverities: [
+        'P1',
+        'P2',
+        'Critical',
+        'Important',
+        'High',
+        'Medium',
+        'Low',
+        'Info',
+      ],
+      requireKodusReview: true,
     };
   }
   const text = readFileSync(path, 'utf8');
@@ -43,7 +68,15 @@ export function loadMergeGateConfig(configRoot = root) {
   const severities = [];
   let inChecks = false;
   let inSev = false;
+  let requireKodusReview = true;
   for (const line of text.split('\n')) {
+    const kodusFlag = line.match(/^requireKodusReview:\s*(true|false)\s*$/i);
+    if (kodusFlag) {
+      requireKodusReview = kodusFlag[1].toLowerCase() === 'true';
+      inChecks = false;
+      inSev = false;
+      continue;
+    }
     if (/^requiredChecks:\s*$/.test(line)) {
       inChecks = true;
       inSev = false;
@@ -68,7 +101,10 @@ export function loadMergeGateConfig(configRoot = root) {
         ? requiredChecks
         : ['Test Gate', 'Composition Gate', 'ECC Merge Gate'],
     blockOnUnresolvedReviewSeverities:
-      severities.length > 0 ? severities : ['P1', 'P2', 'Critical', 'Important'],
+      severities.length > 0
+        ? severities
+        : ['P1', 'P2', 'Critical', 'Important', 'High', 'Medium', 'Low', 'Info'],
+    requireKodusReview,
   };
 }
 
@@ -107,17 +143,28 @@ export function ghJson(args, { cwd = root } = {}) {
   }
 }
 
-export function findingSeverity(body, allowed) {
+export function findingSeverity(body, allowed, { authorLogin = null } = {}) {
   const m = body.match(SEVERITY_RE);
-  if (!m) return null;
-  const sev = (m[1] || m[2] || m[3] || '').toUpperCase();
-  const normalized = sev === 'CRITICAL' ? 'Critical' : sev === 'IMPORTANT' ? 'Important' : sev;
-  if (!allowed.map((s) => s.toUpperCase()).includes(normalized.toUpperCase())) return null;
-  return normalized;
+  if (m) {
+    const sev = (m[1] || m[2] || m[3] || '').toUpperCase();
+    const normalized = sev === 'CRITICAL' ? 'Critical' : sev === 'IMPORTANT' ? 'Important' : sev;
+    if (allowed.map((s) => s.toUpperCase()).includes(normalized.toUpperCase())) return normalized;
+  }
+  // Kodus severity_level-* badges (and fail-closed unknown Kody finding cards).
+  if (isKodyBotLogin(authorLogin) || /kody code-review|severity_level-/i.test(body ?? '')) {
+    const kodySev = kodyFindingSeverity(body, { failClosedUnknown: isKodyBotLogin(authorLogin) });
+    if (kodySev && allowed.map((s) => s.toUpperCase()).includes(kodySev.toUpperCase())) {
+      return kodySev;
+    }
+  }
+  return null;
 }
 
 export function bodiesIndicateResolved(bodiesJoined) {
-  return RESOLVED_MARKERS.some((re) => re.test(bodiesJoined));
+  return (
+    RESOLVED_MARKERS.some((re) => re.test(bodiesJoined)) ||
+    kodyBodiesIndicateDismissed(bodiesJoined)
+  );
 }
 
 /**
@@ -131,12 +178,20 @@ export function evaluateMergeGate({
   checkFailures,
   apiError = null,
   pendingReviewsForHead = [],
+  kodusReview = null,
 }) {
   if (apiError) {
     return {
       ok: false,
       reason: 'api-error',
       detail: String(apiError.message ?? apiError),
+    };
+  }
+  if (kodusReview && kodusReview.ok === false) {
+    return {
+      ok: false,
+      reason: kodusReview.reason || 'kodus-incomplete',
+      detail: kodusReview.detail || 'Kodus review not complete for HEAD',
     };
   }
   if (pendingReviewsForHead.length > 0) {
@@ -245,7 +300,9 @@ export function collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, al
       if (c.databaseId != null) graphqlThreadCommentIds.add(String(c.databaseId));
     }
     const root = comments[0];
-    const sev = findingSeverity(root.body ?? '', allowedSeverities);
+    const sev = findingSeverity(root.body ?? '', allowedSeverities, {
+      authorLogin: root.author?.login,
+    });
     if (!sev) continue;
     const bodies = comments.map((c) => c.body ?? '').join('\n');
     if (thread.isResolved === true || bodiesIndicateResolved(bodies)) continue;
@@ -292,7 +349,9 @@ export function collectUnresolvedFindingsFromRest(
   for (const c of comments) {
     if (c.in_reply_to_id) continue;
     if (skipCommentIds.has(String(c.id))) continue;
-    const sev = findingSeverity(c.body ?? '', allowedSeverities);
+    const sev = findingSeverity(c.body ?? '', allowedSeverities, {
+      authorLogin: c.user?.login,
+    });
     if (!sev) continue;
     const replies = repliesByParent.get(c.id) ?? [];
     if (isResolvedThread(c, replies)) continue;
@@ -336,7 +395,31 @@ export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeveri
   const fromRest = collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities, {
     skipCommentIds: graphqlThreadCommentIds,
   });
-  return mergeGraphqlAndRestFindings(fromGql, fromRest);
+  const issueComments = ghJson([
+    'api',
+    `repos/${owner}/${repo}/issues/${pullNumber}/comments`,
+    '--paginate',
+  ]);
+  const fromKodusIssues = collectKodusIssueCommentFindings(issueComments, allowedSeverities);
+  return mergeGraphqlAndRestFindings(
+    mergeGraphqlAndRestFindings(fromGql, fromRest),
+    fromKodusIssues,
+  );
+}
+
+/**
+ * Resolve Kodus completion for HEAD via the authenticated check-run only.
+ * Issue-comment "Completed" text is corroboration, never sufficient alone.
+ */
+export function resolveKodusReviewForHead(owner, repo, headSha, { required = true } = {}) {
+  if (!required) return { ok: true, reason: 'kodus-not-required', detail: 'requireKodusReview=false' };
+  const runs = ghJson([
+    'api',
+    `repos/${owner}/${repo}/commits/${headSha}/check-runs`,
+    '--paginate',
+  ]);
+  const selected = selectKodusCheckRun(runs);
+  return evaluateKodusCheckRun(selected);
 }
 
 export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
@@ -474,8 +557,12 @@ export function runMergeGateCheck({
   let unresolved = [];
   let pendingReviewsForHead = [];
   let checkFailures = [];
+  let kodusReview = null;
 
   try {
+    kodusReview = resolveKodusReviewForHead(ctx.owner, ctx.repo, ctx.headSha, {
+      required: config.requireKodusReview !== false,
+    });
     unresolved = collectUnresolvedFindings(
       ctx.owner,
       ctx.repo,
@@ -489,12 +576,13 @@ export function runMergeGateCheck({
       ctx.headSha,
     );
     if (!skipChecks) {
-      // Findings first: if already blocked, do not wait on sibling checks.
+      // Findings / Kodus first: if already blocked, do not wait on sibling checks.
       const early = evaluateMergeGate({
         unresolvedFindings: unresolved,
         checkFailures: [],
         apiError: null,
         pendingReviewsForHead,
+        kodusReview,
       });
       if (early.ok) {
         checkFailures = waitForRequiredChecks(
@@ -514,18 +602,29 @@ export function runMergeGateCheck({
     checkFailures,
     apiError,
     pendingReviewsForHead,
+    kodusReview,
   });
 
   const lines = [
     '## ECC Merge Gate',
     `- PR: #${ctx.pullNumber}`,
     `- HEAD: ${ctx.headSha}`,
-    `- Unresolved P1/P2 findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
+    `- Kodus (${KODY_CHECK_NAME}): ${
+      apiError
+        ? 'unknown (API error)'
+        : kodusReview
+          ? `${kodusReview.ok ? 'PASS' : 'FAIL'} (${kodusReview.reason})`
+          : 'n/a'
+    }`,
+    `- Unresolved review findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
     `- Pending reviews for HEAD: ${apiError ? 'unknown' : pendingReviewsForHead.length}`,
     `- Required check failures: ${apiError ? 'unknown' : checkFailures.length}`,
     `- Decision: ${decision.reason}${decision.detail ? ` — ${decision.detail}` : ''}`,
   ];
 
+  if (kodusReview && !kodusReview.ok) {
+    lines.push('', '### Kodus review', `- ${kodusReview.reason}: ${kodusReview.detail}`);
+  }
   if (unresolved.length > 0) {
     lines.push('', '### Unresolved findings');
     for (const f of unresolved) {
@@ -548,7 +647,15 @@ export function runMergeGateCheck({
     lines.push('', '### API error (fail-closed)', `- ${apiError.message}`);
   }
 
-  return { decision, lines, unresolved, checkFailures, pendingReviewsForHead, apiError };
+  return {
+    decision,
+    lines,
+    unresolved,
+    checkFailures,
+    pendingReviewsForHead,
+    kodusReview,
+    apiError,
+  };
 }
 
 const isMainModule =

@@ -466,6 +466,10 @@ function checkMig015SoloLocalIdentity() {
 
 function checkEccMergeGateUnit() {
   console.log('ECC merge gate: P1/P2 finding detector self-test...');
+  execFileSync(process.execPath, ['scripts/kodus-merge-gate.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   execFileSync(process.execPath, ['scripts/ecc-merge-gate-check.self-test.mjs'], {
     cwd: root,
     stdio: 'inherit',

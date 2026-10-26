@@ -1,6 +1,7 @@
 # ECC merge gate policy — machine-enforced companions live in
-# scripts/ecc-merge-gate-check.mjs + .github/workflows/ecc-merge-gate.yml
-# and the repository ruleset "ECC required checks".
+# scripts/ecc-merge-gate-check.mjs + scripts/kodus-merge-gate.mjs +
+# .github/workflows/ecc-merge-gate.yml and the repository ruleset
+# "ECC required checks".
 mergeStrategy: squash
 deleteBranchAfterMerge: true
 requireHumanApproval: false
@@ -8,6 +9,9 @@ allowDraftMerge: false
 cloudDeployAfterMerge: false
 
 # Required status check names (must match GitHub check run names).
+# Kodus is enforced inside ECC Merge Gate (requireKodusReview) — do NOT list
+# "Kody Code Review" here until a ruleset change is explicitly approved after
+# positive+negative gate proof; embedding avoids a second required-check race.
 requiredChecks:
   - Test Gate
   - Composition Gate
@@ -24,12 +28,24 @@ requiredChecks:
 # prior green ECC Merge Gate with FAIL. GraphQL reviewThreads.isResolved is
 # authoritative; API errors and pending reviews for the current HEAD → FAIL.
 # Do not weaken severity thresholds or skip findings evaluation to unblock merges.
+#
+# Kodus (kody-ai): requireKodusReview=true → HEAD must have a completed success
+# "Kody Code Review" check-run from app slug kody-ai with a Complete title.
+# "Code Review Started" is never PASS. New pushes invalidate prior HEAD approval.
+# Severity badges severity_level-{critical|high|medium|low|info} block until
+# resolved or dismissed (<!-- ecc-finding-dismissed: … -->).
+
+requireKodusReview: true
 
 blockOnUnresolvedReviewSeverities:
   - P1
   - P2
   - Critical
   - Important
+  - High
+  - Medium
+  - Low
+  - Info
 
 requireCompositionProofFresh: true
 requireEccCheckReadyEvidence: false # agent-local; CI enforces checks + review findings

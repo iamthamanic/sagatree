@@ -43,6 +43,11 @@ assert(
 assert(src.includes('waitForRequiredChecks'), 'workflow_run path polls sibling checks');
 assert(src.includes('--slurp'), 'paginate uses --slurp so multi-page reviews parse');
 assert(src.includes('skipCommentIds') || src.includes('graphqlThreadCommentIds'), 'REST skips GraphQL thread ids');
+assert(src.includes('kodus-merge-gate') || src.includes('resolveKodusReviewForHead'), 'Kodus review wired');
+assert(src.includes('requireKodusReview'), 'requireKodusReview config hook');
+assert(workflow.includes('issue_comment:'), 'workflow re-runs on Kodus issue comments');
+assert(workflow.includes('check_run:'), 'workflow re-runs on Kody check_run');
+assert(workflow.includes('Kody Code Review'), 'Kody check name filtered');
 
 const p1 = '**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>  Keep idempotency';
 const p2 = '**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Exclude expectedRevision';
