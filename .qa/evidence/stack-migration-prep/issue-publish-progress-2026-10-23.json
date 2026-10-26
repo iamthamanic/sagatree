@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T02:19:52.521Z",
+  "startedAt": "2026-10-26T03:52:26.316Z",
   "total": 90,
-  "updated": 2,
-  "unchanged": 88,
+  "updated": 1,
+  "unchanged": 89,
   "failed": [],
   "issues": [
     {
@@ -253,19 +253,19 @@
       "number": 874,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "4d835d77547ed11ec146f51e0931e4db2e75d2e37bde58db294a73579315b591",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SAGA-GOVERNANCE",
       "number": 875,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": false,
       "labelsOk": false,
-      "sha256": "fa176707b2be2dca84afe61fc9f41d9acff6f6ae50be4fca9e4d79a81391fe69",
+      "sha256": "5705096e55a66cc3e99e6338ae700ab12024899228d12a30274fe84b16f17087",
       "action": "updated"
     },
     {
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T02:20:48.851Z"
+  "finishedAt": "2026-10-26T03:53:14.943Z"
 }
