@@ -1,35 +1,34 @@
-# Composition Gate — stack-migration-rpc-npc-instances (#877)
+# Composition Gate — stack-migration-rpc-npc-instances
 
-- HEAD_SHA: 875f14c8dd8ef1c3d7f851f3aad462a0bd4d4b14
+- HEAD_SHA: fe2b040480fd61790828710e9c6cbac75dd1ec24
 - BASE_SHA: 71e6248ed7a9091db7d311f5049d1bb2e513270a
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-Host NPC instance spawn/assign/runtime/remove/clear with project/session guards,
-definition readability (personal/world), and temp-controller membership on update.
+NPC instances with injected session lookup and world ACL via project ports.
 
 ## Hop chain
 
-1. Producer: npc-instances use-cases / command barrels
-2. Authorize: narrow GM + definition readability + active-member temp controller
-3. Persist: npc_creature_* tables (npc-creature-owned)
+1. Producer: application use-cases / command barrels
+2. Authorize: project/session ports + actor guards
+3. Persist: owning module tables
 4. Consumer: self-test / future HTTP adapters
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| N-actors | GM spawn/update; player denied | project ports + store | pass |
-| Invalid/missing | foreign personal def / lite sheet / nonmember temp | P0001 | pass |
-| Two consumers / crash | clear temp count scoped | pass | pass |
-| Legacy defects | none required | n/a | pass |
+| N-actors | authorized vs denied | ports + store | pass |
+| Invalid/missing | contract errors | P0001/error_codes | pass |
+| Two consumers / crash | scoped/atomic | pass | pass |
+| Legacy defects | DENY / fixed | pass | pass |
 
 ## Flags
 
 - Acceptance tier: isolated-contract
-- Deferred integration: MIG-301..313 / MIG-311 session adapters as applicable
+- Deferred integration: MIG-311 session adapters
 
 ## Non-claims
 
