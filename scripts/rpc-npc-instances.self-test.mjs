@@ -318,7 +318,12 @@ try {
   const afterClear = db
     .prepare(`SELECT runtime FROM npc_creature_instances WHERE id = ?`)
     .get(withTemp.value.id);
-  assert(!JSON.parse(afterClear.runtime).temporaryControllerUserId, 'temp cleared on session');
+  assert(JSON.parse(afterClear.runtime).temporaryControllerUserId === null, 'temp cleared to null');
+  const clearedAgain = clearTemp(GM, sessionId);
+  assert(
+    clearedAgain.ok && clearedAgain.value.cleared === 0,
+    `noop clear=${JSON.stringify(clearedAgain)}`,
+  );
   const otherRt = db
     .prepare(`SELECT runtime FROM npc_creature_instances WHERE id = ?`)
     .get(other.value.id);
