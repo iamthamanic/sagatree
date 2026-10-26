@@ -29,6 +29,7 @@ import {
   kodyBodiesIndicateDismissed,
   evaluateKodusCheckRun,
   selectKodusCheckRun,
+  evaluateKodusHeadEvidence,
   collectKodusIssueCommentFindings,
   collectDismissedIssueCommentIds,
 } from './kodus-merge-gate.mjs';
@@ -441,10 +442,16 @@ export function collectUnresolvedFindings(
 }
 
 /**
- * Resolve Kodus completion for HEAD via the authenticated check-run only.
- * Issue-comment "Completed" text is corroboration, never sufficient alone.
+ * Resolve Kodus completion for HEAD via the Kody check-run, with APPROVED
+ * PR-review fallback when GitHub overwrites the check-run to skipped/neutral
+ * on the same SHA (issue-comment "Completed" text alone is never sufficient).
  */
-export function resolveKodusReviewForHead(owner, repo, headSha, { required = true } = {}) {
+export function resolveKodusReviewForHead(
+  owner,
+  repo,
+  headSha,
+  { required = true, pullNumber = null } = {},
+) {
   if (!required) return { ok: true, reason: 'kodus-not-required', detail: 'requireKodusReview=false' };
   const runs = ghJson([
     'api',
@@ -452,7 +459,18 @@ export function resolveKodusReviewForHead(owner, repo, headSha, { required = tru
     '--paginate',
   ]);
   const selected = selectKodusCheckRun(runs);
-  return evaluateKodusCheckRun(selected);
+  let reviews = [];
+  if (pullNumber != null) {
+    reviews = ghJson([
+      'api',
+      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      '--paginate',
+    ]);
+  }
+  return evaluateKodusHeadEvidence(selected, {
+    reviews: Array.isArray(reviews) ? reviews : [],
+    headSha,
+  });
 }
 
 /**
@@ -620,6 +638,7 @@ export function runMergeGateCheck({
   try {
     kodusReview = resolveKodusReviewForHead(ctx.owner, ctx.repo, ctx.headSha, {
       required: config.requireKodusReview !== false,
+      pullNumber: ctx.pullNumber,
     });
     unresolved = collectUnresolvedFindings(
       ctx.owner,

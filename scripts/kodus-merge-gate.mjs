@@ -162,20 +162,110 @@ export function evaluateKodusCheckRun(checkRun) {
   return { ok: true, reason: 'kodus-complete', detail: title || 'Code Review Complete' };
 }
 
-export function selectKodusCheckRun(checkRuns) {
-  const list = Array.isArray(checkRuns) ? checkRuns : checkRuns?.check_runs ?? [];
+function checkRunTime(run) {
+  return new Date(run.completed_at || run.started_at || 0).getTime();
+}
+
+function mostRecentCheckRun(runs) {
   let best = null;
-  for (const run of list) {
-    if (run.name !== KODY_CHECK_NAME) continue;
-    if (!best) {
-      best = run;
-      continue;
-    }
-    const a = new Date(run.completed_at || run.started_at || 0).getTime();
-    const b = new Date(best.completed_at || best.started_at || 0).getTime();
-    if (a >= b) best = run;
+  for (const run of runs) {
+    if (!best || checkRunTime(run) >= checkRunTime(best)) best = run;
   }
   return best;
+}
+
+/**
+ * Pick the authoritative Kody check-run for a HEAD.
+ * In-progress always wins (fail-closed pending). Among completed runs, a later
+ * `skipped`/`neutral` must not wipe an earlier `success` Complete on the same SHA
+ * (Kody often re-posts Skipped after `@kody start-review` when the diff was already
+ * reviewed). A later hard `failure` still wins over an older success.
+ */
+export function selectKodusCheckRun(checkRuns) {
+  const raw = Array.isArray(checkRuns) ? checkRuns : checkRuns?.check_runs ?? [];
+  const list = raw.filter((run) => run?.name === KODY_CHECK_NAME);
+  if (list.length === 0) return null;
+
+  const pending = list.filter((run) => run.status !== 'completed');
+  if (pending.length > 0) return mostRecentCheckRun(pending);
+
+  const successes = list.filter((run) => run.conclusion === 'success');
+  const hardFails = list.filter((run) =>
+    ['failure', 'timed_out', 'action_required', 'cancelled'].includes(String(run.conclusion)),
+  );
+
+  if (hardFails.length > 0) {
+    const latestFail = mostRecentCheckRun(hardFails);
+    const latestSuccess = successes.length > 0 ? mostRecentCheckRun(successes) : null;
+    if (latestSuccess && checkRunTime(latestSuccess) > checkRunTime(latestFail)) {
+      return latestSuccess;
+    }
+    return latestFail;
+  }
+
+  if (successes.length > 0) return mostRecentCheckRun(successes);
+  return mostRecentCheckRun(list);
+}
+
+/**
+ * When GitHub overwrites the Kody check-run in place (Complete → Skipped on the
+ * same SHA after a re-request), recover completion from a Kody PR review on HEAD.
+ * Only `APPROVED` counts — `COMMENTED` alone is not a completed review signal.
+ * @param {object[]} reviews
+ * @param {string} headSha
+ */
+export function findKodusApprovedReviewForHead(reviews, headSha) {
+  const list = Array.isArray(reviews) ? reviews : [];
+  const head = String(headSha || '').toLowerCase();
+  if (!head) return null;
+  let best = null;
+  for (const r of list) {
+    const login = r.user?.login ?? r.author?.login ?? '';
+    if (!isKodyBotLogin(login)) continue;
+    if (String(r.state).toUpperCase() !== 'APPROVED') continue;
+    const commit = String(r.commit_id ?? r.commitId ?? '').toLowerCase();
+    const sameHead =
+      commit.length > 0 &&
+      (commit === head || head.startsWith(commit) || commit.startsWith(head));
+    if (!sameHead) continue;
+    if (!best) {
+      best = r;
+      continue;
+    }
+    const a = new Date(r.submitted_at || 0).getTime();
+    const b = new Date(best.submitted_at || 0).getTime();
+    if (a >= b) best = r;
+  }
+  return best;
+}
+
+/**
+ * Combine check-run + optional APPROVED review when the check was overwritten to skipped.
+ * @param {object|null} checkRun
+ * @param {{ reviews?: object[], headSha?: string }} [opts]
+ */
+export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = '' } = {}) {
+  const fromCheck = evaluateKodusCheckRun(checkRun);
+  if (fromCheck.ok) return fromCheck;
+  if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
+    return fromCheck;
+  }
+  // Overwritten check-run: Skipped/neutral after a real Complete on the same SHA.
+  if (
+    checkRun &&
+    checkRun.status === 'completed' &&
+    ['skipped', 'neutral'].includes(String(checkRun.conclusion))
+  ) {
+    const approved = findKodusApprovedReviewForHead(reviews, headSha);
+    if (approved) {
+      return {
+        ok: true,
+        reason: 'kodus-complete',
+        detail: `Kody APPROVED review on HEAD (check-run was ${checkRun.conclusion}; id=${approved.id})`,
+      };
+    }
+  }
+  return fromCheck;
 }
 
 /**

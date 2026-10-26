@@ -11,6 +11,8 @@ import {
   kodyBodiesIndicateDismissed,
   evaluateKodusCheckRun,
   selectKodusCheckRun,
+  evaluateKodusHeadEvidence,
+  findKodusApprovedReviewForHead,
   collectKodusIssueCommentFindings,
   collectDismissedIssueCommentIds,
   extractDismissedFindingIds,
@@ -103,6 +105,66 @@ const okRun = {
 };
 assert(evaluateKodusCheckRun(okRun).ok === true, 'complete success PASS');
 assert(selectKodusCheckRun([okRun, { name: 'Test Gate' }])?.name === KODY_CHECK_NAME, 'select kody');
+
+const skippedAfterComplete = {
+  name: KODY_CHECK_NAME,
+  app: { slug: 'kody-ai' },
+  status: 'completed',
+  conclusion: 'skipped',
+  completed_at: '2026-10-26T23:06:43Z',
+  output: { title: 'Code Review Skipped', summary: 'No changed files in this pull request.' },
+};
+assert(
+  selectKodusCheckRun([okRun, skippedAfterComplete])?.conclusion === 'success',
+  'later skipped must not wipe earlier Complete on same HEAD',
+);
+assert(
+  evaluateKodusCheckRun(selectKodusCheckRun([okRun, skippedAfterComplete])).ok === true,
+  'Complete+later-Skipped still evaluates PASS',
+);
+assert(
+  selectKodusCheckRun([skippedAfterComplete])?.conclusion === 'skipped',
+  'skipped alone still selected',
+);
+const pendingRun = {
+  name: KODY_CHECK_NAME,
+  app: { slug: 'kody-ai' },
+  status: 'in_progress',
+  conclusion: null,
+  started_at: '2026-10-26T23:10:00Z',
+  output: { title: 'Code Review Starting' },
+};
+assert(
+  selectKodusCheckRun([okRun, pendingRun])?.status === 'in_progress',
+  'in_progress wins over prior Complete',
+);
+
+const approvedReview = {
+  id: 5660272270,
+  state: 'APPROVED',
+  commit_id: '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
+  submitted_at: '2026-10-26T23:05:41Z',
+  user: { login: 'kody-ai[bot]' },
+};
+assert(
+  findKodusApprovedReviewForHead([approvedReview], '30884f5bdb4c6bc7af92d87f1076a95b61d95c69')?.id ===
+    5660272270,
+  'find APPROVED on HEAD',
+);
+assert(
+  evaluateKodusHeadEvidence(skippedAfterComplete, {
+    reviews: [approvedReview],
+    headSha: '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
+  }).ok === true,
+  'skipped check + APPROVED review on HEAD = PASS',
+);
+assert(
+  evaluateKodusHeadEvidence(skippedAfterComplete, {
+    reviews: [],
+    headSha: '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
+  }).ok === false,
+  'skipped alone without APPROVED still FAIL',
+);
 
 assert(
   evaluateMergeGate({
