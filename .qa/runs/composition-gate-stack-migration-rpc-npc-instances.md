@@ -28,6 +28,7 @@ NPC instances with injected session + world read ports (owner ACL without foreig
 ## Flags
 
 - Acceptance tier: isolated-contract
+- Deferred integration: MIG-311 session adapters
 
 ## Non-claims
 
