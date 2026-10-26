@@ -216,9 +216,14 @@ export class WorldAtlasStore {
     );
   }
 
-  #toSummary(row: MapRow, partyOnly: boolean, allowed: readonly string[]): WorldAtlasMapSummary {
+  #toSummary(
+    row: MapRow,
+    partyOnly: boolean,
+    allowed: ReadonlySet<string> | readonly string[],
+  ): WorldAtlasMapSummary {
+    const allowedSet = allowed instanceof Set ? allowed : new Set(allowed);
     let parentMapId = row.parent_map_id;
-    if (partyOnly && parentMapId !== null && !allowed.includes(parentMapId)) {
+    if (partyOnly && parentMapId !== null && !allowedSet.has(parentMapId)) {
       parentMapId = null;
     }
     return {
@@ -286,14 +291,16 @@ export class WorldAtlasStore {
     const canEdit = this.canEditWorld(actorIds, worldId);
     const partyOnly = !canEdit || playerView === true;
 
-    const sagaResolved = this.#resolveProjectForSaga(worldId, sagaPublicId, actorIds);
-    if (!sagaResolved.ok) return sagaResolved;
-    const projectId = sagaResolved.projectId;
-
+    // Saga membership is only required for party projection. Editors/owners keep
+    // the full catalog even when a foreign saga public id is supplied (Postgres list parity).
     if (partyOnly) {
+      const sagaResolved = this.#resolveProjectForSaga(worldId, sagaPublicId, actorIds);
+      if (!sagaResolved.ok) return sagaResolved;
+      const projectId = sagaResolved.projectId;
       if (!projectId) return { ok: true, value: [] };
       const allowed = this.#partyRevealedMapIds(worldId, projectId);
       if (allowed.length === 0) return { ok: true, value: [] };
+      const allowedSet = new Set(allowed);
       const placeholders = allowed.map(() => '?').join(',');
       const rows = this.#db
         .prepare(
@@ -305,7 +312,7 @@ export class WorldAtlasStore {
            ORDER BY sort_order, title`,
         )
         .all(worldId, ...allowed) as MapRow[];
-      return { ok: true, value: rows.map((r) => this.#toSummary(r, true, allowed)) };
+      return { ok: true, value: rows.map((r) => this.#toSummary(r, true, allowedSet)) };
     }
 
     const rows = this.#db
@@ -403,7 +410,7 @@ export class WorldAtlasStore {
         return { ok: false, error: 'P0002' };
       }
       allowed = this.#partyRevealedMapIds(row.world_profile_id, projectId);
-      if (!allowed.includes(id)) return { ok: false, error: 'P0002' };
+      if (!new Set(allowed).has(id)) return { ok: false, error: 'P0002' };
     }
 
     return { ok: true, value: this.#toVm(row, partyOnly, allowed) };
@@ -426,10 +433,14 @@ export class WorldAtlasStore {
     const titleRaw = typeof input.title === 'string' ? input.title.trim() : '';
     const title = titleRaw.length > 0 ? titleRaw : 'Weltkarte';
 
-    const layers =
-      input.layers && typeof input.layers === 'object' && !Array.isArray(input.layers)
-        ? input.layers
-        : EMPTY_LAYERS;
+    let layers: Record<string, unknown>;
+    if (input.layers === null || input.layers === undefined) {
+      layers = EMPTY_LAYERS;
+    } else if (typeof input.layers === 'object' && !Array.isArray(input.layers)) {
+      layers = input.layers;
+    } else {
+      return { ok: false, error: '22023' };
+    }
     const layerJson = JSON.stringify(layers);
     if (Buffer.byteLength(layerJson, 'utf8') > 1_500_000) {
       return { ok: false, error: '22023' };
@@ -445,18 +456,23 @@ export class WorldAtlasStore {
         ? input.generatorMeta
         : {};
 
-    if (input.parentMapId) {
-      const parent = this.#loadRow(input.parentMapId);
+    const parentMapId =
+      typeof input.parentMapId === 'string' && input.parentMapId.trim().length > 0
+        ? input.parentMapId.trim()
+        : null;
+    if (parentMapId) {
+      const parent = this.#loadRow(parentMapId);
       if (!parent || parent.world_profile_id !== worldId) {
         return { ok: false, error: '22023' };
       }
     }
 
     const now = new Date().toISOString();
-    const mapId = input.mapId?.trim() || null;
+    const mapId =
+      typeof input.mapId === 'string' && input.mapId.trim().length > 0 ? input.mapId.trim() : null;
 
-    this.#db.exec('BEGIN IMMEDIATE');
     try {
+      this.#db.exec('BEGIN IMMEDIATE');
       if (!mapId) {
         const newId = randomUUID();
         this.#db
@@ -470,7 +486,7 @@ export class WorldAtlasStore {
           .run(
             newId,
             worldId,
-            input.parentMapId,
+            parentMapId,
             kind,
             title,
             input.sortOrder ?? 0,
@@ -529,7 +545,7 @@ export class WorldAtlasStore {
            WHERE id = ? AND world_profile_id = ?`,
         )
         .run(
-          input.parentMapId,
+          parentMapId,
           kind,
           title,
           nextSort,

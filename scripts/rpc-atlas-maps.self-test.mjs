@@ -209,6 +209,25 @@ try {
   });
   assert(!badLayers.ok && badLayers.error === '22023', `bad layers type: ${badLayers.error}`);
 
+  const nonObjectLayers = upsertMap(OWNER, {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: null,
+    kind: 'world',
+    title: 'X',
+    sortOrder: 0,
+    bounds: { ...DEFAULT_BOUNDS },
+    layers: 'not-an-object',
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+    generatorMeta: {},
+    expectedRevision: null,
+  });
+  assert(
+    !nonObjectLayers.ok && nonObjectLayers.error === '22023',
+    `non-object layers: ${nonObjectLayers.error}`,
+  );
+
   const huge = 'x'.repeat(1_500_001);
   const tooLarge = upsertMap(OWNER, {
     worldProfileId: worldId,
@@ -335,6 +354,13 @@ try {
   assert(editorList.ok && editorList.value.length >= 2, 'editor sees all maps');
   const editorRow = editorList.value.find((m) => m.id === mapA);
   assert(editorRow?.hasAzgaarMap === true, 'editor hasAzgaar');
+
+  // World owner listing with a foreign saga id must not 42501 (editor path).
+  const editorListForeignSaga = listMaps(OWNER, worldId, false, sagaB);
+  assert(
+    editorListForeignSaga.ok && editorListForeignSaga.value.length >= 2,
+    `editor + foreign saga list: ${editorListForeignSaga.ok ? editorListForeignSaga.value.length : editorListForeignSaga.error}`,
+  );
 
   const editorGet = getMap(OWNER, mapA, false, null);
   assert(editorGet.ok && editorGet.value.azgaarMapStoragePath !== null, 'editor azgaar path');

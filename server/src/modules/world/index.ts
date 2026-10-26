@@ -231,29 +231,49 @@ export function createWorldPorts(deps: {
     ensureWorldAtlasRoot(actor, worldProfileId) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const worldId = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!worldId) return { ok: false, error: '22023' };
       const ids = actorIdentityIds(actor);
-      return atlas.ensureRoot(ids, worldProfileId);
+      return atlas.ensureRoot(ids, worldId);
     },
 
     listWorldAtlasMaps(actor, worldProfileId, playerView = false, sagaPublicId = null) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const worldId = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!worldId) return { ok: false, error: '22023' };
+      if (sagaPublicId !== null && sagaPublicId !== undefined && typeof sagaPublicId !== 'string') {
+        return { ok: false, error: '22023' };
+      }
+      const saga =
+        typeof sagaPublicId === 'string' && sagaPublicId.trim().length > 0
+          ? sagaPublicId.trim()
+          : null;
       const ids = actorIdentityIds(actor);
-      return atlas.listMaps(ids, worldProfileId, playerView, sagaPublicId);
+      return atlas.listMaps(ids, worldId, playerView, saga);
     },
 
     getWorldAtlasMap(actor, mapId, playerView = false, sagaPublicId = null) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const id = typeof mapId === 'string' ? mapId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      if (sagaPublicId !== null && sagaPublicId !== undefined && typeof sagaPublicId !== 'string') {
+        return { ok: false, error: '22023' };
+      }
+      const saga = typeof sagaPublicId === 'string' ? sagaPublicId.trim() : null;
       const ids = actorIdentityIds(actor);
-      return atlas.getMap(ids, mapId, playerView, sagaPublicId);
+      return atlas.getMap(ids, id, playerView, saga === '' ? null : saga);
     },
 
     upsertWorldAtlasMap(actor, input) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!atlas) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
       const ids = actorIdentityIds(actor);
-      return atlas.upsertMap(ids, input);
+      return atlas.upsertMap(ids, { ...input, worldProfileId });
     },
 
     saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
