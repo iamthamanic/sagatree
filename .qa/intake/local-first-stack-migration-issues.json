@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 19,
+    "issuesReady": 18,
     "issuesBlockedOrNeedsDesign": 29,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -5371,7 +5371,7 @@
       "title": "Session-Beitritt, Austritt und Einladung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-session-access",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-session-access.md",
       "dependsOn": [
@@ -5685,9 +5685,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-session-access.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-SEC-ANON-EVENT-HELPER\",\"severity\":\"Critical\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Auch anon kann append_session_event direkt ausführen und ein Event mit frei gewähltem Actor in einer fremden Session anlegen.\",\"sourceEvidence\":\"supabase/migrations/041_session_runtime_state.sql; Supabase-Defaultprivilegien bleiben trotz REVOKE PUBLIC bestehen. Der Helper hat keinen eigenen Auth-/Teilnahme-Guard.\",\"requiredSuccessorAcceptance\":\"Direkten Zugriff auf internen Event-Writer entziehen oder eigenständig autorisieren; anon und authentifizierter Fremdnutzer dürfen weder Event erzeugen noch Actor vortäuschen.\",\"isolatedPostgresReproduced\":true,\"observation\":{\"path\":\".qa/intake/rpc-contracts/legacy-observations.json\",\"testId\":\"BASELINE-SEC-EVENT-HELPER-ANON\"},\"deployedExploitVerified\":false}",
@@ -5728,7 +5729,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-031",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

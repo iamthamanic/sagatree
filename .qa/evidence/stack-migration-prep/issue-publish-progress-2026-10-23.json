@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T09:25:31.755Z",
+  "startedAt": "2026-10-26T10:07:46.198Z",
   "total": 90,
-  "updated": 2,
-  "unchanged": 88,
+  "updated": 1,
+  "unchanged": 89,
   "failed": [],
   "issues": [
     {
@@ -293,10 +293,10 @@
       "number": 877,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "ec901574b1f95c95a85c4273e5cd057d57c3412151ed627998b91ceeb7e27bb0",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-353",
@@ -311,12 +311,12 @@
     {
       "localId": "RPC-SESSION-ACCESS",
       "number": 869,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "4b8d5e672753b5c6337d2b8bdd46cbd01f4f221bdc6e2537e886e7cafdcf5c91",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "69c17af5da2baf2585d4e6cfc3613987a2107384f836d49dd2a233d8a331af90",
+      "action": "updated"
     },
     {
       "localId": "RPC-SESSION-RECAP",
@@ -733,10 +733,10 @@
       "number": 806,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "44fe88fe63cb98071db8a7ceb50d76f13e3861805fc6b3aad5bafdb8c1c6d367",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "MIG-308",
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T09:26:28.950Z"
+  "finishedAt": "2026-10-26T10:08:35.887Z"
 }

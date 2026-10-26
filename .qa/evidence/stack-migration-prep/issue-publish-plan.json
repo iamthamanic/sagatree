@@ -435,11 +435,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-031",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-session-access.md",
-      "sha256": "4b8d5e672753b5c6337d2b8bdd46cbd01f4f221bdc6e2537e886e7cafdcf5c91",
-      "payloadSha256": "282859f689f064955f8ff363c50326881cfa2b7f640b8f9d0bb3068c2462506c"
+      "sha256": "69c17af5da2baf2585d4e6cfc3613987a2107384f836d49dd2a233d8a331af90",
+      "payloadSha256": "78b13a485cfd8c58bdd2f1b76e98feddffa59207d474873e674a09c35e8b4c08"
     },
     {
       "localId": "RPC-SESSION-RECAP",
