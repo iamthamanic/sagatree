@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SAGA-GOVERNANCE",
+  "result": "PASS",
+  "testedCommit": "fbd2fb95a5992bc2d51a8d322edb73ab0201804b",
+  "githubClosed": true,
+  "mergeRef": "PR #972 → main (#875)",
+  "note": "Saga permissions/bundles/bindings isolated host ports; HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-saga-governance.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-governance.md",
+      "sha256": "28f1572abd49f0b5741e3748bb876ed449bf786ea384d6b77d6000defab67b0d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-saga-governance.md",
+      "sha256": "5280e115bf62fcafd0c88a73f4d4625393d6d88be2fe78893bf3c6e5d5c5f0b0"
+    }
+  ]
+}

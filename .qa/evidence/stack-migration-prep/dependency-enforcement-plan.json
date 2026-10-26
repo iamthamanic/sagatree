@@ -591,7 +591,7 @@
       "githubIssue": 875,
       "order": 26,
       "wave": 2,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -607,7 +607,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-026",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

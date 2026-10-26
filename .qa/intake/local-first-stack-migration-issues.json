@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 18,
+    "issuesReady": 17,
     "issuesBlockedOrNeedsDesign": 33,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -3950,7 +3950,7 @@
       "title": "Saga-Berechtigungen, Bindings und Bundles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-saga-governance",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-governance.md",
       "dependsOn": [
@@ -4145,9 +4145,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-saga-governance.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -4183,7 +4184,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-026",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

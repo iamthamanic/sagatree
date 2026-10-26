@@ -365,11 +365,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-026",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-governance.md",
-      "sha256": "fa176707b2be2dca84afe61fc9f41d9acff6f6ae50be4fca9e4d79a81391fe69",
-      "payloadSha256": "8a79607b011a09d7225e4d97cc5b6b587758ff1163cddcd246e5aa81e7370fc1"
+      "sha256": "5705096e55a66cc3e99e6338ae700ab12024899228d12a30274fe84b16f17087",
+      "payloadSha256": "f68f49e7bcec711e490e28830a61c6b2b91e76085f48efe4df50b34f33a646b8"
     },
     {
       "localId": "RPC-SESSION-RUNTIME",
