@@ -517,6 +517,7 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     'MIG-413',
     'MIG-415',
     'MIG-416',
+    'RPC-PROJECT-MEMBERSHIP',
   ];
   for (const id of doneIds) {
     const entry = original.intake.issues.find((issue) => issue.localId === id);
@@ -528,6 +529,10 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
   assert.equal(errors(original).length, 0);
   const ready = original.intake.issues.filter((entry) => entry.status === 'ready');
   assert.ok(!ready.some((entry) => entry.localId === 'MIG-416'), 'MIG-416 must leave READY after DONE evidence');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'RPC-PROJECT-MEMBERSHIP'),
+    'RPC-PROJECT-MEMBERSHIP must leave READY after DONE evidence',
+  );
   assert.ok(ready.some((entry) => entry.localId === 'RPC-ATLAS-MAPS'), 'RPC-ATLAS-MAPS unlocks after RPC-WORLD-MAP DONE');
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

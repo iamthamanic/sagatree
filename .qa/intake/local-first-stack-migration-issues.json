@@ -27,7 +27,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 18,
-    "issuesBlockedOrNeedsDesign": 34,
+    "issuesBlockedOrNeedsDesign": 33,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -3682,7 +3682,7 @@
       "title": "Projektbeitritt und eigener Charakter",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-project-membership",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-project-membership.md",
       "dependsOn": [
@@ -3902,9 +3902,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-project-membership.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -3940,7 +3941,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-025",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -3949,7 +3950,7 @@
       "title": "Saga-Berechtigungen, Bindings und Bundles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-saga-governance",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-saga-governance.md",
       "dependsOn": [
@@ -4182,8 +4183,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-026",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
