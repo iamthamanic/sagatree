@@ -632,6 +632,18 @@ function checkRpcProjectMembership() {
   );
 }
 
+function checkRpcSagaGovernance() {
+  console.log('RPC-SAGA-GOVERNANCE (#875): permissions / bundles / bindings...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-saga-governance.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2933,6 +2945,7 @@ checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkRpcProjectMembership();
+checkRpcSagaGovernance();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
