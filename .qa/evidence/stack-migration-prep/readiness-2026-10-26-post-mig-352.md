@@ -2,7 +2,7 @@
 
 - generatedAt: 2026-10-26T20:35:49Z
 - branch: `chore/773-mig-352-done-evidence`
-- headSha: `10e0843694c15d51f9f80e88da7e8661cdd280ca`
+- headSha: `c97aa24671c09792af2e0ddfb9ef835179b516bc`
 - hint: post plan-regen after MIG-352 saga/project RPC cluster DONE
 
 ## Counts
