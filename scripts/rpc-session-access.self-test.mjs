@@ -133,19 +133,20 @@ try {
   project.setProjectCodeForTests(projectId, 'ACCESS01');
   assert(joinProj(Player, 'ACCESS01', null).ok, 'join project');
 
+  assert(boot.schemaVersion >= 17, `schema>=17 got ${boot.schemaVersion}`);
   const now = new Date().toISOString();
   db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at)
-     VALUES (?, ?, 'pc', 'complete', 'Hero', ?)`,
-  ).run('char-complete', Player.actorId, now);
+    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
+     VALUES (?, ?, 'pc', 'complete', 'Hero', ?, ?)`,
+  ).run('char-complete', Player.actorId, now, 'CH-HERO1');
   db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at)
-     VALUES (?, ?, 'pc', 'incomplete', 'Draft', ?)`,
-  ).run('char-draft', Player.actorId, now);
+    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
+     VALUES (?, ?, 'pc', 'incomplete', 'Draft', ?, ?)`,
+  ).run('char-draft', Player.actorId, now, 'CH-DRAFT');
   db.prepare(
-    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at)
-     VALUES (?, ?, 'pc', 'complete', 'Stolen', ?)`,
-  ).run('char-other', Stranger.actorId, now);
+    `INSERT INTO characters (id, owner_user_id, character_type, sheet_status, name, created_at, public_id)
+     VALUES (?, ?, 'pc', 'complete', 'Stolen', ?, ?)`,
+  ).run('char-other', Stranger.actorId, now, 'CH-OTHER');
 
   const play = createPlay(GM, projectId, 'Abend');
   assert(play.ok, `play: ${play.ok ? '' : play.error}`);
@@ -159,6 +160,10 @@ try {
   const joined = joinSess(Player, '  ' + joinCode.toLowerCase() + '  ', 'char-complete');
   assert(joined.ok, `join: ${joined.ok ? '' : joined.error}`);
   assert(joined.value.runtimeRevision === 1, `rev=${joined.value.runtimeRevision}`);
+  const rtRev = db
+    .prepare(`SELECT revision AS r FROM session_runtime WHERE session_id = ?`)
+    .get(sessionId);
+  assert(rtRev?.r === 1, `session_runtime.revision synced got ${rtRev?.r}`);
   const roster = db
     .prepare(`SELECT character_id AS c FROM session_players WHERE session_id = ? AND user_id = ?`)
     .get(sessionId, Player.actorId);
@@ -219,6 +224,21 @@ try {
     .prepare(`SELECT 1 AS o FROM session_players WHERE session_id = ? AND user_id = ?`)
     .get(sessionId, Stranger.actorId);
   assert(!strangerRoster, 'resolve does not join');
+
+  // Member with bound character gets character_public_id
+  const memberResolve = resolveInvite(Player, fresh.value.token);
+  assert(memberResolve.ok === true, 'member resolve');
+  assert(memberResolve.already_member === true, 'already member');
+  assert(memberResolve.character_public_id === 'CH-HERO1', `char pub=${memberResolve.character_public_id}`);
+
+  // Co-GM via project_members.role=gm (not gm_user_id) may create invites
+  const CoGm = { kind: 'solo-local', actorId: 'co-gm-user' };
+  db.prepare(
+    `INSERT INTO project_members (project_id, user_id, role, active, joined_at, id, character_id)
+     VALUES (?, ?, 'gm', 1, ?, ?, NULL)`,
+  ).run(projectId, CoGm.actorId, now, 'mem-cogm');
+  const coInvite = createInvite(CoGm, sessionId);
+  assert(coInvite.ok, `co-gm invite: ${coInvite.ok ? '' : coInvite.error}`);
 
   // Legacy: append_session_event not exported
   assert(appendSessionEventIsExported() === false, 'event helper not exported');

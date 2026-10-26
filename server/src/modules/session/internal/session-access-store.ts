@@ -101,6 +101,23 @@ export class SessionAccessStore {
       .run(sessionId, projectId, JSON.stringify({ status: 'waiting', roster: {}, gameplay: {} }), now);
   }
 
+  /** Keep play_sessions.runtime_revision and session_runtime.revision in lockstep. */
+  #bumpRevision(sessionId: string, revision: number, now: string): void {
+    this.#db
+      .prepare(`UPDATE play_sessions SET runtime_revision = ? WHERE session_id = ?`)
+      .run(revision, sessionId);
+    this.#db
+      .prepare(`UPDATE session_runtime SET revision = ?, updated_at = ? WHERE session_id = ?`)
+      .run(revision, now, sessionId);
+  }
+
+  #runtimeRevision(sessionId: string): number {
+    const row = this.#db
+      .prepare(`SELECT revision FROM session_runtime WHERE session_id = ?`)
+      .get(sessionId) as { revision: number } | undefined;
+    return Number(row?.revision ?? 0);
+  }
+
   /** Private event writer — never exported (RPC-SEC-ANON-EVENT-HELPER). */
   #appendEvent(
     sessionId: string,
@@ -256,10 +273,8 @@ export class SessionAccessStore {
           )
           .run(current.sessionId, actorIds[0]);
 
-        const revision = Number(current.runtimeRevision ?? 0) + 1;
-        this.#db
-          .prepare(`UPDATE play_sessions SET runtime_revision = ? WHERE session_id = ?`)
-          .run(revision, current.sessionId);
+        const revision = this.#runtimeRevision(current.sessionId) + 1;
+        this.#bumpRevision(current.sessionId, revision, now);
         this.#appendEvent(current.sessionId, actorIds[0], 'join', { characterId: boundCharacter }, revision);
 
         const row = this.#readSession(current.sessionId);
@@ -303,10 +318,8 @@ export class SessionAccessStore {
 
         const now = nowIso();
         this.#ensureRuntime(sessionId, current.projectId, now);
-        const revision = Number(current.runtimeRevision ?? 0) + 1;
-        this.#db
-          .prepare(`UPDATE play_sessions SET runtime_revision = ? WHERE session_id = ?`)
-          .run(revision, sessionId);
+        const revision = this.#runtimeRevision(sessionId) + 1;
+        this.#bumpRevision(sessionId, revision, now);
         this.#appendEvent(sessionId, actorIds[0], 'leave', {}, revision);
         return { ok: true, value: { left: true, runtimeRevision: revision } };
       });
@@ -454,6 +467,14 @@ export class SessionAccessStore {
           .get(session.sessionId, actorIds[0]) as { characterId: string | null } | undefined;
         const alreadyMember = Boolean(roster);
         const isGm = this.#isGm(session.projectId, actorIds);
+        let characterPublicId: string | null = null;
+        if (roster?.characterId) {
+          const ch = this.#db
+            .prepare(`SELECT public_id AS publicId FROM characters WHERE id = ?`)
+            .get(roster.characterId) as { publicId: string | null } | undefined;
+          const raw = (ch?.publicId ?? '').trim().toUpperCase();
+          characterPublicId = raw || null;
+        }
 
         return {
           ok: true,
@@ -464,7 +485,7 @@ export class SessionAccessStore {
           session_status: session.status,
           already_member: alreadyMember,
           is_project_gm: isGm,
-          character_public_id: null,
+          character_public_id: characterPublicId,
         };
       });
     } catch {
