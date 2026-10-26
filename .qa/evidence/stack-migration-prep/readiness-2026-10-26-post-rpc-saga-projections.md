@@ -2,7 +2,7 @@
 
 - generatedAt: 2026-10-26T19:51:00Z
 - branch: `chore/773-rpc-saga-projections-done-evidence`
-- headSha: `6b1f6c20baa89d07c825717f25546a805b230121`
+- headSha: `a4c30929edb0b93f1121903402b4734a1b7c7968`
 - hint: post plan-regen after RPC-SAGA-PROJECTIONS DONE
 
 ## Counts
