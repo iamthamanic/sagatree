@@ -450,7 +450,7 @@ export function resolveKodusReviewForHead(
   owner,
   repo,
   headSha,
-  { required = true, pullNumber = null } = {},
+  { required = true, reviews = null, pullNumber = null } = {},
 ) {
   if (!required) return { ok: true, reason: 'kodus-not-required', detail: 'requireKodusReview=false' };
   const runs = ghJson([
@@ -459,16 +459,17 @@ export function resolveKodusReviewForHead(
     '--paginate',
   ]);
   const selected = selectKodusCheckRun(runs);
-  let reviews = [];
-  if (pullNumber != null) {
-    reviews = ghJson([
+  let reviewList = Array.isArray(reviews) ? reviews : null;
+  if (reviewList == null && pullNumber != null) {
+    const fetched = ghJson([
       'api',
       `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
       '--paginate',
     ]);
+    reviewList = Array.isArray(fetched) ? fetched : [];
   }
   return evaluateKodusHeadEvidence(selected, {
-    reviews: Array.isArray(reviews) ? reviews : [],
+    reviews: reviewList ?? [],
     headSha,
   });
 }
@@ -498,13 +499,16 @@ export function publishEccCheckRun(owner, repo, headSha, { conclusion, title, su
   ]);
 }
 
-export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
-  const reviews = ghJson([
-    'api',
-    `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
-    '--paginate',
-  ]);
-  const list = Array.isArray(reviews) ? reviews : [];
+export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha, reviews = null) {
+  let list = Array.isArray(reviews) ? reviews : null;
+  if (list == null) {
+    const fetched = ghJson([
+      'api',
+      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      '--paginate',
+    ]);
+    list = Array.isArray(fetched) ? fetched : [];
+  }
   return list.filter((r) => {
     if (String(r.state).toUpperCase() !== 'PENDING') return false;
     const commitId = r.commit_id ?? r.commit?.sha;
@@ -636,9 +640,15 @@ export function runMergeGateCheck({
   let kodusReview = null;
 
   try {
+    const reviews = ghJson([
+      'api',
+      `repos/${ctx.owner}/${ctx.repo}/pulls/${ctx.pullNumber}/reviews`,
+      '--paginate',
+    ]);
+    const reviewList = Array.isArray(reviews) ? reviews : [];
     kodusReview = resolveKodusReviewForHead(ctx.owner, ctx.repo, ctx.headSha, {
       required: config.requireKodusReview !== false,
-      pullNumber: ctx.pullNumber,
+      reviews: reviewList,
     });
     unresolved = collectUnresolvedFindings(
       ctx.owner,
@@ -652,6 +662,7 @@ export function runMergeGateCheck({
       ctx.repo,
       ctx.pullNumber,
       ctx.headSha,
+      reviewList,
     );
     if (!skipChecks) {
       // Findings / Kodus first: if already blocked, do not wait on sibling checks.

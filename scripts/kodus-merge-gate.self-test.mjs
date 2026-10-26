@@ -165,6 +165,22 @@ assert(
   }).ok === false,
   'skipped alone without APPROVED still FAIL',
 );
+assert(
+  findKodusApprovedReviewForHead(
+    [
+      approvedReview,
+      {
+        id: 99,
+        state: 'CHANGES_REQUESTED',
+        commit_id: '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
+        submitted_at: '2026-10-26T23:06:00Z',
+        user: { login: 'kody-ai[bot]' },
+      },
+    ],
+    '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
+  ) === null,
+  'later CHANGES_REQUESTED revokes APPROVED fallback',
+);
 
 assert(
   evaluateMergeGate({

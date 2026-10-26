@@ -162,8 +162,22 @@ export function evaluateKodusCheckRun(checkRun) {
   return { ok: true, reason: 'kodus-complete', detail: title || 'Code Review Complete' };
 }
 
+const HARD_FAIL_CONCLUSIONS = new Set([
+  'failure',
+  'timed_out',
+  'action_required',
+  'cancelled',
+]);
+const SOFT_NON_SUCCESS_CONCLUSIONS = new Set(['skipped', 'neutral']);
+
 function checkRunTime(run) {
   return new Date(run.completed_at || run.started_at || 0).getTime();
+}
+
+function reviewOnHead(review, head) {
+  const commit = String(review.commit_id ?? review.commitId ?? '').toLowerCase();
+  if (!commit || !head) return false;
+  return commit === head || head.startsWith(commit) || commit.startsWith(head);
 }
 
 function mostRecentCheckRun(runs) {
@@ -190,9 +204,7 @@ export function selectKodusCheckRun(checkRuns) {
   if (pending.length > 0) return mostRecentCheckRun(pending);
 
   const successes = list.filter((run) => run.conclusion === 'success');
-  const hardFails = list.filter((run) =>
-    ['failure', 'timed_out', 'action_required', 'cancelled'].includes(String(run.conclusion)),
-  );
+  const hardFails = list.filter((run) => HARD_FAIL_CONCLUSIONS.has(String(run.conclusion)));
 
   if (hardFails.length > 0) {
     const latestFail = mostRecentCheckRun(hardFails);
@@ -218,25 +230,29 @@ export function findKodusApprovedReviewForHead(reviews, headSha) {
   const list = Array.isArray(reviews) ? reviews : [];
   const head = String(headSha || '').toLowerCase();
   if (!head) return null;
-  let best = null;
-  for (const r of list) {
+
+  const kodyOnHead = list.filter((r) => {
     const login = r.user?.login ?? r.author?.login ?? '';
-    if (!isKodyBotLogin(login)) continue;
-    if (String(r.state).toUpperCase() !== 'APPROVED') continue;
-    const commit = String(r.commit_id ?? r.commitId ?? '').toLowerCase();
-    const sameHead =
-      commit.length > 0 &&
-      (commit === head || head.startsWith(commit) || commit.startsWith(head));
-    if (!sameHead) continue;
-    if (!best) {
-      best = r;
-      continue;
-    }
-    const a = new Date(r.submitted_at || 0).getTime();
-    const b = new Date(best.submitted_at || 0).getTime();
-    if (a >= b) best = r;
-  }
-  return best;
+    if (!isKodyBotLogin(login)) return false;
+    // Require string commit_id / submitted_at — reject malformed payloads fail-closed.
+    if (typeof (r.commit_id ?? r.commitId) !== 'string') return false;
+    if (r.submitted_at != null && typeof r.submitted_at !== 'string') return false;
+    return reviewOnHead(r, head);
+  });
+
+  const approved = kodyOnHead
+    .filter((r) => String(r.state).toUpperCase() === 'APPROVED')
+    .sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0))[0];
+  if (!approved) return null;
+
+  // A later non-APPROVED Kody review on the same HEAD revokes the approval (fail-closed).
+  const approvedAt = new Date(approved.submitted_at || 0).getTime();
+  const laterNonApproved = kodyOnHead.some(
+    (r) =>
+      String(r.state).toUpperCase() !== 'APPROVED' &&
+      new Date(r.submitted_at || 0).getTime() > approvedAt,
+  );
+  return laterNonApproved ? null : approved;
 }
 
 /**
@@ -254,7 +270,7 @@ export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = ''
   if (
     checkRun &&
     checkRun.status === 'completed' &&
-    ['skipped', 'neutral'].includes(String(checkRun.conclusion))
+    SOFT_NON_SUCCESS_CONCLUSIONS.has(String(checkRun.conclusion))
   ) {
     const approved = findKodusApprovedReviewForHead(reviews, headSha);
     if (approved) {
