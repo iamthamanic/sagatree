@@ -48,6 +48,15 @@ export class CharacterMembershipStore {
     return { ok: true };
   }
 
+  getDisplayName(characterId: string): string | null {
+    const id = typeof characterId === 'string' ? characterId.trim() : '';
+    if (!id) return null;
+    const row = this.#db
+      .prepare(`SELECT name FROM characters WHERE id = ?`)
+      .get(id) as { name: string } | undefined;
+    return row?.name ?? null;
+  }
+
   seedPcForTests(input: {
     readonly ownerUserId: string;
     readonly name?: string;

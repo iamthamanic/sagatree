@@ -288,6 +288,7 @@ export class SagaGovernanceStore {
       label: string | null;
       metadata: unknown;
       worldPlaceId: string | null;
+      updatedAt: string | null;
     }[]
   > | GovernanceError {
     if (actorIds.length === 0 || !actorIds[0]) return { ok: false, error: 'not authenticated' };
@@ -302,7 +303,7 @@ export class SagaGovernanceStore {
     const rows = this.#db
       .prepare(
         `SELECT id, asset_kind AS assetKind, asset_id AS assetId, reveal, label, metadata,
-                world_place_id AS worldPlaceId
+                world_place_id AS worldPlaceId, updated_at AS updatedAt
          FROM saga_asset_bindings
          WHERE project_id = ?
            AND (? IS NULL OR asset_kind = ?)
@@ -317,6 +318,7 @@ export class SagaGovernanceStore {
       label: string | null;
       metadata: string;
       worldPlaceId: string | null;
+      updatedAt: string | null;
     }[];
     const filtered = rows.filter((r) =>
       this.#canViewBinding(project.id, actorIds, r.assetKind, r.reveal),
@@ -337,6 +339,7 @@ export class SagaGovernanceStore {
           reveal: r.reveal,
           label: r.label,
           metadata,
+          updatedAt: r.updatedAt,
           worldPlaceId: r.worldPlaceId,
         };
       }),

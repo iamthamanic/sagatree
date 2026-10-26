@@ -43,6 +43,7 @@ import {
   createSagaPortsStub,
   type SagaPorts,
 } from '../modules/saga/index.ts';
+import { createCharacterPorts } from '../modules/character/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -131,9 +132,11 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
 
     const identity = createIdentityPorts(actorId, authRuntime, config.dataDir);
     const project = createProjectPorts(db ?? undefined);
-    const permissions = createPermissionsPorts(db, {
-      actorHasAccessToSaga: project.actorHasAccessToSaga,
-    });
+    const permissions = createPermissionsPorts(
+      db,
+      { actorHasAccessToSaga: project.actorHasAccessToSaga },
+      project,
+    );
     const world: WorldPorts = db
       ? createWorldPorts({
           authorize: permissions.authorize,
@@ -168,8 +171,20 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
+    const character = db ? createCharacterPorts(db) : createCharacterPorts();
     const saga: SagaPorts = db
-      ? createSagaPorts({ db, authorize: permissions.authorize, project })
+      ? createSagaPorts({
+          db,
+          authorize: permissions.authorize,
+          project,
+          loreAcl: permissions.sagaGovernance,
+          world: {
+            canEditWorld: (ids, worldId) => world.canEditWorld(ids, worldId),
+            appendPromotedLoreFact: (worldId, fact) =>
+              world.appendPromotedLoreFact(worldId, fact),
+          },
+          characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
+        })
       : createSagaPortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,

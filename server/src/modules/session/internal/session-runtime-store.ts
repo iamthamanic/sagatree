@@ -404,7 +404,14 @@ export function createSessionRuntimeStore(
           gameplay: next.gameplay,
         });
         const resultJson = canonicalJson(next);
-        const eventSequence = next.revision;
+        // Monotonic event_sequence (independent of revision) so promote-audit rows
+        // at the current revision cannot collide with the next apply (#876 / Codex P1).
+        const seqRow = db
+          .prepare(
+            'SELECT COALESCE(MAX(event_sequence), 0) AS m FROM session_events WHERE session_id = ?',
+          )
+          .get(sessionId) as { m: number };
+        const eventSequence = Number(seqRow.m) + 1;
 
         const update = db
           .prepare(
