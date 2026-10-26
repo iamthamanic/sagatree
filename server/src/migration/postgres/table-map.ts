@@ -44,6 +44,7 @@ export const MAPPED_TABLES: Readonly<Record<MappedTableName, MappedTableSpec>> =
       { name: 'gm_user_id', pgType: 'uuid' },
       { name: 'title', pgType: 'text' },
       { name: 'created_at', pgType: 'timestamptz' },
+      { name: 'code', pgType: 'text' },
     ],
   },
   project_members: {
@@ -55,6 +56,8 @@ export const MAPPED_TABLES: Readonly<Record<MappedTableName, MappedTableSpec>> =
       { name: 'role', pgType: 'text' },
       { name: 'active', pgType: 'boolean' },
       { name: 'joined_at', pgType: 'timestamptz' },
+      { name: 'id', pgType: 'uuid' },
+      { name: 'character_id', pgType: 'uuid' },
     ],
   },
 });

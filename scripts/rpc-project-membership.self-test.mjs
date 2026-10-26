@@ -115,10 +115,35 @@ try {
   assert(dup.detail === 'active', `dup detail status got ${dup.detail}`);
   const missing = joinByCode(Stranger, 'ZZZZZZZZ', null);
   assert(!missing.ok && missing.error === 'P0002', `unknown code got ${JSON.stringify(missing)}`);
+  const foreignPcEarly = character.seedPcForTests({ ownerUserId: GM.actorId, name: 'GM-PC' });
+  const precedence = joinByCode(Stranger, 'NOPECODE', foreignPcEarly.id);
+  assert(
+    !precedence.ok && precedence.error === 'P0002',
+    `unknown code before character check got ${JSON.stringify(precedence)}`,
+  );
+  const dupIncomplete = character.seedPcForTests({
+    ownerUserId: Player.actorId,
+    name: 'DupDraft',
+    sheetStatus: 'incomplete',
+  });
+  const dupBeforeChar = joinByCode(Player, 'AB12CD34', dupIncomplete.id);
+  assert(
+    !dupBeforeChar.ok && dupBeforeChar.error === 'P0001',
+    `existing membership before sheet check got ${JSON.stringify(dupBeforeChar)}`,
+  );
   const empty = joinByCode(Stranger, '   ', null);
   assert(!empty.ok && empty.error === '22023', `empty code got ${JSON.stringify(empty)}`);
   const unauth = joinByCode({ kind: 'solo-local', actorId: '' }, 'AB12CD34', null);
   assert(!unauth.ok && unauth.error === '42501', 'auth required');
+  // Normalized uniqueness: second project cannot claim case/whitespace variant of same code
+  const created2 = create(GM, native.sagaId, native.versionId, 'Gruppe-2');
+  assert(created2.ok, `create2: ${created2.ok ? '' : created2.error}`);
+  try {
+    db.prepare(`UPDATE projects SET code = '  ab12cd34  ' WHERE id = ?`).run(created2.value.id);
+    assert(false, 'normalized unique index should reject case/whitespace variant');
+  } catch {
+    /* expected */
+  }
 
   // --- Fall 3: only complete owned PC; NULL clears ---
   const incomplete = character.seedPcForTests({

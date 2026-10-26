@@ -3,9 +3,16 @@
 
 ALTER TABLE projects ADD COLUMN code TEXT;
 
-CREATE UNIQUE INDEX IF NOT EXISTS projects_code_upper_unique
-  ON projects (code)
-  WHERE code IS NOT NULL AND code <> '';
+-- Backfill join codes for pre-existing active projects (upgrade path).
+UPDATE projects
+SET code = upper(substr(hex(randomblob(4)), 1, 8))
+WHERE (code IS NULL OR TRIM(code) = '')
+  AND status = 'active';
+
+-- Normalized uniqueness matches lookup UPPER(TRIM(code)) (Postgres idx_projects_code_casefold_unique).
+CREATE UNIQUE INDEX IF NOT EXISTS projects_code_norm_unique
+  ON projects (UPPER(TRIM(code)))
+  WHERE code IS NOT NULL AND TRIM(code) <> '';
 
 ALTER TABLE project_members ADD COLUMN id TEXT;
 ALTER TABLE project_members ADD COLUMN character_id TEXT;

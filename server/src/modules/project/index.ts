@@ -48,11 +48,14 @@ export type ProjectPorts = {
     actorId: string,
     sagaId: string,
   ) => ProjectResult<ProvisionedProject> | { ok: false; error: 'P0002' };
-  /** RPC join_project_by_code — character ownership validated by caller via character ports. */
+  /** RPC join_project_by_code — validateCharacter runs after project/membership checks. */
   readonly joinByCode: (input: {
     readonly actorId: string;
     readonly code: string;
     readonly characterId: string | null;
+    readonly validateCharacter?: (
+      characterId: string,
+    ) => { readonly ok: true } | { readonly ok: false; readonly error: '42501' | '22023' };
   }) => JoinByCodeResult;
   /** RPC set_my_project_character — character ownership validated by caller. */
   readonly setMyCharacter: (input: {

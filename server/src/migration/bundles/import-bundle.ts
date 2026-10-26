@@ -5,7 +5,7 @@
  * Failures abort before publish — no partial authoritative rows.
  * Asset bytes are written under dataDir/assets before metadata is committed.
  */
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync, renameSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { HostDatabase } from '../../persistence/open-database.ts';
@@ -247,10 +247,12 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
             project.description == null ? null : String(project.description),
           );
       } else if (hasSaga) {
+        const codeRaw = project.code == null ? '' : String(project.code).trim();
+        const code = codeRaw !== '' ? codeRaw.toUpperCase() : randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase();
         input.db
           .prepare(
-            `INSERT INTO projects (id, world_id, gm_user_id, title, created_at, saga_id)
-             VALUES (?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO projects (id, world_id, gm_user_id, title, created_at, saga_id, code)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
           )
           .run(
             String(project.id),
@@ -259,11 +261,14 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
             String(project.title ?? 'Project'),
             String(project.created_at ?? new Date().toISOString()),
             project.saga_id == null ? null : String(project.saga_id),
+            code,
           );
       } else {
+        const codeRaw = project.code == null ? '' : String(project.code).trim();
+        const code = codeRaw !== '' ? codeRaw.toUpperCase() : randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase();
         input.db
           .prepare(
-            `INSERT INTO projects (id, world_id, gm_user_id, title, created_at) VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO projects (id, world_id, gm_user_id, title, created_at, code) VALUES (?, ?, ?, ?, ?, ?)`,
           )
           .run(
             String(project.id),
@@ -271,15 +276,20 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
             owner,
             String(project.title ?? 'Project'),
             String(project.created_at ?? new Date().toISOString()),
+            code,
           );
       }
     }
 
     for (const member of bundle.projectMembers) {
+          const memberId =
+        member.id == null || String(member.id).trim() === ''
+          ? randomUUID()
+          : String(member.id);
       input.db
         .prepare(
-          `INSERT INTO project_members (project_id, user_id, role, active, joined_at)
-           VALUES (?, ?, ?, ?, ?)`,
+          `INSERT INTO project_members (project_id, user_id, role, active, joined_at, id, character_id)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
         )
         .run(
           String(member.project_id),
@@ -287,6 +297,10 @@ export function importHostBundle(input: ImportBundleInput): BundleResult<ImportR
           String(member.role ?? 'player'),
           Number(member.active ?? 1),
           member.joined_at == null ? null : String(member.joined_at),
+          memberId,
+          member.character_id == null || String(member.character_id).trim() === ''
+            ? null
+            : String(member.character_id),
         );
     }
 

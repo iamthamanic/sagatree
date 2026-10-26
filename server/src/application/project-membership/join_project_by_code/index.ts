@@ -3,6 +3,7 @@
  * Location: server/src/application/project-membership/join_project_by_code/index.ts
  *
  * Normalizes join code, enforces character ownership via character ports, inserts one active player row.
+ * Error precedence matches Postgres: project/membership before character ownership.
  */
 import type { Actor } from '../../../modules/identity/index.ts';
 import type { CharacterPorts } from '../../../modules/character/index.ts';
@@ -28,15 +29,13 @@ export function joinProjectByCodeUseCase(deps: {
         ? characterIdRaw.trim()
         : null;
 
-    if (characterId) {
-      const check = character.assertOwnedCompletePc(actor.actorId, characterId);
-      if (!check.ok) return { ok: false, error: check.error };
-    }
-
     return project.joinByCode({
       actorId: actor.actorId,
       code: typeof codeRaw === 'string' ? codeRaw : '',
       characterId,
+      validateCharacter: characterId
+        ? (id) => character.assertOwnedCompletePc(actor.actorId, id)
+        : undefined,
     });
   };
 }

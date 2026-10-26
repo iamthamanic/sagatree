@@ -14,6 +14,10 @@ export type SetMyCharacterResult =
   | { readonly ok: true; readonly memberId: string }
   | { readonly ok: false; readonly error: string };
 
+export type CharacterValidateFn = (
+  characterId: string,
+) => { readonly ok: true } | { readonly ok: false; readonly error: '42501' | '22023' };
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -54,25 +58,19 @@ export class ProjectMembershipStore {
     }
   }
 
-  assignCodeIfMissing(projectId: string, preferred?: string | null): string | null {
-    const existing = this.#db
-      .prepare(`SELECT code FROM projects WHERE id = ?`)
-      .get(projectId) as { code: string | null } | undefined;
-    if (!existing) return null;
-    if (existing.code && existing.code.trim() !== '') return existing.code;
-    const code = preferred && preferred.trim() !== '' ? normalizeCode(preferred) : generateProjectJoinCode();
-    this.#db.prepare(`UPDATE projects SET code = ? WHERE id = ?`).run(code, projectId);
-    return code;
-  }
-
   setProjectCodeForTests(projectId: string, code: string): void {
     this.#db.prepare(`UPDATE projects SET code = ? WHERE id = ?`).run(normalizeCode(code), projectId);
   }
 
+  /**
+   * Source contract order: auth → code required → project lookup → existing membership →
+   * optional character ownership → insert. Character validation must not precede P0002/P0001.
+   */
   joinByCode(input: {
     readonly actorId: string;
     readonly code: string;
     readonly characterId: string | null;
+    readonly validateCharacter?: CharacterValidateFn;
   }): JoinByCodeResult {
     if (!input.actorId) return { ok: false, error: '42501' };
     const normalized = normalizeCode(input.code);
@@ -98,6 +96,13 @@ export class ProjectMembershipStore {
           return { ok: false, error: 'P0001', detail: status };
         }
 
+        if (input.characterId) {
+          const validate = input.validateCharacter;
+          if (!validate) return { ok: false, error: '42501' };
+          const check = validate(input.characterId);
+          if (!check.ok) return { ok: false, error: check.error };
+        }
+
         const memberId = newMemberId();
         this.#db
           .prepare(
@@ -105,13 +110,7 @@ export class ProjectMembershipStore {
                project_id, user_id, role, active, joined_at, id, character_id
              ) VALUES (?, ?, 'player', 1, ?, ?, ?)`,
           )
-          .run(
-            project.id,
-            input.actorId,
-            nowIso(),
-            memberId,
-            input.characterId,
-          );
+          .run(project.id, input.actorId, nowIso(), memberId, input.characterId);
 
         return { ok: true, projectId: project.id };
       });
@@ -127,17 +126,35 @@ export class ProjectMembershipStore {
   }): SetMyCharacterResult {
     if (!input.actorId) return { ok: false, error: '42501' };
 
-    const updated = this.#db
+    const row = this.#db
       .prepare(
-        `UPDATE project_members
-         SET character_id = ?
-         WHERE project_id = ? AND user_id = ? AND active = 1
-         RETURNING id`,
+        `SELECT id FROM project_members
+         WHERE project_id = ? AND user_id = ? AND active = 1`,
       )
-      .get(input.characterId, input.projectId, input.actorId) as { id: string } | undefined;
+      .get(input.projectId, input.actorId) as { id: string | null } | undefined;
+    if (!row) return { ok: false, error: 'P0002' };
 
-    if (!updated?.id) return { ok: false, error: 'P0002' };
-    return { ok: true, memberId: updated.id };
+    let memberId = row.id;
+    if (!memberId || memberId.trim() === '') {
+      memberId = newMemberId();
+      this.#db
+        .prepare(
+          `UPDATE project_members
+           SET character_id = ?, id = ?
+           WHERE project_id = ? AND user_id = ? AND active = 1`,
+        )
+        .run(input.characterId, memberId, input.projectId, input.actorId);
+    } else {
+      this.#db
+        .prepare(
+          `UPDATE project_members
+           SET character_id = ?
+           WHERE project_id = ? AND user_id = ? AND active = 1`,
+        )
+        .run(input.characterId, input.projectId, input.actorId);
+    }
+
+    return { ok: true, memberId };
   }
 
   getMemberForTests(projectId: string, userId: string): {
