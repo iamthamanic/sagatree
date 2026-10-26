@@ -477,11 +477,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-034",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-saga-projections.md",
-      "sha256": "fd28f8a74e67d507ac4e27a64595ca806874eacaff75e6b269e51e1ec5207483",
-      "payloadSha256": "a45c07ca377423d46e693e6fd98199657098f58d67d0ca3bb1234805b35794ca"
+      "sha256": "dcb1831c551db30fd078c73e6fe1db57cebcb20fe1a5760177502d70dc54a341",
+      "payloadSha256": "fd7a51682f1d11e5ab722e12674520bd72993fd8907f99701fcf2a176369e386"
     },
     {
       "localId": "MIG-352",
@@ -491,12 +491,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-035",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-352.md",
-      "sha256": "a81937b53525b59028982ccd8a985ede00af26b79b037a362c98d1593ea647dc",
-      "payloadSha256": "633a43869b6d7ecb53903d4c83e4743ede3b188b639477f1d24b26dfeb3a8c1d"
+      "sha256": "fae8ae70fb161ccaa442e5ca780730c91d4bf309da1cf48b4020bb07ee1a6bdc",
+      "payloadSha256": "f49b7aa44797b13c4d7c07e5550cd4706d70f396d24d5263296a78ec28c3ba85"
     },
     {
       "localId": "RPC-WORLD-MAP",
@@ -1047,12 +1046,11 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-074",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-308.md",
-      "sha256": "8e00868d53ce9f34a644cf862b34046e04f47af5b1aa8955448ead1b7e09e02b",
-      "payloadSha256": "f7f7867d645f65ac58823cb24dc75e11bb58bf6531ba1e3d4f6b2781a11480e8"
+      "sha256": "6152113ecf86b6d1b180042f5646b134fccca6c6703948efc5bec3ce42987aa1",
+      "payloadSha256": "2490e54f9bcee9c4149073d7731a7fe10a8e3f82158c50f95dcfcb00cd86f4b5"
     },
     {
       "localId": "MIG-309",
@@ -1076,12 +1074,11 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-076",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-310.md",
-      "sha256": "cef65fcd4674365eca6c83dbcdf2d61c04921f83ff6cfb14c363d59ccb56f80c",
-      "payloadSha256": "1d5a96f03acb97cf9cbdd504e9d1136d362581285d47bc49d05e565ed8555b39"
+      "sha256": "dbd4d51078b3ce4912688e7379cca3bcc7c24fae50911253fb9a2573debb2fda",
+      "payloadSha256": "9e6c3d98dc54fb0c158f9ba7c34b79d10dd57006a9bd7508bf08a5ca15533823"
     },
     {
       "localId": "MIG-311",

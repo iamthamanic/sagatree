@@ -45,8 +45,8 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 31 | 2 | RPC-SESSION-ACCESS [#869](https://github.com/iamthamanic/sagatree/issues/869) | done | #795, #792, #797, #799, #784, #785, #787, #868 |
 | 32 | 2 | RPC-SESSION-RECAP [#870](https://github.com/iamthamanic/sagatree/issues/870) | done | #795, #792, #797, #799, #784, #785, #787, #868 |
 | 33 | 2 | MIG-351 [#814](https://github.com/iamthamanic/sagatree/issues/814) | done | #867, #868, #869, #870 |
-| 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | ready | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
-| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | waiting | #871, #872, #873, #874, #875, #876 |
+| 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | done | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
+| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | ready | #871, #872, #873, #874, #875, #876 |
 | 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | done | #795, #792, #797, #799, #784, #785, #787 |
 | 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | ready | #795, #792, #797, #799, #784, #785, #787, #861 |
 | 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | waiting | #795, #792, #797, #799, #784, #785, #787, #862 |
@@ -85,9 +85,9 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 71 | 4 | MIG-305 [#804](https://github.com/iamthamanic/sagatree/issues/804) | waiting | #791, #792, #795, #878, #793 |
 | 72 | 4 | MIG-306 [#805](https://github.com/iamthamanic/sagatree/issues/805) | done | #791, #792, #795 |
 | 73 | 4 | MIG-307 [#806](https://github.com/iamthamanic/sagatree/issues/806) | ready | #791, #792, #795, #877, #793 |
-| 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | waiting | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
+| 74 | 4 | MIG-308 [#807](https://github.com/iamthamanic/sagatree/issues/807) | ready | #791, #792, #795, #868, #873, #875, #876, #874, #793 |
 | 75 | 4 | MIG-309 [#808](https://github.com/iamthamanic/sagatree/issues/808) | done | #791, #792, #795, #793 |
-| 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | waiting | #791, #792, #795, #871, #873, #872, #876, #793 |
+| 76 | 4 | MIG-310 [#809](https://github.com/iamthamanic/sagatree/issues/809) | ready | #791, #792, #795, #871, #873, #872, #876, #793 |
 | 77 | 4 | MIG-311 [#810](https://github.com/iamthamanic/sagatree/issues/810) | waiting | #791, #792, #795, #867, #868, #869, #870, #836, #837, #796, #793 |
 | 78 | 4 | MIG-312 [#811](https://github.com/iamthamanic/sagatree/issues/811) | ready | #791, #792, #795, #841, #793 |
 | 79 | 4 | MIG-313 [#812](https://github.com/iamthamanic/sagatree/issues/812) | waiting | #791, #792, #795, #866, #864, #865, #862, #861, #863, #841, #793 |

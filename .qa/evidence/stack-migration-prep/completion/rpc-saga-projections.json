@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-SAGA-PROJECTIONS",
+  "result": "PASS",
+  "testedCommit": "6b1f6c20baa89d07c825717f25546a805b230121",
+  "githubClosed": true,
+  "mergeRef": "PR #990 → main (#876)",
+  "note": "get_saga_overview / get_saga_lore_timeline / promote_session_outcome_to_saga|world host ports; role projection; world/session owning writes; no public append_session_event. HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-saga-projections.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-saga-projections.md",
+      "sha256": "a4ee255c13a68f0b3417fc440aa65147f0b3cfd5d6fdf1426e433265576cf71d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-saga-projections.md",
+      "sha256": "d5d684e71b0dfb05e1a7760d998bd6752c3fc93d429c9cbc66a21c9c6db3673a"
+    }
+  ]
+}
