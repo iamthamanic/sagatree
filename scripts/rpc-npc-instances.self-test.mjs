@@ -242,6 +242,23 @@ try {
     sheetMode: 'lite',
   });
   assert(!assign(GM, projectId, 'personal:draft-npcxx', Player.actorId).ok, 'lite sheet denied');
+  assert(
+    !assign(GM, projectId, 'personal:other-owner1', Player.actorId).ok,
+    'foreign personal assign denied',
+  );
+  assert(
+    !spawn(GM, {
+      projectId,
+      definitionId: defId,
+      instanceKind: 'generic',
+      snapshot: {},
+      runtime: {},
+      displayName: 'TooBig',
+      sequenceNumber: 100001,
+      sessionId,
+    }).ok,
+    'sequence >100000 denied',
+  );
 
   // --- Fall 4: clear temp controllers for session only ---
   const withTemp = spawn(GM, {

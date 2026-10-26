@@ -170,6 +170,12 @@ export class NpcInstanceStore {
     if (controllerUserId && !this.#isActiveMember(projectId, controllerUserId)) {
       return { ok: false, error: 'P0001:controller is not an active project member' };
     }
+    if (
+      (definitionId.startsWith('personal:') || definitionId.startsWith('world:')) &&
+      !this.#definitionReadable(actorIds, definitionId)
+    ) {
+      return { ok: false, error: 'P0001:definition not readable' };
+    }
     const def = this.#db
       .prepare(`SELECT status, payload FROM npc_creature_definitions WHERE id = ?`)
       .get(definitionId) as { status: string; payload: string } | undefined;
@@ -236,7 +242,11 @@ export class NpcInstanceStore {
     if (displayName.length < 1 || displayName.length > 120) {
       return { ok: false, error: 'P0001:invalid display name' };
     }
-    if (!Number.isInteger(input.sequenceNumber) || input.sequenceNumber < 1) {
+    if (
+      !Number.isInteger(input.sequenceNumber) ||
+      input.sequenceNumber < 1 ||
+      input.sequenceNumber > 100000
+    ) {
       return { ok: false, error: 'P0001:invalid sequence number' };
     }
     if (input.snapshot === null || typeof input.snapshot !== 'object' || Array.isArray(input.snapshot)) {
@@ -299,7 +309,7 @@ export class NpcInstanceStore {
       return { ok: false, error: 'P0001:invalid runtime' };
     }
     const current = this.#readInstance(instanceId);
-    if (!current) return { ok: false, error: 'P0002:instance not found' };
+    if (!current) return { ok: false, error: 'P0001:instance not found' };
     if (!this.#isNarrowGm(current.projectId, actorIds)) {
       return { ok: false, error: 'P0001:only gm may update runtime' };
     }
@@ -325,7 +335,7 @@ export class NpcInstanceStore {
   ): Ok<{ readonly id: string }> | NpcError {
     if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
     const current = this.#readInstance(instanceId);
-    if (!current) return { ok: false, error: 'P0002:instance not found' };
+    if (!current) return { ok: false, error: 'P0001:instance not found' };
     if (!this.#isNarrowGm(current.projectId, actorIds)) {
       return { ok: false, error: 'P0001:only gm may remove' };
     }
@@ -341,37 +351,48 @@ export class NpcInstanceStore {
     const sess = this.#db
       .prepare(`SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`)
       .get(sessionId) as { projectId: string } | undefined;
-    if (!sess) return { ok: false, error: 'P0002:session not found' };
+    if (!sess) return { ok: false, error: 'P0001:session not found' };
     if (!this.#isNarrowGm(sess.projectId, actorIds)) {
       return { ok: false, error: 'P0001:only gm may clear temp controllers' };
     }
-    const rows = this.#db
-      .prepare(
-        `SELECT id, runtime FROM npc_creature_instances WHERE session_id = ?`,
-      )
-      .all(sessionId) as { id: string; runtime: string }[];
-    let cleared = 0;
-    const now = nowIso();
-    for (const row of rows) {
-      let runtime: Record<string, unknown>;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const rows = this.#db
+        .prepare(
+          `SELECT id, runtime FROM npc_creature_instances WHERE session_id = ?`,
+        )
+        .all(sessionId) as { id: string; runtime: string }[];
+      let cleared = 0;
+      const now = nowIso();
+      for (const row of rows) {
+        let runtime: Record<string, unknown>;
+        try {
+          runtime = JSON.parse(row.runtime) as Record<string, unknown>;
+        } catch {
+          continue;
+        }
+        if (
+          typeof runtime.temporaryControllerUserId === 'string' &&
+          runtime.temporaryControllerUserId.trim() !== ''
+        ) {
+          delete runtime.temporaryControllerUserId;
+          this.#db
+            .prepare(
+              `UPDATE npc_creature_instances SET runtime = ?, updated_at = ? WHERE id = ?`,
+            )
+            .run(JSON.stringify(runtime), now, row.id);
+          cleared += 1;
+        }
+      }
+      this.#db.exec('COMMIT');
+      return { ok: true, value: { cleared } };
+    } catch {
       try {
-        runtime = JSON.parse(row.runtime) as Record<string, unknown>;
+        this.#db.exec('ROLLBACK');
       } catch {
-        continue;
+        /* ignore */
       }
-      if (
-        typeof runtime.temporaryControllerUserId === 'string' &&
-        runtime.temporaryControllerUserId.trim() !== ''
-      ) {
-        delete runtime.temporaryControllerUserId;
-        this.#db
-          .prepare(
-            `UPDATE npc_creature_instances SET runtime = ?, updated_at = ? WHERE id = ?`,
-          )
-          .run(JSON.stringify(runtime), now, row.id);
-        cleared += 1;
-      }
+      return { ok: false, error: 'P0001' };
     }
-    return { ok: true, value: { cleared } };
   }
 }
