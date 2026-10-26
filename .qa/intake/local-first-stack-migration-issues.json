@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 21,
+    "issuesReady": 20,
     "issuesBlockedOrNeedsDesign": 23,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -6695,7 +6695,7 @@
       "title": "Replace Postgres RPC cluster: saga/project RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-352",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-352.md",
       "dependsOn": [
@@ -7010,9 +7010,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-352.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -7045,7 +7046,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-035",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

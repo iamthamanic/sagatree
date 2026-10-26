@@ -1,0 +1,94 @@
+{
+  "generatedAt": "2026-10-26T20:35:49.368Z",
+  "headSha": "c97aa24671c09792af2e0ddfb9ef835179b516bc",
+  "counts": {
+    "total": 90,
+    "done": 47,
+    "ready": 20,
+    "waiting": 19,
+    "blocked": 4
+  },
+  "ready": [
+    {
+      "localId": "RPC-ATLAS-MAPS",
+      "githubIssue": 862
+    },
+    {
+      "localId": "MIG-401",
+      "githubIssue": 817
+    },
+    {
+      "localId": "MIG-404",
+      "githubIssue": 820
+    },
+    {
+      "localId": "MIG-405",
+      "githubIssue": 821
+    },
+    {
+      "localId": "MIG-409",
+      "githubIssue": 825
+    },
+    {
+      "localId": "MIG-410",
+      "githubIssue": 826
+    },
+    {
+      "localId": "MIG-417",
+      "githubIssue": 833
+    },
+    {
+      "localId": "MIG-418",
+      "githubIssue": 834
+    },
+    {
+      "localId": "MIG-419",
+      "githubIssue": 835
+    },
+    {
+      "localId": "MIG-420",
+      "githubIssue": 836
+    },
+    {
+      "localId": "MIG-421",
+      "githubIssue": 837
+    },
+    {
+      "localId": "MIG-422",
+      "githubIssue": 838
+    },
+    {
+      "localId": "MIG-423",
+      "githubIssue": 839
+    },
+    {
+      "localId": "MIG-424",
+      "githubIssue": 840
+    },
+    {
+      "localId": "MIG-301",
+      "githubIssue": 800
+    },
+    {
+      "localId": "MIG-304",
+      "githubIssue": 803
+    },
+    {
+      "localId": "MIG-307",
+      "githubIssue": 806
+    },
+    {
+      "localId": "MIG-308",
+      "githubIssue": 807
+    },
+    {
+      "localId": "MIG-310",
+      "githubIssue": 809
+    },
+    {
+      "localId": "MIG-312",
+      "githubIssue": 811
+    }
+  ],
+  "note": "post MIG-352 DONE"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-352",
+  "result": "PASS",
+  "testedCommit": "10e0843694c15d51f9f80e88da7e8661cdd280ca",
+  "githubClosed": true,
+  "mergeRef": "children #871/#872/#873/#874/#875/#876 → main; coordinator #815",
+  "note": "Saga/project RPC cluster coordinator; implementation exclusively in six child tickets with hashed DONE evidence.",
+  "checks": [
+    {
+      "command": "child RPC-SAGA-AUTHORING completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-saga-authoring.json",
+      "sha256": "b523192696308ad751a58360f05afc65706b5a9fdb35ede1721477337f9b6c9a"
+    },
+    {
+      "command": "child RPC-SAGA-VERSION-READ completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-saga-version-read.json",
+      "sha256": "828c9338502c9eadbc73a12e03f8b9942512067ae6da90c6a9a62e5307e68b22"
+    },
+    {
+      "command": "child RPC-SAGA-PROVISION completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-saga-provision.json",
+      "sha256": "25faff73434779a466a70399f096e976b535b2a43c896192bf5ea0061792d826"
+    },
+    {
+      "command": "child RPC-PROJECT-MEMBERSHIP completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-project-membership.json",
+      "sha256": "b8fd70ccf7205a41fbb7045d78cba95e716de633d5facc035635826bc2a796ac"
+    },
+    {
+      "command": "child RPC-SAGA-GOVERNANCE completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-saga-governance.json",
+      "sha256": "7ced693dc34eb3ec1b0dc523fb14a889250b61ef44a1853b2c386ace1e1e0cac"
+    },
+    {
+      "command": "child RPC-SAGA-PROJECTIONS completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-saga-projections.json",
+      "sha256": "518839f2a06ca139b1bf58e72d0bc2b310f20cd4a932dc210b8682eacf2bc104"
+    },
+    {
+      "command": "coordinator acceptance",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-352.md",
+      "sha256": "53d1e632490b1da79afe7ba9d8122adcafcfa3a6304900889070f8be78403bd1"
+    }
+  ]
+}
