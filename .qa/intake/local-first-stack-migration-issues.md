@@ -40,7 +40,7 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 32 | 2 | RPC-SESSION-RECAP [#870](https://github.com/iamthamanic/sagatree/issues/870) | done | #795, #792, #797, #799, #784, #785, #787, #868 |
 | 33 | 2 | MIG-351 [#814](https://github.com/iamthamanic/sagatree/issues/814) | done | #867, #868, #869, #870 |
 | 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | done | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
-| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | ready | #871, #872, #873, #874, #875, #876 |
+| 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | done | #871, #872, #873, #874, #875, #876 |
 | 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | done | #795, #792, #797, #799, #784, #785, #787 |
 | 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | ready | #795, #792, #797, #799, #784, #785, #787, #861 |
 | 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | waiting | #795, #792, #797, #799, #784, #785, #787, #862 |
