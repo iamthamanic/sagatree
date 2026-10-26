@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-atlas-maps (#862)
 
-- HEAD_SHA: b56f94f3e100583a5ac7e815f96b612570fdb9dd
+- HEAD_SHA: f6f861a3a0d7b92e0fc50a4bb711888f8f03e089
 - BASE_SHA: 10e0843694c15d51f9f80e88da7e8661cdd280ca
 - Date: 2026-10-26
 - Verdict: CLEAR
@@ -8,7 +8,7 @@
 
 ## Event
 
-Atlas map RPC port: WorldPorts → WorldAtlasStore with project saga resolve + active membership gate before party projection; cross-saga DENY (successor fix for RPC-SEC-CROSS-SAGA-REVEAL).
+Atlas map RPC port: WorldPorts → WorldAtlasStore with project saga resolve + active membership gate before party projection; cross-saga DENY (successor fix for RPC-SEC-CROSS-SAGA-REVEAL). Party layer redaction coerces Postgres-equivalent boolean strings/numbers for secret/discovered.
 
 ## Hop chain
 
@@ -16,7 +16,7 @@ Atlas map RPC port: WorldPorts → WorldAtlasStore with project saga resolve + a
 2. Authorize: world owner edit; owner or project.actorCanAccessWorld read
 3. Saga party: resolveProjectIdForWorldAndPublicId + isActiveMember before atlas_wb_party_revealed_map_ids projection
 4. Persist: world_atlas_maps (+ place/link fixtures for tests); BEGIN IMMEDIATE on upsert CAS
-5. Consumer: summary/vm DTO with player redaction parity
+5. Consumer: summary/vm DTO with player redaction parity (coercePgBoolean)
 
 ## Simulations
 
