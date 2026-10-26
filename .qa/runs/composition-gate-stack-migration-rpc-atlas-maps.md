@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-atlas-maps (#862)
 
-- HEAD_SHA: bf376100fdba1ec1b4a9fc5560ca607dbe2a93df
+- HEAD_SHA: 35c5561f558174916f08c71e6e230fd9dc890e79
 - BASE_SHA: d5b6a4d329d921477ba0d2281d68ed10f5404bf5
 - Date: 2026-10-26
 - Verdict: CLEAR
