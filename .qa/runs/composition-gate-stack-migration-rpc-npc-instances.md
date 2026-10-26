@@ -1,34 +1,34 @@
 # Composition Gate — stack-migration-rpc-npc-instances
 
-- HEAD_SHA: 2550270dcccb99465ee62de5a04ea05d016aae4f
+- HEAD_SHA: c49c93f42c2ac2bc20cc6c5a3df08cc6f456b1b5
 - BASE_SHA: 71e6248ed7a9091db7d311f5049d1bb2e513270a
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-NPC instances with injected session + world read ports (owner ACL without foreign SQL in store).
+NPC spawn/update/assign/clear with decoded JSON rows and strict controller IDs.
 
 ## Hop chain
 
-1. Producer: npc-instances use-cases
-2. Authorize: narrow GM + injected world/session lookups
-3. Persist: npc_creature_* tables
+1. Producer: npc-instance use-cases
+2. Authorize: narrow GM + membership + definition readability
+3. Persist: npc_creature_instances / controller_assignments
 4. Consumer: self-test / future HTTP adapters
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| N-actors | GM vs player | ports | pass |
-| Invalid/missing | foreign def / session | P0001 | pass |
-| Two consumers / crash | atomic clear | pass | pass |
-| Legacy defects | n/a | pass | pass |
+| N-actors | GM spawn/update; foreign denied | store | pass |
+| Invalid/missing | empty controller; bad temp | error codes | pass |
+| Two consumers / crash | session-scoped clear | pass | pass |
+| Legacy defects | JSON text leak fixed | pass | pass |
 
 ## Flags
 
 - Acceptance tier: isolated-contract
-- Deferred integration: MIG-311 session adapters
+- Deferred integration: MIG-311 npc adapters
 
 ## Non-claims
 
