@@ -90,10 +90,17 @@ assert(!/functions\/v1\/media|\/media\/upload/.test(routeRegistry), 'route-regis
 await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   for (const path of [
     '/media',
+    '/media/health',
     '/media/upload',
+    '/media/media',
+    '/media/media/x',
+    '/media/media/x/tags',
     '/functions/v1/media',
+    '/functions/v1/media/health',
     '/functions/v1/media/upload',
     '/functions/v1/media/media',
+    '/functions/v1/media/media/x',
+    '/functions/v1/media/media/x/tags',
   ]) {
     for (const method of ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']) {
       const res = await fetch(`${base}${path}`, {
@@ -122,6 +129,7 @@ const uploaded = uploadMedia(
 assert(uploaded.type === 'image/png', 'type from filename');
 assert(uploaded.size === Math.floor((content.length * 3) / 4), 'legacy size formula');
 assert(uploaded.url.includes('/storage/v1/object/media/m1-pic.png'), 'URL constructed, no bytes stored');
+assert(uploaded.uploadedBy === 'u1', 'uploader preserved');
 assert(getMedia(store, 'm1')?.id === 'm1', 'get');
 assert(listMedia(store, 'p1').length === 1, 'list project');
 assert(listMedia(store, undefined, 'image').length === 1, 'list type prefix');
@@ -136,6 +144,27 @@ try {
 assert(threw, 'update missing throws');
 deleteMedia(store, 'm1');
 assert(getMedia(store, 'm1') === null, 'deleted');
+
+// Legacy unsafe inputs preserved (no sanitize/decode/auth rewrite)
+const evilName = '../evil/../../x.png';
+const evilContent = '!!!not-base64!!!';
+const spoofed = 'attacker-spoofed-uploader';
+const unsafe = uploadMedia(
+  store,
+  {
+    filename: evilName,
+    content: evilContent,
+    uploadedBy: spoofed,
+    projectId: 'p-evil',
+  },
+  'm-evil',
+  '2026-01-02T00:00:00.000Z',
+);
+assert(unsafe.filename === evilName, 'unsanitized filename preserved');
+assert(unsafe.uploadedBy === spoofed, 'spoofed uploadedBy preserved');
+assert(unsafe.size === Math.floor((evilContent.length * 3) / 4), 'size from raw content length');
+assert(unsafe.url.includes(`m-evil-${evilName}`), 'path traversal filename embedded in URL');
+assert(getMimeType(evilName) === 'image/png', 'mime from last extension only');
 
 assert(MEDIA_EDGE_MAP_IS_DURABLE_STORAGE === false, 'Map ≠ durable storage');
 const src = readFileSync(
