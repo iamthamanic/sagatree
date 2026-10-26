@@ -148,3 +148,18 @@ export {
   exportPdf,
   parseImportContent,
 } from './internal/export-quarantine.ts';
+
+/** MIG-416 Edge media Map quarantine — not a public host route. */
+export {
+  MEDIA_EDGE_MAP_IS_DURABLE_STORAGE,
+  MEDIA_EDGE_PUBLIC_ACTIVATION_AUTHORIZED,
+  createMediaEdgeStore,
+  deleteMedia,
+  getMedia,
+  getMimeType,
+  listMedia,
+  updateMediaTags,
+  uploadMedia,
+  type MediaEdgeStore,
+  type QuarantineMedia,
+} from './internal/media-edge-quarantine.ts';

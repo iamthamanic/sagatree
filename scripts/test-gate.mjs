@@ -728,6 +728,18 @@ function checkMig415MarketplaceQuarantine() {
   );
 }
 
+function checkMig416MediaQuarantine() {
+  console.log('MIG-416 (#832): media edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-416-media-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -2917,6 +2929,7 @@ checkMig411ItemsQuarantine();
 checkMig412LookReferenceAnalysis();
 checkMig413LorekeeperQuarantine();
 checkMig415MarketplaceQuarantine();
+checkMig416MediaQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
