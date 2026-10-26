@@ -1,30 +1,29 @@
-# Composition Gate — stack-migration-rpc-session-access (#869)
+# Composition Gate — stack-migration-rpc-session-access
 
-- HEAD_SHA: 9262e23e8873acda0bcf0b0781445a64c7779a7c
+- HEAD_SHA: 03bbf26d35d96953a72a949b9984b0a109be11e9
 - BASE_SHA: 71e6248ed7a9091db7d311f5049d1bb2e513270a
 - Date: 2026-10-26
 - Verdict: CLEAR
 
 ## Event
 
-Host session join/leave/invite with synced runtime revision, co-GM invites,
-and character_public_id on resolve.
+Session join/leave/invite with roster sync, CH- public ids, can_write on join.
 
 ## Hop chain
 
-1. Producer: session-access use-cases / command barrels
-2. Authorize: auth + character ownership + isProjectGm (owner or active gm member)
-3. Persist: play_sessions / session_runtime / session_players / session_invites / session_events
+1. Producer: application use-cases / command barrels
+2. Authorize: project/session ports + actor guards
+3. Persist: owning module tables
 4. Consumer: self-test / future HTTP adapters
 
 ## Simulations
 
 | Case | Intended | Composed | Result |
 |------|----------|----------|--------|
-| N-actors | join; foreign leave no-op; co-GM invite | access + project ports | pass |
-| Invalid/missing | incomplete PC / bad token | error codes | pass |
-| Two consumers / crash | invite rotate; revision lockstep | pass | pass |
-| Legacy defects | LEAVE-FOREIGN + ANON-EVENT-HELPER | fixed/denied | pass |
+| N-actors | authorized vs denied | ports + store | pass |
+| Invalid/missing | contract errors | P0001/error_codes | pass |
+| Two consumers / crash | scoped/atomic | pass | pass |
+| Legacy defects | DENY / fixed | pass | pass |
 
 ## Flags
 
