@@ -656,6 +656,18 @@ function checkRpcSessionLifecycle() {
   );
 }
 
+function checkRpcNpcInstances() {
+  console.log('RPC-NPC-INSTANCES (#877): spawn/assign/runtime/remove/clear...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-npc-instances.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2959,6 +2971,7 @@ checkRpcWorldMap();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();
+checkRpcNpcInstances();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
