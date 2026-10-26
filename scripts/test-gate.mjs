@@ -680,6 +680,18 @@ function checkRpcSessionAccess() {
   );
 }
 
+function checkRpcSessionRecap() {
+  console.log('RPC-SESSION-RECAP (#870): get/save summary projection...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-session-recap.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig402AiProviderCredentials() {
   console.log('MIG-402 (#818): AI provider credentials + ollama settings...');
   execFileSync(
@@ -2985,6 +2997,7 @@ checkRpcSagaGovernance();
 checkRpcSessionLifecycle();
 checkRpcNpcInstances();
 checkRpcSessionAccess();
+checkRpcSessionRecap();
 checkMig402AiProviderCredentials();
 checkMig403BestiaryQuarantine();
 checkMig406CharactersQuarantine();
