@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-10-26T22:33:14.107Z",
+  "counts": {
+    "total": 90,
+    "done": 48,
+    "blocked": 4,
+    "ready": 20,
+    "waiting": 18
+  },
+  "note": "post RPC-ATLAS-MAPS DONE",
+  "headSha": "03e1fa6d3864dbbe6bd70b6d92874ff0ae1f9b61"
+}

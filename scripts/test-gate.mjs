@@ -624,6 +624,18 @@ function checkRpcWorldMap() {
   );
 }
 
+function checkRpcAtlasMaps() {
+  console.log('RPC-ATLAS-MAPS (#862): atlas map projection + cross-saga DENY...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-atlas-maps.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcProjectMembership() {
   console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
   execFileSync(
@@ -3008,6 +3020,7 @@ checkRpcSagaVersionRead();
 checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
+checkRpcAtlasMaps();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();

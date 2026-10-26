@@ -48,8 +48,8 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 34 | 2 | RPC-SAGA-PROJECTIONS [#876](https://github.com/iamthamanic/sagatree/issues/876) | done | #795, #792, #797, #799, #784, #785, #787, #875, #870 |
 | 35 | 2 | MIG-352 [#815](https://github.com/iamthamanic/sagatree/issues/815) | done | #871, #872, #873, #874, #875, #876 |
 | 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | done | #795, #792, #797, #799, #784, #785, #787 |
-| 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | ready | #795, #792, #797, #799, #784, #785, #787, #861 |
-| 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | waiting | #795, #792, #797, #799, #784, #785, #787, #862 |
+| 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | done | #795, #792, #797, #799, #784, #785, #787, #861 |
+| 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | ready | #795, #792, #797, #799, #784, #785, #787, #862 |
 | 39 | 2 | RPC-WORLD-CREATE [#864](https://github.com/iamthamanic/sagatree/issues/864) | waiting | #795, #792, #797, #799, #784, #785, #787, #863 |
 | 40 | 2 | RPC-WORLD-RESTRUCTURE [#865](https://github.com/iamthamanic/sagatree/issues/865) | waiting | #795, #792, #797, #799, #784, #785, #787, #864 |
 | 41 | 2 | RPC-WORLD-DESTRUCTIVE [#866](https://github.com/iamthamanic/sagatree/issues/866) | waiting | #795, #792, #797, #799, #784, #785, #787, #865 |

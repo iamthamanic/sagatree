@@ -78,6 +78,10 @@ export type ProjectPorts = {
   readonly resolveByPublicId: (
     publicId: string,
   ) => { id: string; gmUserId: string; publicId: string } | null;
+  readonly resolveProjectIdForWorldAndPublicId: (
+    worldId: string,
+    publicId: string,
+  ) => string | null;
   readonly isProjectGm: (projectId: string, actorIds: readonly string[]) => boolean;
   readonly isActiveMember: (projectId: string, actorIds: readonly string[]) => boolean;
   readonly listActiveMembers: (projectId: string) => readonly {
@@ -108,6 +112,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       setProjectCodeForTests: () => undefined,
       getMemberForTests: () => null,
       resolveByPublicId: () => null,
+      resolveProjectIdForWorldAndPublicId: () => null,
       isProjectGm: () => false,
       isActiveMember: () => false,
       listActiveMembers: () => [],
@@ -143,6 +148,8 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
     getMemberForTests: (projectId, userId) =>
       projectMembership.getMemberForTests(projectId, userId),
     resolveByPublicId: (publicId) => projectMembership.resolveByPublicId(publicId),
+    resolveProjectIdForWorldAndPublicId: (worldId, publicId) =>
+      projectMembership.resolveProjectIdForWorldAndPublicId(worldId, publicId),
     isProjectGm: (projectId, actorIds) => projectMembership.isProjectGm(projectId, actorIds),
     isActiveMember: (projectId, actorIds) => projectMembership.isActiveMember(projectId, actorIds),
     listActiveMembers: (projectId) => projectMembership.listActiveMembers(projectId),

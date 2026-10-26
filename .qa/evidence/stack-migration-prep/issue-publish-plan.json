@@ -519,11 +519,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-037",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-atlas-maps.md",
-      "sha256": "f8be00af1f8846726e4bed1cdc454aaeaf20e38568762813e72c62b5294beaaf",
-      "payloadSha256": "1e7ce0d01c9641ef1171dadb606d98429901221c199db7ad91d63ee88ec10dd1"
+      "sha256": "cc7a5a0706ba63a813d77fb2ee5bfa1380b5edd47f775cce2dd1ccf276c73e83",
+      "payloadSha256": "108735f03cebe74f96542c8ce4fa413cb2bd217ae061d5d96ab60ee0eac43820"
     },
     {
       "localId": "RPC-WORLD-PLACES",
@@ -533,12 +533,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-038",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-places.md",
-      "sha256": "ca19c2219a89ce5b73269bc99d6824174d9b0ead2766f2ec5803a32b139192e7",
-      "payloadSha256": "a9c6a7405be1eec1fab0caaae13160d8dac4218f8794211de760f426e67a9efa"
+      "sha256": "c82856e7f61e2b2ad5082fe7aad4dd850afb556c8a417653c50bd27ee8e422df",
+      "payloadSha256": "50f03b768726ade4cb608df20f654b19d8d2b272608e670814a72dacb2bb91d8"
     },
     {
       "localId": "RPC-WORLD-CREATE",

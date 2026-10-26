@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-ATLAS-MAPS",
+  "result": "PASS",
+  "testedCommit": "3620845f8f463c46af82acf59fd8529cfedac6f5",
+  "githubClosed": true,
+  "mergeRef": "PR #993 → main (#862)",
+  "note": "ensure/list/get/upsert world atlas host ports; cross-saga DENY; coercePgBoolean party redaction; Kody critical/high fixes.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-atlas-maps.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-atlas-maps.md",
+      "sha256": "e113b95253df296bc159d5669d714d43354b5734e4fdc4926b259d878a96100f"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-atlas-maps.md",
+      "sha256": "dca2561ca53586f9144832ade352fc7369f2126a7b9897a3c72aced54e845618"
+    }
+  ]
+}
