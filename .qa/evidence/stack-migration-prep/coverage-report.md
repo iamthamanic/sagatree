@@ -10,7 +10,7 @@ Baseline: 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248. Stand: 2026-10-23 (historisc
 | Infrastruktur-Bereiche | 13 | RPC, Tabellen, Storage, Realtime und Adapterbeziehungen |
 | Kanonische veröffentlichte Issues | 90 | 71 Migration + Atlas #770 + 18 RPC-Untertickets |
 | Ausführungsstatus ready | 19 | Runner-Status aus verifizierten Abschlussbelegen, nicht automatisch aus GitHub CLOSED |
-| waiting (deps) | 26 | Voll spezifiziert; echte Vorgängerabnahmen fehlen noch |
+| waiting (deps) | 25 | Voll spezifiziert; echte Vorgängerabnahmen fehlen noch |
 | blocked / needs-design | 4 | Source-Defekte, Plattform-Deferral oder offene Architekturfragen |
 | Menschliche Architekturfreigaben | 4 | GATE-01..04 implementation-approved; GATE-05 target selected, platform qualification deferred |
 

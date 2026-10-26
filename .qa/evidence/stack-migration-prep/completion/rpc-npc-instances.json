@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-NPC-INSTANCES",
+  "result": "PASS",
+  "testedCommit": "33a52ad691b9c25f5aec80ce0c12fbd037356450",
+  "githubClosed": true,
+  "mergeRef": "PR #976 → main (#877)",
+  "note": "spawn/assign/update/remove/clearTemp NPC instance ports; narrow GM; decoded JSON rows; session-scoped temp controller cleanup to JSON null. HTTP deferred.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-npc-instances.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-npc-instances.md",
+      "sha256": "c8203214c9b9adcfe5d8300ca6bcdb44db4c9ae6e90b8aaa8dfe59e7ada05d52"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-npc-instances.md",
+      "sha256": "4a03f8cb37ff5802d5f70b53c90adfa4c5a1df6ec90c5dae162ea5a3dd0f42ef"
+    }
+  ]
+}

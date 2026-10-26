@@ -27,7 +27,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 19,
-    "issuesBlockedOrNeedsDesign": 30,
+    "issuesBlockedOrNeedsDesign": 29,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -4873,7 +4873,7 @@
       "title": "NPC-Instanzen und Controller-Zuordnung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-npc-instances",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-npc-instances.md",
       "dependsOn": [
@@ -5131,9 +5131,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-npc-instances.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -5169,7 +5170,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-029",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -13760,7 +13761,7 @@
       "title": "Port infrastructure/npc-creature adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-307",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-307.md",
       "dependsOn": [
@@ -13958,8 +13959,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-073",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
