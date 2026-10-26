@@ -111,12 +111,21 @@ export class SessionAccessStore {
   }
 
   /** Rebuild authoritative roster array from session_players (array, not object). */
-  #rosterFromPlayers(sessionId: string): Array<{
+  #rosterFromPlayers(
+    sessionId: string,
+    priorRoster: Array<{ userId: string; joinedAt?: string }> | null,
+  ): Array<{
     userId: string;
     characterId: string | null;
     isOnline: boolean;
     joinedAt: string;
   }> {
+    const priorJoined = new Map<string, string>();
+    for (const entry of priorRoster ?? []) {
+      if (entry?.userId && typeof entry.joinedAt === 'string' && entry.joinedAt) {
+        priorJoined.set(entry.userId, entry.joinedAt);
+      }
+    }
     const rows = this.#db
       .prepare(
         `SELECT user_id AS userId, character_id AS characterId, is_online AS isOnline
@@ -127,12 +136,12 @@ export class SessionAccessStore {
       characterId: string | null;
       isOnline: number;
     }>;
-    const joinedAt = nowIso();
+    const fallbackJoined = nowIso();
     return rows.map((row) => ({
       userId: row.userId,
       characterId: row.characterId,
       isOnline: row.isOnline === 1,
-      joinedAt,
+      joinedAt: priorJoined.get(row.userId) ?? fallbackJoined,
     }));
   }
 
@@ -160,7 +169,10 @@ export class SessionAccessStore {
       }
     }
     state.status = status;
-    state.roster = this.#rosterFromPlayers(sessionId);
+    const priorRoster = Array.isArray(state.roster)
+      ? (state.roster as Array<{ userId: string; joinedAt?: string }>)
+      : null;
+    state.roster = this.#rosterFromPlayers(sessionId, priorRoster);
     this.#db
       .prepare(
         `UPDATE session_runtime SET revision = ?, state_json = ?, updated_at = ? WHERE session_id = ?`,
@@ -323,10 +335,12 @@ export class SessionAccessStore {
             .run(current.sessionId, actorIds[0], boundCharacter);
         }
 
+        // Players need write for presence/runtime self-commands after join.
         this.#db
           .prepare(
-            `INSERT OR IGNORE INTO session_members (session_id, actor_user_id, can_write)
-             VALUES (?, ?, 0)`,
+            `INSERT INTO session_members (session_id, actor_user_id, can_write)
+             VALUES (?, ?, 1)
+             ON CONFLICT(session_id, actor_user_id) DO UPDATE SET can_write = 1`,
           )
           .run(current.sessionId, actorIds[0]);
 
@@ -516,12 +530,17 @@ export class SessionAccessStore {
           .prepare(`UPDATE session_invites SET last_resolved_at = ? WHERE id = ?`)
           .run(nowIso(), invite.id);
 
-        const roster = this.#db
-          .prepare(
-            `SELECT character_id AS characterId FROM session_players
-             WHERE session_id = ? AND user_id = ? AND left_at IS NULL`,
-          )
-          .get(session.sessionId, actorIds[0]) as { characterId: string | null } | undefined;
+        const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+        const placeholders = ids.map(() => '?').join(',');
+        const roster = ids.length
+          ? (this.#db
+              .prepare(
+                `SELECT character_id AS characterId FROM session_players
+                 WHERE session_id = ? AND user_id IN (${placeholders}) AND left_at IS NULL
+                 LIMIT 1`,
+              )
+              .get(session.sessionId, ...ids) as { characterId: string | null } | undefined)
+          : undefined;
         const alreadyMember = Boolean(roster);
         const isGm = this.#isGm(session.projectId, actorIds);
         let characterPublicId: string | null = null;
