@@ -83,6 +83,7 @@ export type NpcCreaturePorts = {
     readonly id: string;
     readonly scope: 'personal' | 'world' | 'core' | 'builtin';
     readonly ownerUserId?: string | null;
+    readonly worldProfileId?: string | null;
     readonly status?: 'active' | 'archived';
     readonly sheetMode?: string;
   }) => void;

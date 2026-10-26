@@ -165,6 +165,42 @@ try {
   });
   assert(!persistentBound.ok, 'persistent must not bind session');
 
+  // P1: foreign personal definition not readable
+  npc.seedDefinitionForTests({
+    id: 'personal:other-owner1',
+    scope: 'personal',
+    ownerUserId: Stranger.actorId,
+    status: 'active',
+    sheetMode: 'full',
+  });
+  assert(
+    !spawn(GM, {
+      projectId,
+      definitionId: 'personal:other-owner1',
+      instanceKind: 'generic',
+      snapshot: {},
+      runtime: {},
+      displayName: 'Stolen',
+      sequenceNumber: 9,
+      sessionId,
+    }).ok,
+    'foreign personal definition denied',
+  );
+  // core: ids are snapshot-only (no row)
+  assert(
+    spawn(GM, {
+      projectId,
+      definitionId: 'core:wolf-pack-01',
+      instanceKind: 'generic',
+      snapshot: { cr: 1 },
+      runtime: {},
+      displayName: 'CoreWolf',
+      sequenceNumber: 10,
+      sessionId,
+    }).ok,
+    'core definition allowed without row',
+  );
+
   const spawned = spawn(GM, {
     projectId, definitionId: defId, instanceKind: 'generic',
     snapshot: { hp: 10 }, runtime: { temporaryControllerUserId: Player.actorId },
@@ -187,6 +223,11 @@ try {
   assert(updated.ok, `update: ${updated.ok ? '' : updated.error}`);
   assert(updated.value.snapshot === snapBefore, 'snapshot unchanged');
   assert(JSON.parse(updated.value.runtime).stance === 'aggressive', 'runtime replaced');
+  // P2: inactive/nonmember temporary controller rejected on runtime update
+  assert(
+    !updateRt(GM, inst.value.id, { temporaryControllerUserId: Stranger.actorId }).ok,
+    'nonmember temp controller on update denied',
+  );
 
   // --- Fall 3: assign controller — active member; full-sheet definition ---
   assert(!assign(Player, projectId, defId, Player.actorId).ok, 'player cannot assign');

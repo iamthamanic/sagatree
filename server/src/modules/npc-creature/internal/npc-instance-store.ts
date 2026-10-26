@@ -57,6 +57,56 @@ export class NpcInstanceStore {
     return this.#project.isActiveMember(projectId, [userId]);
   }
 
+  /**
+   * personal:/world: must exist and be readable (owner or world-read).
+   * core:/builtin: snapshot-only — no DB row required.
+   */
+  #definitionReadable(actorIds: readonly string[], definitionId: string): boolean {
+    if (definitionId.startsWith('core:') || definitionId.startsWith('builtin:')) {
+      return true;
+    }
+    if (!definitionId.startsWith('personal:') && !definitionId.startsWith('world:')) {
+      return true;
+    }
+    const def = this.#db
+      .prepare(
+        `SELECT scope, owner_user_id AS ownerUserId, world_profile_id AS worldProfileId
+         FROM npc_creature_definitions WHERE id = ?`,
+      )
+      .get(definitionId) as
+      | { scope: string; ownerUserId: string | null; worldProfileId: string | null }
+      | undefined;
+    if (!def) return false;
+    if (def.scope === 'personal') {
+      return Boolean(def.ownerUserId && actorIds.includes(def.ownerUserId));
+    }
+    if (def.scope === 'world' && def.worldProfileId) {
+      const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+      if (ids.length === 0) return false;
+      const placeholders = ids.map(() => '?').join(',');
+      const owner = this.#db
+        .prepare(
+          `SELECT 1 AS ok FROM worlds WHERE id = ? AND owner_user_id IN (${placeholders})`,
+        )
+        .get(def.worldProfileId, ...ids) as { ok: number } | undefined;
+      if (owner) return true;
+      return this.#project.actorCanAccessWorld(actorIds, def.worldProfileId);
+    }
+    return false;
+  }
+
+  #tempControllerOk(projectId: string, runtime: unknown): NpcError | null {
+    if (runtime === null || typeof runtime !== 'object' || Array.isArray(runtime)) {
+      return null;
+    }
+    const temp = (runtime as { temporaryControllerUserId?: unknown }).temporaryControllerUserId;
+    if (typeof temp !== 'string' || temp.trim() === '') return null;
+    if (!this.#isActiveMember(projectId, temp.trim())) {
+      return { ok: false, error: 'P0001:temporary controller is not an active project member' };
+    }
+    return null;
+  }
+
   #readInstance(id: string): NpcInstanceRow | null {
     const row = this.#db
       .prepare(
@@ -75,6 +125,7 @@ export class NpcInstanceStore {
     readonly id: string;
     readonly scope: 'personal' | 'world' | 'core' | 'builtin';
     readonly ownerUserId?: string | null;
+    readonly worldProfileId?: string | null;
     readonly status?: 'active' | 'archived';
     readonly sheetMode?: string;
   }): void {
@@ -84,12 +135,13 @@ export class NpcInstanceStore {
       .prepare(
         `INSERT OR REPLACE INTO npc_creature_definitions
            (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at)
-         VALUES (?, ?, ?, NULL, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         input.id,
         input.scope,
         input.ownerUserId ?? null,
+        input.worldProfileId ?? null,
         input.status ?? 'active',
         payload,
         now,
@@ -204,14 +256,11 @@ export class NpcInstanceStore {
         return { ok: false, error: 'P0001:session does not belong to project' };
       }
     }
-    const runtime = input.runtime as { temporaryControllerUserId?: unknown };
-    const temp =
-      typeof runtime.temporaryControllerUserId === 'string'
-        ? runtime.temporaryControllerUserId.trim()
-        : '';
-    if (temp && !this.#isActiveMember(input.projectId, temp)) {
-      return { ok: false, error: 'P0001:temporary controller is not an active project member' };
+    if (!this.#definitionReadable(actorIds, definitionId)) {
+      return { ok: false, error: 'P0001:definition not readable' };
     }
+    const tempErr = this.#tempControllerOk(input.projectId, input.runtime);
+    if (tempErr) return tempErr;
     const id = randomUUID();
     const now = nowIso();
     this.#db
@@ -254,6 +303,8 @@ export class NpcInstanceStore {
     if (!this.#isNarrowGm(current.projectId, actorIds)) {
       return { ok: false, error: 'P0001:only gm may update runtime' };
     }
+    const tempErr = this.#tempControllerOk(current.projectId, runtime);
+    if (tempErr) return tempErr;
     const now = nowIso();
     this.#db
       .prepare(
