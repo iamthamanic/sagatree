@@ -146,7 +146,6 @@ Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprü
 - Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-039`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
-
 ## Design
 
 `.qa/design/migration-issues/stack-migration-rpc-world-create.md`

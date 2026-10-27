@@ -174,4 +174,3 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 
-
