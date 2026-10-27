@@ -135,7 +135,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #787 (GATE-04)
 - Depends on #864 (RPC-WORLD-CREATE)
 
-Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **done**. Completion evidence: `.qa/evidence/stack-migration-prep/completion/rpc-world-restructure.json` (PR #1004).
 
 ## Runner
 

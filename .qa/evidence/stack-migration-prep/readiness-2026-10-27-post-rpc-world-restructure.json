@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-10-27T20:50:01.813Z",
+  "counts": {
+    "total": 90,
+    "done": 51,
+    "blocked": 4,
+    "ready": 20,
+    "waiting": 15
+  },
+  "note": "post RPC-WORLD-RESTRUCTURE DONE",
+  "headSha": "4ade095bef9de900d4106fa420c9fd3e7829d267"
+}

@@ -27,9 +27,12 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 20,
-    "issuesBlockedOrNeedsDesign": 20,
+    "issuesBlockedOrNeedsDesign": 19,
     "gateIssues": 5,
-    "openArchitectureDecisions": 1
+    "openArchitectureDecisions": 1,
+    "issuesDone": 51,
+    "issuesBlocked": 4,
+    "issuesWaiting": 15
   },
   "waves": [
     "migration-wave-0-evidence",
@@ -8116,7 +8119,7 @@
       "title": "Weltknoten verschieben und duplizieren",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-world-restructure",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-restructure.md",
       "dependsOn": [
@@ -8288,7 +8291,7 @@
       ],
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -8324,8 +8327,9 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-040",
-        "agent-ready"
-      ]
+        "agent-done"
+      ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-restructure.json"
     },
     {
       "localId": "RPC-WORLD-DESTRUCTIVE",
@@ -8333,7 +8337,7 @@
       "title": "Folgenvorschau, Archivierung und Löschung",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-world-destructive",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-destructive.md",
       "dependsOn": [
@@ -8566,8 +8570,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-041",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

@@ -148,7 +148,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #787 (GATE-04)
 - Depends on #865 (RPC-WORLD-RESTRUCTURE)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance. Unlocked by RPC-WORLD-RESTRUCTURE DONE (#865 / PR #1004).
 
 ## Runner
 
