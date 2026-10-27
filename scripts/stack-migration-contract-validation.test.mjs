@@ -538,13 +538,20 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  // RPC-WORLD-PLACES shipped via PR #996; dependent RPC-WORLD-CREATE is the unlock probe.
-  const places = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
-  assert.equal(places?.status, 'done', 'RPC-WORLD-PLACES must be DONE after #996');
-  assert.ok(places?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
+  // RPC-WORLD-PLACES (#996) + RPC-WORLD-CREATE (#1000) DONE; RESTRUCTURE is the unlock probe.
+  const worldPlaces = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
+  assert.equal(worldPlaces?.status, 'done', 'RPC-WORLD-PLACES must stay DONE after #996');
+  assert.ok(worldPlaces?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
+  const worldCreate = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-CREATE');
+  assert.equal(worldCreate?.status, 'done', 'RPC-WORLD-CREATE must be DONE after #1000');
+  assert.ok(worldCreate?.labels?.includes('agent-done'), 'RPC-WORLD-CREATE agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'RPC-WORLD-CREATE'),
-    'RPC-WORLD-CREATE unlocks after RPC-WORLD-PLACES DONE',
+    !ready.some((entry) => entry.localId === 'RPC-WORLD-CREATE'),
+    'RPC-WORLD-CREATE must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'RPC-WORLD-RESTRUCTURE'),
+    'RPC-WORLD-RESTRUCTURE unlocks after RPC-WORLD-CREATE DONE',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

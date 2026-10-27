@@ -27,7 +27,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 20,
-    "issuesBlockedOrNeedsDesign": 21,
+    "issuesBlockedOrNeedsDesign": 20,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -7898,7 +7898,7 @@
       "title": "Kanonischen Weltknoten erstellen und benennen",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-world-create",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-create.md",
       "dependsOn": [
@@ -8068,9 +8068,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-create.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -8106,7 +8107,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-039",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -8115,7 +8116,7 @@
       "title": "Weltknoten verschieben und duplizieren",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-rpc-world-restructure",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-world-restructure.md",
       "dependsOn": [
@@ -8323,8 +8324,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-040",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

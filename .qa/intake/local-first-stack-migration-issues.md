@@ -44,8 +44,8 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 36 | 2 | RPC-WORLD-MAP [#861](https://github.com/iamthamanic/sagatree/issues/861) | done | #795, #792, #797, #799, #784, #785, #787 |
 | 37 | 2 | RPC-ATLAS-MAPS [#862](https://github.com/iamthamanic/sagatree/issues/862) | done | #795, #792, #797, #799, #784, #785, #787, #861 |
 | 38 | 2 | RPC-WORLD-PLACES [#863](https://github.com/iamthamanic/sagatree/issues/863) | done | #795, #792, #797, #799, #784, #785, #787, #862 |
-| 39 | 2 | RPC-WORLD-CREATE [#864](https://github.com/iamthamanic/sagatree/issues/864) | ready | #795, #792, #797, #799, #784, #785, #787, #863 |
-| 40 | 2 | RPC-WORLD-RESTRUCTURE [#865](https://github.com/iamthamanic/sagatree/issues/865) | waiting | #795, #792, #797, #799, #784, #785, #787, #864 |
+| 39 | 2 | RPC-WORLD-CREATE [#864](https://github.com/iamthamanic/sagatree/issues/864) | done | #795, #792, #797, #799, #784, #785, #787, #863 |
+| 40 | 2 | RPC-WORLD-RESTRUCTURE [#865](https://github.com/iamthamanic/sagatree/issues/865) | ready | #795, #792, #797, #799, #784, #785, #787, #864 |
 | 41 | 2 | RPC-WORLD-DESTRUCTIVE [#866](https://github.com/iamthamanic/sagatree/issues/866) | waiting | #795, #792, #797, #799, #784, #785, #787, #865 |
 | 42 | 2 | MIG-350 [#813](https://github.com/iamthamanic/sagatree/issues/813) | waiting | #861, #862, #863, #864, #865, #866 |
 | 43 | 3 | MIG-402 [#818](https://github.com/iamthamanic/sagatree/issues/818) | done | #795, #792, #793, #791, #841 |

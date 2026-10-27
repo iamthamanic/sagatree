@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-WORLD-CREATE",
+  "result": "PASS",
+  "testedCommit": "d221c84cbc9310849b029e4278c863e42926d6db",
+  "githubClosed": true,
+  "mergeRef": "PR #1000 → main (#864)",
+  "note": "create_world_node_with_maps + rename_world_node host ports; canonical hierarchy; idempotency ledger 0022; owner-only DENY.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-world-create.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-world-create.md",
+      "sha256": "ea7c7f33adf5a653126f5aca75d176f39694639b421e53b630148125d31bfe6e"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-world-create.md",
+      "sha256": "105e340e4f72cf30455e04432bf4e94da25bdbebc9743cb20e6b4e7f99fa4c32"
+    }
+  ]
+}
