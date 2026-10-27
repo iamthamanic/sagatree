@@ -40,7 +40,8 @@ jobs:
   evaluate:
     name: ECC Merge Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Kodus poll (≤5m) + required-check poll (≤8m) must fit under this ceiling.
+    timeout-minutes: 16
     permissions:
       contents: read
       checks: read

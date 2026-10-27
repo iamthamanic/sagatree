@@ -573,9 +573,12 @@ function defaultGateSleep(ms) {
   }
 }
 
+const KODUS_POLL_REASONS = new Set(['kodus-pending', 'kodus-started-only', 'kodus-missing']);
+
 /**
  * Bounded poll for Kodus completion on HEAD. Prevents a sticky ECC FAIL when the
  * PR-triggered evaluate runs before Kody finishes (same race as required checks).
+ * Defaults keep Kodus wait + required-check wait under the evaluate job timeout.
  */
 export function waitForKodusReview(
   owner,
@@ -583,42 +586,36 @@ export function waitForKodusReview(
   headSha,
   { required = true, pullNumber = null } = {},
   {
-    timeoutMs = Number(process.env.ECC_KODUS_MAX_WAIT_MS || 420_000),
+    timeoutMs = Number(process.env.ECC_KODUS_MAX_WAIT_MS || 300_000),
     intervalMs = Number(process.env.ECC_KODUS_POLL_MS || 20_000),
     sleep = defaultGateSleep,
     log = (msg) => console.error(msg),
+    now = () => Date.now(),
+    fetchReviews = (o, r, n) =>
+      ghJson(['api', `repos/${o}/${r}/pulls/${n}/reviews`, '--paginate']),
+    resolve = resolveKodusReviewForHead,
   } = {},
 ) {
-  const started = Date.now();
-  let reviews = null;
-  if (pullNumber != null) {
-    const fetched = ghJson([
-      'api',
-      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
-      '--paginate',
-    ]);
-    reviews = Array.isArray(fetched) ? fetched : [];
-  }
-  let last = resolveKodusReviewForHead(owner, repo, headSha, { required, reviews, pullNumber });
+  const started = now();
+  // Check-run polling does not need reviews; fetch once after the wait for fallbacks.
+  let last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
   while (
     last &&
     last.ok === false &&
-    (last.reason === 'kodus-pending' || last.reason === 'kodus-started-only') &&
-    Date.now() - started < timeoutMs
+    KODUS_POLL_REASONS.has(last.reason) &&
+    now() - started < timeoutMs
   ) {
     log(`ECC Merge Gate: waiting for Kodus (${last.reason}: ${last.detail})`);
     sleep(intervalMs);
-    if (pullNumber != null) {
-      const fetched = ghJson([
-        'api',
-        `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
-        '--paginate',
-      ]);
-      reviews = Array.isArray(fetched) ? fetched : [];
-    }
-    last = resolveKodusReviewForHead(owner, repo, headSha, { required, reviews, pullNumber });
+    last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
   }
-  return { kodusReview: last, reviews: reviews ?? [] };
+  let reviews = [];
+  if (pullNumber != null) {
+    const fetched = fetchReviews(owner, repo, pullNumber);
+    reviews = Array.isArray(fetched) ? fetched : [];
+    last = resolve(owner, repo, headSha, { required, reviews, pullNumber });
+  }
+  return { kodusReview: last, reviews };
 }
 
 export function waitForRequiredChecks(

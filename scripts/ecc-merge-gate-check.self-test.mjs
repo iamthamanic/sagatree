@@ -14,6 +14,7 @@ import {
   findingSeverity,
   bodiesIndicateResolved,
   mergeGraphqlAndRestFindings,
+  waitForKodusReview,
 } from './ecc-merge-gate-check.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -164,5 +165,31 @@ assert(
   mergeGraphqlAndRestFindings([], [{ id: 111, severity: 'P1', path: 'a.ts' }]).length === 1,
   'REST-only comment (no GraphQL thread) still blocks',
 );
+
+assert(src.includes('waitForKodusReview'), 'Kodus poll helper present');
+assert(workflow.includes('timeout-minutes: 16'), 'evaluate job timeout fits Kodus+check polls');
+
+{
+  let ticks = 0;
+  const sequence = [
+    { ok: false, reason: 'kodus-missing', detail: 'none' },
+    { ok: false, reason: 'kodus-pending', detail: 'in_progress' },
+    { ok: true, reason: 'kodus-complete', detail: 'Complete' },
+  ];
+  const waited = waitForKodusReview('o', 'r', 'abc', { required: true, pullNumber: 1 }, {
+    timeoutMs: 60_000,
+    intervalMs: 1,
+    sleep: () => {},
+    now: () => {
+      ticks += 10_000;
+      return ticks;
+    },
+    fetchReviews: () => [],
+    resolve: () => sequence.shift() ?? { ok: true, reason: 'kodus-complete', detail: 'done' },
+    log: () => {},
+  });
+  assert(waited.kodusReview.ok === true, 'poll reaches Complete from missing→pending');
+  assert(sequence.length === 0, 'poll consumed missing+pending+complete');
+}
 
 console.log('PASS: ecc-merge-gate-check.self-test');
