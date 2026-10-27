@@ -303,6 +303,12 @@ try {
   const bindingBeforeReject = db
     .prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`)
     .get(bindingBId).world_place_id;
+  const outerBindingBefore = db
+    .prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`)
+    .get(bindingId).world_place_id;
+  const bindingsNonNullBeforeReject = db
+    .prepare(`SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`)
+    .get().n;
 
   const placesBeforeReject = db
     .prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`)
@@ -333,7 +339,18 @@ try {
   assert(
     db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingBId)
       .world_place_id === bindingBeforeReject,
-    'rejected delete left saga bindings untouched',
+    'rejected delete left placeB binding untouched',
+  );
+  assert(
+    db
+      .prepare(`SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`)
+      .get().n === bindingsNonNullBeforeReject,
+    'rejected delete left non-null binding count untouched',
+  );
+  assert(
+    db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingId)
+      .world_place_id === outerBindingBefore,
+    'rejected delete left outer-subtree binding untouched',
   );
 
   const placesBefore = placesBeforeReject;
@@ -355,7 +372,12 @@ try {
   assert(
     db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingBId)
       .world_place_id === null,
-    'confirmed delete nulled saga binding',
+    'confirmed delete nulled placeB saga binding',
+  );
+  assert(
+    db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingId)
+      .world_place_id === outerBindingBefore,
+    'confirmed delete left outer-subtree binding untouched',
   );
 
   // --- 6. Stranger DENY delete ---
