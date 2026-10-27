@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-rpc-world-create (#864)
 
-- HEAD_SHA: 63963d865fc67baee7141cbf999936aeb052bfa7
+- HEAD_SHA: b4da6ec042870a747870a71a23c0b532299424a5
 - BASE_SHA: 63963d865fc67baee7141cbf999936aeb052bfa7
 - Date: 2026-10-27
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
