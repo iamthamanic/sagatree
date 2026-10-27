@@ -158,6 +158,46 @@ export type DuplicateWorldNodeResult = {
   readonly created: readonly DuplicateWorldNodeCreatedEntry[];
 };
 
+export type PreviewWorldNodeConsequencesInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+
+export type PreviewWorldNodeConsequencesResult = {
+  readonly placeId: string;
+  readonly childCount: number;
+  readonly sagaBindingCount: number;
+  readonly requiresConfirm: boolean;
+  readonly descendantIds: readonly string[];
+};
+
+export type ArchiveWorldNodeSubtreeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly confirm: boolean;
+};
+
+export type ArchiveWorldNodeSubtreeResult = {
+  readonly archivedCount: number;
+  readonly placeIds: readonly string[];
+  readonly consequences: PreviewWorldNodeConsequencesResult;
+};
+
+export type DeleteWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly confirm: boolean;
+};
+
+export type DeleteWorldNodeResult = {
+  readonly deletedCount: number;
+  readonly placeIds: readonly string[];
+  readonly consequences: PreviewWorldNodeConsequencesResult;
+  /** Maps deleted (exclusive to subtree). Shared maps are preserved (RPC-DATA-SHARED-MAP-DELETE fix). */
+  readonly deletedMapIds: readonly string[];
+  readonly preservedSharedMapIds: readonly string[];
+};
+
 const DEFAULT_MAP_BOUNDS = '{"minX":0,"minY":0,"maxX":1000,"maxY":1000}';
 const EMPTY_LAYERS = '{"type":"FeatureCollection","features":[]}';
 
@@ -1449,6 +1489,209 @@ export class WorldPlacesStore {
           rootMapId: rootMap,
           deep,
           created,
+        },
+      };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  #previewConsequencesUnlocked(
+    worldId: string,
+    placeId: string,
+  ): PreviewWorldNodeConsequencesResult | null {
+    const row = this.#loadPlace(placeId);
+    if (!row || row.world_profile_id !== worldId) return null;
+    const descendantIds = this.#descendantIds(worldId, placeId);
+    const childCount = descendantIds.length;
+    const placeholders = [placeId, ...descendantIds].map(() => '?').join(',');
+    const bindRow = this.#db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM saga_asset_bindings
+         WHERE world_place_id IN (${placeholders})`,
+      )
+      .get(placeId, ...descendantIds) as { n: number };
+    const sagaBindingCount = Number(bindRow?.n ?? 0);
+    return {
+      placeId,
+      childCount,
+      sagaBindingCount,
+      requiresConfirm: childCount > 0 || sagaBindingCount > 0,
+      descendantIds,
+    };
+  }
+
+  previewWorldNodeConsequences(
+    actorIds: readonly string[],
+    input: PreviewWorldNodeConsequencesInput,
+  ):
+    | { ok: true; value: PreviewWorldNodeConsequencesResult }
+    | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+    const preview = this.#previewConsequencesUnlocked(worldId, placeId);
+    if (!preview) return { ok: false, error: 'P0002' };
+    return { ok: true, value: preview };
+  }
+
+  archiveWorldNodeSubtree(
+    actorIds: readonly string[],
+    input: ArchiveWorldNodeSubtreeInput,
+  ):
+    | { ok: true; value: ArchiveWorldNodeSubtreeResult }
+    | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    const now = new Date().toISOString();
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const preview = this.#previewConsequencesUnlocked(worldId, placeId);
+      if (!preview) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      if (preview.requiresConfirm && input.confirm !== true) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+      const placeIds = [...preview.descendantIds, placeId];
+      const placeholders = placeIds.map(() => '?').join(',');
+      this.#db
+        .prepare(
+          `UPDATE world_places SET
+             status = 'archived',
+             revision = revision + 1,
+             updated_at = ?
+           WHERE world_profile_id = ? AND id IN (${placeholders})`,
+        )
+        .run(now, worldId, ...placeIds);
+      const countRow = this.#db.prepare(`SELECT changes() AS n`).get() as { n: number };
+      this.#db.exec('COMMIT');
+      return {
+        ok: true,
+        value: {
+          archivedCount: Number(countRow?.n ?? placeIds.length),
+          placeIds,
+          consequences: preview,
+        },
+      };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  deleteWorldNode(
+    actorIds: readonly string[],
+    input: DeleteWorldNodeInput,
+  ): { ok: true; value: DeleteWorldNodeResult } | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    const now = new Date().toISOString();
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const preview = this.#previewConsequencesUnlocked(worldId, placeId);
+      if (!preview) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      if (preview.requiresConfirm && input.confirm !== true) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+
+      const placeIds = [...preview.descendantIds, placeId];
+      const placePh = placeIds.map(() => '?').join(',');
+
+      const mapRows = this.#db
+        .prepare(
+          `SELECT DISTINCT map_id AS id FROM world_place_map_links
+           WHERE world_profile_id = ? AND place_id IN (${placePh})`,
+        )
+        .all(worldId, ...placeIds) as { id: string }[];
+      const candidateMaps = mapRows.map((r) => r.id);
+
+      this.#db
+        .prepare(
+          `UPDATE saga_asset_bindings
+           SET world_place_id = NULL, updated_at = ?
+           WHERE world_place_id IN (${placePh})`,
+        )
+        .run(now, ...placeIds);
+
+      this.#db
+        .prepare(
+          `DELETE FROM world_place_map_links
+           WHERE world_profile_id = ? AND place_id IN (${placePh})`,
+        )
+        .run(worldId, ...placeIds);
+
+      this.#db
+        .prepare(
+          `DELETE FROM world_places
+           WHERE world_profile_id = ? AND id IN (${placePh})`,
+        )
+        .run(worldId, ...placeIds);
+      const deletedPlaces = this.#db.prepare(`SELECT changes() AS n`).get() as { n: number };
+
+      const deletedMapIds: string[] = [];
+      const preservedSharedMapIds: string[] = [];
+      for (const mapId of candidateMaps) {
+        const kindRow = this.#db
+          .prepare(`SELECT kind FROM world_atlas_maps WHERE id = ? AND world_profile_id = ?`)
+          .get(mapId, worldId) as { kind: string } | undefined;
+        if (!kindRow || kindRow.kind === 'world') continue;
+        const remaining = this.#db
+          .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE map_id = ?`)
+          .get(mapId) as { n: number };
+        if (Number(remaining?.n ?? 0) > 0) {
+          // Corrective vs legacy RPC-DATA-SHARED-MAP-DELETE: keep maps still linked outside subtree.
+          preservedSharedMapIds.push(mapId);
+          continue;
+        }
+        this.#db
+          .prepare(
+            `DELETE FROM world_atlas_maps WHERE id = ? AND world_profile_id = ? AND kind <> 'world'`,
+          )
+          .run(mapId, worldId);
+        deletedMapIds.push(mapId);
+      }
+
+      this.#db.exec('COMMIT');
+      return {
+        ok: true,
+        value: {
+          deletedCount: Number(deletedPlaces?.n ?? placeIds.length),
+          placeIds,
+          consequences: preview,
+          deletedMapIds,
+          preservedSharedMapIds,
         },
       };
     } catch (err) {
