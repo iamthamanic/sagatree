@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-world-create (#864)
 
-- HEAD_SHA: b4da6ec042870a747870a71a23c0b532299424a5
+- HEAD_SHA: 907c5521c129f93539b9be60802249d4ce54599c
 - BASE_SHA: 63963d865fc67baee7141cbf999936aeb052bfa7
 - Date: 2026-10-27
 - Verdict: CLEAR
