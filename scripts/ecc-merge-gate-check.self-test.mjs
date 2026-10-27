@@ -195,13 +195,15 @@ assert(workflow.includes('timeout-minutes: 16'), 'evaluate job timeout fits Kodu
 {
   let resolveCalls = 0;
   let sleepCalls = 0;
+  let clock = 0;
   const waited = waitForKodusReview('o', 'r', 'abc', { required: true, pullNumber: 1 }, {
     timeoutMs: 300_000,
     intervalMs: 20_000,
     sleep: () => {
       sleepCalls += 1;
+      clock += 20_000;
     },
-    now: () => 0,
+    now: () => clock,
     fetchReviews: () => [
       {
         id: 1,
