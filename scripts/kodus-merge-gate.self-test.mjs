@@ -247,6 +247,27 @@ assert(
   ).length === 0,
   'Started PR Summary is not a finding',
 );
+assert(
+  evaluateKodusHeadEvidence(skippedAfterComplete, {
+    reviews: [commentedOnly],
+    headSha: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+  }).ok === false,
+  'review on a different SHA must not unlock the skipped-check fallback',
+);
+assert(
+  evaluateKodusHeadEvidence(
+    {
+      name: KODY_CHECK_NAME,
+      app: { slug: 'kody-ai' },
+      status: 'completed',
+      conclusion: 'failure',
+      completed_at: '2026-10-26T23:06:43Z',
+      output: { title: 'Code Review Failed' },
+    },
+    { reviews: [commentedOnly], headSha: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284' },
+  ).ok === false,
+  'hard-fail check-run must not unlock via review fallback',
+);
 
 assert(
   evaluateMergeGate({
