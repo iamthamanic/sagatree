@@ -485,19 +485,20 @@ export class WorldPlacesStore {
     const seedRaw = typeof input.seedKey === 'string' ? input.seedKey.trim() : '';
     const seedKey = seedRaw.length > 0 ? seedRaw : null;
 
-    // Cheap optimistic reject before taking the single-writer lock.
-    const parentPre = this.#enforceParentEdge(worldId, placeId, parentPlaceId);
-    if (!parentPre.ok) return parentPre;
-    if (placeId) {
-      const existingPre = this.#loadPlace(placeId);
-      if (!existingPre || existingPre.world_profile_id !== worldId) {
-        return { ok: false, error: 'P0002' };
-      }
-    }
-
     const now = new Date().toISOString();
 
     try {
+      // Cheap optimistic reject before taking the single-writer lock
+      // (still inside try so SQLITE_BUSY etc. map to structured errors).
+      const parentPre = this.#enforceParentEdge(worldId, placeId, parentPlaceId);
+      if (!parentPre.ok) return parentPre;
+      if (placeId) {
+        const existingPre = this.#loadPlace(placeId);
+        if (!existingPre || existingPre.world_profile_id !== worldId) {
+          return { ok: false, error: 'P0002' };
+        }
+      }
+
       this.#db.exec('BEGIN IMMEDIATE');
       // Re-check under write lock (no TOCTOU).
       const parentOk = this.#enforceParentEdge(worldId, placeId, parentPlaceId);
@@ -611,21 +612,21 @@ export class WorldPlacesStore {
         ? input.anchor
         : {};
 
-    // Optimistic same-world check before acquiring the write lock.
-    const placePre = this.#loadPlace(placeId);
-    if (!placePre || placePre.world_profile_id !== worldId) {
-      return { ok: false, error: '22023' };
-    }
-    const mapPre = this.#db
-      .prepare(`SELECT id, world_profile_id FROM world_atlas_maps WHERE id = ?`)
-      .get(mapId) as { id: string; world_profile_id: string } | undefined;
-    if (!mapPre || mapPre.world_profile_id !== worldId) {
-      return { ok: false, error: '22023' };
-    }
-
     const now = new Date().toISOString();
 
     try {
+      // Optimistic same-world check before write lock (inside try for structured errors).
+      const placePre = this.#loadPlace(placeId);
+      if (!placePre || placePre.world_profile_id !== worldId) {
+        return { ok: false, error: '22023' };
+      }
+      const mapPre = this.#db
+        .prepare(`SELECT id, world_profile_id FROM world_atlas_maps WHERE id = ?`)
+        .get(mapId) as { id: string; world_profile_id: string } | undefined;
+      if (!mapPre || mapPre.world_profile_id !== worldId) {
+        return { ok: false, error: '22023' };
+      }
+
       this.#db.exec('BEGIN IMMEDIATE');
 
       const place = this.#loadPlace(placeId);
