@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-WORLD-RESTRUCTURE",
+  "result": "PASS",
+  "testedCommit": "4ade095bef9de900d4106fa420c9fd3e7829d267",
+  "githubClosed": true,
+  "mergeRef": "PR #1004 → main (#865)",
+  "note": "reparent_world_node + duplicate_world_node host ports; write-lock revalidation; atlas revision bump; cycle-safe deep copy; Kodus gate harden (APPROVED-without-check + reviews in wait loop).",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-world-restructure.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-world-restructure.md",
+      "sha256": "664f403e7544fbccdb6c62457896a2e22a6f5cc4ccc2d8f2f87b086a75c57638"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-world-restructure.md",
+      "sha256": "7a8ae9c19611811bf2ffb015d46cbe9c067b70ffc2040163d2ea046102aa014b"
+    }
+  ]
+}
