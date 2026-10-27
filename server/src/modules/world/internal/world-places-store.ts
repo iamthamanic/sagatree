@@ -124,6 +124,40 @@ export type RenameWorldNodeInput = {
   readonly name: string;
 };
 
+export type ReparentWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly newParentPlaceId: string | null;
+  readonly confirmRelocate: boolean;
+};
+
+export type ReparentWorldNodeResult = {
+  readonly place: WorldPlaceVm;
+  readonly primaryMapId: string | null;
+  readonly parentMapId: string;
+  readonly relocated: true;
+};
+
+export type DuplicateWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly deep: boolean;
+};
+
+export type DuplicateWorldNodeCreatedEntry = {
+  readonly placeId: string;
+  readonly mapId: string;
+  readonly sourcePlaceId: string;
+  readonly role: 'root' | 'deep_copy';
+};
+
+export type DuplicateWorldNodeResult = {
+  readonly rootPlaceId: string;
+  readonly rootMapId: string;
+  readonly deep: boolean;
+  readonly created: readonly DuplicateWorldNodeCreatedEntry[];
+};
+
 const DEFAULT_MAP_BOUNDS = '{"minX":0,"minY":0,"maxX":1000,"maxY":1000}';
 const EMPTY_LAYERS = '{"type":"FeatureCollection","features":[]}';
 
@@ -1092,6 +1126,331 @@ export class WorldPlacesStore {
       const updated = this.#loadPlace(placeId);
       if (!updated) return { ok: false, error: 'P0002' };
       return { ok: true, value: toPlaceVm(updated) };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  #descendantIds(worldId: string, rootPlaceId: string): string[] {
+    // Single recursive CTE under the write lock (UNION dedupes cycles).
+    const rows = this.#db
+      .prepare(
+        `WITH RECURSIVE tree(id) AS (
+           SELECT id FROM world_places
+           WHERE world_profile_id = ? AND parent_place_id = ?
+           UNION
+           SELECT p.id FROM world_places p
+           INNER JOIN tree t ON p.parent_place_id = t.id
+           WHERE p.world_profile_id = ?
+         )
+         SELECT id FROM tree`,
+      )
+      .all(worldId, rootPlaceId, worldId) as { id: string }[];
+    return rows.map((r) => r.id);
+  }
+
+  #markMapUnlocated(mapId: string, parentMapId: string, now: string): void {
+    const row = this.#db
+      .prepare(`SELECT generator_meta FROM world_atlas_maps WHERE id = ?`)
+      .get(mapId) as { generator_meta: string } | undefined;
+    let meta: Record<string, unknown> = {};
+    if (row?.generator_meta) {
+      try {
+        const parsed: unknown = JSON.parse(row.generator_meta);
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          meta = { ...(parsed as Record<string, unknown>) };
+        }
+      } catch {
+        meta = {};
+      }
+    }
+    meta.mapStatus = 'unlocated';
+    this.#db
+      .prepare(
+        `UPDATE world_atlas_maps SET
+           parent_map_id = ?,
+           generator_meta = ?,
+           revision = revision + 1,
+           updated_at = ?
+         WHERE id = ?`,
+      )
+      .run(parentMapId, JSON.stringify(meta), now, mapId);
+  }
+
+  reparentWorldNode(
+    actorIds: readonly string[],
+    input: ReparentWorldNodeInput,
+  ): { ok: true; value: ReparentWorldNodeResult } | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+    if (input.confirmRelocate !== true) return { ok: false, error: '22023' };
+
+    const newParentId =
+      typeof input.newParentPlaceId === 'string' && input.newParentPlaceId.trim().length > 0
+        ? input.newParentPlaceId.trim()
+        : null;
+    if (newParentId === placeId) return { ok: false, error: '23514' };
+
+    const now = new Date().toISOString();
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      // Revalidate hierarchy under the write lock (Codex P2 / concurrent upsertPlace).
+      const row = this.#loadPlace(placeId);
+      if (!row || row.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      if (!isCanonicalKind(row.kind)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+
+      let parentKind: string | null = null;
+      if (newParentId) {
+        if (newParentId === placeId) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        const descendants = this.#descendantIds(worldId, placeId);
+        if (descendants.includes(newParentId)) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        const parent = this.#loadPlace(newParentId);
+        if (!parent || parent.world_profile_id !== worldId) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        parentKind = parent.kind;
+      }
+
+      const need = requiredParentKind(row.kind);
+      if (!tipSatisfies(need, parentKind)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+
+      const rootMapId = this.#ensureWorldRootMap(worldId, now);
+      let parentMapId = newParentId ? this.#primaryMapId(newParentId) : null;
+      if (!parentMapId) parentMapId = rootMapId;
+
+      this.#db
+        .prepare(
+          `UPDATE world_places SET
+             parent_place_id = ?,
+             revision = revision + 1,
+             updated_at = ?
+           WHERE id = ? AND world_profile_id = ?`,
+        )
+        .run(newParentId, now, placeId, worldId);
+
+      const primaryMapId = this.#primaryMapId(placeId);
+      if (primaryMapId) {
+        this.#markMapUnlocated(primaryMapId, parentMapId, now);
+      }
+
+      this.#db.exec('COMMIT');
+      const updated = this.#loadPlace(placeId);
+      if (!updated) return { ok: false, error: 'P0002' };
+      return {
+        ok: true,
+        value: {
+          place: toPlaceVm(updated),
+          primaryMapId,
+          parentMapId,
+          relocated: true,
+        },
+      };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  duplicateWorldNode(
+    actorIds: readonly string[],
+    input: DuplicateWorldNodeInput,
+  ): { ok: true; value: DuplicateWorldNodeResult } | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    const deep = input.deep === true;
+    const now = new Date().toISOString();
+    const created: DuplicateWorldNodeCreatedEntry[] = [];
+    const idMap = new Map<string, string>();
+
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const src = this.#loadPlace(placeId);
+      if (!src || src.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      const rootMapId = this.#ensureWorldRootMap(worldId, now);
+      let parentMapId = src.parent_place_id ? this.#primaryMapId(src.parent_place_id) : null;
+      if (!parentMapId) parentMapId = rootMapId;
+
+      const rootId = randomUUID();
+      const copyName = `${src.name} (Kopie)`;
+      const srcExtra = this.#db
+        .prepare(`SELECT subtype, description, sort_order FROM world_places WHERE id = ?`)
+        .get(placeId) as
+        | { subtype: string | null; description: string | null; sort_order: number }
+        | undefined;
+
+      this.#db
+        .prepare(
+          `INSERT INTO world_places (
+             id, world_profile_id, parent_place_id, kind, name, description,
+             status, seed_key, sort_order, revision, subtype, created_at, updated_at
+           ) VALUES (?, ?, ?, ?, ?, ?, 'draft', NULL, ?, 0, ?, ?, ?)`,
+        )
+        .run(
+          rootId,
+          worldId,
+          src.parent_place_id,
+          src.kind,
+          copyName,
+          srcExtra?.description ?? src.description,
+          srcExtra?.sort_order ?? src.sort_order,
+          srcExtra?.subtype ?? null,
+          now,
+          now,
+        );
+      const rootMap = this.#createPrimaryMap(
+        worldId,
+        rootId,
+        src.kind,
+        `${copyName} (Karte)`,
+        parentMapId,
+        now,
+      );
+      created.push({
+        placeId: rootId,
+        mapId: rootMap,
+        sourcePlaceId: placeId,
+        role: 'root',
+      });
+      idMap.set(placeId, rootId);
+
+      if (deep) {
+        type TreeRow = {
+          id: string;
+          parent_place_id: string | null;
+          kind: string;
+          name: string;
+          description: string | null;
+          subtype: string | null;
+          sort_order: number;
+          depth: number;
+        };
+        // Cycle-safe BFS (seen set); parent-before-child by depth for idMap inserts.
+        const byDepth: TreeRow[] = [];
+        const seen = new Set<string>([placeId]);
+        let frontier = this.#db
+          .prepare(
+            `SELECT id, parent_place_id, kind, name, description, subtype, sort_order
+             FROM world_places
+             WHERE world_profile_id = ? AND parent_place_id = ?`,
+          )
+          .all(worldId, placeId) as Omit<TreeRow, 'depth'>[];
+        let depth = 1;
+        while (frontier.length > 0) {
+          const next: Omit<TreeRow, 'depth'>[] = [];
+          for (const row of frontier) {
+            if (seen.has(row.id)) continue;
+            seen.add(row.id);
+            byDepth.push({ ...row, depth });
+            const kids = this.#db
+              .prepare(
+                `SELECT id, parent_place_id, kind, name, description, subtype, sort_order
+                 FROM world_places
+                 WHERE world_profile_id = ? AND parent_place_id = ?`,
+              )
+              .all(worldId, row.id) as Omit<TreeRow, 'depth'>[];
+            for (const k of kids) {
+              if (!seen.has(k.id)) next.push(k);
+            }
+          }
+          frontier = next;
+          depth += 1;
+        }
+
+        for (const row of byDepth) {
+          const newParent = row.parent_place_id ? idMap.get(row.parent_place_id) : undefined;
+          if (!newParent) {
+            this.#db.exec('ROLLBACK');
+            return { ok: false, error: 'P0001' };
+          }
+          const childId = randomUUID();
+          this.#db
+            .prepare(
+              `INSERT INTO world_places (
+                 id, world_profile_id, parent_place_id, kind, name, description,
+                 status, seed_key, sort_order, revision, subtype, created_at, updated_at
+               ) VALUES (?, ?, ?, ?, ?, ?, 'draft', NULL, ?, 0, ?, ?, ?)`,
+            )
+            .run(
+              childId,
+              worldId,
+              newParent,
+              row.kind,
+              row.name,
+              row.description,
+              row.sort_order,
+              row.subtype,
+              now,
+              now,
+            );
+          let childParentMap = this.#primaryMapId(newParent);
+          if (!childParentMap) childParentMap = rootMapId;
+          const childMap = this.#createPrimaryMap(
+            worldId,
+            childId,
+            row.kind,
+            `${row.name} (Karte)`,
+            childParentMap,
+            now,
+          );
+          idMap.set(row.id, childId);
+          created.push({
+            placeId: childId,
+            mapId: childMap,
+            sourcePlaceId: row.id,
+            role: 'deep_copy',
+          });
+        }
+      }
+
+      this.#db.exec('COMMIT');
+      return {
+        ok: true,
+        value: {
+          rootPlaceId: rootId,
+          rootMapId: rootMap,
+          deep,
+          created,
+        },
+      };
     } catch (err) {
       try {
         this.#db.exec('ROLLBACK');

@@ -660,6 +660,18 @@ function checkRpcWorldCreate() {
   );
 }
 
+function checkRpcWorldRestructure() {
+  console.log('RPC-WORLD-RESTRUCTURE (#865): reparent/duplicate node...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-world-restructure.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcProjectMembership() {
   console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
   execFileSync(
@@ -3047,6 +3059,7 @@ checkRpcWorldMap();
 checkRpcAtlasMaps();
 checkRpcWorldPlaces();
 checkRpcWorldCreate();
+checkRpcWorldRestructure();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();

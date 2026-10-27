@@ -302,9 +302,21 @@ export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = ''
   if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
     return fromCheck;
   }
+  // Missing check-run: only APPROVED unlocks (COMMENTED alone is not a verdict —
+  // Kody may abort before posting a check). Observed PR #1004: APPROVED without check.
+  if (!checkRun) {
+    const approved = findKodusApprovedReviewForHead(reviews, headSha);
+    if (approved) {
+      return {
+        ok: true,
+        reason: 'kodus-complete',
+        detail: `Kody APPROVED review on HEAD (no check-run; id=${approved.id})`,
+      };
+    }
+    return fromCheck;
+  }
   // Overwritten check-run: Skipped/neutral after a real review on the same SHA.
   if (
-    checkRun &&
     checkRun.status === 'completed' &&
     SOFT_NON_SUCCESS_CONCLUSIONS.has(String(checkRun.conclusion))
   ) {

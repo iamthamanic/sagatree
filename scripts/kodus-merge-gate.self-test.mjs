@@ -268,6 +268,35 @@ assert(
   ).ok === false,
   'hard-fail check-run must not unlock via review fallback',
 );
+assert(
+  evaluateKodusHeadEvidence(null, {
+    reviews: [
+      {
+        id: 5672529116,
+        state: 'APPROVED',
+        commit_id: '11677567b48d2547f476439f7513cefdbae96ad4',
+        submitted_at: '2026-10-27T18:44:27Z',
+        user: { login: 'kody-ai[bot]' },
+      },
+    ],
+    headSha: '11677567b48d2547f476439f7513cefdbae96ad4',
+  }).ok === true,
+  'missing check-run + Kody APPROVED on HEAD = complete (PR #1004)',
+);
+assert(
+  evaluateKodusHeadEvidence(null, {
+    reviews: [commentedOnly],
+    headSha: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
+  }).ok === false,
+  'missing check-run + COMMENTED alone must NOT unlock (need APPROVED)',
+);
+assert(
+  evaluateKodusHeadEvidence(null, {
+    reviews: [],
+    headSha: '11677567b48d2547f476439f7513cefdbae96ad4',
+  }).reason === 'kodus-missing',
+  'missing check-run without HEAD review still fails closed',
+);
 
 assert(
   evaluateMergeGate({

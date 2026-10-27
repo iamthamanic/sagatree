@@ -192,4 +192,39 @@ assert(workflow.includes('timeout-minutes: 16'), 'evaluate job timeout fits Kodu
   assert(sequence.length === 0, 'poll consumed missing+pending+complete');
 }
 
+{
+  let resolveCalls = 0;
+  let sleepCalls = 0;
+  let clock = 0;
+  const waited = waitForKodusReview('o', 'r', 'abc', { required: true, pullNumber: 1 }, {
+    timeoutMs: 300_000,
+    intervalMs: 20_000,
+    sleep: () => {
+      sleepCalls += 1;
+      clock += 20_000;
+    },
+    now: () => clock,
+    fetchReviews: () => [
+      {
+        id: 1,
+        state: 'APPROVED',
+        commit_id: 'abc',
+        submitted_at: '2026-10-27T18:44:27Z',
+        user: { login: 'kody-ai[bot]' },
+      },
+    ],
+    resolve: (_o, _r, _h, opts) => {
+      resolveCalls += 1;
+      const hasApproved = (opts.reviews ?? []).some((x) => x.state === 'APPROVED');
+      return hasApproved
+        ? { ok: true, reason: 'kodus-complete', detail: 'APPROVED without check' }
+        : { ok: false, reason: 'kodus-missing', detail: 'none' };
+    },
+    log: () => {},
+  });
+  assert(waited.kodusReview.ok === true, 'APPROVED without check completes immediately');
+  assert(sleepCalls === 0, 'no poll sleep when reviews unlock missing check-run');
+  assert(resolveCalls === 1, 'single resolve when unlocked up front');
+}
+
 console.log('PASS: ecc-merge-gate-check.self-test');
