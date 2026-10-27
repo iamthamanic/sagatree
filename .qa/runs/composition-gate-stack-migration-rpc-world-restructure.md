@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-world-restructure (#865)
 
-- HEAD_SHA: 8a231493925ff7ceab418cb4aacd97c7a9168432
+- HEAD_SHA: be3c67c918b19d0f331c44361746aa3db514cafc
 - BASE_SHA: 685ae1c291d6d27c6af6097be7566e01872de77b
 - Date: 2026-10-27
 - Verdict: CLEAR
