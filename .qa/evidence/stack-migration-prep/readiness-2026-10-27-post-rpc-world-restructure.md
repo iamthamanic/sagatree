@@ -1,4 +1,4 @@
-# Readiness — post RPC-WORLD-RESTRUCTURE (#865)
+# Readiness — Post RPC-WORLD-RESTRUCTURE (#865)
 
 DONE 51 · READY 20 · WAITING 15 · BLOCKED 4
 

@@ -538,7 +538,10 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  // RPC-WORLD-CREATE (#1000) + RPC-WORLD-RESTRUCTURE (#1004) DONE; DESTRUCTIVE is the unlock probe.
+  // PLACES + CREATE + RESTRUCTURE DONE; DESTRUCTIVE is the unlock probe.
+  const worldPlaces = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
+  assert.equal(worldPlaces?.status, 'done', 'RPC-WORLD-PLACES must stay DONE after #996');
+  assert.ok(worldPlaces?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
   const worldCreate = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-CREATE');
   assert.equal(worldCreate?.status, 'done', 'RPC-WORLD-CREATE must stay DONE after #1000');
   assert.ok(worldCreate?.labels?.includes('agent-done'), 'RPC-WORLD-CREATE agent-done');

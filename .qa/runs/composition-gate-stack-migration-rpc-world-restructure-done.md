@@ -1,20 +1,20 @@
-# Composition Gate — stack-migration-rpc-world-restructure DONE evidence (#865)
+# Composition Gate — Stack-Migration RPC-World-Restructure Done Evidence (#865)
 
-- HEAD_SHA: 3c94b098208ab62c1691ea71410f1601095d76db
+- HEAD_SHA: TBD
 - BASE_SHA: 4ade095bef9de900d4106fa420c9fd3e7829d267
 - Date: 2026-10-27
 - Verdict: CLEAR
-- note: evidence/intake-only; tip may include composition-pin-only commits
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
-Mark RPC-WORLD-RESTRUCTURE DONE with hashed completion evidence; unlock RPC-WORLD-DESTRUCTIVE to READY. No runtime hop changes.
+Mark RPC-WORLD-RESTRUCTURE DONE with hashed completion evidence; unlock RPC-WORLD-DESTRUCTIVE to READY. Evidence/intake/plan mirrors only — no runtime hop changes.
 
 ## Hop chain
 
 1. Producer: completion/rpc-world-restructure.json
 2. Intake sync: status/labels/coverage
-3. Plan mirrors + unlock probe
+3. Plan mirrors + unlock probe (`stack-migration-issue-contracts --write`)
 4. Consumer: next READY topo head #866
 
 ## Simulations
@@ -28,6 +28,7 @@ Mark RPC-WORLD-RESTRUCTURE DONE with hashed completion evidence; unlock RPC-WORL
 ## Flags
 
 - Acceptance tier: isolated-contract (governance)
+- Deferred integration: none (governance/evidence only)
 
 ## Non-claims
 
