@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-WORLD-DESTRUCTIVE",
+  "result": "PASS",
+  "testedCommit": "229db037eebc2a5c8d43a95c71aa89cd113e016b",
+  "githubClosed": true,
+  "mergeRef": "PR #1006 → main (#866)",
+  "note": "preview/archive/delete host ports; confirm gates; saga binding nulling; RPC-DATA-SHARED-MAP-DELETE corrective (preserve shared maps, delete orphan exclusives).",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-world-destructive.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-world-destructive.md",
+      "sha256": "7d9b2d2b3a2920e3063fabad23e3bb8cb44b1c3f6528c33de64def18920b6947"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-world-destructive.md",
+      "sha256": "612f89e29a3701ef639c668c8c7e135c59b52f40750ee7fe56bc3b66065b15a9"
+    }
+  ]
+}
