@@ -184,6 +184,27 @@ try {
     `archive no confirm → ${noConfirmArchive.error}`,
   );
 
+  const statusBeforeStrangerArchive = db
+    .prepare(`SELECT status, revision FROM world_places WHERE id = ?`)
+    .get(country.value.targetPlaceId);
+  const strangerArchive = archiveNode(STRANGER, {
+    worldProfileId: worldId,
+    placeId: country.value.targetPlaceId,
+    confirm: true,
+  });
+  assert(
+    !strangerArchive.ok && strangerArchive.error === '42501',
+    `stranger archive → ${strangerArchive.error}`,
+  );
+  const statusAfterStrangerArchive = db
+    .prepare(`SELECT status, revision FROM world_places WHERE id = ?`)
+    .get(country.value.targetPlaceId);
+  assert(
+    statusAfterStrangerArchive.status === statusBeforeStrangerArchive.status &&
+      statusAfterStrangerArchive.revision === statusBeforeStrangerArchive.revision,
+    'stranger archive left place untouched',
+  );
+
   const archived = archiveNode(OWNER, {
     worldProfileId: worldId,
     placeId: country.value.targetPlaceId,
@@ -272,6 +293,17 @@ try {
   assert(!placeAGone, 'placeA deleted');
 
   // --- 5. Delete with confirm clears bindings + exclusive primary map ---
+  const placesBeforeReject = db
+    .prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`)
+    .get(worldId).n;
+  const linksBeforeReject = db
+    .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = ?`)
+    .get(worldId).n;
+  const bindingsBeforeReject = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`,
+    )
+    .get().n;
   const delCountry2 = deleteNode(OWNER, {
     worldProfileId: worldId,
     placeId: country2.value.targetPlaceId,
@@ -281,10 +313,27 @@ try {
     !delCountry2.ok && delCountry2.error === '22023',
     `delete country2 no confirm → ${delCountry2.error}`,
   );
+  assert(
+    db.prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`).get(worldId)
+      .n === placesBeforeReject,
+    'rejected delete left places untouched',
+  );
+  assert(
+    db
+      .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = ?`)
+      .get(worldId).n === linksBeforeReject,
+    'rejected delete left map links untouched',
+  );
+  assert(
+    db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`,
+      )
+      .get().n === bindingsBeforeReject,
+    'rejected delete left saga bindings untouched',
+  );
 
-  const placesBefore = db
-    .prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`)
-    .get(worldId).n;
+  const placesBefore = placesBeforeReject;
   const deleted = deleteNode(OWNER, {
     worldProfileId: worldId,
     placeId: country2.value.targetPlaceId,
