@@ -293,17 +293,23 @@ try {
   assert(!placeAGone, 'placeA deleted');
 
   // --- 5. Delete with confirm clears bindings + exclusive primary map ---
+  // Binding on placeB makes confirm required and makes no-mutation / nulling assertions meaningful.
+  const bindingBId = randomUUID();
+  db.prepare(
+    `INSERT INTO saga_asset_bindings (
+       id, project_id, asset_kind, asset_id, reveal, label, metadata, world_place_id, updated_at
+     ) VALUES (?, ?, 'item', ?, 'party', 'Bait-B', '{}', ?, ?)`,
+  ).run(bindingBId, projectId, randomUUID(), placeB.value.targetPlaceId, now);
+  const bindingBeforeReject = db
+    .prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`)
+    .get(bindingBId).world_place_id;
+
   const placesBeforeReject = db
     .prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`)
     .get(worldId).n;
   const linksBeforeReject = db
     .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = ?`)
     .get(worldId).n;
-  const bindingsBeforeReject = db
-    .prepare(
-      `SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`,
-    )
-    .get().n;
   const delCountry2 = deleteNode(OWNER, {
     worldProfileId: worldId,
     placeId: country2.value.targetPlaceId,
@@ -325,11 +331,8 @@ try {
     'rejected delete left map links untouched',
   );
   assert(
-    db
-      .prepare(
-        `SELECT COUNT(*) AS n FROM saga_asset_bindings WHERE world_place_id IS NOT NULL`,
-      )
-      .get().n === bindingsBeforeReject,
+    db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingBId)
+      .world_place_id === bindingBeforeReject,
     'rejected delete left saga bindings untouched',
   );
 
@@ -349,6 +352,11 @@ try {
     .prepare(`SELECT id FROM world_places WHERE id = ?`)
     .get(placeB.value.targetPlaceId);
   assert(!placeBGone, 'placeB deleted with country2');
+  assert(
+    db.prepare(`SELECT world_place_id FROM saga_asset_bindings WHERE id = ?`).get(bindingBId)
+      .world_place_id === null,
+    'confirmed delete nulled saga binding',
+  );
 
   // --- 6. Stranger DENY delete ---
   const strangerDel = deleteNode(STRANGER, {
