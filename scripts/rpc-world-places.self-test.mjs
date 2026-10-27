@@ -3,7 +3,7 @@
  * rpc-world-places.self-test — world places RPC port (#863).
  * Location: scripts/rpc-world-places.self-test.mjs
  */
-import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, readdirSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -420,7 +420,7 @@ try {
     `cross saga links deny: ${crossLinks.error}`,
   );
 
-  // archived excluded from editor list
+  // archived excluded from editor list + party links
   const archived = upsertPlace(OWNER, {
     worldProfileId: worldId,
     placeId: null,
@@ -440,7 +440,115 @@ try {
     'archived excluded',
   );
 
+  const archivedLink = upsertLink(OWNER, {
+    worldProfileId: worldId,
+    placeId: archived.value.id,
+    mapId: mapA,
+    usage: 'overview',
+    featureId: null,
+    anchor: {},
+  });
+  assert(archivedLink.ok, 'link on archived place (editor write)');
+  db.prepare(
+    `INSERT INTO saga_asset_bindings (id, project_id, asset_kind, asset_id, reveal, metadata, world_place_id, updated_at)
+     VALUES (?, ?, 'location', ?, 'party', '{}', ?, ?)`,
+  ).run(randomUUID(), projA, archived.value.id, archived.value.id, now);
+  const partyLinksNoArchived = listLinks(PLAYER_A, worldId, true, sagaA);
+  assert(partyLinksNoArchived.ok, 'party links after archive');
+  assert(
+    partyLinksNoArchived.value.every((l) => l.placeId !== archived.value.id),
+    'party links hide archived places',
+  );
+
   db.close();
+
+  // --- Migration 0021: preserve links across upgrade (FK cascade regression) ---
+  const migWork = mkdtempSync(join(tmpdir(), 'rpc-world-places-mig-'));
+  const migData = join(migWork, 'data');
+  mkdirSync(migData);
+  const migThru20 = join(migWork, 'm20');
+  const migThru21 = join(migWork, 'm21');
+  mkdirSync(migThru20);
+  mkdirSync(migThru21);
+  const allMigrations = readdirSync(join(root, 'server/migrations'))
+    .filter((n) => /^\d{4}_.+\.sql$/.test(n))
+    .sort();
+  for (const name of allMigrations) {
+    const ver = Number(name.slice(0, 4));
+    copyFileSync(join(root, 'server/migrations', name), join(migThru21, name));
+    if (ver <= 20) {
+      copyFileSync(join(root, 'server/migrations', name), join(migThru20, name));
+    }
+  }
+  const boot20 = bootstrapHostPersistence({ dataDir: migData, migrationsDir: migThru20 });
+  assert(boot20.ok && boot20.schemaVersion === 20, `schema20: ${boot20.ok ? boot20.schemaVersion : boot20.error}`);
+  const db20 = boot20.db;
+  const tNow = new Date().toISOString();
+  db20.prepare(`INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`).run(
+    'w-mig',
+    'owner',
+    'Mig',
+    tNow,
+  );
+  const mapMig = randomUUID();
+  db20
+    .prepare(
+      `INSERT INTO world_atlas_maps (
+         id, world_profile_id, parent_map_id, kind, title, sort_order,
+         bounds, layers, generator_meta, revision, created_at, updated_at
+       ) VALUES (?, 'w-mig', NULL, 'world', 'M', 0, '{}', '{"type":"FeatureCollection","features":[]}', '{}', 1, ?, ?)`,
+    )
+    .run(mapMig, tNow, tNow);
+  const placeMig = randomUUID();
+  db20
+    .prepare(
+      `INSERT INTO world_places (id, world_profile_id, kind, name, status, created_at, updated_at)
+       VALUES (?, 'w-mig', 'site', 'P', 'canonical', ?, ?)`,
+    )
+    .run(placeMig, tNow, tNow);
+  const linkMig = randomUUID();
+  // Stub 0020 allows 'detail' + 'overview' together (no unique) — upgrade must dedupe.
+  db20
+    .prepare(
+      `INSERT INTO world_place_map_links (id, world_profile_id, place_id, map_id, usage, created_at)
+       VALUES (?, 'w-mig', ?, ?, 'overview', ?)`,
+    )
+    .run(linkMig, placeMig, mapMig, tNow);
+  db20
+    .prepare(
+      `INSERT INTO world_place_map_links (id, world_profile_id, place_id, map_id, usage, created_at)
+       VALUES (?, 'w-mig', ?, ?, 'detail', ?)`,
+    )
+    .run(randomUUID(), placeMig, mapMig, tNow);
+  db20
+    .prepare(
+      `INSERT INTO world_place_map_links (id, world_profile_id, place_id, map_id, usage, created_at)
+       VALUES (?, 'w-mig', ?, ?, 'primary', ?)`,
+    )
+    .run(randomUUID(), placeMig, mapMig, tNow);
+  const beforeLinks = db20
+    .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = 'w-mig'`)
+    .get().n;
+  assert(beforeLinks === 3, `pre-upgrade links=${beforeLinks}`);
+  db20.close();
+
+  const boot21 = bootstrapHostPersistence({ dataDir: migData, migrationsDir: migThru21 });
+  assert(boot21.ok && boot21.schemaVersion >= 21, `schema21: ${boot21.ok ? boot21.schemaVersion : boot21.error}`);
+  const after = boot21.db
+    .prepare(`SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = 'w-mig'`)
+    .get().n;
+  assert(after >= 1, `links preserved after 0021 (got ${after})`);
+  const usages = boot21.db
+    .prepare(
+      `SELECT usage FROM world_place_map_links WHERE world_profile_id = 'w-mig' ORDER BY usage`,
+    )
+    .all()
+    .map((r) => r.usage);
+  assert(usages.includes('primary'), 'primary preserved');
+  assert(usages.filter((u) => u === 'overview').length === 1, 'detail+overview deduped to one overview');
+  boot21.db.close();
+  rmSync(migWork, { recursive: true, force: true });
+
   console.log('PASS rpc-world-places.self-test');
 } finally {
   rmSync(work, { recursive: true, force: true });

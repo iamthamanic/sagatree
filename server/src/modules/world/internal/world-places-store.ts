@@ -81,7 +81,7 @@ export type UpsertWorldPlaceMapLinkInput = {
   readonly anchor: Record<string, unknown> | null;
 };
 
-const ALLOWED_KINDS: readonly WorldPlaceKind[] = [
+const ALLOWED_KINDS: ReadonlySet<string> = new Set<WorldPlaceKind>([
   'continent',
   'realm',
   'region',
@@ -95,16 +95,16 @@ const ALLOWED_KINDS: readonly WorldPlaceKind[] = [
   'country',
   'place',
   'room',
-];
+]);
 
-const ALLOWED_STATUSES: readonly WorldPlaceStatus[] = [
+const ALLOWED_STATUSES: ReadonlySet<string> = new Set<WorldPlaceStatus>([
   'placeholder',
   'draft',
   'canonical',
   'archived',
-];
+]);
 
-const ALLOWED_USAGES: readonly WorldPlaceMapUsage[] = [
+const ALLOWED_USAGES: ReadonlySet<string> = new Set<WorldPlaceMapUsage>([
   'overview',
   'footprint',
   'entrance',
@@ -112,7 +112,7 @@ const ALLOWED_USAGES: readonly WorldPlaceMapUsage[] = [
   'dungeon',
   'battlemap',
   'primary',
-];
+]);
 
 type PlaceRow = {
   id: string;
@@ -143,15 +143,24 @@ type PartyPlaceRow = PlaceRow & {
 };
 
 function isKind(v: string): v is WorldPlaceKind {
-  return (ALLOWED_KINDS as readonly string[]).includes(v);
+  return ALLOWED_KINDS.has(v);
 }
 
 function isStatus(v: string): v is WorldPlaceStatus {
-  return (ALLOWED_STATUSES as readonly string[]).includes(v);
+  return ALLOWED_STATUSES.has(v);
 }
 
 function isUsage(v: string): v is WorldPlaceMapUsage {
-  return (ALLOWED_USAGES as readonly string[]).includes(v);
+  return ALLOWED_USAGES.has(v);
+}
+
+function mapConstraintError(err: unknown): '23505' | '23514' | 'P0001' {
+  const msg = err instanceof Error ? err.message : String(err);
+  // CHECK/FOREIGN messages also contain the word "constraint" — test them first.
+  if (/CHECK|FOREIGN/i.test(msg)) return '23514';
+  if (/UNIQUE/i.test(msg)) return '23505';
+  if (/constraint/i.test(msg)) return '23505';
+  return 'P0001';
 }
 
 function parseAnchor(raw: string | null | undefined): Record<string, unknown> {
@@ -407,10 +416,14 @@ export class WorldPlacesStore {
       const projectId = sagaResolved.projectId;
       if (!projectId) return { ok: true, value: [] };
 
+      // Align with listPlaces party path: never project links for archived places.
       const rows = this.#db
         .prepare(
           `SELECT l.id, l.world_profile_id, l.place_id, l.map_id, l.usage, l.feature_id, l.anchor
            FROM world_place_map_links l
+           INNER JOIN world_places p
+             ON p.id = l.place_id
+            AND p.status <> 'archived'
            INNER JOIN saga_asset_bindings b
              ON b.world_place_id = l.place_id
             AND b.project_id = ?
@@ -459,9 +472,6 @@ export class WorldPlacesStore {
         ? input.placeId.trim()
         : null;
 
-    const parentOk = this.#enforceParentEdge(worldId, placeId, parentPlaceId);
-    if (!parentOk.ok) return parentOk;
-
     const descriptionRaw =
       typeof input.description === 'string' ? input.description.trim() : '';
     const description = descriptionRaw.length > 0 ? descriptionRaw : null;
@@ -479,6 +489,12 @@ export class WorldPlacesStore {
 
     try {
       this.#db.exec('BEGIN IMMEDIATE');
+      // Parent/cycle/same-world must run under the write lock (no TOCTOU).
+      const parentOk = this.#enforceParentEdge(worldId, placeId, parentPlaceId);
+      if (!parentOk.ok) {
+        this.#db.exec('ROLLBACK');
+        return parentOk;
+      }
       if (!placeId) {
         const newId = randomUUID();
         const status = statusRaw ?? 'draft';
@@ -557,10 +573,7 @@ export class WorldPlacesStore {
       } catch {
         /* ignore */
       }
-      const msg = err instanceof Error ? err.message : String(err);
-      if (/UNIQUE|constraint/i.test(msg)) return { ok: false, error: '23505' };
-      if (/CHECK|FOREIGN/i.test(msg)) return { ok: false, error: '23514' };
-      return { ok: false, error: 'P0001' };
+      return { ok: false, error: mapConstraintError(err) };
     }
   }
 
@@ -580,19 +593,6 @@ export class WorldPlacesStore {
     if (!placeId || !mapId || !usageRaw) return { ok: false, error: '22023' };
     if (!isUsage(usageRaw)) return { ok: false, error: '22023' };
 
-    const place = this.#loadPlace(placeId);
-    if (!place || place.world_profile_id !== worldId) {
-      return { ok: false, error: '22023' };
-    }
-    const map = this.#db
-      .prepare(
-        `SELECT id, world_profile_id FROM world_atlas_maps WHERE id = ?`,
-      )
-      .get(mapId) as { id: string; world_profile_id: string } | undefined;
-    if (!map || map.world_profile_id !== worldId) {
-      return { ok: false, error: '22023' };
-    }
-
     const featureRaw =
       typeof input.featureId === 'string' ? input.featureId.trim() : '';
     const featureId = featureRaw.length > 0 ? featureRaw : null;
@@ -604,6 +604,19 @@ export class WorldPlacesStore {
 
     try {
       this.#db.exec('BEGIN IMMEDIATE');
+
+      const place = this.#loadPlace(placeId);
+      if (!place || place.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+      const map = this.#db
+        .prepare(`SELECT id, world_profile_id FROM world_atlas_maps WHERE id = ?`)
+        .get(mapId) as { id: string; world_profile_id: string } | undefined;
+      if (!map || map.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
 
       const existing = this.#db
         .prepare(
@@ -670,10 +683,7 @@ export class WorldPlacesStore {
       } catch {
         /* ignore */
       }
-      const msg = err instanceof Error ? err.message : String(err);
-      if (/UNIQUE|constraint/i.test(msg)) return { ok: false, error: '23505' };
-      if (/CHECK|FOREIGN/i.test(msg)) return { ok: false, error: '23514' };
-      return { ok: false, error: 'P0001' };
+      return { ok: false, error: mapConstraintError(err) };
     }
   }
 }
