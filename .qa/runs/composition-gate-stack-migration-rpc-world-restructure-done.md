@@ -1,6 +1,6 @@
 # Composition Gate — Stack-Migration RPC-World-Restructure Done Evidence (#865)
 
-- HEAD_SHA: TBD
+- HEAD_SHA: 232e601f767f13726365644ffaca5ee8f2887c1a
 - BASE_SHA: 4ade095bef9de900d4106fa420c9fd3e7829d267
 - Date: 2026-10-27
 - Verdict: CLEAR
