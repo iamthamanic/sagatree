@@ -597,8 +597,14 @@ export function waitForKodusReview(
   } = {},
 ) {
   const started = now();
-  // Check-run polling does not need reviews; fetch once after the wait for fallbacks.
-  let last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
+  // Load reviews up front so APPROVED-without-check-run (PR #1004) can exit
+  // immediately instead of burning ECC_KODUS_MAX_WAIT_MS on kodus-missing polls.
+  let reviews = [];
+  if (pullNumber != null) {
+    const fetched = fetchReviews(owner, repo, pullNumber);
+    reviews = Array.isArray(fetched) ? fetched : [];
+  }
+  let last = resolve(owner, repo, headSha, { required, reviews, pullNumber });
   while (
     last &&
     last.ok === false &&
@@ -607,12 +613,10 @@ export function waitForKodusReview(
   ) {
     log(`ECC Merge Gate: waiting for Kodus (${last.reason}: ${last.detail})`);
     sleep(intervalMs);
-    last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
-  }
-  let reviews = [];
-  if (pullNumber != null) {
-    const fetched = fetchReviews(owner, repo, pullNumber);
-    reviews = Array.isArray(fetched) ? fetched : [];
+    if (pullNumber != null) {
+      const fetched = fetchReviews(owner, repo, pullNumber);
+      reviews = Array.isArray(fetched) ? fetched : [];
+    }
     last = resolve(owner, repo, headSha, { required, reviews, pullNumber });
   }
   return { kodusReview: last, reviews };
