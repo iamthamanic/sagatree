@@ -16,7 +16,11 @@ import {
   LEGACY_SCHEMA_UPGRADE_LOCK_FILE,
   type MigrateResult,
 } from './migration-runner.ts';
-import { runIntegrityCheck, type IntegrityResult } from './integrity-check.ts';
+import {
+  runIntegrityCheck,
+  type IntegrityCheckMode,
+  type IntegrityResult,
+} from './integrity-check.ts';
 import { TABLE_OWNERSHIP, assertUniqueTableOwnership, owningModuleForTable } from './table-ownership.ts';
 import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
 
@@ -38,7 +42,7 @@ export {
   owningModuleForTable,
   SQLITE_HOST_POLICY,
 };
-export type { HostDatabase, MigrateResult, IntegrityResult };
+export type { HostDatabase, MigrateResult, IntegrityResult, IntegrityCheckMode };
 
 const defaultMigrationsDir = join(fileURLToPath(new URL('../../migrations', import.meta.url)));
 
@@ -53,6 +57,8 @@ export function bootstrapHostPersistence(options: {
   dataDir: string;
   migrationsDir?: string;
   dbFileName?: string;
+  /** Intermediate migration boots may omit later owned tables. */
+  integrityMode?: IntegrityCheckMode;
 }): BootstrapPersistenceResult {
   assertUniqueTableOwnership();
   const dbPath = join(options.dataDir, options.dbFileName ?? 'host.sqlite');
@@ -77,7 +83,7 @@ export function bootstrapHostPersistence(options: {
     return { ok: false, error: migrate.error, failedStepId };
   }
 
-  const integrity = runIntegrityCheck(opened.db);
+  const integrity = runIntegrityCheck(opened.db, options.integrityMode ?? 'full');
   if (!integrity.ok) {
     try {
       opened.db.close();

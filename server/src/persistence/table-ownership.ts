@@ -28,6 +28,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   world_atlas_maps: 'world',
   world_places: 'world',
   world_place_map_links: 'world',
+  world_node_create_idempotency: 'world',
   projects: 'project',
   project_members: 'project',
   characters: 'character',

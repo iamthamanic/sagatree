@@ -19,6 +19,9 @@ import {
 } from './internal/world-atlas-store.ts';
 import {
   WorldPlacesStore,
+  type CreateWorldNodeInput,
+  type CreateWorldNodeResult,
+  type RenameWorldNodeInput,
   type UpsertWorldPlaceInput,
   type UpsertWorldPlaceMapLinkInput,
   type WorldPlaceMapLinkVm,
@@ -36,6 +39,9 @@ export type {
   WorldAtlasMapVm,
 } from './internal/world-atlas-store.ts';
 export type {
+  CreateWorldNodeInput,
+  CreateWorldNodeResult,
+  RenameWorldNodeInput,
   UpsertWorldPlaceInput,
   UpsertWorldPlaceMapLinkInput,
   WorldPlaceMapLinkVm,
@@ -144,6 +150,14 @@ export type WorldPorts = {
     actor: Actor,
     input: UpsertWorldPlaceMapLinkInput,
   ) => WorldReadResult<WorldPlaceMapLinkVm>;
+  readonly createWorldNodeWithMaps: (
+    actor: Actor,
+    input: CreateWorldNodeInput,
+  ) => WorldReadResult<CreateWorldNodeResult>;
+  readonly renameWorldNode: (
+    actor: Actor,
+    input: RenameWorldNodeInput,
+  ) => WorldReadResult<WorldPlaceVm>;
   /** Owner-only world edit check (promote-to-world / map write parity). */
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
   /** Append a promoted lore fact into worlds.payload.modules.promotedLore (#876). */
@@ -369,6 +383,26 @@ export function createWorldPorts(deps: {
       return places.upsertMapLink(ids, { ...input, worldProfileId });
     },
 
+    createWorldNodeWithMaps(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.createWorldNodeWithMaps(ids, { ...input, worldProfileId });
+    },
+
+    renameWorldNode(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.renameWorldNode(ids, { ...input, worldProfileId });
+    },
+
     saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!maps) return { ok: false, error: 'store-unavailable' };
@@ -461,6 +495,8 @@ export function createWorldPortsStub(): WorldPorts {
     listWorldPlaceMapLinks: () => ({ ok: false, error: 'store-unavailable' }),
     upsertWorldPlace: () => ({ ok: false, error: 'store-unavailable' }),
     upsertWorldPlaceMapLink: () => ({ ok: false, error: 'store-unavailable' }),
+    createWorldNodeWithMaps: () => ({ ok: false, error: 'store-unavailable' }),
+    renameWorldNode: () => ({ ok: false, error: 'store-unavailable' }),
     canEditWorld: () => false,
     appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
   };
