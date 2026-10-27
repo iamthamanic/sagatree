@@ -169,6 +169,8 @@ const HARD_FAIL_CONCLUSIONS = new Set([
   'cancelled',
 ]);
 const SOFT_NON_SUCCESS_CONCLUSIONS = new Set(['skipped', 'neutral']);
+/** Review states that prove a finished Kody cycle without an open change-request. */
+const COMPLETED_KODY_REVIEW_STATES = new Set(['APPROVED', 'COMMENTED']);
 
 function checkRunTime(run) {
   return new Date(run.completed_at || run.started_at || 0).getTime();
@@ -256,23 +258,27 @@ export function findKodusApprovedReviewForHead(reviews, headSha) {
 }
 
 /**
- * Any submitted (non-PENDING) Kody review on HEAD proves a review cycle finished.
- * Used when GitHub overwrites the check-run to Skipped after comments were posted.
+ * A finished Kody review on HEAD (APPROVED or COMMENTED only) proves the review
+ * cycle completed. CHANGES_REQUESTED / DISMISSED / PENDING do not count — they
+ * must not unlock the overwritten skipped-check fallback.
  */
 export function findKodusSubmittedReviewForHead(reviews, headSha) {
   const list = Array.isArray(reviews) ? reviews : [];
   const head = String(headSha || '').toLowerCase();
   if (!head) return null;
-  const submitted = list
-    .filter((r) => {
-      const login = r.user?.login ?? r.author?.login ?? '';
-      if (!isKodyBotLogin(login)) return false;
-      if (typeof (r.commit_id ?? r.commitId) !== 'string') return false;
-      if (String(r.state).toUpperCase() === 'PENDING') return false;
-      return reviewOnHead(r, head);
-    })
-    .toSorted((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
-  return submitted[0] ?? null;
+  const submitted = [];
+  for (const r of list) {
+    if (r == null || typeof r !== 'object') continue;
+    const login = r.user?.login ?? r.author?.login ?? '';
+    if (!isKodyBotLogin(login)) continue;
+    const commitId = r.commit_id ?? r.commitId;
+    if (typeof commitId !== 'string' || commitId.length === 0) continue;
+    if (typeof r.submitted_at !== 'string' || Number.isNaN(Date.parse(r.submitted_at))) continue;
+    if (!COMPLETED_KODY_REVIEW_STATES.has(String(r.state).toUpperCase())) continue;
+    if (!reviewOnHead(r, head)) continue;
+    submitted.push(r);
+  }
+  return submitted.toSorted((a, b) => Date.parse(b.submitted_at) - Date.parse(a.submitted_at))[0] ?? null;
 }
 
 /**

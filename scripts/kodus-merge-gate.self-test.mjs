@@ -201,6 +201,26 @@ assert(
   }).ok === true,
   'skipped check + COMMENTED on HEAD = review complete (findings tracked separately)',
 );
+assert(
+  findKodusSubmittedReviewForHead(
+    [
+      {
+        id: 1,
+        state: 'CHANGES_REQUESTED',
+        commit_id: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
+        submitted_at: '2026-10-26T23:59:00Z',
+        user: { login: 'kody-ai[bot]' },
+      },
+    ],
+    '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
+  ) === null,
+  'CHANGES_REQUESTED alone does not count as completed review signal',
+);
+assert(
+  findKodusSubmittedReviewForHead([null, commentedOnly], '35bdc9ea99f4a7cf8dc435e733c90466bb48d284')
+    ?.id === 5660271485,
+  'null review elements are skipped fail-closed',
+);
 
 assert(
   evaluateMergeGate({
