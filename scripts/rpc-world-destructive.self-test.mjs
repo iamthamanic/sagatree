@@ -379,6 +379,18 @@ try {
       .world_place_id === outerBindingBefore,
     'confirmed delete left outer-subtree binding untouched',
   );
+  assert(
+    deleted.value.deletedMapIds.includes(sharedMapId),
+    'confirmed delete removed map without remaining links',
+  );
+  assert(
+    deleted.value.preservedSharedMapIds.length === 0,
+    `no map preserved after full unlink: ${deleted.value.preservedSharedMapIds.join(',')}`,
+  );
+  assert(
+    !db.prepare(`SELECT id FROM world_atlas_maps WHERE id = ?`).get(sharedMapId),
+    'orphan map row removed',
+  );
 
   // --- 6. Stranger DENY delete ---
   const strangerDel = deleteNode(STRANGER, {
