@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-world-places (#863)
 
-- HEAD_SHA: 8c03ba269af7eb888ab9172833b02ab5eee22bed
+- HEAD_SHA: d3c85e0979f119d990542ff6305f55d956c9a80a
 - BASE_SHA: 5412470de778fe753e3144a2874234f733151d42
 - Date: 2026-10-27
 - Verdict: CLEAR
@@ -8,7 +8,7 @@
 
 ## Event
 
-World places RPC port: WorldPorts → WorldPlacesStore with project saga resolve + active membership gate before party projection; cross-saga DENY (successor fix for RPC-SEC-CROSS-SAGA-REVEAL). Schema expand via `0021_world_places.sql` after atlas stub tables in 0020.
+World places RPC port: WorldPorts → WorldPlacesStore with project saga resolve + active membership gate before party projection; cross-saga DENY (successor fix for RPC-SEC-CROSS-SAGA-REVEAL). Schema expand via `0021_world_places.sql` after atlas stub tables in 0020. Hardening: FK-safe migration copy, party archived filter, in-TX parent re-check, constraint mapping.
 
 ## Hop chain
 
@@ -30,7 +30,6 @@ World places RPC port: WorldPorts → WorldPlacesStore with project saga resolve
 
 - Acceptance tier: isolated-contract
 - Deferred integration: HTTP adapter → MIG-311; FEATURE → MIG-602/#847
-- SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
 
 ## Non-claims
 
