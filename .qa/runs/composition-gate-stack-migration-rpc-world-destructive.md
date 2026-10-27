@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-rpc-world-destructive (#866)
 
-- HEAD_SHA: WORKTREE (uncommitted; pin on first commit of this branch)
+- HEAD_SHA: 2775e55cd91ba2e7ff2dc84ba55797c88720ef41
 - BASE_SHA: e626ce61123ff869d7036a28518300038fe1eee0
 - Date: 2026-10-27
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
