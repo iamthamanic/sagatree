@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-rpc-world-places (#863)
 
-- HEAD_SHA: PENDING_COMMIT
+- HEAD_SHA: 8c03ba269af7eb888ab9172833b02ab5eee22bed
 - BASE_SHA: 5412470de778fe753e3144a2874234f733151d42
 - Date: 2026-10-27
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
