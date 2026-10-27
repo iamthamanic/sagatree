@@ -287,8 +287,8 @@ assert(
   evaluateKodusHeadEvidence(null, {
     reviews: [commentedOnly],
     headSha: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
-  }).ok === true,
-  'missing check-run + Kody COMMENTED on HEAD = complete',
+  }).ok === false,
+  'missing check-run + COMMENTED alone must NOT unlock (need APPROVED)',
 );
 assert(
   evaluateKodusHeadEvidence(null, {
