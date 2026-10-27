@@ -168,8 +168,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 ## Verification state
 
 - Source: source-verified
-- Implementation acceptance: accepted (isolated-contract) — see `.qa/acceptance/stack-migration-rpc-world-destructive.md`
-- Corrective: RPC-DATA-SHARED-MAP-DELETE → host `deleteWorldNode` preserves maps with remaining outside-subtree links (`preservedSharedMapIds`); exclusive non-world maps deleted.
+- Implementation acceptance: not-accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 
