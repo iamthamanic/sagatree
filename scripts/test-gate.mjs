@@ -636,6 +636,18 @@ function checkRpcAtlasMaps() {
   );
 }
 
+function checkRpcWorldPlaces() {
+  console.log('RPC-WORLD-PLACES (#863): places/links + cross-saga DENY...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-world-places.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcProjectMembership() {
   console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
   execFileSync(
@@ -3021,6 +3033,7 @@ checkRpcSagaProvision();
 checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkRpcAtlasMaps();
+checkRpcWorldPlaces();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();

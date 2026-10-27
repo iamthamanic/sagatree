@@ -17,6 +17,13 @@ import {
   type WorldAtlasMapSummary,
   type WorldAtlasMapVm,
 } from './internal/world-atlas-store.ts';
+import {
+  WorldPlacesStore,
+  type UpsertWorldPlaceInput,
+  type UpsertWorldPlaceMapLinkInput,
+  type WorldPlaceMapLinkVm,
+  type WorldPlaceVm,
+} from './internal/world-places-store.ts';
 import { createPartyRevealedAtlasMapIds } from './internal/atlas-party-projection.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 
@@ -28,6 +35,12 @@ export type {
   WorldAtlasMapSummary,
   WorldAtlasMapVm,
 } from './internal/world-atlas-store.ts';
+export type {
+  UpsertWorldPlaceInput,
+  UpsertWorldPlaceMapLinkInput,
+  WorldPlaceMapLinkVm,
+  WorldPlaceVm,
+} from './internal/world-places-store.ts';
 export { createSqliteWorldWriteStore } from './internal/world-write-store.ts';
 
 export {
@@ -111,6 +124,26 @@ export type WorldPorts = {
     actor: Actor,
     input: UpsertWorldAtlasMapInput,
   ) => WorldReadResult<WorldAtlasMapVm>;
+  readonly listWorldPlaces: (
+    actor: Actor,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => WorldReadResult<readonly WorldPlaceVm[]>;
+  readonly listWorldPlaceMapLinks: (
+    actor: Actor,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => WorldReadResult<readonly WorldPlaceMapLinkVm[]>;
+  readonly upsertWorldPlace: (
+    actor: Actor,
+    input: UpsertWorldPlaceInput,
+  ) => WorldReadResult<WorldPlaceVm>;
+  readonly upsertWorldPlaceMapLink: (
+    actor: Actor,
+    input: UpsertWorldPlaceMapLinkInput,
+  ) => WorldReadResult<WorldPlaceMapLinkVm>;
   /** Owner-only world edit check (promote-to-world / map write parity). */
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
   /** Append a promoted lore fact into worlds.payload.modules.promotedLore (#876). */
@@ -162,6 +195,14 @@ export function createWorldPorts(deps: {
           resolveSagaProject: resolveSagaProjectForWorld,
           isActiveProjectMember,
           partyRevealedMapIds: createPartyRevealedAtlasMapIds(db),
+        })
+      : null;
+  const places =
+    db && actorCanAccessWorld && resolveSagaProjectForWorld && isActiveProjectMember
+      ? new WorldPlacesStore(db, {
+          canAccessWorld: actorCanAccessWorld,
+          resolveSagaProject: resolveSagaProjectForWorld,
+          isActiveProjectMember,
         })
       : null;
 
@@ -276,6 +317,58 @@ export function createWorldPorts(deps: {
       return atlas.upsertMap(ids, { ...input, worldProfileId });
     },
 
+    listWorldPlaces(actor, worldProfileId, playerView = false, sagaPublicId = null) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldId = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!worldId) return { ok: false, error: '22023' };
+      if (sagaPublicId !== null && sagaPublicId !== undefined && typeof sagaPublicId !== 'string') {
+        return { ok: false, error: '22023' };
+      }
+      const saga =
+        typeof sagaPublicId === 'string' && sagaPublicId.trim().length > 0
+          ? sagaPublicId.trim()
+          : null;
+      const ids = actorIdentityIds(actor);
+      return places.listPlaces(ids, worldId, playerView, saga);
+    },
+
+    listWorldPlaceMapLinks(actor, worldProfileId, playerView = false, sagaPublicId = null) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldId = typeof worldProfileId === 'string' ? worldProfileId.trim() : '';
+      if (!worldId) return { ok: false, error: '22023' };
+      if (sagaPublicId !== null && sagaPublicId !== undefined && typeof sagaPublicId !== 'string') {
+        return { ok: false, error: '22023' };
+      }
+      const saga =
+        typeof sagaPublicId === 'string' && sagaPublicId.trim().length > 0
+          ? sagaPublicId.trim()
+          : null;
+      const ids = actorIdentityIds(actor);
+      return places.listMapLinks(ids, worldId, playerView, saga);
+    },
+
+    upsertWorldPlace(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.upsertPlace(ids, { ...input, worldProfileId });
+    },
+
+    upsertWorldPlaceMapLink(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.upsertMapLink(ids, { ...input, worldProfileId });
+    },
+
     saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!maps) return { ok: false, error: 'store-unavailable' };
@@ -364,6 +457,10 @@ export function createWorldPortsStub(): WorldPorts {
     listWorldAtlasMaps: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
     upsertWorldAtlasMap: () => ({ ok: false, error: 'store-unavailable' }),
+    listWorldPlaces: () => ({ ok: false, error: 'store-unavailable' }),
+    listWorldPlaceMapLinks: () => ({ ok: false, error: 'store-unavailable' }),
+    upsertWorldPlace: () => ({ ok: false, error: 'store-unavailable' }),
+    upsertWorldPlaceMapLink: () => ({ ok: false, error: 'store-unavailable' }),
     canEditWorld: () => false,
     appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
   };
