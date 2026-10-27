@@ -19,10 +19,16 @@ import {
 } from './internal/world-atlas-store.ts';
 import {
   WorldPlacesStore,
+  type ArchiveWorldNodeSubtreeInput,
+  type ArchiveWorldNodeSubtreeResult,
   type CreateWorldNodeInput,
   type CreateWorldNodeResult,
+  type DeleteWorldNodeInput,
+  type DeleteWorldNodeResult,
   type DuplicateWorldNodeInput,
   type DuplicateWorldNodeResult,
+  type PreviewWorldNodeConsequencesInput,
+  type PreviewWorldNodeConsequencesResult,
   type RenameWorldNodeInput,
   type ReparentWorldNodeInput,
   type ReparentWorldNodeResult,
@@ -43,10 +49,16 @@ export type {
   WorldAtlasMapVm,
 } from './internal/world-atlas-store.ts';
 export type {
+  ArchiveWorldNodeSubtreeInput,
+  ArchiveWorldNodeSubtreeResult,
   CreateWorldNodeInput,
   CreateWorldNodeResult,
+  DeleteWorldNodeInput,
+  DeleteWorldNodeResult,
   DuplicateWorldNodeInput,
   DuplicateWorldNodeResult,
+  PreviewWorldNodeConsequencesInput,
+  PreviewWorldNodeConsequencesResult,
   RenameWorldNodeInput,
   ReparentWorldNodeInput,
   ReparentWorldNodeResult,
@@ -174,6 +186,18 @@ export type WorldPorts = {
     actor: Actor,
     input: DuplicateWorldNodeInput,
   ) => WorldReadResult<DuplicateWorldNodeResult>;
+  readonly previewWorldNodeConsequences: (
+    actor: Actor,
+    input: PreviewWorldNodeConsequencesInput,
+  ) => WorldReadResult<PreviewWorldNodeConsequencesResult>;
+  readonly archiveWorldNodeSubtree: (
+    actor: Actor,
+    input: ArchiveWorldNodeSubtreeInput,
+  ) => WorldReadResult<ArchiveWorldNodeSubtreeResult>;
+  readonly deleteWorldNode: (
+    actor: Actor,
+    input: DeleteWorldNodeInput,
+  ) => WorldReadResult<DeleteWorldNodeResult>;
   /** Owner-only world edit check (promote-to-world / map write parity). */
   readonly canEditWorld: (actorIds: readonly string[], worldId: string) => boolean;
   /** Append a promoted lore fact into worlds.payload.modules.promotedLore (#876). */
@@ -439,6 +463,36 @@ export function createWorldPorts(deps: {
       return places.duplicateWorldNode(ids, { ...input, worldProfileId });
     },
 
+    previewWorldNodeConsequences(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.previewWorldNodeConsequences(ids, { ...input, worldProfileId });
+    },
+
+    archiveWorldNodeSubtree(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.archiveWorldNodeSubtree(ids, { ...input, worldProfileId });
+    },
+
+    deleteWorldNode(actor, input) {
+      if (!actor?.actorId) return { ok: false, error: '42501' };
+      if (!places) return { ok: false, error: 'store-unavailable' };
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: '22023' };
+      const ids = actorIdentityIds(actor);
+      return places.deleteWorldNode(ids, { ...input, worldProfileId });
+    },
+
     saveWorldMap(actor, worldProfileId, expectedRevision, mapData) {
       if (!actor?.actorId) return { ok: false, error: '42501' };
       if (!maps) return { ok: false, error: 'store-unavailable' };
@@ -535,6 +589,9 @@ export function createWorldPortsStub(): WorldPorts {
     renameWorldNode: () => ({ ok: false, error: 'store-unavailable' }),
     reparentWorldNode: () => ({ ok: false, error: 'store-unavailable' }),
     duplicateWorldNode: () => ({ ok: false, error: 'store-unavailable' }),
+    previewWorldNodeConsequences: () => ({ ok: false, error: 'store-unavailable' }),
+    archiveWorldNodeSubtree: () => ({ ok: false, error: 'store-unavailable' }),
+    deleteWorldNode: () => ({ ok: false, error: 'store-unavailable' }),
     canEditWorld: () => false,
     appendPromotedLoreFact: () => ({ ok: false, error: 'store-unavailable' }),
   };

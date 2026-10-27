@@ -672,6 +672,18 @@ function checkRpcWorldRestructure() {
   );
 }
 
+function checkRpcWorldDestructive() {
+  console.log('RPC-WORLD-DESTRUCTIVE (#866): preview/archive/delete + shared-map preserve...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-world-destructive.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcProjectMembership() {
   console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
   execFileSync(
@@ -3060,6 +3072,7 @@ checkRpcAtlasMaps();
 checkRpcWorldPlaces();
 checkRpcWorldCreate();
 checkRpcWorldRestructure();
+checkRpcWorldDestructive();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();
