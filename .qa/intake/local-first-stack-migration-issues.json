@@ -8423,7 +8423,6 @@
         "Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.",
         "Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.",
         "Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.",
-        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
         "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false,\"resolution\":\"host deleteWorldNode preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by self-test\"}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
@@ -8519,16 +8518,6 @@
         {
           "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
           "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
-          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
-          "sourceRefs": [
-            ".qa/intake/rpc-contracts/preview_world_node_consequences.md",
-            ".qa/intake/rpc-contracts/archive_world_node_subtree.md",
-            ".qa/intake/rpc-contracts/delete_world_node.md"
-          ]
-        },
-        {
-          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
-          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
           "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false,\"resolution\":\"host deleteWorldNode preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by self-test\"}",
           "sourceRefs": [
             ".qa/intake/rpc-contracts/preview_world_node_consequences.md",
@@ -8543,7 +8532,6 @@
         "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
-          "{\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
           "{\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false,\"resolution\":\"host deleteWorldNode preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by self-test\"}"
         ],
         "approvalRequired": null
@@ -8558,7 +8546,6 @@
           "Archivierung umfasst Wurzel und Nachfahren und erhöht deren Revision; Wiederholung bleibt definiert.",
           "Löschung entfernt nur den bestätigten Teilbaum mit zugehörigen Links/Karten und löst Saga-Ortsreferenzen in derselben Transaktion.",
           "Fehlende Bestätigung oder fehlende Editor-Rechte verändert weder Orte, Bindings noch Karten.",
-          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false}",
           "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DATA-SHARED-MAP-DELETE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.\",\"sourceEvidence\":\"supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.\",\"requiredSuccessorAcceptance\":\"Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.\",\"deployedExploitVerified\":false,\"resolution\":\"host deleteWorldNode preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by self-test\"}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],

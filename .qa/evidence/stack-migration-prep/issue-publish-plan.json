@@ -578,8 +578,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-destructive.md",
-      "sha256": "0983c511366403cb954b3766ef01eb580af64a2b386ce0ae656b1bd19ab2e411",
-      "payloadSha256": "1abe12422938a64e20e26cc858e158525eb7c8f90339c4663ef449c6d63cea59"
+      "sha256": "779cb1b893520ced23da6326d840306d9b95814c9e5dd68ed1ab61402399af27",
+      "payloadSha256": "770a7c11fefe068fa95574effb88437213fb3aba2395a0a670bc40a9ec2c87ed"
     },
     {
       "localId": "MIG-350",

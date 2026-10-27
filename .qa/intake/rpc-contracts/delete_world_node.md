@@ -159,13 +159,15 @@ Diese Punkte sind verpflichtende Tests für den Nachfolger. Ihre Auflistung beha
 
 ## Legacy-Defekte und offene Entscheidungen
 
-### Medium — RPC-DATA-SHARED-MAP-DELETE
+### Medium — RPC-DATA-SHARED-MAP-DELETE (resolved-corrective)
 
 Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.
 
 **Beleg:** supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.
 
 **Erforderliche Nachfolger-Abnahme:** Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.
+
+**Resolution:** Host `deleteWorldNode` preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by `scripts/rpc-world-destructive.self-test.mjs`.
 
 ## Vollständige Quellenbindung
 
