@@ -533,11 +533,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-038",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-places.md",
-      "sha256": "c82856e7f61e2b2ad5082fe7aad4dd850afb556c8a417653c50bd27ee8e422df",
-      "payloadSha256": "50f03b768726ade4cb608df20f654b19d8d2b272608e670814a72dacb2bb91d8"
+      "sha256": "02a68ddb4aa692a17a638a49c305cb9722a044db8e7481a03f7d6d29c8ff30c2",
+      "payloadSha256": "c827e19e6647377356cd3d80b2b904c2d4e588c6943316ee355129459980aba1"
     },
     {
       "localId": "RPC-WORLD-CREATE",
@@ -547,12 +547,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-039",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-create.md",
-      "sha256": "c3e559736f8a808fe812006bae2d71984fab123a588267369a8f4d0e07c41b81",
-      "payloadSha256": "5bc63d2a80141ea73dc4a5f8cd7a813ae688ed411acbceee356e80ad2363ddff"
+      "sha256": "dc4fcc76bafeb0a57d57db817e254dec675bd30f37525c3b11574cd081f917a0",
+      "payloadSha256": "0ced54cfdf33d4b7f0dbf7aef92a1aff8af605ad301220b63fe12046dd5121b6"
     },
     {
       "localId": "RPC-WORLD-RESTRUCTURE",

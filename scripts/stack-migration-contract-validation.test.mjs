@@ -538,13 +538,13 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  // RPC-ATLAS-MAPS shipped via PR #993; dependent RPC-WORLD-PLACES is the unlock probe.
-  const atlas = original.intake.issues.find((issue) => issue.localId === 'RPC-ATLAS-MAPS');
-  assert.equal(atlas?.status, 'done', 'RPC-ATLAS-MAPS must be DONE after #993');
-  assert.ok(atlas?.labels?.includes('agent-done'), 'RPC-ATLAS-MAPS agent-done');
+  // RPC-WORLD-PLACES shipped via PR #996; dependent RPC-WORLD-CREATE is the unlock probe.
+  const places = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
+  assert.equal(places?.status, 'done', 'RPC-WORLD-PLACES must be DONE after #996');
+  assert.ok(places?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'RPC-WORLD-PLACES'),
-    'RPC-WORLD-PLACES unlocks after RPC-ATLAS-MAPS DONE',
+    ready.some((entry) => entry.localId === 'RPC-WORLD-CREATE'),
+    'RPC-WORLD-CREATE unlocks after RPC-WORLD-PLACES DONE',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

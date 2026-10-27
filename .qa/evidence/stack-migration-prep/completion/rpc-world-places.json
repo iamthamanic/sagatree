@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-WORLD-PLACES",
+  "result": "PASS",
+  "testedCommit": "3b8bda10f71c653ceeb1f37bd18128f8591e86d0",
+  "githubClosed": true,
+  "mergeRef": "PR #996 → main (#863)",
+  "note": "list/upsert world places + map-links host ports; cross-saga DENY on party projection; WorldPlacesStore; schema 0021 after atlas stubs.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-world-places.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-world-places.md",
+      "sha256": "b40acb9ef238a03d6f084438141d9eb0a6fc8d4cd53d64394f76834859c901c8"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-world-places.md",
+      "sha256": "958871a76a7afc4a0412b8fe952983a1d97794f0dd5eeb1f25782bc8d71c78ed"
+    }
+  ]
+}
