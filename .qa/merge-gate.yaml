@@ -30,8 +30,11 @@ requiredChecks:
 # Do not weaken severity thresholds or skip findings evaluation to unblock merges.
 #
 # Kodus (kody-ai): requireKodusReview=true → HEAD must have a completed success
-# "Kody Code Review" check-run from app slug kody-ai with a Complete title.
+# "Kody Code Review" check-run from app slug kody-ai with a Complete title
+# (or APPROVED/COMMENTED review fallback when GitHub overwrites the check to skipped).
 # "Code Review Started" is never PASS. New pushes invalidate prior HEAD approval.
+# Evaluate polls Kodus (ECC_KODUS_MAX_WAIT_MS / ECC_KODUS_POLL_MS) so the first
+# PR-triggered run does not sticky-fail while Kody is still in_progress.
 # Severity badges severity_level-{critical|high|medium|low|info} block until
 # resolved or dismissed (<!-- ecc-finding-dismissed: … -->).
 

@@ -565,6 +565,62 @@ export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
  * leave a sticky FAIL while Test Gate / Composition Gate / Browser E2E are still
  * queued — that FAIL would become the latest required check and block merges.
  */
+function defaultGateSleep(ms) {
+  try {
+    execFileSync('sleep', [String(Math.max(1, Math.ceil(ms / 1000)))], { stdio: 'ignore' });
+  } catch {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  }
+}
+
+/**
+ * Bounded poll for Kodus completion on HEAD. Prevents a sticky ECC FAIL when the
+ * PR-triggered evaluate runs before Kody finishes (same race as required checks).
+ */
+export function waitForKodusReview(
+  owner,
+  repo,
+  headSha,
+  { required = true, pullNumber = null } = {},
+  {
+    timeoutMs = Number(process.env.ECC_KODUS_MAX_WAIT_MS || 420_000),
+    intervalMs = Number(process.env.ECC_KODUS_POLL_MS || 20_000),
+    sleep = defaultGateSleep,
+    log = (msg) => console.error(msg),
+  } = {},
+) {
+  const started = Date.now();
+  let reviews = null;
+  if (pullNumber != null) {
+    const fetched = ghJson([
+      'api',
+      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      '--paginate',
+    ]);
+    reviews = Array.isArray(fetched) ? fetched : [];
+  }
+  let last = resolveKodusReviewForHead(owner, repo, headSha, { required, reviews, pullNumber });
+  while (
+    last &&
+    last.ok === false &&
+    (last.reason === 'kodus-pending' || last.reason === 'kodus-started-only') &&
+    Date.now() - started < timeoutMs
+  ) {
+    log(`ECC Merge Gate: waiting for Kodus (${last.reason}: ${last.detail})`);
+    sleep(intervalMs);
+    if (pullNumber != null) {
+      const fetched = ghJson([
+        'api',
+        `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+        '--paginate',
+      ]);
+      reviews = Array.isArray(fetched) ? fetched : [];
+    }
+    last = resolveKodusReviewForHead(owner, repo, headSha, { required, reviews, pullNumber });
+  }
+  return { kodusReview: last, reviews: reviews ?? [] };
+}
+
 export function waitForRequiredChecks(
   owner,
   repo,
@@ -573,13 +629,7 @@ export function waitForRequiredChecks(
   {
     timeoutMs = Number(process.env.ECC_MERGE_GATE_CHECK_WAIT_MS || 480_000),
     intervalMs = Number(process.env.ECC_MERGE_GATE_CHECK_POLL_MS || 20_000),
-    sleep = (ms) => {
-      try {
-        execFileSync('sleep', [String(Math.max(1, Math.ceil(ms / 1000)))], { stdio: 'ignore' });
-      } catch {
-        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-      }
-    },
+    sleep = defaultGateSleep,
     log = (msg) => console.error(msg),
   } = {},
 ) {
@@ -640,16 +690,12 @@ export function runMergeGateCheck({
   let kodusReview = null;
 
   try {
-    const reviews = ghJson([
-      'api',
-      `repos/${ctx.owner}/${ctx.repo}/pulls/${ctx.pullNumber}/reviews`,
-      '--paginate',
-    ]);
-    const reviewList = Array.isArray(reviews) ? reviews : [];
-    kodusReview = resolveKodusReviewForHead(ctx.owner, ctx.repo, ctx.headSha, {
+    const waited = waitForKodusReview(ctx.owner, ctx.repo, ctx.headSha, {
       required: config.requireKodusReview !== false,
-      reviews: reviewList,
+      pullNumber: ctx.pullNumber,
     });
+    kodusReview = waited.kodusReview;
+    const reviewList = waited.reviews;
     unresolved = collectUnresolvedFindings(
       ctx.owner,
       ctx.repo,
