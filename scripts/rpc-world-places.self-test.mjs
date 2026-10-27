@@ -480,7 +480,12 @@ try {
       copyFileSync(join(root, 'server/migrations', name), join(migThru20, name));
     }
   }
-  const boot20 = bootstrapHostPersistence({ dataDir: migData, migrationsDir: migThru20 });
+  const boot20 = bootstrapHostPersistence({
+    dataDir: migData,
+    migrationsDir: migThru20,
+    // Schema-20 fixture omits later owned tables (e.g. world_node_create_idempotency).
+    integrityMode: 'db-tables-owned-only',
+  });
   assert(boot20.ok && boot20.schemaVersion === 20, `schema20: ${boot20.ok ? boot20.schemaVersion : boot20.error}`);
   const db20 = boot20.db;
   const tNow = new Date().toISOString();

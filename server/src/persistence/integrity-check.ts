@@ -9,14 +9,21 @@ export type IntegrityResult =
   | { ok: true }
   | { ok: false; errors: readonly string[] };
 
+export type IntegrityCheckMode = 'full' | 'db-tables-owned-only';
+
 /**
  * Verify bootstrap catalog integrity.
  * - foreign_keys pragma ON
  * - no orphan project_members / projects.world_id
  * - UUID-like TEXT ids remain non-null strings; JSON columns parse when present
  * - every user table maps to exactly one owning module
+ * - `full` also requires every TABLE_OWNERSHIP entry to exist (latest schema).
+ *   `db-tables-owned-only` skips that reverse check for intermediate migration boots.
  */
-export function runIntegrityCheck(db: HostDatabase): IntegrityResult {
+export function runIntegrityCheck(
+  db: HostDatabase,
+  mode: IntegrityCheckMode = 'full',
+): IntegrityResult {
   const errors: string[] = [];
 
   const fk = db.prepare('PRAGMA foreign_keys').get() as { foreign_keys: number } | undefined;
@@ -34,10 +41,12 @@ export function runIntegrityCheck(db: HostDatabase): IntegrityResult {
     }
   }
 
-  for (const table of Object.keys(TABLE_OWNERSHIP)) {
-    const present = tables.some((row) => row.name === table);
-    if (!present) {
-      errors.push(`owned table ${table} missing from database`);
+  if (mode === 'full') {
+    for (const table of Object.keys(TABLE_OWNERSHIP)) {
+      const present = tables.some((row) => row.name === table);
+      if (!present) {
+        errors.push(`owned table ${table} missing from database`);
+      }
     }
   }
 

@@ -648,6 +648,18 @@ function checkRpcWorldPlaces() {
   );
 }
 
+function checkRpcWorldCreate() {
+  console.log('RPC-WORLD-CREATE (#864): create/rename node + idempotency...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-world-create.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcProjectMembership() {
   console.log('RPC-PROJECT-MEMBERSHIP (#874): join_project_by_code + set_my_project_character...');
   execFileSync(
@@ -3034,6 +3046,7 @@ checkRpcSessionRuntime();
 checkRpcWorldMap();
 checkRpcAtlasMaps();
 checkRpcWorldPlaces();
+checkRpcWorldCreate();
 checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();

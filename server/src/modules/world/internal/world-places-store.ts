@@ -1,5 +1,6 @@
 /**
- * world_places + world_place_map_links persistence (RPC-WORLD-PLACES / #863).
+ * world_places + world_place_map_links persistence (RPC-WORLD-PLACES / #863)
+ * + create/rename world node (RPC-WORLD-CREATE / #864).
  * Private — import only from world public API.
  * Location: server/src/modules/world/internal/world-places-store.ts
  *
@@ -8,6 +9,14 @@
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+import {
+  isCanonicalKind,
+  mapKindForNode,
+  missingAncestorChain,
+  placeholderStem,
+  requiredParentKind,
+  tipSatisfies,
+} from './world-create-helpers.ts';
 
 export type WorldPlaceKind =
   | 'continent'
@@ -80,6 +89,43 @@ export type UpsertWorldPlaceMapLinkInput = {
   readonly featureId: string | null;
   readonly anchor: Record<string, unknown> | null;
 };
+
+export type CreateWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly kind: string;
+  readonly name: string;
+  readonly idempotencyKey: string;
+  readonly subtype?: string | null;
+  readonly parentPlaceId?: string | null;
+  readonly description?: string | null;
+};
+
+export type CreateWorldNodeCreatedEntry = {
+  readonly placeId: string;
+  readonly kind: string;
+  readonly name: string;
+  readonly status: string;
+  readonly mapId: string;
+  readonly role: 'ancestor_placeholder' | 'target';
+};
+
+export type CreateWorldNodeResult = {
+  readonly worldProfileId: string;
+  readonly worldRootMapId: string;
+  readonly targetPlaceId: string;
+  readonly targetMapId: string;
+  readonly created: readonly CreateWorldNodeCreatedEntry[];
+  readonly idempotencyKey: string;
+};
+
+export type RenameWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly name: string;
+};
+
+const DEFAULT_MAP_BOUNDS = '{"minX":0,"minY":0,"maxX":1000,"maxY":1000}';
+const EMPTY_LAYERS = '{"type":"FeatureCollection","features":[]}';
 
 const ALLOWED_KINDS: ReadonlySet<string> = new Set<WorldPlaceKind>([
   'continent',
@@ -701,6 +747,351 @@ export class WorldPlacesStore {
       const created = this.#loadLink(newId);
       if (!created) return { ok: false, error: 'P0002' };
       return { ok: true, value: toLinkVm(created) };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  #ensureWorldRootMap(worldId: string, now: string): string {
+    const existing = this.#db
+      .prepare(
+        `SELECT id FROM world_atlas_maps
+         WHERE world_profile_id = ?
+           AND kind = 'world'
+           AND parent_map_id IS NULL
+         ORDER BY sort_order ASC, created_at ASC
+         LIMIT 1`,
+      )
+      .get(worldId) as { id: string } | undefined;
+    if (existing) return existing.id;
+
+    const id = randomUUID();
+    this.#db
+      .prepare(
+        `INSERT INTO world_atlas_maps (
+           id, world_profile_id, parent_map_id, kind, title, sort_order,
+           bounds, layers, generator_meta, revision, created_at, updated_at
+         ) VALUES (?, ?, NULL, 'world', 'Weltkarte', 0, ?, ?, ?, 0, ?, ?)`,
+      )
+      .run(
+        id,
+        worldId,
+        DEFAULT_MAP_BOUNDS,
+        EMPTY_LAYERS,
+        JSON.stringify({ engine: 'unified_canvas', mapStatus: 'unsketched' }),
+        now,
+        now,
+      );
+    return id;
+  }
+
+  #primaryMapId(placeId: string): string | null {
+    const row = this.#db
+      .prepare(
+        `SELECT map_id AS id FROM world_place_map_links
+         WHERE place_id = ? AND usage = 'primary'
+         LIMIT 1`,
+      )
+      .get(placeId) as { id: string } | undefined;
+    return row?.id ?? null;
+  }
+
+  #nextPlaceholderName(worldId: string, parentId: string | null, kind: string): string {
+    const stem = placeholderStem(kind);
+    const row = this.#db
+      .prepare(
+        parentId === null
+          ? `SELECT COUNT(*) AS n FROM world_places
+             WHERE world_profile_id = ? AND kind = ? AND status = 'placeholder'
+               AND parent_place_id IS NULL`
+          : `SELECT COUNT(*) AS n FROM world_places
+             WHERE world_profile_id = ? AND kind = ? AND status = 'placeholder'
+               AND parent_place_id = ?`,
+      )
+      .get(
+        ...(parentId === null ? [worldId, kind] : [worldId, kind, parentId]),
+      ) as { n: number };
+    return `${stem} ${Number(row.n) + 1}`;
+  }
+
+  #createPrimaryMap(
+    worldId: string,
+    placeId: string,
+    kind: string,
+    title: string,
+    parentMapId: string,
+    now: string,
+  ): string {
+    const mapId = randomUUID();
+    const mapKind = mapKindForNode(kind);
+    this.#db
+      .prepare(
+        `INSERT INTO world_atlas_maps (
+           id, world_profile_id, parent_map_id, kind, title, sort_order,
+           bounds, layers, generator_meta, revision, created_at, updated_at
+         ) VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, 0, ?, ?)`,
+      )
+      .run(
+        mapId,
+        worldId,
+        parentMapId,
+        mapKind,
+        title,
+        DEFAULT_MAP_BOUNDS,
+        EMPTY_LAYERS,
+        JSON.stringify({
+          engine: 'unified_canvas',
+          mapStatus: 'unlocated',
+          placeId,
+        }),
+        now,
+        now,
+      );
+    const linkId = randomUUID();
+    this.#db
+      .prepare(
+        `INSERT INTO world_place_map_links (
+           id, world_profile_id, place_id, map_id, usage, feature_id, anchor,
+           created_at, updated_at
+         ) VALUES (?, ?, ?, ?, 'primary', NULL, '{}', ?, ?)`,
+      )
+      .run(linkId, worldId, placeId, mapId, now, now);
+    return mapId;
+  }
+
+  createWorldNodeWithMaps(
+    actorIds: readonly string[],
+    input: CreateWorldNodeInput,
+  ): { ok: true; value: CreateWorldNodeResult } | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const kind = typeof input.kind === 'string' ? input.kind.trim() : '';
+    const name = typeof input.name === 'string' ? input.name.trim() : '';
+    const key =
+      typeof input.idempotencyKey === 'string' ? input.idempotencyKey.trim() : '';
+    if (!worldId || !kind || !name || !key) return { ok: false, error: '22023' };
+    if (!isCanonicalKind(kind)) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    const cached = this.#db
+      .prepare(
+        `SELECT result FROM world_node_create_idempotency
+         WHERE world_profile_id = ? AND idempotency_key = ?`,
+      )
+      .get(worldId, key) as { result: string } | undefined;
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached.result) as CreateWorldNodeResult;
+        return { ok: true, value: parsed };
+      } catch {
+        return { ok: false, error: 'P0001' };
+      }
+    }
+
+    let parentId =
+      typeof input.parentPlaceId === 'string' && input.parentPlaceId.trim().length > 0
+        ? input.parentPlaceId.trim()
+        : null;
+    let parentKind: string | null = null;
+    if (parentId) {
+      const parent = this.#loadPlace(parentId);
+      if (!parent || parent.world_profile_id !== worldId) {
+        return { ok: false, error: '23514' };
+      }
+      parentKind = parent.kind;
+    }
+
+    const chain = missingAncestorChain(kind, parentKind, parentId !== null);
+    if (chain.length === 0) {
+      const need = requiredParentKind(kind);
+      if (!tipSatisfies(need, parentKind)) {
+        return { ok: false, error: '23514' };
+      }
+    } else if (parentId !== null) {
+      const needForTip = requiredParentKind(chain[0]!);
+      if (!tipSatisfies(needForTip, parentKind)) {
+        return { ok: false, error: '23514' };
+      }
+    }
+
+    const subtypeRaw =
+      typeof input.subtype === 'string' ? input.subtype.trim() : '';
+    const subtype = subtypeRaw.length > 0 ? subtypeRaw : null;
+    const descriptionValue =
+      typeof input.description === 'string'
+        ? input.description.trim().length > 0
+          ? input.description.trim()
+          : null
+        : null;
+
+    const now = new Date().toISOString();
+    const created: CreateWorldNodeCreatedEntry[] = [];
+
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+
+      const cachedAgain = this.#db
+        .prepare(
+          `SELECT result FROM world_node_create_idempotency
+           WHERE world_profile_id = ? AND idempotency_key = ?`,
+        )
+        .get(worldId, key) as { result: string } | undefined;
+      if (cachedAgain) {
+        this.#db.exec('COMMIT');
+        return { ok: true, value: JSON.parse(cachedAgain.result) as CreateWorldNodeResult };
+      }
+
+      const rootMapId = this.#ensureWorldRootMap(worldId, now);
+      let parentMapId: string | null = parentId ? this.#primaryMapId(parentId) : null;
+      if (!parentMapId) parentMapId = rootMapId;
+
+      for (const ancestorKind of chain) {
+        const phName = this.#nextPlaceholderName(worldId, parentId, ancestorKind);
+        const placeId = randomUUID();
+        this.#db
+          .prepare(
+            `INSERT INTO world_places (
+               id, world_profile_id, parent_place_id, kind, name, description,
+               status, seed_key, sort_order, revision, subtype, created_at, updated_at
+             ) VALUES (?, ?, ?, ?, ?, NULL, 'placeholder', NULL, 0, 0, NULL, ?, ?)`,
+          )
+          .run(placeId, worldId, parentId, ancestorKind, phName, now, now);
+        const mapId = this.#createPrimaryMap(
+          worldId,
+          placeId,
+          ancestorKind,
+          `${phName} (Karte)`,
+          parentMapId,
+          now,
+        );
+        created.push({
+          placeId,
+          kind: ancestorKind,
+          name: phName,
+          status: 'placeholder',
+          mapId,
+          role: 'ancestor_placeholder',
+        });
+        parentId = placeId;
+        parentKind = ancestorKind;
+        parentMapId = mapId;
+      }
+
+      const targetId = randomUUID();
+      this.#db
+        .prepare(
+          `INSERT INTO world_places (
+             id, world_profile_id, parent_place_id, kind, name, description,
+             status, seed_key, sort_order, revision, subtype, created_at, updated_at
+           ) VALUES (?, ?, ?, ?, ?, ?, 'draft', NULL, 0, 0, ?, ?, ?)`,
+        )
+        .run(
+          targetId,
+          worldId,
+          parentId,
+          kind,
+          name,
+          descriptionValue,
+          subtype,
+          now,
+          now,
+        );
+      const targetMapId = this.#createPrimaryMap(
+        worldId,
+        targetId,
+        kind,
+        `${name} (Karte)`,
+        parentMapId,
+        now,
+      );
+      created.push({
+        placeId: targetId,
+        kind,
+        name,
+        status: 'draft',
+        mapId: targetMapId,
+        role: 'target',
+      });
+
+      const result: CreateWorldNodeResult = {
+        worldProfileId: worldId,
+        worldRootMapId: rootMapId,
+        targetPlaceId: targetId,
+        targetMapId,
+        created,
+        idempotencyKey: key,
+      };
+
+      this.#db
+        .prepare(
+          `INSERT INTO world_node_create_idempotency
+             (world_profile_id, idempotency_key, result, created_at)
+           VALUES (?, ?, ?, ?)`,
+        )
+        .run(worldId, key, JSON.stringify(result), now);
+
+      this.#db.exec('COMMIT');
+      return { ok: true, value: result };
+    } catch (err) {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: mapConstraintError(err) };
+    }
+  }
+
+  renameWorldNode(
+    actorIds: readonly string[],
+    input: RenameWorldNodeInput,
+  ): { ok: true; value: WorldPlaceVm } | { ok: false; error: string } {
+    const worldId =
+      typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+    const placeId = typeof input.placeId === 'string' ? input.placeId.trim() : '';
+    const name = typeof input.name === 'string' ? input.name.trim() : '';
+    if (!worldId || !placeId) return { ok: false, error: '22023' };
+    if (!name) return { ok: false, error: '22023' };
+    if (!this.worldExists(worldId) || !this.canEditWorld(actorIds, worldId)) {
+      return { ok: false, error: '42501' };
+    }
+
+    const existing = this.#loadPlace(placeId);
+    if (!existing || existing.world_profile_id !== worldId) {
+      return { ok: false, error: 'P0002' };
+    }
+
+    const now = new Date().toISOString();
+
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const row = this.#loadPlace(placeId);
+      if (!row || row.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
+      const status = row.status === 'placeholder' ? 'draft' : row.status;
+      this.#db
+        .prepare(
+          `UPDATE world_places SET
+             name = ?,
+             status = ?,
+             revision = revision + 1,
+             updated_at = ?
+           WHERE id = ? AND world_profile_id = ?`,
+        )
+        .run(name, status, now, placeId, worldId);
+      this.#db.exec('COMMIT');
+      const updated = this.#loadPlace(placeId);
+      if (!updated) return { ok: false, error: 'P0002' };
+      return { ok: true, value: toPlaceVm(updated) };
     } catch (err) {
       try {
         this.#db.exec('ROLLBACK');
