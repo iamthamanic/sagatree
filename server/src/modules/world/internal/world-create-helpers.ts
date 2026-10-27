@@ -14,8 +14,10 @@ export const CANONICAL_KINDS = [
 
 export type CanonicalWorldNodeKind = (typeof CANONICAL_KINDS)[number];
 
+const CANONICAL_KIND_SET: ReadonlySet<string> = new Set(CANONICAL_KINDS);
+
 export function isCanonicalKind(v: string): v is CanonicalWorldNodeKind {
-  return (CANONICAL_KINDS as readonly string[]).includes(v);
+  return CANONICAL_KIND_SET.has(v);
 }
 
 export function requiredParentKind(kind: string): string | null {

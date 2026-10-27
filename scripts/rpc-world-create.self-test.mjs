@@ -103,9 +103,10 @@ try {
   assert(room.ok, `create room: ${room.ok ? '' : room.error}`);
   assert(room.value.created.length === 5, `room chain len=${room.value.created.length}`);
   const kinds = room.value.created.map((c) => c.kind);
+  const expectedKinds = ['continent', 'country', 'place', 'building', 'room'];
   assert(
-    JSON.stringify(kinds) ===
-      JSON.stringify(['continent', 'country', 'place', 'building', 'room']),
+    kinds.length === expectedKinds.length &&
+      expectedKinds.every((k, i) => kinds[i] === k),
     `kinds=${kinds.join(',')}`,
   );
   assert(
@@ -153,6 +154,16 @@ try {
     .prepare(`SELECT COUNT(*) AS n FROM world_places WHERE world_profile_id = ?`)
     .get(worldId).n;
   assert(placeCount2 === 5, `places after idempotent=${placeCount2}`);
+  const mapCount2 = db
+    .prepare(`SELECT COUNT(*) AS n FROM world_atlas_maps WHERE world_profile_id = ?`)
+    .get(worldId).n;
+  const linkCount2 = db
+    .prepare(
+      `SELECT COUNT(*) AS n FROM world_place_map_links WHERE world_profile_id = ? AND usage = 'primary'`,
+    )
+    .get(worldId).n;
+  assert(mapCount2 === 6, `maps after idempotent=${mapCount2} (5 primary + 1 root)`);
+  assert(linkCount2 === 5, `primary links after idempotent=${linkCount2}`);
 
   // --- 3. Compatible parent: only missing ancestors under tip ---
   const continent = createNode(OWNER, {
