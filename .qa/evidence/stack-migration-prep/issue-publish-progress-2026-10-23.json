@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "repository": "iamthamanic/sagatree",
   "mode": "write",
-  "startedAt": "2026-10-26T13:09:21.318Z",
+  "startedAt": "2026-10-27T12:38:29.542Z",
   "total": 90,
-  "updated": 1,
-  "unchanged": 89,
+  "updated": 2,
+  "unchanged": 88,
   "failed": [],
   "issues": [
     {
@@ -333,19 +333,19 @@
       "number": 814,
       "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": false,
-      "labelsOk": false,
+      "bodyOk": true,
+      "labelsOk": true,
       "sha256": "6673ab0d3de3135e4b0388f5fcd413924505ca7d92ef182cff973a51efbdae3f",
-      "action": "updated"
+      "action": "unchanged"
     },
     {
       "localId": "RPC-SAGA-PROJECTIONS",
       "number": 876,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "fd28f8a74e67d507ac4e27a64595ca806874eacaff75e6b269e51e1ec5207483",
+      "sha256": "dcb1831c551db30fd078c73e6fe1db57cebcb20fe1a5760177502d70dc54a341",
       "action": "unchanged"
     },
     {
@@ -355,7 +355,7 @@
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "a81937b53525b59028982ccd8a985ede00af26b79b037a362c98d1593ea647dc",
+      "sha256": "e9ed9fb21eadb99a60d14a640c10ebf7e567e067556dd521d2b9aaf2517d1210",
       "action": "unchanged"
     },
     {
@@ -371,42 +371,42 @@
     {
       "localId": "RPC-ATLAS-MAPS",
       "number": 862,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "f8be00af1f8846726e4bed1cdc454aaeaf20e38568762813e72c62b5294beaaf",
+      "sha256": "cc7a5a0706ba63a813d77fb2ee5bfa1380b5edd47f775cce2dd1ccf276c73e83",
       "action": "unchanged"
     },
     {
       "localId": "RPC-WORLD-PLACES",
       "number": 863,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "ca19c2219a89ce5b73269bc99d6824174d9b0ead2766f2ec5803a32b139192e7",
+      "sha256": "7e753ee3a06eb0cbb4953948e0009f8c3a1439ec92bc7cdfc5df5015d785a3f8",
       "action": "unchanged"
     },
     {
       "localId": "RPC-WORLD-CREATE",
       "number": 864,
-      "state": "OPEN",
+      "state": "CLOSED",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "c3e559736f8a808fe812006bae2d71984fab123a588267369a8f4d0e07c41b81",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "defdb60b0b0e669cac365890647a0dc44bcee34fa90bd6fc1ba73067872bf92f",
+      "action": "updated"
     },
     {
       "localId": "RPC-WORLD-RESTRUCTURE",
       "number": 865,
       "state": "OPEN",
       "titleOk": true,
-      "bodyOk": true,
-      "labelsOk": true,
-      "sha256": "cd3aeec0faeda11a18578fa217565db306908288b4fff2954e84f84724f1f87a",
-      "action": "unchanged"
+      "bodyOk": false,
+      "labelsOk": false,
+      "sha256": "e7dd895c73797888774344af26ba93ec609007016386cc309fc44436783a0690",
+      "action": "updated"
     },
     {
       "localId": "RPC-WORLD-DESTRUCTIVE",
@@ -745,7 +745,7 @@
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "8e00868d53ce9f34a644cf862b34046e04f47af5b1aa8955448ead1b7e09e02b",
+      "sha256": "6152113ecf86b6d1b180042f5646b134fccca6c6703948efc5bec3ce42987aa1",
       "action": "unchanged"
     },
     {
@@ -765,7 +765,7 @@
       "titleOk": true,
       "bodyOk": true,
       "labelsOk": true,
-      "sha256": "cef65fcd4674365eca6c83dbcdf2d61c04921f83ff6cfb14c363d59ccb56f80c",
+      "sha256": "dbd4d51078b3ce4912688e7379cca3bcc7c24fae50911253fb9a2573debb2fda",
       "action": "unchanged"
     },
     {
@@ -909,5 +909,5 @@
       "action": "unchanged"
     }
   ],
-  "finishedAt": "2026-10-26T13:10:15.494Z"
+  "finishedAt": "2026-10-27T12:39:33.218Z"
 }
