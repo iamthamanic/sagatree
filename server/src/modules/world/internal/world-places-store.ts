@@ -1137,24 +1137,21 @@ export class WorldPlacesStore {
   }
 
   #descendantIds(worldId: string, rootPlaceId: string): string[] {
-    const out: string[] = [];
-    const queue = [rootPlaceId];
-    const seen = new Set<string>([rootPlaceId]);
-    while (queue.length > 0) {
-      const parent = queue.shift()!;
-      const children = this.#db
-        .prepare(
-          `SELECT id FROM world_places WHERE world_profile_id = ? AND parent_place_id = ?`,
-        )
-        .all(worldId, parent) as { id: string }[];
-      for (const child of children) {
-        if (seen.has(child.id)) continue;
-        seen.add(child.id);
-        out.push(child.id);
-        queue.push(child.id);
-      }
-    }
-    return out;
+    // Single recursive CTE under the write lock (UNION dedupes cycles).
+    const rows = this.#db
+      .prepare(
+        `WITH RECURSIVE tree(id) AS (
+           SELECT id FROM world_places
+           WHERE world_profile_id = ? AND parent_place_id = ?
+           UNION
+           SELECT p.id FROM world_places p
+           INNER JOIN tree t ON p.parent_place_id = t.id
+           WHERE p.world_profile_id = ?
+         )
+         SELECT id FROM tree`,
+      )
+      .all(worldId, rootPlaceId, worldId) as { id: string }[];
+    return rows.map((r) => r.id);
   }
 
   #markMapUnlocated(mapId: string, parentMapId: string, now: string): void {
@@ -1175,7 +1172,12 @@ export class WorldPlacesStore {
     meta.mapStatus = 'unlocated';
     this.#db
       .prepare(
-        `UPDATE world_atlas_maps SET parent_map_id = ?, generator_meta = ?, updated_at = ? WHERE id = ?`,
+        `UPDATE world_atlas_maps SET
+           parent_map_id = ?,
+           generator_meta = ?,
+           revision = revision + 1,
+           updated_at = ?
+         WHERE id = ?`,
       )
       .run(parentMapId, JSON.stringify(meta), now, mapId);
   }
@@ -1361,8 +1363,9 @@ export class WorldPlacesStore {
           sort_order: number;
           depth: number;
         };
-        // BFS by depth using iterative expansion (SQLite has no WITH RECURSIVE in all builds — use JS).
+        // Cycle-safe BFS (seen set); parent-before-child by depth for idMap inserts.
         const byDepth: TreeRow[] = [];
+        const seen = new Set<string>([placeId]);
         let frontier = this.#db
           .prepare(
             `SELECT id, parent_place_id, kind, name, description, subtype, sort_order
@@ -1374,6 +1377,8 @@ export class WorldPlacesStore {
         while (frontier.length > 0) {
           const next: Omit<TreeRow, 'depth'>[] = [];
           for (const row of frontier) {
+            if (seen.has(row.id)) continue;
+            seen.add(row.id);
             byDepth.push({ ...row, depth });
             const kids = this.#db
               .prepare(
@@ -1382,7 +1387,9 @@ export class WorldPlacesStore {
                  WHERE world_profile_id = ? AND parent_place_id = ?`,
               )
               .all(worldId, row.id) as Omit<TreeRow, 'depth'>[];
-            next.push(...kids);
+            for (const k of kids) {
+              if (!seen.has(k.id)) next.push(k);
+            }
           }
           frontier = next;
           depth += 1;

@@ -308,7 +308,7 @@ try {
     `places +${deep.value.created.length}`,
   );
 
-  // --- 10. Parallel deep copies do not share IDs ---
+  // --- 10. Sequential deep copies must not reuse IDs (local id-map not shared) ---
   const deep2 = duplicateNode(OWNER, {
     worldProfileId: worldId,
     placeId: countryA.value.targetPlaceId,
@@ -320,6 +320,22 @@ try {
   for (const id of ids2) {
     assert(!ids1.has(id), `no shared id ${id}`);
   }
+
+  // --- 10b. Reparent bumps atlas map revision (optimistic concurrency) ---
+  const revBefore = db
+    .prepare(`SELECT revision FROM world_atlas_maps WHERE id = ?`)
+    .get(placeMapId).revision;
+  const moveBack = reparentNode(OWNER, {
+    worldProfileId: worldId,
+    placeId,
+    newParentPlaceId: countryA.value.targetPlaceId,
+    confirmRelocate: true,
+  });
+  assert(moveBack.ok, `moveBack: ${moveBack.ok ? '' : moveBack.error}`);
+  const revAfter = db
+    .prepare(`SELECT revision FROM world_atlas_maps WHERE id = ?`)
+    .get(placeMapId).revision;
+  assert(revAfter === revBefore + 1, `map revision ${revBefore}→${revAfter}`);
 
   // --- 11. Stranger duplicate DENY ---
   const strangerDup = duplicateNode(STRANGER, {

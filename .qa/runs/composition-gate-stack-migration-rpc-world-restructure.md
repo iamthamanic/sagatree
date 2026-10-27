@@ -24,7 +24,7 @@ World restructure RPC port: WorldPorts → WorldPlacesStore.reparentWorldNode / 
 |------|----------|----------|--------|
 | N-actors | Owner reparent/duplicate; stranger 42501 | self-test | pass |
 | Invalid/missing | no confirm 22023; cycle/bad edge/foreign 23514 without partial move | self-test | pass |
-| Two consumers / crash | parallel deep duplicates yield disjoint place IDs; local id map not shared | self-test | pass |
+| Two consumers / crash | sequential deep duplicates yield disjoint place IDs; local id map not shared | self-test | pass |
 
 ## Flags
 
