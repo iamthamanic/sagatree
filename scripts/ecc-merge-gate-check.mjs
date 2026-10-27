@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
  * ecc-merge-gate-check — machine gate: block merge when unresolved P1/P2
- * (or Critical/Important) review findings remain on the PR tip.
+ * (or Critical/Important/High/Medium/…) review findings remain on the PR tip,
+ * and (when configured) when Kodus (kody-ai) has not completed successfully
+ * for the current HEAD.
  * Location: scripts/ecc-merge-gate-check.mjs
  *
  * Also verifies required GitHub check conclusions for the PR head SHA.
@@ -11,12 +13,26 @@
  * a prior green run; GraphQL review-thread resolution is authoritative; API
  * errors or unclear review state → FAIL (never PASS).
  *
+ * Kodus: see scripts/kodus-merge-gate.mjs — completion is the "Kody Code Review"
+ * check-run (app kody-ai) with a Complete title; never treat Started as PASS.
+ *
  * Exit 0 = PASS, exit 1 = FAIL (must not merge).
  */
 import { readFileSync, existsSync, appendFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import {
+  KODY_CHECK_NAME,
+  isKodyBotLogin,
+  kodyFindingSeverity,
+  kodyBodiesIndicateDismissed,
+  evaluateKodusCheckRun,
+  selectKodusCheckRun,
+  evaluateKodusHeadEvidence,
+  collectKodusIssueCommentFindings,
+  collectDismissedIssueCommentIds,
+} from './kodus-merge-gate.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -28,6 +44,7 @@ export const RESOLVED_MARKERS = [
   /resolved by\s+`?[0-9a-f]{7,40}`?/i,
   /addressed in\s+(?:commit\s+)?`?[0-9a-f]{7,40}`?/i,
   /<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i,
+  /<!--\s*ecc-finding-dismissed:\s*.+?\s*-->/i,
 ];
 
 export function loadMergeGateConfig(configRoot = root) {
@@ -35,7 +52,17 @@ export function loadMergeGateConfig(configRoot = root) {
   if (!existsSync(path)) {
     return {
       requiredChecks: ['Test Gate', 'Composition Gate', 'ECC Merge Gate'],
-      blockOnUnresolvedReviewSeverities: ['P1', 'P2', 'Critical', 'Important'],
+      blockOnUnresolvedReviewSeverities: [
+        'P1',
+        'P2',
+        'Critical',
+        'Important',
+        'High',
+        'Medium',
+        'Low',
+        'Info',
+      ],
+      requireKodusReview: true,
     };
   }
   const text = readFileSync(path, 'utf8');
@@ -43,7 +70,15 @@ export function loadMergeGateConfig(configRoot = root) {
   const severities = [];
   let inChecks = false;
   let inSev = false;
+  let requireKodusReview = true;
   for (const line of text.split('\n')) {
+    const kodusFlag = line.match(/^requireKodusReview:\s*(true|false)\s*$/i);
+    if (kodusFlag) {
+      requireKodusReview = kodusFlag[1].toLowerCase() === 'true';
+      inChecks = false;
+      inSev = false;
+      continue;
+    }
     if (/^requiredChecks:\s*$/.test(line)) {
       inChecks = true;
       inSev = false;
@@ -68,7 +103,10 @@ export function loadMergeGateConfig(configRoot = root) {
         ? requiredChecks
         : ['Test Gate', 'Composition Gate', 'ECC Merge Gate'],
     blockOnUnresolvedReviewSeverities:
-      severities.length > 0 ? severities : ['P1', 'P2', 'Critical', 'Important'],
+      severities.length > 0
+        ? severities
+        : ['P1', 'P2', 'Critical', 'Important', 'High', 'Medium', 'Low', 'Info'],
+    requireKodusReview,
   };
 }
 
@@ -107,17 +145,28 @@ export function ghJson(args, { cwd = root } = {}) {
   }
 }
 
-export function findingSeverity(body, allowed) {
+export function findingSeverity(body, allowed, { authorLogin = null } = {}) {
   const m = body.match(SEVERITY_RE);
-  if (!m) return null;
-  const sev = (m[1] || m[2] || m[3] || '').toUpperCase();
-  const normalized = sev === 'CRITICAL' ? 'Critical' : sev === 'IMPORTANT' ? 'Important' : sev;
-  if (!allowed.map((s) => s.toUpperCase()).includes(normalized.toUpperCase())) return null;
-  return normalized;
+  if (m) {
+    const sev = (m[1] || m[2] || m[3] || '').toUpperCase();
+    const normalized = sev === 'CRITICAL' ? 'Critical' : sev === 'IMPORTANT' ? 'Important' : sev;
+    if (allowed.map((s) => s.toUpperCase()).includes(normalized.toUpperCase())) return normalized;
+  }
+  // Kodus severity_level-* badges (and fail-closed unknown Kody finding cards).
+  if (isKodyBotLogin(authorLogin) || /kody code-review|severity_level-/i.test(body ?? '')) {
+    const kodySev = kodyFindingSeverity(body, { failClosedUnknown: isKodyBotLogin(authorLogin) });
+    if (kodySev && allowed.map((s) => s.toUpperCase()).includes(kodySev.toUpperCase())) {
+      return kodySev;
+    }
+  }
+  return null;
 }
 
 export function bodiesIndicateResolved(bodiesJoined) {
-  return RESOLVED_MARKERS.some((re) => re.test(bodiesJoined));
+  return (
+    RESOLVED_MARKERS.some((re) => re.test(bodiesJoined)) ||
+    kodyBodiesIndicateDismissed(bodiesJoined)
+  );
 }
 
 /**
@@ -131,12 +180,20 @@ export function evaluateMergeGate({
   checkFailures,
   apiError = null,
   pendingReviewsForHead = [],
+  kodusReview = null,
 }) {
   if (apiError) {
     return {
       ok: false,
       reason: 'api-error',
       detail: String(apiError.message ?? apiError),
+    };
+  }
+  if (kodusReview && kodusReview.ok === false) {
+    return {
+      ok: false,
+      reason: kodusReview.reason || 'kodus-incomplete',
+      detail: kodusReview.detail || 'Kodus review not complete for HEAD',
     };
   }
   if (pendingReviewsForHead.length > 0) {
@@ -180,9 +237,21 @@ export function lateFindingInvalidatesPriorPass({ headSha, findingCommitSha, sev
   return { blocks: true, reason: 'late-blocking-finding-on-same-head' };
 }
 
+const TRUSTED_REVIEW_ASSOCIATIONS = new Set(['OWNER', 'MEMBER', 'COLLABORATOR']);
+
 export function isResolvedThread(comment, replies) {
-  const bodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
-  if (bodiesIndicateResolved(bodies)) return true;
+  // Trusted dismissals: root or a trusted-association reply carrying the HTML marker.
+  const trustedBodies = [
+    comment.body,
+    ...replies
+      .filter((r) => TRUSTED_REVIEW_ASSOCIATIONS.has(String(r.author_association ?? '').toUpperCase()))
+      .map((r) => r.body),
+  ].join('\n');
+  if (bodiesIndicateResolved(trustedBodies)) return true;
+  // Untrusted free-text must not clear findings; still honor SHA resolve markers on any body
+  // when they include an explicit ecc-finding-resolved HTML tag (already in RESOLVED_MARKERS).
+  const allBodies = [comment.body, ...replies.map((r) => r.body)].join('\n');
+  if (/<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i.test(allBodies)) return true;
   if (comment.isResolved === true || comment.resolved === true) return true;
   return false;
 }
@@ -245,7 +314,9 @@ export function collectUnresolvedFindingsFromGraphql(owner, repo, pullNumber, al
       if (c.databaseId != null) graphqlThreadCommentIds.add(String(c.databaseId));
     }
     const root = comments[0];
-    const sev = findingSeverity(root.body ?? '', allowedSeverities);
+    const sev = findingSeverity(root.body ?? '', allowedSeverities, {
+      authorLogin: root.author?.login,
+    });
     if (!sev) continue;
     const bodies = comments.map((c) => c.body ?? '').join('\n');
     if (thread.isResolved === true || bodiesIndicateResolved(bodies)) continue;
@@ -292,7 +363,9 @@ export function collectUnresolvedFindingsFromRest(
   for (const c of comments) {
     if (c.in_reply_to_id) continue;
     if (skipCommentIds.has(String(c.id))) continue;
-    const sev = findingSeverity(c.body ?? '', allowedSeverities);
+    const sev = findingSeverity(c.body ?? '', allowedSeverities, {
+      authorLogin: c.user?.login,
+    });
     if (!sev) continue;
     const replies = repliesByParent.get(c.id) ?? [];
     if (isResolvedThread(c, replies)) continue;
@@ -326,7 +399,13 @@ export function mergeGraphqlAndRestFindings(fromGql, fromRest) {
  * Union GraphQL (authoritative resolution) + REST (non-thread comments only).
  * Any API throw propagates (fail-closed).
  */
-export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeverities) {
+export function collectUnresolvedFindings(
+  owner,
+  repo,
+  pullNumber,
+  allowedSeverities,
+  { headSha = null } = {},
+) {
   const { unresolved: fromGql, graphqlThreadCommentIds } = collectUnresolvedFindingsFromGraphql(
     owner,
     repo,
@@ -336,16 +415,100 @@ export function collectUnresolvedFindings(owner, repo, pullNumber, allowedSeveri
   const fromRest = collectUnresolvedFindingsFromRest(owner, repo, pullNumber, allowedSeverities, {
     skipCommentIds: graphqlThreadCommentIds,
   });
-  return mergeGraphqlAndRestFindings(fromGql, fromRest);
-}
-
-export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha) {
-  const reviews = ghJson([
+  const issueComments = ghJson([
     'api',
-    `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+    `repos/${owner}/${repo}/issues/${pullNumber}/comments`,
     '--paginate',
   ]);
-  const list = Array.isArray(reviews) ? reviews : [];
+  let headCommittedAt = null;
+  if (headSha) {
+    try {
+      const commit = ghJson(['api', `repos/${owner}/${repo}/commits/${headSha}`]);
+      headCommittedAt =
+        commit.commit?.committer?.date ?? commit.commit?.author?.date ?? commit.committer?.date ?? null;
+    } catch {
+      headCommittedAt = null;
+    }
+  }
+  const dismissedIds = collectDismissedIssueCommentIds(issueComments);
+  const fromKodusIssues = collectKodusIssueCommentFindings(issueComments, allowedSeverities, {
+    headCommittedAt,
+    dismissedIds,
+  });
+  return mergeGraphqlAndRestFindings(
+    mergeGraphqlAndRestFindings(fromGql, fromRest),
+    fromKodusIssues,
+  );
+}
+
+/**
+ * Resolve Kodus completion for HEAD via the Kody check-run, with APPROVED
+ * PR-review fallback when GitHub overwrites the check-run to skipped/neutral
+ * on the same SHA (issue-comment "Completed" text alone is never sufficient).
+ */
+export function resolveKodusReviewForHead(
+  owner,
+  repo,
+  headSha,
+  { required = true, reviews = null, pullNumber = null } = {},
+) {
+  if (!required) return { ok: true, reason: 'kodus-not-required', detail: 'requireKodusReview=false' };
+  const runs = ghJson([
+    'api',
+    `repos/${owner}/${repo}/commits/${headSha}/check-runs`,
+    '--paginate',
+  ]);
+  const selected = selectKodusCheckRun(runs);
+  let reviewList = Array.isArray(reviews) ? reviews : null;
+  if (reviewList == null && pullNumber != null) {
+    const fetched = ghJson([
+      'api',
+      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      '--paginate',
+    ]);
+    reviewList = Array.isArray(fetched) ? fetched : [];
+  }
+  return evaluateKodusHeadEvidence(selected, {
+    reviews: reviewList ?? [],
+    headSha,
+  });
+}
+
+/**
+ * Publish / refresh the ECC Merge Gate check-run on a specific SHA.
+ * Required for check_run / issue_comment workflow triggers (default-branch association).
+ */
+export function publishEccCheckRun(owner, repo, headSha, { conclusion, title, summary }) {
+  return ghJson([
+    'api',
+    '--method',
+    'POST',
+    `repos/${owner}/${repo}/check-runs`,
+    '-f',
+    `name=ECC Merge Gate`,
+    '-f',
+    `head_sha=${headSha}`,
+    '-f',
+    'status=completed',
+    '-f',
+    `conclusion=${conclusion}`,
+    '-f',
+    `output[title]=${title}`,
+    '-f',
+    `output[summary]=${summary}`,
+  ]);
+}
+
+export function collectPendingReviewsForHead(owner, repo, pullNumber, headSha, reviews = null) {
+  let list = Array.isArray(reviews) ? reviews : null;
+  if (list == null) {
+    const fetched = ghJson([
+      'api',
+      `repos/${owner}/${repo}/pulls/${pullNumber}/reviews`,
+      '--paginate',
+    ]);
+    list = Array.isArray(fetched) ? fetched : [];
+  }
   return list.filter((r) => {
     if (String(r.state).toUpperCase() !== 'PENDING') return false;
     const commitId = r.commit_id ?? r.commit?.sha;
@@ -402,6 +565,59 @@ export function collectCheckFailures(owner, repo, headSha, requiredChecks) {
  * leave a sticky FAIL while Test Gate / Composition Gate / Browser E2E are still
  * queued — that FAIL would become the latest required check and block merges.
  */
+function defaultGateSleep(ms) {
+  try {
+    execFileSync('sleep', [String(Math.max(1, Math.ceil(ms / 1000)))], { stdio: 'ignore' });
+  } catch {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  }
+}
+
+const KODUS_POLL_REASONS = new Set(['kodus-pending', 'kodus-started-only', 'kodus-missing']);
+
+/**
+ * Bounded poll for Kodus completion on HEAD. Prevents a sticky ECC FAIL when the
+ * PR-triggered evaluate runs before Kody finishes (same race as required checks).
+ * Defaults keep Kodus wait + required-check wait under the evaluate job timeout.
+ */
+export function waitForKodusReview(
+  owner,
+  repo,
+  headSha,
+  { required = true, pullNumber = null } = {},
+  {
+    timeoutMs = Number(process.env.ECC_KODUS_MAX_WAIT_MS || 300_000),
+    intervalMs = Number(process.env.ECC_KODUS_POLL_MS || 20_000),
+    sleep = defaultGateSleep,
+    log = (msg) => console.error(msg),
+    now = () => Date.now(),
+    fetchReviews = (o, r, n) =>
+      ghJson(['api', `repos/${o}/${r}/pulls/${n}/reviews`, '--paginate']),
+    resolve = resolveKodusReviewForHead,
+  } = {},
+) {
+  const started = now();
+  // Check-run polling does not need reviews; fetch once after the wait for fallbacks.
+  let last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
+  while (
+    last &&
+    last.ok === false &&
+    KODUS_POLL_REASONS.has(last.reason) &&
+    now() - started < timeoutMs
+  ) {
+    log(`ECC Merge Gate: waiting for Kodus (${last.reason}: ${last.detail})`);
+    sleep(intervalMs);
+    last = resolve(owner, repo, headSha, { required, reviews: [], pullNumber });
+  }
+  let reviews = [];
+  if (pullNumber != null) {
+    const fetched = fetchReviews(owner, repo, pullNumber);
+    reviews = Array.isArray(fetched) ? fetched : [];
+    last = resolve(owner, repo, headSha, { required, reviews, pullNumber });
+  }
+  return { kodusReview: last, reviews };
+}
+
 export function waitForRequiredChecks(
   owner,
   repo,
@@ -410,13 +626,7 @@ export function waitForRequiredChecks(
   {
     timeoutMs = Number(process.env.ECC_MERGE_GATE_CHECK_WAIT_MS || 480_000),
     intervalMs = Number(process.env.ECC_MERGE_GATE_CHECK_POLL_MS || 20_000),
-    sleep = (ms) => {
-      try {
-        execFileSync('sleep', [String(Math.max(1, Math.ceil(ms / 1000)))], { stdio: 'ignore' });
-      } catch {
-        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-      }
-    },
+    sleep = defaultGateSleep,
     log = (msg) => console.error(msg),
   } = {},
 ) {
@@ -474,27 +684,37 @@ export function runMergeGateCheck({
   let unresolved = [];
   let pendingReviewsForHead = [];
   let checkFailures = [];
+  let kodusReview = null;
 
   try {
+    const waited = waitForKodusReview(ctx.owner, ctx.repo, ctx.headSha, {
+      required: config.requireKodusReview !== false,
+      pullNumber: ctx.pullNumber,
+    });
+    kodusReview = waited.kodusReview;
+    const reviewList = waited.reviews;
     unresolved = collectUnresolvedFindings(
       ctx.owner,
       ctx.repo,
       ctx.pullNumber,
       config.blockOnUnresolvedReviewSeverities,
+      { headSha: ctx.headSha },
     );
     pendingReviewsForHead = collectPendingReviewsForHead(
       ctx.owner,
       ctx.repo,
       ctx.pullNumber,
       ctx.headSha,
+      reviewList,
     );
     if (!skipChecks) {
-      // Findings first: if already blocked, do not wait on sibling checks.
+      // Findings / Kodus first: if already blocked, do not wait on sibling checks.
       const early = evaluateMergeGate({
         unresolvedFindings: unresolved,
         checkFailures: [],
         apiError: null,
         pendingReviewsForHead,
+        kodusReview,
       });
       if (early.ok) {
         checkFailures = waitForRequiredChecks(
@@ -514,18 +734,29 @@ export function runMergeGateCheck({
     checkFailures,
     apiError,
     pendingReviewsForHead,
+    kodusReview,
   });
 
   const lines = [
     '## ECC Merge Gate',
     `- PR: #${ctx.pullNumber}`,
     `- HEAD: ${ctx.headSha}`,
-    `- Unresolved P1/P2 findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
+    `- Kodus (${KODY_CHECK_NAME}): ${
+      apiError
+        ? 'unknown (API error)'
+        : kodusReview
+          ? `${kodusReview.ok ? 'PASS' : 'FAIL'} (${kodusReview.reason})`
+          : 'n/a'
+    }`,
+    `- Unresolved review findings: ${apiError ? 'unknown (API error)' : unresolved.length}`,
     `- Pending reviews for HEAD: ${apiError ? 'unknown' : pendingReviewsForHead.length}`,
     `- Required check failures: ${apiError ? 'unknown' : checkFailures.length}`,
     `- Decision: ${decision.reason}${decision.detail ? ` — ${decision.detail}` : ''}`,
   ];
 
+  if (kodusReview && !kodusReview.ok) {
+    lines.push('', '### Kodus review', `- ${kodusReview.reason}: ${kodusReview.detail}`);
+  }
   if (unresolved.length > 0) {
     lines.push('', '### Unresolved findings');
     for (const f of unresolved) {
@@ -548,7 +779,15 @@ export function runMergeGateCheck({
     lines.push('', '### API error (fail-closed)', `- ${apiError.message}`);
   }
 
-  return { decision, lines, unresolved, checkFailures, pendingReviewsForHead, apiError };
+  return {
+    decision,
+    lines,
+    unresolved,
+    checkFailures,
+    pendingReviewsForHead,
+    kodusReview,
+    apiError,
+  };
 }
 
 const isMainModule =

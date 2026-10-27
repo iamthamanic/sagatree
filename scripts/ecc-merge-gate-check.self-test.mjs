@@ -14,6 +14,7 @@ import {
   findingSeverity,
   bodiesIndicateResolved,
   mergeGraphqlAndRestFindings,
+  waitForKodusReview,
 } from './ecc-merge-gate-check.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,6 +44,11 @@ assert(
 assert(src.includes('waitForRequiredChecks'), 'workflow_run path polls sibling checks');
 assert(src.includes('--slurp'), 'paginate uses --slurp so multi-page reviews parse');
 assert(src.includes('skipCommentIds') || src.includes('graphqlThreadCommentIds'), 'REST skips GraphQL thread ids');
+assert(src.includes('kodus-merge-gate') || src.includes('resolveKodusReviewForHead'), 'Kodus review wired');
+assert(src.includes('requireKodusReview'), 'requireKodusReview config hook');
+assert(workflow.includes('issue_comment:'), 'workflow re-runs on Kodus issue comments');
+assert(workflow.includes('check_run:'), 'workflow re-runs on Kody check_run');
+assert(workflow.includes('Kody Code Review'), 'Kody check name filtered');
 
 const p1 = '**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>  Keep idempotency';
 const p2 = '**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Exclude expectedRevision';
@@ -159,5 +165,31 @@ assert(
   mergeGraphqlAndRestFindings([], [{ id: 111, severity: 'P1', path: 'a.ts' }]).length === 1,
   'REST-only comment (no GraphQL thread) still blocks',
 );
+
+assert(src.includes('waitForKodusReview'), 'Kodus poll helper present');
+assert(workflow.includes('timeout-minutes: 16'), 'evaluate job timeout fits Kodus+check polls');
+
+{
+  let ticks = 0;
+  const sequence = [
+    { ok: false, reason: 'kodus-missing', detail: 'none' },
+    { ok: false, reason: 'kodus-pending', detail: 'in_progress' },
+    { ok: true, reason: 'kodus-complete', detail: 'Complete' },
+  ];
+  const waited = waitForKodusReview('o', 'r', 'abc', { required: true, pullNumber: 1 }, {
+    timeoutMs: 60_000,
+    intervalMs: 1,
+    sleep: () => {},
+    now: () => {
+      ticks += 10_000;
+      return ticks;
+    },
+    fetchReviews: () => [],
+    resolve: () => sequence.shift() ?? { ok: true, reason: 'kodus-complete', detail: 'done' },
+    log: () => {},
+  });
+  assert(waited.kodusReview.ok === true, 'poll reaches Complete from missing→pending');
+  assert(sequence.length === 0, 'poll consumed missing+pending+complete');
+}
 
 console.log('PASS: ecc-merge-gate-check.self-test');

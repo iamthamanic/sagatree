@@ -27,7 +27,7 @@ Read [AGENTS.md](../../AGENTS.md) before changing code.
 - Issue branches from `main` — never commit directly to `main`
 - Acceptance: `.qa/acceptance/<slug>.md` when present
 - Composition proof: `.qa/runs/composition-gate-<slug>.md` (CLEAR/SKIPPED for current HEAD)
-- Ship only after `@ecc-check` READY / green CI
+- Ship only after `@ecc-check` READY / green CI **and** Kodus (`Kody Code Review` Complete on HEAD) + Codex findings cleared — see AGENTS.md “External AI Review Contract”
 - Long queues: after each merge, update handoff + auto-compact in-session, then immediately next issue — see AGENTS.md “Context compact & long queues”
 
 ## Security

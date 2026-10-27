@@ -2,27 +2,27 @@ name: ECC Merge Gate
 
 # Machine-enforced merge prerequisites for Epic #773 recovery:
 # - Unresolved Codex/Bugbot P1/P2 (Critical/Important) review findings → FAIL
+# - Unresolved Kodus (kody-ai) Critical/High/Medium/Low/Info findings → FAIL
+# - Kodus "Kody Code Review" check-run must succeed for current HEAD (Complete)
 # - Required quality checks must be green on the PR head SHA
 #
-# #937 fail-closed race: a green run BEFORE late review findings must NOT remain
-# mergeable. Re-run on review / review_comment so a new FAIL invalidates the
-# prior PASS on the same HEAD (required-check freshness).
-#
-# Ambient known-red migration baselines (Atlas E2E, PG baseline, GATE-01/02/03
-# isolated candidates) are intentionally NOT in requiredChecks — see
-# .qa/merge-gate.yaml. Do not weaken this job to silence unresolved P1/P2.
+# Privilege split: evaluate job checks out PR head with checks:read only.
+# Publish job (check_run / issue_comment / workflow_run only) has checks:write
+# but never checks out PR-controlled code — it only mirrors the evaluate exit
+# code onto the PR head SHA via the Checks API.
 
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
-  # Late Codex/Bugbot findings arrive as reviews / review comments after the
-  # first green gate (#934/#935). Re-evaluate findings on the current HEAD.
   pull_request_review:
     types: [submitted, edited, dismissed]
   pull_request_review_comment:
     types: [created, edited, deleted]
-  # Allow re-check after other workflows finish (same SHA).
+  issue_comment:
+    types: [created, edited]
+  check_run:
+    types: [completed, rerequested]
   workflow_run:
     workflows:
       - Quality Gates
@@ -30,28 +30,33 @@ on:
       - Stack migration source contracts
     types: [completed]
 
-permissions:
-  contents: read
-  checks: read
-  pull-requests: read
+permissions: {}
 
 concurrency:
-  # Do not cancel-in-progress: a cancelled ECC Merge Gate can become the latest
-  # required check and stick red while a review event races the initial PR run
-  # (#937). Overlapping runs are cheap; the newest successful findings check wins.
-  group: ecc-merge-gate-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.sha }}
+  group: ecc-merge-gate-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.event.issue.number || github.event.check_run.head_sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
-  ecc-merge-gate:
+  evaluate:
     name: ECC Merge Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # On workflow_run, only evaluate the originating PR.
+    # Kodus poll (≤5m) + required-check poll (≤8m) must fit under this ceiling.
+    timeout-minutes: 16
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
+      issues: read
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+      sha: ${{ steps.pr.outputs.sha }}
+      exit_code: ${{ steps.gate.outputs.exit_code }}
     if: >
       github.event_name == 'pull_request' ||
       github.event_name == 'pull_request_review' ||
       github.event_name == 'pull_request_review_comment' ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && (github.event.comment.user.login == 'kody-ai[bot]' || github.event.comment.user.login == 'kody-ai')) ||
+      (github.event_name == 'check_run' && github.event.check_run.name == 'Kody Code Review') ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != '')
 
     steps:
@@ -65,6 +70,21 @@ jobs:
           if [ "$EVENT" = "pull_request" ] || [ "$EVENT" = "pull_request_review" ] || [ "$EVENT" = "pull_request_review_comment" ]; then
             echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = "issue_comment" ]; then
+            PR="${{ github.event.issue.number }}"
+            SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
+            echo "number=$PR" >> "$GITHUB_OUTPUT"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = "check_run" ]; then
+            SHA="${{ github.event.check_run.head_sha }}"
+            PR=$(gh api "repos/${{ github.repository }}/commits/${SHA}/pulls" --jq '.[0].number // empty')
+            if [ -z "$PR" ]; then
+              echo "No PR for Kody check_run — skip"
+              echo "number=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "number=$PR" >> "$GITHUB_OUTPUT"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           else
             PR=$(gh api "repos/${{ github.repository }}/commits/${{ github.event.workflow_run.head_sha }}/pulls" --jq '.[0].number // empty')
             if [ -z "$PR" ]; then
@@ -76,7 +96,7 @@ jobs:
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout
+      - name: Checkout PR head
         if: steps.pr.outputs.number != ''
         uses: actions/checkout@v4
         with:
@@ -90,14 +110,54 @@ jobs:
           node-version: 22
 
       - name: Run ECC Merge Gate check
+        id: gate
         if: steps.pr.outputs.number != ''
         env:
           GH_TOKEN: ${{ github.token }}
           ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
-          # Findings always evaluated. Skip sibling-check enforcement on
-          # pull_request + review events so (1) early PR open is not sticky-red
-          # while Quality Gates queue and (2) late review findings still
-          # fail-close by replacing a prior green run (#937). workflow_run
-          # enforces required checks (with poll) once siblings are underway.
-          ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment') && '1' || '0' }}
-        run: node scripts/ecc-merge-gate-check.mjs
+          ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment' || github.event_name == 'issue_comment' || github.event_name == 'check_run') && '1' || '0' }}
+        run: |
+          set +e
+          node scripts/ecc-merge-gate-check.mjs
+          CODE=$?
+          set -e
+          echo "exit_code=$CODE" >> "$GITHUB_OUTPUT"
+          exit "$CODE"
+
+  # Mirrors evaluate onto the PR head SHA for events whose workflow check-runs
+  # associate with the default branch (check_run / issue_comment / workflow_run).
+  # Never checks out PR code; only uses evaluate outputs + gh api.
+  publish:
+    name: ECC Merge Gate Publish
+    needs: evaluate
+    if: >
+      always() &&
+      needs.evaluate.outputs.number != '' &&
+      needs.evaluate.outputs.sha != '' &&
+      (github.event_name == 'check_run' || github.event_name == 'issue_comment' || github.event_name == 'workflow_run')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+    steps:
+      - name: Publish ECC Merge Gate on PR HEAD
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.evaluate.outputs.sha }}
+          GATE_EXIT: ${{ needs.evaluate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          if [ "${GATE_EXIT:-1}" = "0" ]; then
+            CONCL=success
+            TITLE='ECC Merge Gate PASS'
+          else
+            CONCL=failure
+            TITLE='ECC Merge Gate FAIL'
+          fi
+          gh api --method POST "repos/${{ github.repository }}/check-runs" \
+            -f name='ECC Merge Gate' \
+            -f head_sha="$HEAD_SHA" \
+            -f status='completed' \
+            -f conclusion="$CONCL" \
+            -f "output[title]=$TITLE" \
+            -f "output[summary]=Mirrored from evaluate job (event=${{ github.event_name }}, run=${{ github.run_id }}). PR-controlled scripts did not hold checks:write."
