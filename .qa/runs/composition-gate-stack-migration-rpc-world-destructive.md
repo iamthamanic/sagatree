@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-world-destructive (#866)
 
-- HEAD_SHA: 46b8bdb375b6d28e299ee82df2e2cbb85240386d
+- HEAD_SHA: 381fd585bf8b977d5d396216ebd3e4b29cd1a0cf
 - BASE_SHA: e626ce61123ff869d7036a28518300038fe1eee0
 - Date: 2026-10-27
 - Verdict: CLEAR
