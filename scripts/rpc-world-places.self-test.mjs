@@ -472,7 +472,7 @@ try {
   mkdirSync(migThru21);
   const allMigrations = readdirSync(join(root, 'server/migrations'))
     .filter((n) => /^\d{4}_.+\.sql$/.test(n))
-    .sort();
+    .toSorted();
   for (const name of allMigrations) {
     const ver = Number(name.slice(0, 4));
     copyFileSync(join(root, 'server/migrations', name), join(migThru21, name));
