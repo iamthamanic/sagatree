@@ -29,10 +29,7 @@
     "issuesReady": 20,
     "issuesBlockedOrNeedsDesign": 19,
     "gateIssues": 5,
-    "openArchitectureDecisions": 1,
-    "issuesDone": 51,
-    "issuesBlocked": 4,
-    "issuesWaiting": 15
+    "openArchitectureDecisions": 1
   },
   "waves": [
     "migration-wave-0-evidence",
@@ -8289,6 +8286,7 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-restructure.json",
       "verification": {
         "sourceStatus": "source-verified",
         "implementationStatus": "accepted",
@@ -8328,8 +8326,7 @@
         "migration-wave-2-api-realtime",
         "migration-order-040",
         "agent-done"
-      ],
-      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-world-restructure.json"
+      ]
     },
     {
       "localId": "RPC-WORLD-DESTRUCTIVE",

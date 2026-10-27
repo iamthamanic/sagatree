@@ -148,15 +148,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #787 (GATE-04)
 - Depends on #865 (RPC-WORLD-RESTRUCTURE)
 
-Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance. Unlocked by RPC-WORLD-RESTRUCTURE DONE (#865 / PR #1004).
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-rpc-world-destructive`
 - Design: `.qa/design/migration-issues/stack-migration-rpc-world-destructive.md`
-- Status: waiting
+- Status: ready
 - Reihenfolge: 41; Welle: 2
-- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-041`, `agent-blocked`, `waiting-dependency`
+- Labels: `P1`, `migration-wave-2-api-realtime`, `migration-order-041`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

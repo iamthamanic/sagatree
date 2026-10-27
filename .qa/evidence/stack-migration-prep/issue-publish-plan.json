@@ -564,9 +564,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-restructure.md",
-      "sha256": "e7dd895c73797888774344af26ba93ec609007016386cc309fc44436783a0690",
-      "payloadSha256": "4c92cc08d9a1453c64a48f8cbebf52fe3c750dabd93dd55bff73bd161749b189",
-      "status": "done"
+      "sha256": "778a67f4c3c60b6d431821b6a9f5a80a26113f6c52650aac76dd544ed98aca8b",
+      "payloadSha256": "8cfbd20b87cc043189cbeefbfb4392cc88171c40ce58384b9a46beff754077e7"
     },
     {
       "localId": "RPC-WORLD-DESTRUCTIVE",
@@ -579,10 +578,8 @@
         "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-world-destructive.md",
-      "sha256": "5efeeecfffbd170a6785e13df5d4329692c01c4085f719136692021eb7a6ee8d",
-      "payloadSha256": "dfae7038d02c8baf0ef5742f7f727355c4285e6d0071fc53f3c6fc70c5f07d3b",
-      "status": "ready",
-      "runnerBlock": false
+      "sha256": "40cf21df791ddecea4c7c5ee851e7b1ff0fcb25fe3387f2d749e2d2fd5e6e5c7",
+      "payloadSha256": "e0c7f269d6afdc6e4cddee8fbf85f9d2d53a151a9162ab6415224760cdea5fde"
     },
     {
       "localId": "MIG-350",
