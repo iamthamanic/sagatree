@@ -14,6 +14,7 @@ import {
   evaluateKodusHeadEvidence,
   findKodusApprovedReviewForHead,
   findKodusSubmittedReviewForHead,
+  isKodyStatusIssueComment,
   collectKodusIssueCommentFindings,
   collectDismissedIssueCommentIds,
   extractDismissedFindingIds,
@@ -220,6 +221,31 @@ assert(
   findKodusSubmittedReviewForHead([null, commentedOnly], '35bdc9ea99f4a7cf8dc435e733c90466bb48d284')
     ?.id === 5660271485,
   'null review elements are skipped fail-closed',
+);
+assert(
+  isKodyStatusIssueComment('## Code Review Started! 🚀\n\n[Kody](https://kodus.io)'),
+  'Started is status comment',
+);
+assert(
+  kodyFindingSeverity(
+    '# PR Summary (Comment created by [Kody](https://kodus.io) 🤖)\n\n## Code Review Started! 🚀',
+    { failClosedUnknown: true },
+  ) === null,
+  'Started/PR Summary must not map to Critical',
+);
+assert(
+  collectKodusIssueCommentFindings(
+    [
+      {
+        id: 6430869490,
+        user: { login: 'kody-ai[bot]' },
+        body: '# PR Summary (Comment created by [Kody](https://kodus.io) 🤖)\n\n## Code Review Started! 🚀',
+        created_at: '2026-10-27T00:45:00Z',
+      },
+    ],
+    ['Critical', 'High', 'Medium', 'Low', 'Info'],
+  ).length === 0,
+  'Started PR Summary is not a finding',
 );
 
 assert(

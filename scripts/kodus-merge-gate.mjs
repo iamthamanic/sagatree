@@ -44,8 +44,18 @@ export function mapKodySeverityToken(token) {
   return SEVERITY_MAP[String(token).toLowerCase()] ?? null;
 }
 
+/** Status / summary issue comments are not findings — never fail-closed Critical. */
+export function isKodyStatusIssueComment(body) {
+  const text = body ?? '';
+  if (/##\s*Code Review (Started|Completed)/i.test(text)) return true;
+  if (/#\s*PR Summary\b/i.test(text) && /Comment created by\s*\[?Kody/i.test(text)) return true;
+  if (/^@kody\s+start-review/i.test(text.trim())) return true;
+  return false;
+}
+
 export function kodyFindingSeverity(body, { failClosedUnknown = true } = {}) {
   const text = body ?? '';
+  if (isKodyStatusIssueComment(text)) return null;
   const m = text.match(KODY_SEVERITY_RE);
   if (m) {
     const mapped = mapKodySeverityToken(m[1] || m[2]);
@@ -338,8 +348,7 @@ export function collectKodusIssueCommentFindings(
     const login = c.user?.login ?? c.author?.login;
     if (!isKodyBotLogin(login)) continue;
     const body = c.body ?? '';
-    if (/^@kody\s+start-review/i.test(body.trim())) continue;
-    if (/##\s*Code Review Completed/i.test(body)) continue;
+    if (isKodyStatusIssueComment(body)) continue;
     if (/<!--\s*kody-codereview-completed-/i.test(body) && !KODY_SEVERITY_RE.test(body)) continue;
 
     // Scope to current HEAD: ignore cards posted before this commit existed.
