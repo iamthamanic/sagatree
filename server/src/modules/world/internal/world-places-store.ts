@@ -1193,40 +1193,51 @@ export class WorldPlacesStore {
     }
     if (input.confirmRelocate !== true) return { ok: false, error: '22023' };
 
-    const existing = this.#loadPlace(placeId);
-    if (!existing || existing.world_profile_id !== worldId) {
-      return { ok: false, error: 'P0002' };
-    }
-    if (!isCanonicalKind(existing.kind)) return { ok: false, error: '22023' };
-
     const newParentId =
       typeof input.newParentPlaceId === 'string' && input.newParentPlaceId.trim().length > 0
         ? input.newParentPlaceId.trim()
         : null;
-
-    let parentKind: string | null = null;
-    if (newParentId) {
-      if (newParentId === placeId) return { ok: false, error: '23514' };
-      const descendants = this.#descendantIds(worldId, placeId);
-      if (descendants.includes(newParentId)) return { ok: false, error: '23514' };
-      const parent = this.#loadPlace(newParentId);
-      if (!parent || parent.world_profile_id !== worldId) {
-        return { ok: false, error: '23514' };
-      }
-      parentKind = parent.kind;
-    }
-
-    const need = requiredParentKind(existing.kind);
-    if (!tipSatisfies(need, parentKind)) return { ok: false, error: '23514' };
+    if (newParentId === placeId) return { ok: false, error: '23514' };
 
     const now = new Date().toISOString();
     try {
       this.#db.exec('BEGIN IMMEDIATE');
+      // Revalidate hierarchy under the write lock (Codex P2 / concurrent upsertPlace).
       const row = this.#loadPlace(placeId);
       if (!row || row.world_profile_id !== worldId) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: 'P0002' };
       }
+      if (!isCanonicalKind(row.kind)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '22023' };
+      }
+
+      let parentKind: string | null = null;
+      if (newParentId) {
+        if (newParentId === placeId) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        const descendants = this.#descendantIds(worldId, placeId);
+        if (descendants.includes(newParentId)) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        const parent = this.#loadPlace(newParentId);
+        if (!parent || parent.world_profile_id !== worldId) {
+          this.#db.exec('ROLLBACK');
+          return { ok: false, error: '23514' };
+        }
+        parentKind = parent.kind;
+      }
+
+      const need = requiredParentKind(row.kind);
+      if (!tipSatisfies(need, parentKind)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+
       const rootMapId = this.#ensureWorldRootMap(worldId, now);
       let parentMapId = newParentId ? this.#primaryMapId(newParentId) : null;
       if (!parentMapId) parentMapId = rootMapId;
@@ -1280,11 +1291,6 @@ export class WorldPlacesStore {
       return { ok: false, error: '42501' };
     }
 
-    const src = this.#loadPlace(placeId);
-    if (!src || src.world_profile_id !== worldId) {
-      return { ok: false, error: 'P0002' };
-    }
-
     const deep = input.deep === true;
     const now = new Date().toISOString();
     const created: DuplicateWorldNodeCreatedEntry[] = [];
@@ -1292,13 +1298,17 @@ export class WorldPlacesStore {
 
     try {
       this.#db.exec('BEGIN IMMEDIATE');
+      const src = this.#loadPlace(placeId);
+      if (!src || src.world_profile_id !== worldId) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'P0002' };
+      }
       const rootMapId = this.#ensureWorldRootMap(worldId, now);
       let parentMapId = src.parent_place_id ? this.#primaryMapId(src.parent_place_id) : null;
       if (!parentMapId) parentMapId = rootMapId;
 
       const rootId = randomUUID();
       const copyName = `${src.name} (Kopie)`;
-      // subtype column may be null — load via raw query
       const srcExtra = this.#db
         .prepare(`SELECT subtype, description, sort_order FROM world_places WHERE id = ?`)
         .get(placeId) as
