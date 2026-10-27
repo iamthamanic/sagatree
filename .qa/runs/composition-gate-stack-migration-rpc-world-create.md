@@ -24,7 +24,7 @@ World create/rename RPC port: WorldPorts → WorldPlacesStore.createWorldNodeWit
 |------|----------|----------|--------|
 | N-actors | Owner create/rename; stranger 42501 | self-test | pass |
 | Invalid/missing | empty name/kind 22023; foreign/invalid parent 23514; missing P0002 | self-test | pass |
-| Idempotency / crash | same key returns cached IDs; no extra places | self-test | pass |
+| Two consumers / crash | same idempotency key returns cached IDs; no extra places/maps | self-test | pass |
 
 ## Flags
 
