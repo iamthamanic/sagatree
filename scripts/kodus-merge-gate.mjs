@@ -242,7 +242,7 @@ export function findKodusApprovedReviewForHead(reviews, headSha) {
 
   const approved = kodyOnHead
     .filter((r) => String(r.state).toUpperCase() === 'APPROVED')
-    .sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0))[0];
+    .toSorted((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0))[0];
   if (!approved) return null;
 
   // A later non-APPROVED Kody review on the same HEAD revokes the approval (fail-closed).
@@ -256,6 +256,26 @@ export function findKodusApprovedReviewForHead(reviews, headSha) {
 }
 
 /**
+ * Any submitted (non-PENDING) Kody review on HEAD proves a review cycle finished.
+ * Used when GitHub overwrites the check-run to Skipped after comments were posted.
+ */
+export function findKodusSubmittedReviewForHead(reviews, headSha) {
+  const list = Array.isArray(reviews) ? reviews : [];
+  const head = String(headSha || '').toLowerCase();
+  if (!head) return null;
+  const submitted = list
+    .filter((r) => {
+      const login = r.user?.login ?? r.author?.login ?? '';
+      if (!isKodyBotLogin(login)) return false;
+      if (typeof (r.commit_id ?? r.commitId) !== 'string') return false;
+      if (String(r.state).toUpperCase() === 'PENDING') return false;
+      return reviewOnHead(r, head);
+    })
+    .toSorted((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+  return submitted[0] ?? null;
+}
+
+/**
  * Combine check-run + optional APPROVED review when the check was overwritten to skipped.
  * @param {object|null} checkRun
  * @param {{ reviews?: object[], headSha?: string }} [opts]
@@ -266,7 +286,7 @@ export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = ''
   if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
     return fromCheck;
   }
-  // Overwritten check-run: Skipped/neutral after a real Complete on the same SHA.
+  // Overwritten check-run: Skipped/neutral after a real review on the same SHA.
   if (
     checkRun &&
     checkRun.status === 'completed' &&
@@ -278,6 +298,14 @@ export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = ''
         ok: true,
         reason: 'kodus-complete',
         detail: `Kody APPROVED review on HEAD (check-run was ${checkRun.conclusion}; id=${approved.id})`,
+      };
+    }
+    const submitted = findKodusSubmittedReviewForHead(reviews, headSha);
+    if (submitted) {
+      return {
+        ok: true,
+        reason: 'kodus-complete',
+        detail: `Kody ${submitted.state} review on HEAD after overwritten ${checkRun.conclusion} check (id=${submitted.id})`,
       };
     }
   }

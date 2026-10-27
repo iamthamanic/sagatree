@@ -13,6 +13,7 @@ import {
   selectKodusCheckRun,
   evaluateKodusHeadEvidence,
   findKodusApprovedReviewForHead,
+  findKodusSubmittedReviewForHead,
   collectKodusIssueCommentFindings,
   collectDismissedIssueCommentIds,
   extractDismissedFindingIds,
@@ -180,6 +181,25 @@ assert(
     '30884f5bdb4c6bc7af92d87f1076a95b61d95c69',
   ) === null,
   'later CHANGES_REQUESTED revokes APPROVED fallback',
+);
+const commentedOnly = {
+  id: 5660271485,
+  state: 'COMMENTED',
+  commit_id: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
+  submitted_at: '2026-10-26T23:52:33Z',
+  user: { login: 'kody-ai[bot]' },
+};
+assert(
+  findKodusSubmittedReviewForHead([commentedOnly], '35bdc9ea99f4a7cf8dc435e733c90466bb48d284')?.id ===
+    5660271485,
+  'COMMENTED on HEAD counts as submitted review',
+);
+assert(
+  evaluateKodusHeadEvidence(skippedAfterComplete, {
+    reviews: [commentedOnly],
+    headSha: '35bdc9ea99f4a7cf8dc435e733c90466bb48d284',
+  }).ok === true,
+  'skipped check + COMMENTED on HEAD = review complete (findings tracked separately)',
 );
 
 assert(
