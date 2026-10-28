@@ -30,6 +30,11 @@ const allowUrl = pathToFileURL(
   join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),
 ).href;
 
+const [mod, app, allow] = await Promise.all([
+  import(modUrl),
+  import(appUrl),
+  import(allowUrl),
+]);
 const {
   CHARACTER_LORE_DEFAULT_RATE_LIMIT,
   CHARACTER_LORE_MAX_REQUEST_BYTES,
@@ -45,9 +50,9 @@ const {
   parseCharacterLoreRequestBody,
   resolveCharacterLoreProviderConfig,
   stripCharacterLoreSecrets,
-} = await import(modUrl);
-const { createCharacterLoreUseCases } = await import(appUrl);
-const { isEdgeDispatcherAllowed } = await import(allowUrl);
+} = mod;
+const { createCharacterLoreUseCases } = app;
+const { isEdgeDispatcherAllowed } = allow;
 
 assert(CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no public activation');
 assert(isEdgeDispatcherAllowed('character-lore') === true, 'edge stays allowlisted');
@@ -142,10 +147,18 @@ function makeUc(storeOpts = {}) {
   return createCharacterLoreUseCases({
     store,
     references: makeReferences(),
-    resolveProvider: () =>
-      storeOpts.noProvider
-        ? null
-        : { provider: 'ollama', baseUrl: 'http://ollama:11434', model: 'test-model' },
+    resolveProvider: async (userId) => {
+      assert(typeof userId === 'string' && userId.length > 0, 'provider scoped to caller');
+      if (storeOpts.noProvider) return null;
+      if (storeOpts.perUserModel) {
+        return {
+          provider: 'ollama',
+          baseUrl: 'http://ollama:11434',
+          model: `model-for-${userId}`,
+        };
+      }
+      return { provider: 'ollama', baseUrl: 'http://ollama:11434', model: 'test-model' };
+    },
     generateStory: storeOpts.generateStory ?? fakeGenerate,
     rateLimitPerMinute: storeOpts.limit,
     nowMs: storeOpts.nowMs,
@@ -289,12 +302,33 @@ assert(
   assert(over.status === 'error' && over.httpStatus === 500, 'overlong story → 500');
   assert(!errorPayloadContainsSecrets(over.message), 'error has no secrets');
 
-  const okUc = makeUc();
+  const wsUc = makeUc({ generateStory: async () => '   \n\t  ' });
+  const blank = await wsUc.generate(actor(GM), {
+    contentLengthHeader: '50',
+    body: characterLoreMinimalContext(),
+  });
+  assert(blank.status === 'error' && blank.httpStatus === 500, 'whitespace-only story rejected');
+
+  const okUc = makeUc({ perUserModel: true, generateStory: async (cfg) => {
+    assert(cfg.model === `model-for-${GM}`, 'caller-scoped provider model');
+    return STORY;
+  } });
   const ok = await okUc.generate(actor(GM), {
     contentLengthHeader: '50',
     body: characterLoreMinimalContext(),
   });
   assert(ok.status === 'ok' && ok.story.length >= 1 && ok.story.length <= 12_000, 'story bounds');
+  assert(ok.model === `model-for-${GM}`, 'ok response uses caller model');
+
+  // Decoded-size 413 still charges quota (Edge: rate-limit before decoded body check)
+  const chargeUc = makeUc({ nowMs: 9_000_000_000_000 });
+  const charged = await chargeUc.generate(actor(GM), {
+    contentLengthHeader: '50',
+    rawBodyUtf8Bytes: CHARACTER_LORE_MAX_REQUEST_BYTES + 1,
+    body: characterLoreMinimalContext(),
+  });
+  assert(charged.httpStatus === 413, 'decoded oversized → 413 after quota');
+  assert(chargeUc.store.quota.get(GM)?.count === 1, 'quota charged before decoded 413');
 
   const stripped = stripCharacterLoreSecrets({
     apiKey: 'sk-secret-should-go',

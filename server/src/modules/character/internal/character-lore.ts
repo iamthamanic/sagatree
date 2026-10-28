@@ -411,7 +411,7 @@ export function checkCharacterLoreBodySize(
 export function resolveCharacterLoreRateLimit(envLimit?: string | number): number {
   const configured =
     typeof envLimit === 'number'
-      ? envLimit
+      ? Math.floor(envLimit)
       : Number.parseInt(typeof envLimit === 'string' ? envLimit : '', 10);
   return Number.isFinite(configured) && configured > 0
     ? Math.min(configured, CHARACTER_LORE_MAX_RATE_LIMIT)
@@ -447,8 +447,13 @@ export function consumeCharacterLoreRateLimit(
     throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');
   }
 
+  // Prune expired windows so the process-memory map cannot grow without bound.
+  for (const [key, entry] of store.quota) {
+    if (entry.resetAt <= nowMs) store.quota.delete(key);
+  }
+
   const existing = store.quota.get(userId);
-  if (!existing || existing.resetAt <= nowMs) {
+  if (!existing) {
     store.quota.set(userId, { count: 1, resetAt: nowMs + windowSeconds * 1000 });
     return { ok: true };
   }
@@ -614,7 +619,10 @@ export type CharacterLoreGenerateResult =
 export type CharacterLoreGenerateDeps = {
   readonly store: CharacterLoreStore;
   readonly references: CharacterLoreReferencePorts;
-  readonly resolveProvider: () => CharacterLoreProviderConfig | null;
+  /** Caller-scoped — mirrors Edge `resolveLlmProviderForUser(userId)`. */
+  readonly resolveProvider: (
+    userId: string,
+  ) => CharacterLoreProviderConfig | null | Promise<CharacterLoreProviderConfig | null>;
   readonly generateStory: (
     config: CharacterLoreProviderConfig,
     prompt: CharacterLorePrompt,
@@ -625,7 +633,8 @@ export type CharacterLoreGenerateDeps = {
 
 /**
  * Isolated generate-background use-case body (auth assumed at application boundary).
- * Ordering matches Edge: rate-limit → parse → provider-absent → lore → generate.
+ * Ordering matches Edge: Content-Length → rate-limit → decoded-body size → parse →
+ * provider-absent → lore → generate.
  */
 export async function generateCharacterLoreBackground(
   deps: CharacterLoreGenerateDeps,
@@ -636,12 +645,14 @@ export async function generateCharacterLoreBackground(
     readonly body: unknown;
   },
 ): Promise<CharacterLoreGenerateResult> {
-  const size = checkCharacterLoreBodySize(
-    input.contentLengthHeader,
-    input.rawBodyUtf8Bytes,
-  );
-  if (!size.ok) {
-    return { status: 'error', message: size.message, httpStatus: size.status };
+  // Header preflight only (Edge). Decoded-byte check happens after quota charge.
+  const headerSize = checkCharacterLoreBodySize(input.contentLengthHeader);
+  if (!headerSize.ok) {
+    return {
+      status: 'error',
+      message: headerSize.message,
+      httpStatus: headerSize.status,
+    };
   }
 
   if (!input.userId) {
@@ -653,15 +664,34 @@ export async function generateCharacterLoreBackground(
   }
 
   const limit = resolveCharacterLoreRateLimit(deps.rateLimitPerMinute);
-  const rate = consumeCharacterLoreRateLimit(
-    deps.store,
-    input.userId,
-    limit,
-    CHARACTER_LORE_RATE_WINDOW_SECONDS,
-    deps.nowMs ?? Date.now(),
-  );
+  let rate: { ok: true } | { ok: false; status: 429 | 503; message: string };
+  try {
+    rate = consumeCharacterLoreRateLimit(
+      deps.store,
+      input.userId,
+      limit,
+      CHARACTER_LORE_RATE_WINDOW_SECONDS,
+      deps.nowMs ?? Date.now(),
+    );
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+      httpStatus: 503,
+    };
+  }
   if (!rate.ok) {
     return { status: 'error', message: rate.message, httpStatus: rate.status };
+  }
+
+  const decodedSize = checkCharacterLoreBodySize(null, input.rawBodyUtf8Bytes);
+  if (!decodedSize.ok) {
+    return {
+      status: 'error',
+      message: decodedSize.message,
+      httpStatus: decodedSize.status,
+    };
   }
 
   const parsed = parseCharacterLoreRequestBody(input.body);
@@ -673,7 +703,7 @@ export async function generateCharacterLoreBackground(
     };
   }
 
-  const providerConfig = deps.resolveProvider();
+  const providerConfig = await deps.resolveProvider(input.userId);
   if (!providerConfig) {
     return {
       status: 'not-configured',
@@ -697,7 +727,8 @@ export async function generateCharacterLoreBackground(
       parsed.currentBackgroundStory,
     );
     deps.store.providerInvocations += 1;
-    const story = await deps.generateStory(providerConfig, prompt);
+    const storyRaw = await deps.generateStory(providerConfig, prompt);
+    const story = typeof storyRaw === 'string' ? storyRaw.trim() : '';
     if (!story || story.length > CHARACTER_LORE_MAX_STORY_LENGTH) {
       throw new Error('Generated story length is invalid');
     }

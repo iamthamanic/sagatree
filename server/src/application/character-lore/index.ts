@@ -15,7 +15,8 @@ import {
 } from '../../modules/character/character-lore.ts';
 
 function actorUserId(actor: Actor): string | null {
-  return actor?.actorId ? actor.actorId : null;
+  const id = typeof actor?.actorId === 'string' ? actor.actorId.trim() : '';
+  return id || null;
 }
 
 export type CharacterLoreUseCaseDeps = Omit<CharacterLoreGenerateDeps, 'store'> & {
