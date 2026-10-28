@@ -26,7 +26,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 21,
+    "issuesReady": 20,
     "issuesBlockedOrNeedsDesign": 17,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -8577,7 +8577,7 @@
       "title": "Replace Postgres RPC cluster: world/atlas RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-350",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-350.md",
       "dependsOn": [
@@ -8815,9 +8815,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-350.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -8850,7 +8851,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-042",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

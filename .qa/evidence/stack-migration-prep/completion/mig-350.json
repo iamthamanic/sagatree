@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-350",
+  "result": "PASS",
+  "testedCommit": "fb10f5e4210595778b1b9947176ebd981c74dd0a",
+  "githubClosed": true,
+  "mergeRef": "children #861/#862/#863/#864/#865/#866 \u2192 main; coordinator #813",
+  "note": "World/atlas RPC cluster coordinator; implementation exclusively in six child tickets with hashed DONE evidence.",
+  "checks": [
+    {
+      "command": "child RPC-WORLD-MAP completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-world-map.json",
+      "sha256": "abb067d5e76119ef14f422c1c2c513067ad2fc628e5fa08d8a72bf0bcab34e9a"
+    },
+    {
+      "command": "child RPC-ATLAS-MAPS completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-atlas-maps.json",
+      "sha256": "7867d7401f87278e32cfd476fa7f1d3c4f75a97a3e77734aeb2e6caaf143e200"
+    },
+    {
+      "command": "child RPC-WORLD-PLACES completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-world-places.json",
+      "sha256": "f3b647bc38a08ac122a46fe01d25387e7350949e8e4c82893d5aef5c8d4bb234"
+    },
+    {
+      "command": "child RPC-WORLD-CREATE completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-world-create.json",
+      "sha256": "efd0c866fb3b055f8a3e7f22964888ed4efdf654eb196ed7b8b8ec48437c9944"
+    },
+    {
+      "command": "child RPC-WORLD-RESTRUCTURE completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-world-restructure.json",
+      "sha256": "ed2c68a0535ecd98ee18b88d3ccdcaa388c269d8f2dcfbd20670a47fb11f3cc3"
+    },
+    {
+      "command": "child RPC-WORLD-DESTRUCTIVE completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-world-destructive.json",
+      "sha256": "99e0409b24805879ba6c4b429c4c648f060ebbf1cb02a7c729ac5bcc9c6552c7"
+    },
+    {
+      "command": "coordinator acceptance",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-350.md",
+      "sha256": "6b8c220bb7f4434e5e4270efcc7b7134e0ac8e4fa82acca2be5c422fbca0629a"
+    }
+  ]
+}

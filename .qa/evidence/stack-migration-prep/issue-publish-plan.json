@@ -589,11 +589,11 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-042",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-350.md",
-      "sha256": "7f91f4e9b059a8c77c26c251c60ad3dcd70576f10f97a0f64b84cd8f190fbd68",
-      "payloadSha256": "2e940960746da72247b5f28393b5f66027afed91697438cec60a67528975fe50"
+      "sha256": "93de7703b956c2cced07356da2f3f2b72eaefb9d3f92fc4a4263bb2f3d82726a",
+      "payloadSha256": "97abeb6f9c0167260bb8b02b0eb67d2940cac827cf238139224fb5a42646c29c"
     },
     {
       "localId": "MIG-402",
