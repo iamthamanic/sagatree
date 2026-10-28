@@ -149,10 +149,13 @@ const unavailable = ucProv.start(owner, {
 assert(
   unavailable.ok === true &&
     unavailable.value &&
-    unavailable.value.id === null &&
+    typeof unavailable.value.id === 'string' &&
     unavailable.value.status === 'provider_unavailable',
-  'provider_unavailable pseudo-job',
+  'provider_unavailable persisted job',
 );
+const retryUnavail = ucProv.retry(owner, unavailable.value.id);
+assert(retryUnavail.ok === false, 'retry without provider task stays invalid');
+assert(isAllowedAvatarMeshyGlbUrl('http://localhost/foo.glb') === false, 'glb deny localhost http');
 const ucNone = createCharacterAvatarMeshyUseCases(createCharacterAvatarMeshyStore(false));
 assert(ucNone.config().status === 'not-configured', 'config not-configured');
 assert(

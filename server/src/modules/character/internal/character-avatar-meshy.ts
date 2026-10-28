@@ -29,7 +29,8 @@ const GEOMETRY = new Set(['low', 'standard', 'high', 'maximum', 'smart-topology'
 const TEXTURE = new Set(['standard', '2k', '4k', '8k']);
 const POSE = new Set(['a-pose', 't-pose', 'none']);
 const TOPOLOGY = new Set(['triangle', 'quad']);
-const GLB_HOST_ALLOWLIST = new Set(['assets.meshy.ai', 'cdn.meshy.ai', 'localhost']);
+/** Production Meshy CDN hosts only (https). No localhost/loopback SSRF surface. */
+const GLB_HOST_ALLOWLIST = new Set(['assets.meshy.ai', 'cdn.meshy.ai']);
 
 export type MeshyAvatarMode = 'text' | 'image';
 export type MeshyAvatarJobStatus =
@@ -55,6 +56,7 @@ export type MeshyAvatarJob = {
   remeshClaimedBy: string | null;
   storagePath: string | null;
   generationComplete: boolean;
+  settings: Record<string, unknown>;
 };
 
 export type MeshyAvatarPortsResult<T> =
@@ -233,9 +235,7 @@ export function validateAvatarMeshyProvider(
 export function isAllowedAvatarMeshyGlbUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && parsed.hostname === 'localhost')) {
-      return false;
-    }
+    if (parsed.protocol !== 'https:') return false;
     if (!GLB_HOST_ALLOWLIST.has(parsed.hostname)) return false;
     return parsed.pathname.toLowerCase().endsWith('.glb');
   } catch {
@@ -323,15 +323,15 @@ export type StartAvatarMeshyInput = {
   readonly texturePrompt?: unknown;
   readonly providerId?: unknown;
   readonly settings?: unknown;
-  /** Injected provider create — returns null → provider_unavailable pseudo-job. */
-  readonly createProviderTask?: () => string | null;
+  /** Injected provider create — returns null → persist provider_unavailable job. */
+  readonly createProviderTask?: (settings: Record<string, unknown>) => string | null;
   readonly nowMs?: number;
 };
 
 export function startAvatarMeshyJob(
   store: CharacterAvatarMeshyStore,
   input: StartAvatarMeshyInput,
-): MeshyAvatarPortsResult<MeshyAvatarJob | { readonly id: null; readonly status: 'provider_unavailable' }> {
+): MeshyAvatarPortsResult<MeshyAvatarJob> {
   void CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED;
   const nonce = validateAvatarMeshyNonce(input.clientNonce);
   if (!nonce.ok) return nonce;
@@ -350,18 +350,19 @@ export function startAvatarMeshyJob(
   } else {
     const image = validateAvatarMeshyImageDataUri(input.imageDataUri);
     if (!image.ok) return image;
-    if (typeof input.texturePrompt === 'string' && input.texturePrompt.trim()) {
-      const textureNorm = normalizeAvatarMeshyPrompt(input.texturePrompt);
-      if (textureNorm.length > MESHY_AVATAR_PROMPT_MAX) {
-        return { ok: false, status: 400, error: 'texture prompt too long', code: 'invalid_prompt' };
-      }
-      prompt =
-        textureNorm.length >= MESHY_AVATAR_PROMPT_MIN
-          ? textureNorm
-          : MESHY_AVATAR_IMAGE_PLACEHOLDER;
-    } else {
-      prompt = MESHY_AVATAR_IMAGE_PLACEHOLDER;
+    // Edge parity: texturePrompt ?? prompt; placeholder only when under min length.
+    const rawGuidance =
+      typeof input.texturePrompt === 'string' && input.texturePrompt.trim()
+        ? input.texturePrompt
+        : typeof input.prompt === 'string'
+          ? input.prompt
+          : '';
+    const guidance = normalizeAvatarMeshyPrompt(rawGuidance);
+    if (guidance.length > MESHY_AVATAR_PROMPT_MAX) {
+      return { ok: false, status: 400, error: 'texture prompt too long', code: 'invalid_prompt' };
     }
+    prompt =
+      guidance.length >= MESHY_AVATAR_PROMPT_MIN ? guidance : MESHY_AVATAR_IMAGE_PLACEHOLDER;
   }
 
   if (!store.meshyConfigured) {
@@ -386,15 +387,9 @@ export function startAvatarMeshyJob(
     }
   }
 
-  const create = input.createProviderTask ?? (() => `task-${store.nextId}`);
-  const providerTaskId = create();
-  if (providerTaskId === null) {
-    return {
-      ok: true,
-      value: { id: null, status: 'provider_unavailable' },
-    };
-  }
-
+  const create =
+    input.createProviderTask ?? ((_settings: Record<string, unknown>) => `task-${store.nextId}`);
+  const providerTaskId = create(settings.value);
   const id = `job-${store.nextId++}`;
   const job: MeshyAvatarJob = {
     id,
@@ -403,13 +398,14 @@ export function startAvatarMeshyJob(
     generationMode: mode,
     prompt,
     idempotencyKey,
-    status: 'generating',
-    progress: 10,
+    status: providerTaskId === null ? 'provider_unavailable' : 'generating',
+    progress: providerTaskId === null ? 0 : 10,
     providerTaskId,
     remeshTaskId: null,
     remeshClaimedBy: null,
     storagePath: `${input.ownerUserId}/avatars/${id}.glb`,
     generationComplete: false,
+    settings: settings.value,
   };
   store.jobs.set(id, job);
   store.byIdempotency.set(idempotencyKey, id);
@@ -462,12 +458,8 @@ export function claimAvatarMeshyRemesh(
   const got = getAvatarMeshyJob(store, ownerUserId, jobId);
   if (!got.ok) return got;
   const job = got.value;
-  if (
-    !job.generationComplete ||
-    job.status === 'failed' ||
-    job.status === 'succeeded' ||
-    job.status === 'provider_unavailable'
-  ) {
+  // Only claim remesh from an active generating job that finished provider mesh.
+  if (job.status !== 'generating' || !job.generationComplete) {
     return { ok: true, value: { claimed: false, job } };
   }
   if (job.remeshClaimedBy && job.remeshClaimedBy !== claimerId) {
