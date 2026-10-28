@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-313 (#812)
 
-- HEAD_SHA: f9329e5a8a1c6df85b62500067ec1b6bb74a2820
+- HEAD_SHA: a72056ea582b632e8f2a1e525adb4f6fcf444ab6
 - BASE_SHA: 856c4b0720846a73ea8131e4355b9ab3ac6452a1
 - HOP_DIGEST: mig-313-host-world-adapter-v1
 - Date: 2026-10-28
