@@ -25,6 +25,37 @@ export {
   type QuarantineCharacter,
 } from './internal/characters-quarantine.ts';
 
+export {
+  CHARACTER_AVATAR_MESHY_PUBLIC_ACTIVATION_AUTHORIZED,
+  MESHY_AVATAR_IMAGE_MAX_BYTES,
+  MESHY_AVATAR_PROMPT_MAX,
+  MESHY_AVATAR_PROMPT_MIN,
+  MESHY_AVATAR_RATE_LIMIT,
+  MESHY_AVATAR_RATE_WINDOW_SECONDS,
+  assertAvatarMeshyStoragePathOwner,
+  buildAvatarMeshyIdempotencyKey,
+  claimAvatarMeshyRemesh,
+  consumeAvatarMeshyQuota,
+  createCharacterAvatarMeshyStore,
+  markAvatarMeshyGenerationComplete,
+  describeAvatarMeshyConfigLegacyDefect,
+  describeAvatarMeshyIdempotencyLegacyDefect,
+  describeAvatarMeshyStartOrderingLegacyDefect,
+  getAvatarMeshyConfig,
+  getAvatarMeshyJob,
+  isAllowedAvatarMeshyGlbUrl,
+  retryAvatarMeshyJob,
+  startAvatarMeshyJob,
+  validateAvatarMeshyImageDataUri,
+  validateAvatarMeshyNonce,
+  validateAvatarMeshyProvider,
+  validateAvatarMeshySettings,
+  validateAvatarMeshyTextPrompt,
+  type CharacterAvatarMeshyStore,
+  type MeshyAvatarJob,
+  type StartAvatarMeshyInput,
+} from './internal/character-avatar-meshy.ts';
+
 export type { CharacterMembershipCheck, SeededPc };
 
 export type CharacterPorts = {
