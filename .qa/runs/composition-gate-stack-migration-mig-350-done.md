@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-350 DONE evidence (#813)
 
-- HEAD_SHA: PLACEHOLDER
+- HEAD_SHA: 9f52d6615a23cf97283f9973918071df0d91fa4a
 - BASE_SHA: fb10f5e4210595778b1b9947176ebd981c74dd0a
 - Date: 2026-10-28
 - Verdict: CLEAR
