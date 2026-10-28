@@ -48,7 +48,7 @@
       "command": "coordinator acceptance",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-350.md",
-      "sha256": "6bb2ff3b72990677037b1de64a2a0d4112ef2db2eaee5c4c30c67a8bb217e828"
+      "sha256": "6b8c220bb7f4434e5e4270efcc7b7134e0ac8e4fa82acca2be5c422fbca0629a"
     }
   ]
 }

@@ -1,4 +1,4 @@
-# Acceptance — MIG-350 world/atlas RPC cluster (#813)
+# Acceptance — MIG-350 World/Atlas RPC Cluster (#813)
 
 ## Intent
 Coordinate the 6 world/atlas RPC child tickets; no additional host implementation in this issue.
