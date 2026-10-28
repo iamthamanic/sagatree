@@ -54,6 +54,7 @@ export type MeshyAvatarJob = {
   remeshTaskId: string | null;
   remeshClaimedBy: string | null;
   storagePath: string | null;
+  generationComplete: boolean;
 };
 
 export type MeshyAvatarPortsResult<T> =
@@ -188,10 +189,27 @@ export function validateAvatarMeshySettings(
   }
   const s = raw as Record<string, unknown>;
   const model = typeof s.model === 'string' ? s.model : typeof s.modelId === 'string' ? s.modelId : '';
-  const geometry = typeof s.geometry === 'string' ? s.geometry : '';
-  const texture = typeof s.texture === 'string' ? s.texture : '';
-  const pose = typeof s.pose === 'string' ? s.pose : '';
-  const topology = typeof s.topology === 'string' ? s.topology : '';
+  // Accept Edge short names and canonical Avatar3dGenerationSettings field names.
+  const geometry =
+    typeof s.geometry === 'string'
+      ? s.geometry
+      : typeof s.geometryQuality === 'string'
+        ? s.geometryQuality
+        : '';
+  const texture =
+    typeof s.texture === 'string'
+      ? s.texture
+      : typeof s.textureQuality === 'string'
+        ? s.textureQuality
+        : '';
+  const pose =
+    typeof s.pose === 'string' ? s.pose : typeof s.poseMode === 'string' ? s.poseMode : '';
+  const topology =
+    typeof s.topology === 'string'
+      ? s.topology
+      : typeof s.topologyMode === 'string'
+        ? s.topologyMode
+        : '';
   const outputFormat = typeof s.outputFormat === 'string' ? s.outputFormat : 'glb';
   if (!MESHY_MODELS.has(model) || !GEOMETRY.has(geometry) || !TEXTURE.has(texture)) {
     return { ok: false, status: 400, error: 'settings enums invalid', code: 'invalid_settings' };
@@ -391,6 +409,7 @@ export function startAvatarMeshyJob(
     remeshTaskId: null,
     remeshClaimedBy: null,
     storagePath: `${input.ownerUserId}/avatars/${id}.glb`,
+    generationComplete: false,
   };
   store.jobs.set(id, job);
   store.byIdempotency.set(idempotencyKey, id);
@@ -413,6 +432,27 @@ export function getAvatarMeshyJob(
  * Conditional remesh claim — only one concurrent poll wins the claim.
  * Returns true when this caller started remesh.
  */
+/**
+ * Mark provider generation complete (fixture / poll adapter before remesh).
+ * Remesh claim requires this stage — never jump generating → remeshing.
+ */
+export function markAvatarMeshyGenerationComplete(
+  store: CharacterAvatarMeshyStore,
+  ownerUserId: string,
+  jobId: string,
+): MeshyAvatarPortsResult<MeshyAvatarJob> {
+  const got = getAvatarMeshyJob(store, ownerUserId, jobId);
+  if (!got.ok) return got;
+  const job = got.value;
+  if (job.status !== 'generating' && job.status !== 'queued') {
+    return { ok: false, status: 400, error: 'not generating', code: 'invalid_state' };
+  }
+  job.status = 'generating';
+  job.progress = Math.max(job.progress, 50);
+  job.generationComplete = true;
+  return { ok: true, value: job };
+}
+
 export function claimAvatarMeshyRemesh(
   store: CharacterAvatarMeshyStore,
   ownerUserId: string,
@@ -422,6 +462,14 @@ export function claimAvatarMeshyRemesh(
   const got = getAvatarMeshyJob(store, ownerUserId, jobId);
   if (!got.ok) return got;
   const job = got.value;
+  if (
+    !job.generationComplete ||
+    job.status === 'failed' ||
+    job.status === 'succeeded' ||
+    job.status === 'provider_unavailable'
+  ) {
+    return { ok: true, value: { claimed: false, job } };
+  }
   if (job.remeshClaimedBy && job.remeshClaimedBy !== claimerId) {
     return { ok: true, value: { claimed: false, job } };
   }

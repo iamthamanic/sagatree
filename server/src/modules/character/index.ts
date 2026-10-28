@@ -37,6 +37,7 @@ export {
   claimAvatarMeshyRemesh,
   consumeAvatarMeshyQuota,
   createCharacterAvatarMeshyStore,
+  markAvatarMeshyGenerationComplete,
   describeAvatarMeshyConfigLegacyDefect,
   describeAvatarMeshyIdempotencyLegacyDefect,
   describeAvatarMeshyStartOrderingLegacyDefect,
@@ -52,6 +53,7 @@ export {
   validateAvatarMeshyTextPrompt,
   type CharacterAvatarMeshyStore,
   type MeshyAvatarJob,
+  type StartAvatarMeshyInput,
 } from './internal/character-avatar-meshy.ts';
 
 export type { CharacterMembershipCheck, SeededPc };

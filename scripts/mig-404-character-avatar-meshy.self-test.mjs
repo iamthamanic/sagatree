@@ -38,6 +38,7 @@ const {
   describeAvatarMeshyIdempotencyLegacyDefect,
   describeAvatarMeshyStartOrderingLegacyDefect,
   isAllowedAvatarMeshyGlbUrl,
+  markAvatarMeshyGenerationComplete,
 } = await import(modUrl);
 const { createCharacterAvatarMeshyUseCases } = await import(appUrl);
 const { isEdgeDispatcherAllowed } = await import(allowUrl);
@@ -98,6 +99,19 @@ assert(
   }).ok === false,
   'bad settings',
 );
+const canonicalSettings = uc.start(owner, {
+  clientNonce: 'canon-settings',
+  prompt: 'abcdefghijkl',
+  settings: {
+    modelId: 'latest',
+    geometryQuality: 'high',
+    textureQuality: '4k',
+    poseMode: 'a-pose',
+    topologyMode: 'triangle',
+    outputFormat: 'glb',
+  },
+});
+assert(canonicalSettings.ok === true, 'canonical Avatar3dGenerationSettings field names');
 
 // Fall 3: replay + 3rd start in window → 429 even if replay
 const store2 = createCharacterAvatarMeshyStore(true);
@@ -110,7 +124,11 @@ assert(s2.ok === true && s2.replayed === true, 'replay start2');
 const s3 = uc2.start(owner, { clientNonce: 'same', prompt: 'abcdefghijkl', nowMs: t0 });
 assert(s3.ok === false && s3.status === 429, 'third start 429 even if would replay');
 
-// Fall 4: concurrent remesh claim — only one wins
+// Fall 4: remesh only after generation complete; concurrent claim — only one wins
+const premature = uc.poll(owner, jobId, 'poller-early');
+assert(premature.ok && premature.value.claimed === false, 'no remesh while still generating');
+const marked = markAvatarMeshyGenerationComplete(uc.store, 'owner-a', jobId);
+assert(marked.ok === true && marked.value.generationComplete === true, 'generation complete');
 const pollA = uc.poll(owner, jobId, 'poller-a');
 const pollB = uc.poll(owner, jobId, 'poller-b');
 assert(pollA.ok && pollA.value.claimed === true, 'first poll claims remesh');
