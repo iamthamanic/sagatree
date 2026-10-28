@@ -28,6 +28,7 @@ DONE evidence sync: intake RPC-WORLD-DESTRUCTIVE → done + completionEvidence; 
 ## Flags
 
 - Acceptance tier: isolated-contract DONE evidence
+- Deferred integration: none (DONE/queue-metadata evidence only; HTTP adapter → MIG-311; FEATURE → MIG-602/#847)
 - No cutover
 
 ## Non-claims
