@@ -2,7 +2,7 @@
 
 - HEAD_SHA: ce8d93d362dbf8ac59172915fdf0d853877b11df
 - BASE_SHA: e44a40ae499c48b710451e05ed2bb08948937b7e
-- HOP_DIGEST: mig-313-host-world-adapter-v1
+- HOP_DIGEST: 9385e461073c66a118841f24e5e9c7296466c2ccdffe01919937e6dec1cba9f9
 - Date: 2026-10-28
 - Verdict: CLEAR
 - note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
