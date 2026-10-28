@@ -13,6 +13,8 @@ export const AI_GM_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 export const AI_GM_DEFAULT_RATE_LIMIT = 12 as const;
 export const AI_GM_RATE_LIMIT_WINDOW_SECONDS = 60 as const;
 export const AI_GM_ACTION_MAX_LENGTH = 5000 as const;
+/** Max expired keys removed per consume (amortized cleanup; avoids O(U) every call). */
+export const AI_GM_QUOTA_SWEEP_BATCH = 8 as const;
 
 export type AiGmRequestValidation =
   | { readonly valid: true }
@@ -84,8 +86,13 @@ export function consumeAiGmQuota(
   const id = typeof userId === 'string' ? userId.trim() : '';
   if (!id) return false;
   const windowMs = bucket.windowSeconds * 1000;
+  // Bounded sweep: delete up to SWEEP_BATCH expired keys; skip live entries.
+  let swept = 0;
   for (const [key, entry] of bucket.entries) {
-    if (nowMs - entry.windowStartMs >= windowMs) bucket.entries.delete(key);
+    if (swept >= AI_GM_QUOTA_SWEEP_BATCH) break;
+    if (nowMs - entry.windowStartMs < windowMs) continue;
+    bucket.entries.delete(key);
+    swept += 1;
   }
   const prior = bucket.entries.get(id);
   const windowStartMs =
