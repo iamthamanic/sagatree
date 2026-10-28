@@ -378,8 +378,16 @@ export function createWorldPorts(deps: {
           return { ok: false, error: 'delete-failed' };
         }
       }
+      let inTx = false;
       try {
         db.exec('BEGIN IMMEDIATE');
+        inTx = true;
+        // Revalidate project refs under the write lock (pre-check is advisory only).
+        if (worldHasProjects?.(id)) {
+          db.exec('ROLLBACK');
+          inTx = false;
+          return { ok: false, error: 'world-in-use' };
+        }
         writeStore.deleteWorldMapRow(id);
         const changed = writeStore.deleteOwned({
           id,
@@ -387,15 +395,19 @@ export function createWorldPorts(deps: {
         });
         if (changed < 1) {
           db.exec('ROLLBACK');
+          inTx = false;
           return { ok: false, error: 'not-authorized' };
         }
         db.exec('COMMIT');
+        inTx = false;
         return { ok: true, value: { deleted: true } };
       } catch (err) {
-        try {
-          db.exec('ROLLBACK');
-        } catch {
-          /* ignore */
+        if (inTx) {
+          try {
+            db.exec('ROLLBACK');
+          } catch {
+            /* ignore */
+          }
         }
         const msg = err instanceof Error ? err.message : String(err);
         if (/FOREIGN KEY|constraint/i.test(msg)) return { ok: false, error: 'world-in-use' };
