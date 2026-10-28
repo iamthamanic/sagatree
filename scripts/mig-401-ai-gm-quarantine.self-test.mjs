@@ -143,6 +143,17 @@ assert(
   consumeAiGmQuota(bucket, 'user-1', t0 + AI_GM_RATE_LIMIT_WINDOW_SECONDS * 1000) === true,
   'after 60s window → allow again',
 );
+const pruneBucket = createAiGmQuotaBucket(2, 60);
+assert(consumeAiGmQuota(pruneBucket, 'stale-a', t0) === true, 'prune seed a');
+assert(consumeAiGmQuota(pruneBucket, 'stale-b', t0) === true, 'prune seed b');
+assert(pruneBucket.entries.size === 2, 'two live entries');
+assert(
+  consumeAiGmQuota(pruneBucket, 'fresh', t0 + AI_GM_RATE_LIMIT_WINDOW_SECONDS * 1000) === true,
+  'consume after expiry prunes stale keys',
+);
+assert(pruneBucket.entries.has('stale-a') === false, 'stale-a pruned');
+assert(pruneBucket.entries.has('stale-b') === false, 'stale-b pruned');
+assert(pruneBucket.entries.has('fresh') === true, 'fresh retained');
 
 const narrative = formatAiGmNdjsonChunk({ type: 'narrative', content: 'Hi' });
 assert(narrative === '{"type":"narrative","content":"Hi"}\n', 'ndjson narrative');

@@ -84,6 +84,9 @@ export function consumeAiGmQuota(
   const id = typeof userId === 'string' ? userId.trim() : '';
   if (!id) return false;
   const windowMs = bucket.windowSeconds * 1000;
+  for (const [key, entry] of bucket.entries) {
+    if (nowMs - entry.windowStartMs >= windowMs) bucket.entries.delete(key);
+  }
   const prior = bucket.entries.get(id);
   const windowStartMs =
     prior !== undefined && nowMs - prior.windowStartMs < windowMs
