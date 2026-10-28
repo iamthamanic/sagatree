@@ -1,7 +1,7 @@
 # Composition Gate — stack-migration-mig-350 DONE Evidence (#813)
 
-- HEAD_SHA: ebade3cbddf73170326e57e9b293cad13884b3c6
-- BASE_SHA: fb10f5e4210595778b1b9947176ebd981c74dd0a
+- HEAD_SHA: 9a13f6ab419f05c4d80a8cc84cec135931100d98
+- BASE_SHA: ff14b9c571f14177bbbc233ce9958378206b701d
 - Date: 2026-10-28
 - Verdict: CLEAR
 - note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
