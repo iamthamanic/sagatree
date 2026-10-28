@@ -18,7 +18,7 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "6d6177e02f127b6c90442dc7d7a21496356228df3b7fd2a5551be427d55a5fdf"
+      "sha256": "b8cb4ceb48f6820c880014f606c115ae9c8b97bfb20377e00e6f281b8cca1e1a"
     },
     {
       "command": "edge/infra inventory 25+13",

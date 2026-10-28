@@ -20477,11 +20477,12 @@
         {
           "id": "RPC-DATA-SHARED-MAP-DELETE",
           "severity": "Medium",
-          "status": "blocked-successor-acceptance",
+          "status": "resolved-corrective",
           "summary": "Die Kartenlöschung umfasst jede Karte eines Teilbaumlinks, auch bei weiteren Links außerhalb des Teilbaums.",
           "sourceEvidence": "supabase/migrations/104_atlas_worldbuilder_mutations.sql: delete_world_node sammelt map_id ohne Exklusivitätsbedingung und löscht gesammelte Nicht-world-Karten.",
           "requiredSuccessorAcceptance": "Gemeinsam genutzte Karten/FK-Cascades mit Außenort-Fixture prüfen und eine explizite Erhaltungs- oder Bestätigungsregel festlegen; keine unbemerkte Datenverlust-Parität.",
-          "deployedExploitVerified": false
+          "deployedExploitVerified": false,
+          "resolution": "host deleteWorldNode preserves maps with remaining outside-subtree links; exclusive non-world maps deleted; covered by self-test"
         }
       ],
       "operations": [],
