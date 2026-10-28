@@ -119,6 +119,17 @@ export type WorldPorts = {
     actor: Actor,
     title: string,
   ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
+  /** Owner-only title update — profile CRUD transport (MIG-313). */
+  readonly updateOwnedWorld: (
+    actor: Actor,
+    worldId: string,
+    title: string,
+  ) => WorldReadResult<WorldReadDto>;
+  /** Owner-only delete — fails closed when row missing or foreign owner. */
+  readonly deleteOwnedWorld: (
+    actor: Actor,
+    worldId: string,
+  ) => WorldReadResult<{ readonly deleted: true }>;
   readonly getWorldMap: (
     actor: Actor,
     worldProfileId: string,
@@ -306,6 +317,48 @@ export function createWorldPorts(deps: {
         return { ok: false, error: 'P0001' };
       }
       return { ok: true, value: { id, title: safeTitle, createdAt } };
+    },
+
+    updateOwnedWorld(actor, worldId, title) {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      if (!writeStore) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return { ok: false, error: 'missing-world' };
+      const decision = authorize('world.edit', actor, { worldId: id });
+      if (!decision.allow) {
+        return {
+          ok: false,
+          error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
+        };
+      }
+      const safeTitle = typeof title === 'string' && title.trim() ? title.trim() : '';
+      if (!safeTitle) return { ok: false, error: 'missing-title' };
+      const changed = writeStore.updateOwnedTitle({
+        id,
+        ownerUserId: actor.actorId,
+        title: safeTitle,
+      });
+      if (changed < 1) return { ok: false, error: 'not-authorized' };
+      const row = store.findById(id);
+      if (!row) return { ok: false, error: 'world-not-found' };
+      return { ok: true, value: toDto(row) };
+    },
+
+    deleteOwnedWorld(actor, worldId) {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      if (!writeStore) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return { ok: false, error: 'missing-world' };
+      const decision = authorize('world.edit', actor, { worldId: id });
+      if (!decision.allow) {
+        return {
+          ok: false,
+          error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
+        };
+      }
+      const changed = writeStore.deleteOwned({ id, ownerUserId: actor.actorId });
+      if (changed < 1) return { ok: false, error: 'not-authorized' };
+      return { ok: true, value: { deleted: true } };
     },
 
     getWorldMap(actor, worldProfileId, playerView = false) {
@@ -575,6 +628,8 @@ export function createWorldPortsStub(): WorldPorts {
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
     },
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    updateOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    deleteOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     ensureWorldAtlasRoot: () => ({ ok: false, error: 'store-unavailable' }),

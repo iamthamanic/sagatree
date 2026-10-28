@@ -3,6 +3,7 @@
  * Location: src/infrastructure/world/host-world-read.contract.ts
  *
  * Transport-free DTO mirror of `server/src/modules/world` public read port.
+ * Full RPC/profile/storage ports live in `host-world-ports.contract.ts` (MIG-313).
  * Frontend adapters stay on Supabase until cutover; this file documents the
  * host shape for parity checks without importing the Node host package.
  */

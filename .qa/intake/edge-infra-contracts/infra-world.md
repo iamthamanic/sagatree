@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `95a501edd1ff1f24d44b197aaa14cb522d1de251e3fa3576c36ca7ca021ccabb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `69161d3388679359c636992abe47cf22d3382fe820ad193f20917a8dc856241b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -515,7 +515,384 @@ Enclosing operation: `src/infrastructure/world/world-profile-service.ts:150`; co
 
 ## Complete public declarations and facade operation contracts
 
-### src/infrastructure/world/host-world-read.contract.ts:11
+### src/infrastructure/world/host-world-adapter.ts:13
+
+```ts
+export type HostWorldAdapter = HostWorldPorts & {
+  readonly transport: 'host';
+  readonly rpcNames: typeof HOST_WORLD_RPC_NAMES;
+};
+```
+
+### src/infrastructure/world/host-world-adapter.ts:22
+
+```ts
+export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter {
+  return {
+    transport: 'host',
+    rpcNames: HOST_WORLD_RPC_NAMES,
+    listOwnedWorlds: (actorId) => ports.listOwnedWorlds(actorId),
+    getWorld: (actorId, worldId) => ports.getWorld(actorId, worldId),
+    createOwnedWorld: (actorId, title) => ports.createOwnedWorld(actorId, title),
+    updateOwnedWorld: (actorId, worldId, title) => ports.updateOwnedWorld(actorId, worldId, title),
+    deleteOwnedWorld: (actorId, worldId) => ports.deleteOwnedWorld(actorId, worldId),
+    getWorldMap: (actorId, worldProfileId, playerView) =>
+      ports.getWorldMap(actorId, worldProfileId, playerView),
+    saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>
+      ports.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData),
+    ensureWorldAtlasRoot: (actorId, worldProfileId) =>
+      ports.ensureWorldAtlasRoot(actorId, worldProfileId),
+    listWorldAtlasMaps: (actorId, worldProfileId, playerView, sagaPublicId) =>
+      ports.listWorldAtlasMaps(actorId, worldProfileId, playerView, sagaPublicId),
+    getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>
+      ports.getWorldAtlasMap(actorId, mapId, playerView, sagaPublicId),
+    upsertWorldAtlasMap: (actorId, input) => ports.upsertWorldAtlasMap(actorId, input),
+    listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>
+      ports.listWorldPlaces(actorId, worldProfileId, playerView, sagaPublicId),
+    listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>
+      ports.listWorldPlaceMapLinks(actorId, worldProfileId, playerView, sagaPublicId),
+    upsertWorldPlace: (actorId, input) => ports.upsertWorldPlace(actorId, input),
+    upsertWorldPlaceMapLink: (actorId, input) => ports.upsertWorldPlaceMapLink(actorId, input),
+    createWorldNodeWithMaps: (actorId, input) => ports.createWorldNodeWithMaps(actorId, input),
+    renameWorldNode: (actorId, input) => ports.renameWorldNode(actorId, input),
+    reparentWorldNode: (actorId, input) => ports.reparentWorldNode(actorId, input),
+    duplicateWorldNode: (actorId, input) => ports.duplicateWorldNode(actorId, input),
+    previewWorldNodeConsequences: (actorId, input) =>
+      ports.previewWorldNodeConsequences(actorId, input),
+    archiveWorldNodeSubtree: (actorId, input) => ports.archiveWorldNodeSubtree(actorId, input),
+    deleteWorldNode: (actorId, input) => ports.deleteWorldNode(actorId, input),
+    publishWorldAsset: (actorId, input) => ports.publishWorldAsset(actorId, input),
+  };
+}
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:16
+
+```ts
+export type HostWorldMapDto = {
+  readonly worldId: string;
+  readonly revision: number;
+  readonly mapData: Readonly<Record<string, unknown>>;
+  readonly playerView: boolean;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:23
+
+```ts
+export type HostWorldAtlasMapSummary = {
+  readonly id: string;
+  readonly worldProfileId: string;
+  readonly parentMapId: string | null;
+  readonly kind: string;
+  readonly title: string;
+  readonly sortOrder: number;
+  readonly revision: number;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:33
+
+```ts
+export type HostWorldAtlasMapVm = HostWorldAtlasMapSummary & {
+  readonly bounds: Readonly<Record<string, unknown>>;
+  readonly layers: Readonly<Record<string, unknown>>;
+  readonly basemapStoragePath: string | null;
+  readonly azgaarMapStoragePath: string | null;
+  readonly generatorMeta: Readonly<Record<string, unknown>>;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:42
+
+```ts
+export type HostWorldPlaceVm = Readonly<Record<string, unknown>> & {
+  readonly id: string;
+  readonly worldProfileId: string;
+  readonly name: string;
+  readonly kind: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:49
+
+```ts
+export type HostWorldPlaceMapLinkVm = Readonly<Record<string, unknown>> & {
+  readonly id: string;
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly mapId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:57
+
+```ts
+export type HostUpsertWorldAtlasMapInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:61
+
+```ts
+export type HostCreateWorldNodeInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly kind: string;
+  readonly name: string;
+  readonly idempotencyKey: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:68
+
+```ts
+export type HostCreateWorldNodeResult = Readonly<Record<string, unknown>> & {
+  readonly targetPlaceId: string;
+  readonly worldProfileId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:73
+
+```ts
+export type HostRenameWorldNodeInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly name: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:79
+
+```ts
+export type HostReparentWorldNodeInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:84
+
+```ts
+export type HostDuplicateWorldNodeInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:89
+
+```ts
+export type HostPreviewWorldNodeConsequencesInput = {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:94
+
+```ts
+export type HostArchiveWorldNodeSubtreeInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:99
+
+```ts
+export type HostDeleteWorldNodeInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:104
+
+```ts
+export type HostUpsertWorldPlaceInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly kind: string;
+  readonly name: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:110
+
+```ts
+export type HostUpsertWorldPlaceMapLinkInput = Readonly<Record<string, unknown>> & {
+  readonly worldProfileId: string;
+  readonly placeId: string;
+  readonly mapId: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:117
+
+```ts
+export type HostWorldAssetPublishInput = {
+  readonly worldProfileId: string;
+  readonly kind: 'map-pin' | 'world-atlas';
+  readonly bytes: Uint8Array;
+  readonly contentType: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:124
+
+```ts
+export type HostWorldAssetPublishResult = {
+  readonly assetId: string;
+  readonly contentType: string;
+  /** Opaque storage reference (successor of Supabase bucket path). */
+  readonly storageRef: string;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:135
+
+```ts
+export type HostWorldPorts = HostWorldReadPort & {
+  readonly createOwnedWorld: (
+    actorId: string,
+    title: string,
+  ) => Promise<HostWorldReadResult<{ readonly id: string; readonly title: string; readonly createdAt: string }>>;
+  readonly updateOwnedWorld: (
+    actorId: string,
+    worldId: string,
+    title: string,
+  ) => Promise<HostWorldReadResult<HostWorldReadDto>>;
+  readonly deleteOwnedWorld: (
+    actorId: string,
+    worldId: string,
+  ) => Promise<HostWorldReadResult<{ readonly deleted: true }>>;
+
+  readonly getWorldMap: (
+    actorId: string,
+    worldProfileId: string,
+    playerView?: boolean,
+  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;
+  readonly saveWorldMap: (
+    actorId: string,
+    worldProfileId: string,
+    expectedRevision: number | null,
+    mapData: Readonly<Record<string, unknown>>,
+  ) => Promise<HostWorldReadResult<HostWorldMapDto>>;
+
+  readonly ensureWorldAtlasRoot: (
+    actorId: string,
+    worldProfileId: string,
+  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;
+  readonly listWorldAtlasMaps: (
+    actorId: string,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => Promise<HostWorldReadResult<readonly HostWorldAtlasMapSummary[]>>;
+  readonly getWorldAtlasMap: (
+    actorId: string,
+    mapId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;
+  readonly upsertWorldAtlasMap: (
+    actorId: string,
+    input: HostUpsertWorldAtlasMapInput,
+  ) => Promise<HostWorldReadResult<HostWorldAtlasMapVm>>;
+
+  readonly listWorldPlaces: (
+    actorId: string,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceVm[]>>;
+  readonly listWorldPlaceMapLinks: (
+    actorId: string,
+    worldProfileId: string,
+    playerView?: boolean,
+    sagaPublicId?: string | null,
+  ) => Promise<HostWorldReadResult<readonly HostWorldPlaceMapLinkVm[]>>;
+  readonly upsertWorldPlace: (
+    actorId: string,
+    input: HostUpsertWorldPlaceInput,
+  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;
+  readonly upsertWorldPlaceMapLink: (
+    actorId: string,
+    input: HostUpsertWorldPlaceMapLinkInput,
+  ) => Promise<HostWorldReadResult<HostWorldPlaceMapLinkVm>>;
+
+  readonly createWorldNodeWithMaps: (
+    actorId: string,
+    input: HostCreateWorldNodeInput,
+  ) => Promise<HostWorldReadResult<HostCreateWorldNodeResult>>;
+  readonly renameWorldNode: (
+    actorId: string,
+    input: HostRenameWorldNodeInput,
+  ) => Promise<HostWorldReadResult<HostWorldPlaceVm>>;
+  readonly reparentWorldNode: (
+    actorId: string,
+    input: HostReparentWorldNodeInput,
+  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;
+  readonly duplicateWorldNode: (
+    actorId: string,
+    input: HostDuplicateWorldNodeInput,
+  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;
+  readonly previewWorldNodeConsequences: (
+    actorId: string,
+    input: HostPreviewWorldNodeConsequencesInput,
+  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;
+  readonly archiveWorldNodeSubtree: (
+    actorId: string,
+    input: HostArchiveWorldNodeSubtreeInput,
+  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;
+  readonly deleteWorldNode: (
+    actorId: string,
+    input: HostDeleteWorldNodeInput,
+  ) => Promise<HostWorldReadResult<Readonly<Record<string, unknown>>>>;
+
+  /**
+   * Storage successor for `world-map-pins` / `world-atlas` buckets.
+   * Must not write pin/atlas bytes into world SQL tables.
+   */
+  readonly publishWorldAsset: (
+    actorId: string,
+    input: HostWorldAssetPublishInput,
+  ) => Promise<HostWorldReadResult<HostWorldAssetPublishResult>>;
+};
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:244
+
+```ts
+export const HOST_WORLD_RPC_NAMES = [
+  'archive_world_node_subtree',
+  'create_world_node_with_maps',
+  'delete_world_node',
+  'duplicate_world_node',
+  'ensure_world_atlas_root',
+  'get_world_atlas_map',
+  'get_world_map',
+  'list_world_atlas_maps',
+  'list_world_place_map_links',
+  'list_world_places',
+  'preview_world_node_consequences',
+  'rename_world_node',
+  'reparent_world_node',
+  'save_world_map',
+  'upsert_world_atlas_map',
+  'upsert_world_place',
+  'upsert_world_place_map_link',
+] as const;
+```
+
+### src/infrastructure/world/host-world-ports.contract.ts:264
+
+```ts
+export type HostWorldRpcName = (typeof HOST_WORLD_RPC_NAMES)[number];
+```
+
+### src/infrastructure/world/host-world-read.contract.ts:12
 
 ```ts
 export type HostWorldReadDto = {
@@ -525,7 +902,7 @@ export type HostWorldReadDto = {
 };
 ```
 
-### src/infrastructure/world/host-world-read.contract.ts:17
+### src/infrastructure/world/host-world-read.contract.ts:18
 
 ```ts
 export type HostWorldReadResult<T> =
@@ -533,7 +910,7 @@ export type HostWorldReadResult<T> =
   | { readonly ok: false; readonly error: string };
 ```
 
-### src/infrastructure/world/host-world-read.contract.ts:25
+### src/infrastructure/world/host-world-read.contract.ts:26
 
 ```ts
 export type HostWorldReadPort = {
@@ -1353,7 +1730,9 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/media/optimizer/engines/video/index.ts` | `d8c6aaaabb2ad762d4c15f9ef4aa9bc016f5968b2512cfe52f71cb09655dd842` |
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
-| `src/infrastructure/world/host-world-read.contract.ts` | `e81ccebd8dd092ac60642b0c14e7424877fd194e49e47d92b0d5fcb4a4fff2e3` |
+| `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
+| `src/infrastructure/world/host-world-ports.contract.ts` | `53f740e5bdcfd953a0a5e866a94e10764f607fb4f0a8a71d37832f6c2ae74311` |
+| `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
 | `src/infrastructure/world/world-atlas-service.ts` | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
 | `src/infrastructure/world/world-map-service.ts` | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |
 | `src/infrastructure/world/world-place-service.ts` | `0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0` |

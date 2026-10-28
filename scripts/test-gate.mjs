@@ -924,6 +924,18 @@ function checkMig309Rulesets() {
   );
 }
 
+function checkMig313WorldAdapter() {
+  console.log('MIG-313 world adapter (#812): host repository ports + no cutover...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-313-world-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3063,6 +3075,7 @@ checkMig500LocalAssets();
 checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig309Rulesets();
+checkMig313WorldAdapter();
 checkRpcSagaAuthoring();
 checkRpcSagaVersionRead();
 checkRpcSagaProvision();
