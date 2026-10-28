@@ -538,7 +538,7 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  // PLACES + CREATE + RESTRUCTURE DONE; DESTRUCTIVE is the unlock probe.
+  // PLACES + CREATE + RESTRUCTURE + DESTRUCTIVE DONE; MIG-350 is the unlock probe.
   const worldPlaces = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
   assert.equal(worldPlaces?.status, 'done', 'RPC-WORLD-PLACES must stay DONE after #996');
   assert.ok(worldPlaces?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
@@ -548,13 +548,16 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
   const worldRestructure = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-RESTRUCTURE');
   assert.equal(worldRestructure?.status, 'done', 'RPC-WORLD-RESTRUCTURE must be DONE after #1004');
   assert.ok(worldRestructure?.labels?.includes('agent-done'), 'RPC-WORLD-RESTRUCTURE agent-done');
+  const worldDestructive = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-DESTRUCTIVE');
+  assert.equal(worldDestructive?.status, 'done', 'RPC-WORLD-DESTRUCTIVE must be DONE after #1006');
+  assert.ok(worldDestructive?.labels?.includes('agent-done'), 'RPC-WORLD-DESTRUCTIVE agent-done');
   assert.ok(
-    !ready.some((entry) => entry.localId === 'RPC-WORLD-RESTRUCTURE'),
-    'RPC-WORLD-RESTRUCTURE must leave READY after DONE evidence',
+    !ready.some((entry) => entry.localId === 'RPC-WORLD-DESTRUCTIVE'),
+    'RPC-WORLD-DESTRUCTIVE must leave READY after DONE evidence',
   );
   assert.ok(
-    ready.some((entry) => entry.localId === 'RPC-WORLD-DESTRUCTIVE'),
-    'RPC-WORLD-DESTRUCTIVE unlocks after RPC-WORLD-RESTRUCTURE DONE',
+    ready.some((entry) => entry.localId === 'MIG-350'),
+    'MIG-350 unlocks after RPC-WORLD-DESTRUCTIVE DONE',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

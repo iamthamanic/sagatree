@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "readiness-snapshot",
+  "afterLocalId": "RPC-WORLD-DESTRUCTIVE",
+  "afterGithubIssue": 866,
+  "mergeRef": "PR #1006 → main",
+  "testedCommit": "229db037eebc2a5c8d43a95c71aa89cd113e016b",
+  "counts": {
+    "done": 52,
+    "ready": 21,
+    "waiting": 13,
+    "blocked": 4
+  },
+  "nextReadyProbe": "MIG-350",
+  "note": "RPC-DATA-SHARED-MAP-DELETE resolved-corrective on host deleteWorldNode."
+}
