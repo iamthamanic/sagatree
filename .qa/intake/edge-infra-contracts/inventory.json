@@ -43866,6 +43866,8 @@
       "area": "world",
       "implementationIssue": 812,
       "files": [
+        "src/infrastructure/world/host-world-adapter.ts",
+        "src/infrastructure/world/host-world-ports.contract.ts",
         "src/infrastructure/world/host-world-read.contract.ts",
         "src/infrastructure/world/world-atlas-service.ts",
         "src/infrastructure/world/world-map-service.ts",
@@ -44217,8 +44219,16 @@
             "sha256": "7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9"
           },
           {
+            "path": "src/infrastructure/world/host-world-adapter.ts",
+            "sha256": "fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da"
+          },
+          {
+            "path": "src/infrastructure/world/host-world-ports.contract.ts",
+            "sha256": "406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e"
+          },
+          {
             "path": "src/infrastructure/world/host-world-read.contract.ts",
-            "sha256": "e81ccebd8dd092ac60642b0c14e7424877fd194e49e47d92b0d5fcb4a4fff2e3"
+            "sha256": "271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -44258,7 +44268,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "95a501edd1ff1f24d44b197aaa14cb522d1de251e3fa3576c36ca7ca021ccabb",
+      "sourceContractSha256": "62f1b661aed0c9caef575ab90f7f66e6abeb63341183e1e736a2d2102e90793a",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",
@@ -45064,6 +45074,12 @@
       "authz": "Owner/editor read differs from saga-player reveal projection; preserve p_saga_public_id,p_player_view and no private catalog/map/layer/title exposure.",
       "legacyDefects": [],
       "publicOperationSources": [
+        {
+          "path": "src/infrastructure/world/host-world-adapter.ts",
+          "line": 22,
+          "endLine": 58,
+          "name": "createHostWorldAdapter"
+        },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
           "line": 39,

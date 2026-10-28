@@ -119,6 +119,17 @@ export type WorldPorts = {
     actor: Actor,
     title: string,
   ) => WorldReadResult<{ id: string; title: string; createdAt: string }>;
+  /** Owner-only title update — profile CRUD transport (MIG-313). */
+  readonly updateOwnedWorld: (
+    actor: Actor,
+    worldId: string,
+    title: string,
+  ) => WorldReadResult<WorldReadDto>;
+  /** Owner-only delete — fails closed when row missing or foreign owner. */
+  readonly deleteOwnedWorld: (
+    actor: Actor,
+    worldId: string,
+  ) => WorldReadResult<{ readonly deleted: true }>;
   readonly getWorldMap: (
     actor: Actor,
     worldProfileId: string,
@@ -226,6 +237,8 @@ export function createWorldPorts(deps: {
   readonly actorCanAccessWorld?: (actorIds: readonly string[], worldId: string) => boolean;
   readonly resolveSagaProjectForWorld?: (worldId: string, sagaPublicId: string) => string | null;
   readonly isActiveProjectMember?: (projectId: string, actorIds: readonly string[]) => boolean;
+  /** Project-module read: any project still bound to this world (delete gate). */
+  readonly worldHasProjects?: (worldId: string) => boolean;
 }): WorldPorts {
   const {
     authorize,
@@ -235,6 +248,7 @@ export function createWorldPorts(deps: {
     actorCanAccessWorld,
     resolveSagaProjectForWorld,
     isActiveProjectMember,
+    worldHasProjects,
   } = deps;
   const maps =
     db && actorCanAccessWorld
@@ -306,6 +320,99 @@ export function createWorldPorts(deps: {
         return { ok: false, error: 'P0001' };
       }
       return { ok: true, value: { id, title: safeTitle, createdAt } };
+    },
+
+    updateOwnedWorld(actor, worldId, title) {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      if (!writeStore) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return { ok: false, error: 'missing-world' };
+      const decision = authorize('world.edit', actor, { worldId: id });
+      if (!decision.allow) {
+        return {
+          ok: false,
+          error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
+        };
+      }
+      const safeTitle = typeof title === 'string' && title.trim() ? title.trim() : '';
+      if (!safeTitle) return { ok: false, error: 'missing-title' };
+      // Match policy: linked solo ids may own the row while remote actor is authorized.
+      const changed = writeStore.updateOwnedTitle({
+        id,
+        ownerUserIds: actorIdentityIds(actor),
+        title: safeTitle,
+      });
+      if (changed < 1) return { ok: false, error: 'not-authorized' };
+      const row = store.findById(id);
+      if (!row) return { ok: false, error: 'world-not-found' };
+      return { ok: true, value: toDto(row) };
+    },
+
+    deleteOwnedWorld(actor, worldId) {
+      if (!actor?.actorId) return { ok: false, error: 'missing-actor' };
+      if (!writeStore) return { ok: false, error: 'store-unavailable' };
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return { ok: false, error: 'missing-world' };
+      const decision = authorize('world.edit', actor, { worldId: id });
+      if (!decision.allow) {
+        return {
+          ok: false,
+          error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
+        };
+      }
+      if (worldHasProjects?.(id)) {
+        return { ok: false, error: 'world-in-use' };
+      }
+      if (!db) {
+        // No db handle for transactional cleanup — ownership-scoped delete only.
+        try {
+          const changed = writeStore.deleteOwned({
+            id,
+            ownerUserIds: actorIdentityIds(actor),
+          });
+          if (changed < 1) return { ok: false, error: 'not-authorized' };
+          return { ok: true, value: { deleted: true } };
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (/FOREIGN KEY|constraint/i.test(msg)) return { ok: false, error: 'world-in-use' };
+          return { ok: false, error: 'delete-failed' };
+        }
+      }
+      let inTx = false;
+      try {
+        db.exec('BEGIN IMMEDIATE');
+        inTx = true;
+        // Revalidate project refs under the write lock (pre-check is advisory only).
+        if (worldHasProjects?.(id)) {
+          db.exec('ROLLBACK');
+          inTx = false;
+          return { ok: false, error: 'world-in-use' };
+        }
+        writeStore.deleteWorldMapRow(id);
+        const changed = writeStore.deleteOwned({
+          id,
+          ownerUserIds: actorIdentityIds(actor),
+        });
+        if (changed < 1) {
+          db.exec('ROLLBACK');
+          inTx = false;
+          return { ok: false, error: 'not-authorized' };
+        }
+        db.exec('COMMIT');
+        inTx = false;
+        return { ok: true, value: { deleted: true } };
+      } catch (err) {
+        if (inTx) {
+          try {
+            db.exec('ROLLBACK');
+          } catch {
+            /* ignore */
+          }
+        }
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/FOREIGN KEY|constraint/i.test(msg)) return { ok: false, error: 'world-in-use' };
+        return { ok: false, error: 'delete-failed' };
+      }
     },
 
     getWorldMap(actor, worldProfileId, playerView = false) {
@@ -575,6 +682,8 @@ export function createWorldPortsStub(): WorldPorts {
       getWorld: () => ({ ok: false, error: 'store-unavailable' }),
     },
     createOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    updateOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
+    deleteOwnedWorld: () => ({ ok: false, error: 'store-unavailable' }),
     getWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     saveWorldMap: () => ({ ok: false, error: 'store-unavailable' }),
     ensureWorldAtlasRoot: () => ({ ok: false, error: 'store-unavailable' }),

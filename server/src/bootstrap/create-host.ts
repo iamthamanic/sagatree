@@ -148,6 +148,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           isActiveProjectMember: (projectId, actorIds) =>
             project.isActiveMember(projectId, actorIds) ||
             project.isProjectGm(projectId, actorIds),
+          worldHasProjects: project.worldHasProjects,
         })
       : createWorldPortsStub();
     const largeUploadsEnabled = env.SAGATREE_LARGE_UPLOADS === '1';
