@@ -78,12 +78,10 @@ for (const name of [
   const src = readFileSync(join(root, 'src/infrastructure/world', name), 'utf8');
   writeFileSync(join(adapterLoadDir, name), rewriteTsImports(src));
 }
-const { createHostWorldAdapter } = await import(
-  pathToFileURL(join(adapterLoadDir, 'host-world-adapter.ts')).href
-);
-const { HOST_WORLD_RPC_NAMES } = await import(
-  pathToFileURL(join(adapterLoadDir, 'host-world-ports.contract.ts')).href
-);
+const [{ createHostWorldAdapter }, { HOST_WORLD_RPC_NAMES }] = await Promise.all([
+  import(pathToFileURL(join(adapterLoadDir, 'host-world-adapter.ts')).href),
+  import(pathToFileURL(join(adapterLoadDir, 'host-world-ports.contract.ts')).href),
+]);
 assert(Array.isArray(HOST_WORLD_RPC_NAMES) && HOST_WORLD_RPC_NAMES.length === 17, 'contract rpc list');
 assert(typeof createHostWorldAdapter === 'function', 'real createHostWorldAdapter loaded');
 
@@ -154,6 +152,7 @@ try {
     resolveSagaProjectForWorld: project.resolveProjectIdForWorldAndPublicId,
     isActiveProjectMember: (projectId, actorIds) =>
       project.isActiveMember(projectId, actorIds) || project.isProjectGm(projectId, actorIds),
+    worldHasProjects: project.worldHasProjects,
   });
   const assets = createAssetPorts({
     dataDir,

@@ -237,6 +237,8 @@ export function createWorldPorts(deps: {
   readonly actorCanAccessWorld?: (actorIds: readonly string[], worldId: string) => boolean;
   readonly resolveSagaProjectForWorld?: (worldId: string, sagaPublicId: string) => string | null;
   readonly isActiveProjectMember?: (projectId: string, actorIds: readonly string[]) => boolean;
+  /** Project-module read: any project still bound to this world (delete gate). */
+  readonly worldHasProjects?: (worldId: string) => boolean;
 }): WorldPorts {
   const {
     authorize,
@@ -246,6 +248,7 @@ export function createWorldPorts(deps: {
     actorCanAccessWorld,
     resolveSagaProjectForWorld,
     isActiveProjectMember,
+    worldHasProjects,
   } = deps;
   const maps =
     db && actorCanAccessWorld
@@ -357,19 +360,46 @@ export function createWorldPorts(deps: {
           error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
         };
       }
-      if (writeStore.hasProjectRefs(id)) {
+      if (worldHasProjects?.(id)) {
         return { ok: false, error: 'world-in-use' };
       }
+      if (!db) {
+        // No db handle for transactional cleanup — ownership-scoped delete only.
+        try {
+          const changed = writeStore.deleteOwned({
+            id,
+            ownerUserIds: actorIdentityIds(actor),
+          });
+          if (changed < 1) return { ok: false, error: 'not-authorized' };
+          return { ok: true, value: { deleted: true } };
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (/FOREIGN KEY|constraint/i.test(msg)) return { ok: false, error: 'world-in-use' };
+          return { ok: false, error: 'delete-failed' };
+        }
+      }
       try {
+        db.exec('BEGIN IMMEDIATE');
         writeStore.deleteWorldMapRow(id);
         const changed = writeStore.deleteOwned({
           id,
           ownerUserIds: actorIdentityIds(actor),
         });
-        if (changed < 1) return { ok: false, error: 'not-authorized' };
+        if (changed < 1) {
+          db.exec('ROLLBACK');
+          return { ok: false, error: 'not-authorized' };
+        }
+        db.exec('COMMIT');
         return { ok: true, value: { deleted: true } };
-      } catch {
-        return { ok: false, error: 'world-in-use' };
+      } catch (err) {
+        try {
+          db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/FOREIGN KEY|constraint/i.test(msg)) return { ok: false, error: 'world-in-use' };
+        return { ok: false, error: 'delete-failed' };
       }
     },
 

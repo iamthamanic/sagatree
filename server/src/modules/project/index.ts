@@ -84,6 +84,8 @@ export type ProjectPorts = {
   ) => string | null;
   readonly isProjectGm: (projectId: string, actorIds: readonly string[]) => boolean;
   readonly isActiveMember: (projectId: string, actorIds: readonly string[]) => boolean;
+  /** True when any project row references this world (MIG-313 delete gate). */
+  readonly worldHasProjects: (worldId: string) => boolean;
   readonly listActiveMembers: (projectId: string) => readonly {
     memberId: string;
     userId: string;
@@ -115,6 +117,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       resolveProjectIdForWorldAndPublicId: () => null,
       isProjectGm: () => false,
       isActiveMember: () => false,
+      worldHasProjects: () => false,
       listActiveMembers: () => [],
       getActiveMemberById: () => null,
     };
@@ -152,6 +155,14 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       projectMembership.resolveProjectIdForWorldAndPublicId(worldId, publicId),
     isProjectGm: (projectId, actorIds) => projectMembership.isProjectGm(projectId, actorIds),
     isActiveMember: (projectId, actorIds) => projectMembership.isActiveMember(projectId, actorIds),
+    worldHasProjects: (worldId) => {
+      const id = typeof worldId === 'string' ? worldId.trim() : '';
+      if (!id) return false;
+      const row = db
+        .prepare(`SELECT 1 AS ok FROM projects WHERE world_id = ? LIMIT 1`)
+        .get(id) as { ok: number } | undefined;
+      return Boolean(row);
+    },
     listActiveMembers: (projectId) => projectMembership.listActiveMembers(projectId),
     getActiveMemberById: (projectId, memberId) =>
       projectMembership.getActiveMemberById(projectId, memberId),

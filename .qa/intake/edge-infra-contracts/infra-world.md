@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `69161d3388679359c636992abe47cf22d3382fe820ad193f20917a8dc856241b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `62f1b661aed0c9caef575ab90f7f66e6abeb63341183e1e736a2d2102e90793a`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -570,10 +570,10 @@ export function createHostWorldAdapter(ports: HostWorldPorts): HostWorldAdapter 
 
 ```ts
 export type HostWorldMapDto = {
-  readonly worldId: string;
+  readonly worldProfileId: string;
   readonly revision: number;
   readonly mapData: Readonly<Record<string, unknown>>;
-  readonly playerView: boolean;
+  readonly updatedAt: string | null;
 };
 ```
 
@@ -666,13 +666,15 @@ export type HostRenameWorldNodeInput = {
 ### src/infrastructure/world/host-world-ports.contract.ts:79
 
 ```ts
-export type HostReparentWorldNodeInput = Readonly<Record<string, unknown>> & {
+export type HostReparentWorldNodeInput = {
   readonly worldProfileId: string;
   readonly placeId: string;
+  readonly newParentPlaceId: string | null;
+  readonly confirmRelocate: boolean;
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:84
+### src/infrastructure/world/host-world-ports.contract.ts:86
 
 ```ts
 export type HostDuplicateWorldNodeInput = Readonly<Record<string, unknown>> & {
@@ -681,7 +683,7 @@ export type HostDuplicateWorldNodeInput = Readonly<Record<string, unknown>> & {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:89
+### src/infrastructure/world/host-world-ports.contract.ts:91
 
 ```ts
 export type HostPreviewWorldNodeConsequencesInput = {
@@ -690,7 +692,7 @@ export type HostPreviewWorldNodeConsequencesInput = {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:94
+### src/infrastructure/world/host-world-ports.contract.ts:96
 
 ```ts
 export type HostArchiveWorldNodeSubtreeInput = Readonly<Record<string, unknown>> & {
@@ -699,7 +701,7 @@ export type HostArchiveWorldNodeSubtreeInput = Readonly<Record<string, unknown>>
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:99
+### src/infrastructure/world/host-world-ports.contract.ts:101
 
 ```ts
 export type HostDeleteWorldNodeInput = Readonly<Record<string, unknown>> & {
@@ -708,7 +710,7 @@ export type HostDeleteWorldNodeInput = Readonly<Record<string, unknown>> & {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:104
+### src/infrastructure/world/host-world-ports.contract.ts:106
 
 ```ts
 export type HostUpsertWorldPlaceInput = Readonly<Record<string, unknown>> & {
@@ -718,7 +720,7 @@ export type HostUpsertWorldPlaceInput = Readonly<Record<string, unknown>> & {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:110
+### src/infrastructure/world/host-world-ports.contract.ts:112
 
 ```ts
 export type HostUpsertWorldPlaceMapLinkInput = Readonly<Record<string, unknown>> & {
@@ -728,7 +730,7 @@ export type HostUpsertWorldPlaceMapLinkInput = Readonly<Record<string, unknown>>
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:117
+### src/infrastructure/world/host-world-ports.contract.ts:119
 
 ```ts
 export type HostWorldAssetPublishInput = {
@@ -739,7 +741,7 @@ export type HostWorldAssetPublishInput = {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:124
+### src/infrastructure/world/host-world-ports.contract.ts:126
 
 ```ts
 export type HostWorldAssetPublishResult = {
@@ -750,7 +752,7 @@ export type HostWorldAssetPublishResult = {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:135
+### src/infrastructure/world/host-world-ports.contract.ts:137
 
 ```ts
 export type HostWorldPorts = HostWorldReadPort & {
@@ -854,6 +856,8 @@ export type HostWorldPorts = HostWorldReadPort & {
   /**
    * Storage successor for `world-map-pins` / `world-atlas` buckets.
    * Must not write pin/atlas bytes into world SQL tables.
+   * Implementations MUST authorize `world.edit` for `input.worldProfileId`
+   * before publishing bytes (no cross-world asset attach by actor id alone).
    */
   readonly publishWorldAsset: (
     actorId: string,
@@ -862,7 +866,7 @@ export type HostWorldPorts = HostWorldReadPort & {
 };
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:244
+### src/infrastructure/world/host-world-ports.contract.ts:248
 
 ```ts
 export const HOST_WORLD_RPC_NAMES = [
@@ -886,7 +890,7 @@ export const HOST_WORLD_RPC_NAMES = [
 ] as const;
 ```
 
-### src/infrastructure/world/host-world-ports.contract.ts:264
+### src/infrastructure/world/host-world-ports.contract.ts:268
 
 ```ts
 export type HostWorldRpcName = (typeof HOST_WORLD_RPC_NAMES)[number];
@@ -1731,7 +1735,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/media/optimizer/index.ts` | `c1b162af47239195707de742a8991bea14d85f2238108968613c3bad3d91cf02` |
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
-| `src/infrastructure/world/host-world-ports.contract.ts` | `53f740e5bdcfd953a0a5e866a94e10764f607fb4f0a8a71d37832f6c2ae74311` |
+| `src/infrastructure/world/host-world-ports.contract.ts` | `406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
 | `src/infrastructure/world/world-atlas-service.ts` | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
 | `src/infrastructure/world/world-map-service.ts` | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |

@@ -44224,7 +44224,7 @@
           },
           {
             "path": "src/infrastructure/world/host-world-ports.contract.ts",
-            "sha256": "53f740e5bdcfd953a0a5e866a94e10764f607fb4f0a8a71d37832f6c2ae74311"
+            "sha256": "406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e"
           },
           {
             "path": "src/infrastructure/world/host-world-read.contract.ts",
@@ -44268,7 +44268,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "69161d3388679359c636992abe47cf22d3382fe820ad193f20917a8dc856241b",
+      "sourceContractSha256": "62f1b661aed0c9caef575ab90f7f66e6abeb63341183e1e736a2d2102e90793a",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

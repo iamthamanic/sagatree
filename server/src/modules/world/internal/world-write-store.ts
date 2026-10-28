@@ -21,8 +21,6 @@ export type WorldWriteStore = {
     readonly id: string;
     readonly ownerUserIds: readonly string[];
   }) => number;
-  /** True when a project row still references this world (blocks delete). */
-  readonly hasProjectRefs: (worldId: string) => boolean;
   /** Drop legacy tile-map row so world delete is not blocked by world_maps FK. */
   readonly deleteWorldMapRow: (worldId: string) => void;
 };
@@ -53,12 +51,6 @@ export function createSqliteWorldWriteStore(db: HostDatabase): WorldWriteStore {
         .prepare(`DELETE FROM worlds WHERE id = ? AND owner_user_id IN (${placeholders})`)
         .run(input.id, ...ids);
       return Number(result.changes ?? 0);
-    },
-    hasProjectRefs(worldId) {
-      const row = db
-        .prepare(`SELECT 1 AS ok FROM projects WHERE world_id = ? LIMIT 1`)
-        .get(worldId) as { ok: number } | undefined;
-      return Boolean(row);
     },
     deleteWorldMapRow(worldId) {
       db.prepare(`DELETE FROM world_maps WHERE world_id = ?`).run(worldId);
