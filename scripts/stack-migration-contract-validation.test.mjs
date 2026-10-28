@@ -538,7 +538,7 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-SAGA-GOVERNANCE'),
     'RPC-SAGA-GOVERNANCE must leave READY after DONE evidence',
   );
-  // PLACES + CREATE + RESTRUCTURE + DESTRUCTIVE DONE; MIG-350 is the unlock probe.
+  // World/atlas children + MIG-350 coordinator DONE.
   const worldPlaces = original.intake.issues.find((issue) => issue.localId === 'RPC-WORLD-PLACES');
   assert.equal(worldPlaces?.status, 'done', 'RPC-WORLD-PLACES must stay DONE after #996');
   assert.ok(worldPlaces?.labels?.includes('agent-done'), 'RPC-WORLD-PLACES agent-done');
@@ -555,9 +555,17 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'RPC-WORLD-DESTRUCTIVE'),
     'RPC-WORLD-DESTRUCTIVE must leave READY after DONE evidence',
   );
+  const mig350 = original.intake.issues.find((issue) => issue.localId === 'MIG-350');
+  assert.equal(mig350?.status, 'done', 'MIG-350 coordinator must be DONE after #813 evidence');
+  assert.ok(mig350?.completionEvidence, 'MIG-350 completionEvidence path');
+  assert.ok(mig350?.labels?.includes('agent-done'), 'MIG-350 agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'MIG-350'),
-    'MIG-350 unlocks after RPC-WORLD-DESTRUCTIVE DONE',
+    !ready.some((entry) => entry.localId === 'MIG-350'),
+    'MIG-350 must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'MIG-313'),
+    'MIG-313 remains READY after world/atlas cluster DONE',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
