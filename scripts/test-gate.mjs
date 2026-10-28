@@ -888,6 +888,18 @@ function checkMig416MediaQuarantine() {
   );
 }
 
+function checkMig401AiGmQuarantine() {
+  console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-401-ai-gm-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -3103,6 +3115,7 @@ checkMig412LookReferenceAnalysis();
 checkMig413LorekeeperQuarantine();
 checkMig415MarketplaceQuarantine();
 checkMig416MediaQuarantine();
+checkMig401AiGmQuarantine();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
