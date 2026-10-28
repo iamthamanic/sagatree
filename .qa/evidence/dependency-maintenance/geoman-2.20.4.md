@@ -1,4 +1,4 @@
-# Dependency maintenance — @geoman-io/leaflet-geoman-free 2.20.2 → 2.20.4
+# Dependency Maintenance — @geoman-io/leaflet-geoman-free 2.20.2 → 2.20.4
 
 - PR: #980
 - Kind: patch
