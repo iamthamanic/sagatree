@@ -65,7 +65,7 @@
     "@jsquash/jpeg": "1.6.0",
     "@jsquash/png": "3.1.1",
     "@playwright/test": "^1.55.0",
-    "@tailwindcss/vite": "4.1.12",
+    "@tailwindcss/vite": "4.3.3",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^20.10.0",
     "@types/react": "^18.3.31",
@@ -73,7 +73,7 @@
     "@types/three": "0.186.0",
     "@vitejs/plugin-react": "^4.7.0",
     "gltf-validator": "^2.0.0-dev.3.10",
-    "tailwindcss": "4.1.12",
+    "tailwindcss": "4.3.3",
     "typescript": "5.8.3",
     "vite": "6.4.4"
   },
