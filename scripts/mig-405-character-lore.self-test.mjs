@@ -150,14 +150,19 @@ function makeUc(storeOpts = {}) {
     resolveProvider: async (userId) => {
       assert(typeof userId === 'string' && userId.length > 0, 'provider scoped to caller');
       if (storeOpts.noProvider) return null;
+      const baseUrl = (
+        process.env.CHARACTER_AI_BASE_URL ||
+        process.env.OLLAMA_HOST ||
+        'http://127.0.0.1:11434'
+      ).replace(/\/+$/, '');
       if (storeOpts.perUserModel) {
         return {
           provider: 'ollama',
-          baseUrl: 'http://ollama:11434',
+          baseUrl,
           model: `model-for-${userId}`,
         };
       }
-      return { provider: 'ollama', baseUrl: 'http://ollama:11434', model: 'test-model' };
+      return { provider: 'ollama', baseUrl, model: 'test-model' };
     },
     generateStory: storeOpts.generateStory ?? fakeGenerate,
     rateLimitPerMinute: storeOpts.limit,

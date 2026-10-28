@@ -447,13 +447,9 @@ export function consumeCharacterLoreRateLimit(
     throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');
   }
 
-  // Prune expired windows so the process-memory map cannot grow without bound.
-  for (const [key, entry] of store.quota) {
-    if (entry.resetAt <= nowMs) store.quota.delete(key);
-  }
-
   const existing = store.quota.get(userId);
-  if (!existing) {
+  // Replace expired window for this user only (O(1); avoids unbounded growth + full-map scans).
+  if (!existing || existing.resetAt <= nowMs) {
     store.quota.set(userId, { count: 1, resetAt: nowMs + windowSeconds * 1000 });
     return { ok: true };
   }
@@ -703,7 +699,17 @@ export async function generateCharacterLoreBackground(
     };
   }
 
-  const providerConfig = await deps.resolveProvider(input.userId);
+  let providerConfig: CharacterLoreProviderConfig | null;
+  try {
+    providerConfig = await deps.resolveProvider(input.userId);
+  } catch {
+    return {
+      status: 'error',
+      message:
+        'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',
+      httpStatus: 503,
+    };
+  }
   if (!providerConfig) {
     return {
       status: 'not-configured',
