@@ -21,12 +21,18 @@ const modUrl = pathToFileURL(join(root, 'server/src/modules/ai/index.ts')).href;
 const {
   AI_GM_ACTION_MAX_LENGTH,
   AI_GM_DEFAULT_RATE_LIMIT,
+  AI_GM_NON_STREAM_CONTENT_TYPE,
   AI_GM_PUBLIC_ACTIVATION_AUTHORIZED,
+  AI_GM_RATE_LIMIT_WINDOW_SECONDS,
   AI_GM_STREAM_CONTENT_TYPE,
+  aiGmAttemptDurableStateWrite,
   aiGmPipelineStageAfterMembership,
   consumeAiGmQuota,
   createAiGmQuotaBucket,
   formatAiGmNdjsonChunk,
+  formatAiGmNdjsonStream,
+  formatAiGmNonStreamResponse,
+  parseAiGmNdjsonLineBuffer,
   validateAiGmRequest,
 } = await import(modUrl);
 
@@ -125,24 +131,64 @@ assert(
 assert(aiGmPipelineStageAfterMembership({ membershipAllowed: false }) === 'denied', 'deny before quota');
 assert(aiGmPipelineStageAfterMembership({ membershipAllowed: true }) === 'rate-limit', 'quota after membership');
 
+assert(AI_GM_RATE_LIMIT_WINDOW_SECONDS === 60, 'quota window 60s');
+const t0 = 1_700_000_000_000;
 const bucket = createAiGmQuotaBucket();
 for (let i = 0; i < 12; i += 1) {
-  assert(consumeAiGmQuota(bucket, 'user-1') === true, `quota allow ${i + 1}`);
+  assert(consumeAiGmQuota(bucket, 'user-1', t0) === true, `quota allow ${i + 1}`);
 }
-assert(consumeAiGmQuota(bucket, 'user-1') === false, '13th → deny (429)');
-assert(consumeAiGmQuota(bucket, 'user-2') === true, 'other user still allowed');
+assert(consumeAiGmQuota(bucket, 'user-1', t0) === false, '13th → deny (429)');
+assert(consumeAiGmQuota(bucket, 'user-2', t0) === true, 'other user still allowed');
+assert(
+  consumeAiGmQuota(bucket, 'user-1', t0 + AI_GM_RATE_LIMIT_WINDOW_SECONDS * 1000) === true,
+  'after 60s window → allow again',
+);
 
 const narrative = formatAiGmNdjsonChunk({ type: 'narrative', content: 'Hi' });
 assert(narrative === '{"type":"narrative","content":"Hi"}\n', 'ndjson narrative');
 assert(!narrative.startsWith('data:'), 'not SSE data: framing');
-const complete = formatAiGmNdjsonChunk({
+const completeChunk = {
   type: 'complete',
   narrative: 'done',
   worldStateUpdate: null,
   combatInitiated: false,
-});
+};
+const complete = formatAiGmNdjsonChunk(completeChunk);
 assert(complete.includes('"type":"complete"'), 'ndjson complete');
 const errChunk = formatAiGmNdjsonChunk({ type: 'error', error: 'boom' });
 assert(errChunk.includes('"type":"error"'), 'ndjson error');
+
+const streamBody = formatAiGmNdjsonStream([
+  { type: 'narrative', content: 'Hel' },
+  { type: 'narrative', content: 'lo' },
+  completeChunk,
+  { type: 'error', error: 'provider-down' },
+]);
+assert(streamBody.split('\n').filter(Boolean).length === 4, 'multi-chunk NDJSON lines');
+assert(!streamBody.includes('data:'), 'stream not SSE data: framing');
+
+const split = '{"type":"narrative","content":"ab"}\n{"type":"err';
+const mid = 'or","error":"x"}\n';
+const first = parseAiGmNdjsonLineBuffer('', split.slice(0, 10));
+assert(first.lines.length === 0, 'incomplete first provider chunk stays buffered');
+const second = parseAiGmNdjsonLineBuffer(first.rest, split.slice(10) + mid);
+assert(second.lines.length === 2, 'chunk-boundary yields two NDJSON lines');
+assert(second.rest === '', 'no trailing partial after complete lines');
+
+assert(AI_GM_NON_STREAM_CONTENT_TYPE === 'application/json', 'non-stream content-type');
+const nonStream = formatAiGmNonStreamResponse({
+  narrative: 'done',
+  worldStateUpdate: { scene: 'camp' },
+  diceRollsRequired: [{ type: 'd20', dc: 12 }],
+  combatInitiated: false,
+});
+const nonStreamParsed = JSON.parse(nonStream);
+assert(nonStreamParsed.narrative === 'done', 'non-stream narrative');
+assert(nonStreamParsed.worldStateUpdate?.scene === 'camp', 'non-stream worldStateUpdate');
+assert(Array.isArray(nonStreamParsed.diceRollsRequired), 'non-stream diceRollsRequired');
+assert(nonStreamParsed.combatInitiated === false, 'non-stream combatInitiated');
+
+const deniedWrite = aiGmAttemptDurableStateWrite({ scene: 'camp' });
+assert(deniedWrite.ok === false && deniedWrite.reason === 'activation-denied', 'failed state write');
 
 console.log('PASS: mig-401 ai-gm quarantine (404 preserved, fixtures pinned, no cutover)');

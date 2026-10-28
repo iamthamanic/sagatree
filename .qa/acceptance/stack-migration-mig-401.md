@@ -1,4 +1,4 @@
-# Acceptance — MIG-401 ai-gm Edge quarantine (#817)
+# Acceptance — MIG-401 ai-gm Edge Quarantine (#817)
 
 ## Intent
 Capture legacy-unmounted Edge `ai-gm` worker; keep external 404. No automatic host route or public activation until a reviewed successor is authorized.
