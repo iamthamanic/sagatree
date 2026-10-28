@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-readiness",
+  "generatedAt": "2026-10-28T07:25:29Z",
+  "hint": "post-mig-350",
+  "counts": {
+    "total": 90,
+    "done": 53,
+    "ready": 20,
+    "waiting": 13,
+    "blocked": 4
+  },
+  "localId": "MIG-350",
+  "githubIssue": 813
+}
