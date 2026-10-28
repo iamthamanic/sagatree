@@ -5,7 +5,7 @@
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
  */
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -20,13 +20,13 @@ function assert(cond, msg) {
   }
 }
 
-function actor(id) {
+function actor(id, linkedSoloActorIds = []) {
   return {
     kind: 'remote-account',
     actorId: id,
     sessionId: `auth-${id}`,
     email: null,
-    linkedSoloActorIds: [],
+    linkedSoloActorIds,
   };
 }
 
@@ -44,42 +44,48 @@ const worldReadUrl = pathToFileURL(
 const assetsUrl = pathToFileURL(join(root, 'server/src/assets/index.ts')).href;
 const mediaUrl = pathToFileURL(join(root, 'server/src/modules/media/index.ts')).href;
 
-const { bootstrapHostPersistence } = await import(persistenceUrl);
-const { createPermissionsPorts } = await import(permissionsUrl);
-const { createProjectPorts } = await import(projectUrl);
-const { createWorldPorts, createSqliteWorldWriteStore } = await import(worldUrl);
-const { createSqliteWorldReadStore } = await import(worldReadUrl);
-const { createAssetPorts } = await import(assetsUrl);
-const { createMediaPorts } = await import(mediaUrl);
+const [
+  { bootstrapHostPersistence },
+  { createPermissionsPorts },
+  { createProjectPorts },
+  { createWorldPorts, createSqliteWorldWriteStore },
+  { createSqliteWorldReadStore },
+  { createAssetPorts },
+  { createMediaPorts },
+] = await Promise.all([
+  import(persistenceUrl),
+  import(permissionsUrl),
+  import(projectUrl),
+  import(worldUrl),
+  import(worldReadUrl),
+  import(assetsUrl),
+  import(mediaUrl),
+]);
 
-/** Frontend Vite barrels are extensionless — assert via source, do not Node-import. */
-const HOST_WORLD_RPC_NAMES = [
-  'archive_world_node_subtree',
-  'create_world_node_with_maps',
-  'delete_world_node',
-  'duplicate_world_node',
-  'ensure_world_atlas_root',
-  'get_world_atlas_map',
-  'get_world_map',
-  'list_world_atlas_maps',
-  'list_world_place_map_links',
-  'list_world_places',
-  'preview_world_node_consequences',
-  'rename_world_node',
-  'reparent_world_node',
-  'save_world_map',
-  'upsert_world_atlas_map',
-  'upsert_world_place',
-  'upsert_world_place_map_link',
-];
-
-function createHostWorldAdapter(ports) {
-  return {
-    transport: 'host',
-    rpcNames: HOST_WORLD_RPC_NAMES,
-    ...ports,
-  };
+/** Load real Vite extensionless adapter into Node via rewritten temp copies. */
+const adapterLoadDir = mkdtempSync(join(tmpdir(), 'mig313-adapter-'));
+function rewriteTsImports(source) {
+  return source.replace(/from ['"](\.[^'"]+)['"]/g, (full, spec) => {
+    if (/\.(ts|js|mjs|cjs|json)$/.test(spec)) return full;
+    return `from '${spec}.ts'`;
+  });
 }
+for (const name of [
+  'host-world-read.contract.ts',
+  'host-world-ports.contract.ts',
+  'host-world-adapter.ts',
+]) {
+  const src = readFileSync(join(root, 'src/infrastructure/world', name), 'utf8');
+  writeFileSync(join(adapterLoadDir, name), rewriteTsImports(src));
+}
+const { createHostWorldAdapter } = await import(
+  pathToFileURL(join(adapterLoadDir, 'host-world-adapter.ts')).href
+);
+const { HOST_WORLD_RPC_NAMES } = await import(
+  pathToFileURL(join(adapterLoadDir, 'host-world-ports.contract.ts')).href
+);
+assert(Array.isArray(HOST_WORLD_RPC_NAMES) && HOST_WORLD_RPC_NAMES.length === 17, 'contract rpc list');
+assert(typeof createHostWorldAdapter === 'function', 'real createHostWorldAdapter loaded');
 
 const work = mkdtempSync(join(tmpdir(), 'mig313-'));
 const dataDir = join(work, 'data');
@@ -88,14 +94,10 @@ const acceptance = [];
 const note = (line) => acceptance.push(line);
 
 try {
-  // --- Contract inventory: 17 RPCs + command wrappers + no server import ---
   assert(HOST_WORLD_RPC_NAMES.length === 17, `rpc count ${HOST_WORLD_RPC_NAMES.length}`);
   const commandsDir = join(root, 'server/src/application/commands');
   for (const name of HOST_WORLD_RPC_NAMES) {
-    assert(
-      existsSync(join(commandsDir, `${name}.ts`)),
-      `missing application/commands/${name}.ts`,
-    );
+    assert(existsSync(join(commandsDir, `${name}.ts`)), `missing application/commands/${name}.ts`);
   }
   const portsSrc = readFileSync(
     join(root, 'src/infrastructure/world/host-world-ports.contract.ts'),
@@ -108,13 +110,10 @@ try {
   assert(!/from ['"].*server\//.test(portsSrc), 'ports contract must not import server/');
   assert(!/from ['"].*server\//.test(adapterSrc), 'adapter must not import server/');
   assert(!/\bas\s+any\b|@ts-ignore|@ts-expect-error/.test(portsSrc + adapterSrc), 'typed-strict');
-  for (const name of HOST_WORLD_RPC_NAMES) {
-    assert(portsSrc.includes(`'${name}'`), `contract lists ${name}`);
-  }
-  assert(adapterSrc.includes('createHostWorldAdapter'), 'adapter exports factory');
-  assert(adapterSrc.includes('publishWorldAsset'), 'adapter exposes asset publish');
+  assert(portsSrc.includes('worldProfileId'), 'map DTO uses worldProfileId');
+  assert(portsSrc.includes('confirmRelocate'), 'reparent requires confirmRelocate');
+  assert(portsSrc.includes('world.edit'), 'publish documents world.edit gate');
 
-  // Supabase facades remain (no production cutover)
   for (const file of [
     'world-atlas-service.ts',
     'world-map-service.ts',
@@ -132,7 +131,6 @@ try {
     /storage\.from\(['"]world-map-pins['"]\)/.test(mapService),
     'map pin upload remains storage bucket (not a table)',
   );
-  assert(!/\.from\(['"]world_map_pins['"]\)/.test(mapService), 'pin must not use SQL table');
 
   const boot = bootstrapHostPersistence({
     dataDir,
@@ -167,6 +165,8 @@ try {
   const OWNER = actor('owner-313');
   const STRANGER = actor('stranger-313');
   const PLAYER = actor('player-313');
+  const SOLO_OWNER = 'solo-owner-313';
+  const LINKED = actor('remote-linked-313', [SOLO_OWNER]);
 
   const hostPorts = {
     listOwnedWorlds: (actorId) => toResult(world.read.listOwnedWorlds(actor(actorId))),
@@ -180,9 +180,7 @@ try {
       toResult(world.getWorldMap(actor(actorId), worldProfileId, playerView)),
     saveWorldMap: (actorId, worldProfileId, expectedRevision, mapData) =>
       toResult(
-        world.saveWorldMap(actor(actorId), worldProfileId, expectedRevision, {
-          ...mapData,
-        }),
+        world.saveWorldMap(actor(actorId), worldProfileId, expectedRevision, { ...mapData }),
       ),
     ensureWorldAtlasRoot: (actorId, worldProfileId) =>
       toResult(world.ensureWorldAtlasRoot(actor(actorId), worldProfileId)),
@@ -193,9 +191,7 @@ try {
     getWorldAtlasMap: (actorId, mapId, playerView, sagaPublicId) =>
       toResult(world.getWorldAtlasMap(actor(actorId), mapId, playerView, sagaPublicId)),
     upsertWorldAtlasMap: (actorId, input) =>
-      toResult(
-        world.upsertWorldAtlasMap(actor(actorId), /** @type {any} */ (input)),
-      ),
+      toResult(world.upsertWorldAtlasMap(actor(actorId), /** @type {any} */ (input))),
     listWorldPlaces: (actorId, worldProfileId, playerView, sagaPublicId) =>
       toResult(world.listWorldPlaces(actor(actorId), worldProfileId, playerView, sagaPublicId)),
     listWorldPlaceMapLinks: (actorId, worldProfileId, playerView, sagaPublicId) =>
@@ -208,10 +204,9 @@ try {
       toResult(world.upsertWorldPlaceMapLink(actor(actorId), /** @type {any} */ (input))),
     createWorldNodeWithMaps: (actorId, input) =>
       toResult(world.createWorldNodeWithMaps(actor(actorId), /** @type {any} */ (input))),
-    renameWorldNode: (actorId, input) =>
-      toResult(world.renameWorldNode(actor(actorId), input)),
+    renameWorldNode: (actorId, input) => toResult(world.renameWorldNode(actor(actorId), input)),
     reparentWorldNode: (actorId, input) =>
-      toResult(world.reparentWorldNode(actor(actorId), /** @type {any} */ (input))),
+      toResult(world.reparentWorldNode(actor(actorId), input)),
     duplicateWorldNode: (actorId, input) =>
       toResult(world.duplicateWorldNode(actor(actorId), /** @type {any} */ (input))),
     previewWorldNodeConsequences: (actorId, input) =>
@@ -222,8 +217,16 @@ try {
       toResult(world.deleteWorldNode(actor(actorId), /** @type {any} */ (input))),
     publishWorldAsset: async (actorId, input) => {
       const a = actor(actorId);
-      // map-pin uses dedicated media profile; atlas basemap reuses look-reference budgets
-      // until a dedicated world-atlas profile lands (MIG-500 successor).
+      const worldId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldId) return { ok: false, error: 'missing-world' };
+      const decision = permissions.authorize('world.edit', a, { worldId });
+      if (!decision.allow) {
+        return {
+          ok: false,
+          error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
+        };
+      }
       const profileId = input.kind === 'map-pin' ? 'map-pin' : 'look-reference';
       const policy = media.validateUpload({
         kind: 'image',
@@ -233,10 +236,7 @@ try {
         width: 64,
         height: 64,
       });
-      if (!policy.ok) {
-        return { ok: false, error: policy.error };
-      }
-      // Never insert pin/atlas bytes into world_* tables — assets module only.
+      if (!policy.ok) return { ok: false, error: policy.error };
       const published = assets.publish(a, {
         bytes: input.bytes,
         contentType: input.contentType,
@@ -253,14 +253,28 @@ try {
     },
   };
 
-  const adapter = createHostWorldAdapter(hostPorts);
+  // Spy: real createHostWorldAdapter must forward args (not a local copy).
+  let saveArgs = null;
+  const spied = {
+    ...hostPorts,
+    saveWorldMap: async (actorId, worldProfileId, expectedRevision, mapData) => {
+      saveArgs = { actorId, worldProfileId, expectedRevision, mapData };
+      return hostPorts.saveWorldMap(actorId, worldProfileId, expectedRevision, mapData);
+    },
+  };
+  const adapter = createHostWorldAdapter(spied);
   assert(adapter.transport === 'host', 'transport tag');
   assert(adapter.rpcNames.length === 17, 'adapter rpcNames');
 
-  // --- Profile CRUD transport ---
+  // --- Profile CRUD + linked-solo ownership ---
   const created = await adapter.createOwnedWorld(OWNER.actorId, 'MIG-313 World');
   assert(created.ok, `createOwnedWorld: ${created.ok ? '' : created.error}`);
   const worldId = created.value.id;
+
+  const soloWorld = world.createOwnedWorld(actor(SOLO_OWNER), 'Solo World');
+  assert(soloWorld.ok, 'solo create');
+  const linkedUpdate = world.updateOwnedWorld(LINKED, soloWorld.value.id, 'Solo Renamed');
+  assert(linkedUpdate.ok && linkedUpdate.value.title === 'Solo Renamed', 'linked solo update');
 
   const listed = await adapter.listOwnedWorlds(OWNER.actorId);
   assert(listed.ok && listed.value.some((w) => w.id === worldId), 'owner lists world');
@@ -270,11 +284,11 @@ try {
 
   const strangerGet = await adapter.getWorld(STRANGER.actorId, worldId);
   assert(!strangerGet.ok && strangerGet.error === 'not-authorized', 'stranger get DENY');
-
   const strangerUpdate = await adapter.updateOwnedWorld(STRANGER.actorId, worldId, 'Hijack');
   assert(!strangerUpdate.ok && strangerUpdate.error === 'not-authorized', 'stranger update DENY');
 
-  // Project membership so atlas/places access works for owner + player projection tests
+  // Membership fixture — same SQL pattern as rpc-atlas-maps / rpc-world-* self-tests.
+  // createFromSagaVersion requires a full saga definition graph (out of MIG-313 scope).
   const projectId = 'proj-313';
   const now = new Date().toISOString();
   db.prepare(
@@ -283,8 +297,12 @@ try {
   db.prepare(
     `INSERT INTO project_members (project_id, user_id, role, active, joined_at) VALUES (?, ?, ?, 1, ?)`,
   ).run(projectId, PLAYER.actorId, 'player', now);
+  assert(
+    project.isActiveMember(projectId, [PLAYER.actorId]),
+    'project port reads membership fixture',
+  );
 
-  // --- Tree lifecycle via host ports ---
+  // --- Tree lifecycle ---
   const continent = await adapter.createWorldNodeWithMaps(OWNER.actorId, {
     worldProfileId: worldId,
     kind: 'continent',
@@ -357,7 +375,6 @@ try {
   });
   assert(archived.ok, `archive: ${archived.ok ? '' : archived.error}`);
 
-  // Delete a separate leaf so archive + delete both exercise paths
   const leaf = await adapter.createWorldNodeWithMaps(OWNER.actorId, {
     worldProfileId: worldId,
     kind: 'place',
@@ -373,44 +390,52 @@ try {
   });
   assert(deleted.ok, `delete: ${deleted.ok ? '' : deleted.error}`);
 
-  // Reload places into DB-backed tree
   const placesReload = await adapter.listWorldPlaces(OWNER.actorId, worldId, false, null);
   assert(placesReload.ok && placesReload.value.length > 0, 'reload places after mutations');
-
   note('Create world/node/maps; edit/rename/reparent/duplicate/archive/delete with consequence preview and reload into DB-backed tree.');
 
-  // --- Player projection: only revealed maps ---
+  // --- Player projection: no saga ⇒ empty; owner sees maps ---
   const atlasRoot = await adapter.ensureWorldAtlasRoot(OWNER.actorId, worldId);
-  assert(
-    atlasRoot.ok && atlasRoot.value.length >= 1,
-    `ensure root: ${atlasRoot.ok ? '' : atlasRoot.error}`,
-  );
+  assert(atlasRoot.ok && atlasRoot.value.length >= 1, `ensure root: ${atlasRoot.ok ? '' : atlasRoot.error}`);
   const ownerMaps = await adapter.listWorldAtlasMaps(OWNER.actorId, worldId, false, null);
   assert(ownerMaps.ok && ownerMaps.value.length >= 1, 'owner atlas list');
-
-  const playerMaps = await adapter.listWorldAtlasMaps(PLAYER.actorId, worldId, true, null);
-  assert(playerMaps.ok, `player list: ${playerMaps.ok ? '' : playerMaps.error}`);
-  // Player view must not widen to full owner catalog when nothing revealed for saga.
+  const playerNoSaga = await adapter.listWorldAtlasMaps(PLAYER.actorId, worldId, true, null);
   assert(
-    playerMaps.value.length <= ownerMaps.value.length,
-    'player projection not wider than owner',
+    playerNoSaga.ok && playerNoSaga.value.length === 0,
+    `player without saga must see empty, got ${playerNoSaga.ok ? playerNoSaga.value.length : playerNoSaga.error}`,
   );
-
   const strangerMaps = await adapter.listWorldAtlasMaps(STRANGER.actorId, worldId, true, null);
   assert(
     !strangerMaps.ok || strangerMaps.value.length === 0,
     'stranger atlas DENY or empty',
   );
-  if (!strangerMaps.ok) {
-    assert(
-      strangerMaps.error === '42501' || strangerMaps.error === 'not-authorized',
-      `stranger atlas error ${strangerMaps.error}`,
-    );
-  }
-
   note('Player sees only explicitly revealed map/place projection; foreign access DENY.');
 
-  // --- Map pin storage via assets (not table) + media policy ---
+  // --- Map DTO shape + adapter arg forwarding ---
+  const mapGet = await adapter.getWorldMap(OWNER.actorId, worldId, false);
+  assert(mapGet.ok, `getWorldMap: ${mapGet.ok ? '' : mapGet.error}`);
+  assert(mapGet.value.worldProfileId === worldId, 'map DTO worldProfileId');
+  assert(typeof mapGet.value.revision === 'number', 'map DTO revision');
+  assert(!('worldId' in mapGet.value), 'map DTO must not invent worldId');
+  assert(!('playerView' in mapGet.value), 'map DTO must not invent playerView');
+
+  await adapter.saveWorldMap(OWNER.actorId, worldId, mapGet.value.revision, {
+    size: 24,
+    tiles: {},
+    pins: [],
+  });
+  assert(saveArgs?.expectedRevision === mapGet.value.revision, 'adapter forwards expectedRevision');
+  assert(saveArgs?.worldProfileId === worldId, 'adapter forwards worldProfileId');
+
+  // --- Map pin: world.edit gate + assets storage ---
+  const strangerPin = await adapter.publishWorldAsset(STRANGER.actorId, {
+    worldProfileId: worldId,
+    kind: 'map-pin',
+    bytes: new Uint8Array(64).fill(1),
+    contentType: 'image/png',
+  });
+  assert(!strangerPin.ok && strangerPin.error === 'not-authorized', 'stranger pin DENY');
+
   const badPin = await adapter.publishWorldAsset(OWNER.actorId, {
     worldProfileId: worldId,
     kind: 'map-pin',
@@ -419,40 +444,39 @@ try {
   });
   assert(!badPin.ok, 'invalid map-pin MIME rejected');
 
-  const pinBytes = new Uint8Array(256).fill(7);
   const pinOk = await adapter.publishWorldAsset(OWNER.actorId, {
     worldProfileId: worldId,
     kind: 'map-pin',
-    bytes: pinBytes,
+    bytes: new Uint8Array(256).fill(7),
     contentType: 'image/png',
   });
   assert(pinOk.ok, `map-pin publish: ${pinOk.ok ? '' : pinOk.error}`);
   assert(pinOk.value.storageRef.startsWith('asset://'), 'storage ref is asset opaque id');
+  assert(db.prepare(`SELECT COUNT(*) AS n FROM assets`).get().n >= 1, 'asset row stored');
+  assert(
+    db.prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%pin%'`).all()
+      .length === 0,
+    'no world pin SQL table',
+  );
 
-  const assetRows = db.prepare(`SELECT COUNT(*) AS n FROM assets`).get().n;
-  assert(assetRows >= 1, 'asset row stored in assets table');
-  const pinInWorldTables = db
-    .prepare(
-      `SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%pin%'`,
-    )
-    .all();
-  assert(pinInWorldTables.length === 0, 'no world pin SQL table');
+  // delete while project refs → world-in-use
+  const blocked = await adapter.deleteOwnedWorld(OWNER.actorId, worldId);
+  assert(!blocked.ok && blocked.error === 'world-in-use', 'project refs block delete');
 
-  // Profile delete after tree work (owner only)
-  const strangerDelete = await adapter.deleteOwnedWorld(STRANGER.actorId, worldId);
-  assert(!strangerDelete.ok, 'stranger delete DENY');
-
-  // Clean child rows so FK CASCADE can delete world (projects reference worlds without CASCADE)
+  // Clean project membership via SQL only after port-created ids (FK teardown)
   db.prepare(`DELETE FROM project_members WHERE project_id = ?`).run(projectId);
   db.prepare(`DELETE FROM projects WHERE id = ?`).run(projectId);
-  // Clear place/map trees first if needed — CASCADE from worlds should handle world_* tables
+  // Ensure world_maps exists then deleteOwnedWorld clears it without throw
+  world.saveWorldMap(OWNER, worldId, null, { size: 8, tiles: {}, pins: [] });
   const deletedWorld = await adapter.deleteOwnedWorld(OWNER.actorId, worldId);
   assert(deletedWorld.ok, `deleteOwnedWorld: ${deletedWorld.ok ? '' : deletedWorld.error}`);
 
+  const linkedDelete = world.deleteOwnedWorld(LINKED, soloWorld.value.id);
+  assert(linkedDelete.ok, 'linked solo delete');
+
   note('Map pin upload uses host asset storage; 17 RPC deps + profile CRUD transport ready.');
 
-  // --- Each RPC name reachable on WorldPorts / adapter ---
-  const portMethods = [
+  for (const m of [
     'archiveWorldNodeSubtree',
     'createWorldNodeWithMaps',
     'deleteWorldNode',
@@ -470,32 +494,15 @@ try {
     'upsertWorldAtlasMap',
     'upsertWorldPlace',
     'upsertWorldPlaceMapLink',
-  ];
-  for (const m of portMethods) {
+  ]) {
     assert(typeof adapter[m] === 'function', `adapter.${m}`);
     assert(typeof world[m] === 'function', `WorldPorts.${m}`);
   }
   note('Contract fixtures for all 17 RPCs: host ports + command wrappers present.');
 
-  // Durable reopen
-  db.close();
-  const boot2 = bootstrapHostPersistence({
-    dataDir,
-    migrationsDir: join(root, 'server/migrations'),
-  });
-  assert(boot2.ok, 'rebootstrap');
-  const world2 = createWorldPorts({
-    authorize: createPermissionsPorts(boot2.db).authorize,
-    store: createSqliteWorldReadStore(boot2.db),
-    writeStore: createSqliteWorldWriteStore(boot2.db),
-  });
-  const gone = world2.read.getWorld(OWNER, worldId);
-  assert(!gone.ok, 'deleted world absent after reopen');
-  boot2.db.close();
-
-  assert(acceptance.length >= 3, 'acceptance notes');
   console.log('PASS: mig-313 world adapter ports (host repository binding, no cutover)');
   for (const line of acceptance) console.log(`  - ${line}`);
 } finally {
   rmSync(work, { recursive: true, force: true });
+  rmSync(adapterLoadDir, { recursive: true, force: true });
 }

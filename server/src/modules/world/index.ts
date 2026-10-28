@@ -333,9 +333,10 @@ export function createWorldPorts(deps: {
       }
       const safeTitle = typeof title === 'string' && title.trim() ? title.trim() : '';
       if (!safeTitle) return { ok: false, error: 'missing-title' };
+      // Match policy: linked solo ids may own the row while remote actor is authorized.
       const changed = writeStore.updateOwnedTitle({
         id,
-        ownerUserId: actor.actorId,
+        ownerUserIds: actorIdentityIds(actor),
         title: safeTitle,
       });
       if (changed < 1) return { ok: false, error: 'not-authorized' };
@@ -356,9 +357,20 @@ export function createWorldPorts(deps: {
           error: decision.reason === 'missing-world' ? 'missing-world' : 'not-authorized',
         };
       }
-      const changed = writeStore.deleteOwned({ id, ownerUserId: actor.actorId });
-      if (changed < 1) return { ok: false, error: 'not-authorized' };
-      return { ok: true, value: { deleted: true } };
+      if (writeStore.hasProjectRefs(id)) {
+        return { ok: false, error: 'world-in-use' };
+      }
+      try {
+        writeStore.deleteWorldMapRow(id);
+        const changed = writeStore.deleteOwned({
+          id,
+          ownerUserIds: actorIdentityIds(actor),
+        });
+        if (changed < 1) return { ok: false, error: 'not-authorized' };
+        return { ok: true, value: { deleted: true } };
+      } catch {
+        return { ok: false, error: 'world-in-use' };
+      }
     },
 
     getWorldMap(actor, worldProfileId, playerView = false) {

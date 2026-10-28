@@ -12,12 +12,12 @@ import type { HostWorldReadDto, HostWorldReadPort, HostWorldReadResult } from '.
 
 export type { HostWorldReadDto, HostWorldReadPort, HostWorldReadResult };
 
-/** Opaque JSON map payload — same shape host stores in world_maps.map_data. */
+/** Matches host `WorldMapDto` from world-map-store (not a client-invented shape). */
 export type HostWorldMapDto = {
-  readonly worldId: string;
+  readonly worldProfileId: string;
   readonly revision: number;
   readonly mapData: Readonly<Record<string, unknown>>;
-  readonly playerView: boolean;
+  readonly updatedAt: string | null;
 };
 
 export type HostWorldAtlasMapSummary = {
@@ -76,9 +76,11 @@ export type HostRenameWorldNodeInput = {
   readonly name: string;
 };
 
-export type HostReparentWorldNodeInput = Readonly<Record<string, unknown>> & {
+export type HostReparentWorldNodeInput = {
   readonly worldProfileId: string;
   readonly placeId: string;
+  readonly newParentPlaceId: string | null;
+  readonly confirmRelocate: boolean;
 };
 
 export type HostDuplicateWorldNodeInput = Readonly<Record<string, unknown>> & {
@@ -233,6 +235,8 @@ export type HostWorldPorts = HostWorldReadPort & {
   /**
    * Storage successor for `world-map-pins` / `world-atlas` buckets.
    * Must not write pin/atlas bytes into world SQL tables.
+   * Implementations MUST authorize `world.edit` for `input.worldProfileId`
+   * before publishing bytes (no cross-world asset attach by actor id alone).
    */
   readonly publishWorldAsset: (
     actorId: string,
