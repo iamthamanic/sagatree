@@ -1,8 +1,8 @@
 # Readiness — post MIG-350 (#813)
 
 - generatedAt: 2026-10-28T07:25:29Z
-- branch: 
-- headSha: 
+- branch: `chore/mig-350-813-done-evidence`
+- headSha: `9f52d6615a23cf97283f9973918071df0d91fa4a`
 - hint: post plan-regen after MIG-350 world/atlas RPC cluster DONE
 
 ## Counts
