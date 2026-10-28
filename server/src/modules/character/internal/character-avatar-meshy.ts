@@ -408,7 +408,10 @@ export function startAvatarMeshyJob(
     settings: settings.value,
   };
   store.jobs.set(id, job);
-  store.byIdempotency.set(idempotencyKey, id);
+  // Do not bind clientNonce to an inert provider_unavailable row (blocks replay/retry).
+  if (providerTaskId !== null) {
+    store.byIdempotency.set(idempotencyKey, id);
+  }
   return { ok: true, value: job };
 }
 

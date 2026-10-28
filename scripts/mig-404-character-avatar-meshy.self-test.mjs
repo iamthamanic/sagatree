@@ -20,7 +20,9 @@ function actor(id) {
   return { kind: 'solo-local', actorId: id };
 }
 
-const modUrl = pathToFileURL(join(root, 'server/src/modules/character/index.ts')).href;
+const modUrl = pathToFileURL(
+  join(root, 'server/src/modules/character/character-avatar-meshy.ts'),
+).href;
 const appUrl = pathToFileURL(
   join(root, 'server/src/application/character-avatar-meshy/index.ts'),
 ).href;
@@ -155,6 +157,17 @@ assert(
 );
 const retryUnavail = ucProv.retry(owner, unavailable.value.id);
 assert(retryUnavail.ok === false, 'retry without provider task stays invalid');
+const restartAfterUnavailable = ucProv.start(owner, {
+  clientNonce: 'prov-fail',
+  prompt: 'abcdefghijkl',
+  createProviderTask: () => 'task-recovered',
+});
+assert(
+  restartAfterUnavailable.ok === true &&
+    restartAfterUnavailable.value.status === 'generating' &&
+    restartAfterUnavailable.replayed !== true,
+  'same nonce can start again when unavailable was not idempotent-bound',
+);
 assert(isAllowedAvatarMeshyGlbUrl('http://localhost/foo.glb') === false, 'glb deny localhost http');
 const ucNone = createCharacterAvatarMeshyUseCases(createCharacterAvatarMeshyStore(false));
 assert(ucNone.config().status === 'not-configured', 'config not-configured');

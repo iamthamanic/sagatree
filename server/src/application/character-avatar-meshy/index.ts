@@ -16,7 +16,7 @@ import {
   startAvatarMeshyJob,
   type CharacterAvatarMeshyStore,
   type StartAvatarMeshyInput,
-} from '../../modules/character/index.ts';
+} from '../../modules/character/character-avatar-meshy.ts';
 
 function actorUserId(actor: Actor): string | null {
   return actor?.actorId ? actor.actorId : null;
