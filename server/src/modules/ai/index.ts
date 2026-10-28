@@ -566,3 +566,17 @@ export function createAiPortsStub(): AiPorts {
     clearOllamaSettings: deny,
   };
 }
+
+export {
+  AI_GM_ACTION_MAX_LENGTH,
+  AI_GM_DEFAULT_RATE_LIMIT,
+  AI_GM_PUBLIC_ACTIVATION_AUTHORIZED,
+  AI_GM_RATE_LIMIT_WINDOW_SECONDS,
+  AI_GM_STREAM_CONTENT_TYPE,
+  aiGmPipelineStageAfterMembership,
+  consumeAiGmQuota,
+  createAiGmQuotaBucket,
+  formatAiGmNdjsonChunk,
+  validateAiGmRequest,
+} from './internal/ai-gm-quarantine.ts';
+export type { AiGmQuotaBucket, AiGmRequestValidation, AiGmStreamChunk } from './internal/ai-gm-quarantine.ts';
