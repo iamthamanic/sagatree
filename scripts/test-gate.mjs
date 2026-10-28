@@ -912,6 +912,18 @@ function checkMig404CharacterAvatarMeshy() {
   );
 }
 
+function checkMig405CharacterLore() {
+  console.log('MIG-405 (#821): character-lore host isolated-contract fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-405-character-lore.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -3129,6 +3141,7 @@ checkMig415MarketplaceQuarantine();
 checkMig416MediaQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
+checkMig405CharacterLore();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
