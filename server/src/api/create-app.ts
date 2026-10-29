@@ -8,12 +8,15 @@
 import { Hono } from 'hono';
 import type { createHealthUseCase } from '../application/health/index.ts';
 import type { TransportUseCase } from '../application/transport/index.ts';
+import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
+import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
+import { mountAiHttpRoutes } from './ai-routes.ts';
 
 export type HostApiDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
@@ -36,6 +39,9 @@ export type HostApiDeps = {
     actorId: string;
     worldId: string;
   }) => { ok: true; mutated: boolean } | { ok: false; status: number; error: string };
+  /** MIG-301 infrastructure/ai host HTTP adapters (optional until ports wired). */
+  readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
+  readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
 };
 
 async function readJsonSafe(c: {
@@ -340,6 +346,16 @@ export function createHostApi(deps: HostApiDeps): Hono {
     }
     return c.json(result.sync, 200);
   });
+
+  // MIG-301: BYOK + Ollama Organize host HTTP (Edge remains allowlisted until cutover).
+  if (deps.aiCredentials && deps.aiOllama) {
+    mountAiHttpRoutes(app, {
+      identity: deps.identity,
+      hostMode: deps.hostMode,
+      credentials: deps.aiCredentials,
+      ollama: deps.aiOllama,
+    });
+  }
 
   /**
    * Typed transport command — validate → authenticate → authorize → execute.

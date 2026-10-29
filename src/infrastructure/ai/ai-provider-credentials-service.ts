@@ -1,15 +1,15 @@
 /**
  * ai-provider-credentials-service — client facade for Settings BYOK providers.
- * Invokes Edge only; never persists secrets in the browser.
+ * Prefers host HTTP when configured; otherwise Edge. Never persists secrets in the browser.
  * Location: src/infrastructure/ai/ai-provider-credentials-service.ts
  */
-import { supabase } from '../../lib/supabase';
 import type {
   AiModality,
   AiProviderAuthKind,
   AiProviderCredentialStatus,
   AiProviderCredentialView,
 } from '../../domains/ai-providers';
+import { createAiInvoke, type AiInvokeFn } from './host-ai-invoke';
 
 type FunctionResponse =
   | { status: 'ok' } & Record<string, unknown>
@@ -38,30 +38,6 @@ function parseResponse(value: unknown): FunctionResponse {
   return { status: 'error', message: 'Ungültige Serverantwort.' };
 }
 
-function hasResponseContext(error: unknown): error is { context: Response } {
-  return isRecord(error) && error.context instanceof Response;
-}
-
-async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {
-  if (!hasResponseContext(error)) return undefined;
-  try {
-    const body: unknown = await error.context.clone().json();
-    const parsed = parseResponse(body);
-    return parsed.status === 'ok' ? undefined : parsed.message;
-  } catch {
-    return undefined;
-  }
-}
-
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');
-  }
-  return parseResponse(data);
-}
-
 function parseModality(value: unknown): AiModality | null {
   if (value === 'image' || value === '3d' || value === 'video' || value === 'audio') return value;
   return null;
@@ -82,9 +58,10 @@ function parseProviderView(value: unknown): AiProviderCredentialView | null {
     ? value.modalities.filter((m): m is AiModality => parseModality(m) !== null)
     : [];
   const meta = isRecord(value.meta) ? value.meta : {};
-  const credits = typeof meta.credits === 'number' && Number.isFinite(meta.credits)
-    ? Math.max(0, Math.round(meta.credits))
-    : undefined;
+  const credits =
+    typeof meta.credits === 'number' && Number.isFinite(meta.credits)
+      ? Math.max(0, Math.round(meta.credits))
+      : undefined;
 
   return {
     providerId: value.providerId,
@@ -101,9 +78,19 @@ function parseProviderView(value: unknown): AiProviderCredentialView | null {
   };
 }
 
-class AiProviderCredentialsService {
+export class AiProviderCredentialsService {
+  private readonly invokeFn: AiInvokeFn;
+
+  constructor(invokeFn: AiInvokeFn = createAiInvoke()) {
+    this.invokeFn = invokeFn;
+  }
+
+  private async invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+    return parseResponse(await this.invokeFn('provider-credentials', body));
+  }
+
   async list(modality?: AiModality): Promise<AiProviderCredentialView[]> {
-    const response = await invoke({
+    const response = await this.invoke({
       action: 'list',
       ...(modality ? { modality } : {}),
     });
@@ -115,7 +102,7 @@ class AiProviderCredentialsService {
   }
 
   async upsert(providerId: string, apiKey: string): Promise<AiProviderCredentialView> {
-    const response = await invoke({
+    const response = await this.invoke({
       action: 'upsert',
       providerId,
       apiKey,
@@ -127,7 +114,7 @@ class AiProviderCredentialsService {
   }
 
   async refresh(providerId: string): Promise<AiProviderCredentialView> {
-    const response = await invoke({ action: 'refresh', providerId });
+    const response = await this.invoke({ action: 'refresh', providerId });
     if (response.status !== 'ok') throw new Error(response.message);
     const provider = parseProviderView(response.provider);
     if (!provider) throw new Error('Aktualisierungs-Antwort unvollständig.');
@@ -135,7 +122,7 @@ class AiProviderCredentialsService {
   }
 
   async delete(providerId: string): Promise<void> {
-    const response = await invoke({ action: 'delete', providerId });
+    const response = await this.invoke({ action: 'delete', providerId });
     if (response.status !== 'ok') throw new Error(response.message);
   }
 }

@@ -47,6 +47,8 @@ import { createCharacterPorts } from '../modules/character/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
+import { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
+import { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import { createSessionPorts } from '../modules/session/index.ts';
 import { createRealtimeSessionRooms, type RealtimeFanoutMessage } from '../realtime/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
@@ -173,6 +175,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     // Media owns asset-table policy surface; codecs remain in browser optimizer (infra-media).
     const media = createMediaPorts();
     const ai: AiPorts = db ? createAiPorts({ db, env }) : createAiPortsStub();
+    const aiCredentials = createAiProviderCredentialsUseCases(ai);
+    const aiOllama = createOllamaSettingsUseCases(ai);
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
@@ -292,6 +296,8 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       authHandlerRef,
       tryAuthorizedProjectTouch,
       tryAuthorizedWorldTouch,
+      aiCredentials,
+      aiOllama,
     });
 
     return {

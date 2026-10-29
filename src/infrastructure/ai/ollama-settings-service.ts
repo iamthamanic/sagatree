@@ -1,14 +1,14 @@
 /**
  * ollama-settings-service — client facade for Organize (Ollama LLM) prefs.
- * Invokes Edge only; never persists secrets in the browser.
+ * Prefers host HTTP when configured; otherwise Edge. Never persists secrets in the browser.
  * Location: src/infrastructure/ai/ollama-settings-service.ts
  */
-import { supabase } from '../../lib/supabase';
 import type {
   OllamaSettingsUpsertInput,
   OllamaSettingsView,
 } from '../../domains/ai-providers/ollama-settings';
 import { OLLAMA_CLOUD_OPENAI_BASE } from '../../domains/ai-providers/ollama-settings';
+import { createAiInvoke, type AiInvokeFn } from './host-ai-invoke';
 
 type FunctionResponse =
   | { status: 'ok' } & Record<string, unknown>
@@ -31,30 +31,6 @@ function parseResponse(value: unknown): FunctionResponse {
     };
   }
   return { status: 'error', message: 'Ungültige Serverantwort.' };
-}
-
-function hasResponseContext(error: unknown): error is { context: Response } {
-  return isRecord(error) && error.context instanceof Response;
-}
-
-async function getFunctionErrorMessage(error: unknown): Promise<string | undefined> {
-  if (!hasResponseContext(error)) return undefined;
-  try {
-    const body: unknown = await error.context.clone().json();
-    const parsed = parseResponse(body);
-    return parsed.status === 'ok' ? undefined : parsed.message;
-  } catch {
-    return undefined;
-  }
-}
-
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { data, error } = await supabase.functions.invoke('ollama-settings', { body });
-  if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? 'Ollama-Einstellungen nicht erreichbar.');
-  }
-  return parseResponse(data);
 }
 
 function parseSettings(value: unknown): OllamaSettingsView | null {
@@ -85,9 +61,19 @@ function parseModels(value: unknown): string[] {
   return value.filter((m): m is string => typeof m === 'string' && m.trim().length > 0);
 }
 
-class OllamaSettingsService {
+export class OllamaSettingsService {
+  private readonly invokeFn: AiInvokeFn;
+
+  constructor(invokeFn: AiInvokeFn = createAiInvoke()) {
+    this.invokeFn = invokeFn;
+  }
+
+  private async invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
+    return parseResponse(await this.invokeFn('ollama-settings', body));
+  }
+
   async get(): Promise<OllamaSettingsView> {
-    const response = await invoke({ action: 'get' });
+    const response = await this.invoke({ action: 'get' });
     if (response.status !== 'ok') throw new Error(response.message);
     const settings = parseSettings(response.settings);
     if (!settings) throw new Error('Einstellungen unvollständig.');
@@ -98,7 +84,7 @@ class OllamaSettingsService {
     settings: OllamaSettingsView;
     models: string[];
   }> {
-    const response = await invoke({
+    const response = await this.invoke({
       action: 'upsert',
       useCloud: input.useCloud,
       baseUrl: input.baseUrl,
@@ -117,7 +103,7 @@ class OllamaSettingsService {
     model?: string;
     apiKey?: string;
   }): Promise<{ message: string; models: string[] }> {
-    const response = await invoke({
+    const response = await this.invoke({
       action: 'test',
       useCloud: input.useCloud,
       baseUrl: input.baseUrl,
@@ -126,10 +112,7 @@ class OllamaSettingsService {
     });
     if (response.status !== 'ok') throw new Error(response.message);
     return {
-      message:
-        typeof response.message === 'string'
-          ? response.message
-          : 'Verbindung OK.',
+      message: typeof response.message === 'string' ? response.message : 'Verbindung OK.',
       models: parseModels(response.models),
     };
   }
@@ -139,7 +122,7 @@ class OllamaSettingsService {
     baseUrl: string;
     apiKey?: string;
   }): Promise<string[]> {
-    const response = await invoke({
+    const response = await this.invoke({
       action: 'listModels',
       useCloud: input.useCloud,
       baseUrl: input.baseUrl,
@@ -150,7 +133,7 @@ class OllamaSettingsService {
   }
 
   async clear(): Promise<OllamaSettingsView> {
-    const response = await invoke({ action: 'clear' });
+    const response = await this.invoke({ action: 'clear' });
     if (response.status !== 'ok') throw new Error(response.message);
     const settings = parseSettings(response.settings);
     if (!settings) throw new Error('Reset-Antwort unvollständig.');
