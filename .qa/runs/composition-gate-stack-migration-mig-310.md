@@ -37,3 +37,5 @@ Publish retains version snapshot; adapter promote of already-promoted consequenc
 - No saga-infra HTTP mount in this slice
 - Skip MIG-305/#804 waiting-dependency; Dependabot #982–#984 deferred
 - Browser E2E: SKIPPED (no UI surface in this slice)
+
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
