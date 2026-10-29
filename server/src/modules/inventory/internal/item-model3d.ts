@@ -45,6 +45,7 @@ export type ItemModel3dAsset = {
 
 export type ItemModel3dJob = {
   id: string;
+  seq: number;
   ownerUserId: string;
   definitionId: string;
   status: 'waiting' | 'in_progress' | 'succeeded' | 'failed' | 'canceled';
@@ -52,6 +53,9 @@ export type ItemModel3dJob = {
   errorMessage?: string;
   assetId?: string;
   providerTaskId?: string;
+  /** Isolated provider poll result: succeeded | failed | in_progress */
+  providerPollStatus?: 'succeeded' | 'failed' | 'in_progress' | 'canceled';
+  providerModelUrl?: string;
   materializeClaimedBy?: string | null;
   paidCreateDone: boolean;
 };
@@ -99,6 +103,23 @@ export function checkItemModel3dContentLengthHeader(
   return { ok: true };
 }
 
+export function decodeStrictBase64(contentBase64: string): Uint8Array {
+  const cleaned = contentBase64
+    .replace(/^data:model\/gltf-binary;base64,/, '')
+    .replace(/^data:application\/octet-stream;base64,/, '')
+    .trim();
+  if (!cleaned) throw new Error('Empty GLB payload');
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleaned) || cleaned.length % 4 !== 0) {
+    throw new Error('Invalid base64 payload');
+  }
+  const buf = Buffer.from(cleaned, 'base64');
+  // Round-trip: reject silent ignore of invalid chars
+  if (buf.toString('base64').replace(/=+$/, '') !== cleaned.replace(/=+$/, '')) {
+    throw new Error('Invalid base64 payload');
+  }
+  return new Uint8Array(buf);
+}
+
 export function sniffItemModel3dGlb(bytes: Uint8Array): boolean {
   return (
     bytes.length >= 4 &&
@@ -129,9 +150,10 @@ export function validateItemModel3dGlbBytes(
 
 export function isAllowedItemModel3dMeshyHost(hostname: string): boolean {
   const host = hostname.toLowerCase();
-  return [...MESHY_HOST_ALLOWLIST].some(
-    (allowed) => host === allowed || host.endsWith(`.${allowed}`),
-  );
+  for (const allowed of MESHY_HOST_ALLOWLIST) {
+    if (host === allowed || host.endsWith(`.${allowed}`)) return true;
+  }
+  return false;
 }
 
 export function buildItemModel3dAssetKey(assetId: string): string {
@@ -243,7 +265,7 @@ export function consumeItemModel3dQuota(
 
 export type ItemModel3dResult =
   | { status: 'ok'; [key: string]: unknown }
-  | { status: 'not-configured'; message: string }
+  | { status: 'not-configured'; message: string; httpStatus: 503 }
   | { status: 'error'; message: string; code?: string; httpStatus: number };
 
 function signedUrlFor(assetId: string): string {
@@ -265,15 +287,14 @@ export function itemModel3dUpload(
   input: { definitionId: string; contentBase64: string; mime?: string },
 ): ItemModel3dResult {
   try {
-    const def = assertDefinitionAuthorized(store, userId, input.definitionId.trim());
-    const cleaned = input.contentBase64
-      .replace(/^data:model\/gltf-binary;base64,/, '')
-      .replace(/^data:application\/octet-stream;base64,/, '')
-      .trim();
-    if (!cleaned) {
-      return { status: 'error', message: 'Empty GLB payload', httpStatus: 400 };
+    if (typeof input.definitionId !== 'string' || !input.definitionId.trim()) {
+      return { status: 'error', message: 'definitionId required', httpStatus: 400 };
     }
-    const bytes = Uint8Array.from(Buffer.from(cleaned, 'base64'));
+    if (typeof input.contentBase64 !== 'string' || !input.contentBase64.trim()) {
+      return { status: 'error', message: 'contentBase64 required', httpStatus: 400 };
+    }
+    const def = assertDefinitionAuthorized(store, userId, input.definitionId.trim());
+    const bytes = decodeStrictBase64(input.contentBase64);
     const validated = validateItemModel3dGlbBytes(bytes, input.mime);
     const assetId = nextId(store, 'asset');
     const storagePath = buildItemModel3dStoragePath({
@@ -325,6 +346,7 @@ export function itemModel3dGenerate(
     return {
       status: 'not-configured',
       message: 'Meshy is not configured',
+      httpStatus: 503,
     };
   }
   const quota = consumeItemModel3dQuota(store, userId, nowMs);
@@ -339,7 +361,11 @@ export function itemModel3dGenerate(
   try {
     const def = assertDefinitionAuthorized(store, userId, definitionId.trim());
     const assetKey = def.payload.assetKey;
-    if (!assetKey || !assetKey.startsWith(ITEM_MODEL3D_THUMBNAIL_PREFIX)) {
+    const thumbId =
+      typeof assetKey === 'string' && assetKey.startsWith(ITEM_MODEL3D_THUMBNAIL_PREFIX)
+        ? assetKey.slice(ITEM_MODEL3D_THUMBNAIL_PREFIX.length).trim()
+        : '';
+    if (!thumbId) {
       return {
         status: 'error',
         message: 'Thumbnail required',
@@ -350,14 +376,18 @@ export function itemModel3dGenerate(
     // Legacy: paid create before jobs INSERT.
     store.providerCreates += 1;
     const jobId = nextId(store, 'job');
+    const seq = store.nextId;
     store.jobs.set(jobId, {
       id: jobId,
+      seq,
       ownerUserId: userId,
       definitionId: def.id,
       status: 'waiting',
       progress: 5,
       paidCreateDone: true,
       providerTaskId: `meshy-${jobId}`,
+      providerPollStatus: 'succeeded',
+      providerModelUrl: 'https://cdn.meshy.ai/models/ok.glb',
       materializeClaimedBy: null,
     });
     return { status: 'ok', jobId, jobStatus: 'waiting', progress: 5 };
@@ -386,33 +416,73 @@ export function itemModel3dStatus(
   jobId: string,
   claimerId = 'poller',
 ): ItemModel3dResult {
+  if (typeof jobId !== 'string' || !jobId.trim()) {
+    return { status: 'error', message: 'jobId required', httpStatus: 400 };
+  }
   const job = store.jobs.get(jobId.trim());
   if (!job || job.ownerUserId !== userId) {
     return { status: 'error', message: 'Not found', httpStatus: 404 };
   }
   if (job.status === 'waiting' || job.status === 'in_progress') {
-    if (!job.materializeClaimedBy) {
-      job.materializeClaimedBy = claimerId;
-      job.status = 'succeeded';
-      job.progress = 100;
-      const assetId = nextId(store, 'asset');
-      const def = store.definitions.get(job.definitionId);
-      const storagePath = buildItemModel3dStoragePath({
-        ownerUserId: userId,
-        definitionId: job.definitionId,
-        worldProfileId: def?.worldProfileId,
-        assetId,
-      });
-      store.assets.set(assetId, {
-        id: assetId,
-        ownerUserId: userId,
-        definitionId: job.definitionId,
-        storagePath,
-        deletedAt: null,
-        byteSize: 1024,
-      });
-      job.assetId = assetId;
-      if (def) def.payload.model3d = buildItemModel3dAssetKey(assetId);
+    const poll = job.providerPollStatus ?? 'in_progress';
+    if (poll === 'in_progress') {
+      job.status = 'in_progress';
+      job.progress = Math.max(job.progress, 10);
+    } else if (poll === 'failed' || poll === 'canceled') {
+      job.status = poll;
+      job.progress = job.progress || 0;
+      job.errorMessage = job.errorMessage || 'provider terminal failure';
+    } else if (poll === 'succeeded') {
+      const modelUrl = job.providerModelUrl || '';
+      let hostOk = false;
+      try {
+        const parsed = new URL(modelUrl);
+        hostOk =
+          parsed.protocol === 'https:' && isAllowedItemModel3dMeshyHost(parsed.hostname);
+      } catch {
+        hostOk = false;
+      }
+      if (!hostOk) {
+        job.status = 'failed';
+        job.errorMessage = 'Provider model host is not allowlisted';
+      } else if (!job.materializeClaimedBy) {
+        try {
+          assertDefinitionAuthorized(store, userId, job.definitionId);
+        } catch {
+          job.status = 'failed';
+          job.errorMessage = 'Definition no longer mutable';
+          // do not create asset
+          const outEarly: Record<string, unknown> = {
+            status: 'ok',
+            jobId: job.id,
+            jobStatus: job.status,
+            progress: job.progress,
+          };
+          if (job.errorMessage) outEarly.errorMessage = job.errorMessage;
+          return outEarly as ItemModel3dResult;
+        }
+        job.materializeClaimedBy = claimerId;
+        job.status = 'succeeded';
+        job.progress = 100;
+        const assetId = nextId(store, 'asset');
+        const def = store.definitions.get(job.definitionId);
+        const storagePath = buildItemModel3dStoragePath({
+          ownerUserId: userId,
+          definitionId: job.definitionId,
+          worldProfileId: def?.worldProfileId,
+          assetId,
+        });
+        store.assets.set(assetId, {
+          id: assetId,
+          ownerUserId: userId,
+          definitionId: job.definitionId,
+          storagePath,
+          deletedAt: null,
+          byteSize: 1024,
+        });
+        job.assetId = assetId;
+        if (def) def.payload.model3d = buildItemModel3dAssetKey(assetId);
+      }
     }
   }
   const out: Record<string, unknown> = {
@@ -527,7 +597,7 @@ export function itemModel3dLatestJob(
   let latest: ItemModel3dJob | null = null;
   for (const job of store.jobs.values()) {
     if (job.ownerUserId === userId && job.definitionId === definitionId.trim()) {
-      if (!latest || job.id > latest.id) latest = job;
+      if (!latest || job.seq > latest.seq) latest = job;
     }
   }
   if (!latest) return { status: 'ok', job: null };

@@ -21,5 +21,12 @@ export {
   ITEM_MODEL3D_RATE_LIMIT,
   createItemModel3dStore,
   describeItemModel3dLegacyDefects,
+  itemModel3dConfig,
+  itemModel3dGenerate,
+  itemModel3dLatestJob,
+  itemModel3dRemove,
+  itemModel3dResolve,
+  itemModel3dStatus,
+  itemModel3dUpload,
   type ItemModel3dStore,
 } from './internal/item-model3d.ts';

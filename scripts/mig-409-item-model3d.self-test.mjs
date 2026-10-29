@@ -143,7 +143,41 @@ assert(gDown.httpStatus === 500 && down.providerCreates === 0, 'quota store down
 const noMeshy = createItemModel3dStore(false);
 seedStore(noMeshy);
 const noCfg = createItemModel3dUseCases(noMeshy).generate(actor(OWNER), 'def-personal');
-assert(noCfg.status === 'not-configured', 'not-configured');
+assert(noCfg.status === 'not-configured' && noCfg.httpStatus === 503, 'not-configured 503');
+
+// empty thumbnail suffix → THUMBNAIL_REQUIRED (no paid create)
+const emptyThumb = createItemModel3dStore(true);
+seedStore(emptyThumb);
+emptyThumb.definitions.get('def-personal').payload.assetKey = 'thumbnail2d:';
+const emptyThumbUc = createItemModel3dUseCases(emptyThumb);
+const emptyGen = emptyThumbUc.generate(actor(OWNER), 'def-personal');
+assert(
+  emptyGen.code === 'THUMBNAIL_REQUIRED' && emptyThumb.providerCreates === 0,
+  'empty thumb suffix',
+);
+
+// strict base64 reject
+const badB64 = uc.upload(actor(OWNER), {
+  definitionId: 'def-personal',
+  contentBase64: 'Z2xURg!!!!',
+});
+assert(badB64.status === 'error' && badB64.httpStatus === 500, 'invalid base64 rejected');
+
+// missing jobId → 400
+assert(uc.status(actor(OWNER), '').httpStatus === 400, 'empty jobId 400');
+
+// provider in_progress then off-allowlist fail
+const pollStore = createItemModel3dStore(true);
+seedStore(pollStore);
+const pollUc = createItemModel3dUseCases(pollStore);
+const pj = pollUc.generate(actor(OWNER), 'def-personal');
+pollStore.jobs.get(pj.jobId).providerPollStatus = 'in_progress';
+const mid = pollUc.status(actor(OWNER), pj.jobId);
+assert(mid.jobStatus === 'in_progress', 'provider still running');
+pollStore.jobs.get(pj.jobId).providerPollStatus = 'succeeded';
+pollStore.jobs.get(pj.jobId).providerModelUrl = 'https://evil.example/x.glb';
+const badHost = pollUc.status(actor(OWNER), pj.jobId);
+assert(badHost.jobStatus === 'failed', 'off-allowlist never materializes');
 
 // --- Fall 3: unions + latest null + signed TTL ---
 assert(uc.config(actor(OWNER)).maxBytes === ITEM_MODEL3D_MAX_BYTES, 'config maxBytes');

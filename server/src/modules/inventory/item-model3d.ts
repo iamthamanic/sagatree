@@ -15,6 +15,7 @@ export {
   buildItemModel3dStoragePath,
   checkItemModel3dContentLengthHeader,
   createItemModel3dStore,
+  decodeStrictBase64,
   describeItemModel3dLegacyDefects,
   isAllowedItemModel3dMeshyHost,
   itemModel3dConfig,

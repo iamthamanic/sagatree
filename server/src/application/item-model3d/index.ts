@@ -16,7 +16,7 @@ import {
   itemModel3dStatus,
   itemModel3dUpload,
   type ItemModel3dStore,
-} from '../../modules/inventory/item-model3d.ts';
+} from '../../modules/inventory/index.ts';
 
 function actorUserId(actor: Actor): string | null {
   const id = typeof actor?.actorId === 'string' ? actor.actorId.trim() : '';
