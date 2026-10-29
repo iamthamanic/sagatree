@@ -59,7 +59,10 @@ import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
 import { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
-import { createSessionPorts } from '../modules/session/index.ts';
+import {
+  createSessionPorts,
+  createSessionProjectLookup,
+} from '../modules/session/index.ts';
 import { createRealtimeSessionRooms, type RealtimeFanoutMessage } from '../realtime/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
@@ -210,27 +213,16 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
         })
       : createSagaPortsStub();
-    const npcCreature: NpcCreaturePorts = db
+    const sessionProjectLookup = db ? createSessionProjectLookup(db) : null;
+    const npcCreature: NpcCreaturePorts = db && sessionProjectLookup
       ? createNpcCreaturePorts({
           db,
           project,
           session: {
-            sessionProjectId: (sessionId) => {
-              const row = db
-                .prepare(
-                  `SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`,
-                )
-                .get(sessionId) as { projectId: string } | undefined;
-              return row?.projectId ?? null;
-            },
-            sessionBelongsToProject: (sessionId, projectId) => {
-              const row = db
-                .prepare(
-                  `SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`,
-                )
-                .get(sessionId) as { projectId: string } | undefined;
-              return Boolean(row && row.projectId === projectId);
-            },
+            sessionProjectId: (sessionId) =>
+              sessionProjectLookup.projectIdForSession(sessionId),
+            sessionBelongsToProject: (sessionId, projectId) =>
+              sessionProjectLookup.projectIdForSession(sessionId) === projectId,
           },
           world: {
             canReadWorldProfile: (actorIds, worldProfileId) => {

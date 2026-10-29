@@ -78,7 +78,7 @@ export function normalizeNpcDefinitionDraft(
     return { ok: false, error: 'invalid-sheet-mode' };
   }
   const level = draftRaw.level;
-  if (typeof level !== 'number' || !Number.isInteger(level) || level < 0 || level > 20) {
+  if (typeof level !== 'number' || !Number.isInteger(level) || level < 1 || level > 20) {
     return { ok: false, error: 'invalid-level' };
   }
   if (!COMBAT_PROFILES.has(String(draftRaw.combatProfile))) {

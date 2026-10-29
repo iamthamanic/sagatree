@@ -254,6 +254,17 @@ export class NpcInstanceStore {
     return generateNpcCreaturePublicId();
   }
 
+  #ensurePublicId(rowId: string, existing: string | null): string | null {
+    const trimmed =
+      typeof existing === 'string' ? existing.trim().toUpperCase() : '';
+    if (isNpcCreaturePublicId(trimmed)) return trimmed;
+    const publicId = this.#uniquePublicId();
+    this.#db
+      .prepare(`UPDATE npc_creature_definitions SET public_id = ? WHERE id = ?`)
+      .run(publicId, rowId);
+    return publicId;
+  }
+
   #mapDefinitionRow(row: {
     readonly id: string;
     readonly public_id: string | null;
@@ -276,10 +287,7 @@ export class NpcInstanceStore {
     } catch {
       return null;
     }
-    const publicId =
-      typeof row.public_id === 'string' && isNpcCreaturePublicId(row.public_id.trim().toUpperCase())
-        ? row.public_id.trim().toUpperCase()
-        : '';
+    const publicId = this.#ensurePublicId(row.id, row.public_id);
     if (!publicId) return null;
     if (
       row.scope !== 'personal' &&
@@ -368,14 +376,34 @@ export class NpcInstanceStore {
     },
   ): Ok<readonly NpcDefinitionRecord[]> | NpcError {
     if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const includeArchived = options?.includeArchived === true;
+    const scope = options?.scope ?? null;
+    const worldProfileId = options?.worldProfileId ?? null;
+    const ownerPlaceholders = actorIds.map(() => '?').join(', ');
+    // Candidate set: own personal rows + world/core/builtin (+ optional filters).
+    // World ACL is memoized per world_profile_id below (not N queries blindly).
     const rows = this.#db
       .prepare(
         `SELECT id, public_id, scope, world_profile_id, owner_user_id, status, payload,
                 payload_version, created_at, updated_at
          FROM npc_creature_definitions
+         WHERE (? = 1 OR status = 'active')
+           AND (? IS NULL OR scope = ?)
+           AND (? IS NULL OR world_profile_id = ?)
+           AND (
+             (scope = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
+             OR scope IN ('world', 'core', 'builtin')
+           )
          ORDER BY updated_at DESC`,
       )
-      .all() as Array<{
+      .all(
+        includeArchived ? 1 : 0,
+        scope,
+        scope,
+        worldProfileId,
+        worldProfileId,
+        ...actorIds,
+      ) as Array<{
       id: string;
       public_id: string | null;
       scope: string;
@@ -387,20 +415,21 @@ export class NpcInstanceStore {
       created_at: string;
       updated_at: string;
     }>;
-    const includeArchived = options?.includeArchived === true;
+    const worldReadCache = new Map<string, boolean>();
     const out: NpcDefinitionRecord[] = [];
     for (const row of rows) {
       const mapped = this.#mapDefinitionRow(row);
       if (!mapped) continue;
-      if (!includeArchived && mapped.status !== 'active') continue;
-      if (options?.scope && mapped.scope !== options.scope) continue;
-      if (
-        options?.worldProfileId &&
-        mapped.worldProfileId !== options.worldProfileId
-      ) {
+      if (mapped.scope === 'world' && mapped.worldProfileId) {
+        let allowed = worldReadCache.get(mapped.worldProfileId);
+        if (allowed === undefined) {
+          allowed = this.#world.canReadWorldProfile(actorIds, mapped.worldProfileId);
+          worldReadCache.set(mapped.worldProfileId, allowed);
+        }
+        if (!allowed) continue;
+      } else if (!this.#definitionReadableForActor(actorIds, mapped)) {
         continue;
       }
-      if (!this.#definitionReadableForActor(actorIds, mapped)) continue;
       out.push(mapped);
     }
     return { ok: true, value: out };

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `d325464716d2a29f50a5966621d42c89338a3aac385a8bc97c0db3ed289486e3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `59d1477df9dabd87fccedc30a2dab1aee810a72ce5c060f14f2f7eecfbab6ffe`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -59,17 +59,17 @@ None in the reviewed source.
 
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:232` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:236` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:232`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: npc_creature_controller_assignments
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:234` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:238` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -81,20 +81,20 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:228`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:232`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:260` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:264` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:254`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:258`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: assign_npc_creature_controller
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:284` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:288` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -105,20 +105,20 @@ supabase.rpc('assign_npc_creature_controller', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:254`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:258`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:321` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:325` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:318`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:322`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: npc_creature_instances
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:323` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:327` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -131,20 +131,20 @@ supabase
       .order('updated_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:318`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:322`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:352` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:356` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:348`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: spawn_npc_creature_instance
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:385` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:389` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -160,20 +160,20 @@ supabase.rpc('spawn_npc_creature_instance', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:344`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:348`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:413` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:417` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:408`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:412`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: update_npc_creature_instance_runtime
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:428` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:432` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -183,20 +183,20 @@ supabase.rpc('update_npc_creature_instance_runtime', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:408`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:412`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:446` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:450` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:445`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:449`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: remove_npc_creature_instance
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:448` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:452` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -205,20 +205,20 @@ supabase.rpc('remove_npc_creature_instance', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:445`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:449`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:466` — dynamic-expression.
+`src/infrastructure/npc-creature/npc-creature-service.ts:470` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:463`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:467`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: clear_npc_creature_instance_temp_controllers_for_session
 
-`src/infrastructure/npc-creature/npc-creature-service.ts:468` — literal-or-constant.
+`src/infrastructure/npc-creature/npc-creature-service.ts:472` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -227,7 +227,7 @@ supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:463`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/npc-creature/npc-creature-service.ts:467`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/npc-creature/supabase-npc-creature.repository.ts:40` — dynamic-expression.
@@ -373,6 +373,204 @@ Enclosing operation: `src/infrastructure/npc-creature/supabase-npc-creature.repo
 
 ## Complete public declarations and facade operation contracts
 
+### src/infrastructure/npc-creature/host-npc-creature-adapter.ts:12
+
+```ts
+export type HostNpcCreatureAdapter = HostNpcCreaturePorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_NPC_CREATURE_OPS;
+};
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-adapter.ts:21
+
+```ts
+export function createHostNpcCreatureAdapter(
+  ports: HostNpcCreaturePorts,
+): HostNpcCreatureAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_NPC_CREATURE_OPS,
+    listDefinitions: (actorId, options) => ports.listDefinitions(actorId, options),
+    getDefinition: (actorId, definitionId) => ports.getDefinition(actorId, definitionId),
+    createDefinition: (actorId, input) => ports.createDefinition(actorId, input),
+    updateDefinition: (actorId, definitionId, draft) =>
+      ports.updateDefinition(actorId, definitionId, draft),
+    archiveDefinition: (actorId, definitionId) =>
+      ports.archiveDefinition(actorId, definitionId),
+    restoreDefinition: (actorId, definitionId) =>
+      ports.restoreDefinition(actorId, definitionId),
+    duplicateDefinition: (actorId, sourceDefinitionId) =>
+      ports.duplicateDefinition(actorId, sourceDefinitionId),
+    assignController: (actorId, projectId, definitionId, controllerUserId) =>
+      ports.assignController(actorId, projectId, definitionId, controllerUserId),
+    spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),
+    updateRuntime: (actorId, instanceId, runtime) =>
+      ports.updateRuntime(actorId, instanceId, runtime),
+    removeInstance: (actorId, instanceId) => ports.removeInstance(actorId, instanceId),
+    clearTempControllersForSession: (actorId, sessionId) =>
+      ports.clearTempControllersForSession(actorId, sessionId),
+  };
+}
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:10
+
+```ts
+export type HostNpcCreatureResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:14
+
+```ts
+export type HostNpcDefinitionRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly scope: 'personal' | 'world' | 'core' | 'builtin';
+  readonly worldProfileId: string | null;
+  readonly ownerUserId: string | null;
+  readonly status: 'active' | 'archived';
+  readonly payload: Readonly<Record<string, unknown>>;
+  readonly payloadVersion: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:27
+
+```ts
+export type HostNpcInstanceRow = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly sessionId: string | null;
+  readonly definitionId: string;
+  readonly displayName: string;
+  readonly instanceKind: string;
+  readonly sequenceNumber: number;
+  readonly snapshot: Readonly<Record<string, unknown>>;
+  readonly runtime: Readonly<Record<string, unknown>>;
+  readonly createdBy: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:42
+
+```ts
+export type HostNpcControllerAssignmentRow = {
+  readonly projectId: string;
+  readonly definitionId: string;
+  readonly controllerUserId: string | null;
+  readonly assignedBy: string;
+  readonly updatedAt: string;
+};
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:54
+
+```ts
+export type HostNpcCreaturePorts = {
+  readonly listDefinitions: (
+    actorId: string,
+    options?: {
+      readonly scope?: 'personal' | 'world' | 'core' | 'builtin';
+      readonly worldProfileId?: string | null;
+      readonly includeArchived?: boolean;
+    },
+  ) => Promise<HostNpcCreatureResult<readonly HostNpcDefinitionRecord[]>>;
+  readonly getDefinition: (
+    actorId: string,
+    definitionId: string,
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord | null>>;
+  readonly createDefinition: (
+    actorId: string,
+    input: {
+      readonly scope: 'personal' | 'world';
+      readonly worldProfileId?: string | null;
+      readonly draft: unknown;
+    },
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly updateDefinition: (
+    actorId: string,
+    definitionId: string,
+    draft: unknown,
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly archiveDefinition: (
+    actorId: string,
+    definitionId: string,
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly restoreDefinition: (
+    actorId: string,
+    definitionId: string,
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly duplicateDefinition: (
+    actorId: string,
+    sourceDefinitionId: string,
+  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;
+  readonly assignController: (
+    actorId: string,
+    projectId: string,
+    definitionId: string,
+    controllerUserId: string | null,
+  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow>>;
+  readonly spawnInstance: (
+    actorId: string,
+    input: {
+      readonly projectId: string;
+      readonly definitionId: string;
+      readonly instanceKind: string;
+      readonly snapshot: unknown;
+      readonly runtime: unknown;
+      readonly displayName: string;
+      readonly sequenceNumber: number;
+      readonly sessionId?: string | null;
+    },
+  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;
+  readonly updateRuntime: (
+    actorId: string,
+    instanceId: string,
+    runtime: unknown,
+  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;
+  readonly removeInstance: (
+    actorId: string,
+    instanceId: string,
+  ) => Promise<HostNpcCreatureResult<{ readonly id: string }>>;
+  readonly clearTempControllersForSession: (
+    actorId: string,
+    sessionId: string,
+  ) => Promise<HostNpcCreatureResult<{ readonly cleared: number }>>;
+};
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:127
+
+```ts
+export const HOST_NPC_CREATURE_OPS = [
+  'listDefinitions',
+  'getDefinition',
+  'createDefinition',
+  'updateDefinition',
+  'archiveDefinition',
+  'restoreDefinition',
+  'duplicateDefinition',
+  'assignController',
+  'spawnInstance',
+  'updateRuntime',
+  'removeInstance',
+  'clearTempControllersForSession',
+] as const;
+```
+
+### src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts:142
+
+```ts
+export type HostNpcCreatureOp = (typeof HOST_NPC_CREATURE_OPS)[number];
+```
+
 ### src/infrastructure/npc-creature/npc-creature-controller.persistence.ts:7
 
 ```ts
@@ -476,7 +674,7 @@ export function toInstanceSnapshotPayload(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:52
+### src/infrastructure/npc-creature/npc-creature-service.ts:56
 
 ```ts
 export async function listNpcCreatureDefinitions(options?: {
@@ -488,7 +686,7 @@ export async function listNpcCreatureDefinitions(options?: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:60
+### src/infrastructure/npc-creature/npc-creature-service.ts:64
 
 ```ts
 export async function getNpcCreatureDefinition(
@@ -498,7 +696,7 @@ export async function getNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:66
+### src/infrastructure/npc-creature/npc-creature-service.ts:70
 
 ```ts
 export async function createNpcCreatureDefinition(
@@ -508,7 +706,7 @@ export async function createNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:72
+### src/infrastructure/npc-creature/npc-creature-service.ts:76
 
 ```ts
 export async function updateNpcCreatureDefinition(
@@ -518,7 +716,7 @@ export async function updateNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:78
+### src/infrastructure/npc-creature/npc-creature-service.ts:82
 
 ```ts
 export async function archiveNpcCreatureDefinition(
@@ -528,7 +726,7 @@ export async function archiveNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:94
+### src/infrastructure/npc-creature/npc-creature-service.ts:98
 
 ```ts
 export async function duplicateNpcCreatureDefinition(
@@ -551,7 +749,7 @@ export async function duplicateNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:113
+### src/infrastructure/npc-creature/npc-creature-service.ts:117
 
 ```ts
 export async function restoreNpcCreatureDefinition(
@@ -561,7 +759,7 @@ export async function restoreNpcCreatureDefinition(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:120
+### src/infrastructure/npc-creature/npc-creature-service.ts:124
 
 ```ts
 export function toNpcCreatureDefinitionSummaries(
@@ -580,7 +778,7 @@ export function toNpcCreatureDefinitionSummaries(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:139
+### src/infrastructure/npc-creature/npc-creature-service.ts:143
 
 ```ts
 export async function loadWorldProfileNpcCreatureCatalog(
@@ -594,7 +792,7 @@ export async function loadWorldProfileNpcCreatureCatalog(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:149
+### src/infrastructure/npc-creature/npc-creature-service.ts:153
 
 ```ts
 export interface WorldNpcCreatureAvailability {
@@ -604,7 +802,7 @@ export interface WorldNpcCreatureAvailability {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:159
+### src/infrastructure/npc-creature/npc-creature-service.ts:163
 
 ```ts
 export async function loadWorldNpcCreatureAvailability(
@@ -648,7 +846,7 @@ export async function loadWorldNpcCreatureAvailability(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:202
+### src/infrastructure/npc-creature/npc-creature-service.ts:206
 
 ```ts
 export async function promoteNpcCreatureCompactToFull(input: {
@@ -677,7 +875,7 @@ export async function promoteNpcCreatureCompactToFull(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:228
+### src/infrastructure/npc-creature/npc-creature-service.ts:232
 
 ```ts
 export async function getNpcCreatureControllerAssignment(
@@ -703,7 +901,7 @@ export async function getNpcCreatureControllerAssignment(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:254
+### src/infrastructure/npc-creature/npc-creature-service.ts:258
 
 ```ts
 export async function assignNpcCreatureController(input: {
@@ -754,7 +952,7 @@ export async function assignNpcCreatureController(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:318
+### src/infrastructure/npc-creature/npc-creature-service.ts:322
 
 ```ts
 export async function listNpcCreatureInstances(
@@ -780,7 +978,7 @@ export async function listNpcCreatureInstances(
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:344
+### src/infrastructure/npc-creature/npc-creature-service.ts:348
 
 ```ts
 export async function spawnNpcCreatureInstance(input: {
@@ -847,7 +1045,7 @@ export async function spawnNpcCreatureInstance(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:408
+### src/infrastructure/npc-creature/npc-creature-service.ts:412
 
 ```ts
 export async function updateNpcCreatureInstanceRuntime(input: {
@@ -887,7 +1085,7 @@ export async function updateNpcCreatureInstanceRuntime(input: {
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:445
+### src/infrastructure/npc-creature/npc-creature-service.ts:449
 
 ```ts
 export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {
@@ -905,7 +1103,7 @@ export async function removeNpcCreatureInstance(instanceId: string): Promise<voi
 }
 ```
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:463
+### src/infrastructure/npc-creature/npc-creature-service.ts:467
 
 ```ts
 export async function clearNpcCreatureInstanceTempControllersForSession(
@@ -1302,9 +1500,11 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts` | `19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a` |
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
+| `src/infrastructure/npc-creature/host-npc-creature-adapter.ts` | `c707763455a2e935f607ce3a43e750f1a3b2de42e90e1a5c96be8fb15f22a2bb` |
+| `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts` | `781e93fe661518ad05e0b2708813fe89aceda69f212cf59a8de157fc9c408a69` |
 | `src/infrastructure/npc-creature/npc-creature-controller.persistence.ts` | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
 | `src/infrastructure/npc-creature/npc-creature-instance.persistence.ts` | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
-| `src/infrastructure/npc-creature/npc-creature-service.ts` | `8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759` |
+| `src/infrastructure/npc-creature/npc-creature-service.ts` | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
 | `src/infrastructure/npc-creature/npc-creature.persistence.ts` | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `src/infrastructure/npc-creature/supabase-npc-creature.repository.ts` | `5a4ffd9548db32d83f852e36c5ec77b878a758d16e080a45a014c9f15256c041` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |

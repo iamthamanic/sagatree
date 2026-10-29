@@ -4,6 +4,14 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "sha256": "c707763455a2e935f607ce3a43e750f1a3b2de42e90e1a5c96be8fb15f22a2bb"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "sha256": "781e93fe661518ad05e0b2708813fe89aceda69f212cf59a8de157fc9c408a69"
+    },
+    {
       "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
       "sha256": "9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530"
     },
@@ -13,7 +21,7 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "sha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759"
+      "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -1173,16 +1181,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 232,
-      "endLine": 232,
+      "line": 236,
+      "endLine": 236,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 228,
-        "endLine": 248,
+        "line": 232,
+        "endLine": 252,
         "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
       }
     },
@@ -1190,8 +1198,8 @@
       "kind": "table",
       "name": "npc_creature_controller_assignments",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 234,
-      "endLine": 235,
+      "line": 238,
+      "endLine": 239,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(CONTROLLER_TABLE)",
       "chain": "supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle()",
@@ -1200,8 +1208,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 228,
-        "endLine": 248,
+        "line": 232,
+        "endLine": 252,
         "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
       }
     },
@@ -1209,16 +1217,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 260,
-      "endLine": 260,
+      "line": 264,
+      "endLine": 264,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 254,
-        "endLine": 299,
+        "line": 258,
+        "endLine": 303,
         "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
       }
     },
@@ -1226,8 +1234,8 @@
       "kind": "rpc",
       "name": "assign_npc_creature_controller",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 284,
-      "endLine": 288,
+      "line": 288,
+      "endLine": 292,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    })",
       "chain": "supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    })",
@@ -1237,8 +1245,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 254,
-        "endLine": 299,
+        "line": 258,
+        "endLine": 303,
         "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
       }
     },
@@ -1246,16 +1254,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 321,
-      "endLine": 321,
+      "line": 325,
+      "endLine": 325,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 318,
-        "endLine": 338,
+        "line": 322,
+        "endLine": 342,
         "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
       }
     },
@@ -1263,8 +1271,8 @@
       "kind": "table",
       "name": "npc_creature_instances",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 323,
-      "endLine": 324,
+      "line": 327,
+      "endLine": 328,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(INSTANCES_TABLE)",
       "chain": "supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false })",
@@ -1273,8 +1281,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 318,
-        "endLine": 338,
+        "line": 322,
+        "endLine": 342,
         "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
       }
     },
@@ -1282,16 +1290,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 352,
-      "endLine": 352,
+      "line": 356,
+      "endLine": 356,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 344,
-        "endLine": 405,
+        "line": 348,
+        "endLine": 409,
         "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
       }
     },
@@ -1299,8 +1307,8 @@
       "kind": "rpc",
       "name": "spawn_npc_creature_instance",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 385,
-      "endLine": 394,
+      "line": 389,
+      "endLine": 398,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    })",
       "chain": "supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    })",
@@ -1310,8 +1318,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 344,
-        "endLine": 405,
+        "line": 348,
+        "endLine": 409,
         "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
       }
     },
@@ -1319,16 +1327,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 413,
-      "endLine": 413,
+      "line": 417,
+      "endLine": 417,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 408,
-        "endLine": 442,
+        "line": 412,
+        "endLine": 446,
         "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
       }
     },
@@ -1336,8 +1344,8 @@
       "kind": "rpc",
       "name": "update_npc_creature_instance_runtime",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 428,
-      "endLine": 431,
+      "line": 432,
+      "endLine": 435,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    })",
       "chain": "supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    })",
@@ -1347,8 +1355,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 408,
-        "endLine": 442,
+        "line": 412,
+        "endLine": 446,
         "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
       }
     },
@@ -1356,16 +1364,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 446,
-      "endLine": 446,
+      "line": 450,
+      "endLine": 450,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 445,
-        "endLine": 457,
+        "line": 449,
+        "endLine": 461,
         "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
       }
     },
@@ -1373,8 +1381,8 @@
       "kind": "rpc",
       "name": "remove_npc_creature_instance",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 448,
-      "endLine": 450,
+      "line": 452,
+      "endLine": 454,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    })",
       "chain": "supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    })",
@@ -1384,8 +1392,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 445,
-        "endLine": 457,
+        "line": 449,
+        "endLine": 461,
         "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
       }
     },
@@ -1393,16 +1401,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 466,
-      "endLine": 466,
+      "line": 470,
+      "endLine": 470,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 463,
-        "endLine": 480,
+        "line": 467,
+        "endLine": 484,
         "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
       }
     },
@@ -1410,8 +1418,8 @@
       "kind": "rpc",
       "name": "clear_npc_creature_instance_temp_controllers_for_session",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 468,
-      "endLine": 470,
+      "line": 472,
+      "endLine": 474,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    })",
       "chain": "supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    })",
@@ -1421,8 +1429,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "line": 463,
-        "endLine": 480,
+        "line": 467,
+        "endLine": 484,
         "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
       }
     },
@@ -1628,6 +1636,22 @@
   ],
   "imports": [
     {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-npc-creature-ports.contract",
+      "resolvedPath": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "expression": "import type { HostNpcCreaturePorts } from './host-npc-creature-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-npc-creature-ports.contract",
+      "resolvedPath": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "expression": "import { HOST_NPC_CREATURE_OPS } from './host-npc-creature-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
       "line": 5,
       "endLine": 5,
@@ -1645,56 +1669,56 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 8,
-      "endLine": 33,
+      "line": 12,
+      "endLine": 37,
       "module": "../../domains/npc-creature",
       "resolvedPath": "src/domains/npc-creature/index.ts",
       "expression": "import {\n  assertFullSheetHasNoSilentIllegalAttributes,\n  buildCompactToFullWriteDraft,\n  deriveNpcCreaturePower,\n  getBuiltinNpcCreatureDefinition,\n  getCoreNpcCreatureDefinition,\n  getNpcCreatureCatalogModuleConfig,\n  isCoreNpcCreatureDefinitionId,\n  listCoreNpcCreatureDefinitions,\n  planNpcControllerAssignment,\n  planNpcCreatureInstanceRuntimeUpdate,\n  planNpcCreatureInstanceSpawn,\n  resolveWorldNpcCreatureCatalog,\n  type CreateNpcCreatureDefinitionInput,\n  type NpcControllerAssignment,\n  type NpcCreatureCatalogModuleConfig,\n  type NpcCreatureCatalogRecord,\n  type NpcCreatureDefinition,\n  type NpcCreatureDefinitionSummary,\n  type NpcCreatureInstance,\n  type NpcCreatureInstanceKind,\n  type NpcCreatureInstanceRuntimeUpdate,\n  type NpcCreatureScope,\n  type ResolvedWorldNpcCreatureCatalog,\n  type UpdateNpcCreatureDefinitionInput,\n} from '../../domains/npc-creature';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 34,
-      "endLine": 34,
+      "line": 38,
+      "endLine": 38,
       "module": "../../lib/authenticatedUser",
       "resolvedPath": "src/lib/authenticatedUser.ts",
       "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 35,
-      "endLine": 35,
+      "line": 39,
+      "endLine": 39,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 36,
-      "endLine": 36,
+      "line": 40,
+      "endLine": 40,
       "module": "../../lib/networkTimeout",
       "resolvedPath": "src/lib/networkTimeout.ts",
       "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 37,
-      "endLine": 40,
+      "line": 41,
+      "endLine": 44,
       "module": "./npc-creature-controller.persistence",
       "resolvedPath": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
       "expression": "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 41,
-      "endLine": 46,
+      "line": 45,
+      "endLine": 50,
       "module": "./npc-creature-instance.persistence",
       "resolvedPath": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
       "expression": "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 47,
-      "endLine": 47,
+      "line": 51,
+      "endLine": 51,
       "module": "./supabase-npc-creature.repository",
       "resolvedPath": "src/infrastructure/npc-creature/supabase-npc-creature.repository.ts",
       "expression": "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"
@@ -1758,6 +1782,60 @@
   ],
   "publicDeclarations": [
     {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostNpcCreatureAdapter = HostNpcCreaturePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_NPC_CREATURE_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 21,
+      "endLine": 47,
+      "text": "export function createHostNpcCreatureAdapter(\n  ports: HostNpcCreaturePorts,\n): HostNpcCreatureAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_NPC_CREATURE_OPS,\n    listDefinitions: (actorId, options) => ports.listDefinitions(actorId, options),\n    getDefinition: (actorId, definitionId) => ports.getDefinition(actorId, definitionId),\n    createDefinition: (actorId, input) => ports.createDefinition(actorId, input),\n    updateDefinition: (actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft),\n    archiveDefinition: (actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId),\n    restoreDefinition: (actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId),\n    duplicateDefinition: (actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId),\n    assignController: (actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId),\n    spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),\n    updateRuntime: (actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime),\n    removeInstance: (actorId, instanceId) => ports.removeInstance(actorId, instanceId),\n    clearTempControllersForSession: (actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "export type HostNpcCreatureResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 14,
+      "endLine": 25,
+      "text": "export type HostNpcDefinitionRecord = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly scope: 'personal' | 'world' | 'core' | 'builtin';\n  readonly worldProfileId: string | null;\n  readonly ownerUserId: string | null;\n  readonly status: 'active' | 'archived';\n  readonly payload: Readonly<Record<string, unknown>>;\n  readonly payloadVersion: number;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 27,
+      "endLine": 40,
+      "text": "export type HostNpcInstanceRow = {\n  readonly id: string;\n  readonly projectId: string;\n  readonly sessionId: string | null;\n  readonly definitionId: string;\n  readonly displayName: string;\n  readonly instanceKind: string;\n  readonly sequenceNumber: number;\n  readonly snapshot: Readonly<Record<string, unknown>>;\n  readonly runtime: Readonly<Record<string, unknown>>;\n  readonly createdBy: string;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 42,
+      "endLine": 48,
+      "text": "export type HostNpcControllerAssignmentRow = {\n  readonly projectId: string;\n  readonly definitionId: string;\n  readonly controllerUserId: string | null;\n  readonly assignedBy: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 54,
+      "endLine": 124,
+      "text": "export type HostNpcCreaturePorts = {\n  readonly listDefinitions: (\n    actorId: string,\n    options?: {\n      readonly scope?: 'personal' | 'world' | 'core' | 'builtin';\n      readonly worldProfileId?: string | null;\n      readonly includeArchived?: boolean;\n    },\n  ) => Promise<HostNpcCreatureResult<readonly HostNpcDefinitionRecord[]>>;\n  readonly getDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord | null>>;\n  readonly createDefinition: (\n    actorId: string,\n    input: {\n      readonly scope: 'personal' | 'world';\n      readonly worldProfileId?: string | null;\n      readonly draft: unknown;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly updateDefinition: (\n    actorId: string,\n    definitionId: string,\n    draft: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly archiveDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly restoreDefinition: (\n    actorId: string,\n    definitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly duplicateDefinition: (\n    actorId: string,\n    sourceDefinitionId: string,\n  ) => Promise<HostNpcCreatureResult<HostNpcDefinitionRecord>>;\n  readonly assignController: (\n    actorId: string,\n    projectId: string,\n    definitionId: string,\n    controllerUserId: string | null,\n  ) => Promise<HostNpcCreatureResult<HostNpcControllerAssignmentRow>>;\n  readonly spawnInstance: (\n    actorId: string,\n    input: {\n      readonly projectId: string;\n      readonly definitionId: string;\n      readonly instanceKind: string;\n      readonly snapshot: unknown;\n      readonly runtime: unknown;\n      readonly displayName: string;\n      readonly sequenceNumber: number;\n      readonly sessionId?: string | null;\n    },\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly updateRuntime: (\n    actorId: string,\n    instanceId: string,\n    runtime: unknown,\n  ) => Promise<HostNpcCreatureResult<HostNpcInstanceRow>>;\n  readonly removeInstance: (\n    actorId: string,\n    instanceId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly id: string }>>;\n  readonly clearTempControllersForSession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostNpcCreatureResult<{ readonly cleared: number }>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 127,
+      "endLine": 140,
+      "text": "export const HOST_NPC_CREATURE_OPS = [\n  'listDefinitions',\n  'getDefinition',\n  'createDefinition',\n  'updateDefinition',\n  'archiveDefinition',\n  'restoreDefinition',\n  'duplicateDefinition',\n  'assignController',\n  'spawnInstance',\n  'updateRuntime',\n  'removeInstance',\n  'clearTempControllersForSession',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts",
+      "line": 142,
+      "endLine": 142,
+      "text": "export type HostNpcCreatureOp = (typeof HOST_NPC_CREATURE_OPS)[number];"
+    },
+    {
       "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
       "line": 7,
       "endLine": 13,
@@ -1795,116 +1873,116 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 52,
-      "endLine": 58,
+      "line": 56,
+      "endLine": 62,
       "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  return supabaseNpcCreatureRepository.listDefinitions(options);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 60,
-      "endLine": 64,
+      "line": 64,
+      "endLine": 68,
       "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  return supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 66,
-      "endLine": 70,
+      "line": 70,
+      "endLine": 74,
       "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.createDefinition(input);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 72,
-      "endLine": 76,
+      "line": 76,
+      "endLine": 80,
       "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.updateDefinition(input);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 78,
-      "endLine": 82,
+      "line": 82,
+      "endLine": 86,
       "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.archiveDefinition(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 94,
-      "endLine": 111,
+      "line": 98,
+      "endLine": 115,
       "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  let definition = sourceDefinition ?? null;\n  if (!definition) {\n    const existing = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n    if (!existing) {\n      throw new Error('Definition nicht gefunden.');\n    }\n    definition = existing.definition;\n  }\n  const { id: _id, scope: _scope, ...rest } = definition;\n  return supabaseNpcCreatureRepository.createDefinition({\n    target: { scope: 'personal' },\n    draft: { ...rest, name: personalCopyName(rest.name) },\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 113,
-      "endLine": 117,
+      "line": 117,
+      "endLine": 121,
       "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.restoreDefinition(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 120,
-      "endLine": 133,
+      "line": 124,
+      "endLine": 137,
       "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 139,
-      "endLine": 147,
+      "line": 143,
+      "endLine": 151,
       "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return supabaseNpcCreatureRepository.listDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 149,
-      "endLine": 153,
+      "line": 153,
+      "endLine": 157,
       "text": "export interface WorldNpcCreatureAvailability {\n  config: NpcCreatureCatalogModuleConfig;\n  resolved: ResolvedWorldNpcCreatureCatalog;\n  worldRecords: NpcCreatureCatalogRecord[];\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 159,
-      "endLine": 197,
+      "line": 163,
+      "endLine": 201,
       "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  const [modules, worldRecords, personalRecords] = await Promise.all([\n    supabaseNpcCreatureRepository.loadWorldProfileModules(worldProfileId),\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    supabaseNpcCreatureRepository.listDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 202,
-      "endLine": 225,
+      "line": 206,
+      "endLine": 229,
       "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  const existing = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return supabaseNpcCreatureRepository.updateDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 228,
-      "endLine": 248,
+      "line": 232,
+      "endLine": 252,
       "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 254,
-      "endLine": 299,
+      "line": 258,
+      "endLine": 303,
       "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 318,
-      "endLine": 338,
+      "line": 322,
+      "endLine": 342,
       "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 344,
-      "endLine": 405,
+      "line": 348,
+      "endLine": 409,
       "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 408,
-      "endLine": 442,
+      "line": 412,
+      "endLine": 446,
       "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 445,
-      "endLine": 457,
+      "line": 449,
+      "endLine": 461,
       "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 463,
-      "endLine": 480,
+      "line": 467,
+      "endLine": 484,
       "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
     },
     {
@@ -1951,6 +2029,97 @@
     }
   ],
   "operationDeclarations": [
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 21,
+      "endLine": 47,
+      "name": "createHostNpcCreatureAdapter",
+      "text": "export function createHostNpcCreatureAdapter(\n  ports: HostNpcCreaturePorts,\n): HostNpcCreatureAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_NPC_CREATURE_OPS,\n    listDefinitions: (actorId, options) => ports.listDefinitions(actorId, options),\n    getDefinition: (actorId, definitionId) => ports.getDefinition(actorId, definitionId),\n    createDefinition: (actorId, input) => ports.createDefinition(actorId, input),\n    updateDefinition: (actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft),\n    archiveDefinition: (actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId),\n    restoreDefinition: (actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId),\n    duplicateDefinition: (actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId),\n    assignController: (actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId),\n    spawnInstance: (actorId, input) => ports.spawnInstance(actorId, input),\n    updateRuntime: (actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime),\n    removeInstance: (actorId, instanceId) => ports.removeInstance(actorId, instanceId),\n    clearTempControllersForSession: (actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId, options) => ports.listDefinitions(actorId, options)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 28,
+      "endLine": 28,
+      "name": "callback",
+      "text": "(actorId, definitionId) => ports.getDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 29,
+      "endLine": 29,
+      "name": "callback",
+      "text": "(actorId, input) => ports.createDefinition(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 30,
+      "endLine": 31,
+      "name": "callback",
+      "text": "(actorId, definitionId, draft) =>\n      ports.updateDefinition(actorId, definitionId, draft)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 32,
+      "endLine": 33,
+      "name": "callback",
+      "text": "(actorId, definitionId) =>\n      ports.archiveDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 34,
+      "endLine": 35,
+      "name": "callback",
+      "text": "(actorId, definitionId) =>\n      ports.restoreDefinition(actorId, definitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 36,
+      "endLine": 37,
+      "name": "callback",
+      "text": "(actorId, sourceDefinitionId) =>\n      ports.duplicateDefinition(actorId, sourceDefinitionId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 38,
+      "endLine": 39,
+      "name": "callback",
+      "text": "(actorId, projectId, definitionId, controllerUserId) =>\n      ports.assignController(actorId, projectId, definitionId, controllerUserId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 40,
+      "endLine": 40,
+      "name": "callback",
+      "text": "(actorId, input) => ports.spawnInstance(actorId, input)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 41,
+      "endLine": 42,
+      "name": "callback",
+      "text": "(actorId, instanceId, runtime) =>\n      ports.updateRuntime(actorId, instanceId, runtime)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 43,
+      "endLine": 43,
+      "name": "callback",
+      "text": "(actorId, instanceId) => ports.removeInstance(actorId, instanceId)"
+    },
+    {
+      "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
+      "line": 44,
+      "endLine": 45,
+      "name": "callback",
+      "text": "(actorId, sessionId) =>\n      ports.clearTempControllersForSession(actorId, sessionId)"
+    },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
       "line": 15,
@@ -2009,204 +2178,204 @@
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 52,
-      "endLine": 58,
+      "line": 56,
+      "endLine": 62,
       "name": "listNpcCreatureDefinitions",
       "text": "export async function listNpcCreatureDefinitions(options?: {\n  scope?: NpcCreatureScope;\n  worldProfileId?: string | null;\n  includeArchived?: boolean;\n}): Promise<NpcCreatureCatalogRecord[]> {\n  return supabaseNpcCreatureRepository.listDefinitions(options);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 60,
-      "endLine": 64,
+      "line": 64,
+      "endLine": 68,
       "name": "getNpcCreatureDefinition",
       "text": "export async function getNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord | null> {\n  return supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 66,
-      "endLine": 70,
+      "line": 70,
+      "endLine": 74,
       "name": "createNpcCreatureDefinition",
       "text": "export async function createNpcCreatureDefinition(\n  input: CreateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.createDefinition(input);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 72,
-      "endLine": 76,
+      "line": 76,
+      "endLine": 80,
       "name": "updateNpcCreatureDefinition",
       "text": "export async function updateNpcCreatureDefinition(\n  input: UpdateNpcCreatureDefinitionInput,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.updateDefinition(input);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 78,
-      "endLine": 82,
+      "line": 82,
+      "endLine": 86,
       "name": "archiveNpcCreatureDefinition",
       "text": "export async function archiveNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.archiveDefinition(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 84,
-      "endLine": 88,
+      "line": 88,
+      "endLine": 92,
       "name": "personalCopyName",
       "text": "function personalCopyName(sourceName: string): string {\n  const suffix = ' (Kopie)';\n  const maxBase = Math.max(1, 255 - suffix.length);\n  return `${sourceName.trim().slice(0, maxBase) || 'NPC'}${suffix}`;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 94,
-      "endLine": 111,
+      "line": 98,
+      "endLine": 115,
       "name": "duplicateNpcCreatureDefinition",
       "text": "export async function duplicateNpcCreatureDefinition(\n  definitionId: string,\n  sourceDefinition?: NpcCreatureDefinition,\n): Promise<NpcCreatureCatalogRecord> {\n  let definition = sourceDefinition ?? null;\n  if (!definition) {\n    const existing = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n    if (!existing) {\n      throw new Error('Definition nicht gefunden.');\n    }\n    definition = existing.definition;\n  }\n  const { id: _id, scope: _scope, ...rest } = definition;\n  return supabaseNpcCreatureRepository.createDefinition({\n    target: { scope: 'personal' },\n    draft: { ...rest, name: personalCopyName(rest.name) },\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 113,
-      "endLine": 117,
+      "line": 117,
+      "endLine": 121,
       "name": "restoreNpcCreatureDefinition",
       "text": "export async function restoreNpcCreatureDefinition(\n  definitionId: string,\n): Promise<NpcCreatureCatalogRecord> {\n  return supabaseNpcCreatureRepository.restoreDefinition(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 120,
-      "endLine": 133,
+      "line": 124,
+      "endLine": 137,
       "name": "toNpcCreatureDefinitionSummaries",
       "text": "export function toNpcCreatureDefinitionSummaries(\n  records: readonly NpcCreatureCatalogRecord[],\n): NpcCreatureDefinitionSummary[] {\n  return records.map((record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 123,
-      "endLine": 132,
+      "line": 127,
+      "endLine": 136,
       "name": "callback",
       "text": "(record) => {\n    const derived = deriveNpcCreaturePower(record.definition);\n    return {\n      definition: record.definition,\n      machtgradLabel: derived.machtgradLabel,\n      status: record.status,\n      scope: record.definition.scope,\n      worldProfileId: record.worldProfileId,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 139,
-      "endLine": 147,
+      "line": 143,
+      "endLine": 151,
       "name": "loadWorldProfileNpcCreatureCatalog",
       "text": "export async function loadWorldProfileNpcCreatureCatalog(\n  worldProfileId: string,\n): Promise<NpcCreatureCatalogRecord[]> {\n  return supabaseNpcCreatureRepository.listDefinitions({\n    scope: 'world',\n    worldProfileId,\n    includeArchived: true,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 159,
-      "endLine": 197,
+      "line": 163,
+      "endLine": 201,
       "name": "loadWorldNpcCreatureAvailability",
       "text": "export async function loadWorldNpcCreatureAvailability(\n  worldProfileId: string,\n): Promise<WorldNpcCreatureAvailability> {\n  const [modules, worldRecords, personalRecords] = await Promise.all([\n    supabaseNpcCreatureRepository.loadWorldProfileModules(worldProfileId),\n    loadWorldProfileNpcCreatureCatalog(worldProfileId),\n    supabaseNpcCreatureRepository.listDefinitions({\n      scope: 'personal',\n      includeArchived: false,\n    }),\n  ]);\n  const { config } = getNpcCreatureCatalogModuleConfig(modules);\n  const worldDefinitions = worldRecords\n    .filter((record) => record.status === 'active')\n    .map((record) => record.definition);\n  const personalDefinitions = personalRecords.map((record) => record.definition);\n\n  const resolveDefinition = (\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  };\n\n  const resolved = resolveWorldNpcCreatureCatalog({\n    config,\n    coreDefinitions: listCoreNpcCreatureDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  return { config, resolved, worldRecords };\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 172,
-      "endLine": 172,
+      "line": 176,
+      "endLine": 176,
       "name": "callback",
       "text": "(record) => record.status === 'active'"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 173,
-      "endLine": 173,
+      "line": 177,
+      "endLine": 177,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 174,
-      "endLine": 174,
+      "line": 178,
+      "endLine": 178,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 176,
-      "endLine": 186,
+      "line": 180,
+      "endLine": 190,
       "name": "resolveDefinition",
       "text": "(\n    definitionId: string,\n  ): NpcCreatureDefinition | undefined => {\n    const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreNpcCreatureDefinition(definitionId);\n    if (core) return core;\n    const world = worldDefinitions.find((entry) => entry.id === definitionId);\n    if (world) return world;\n    return personalDefinitions.find((entry) => entry.id === definitionId);\n  }"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 183,
-      "endLine": 183,
+      "line": 187,
+      "endLine": 187,
       "name": "callback",
       "text": "(entry) => entry.id === definitionId"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 185,
-      "endLine": 185,
+      "line": 189,
+      "endLine": 189,
       "name": "callback",
       "text": "(entry) => entry.id === definitionId"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 202,
-      "endLine": 225,
+      "line": 206,
+      "endLine": 229,
       "name": "promoteNpcCreatureCompactToFull",
       "text": "export async function promoteNpcCreatureCompactToFull(input: {\n  definitionId: string;\n  fullSheet: Readonly<Record<string, unknown>>;\n}): Promise<NpcCreatureCatalogRecord> {\n  const attrsCheck = assertFullSheetHasNoSilentIllegalAttributes(input.fullSheet);\n  if (attrsCheck.ok === false) {\n    throw new Error(attrsCheck.message);\n  }\n\n  const existing = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!existing) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const draft = buildCompactToFullWriteDraft(existing.definition, input.fullSheet);\n  if (!draft) {\n    throw new Error('Compact→Full-Entwurf ungültig — Full Sheet fehlt oder ist leer.');\n  }\n\n  return supabaseNpcCreatureRepository.updateDefinition({\n    definitionId: input.definitionId,\n    draft,\n  });\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 228,
-      "endLine": 248,
+      "line": 232,
+      "endLine": 252,
       "name": "getNpcCreatureControllerAssignment",
       "text": "export async function getNpcCreatureControllerAssignment(\n  projectId: string,\n  definitionId: string,\n): Promise<NpcControllerAssignment | null> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(CONTROLLER_TABLE)\n      .select('project_id, definition_id, controller_user_id, assigned_by, updated_at')\n      .eq('project_id', projectId)\n      .eq('definition_id', definitionId)\n      .maybeSingle(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller-Zuweisung konnte nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller-Zuweisung konnte nicht geladen werden: ${error.message}`);\n  }\n  if (!data) return null;\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 254,
-      "endLine": 299,
+      "line": 258,
+      "endLine": 303,
       "name": "assignNpcCreatureController",
       "text": "export async function assignNpcCreatureController(input: {\n  projectId: string;\n  definitionId: string;\n  controllerUserId: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcControllerAssignment> {\n  const actorUserId = await getAuthenticatedUserId();\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(input.definitionId);\n  if (!record) {\n    throw new Error('Figur wurde nicht gefunden.');\n  }\n\n  const planned = planNpcControllerAssignment(\n    record.definition,\n    {\n      projectId: input.projectId,\n      definitionId: input.definitionId,\n      controllerUserId: input.controllerUserId,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('assign_npc_creature_controller', {\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Controller konnte nicht zugewiesen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Controller konnte nicht zugewiesen werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Controller konnte nicht zugewiesen werden.');\n  }\n  return toNpcControllerAssignment(data as NpcControllerAssignmentRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 301,
-      "endLine": 310,
+      "line": 305,
+      "endLine": 314,
       "name": "resolveDefinitionForInstance",
       "text": "async function resolveDefinitionForInstance(\n  definitionId: string,\n): Promise<NpcCreatureDefinition | null> {\n  const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n  if (builtin) return builtin;\n  const core = getCoreNpcCreatureDefinition(definitionId);\n  if (core) return core;\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n  return record?.definition ?? null;\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 312,
-      "endLine": 315,
+      "line": 316,
+      "endLine": 319,
       "name": "isBuiltinOrCoreDefinitionId",
       "text": "function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {\n  if (isCoreNpcCreatureDefinitionId(definitionId)) return true;\n  return Boolean(getBuiltinNpcCreatureDefinition(definitionId));\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 318,
-      "endLine": 338,
+      "line": 322,
+      "endLine": 342,
       "name": "listNpcCreatureInstances",
       "text": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 337,
-      "endLine": 337,
+      "line": 341,
+      "endLine": 341,
       "name": "callback",
       "text": "(row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow)"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 344,
-      "endLine": 405,
+      "line": 348,
+      "endLine": 409,
       "name": "spawnNpcCreatureInstance",
       "text": "export async function spawnNpcCreatureInstance(input: {\n  projectId: string;\n  sessionId?: string | null;\n  definitionId: string;\n  instanceKind: NpcCreatureInstanceKind;\n  displayName?: string | null;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const definition = await resolveDefinitionForInstance(input.definitionId);\n  if (!definition) {\n    throw new Error('Figuren-Vorlage wurde nicht gefunden.');\n  }\n\n  const existing = await listNpcCreatureInstances(input.projectId);\n  const definitionReadable =\n    isBuiltinOrCoreDefinitionId(definition.id)\n    || Boolean(await supabaseNpcCreatureRepository.getDefinitionById(definition.id));\n\n  const planned = planNpcCreatureInstanceSpawn(\n    definition,\n    {\n      projectId: input.projectId,\n      sessionId: input.sessionId ?? null,\n      definitionId: input.definitionId,\n      instanceKind: input.instanceKind,\n      displayName: input.displayName ?? null,\n    },\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n      existingInstances: existing,\n      definitionReadable,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('spawn_npc_creature_instance', {\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht erzeugt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht erzeugt werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz konnte nicht erzeugt werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 408,
-      "endLine": 442,
+      "line": 412,
+      "endLine": 446,
       "name": "updateNpcCreatureInstanceRuntime",
       "text": "export async function updateNpcCreatureInstanceRuntime(input: {\n  instance: NpcCreatureInstance;\n  patch: NpcCreatureInstanceRuntimeUpdate;\n  activeMemberUserIds: readonly string[];\n}): Promise<NpcCreatureInstance> {\n  const actorUserId = await getAuthenticatedUserId();\n  const planned = planNpcCreatureInstanceRuntimeUpdate(\n    input.instance,\n    input.patch,\n    {\n      actorUserId,\n      actorRole: 'gm',\n      activeMemberUserIds: input.activeMemberUserIds,\n    },\n  );\n  if (planned.ok === false) {\n    throw new Error(planned.message);\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('update_npc_creature_instance_runtime', {\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz-Status konnte nicht gespeichert werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz-Status konnte nicht gespeichert werden: ${error.message}`);\n  }\n  if (!data || typeof data !== 'object') {\n    throw new Error('Instanz-Status konnte nicht gespeichert werden.');\n  }\n  return toNpcCreatureInstance(data as NpcCreatureInstanceRow);\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 445,
-      "endLine": 457,
+      "line": 449,
+      "endLine": 461,
       "name": "removeNpcCreatureInstance",
       "text": "export async function removeNpcCreatureInstance(instanceId: string): Promise<void> {\n  await getAuthenticatedUserId();\n  const { error } = await raceWithTimeoutReject(\n    supabase.rpc('remove_npc_creature_instance', {\n      p_instance_id: instanceId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanz konnte nicht entfernt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanz konnte nicht entfernt werden: ${error.message}`);\n  }\n}"
     },
     {
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 463,
-      "endLine": 480,
+      "line": 467,
+      "endLine": 484,
       "name": "clearNpcCreatureInstanceTempControllersForSession",
       "text": "export async function clearNpcCreatureInstanceTempControllersForSession(\n  sessionId: string,\n): Promise<number> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.rpc('clear_npc_creature_instance_temp_controllers_for_session', {\n      p_session_id: sessionId,\n    }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Temporäre Controller konnten nicht zurückgesetzt werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(\n      `Temporäre Controller konnten nicht zurückgesetzt werden: ${error.message}`,\n    );\n  }\n  return typeof data === 'number' ? data : 0;\n}"
     },

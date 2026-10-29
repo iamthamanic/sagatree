@@ -393,12 +393,11 @@ try {
   assert(/supabaseNpcCreatureRepository/.test(serviceSrc), 'service default remains Supabase');
   assert(/Dual-path \(MIG-307\)/.test(serviceSrc), 'dual-path note on service');
   assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
-  assert(!/VITE_SAGATREE_HOST_NPC/.test(serviceSrc), 'no accidental env cutover in service');
-  assert(
-    !/VITE_SAGATREE_HOST_AI|VITE_SAGATREE_HOST_AUTH_URL/.test(serviceSrc) ||
-      /do not redirect|no accidental/.test(serviceSrc),
-    'flags do not redirect facade',
-  );
+  // Strip comments so the dual-path prose cannot mask a real env redirect.
+  const serviceCode = serviceSrc
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+  assert(!/VITE_SAGATREE_HOST/i.test(serviceCode), 'flags do not redirect facade');
 
   const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
   assert(
