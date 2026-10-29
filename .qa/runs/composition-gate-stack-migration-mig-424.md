@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-424 (#840)
 
-- HEAD_SHA: fd5fcd4f0f5fd54a8791478263bd8e40e8b7ec68
+- HEAD_SHA: 037f9491ecf6cc71cc97d3cc004119de00b526a2
 - BASE_SHA: 15f0348e6c114188c4d577fec91e2e7a303a0886
 - HOP_DIGEST: world-edge-quarantine-v1
 - Date: 2026-10-29
@@ -32,3 +32,4 @@ Durable world write/atlas stores do not import quarantine; activation remains fa
 
 - Acceptance tier: isolated-contract
 - Deferred integration: authorized host HTTP + MIG-600/#845 + MIG-602/#847
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
