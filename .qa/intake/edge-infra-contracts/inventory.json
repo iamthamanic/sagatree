@@ -1064,7 +1064,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -20362,7 +20362,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -28761,11 +28761,11 @@
           },
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "src/infrastructure/ai/ollama-settings-service.ts",
-            "sha256": "64628ae62a82039cda3a85c33a01ec3c2a4c021c96bb1a7ad3503928649b4197"
+            "sha256": "aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -28781,7 +28781,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "0838be36fdafedfb9e26ab8b238ee3ba30bae290d951154962d7ace0f7cf46e7",
+      "sourceContractSha256": "8042aca0facae9dee39021517042bb1d0e298b2fc3575e6f8eb61a8f8a2f1913",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28956,67 +28956,67 @@
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
           "line": 76,
-          "endLine": 104,
+          "endLine": 109,
           "name": "invokeHost"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 110,
-          "endLine": 142,
+          "line": 115,
+          "endLine": 147,
           "name": "createAiInvoke"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 17,
-          "endLine": 19,
+          "line": 18,
+          "endLine": 20,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 21,
-          "endLine": 34,
+          "line": 22,
+          "endLine": 38,
           "name": "parseResponse"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 36,
-          "endLine": 57,
+          "line": 40,
+          "endLine": 61,
           "name": "parseSettings"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 59,
-          "endLine": 62,
+          "line": 63,
+          "endLine": 66,
           "name": "parseModels"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 75,
-          "endLine": 81,
+          "line": 79,
+          "endLine": 85,
           "name": "get"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 83,
-          "endLine": 98,
+          "line": 87,
+          "endLine": 102,
           "name": "upsert"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 100,
-          "endLine": 118,
+          "line": 104,
+          "endLine": 122,
           "name": "test"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 120,
-          "endLine": 133,
+          "line": 124,
+          "endLine": 137,
           "name": "listModels"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 135,
-          "endLine": 141,
+          "line": 139,
+          "endLine": 145,
           "name": "clear"
         }
       ],

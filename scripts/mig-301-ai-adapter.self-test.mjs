@@ -97,10 +97,15 @@ try {
     ollama,
   });
 
-  async function post(path, body, target = app) {
+  async function post(path, body, target = app, extraHeaders = {}) {
     const res = await target.request(path, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', Accept: 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        Accept: 'application/json',
+        host: '127.0.0.1:8787',
+        ...extraHeaders,
+      },
       body: JSON.stringify(body),
     });
     const json = await res.json();
@@ -160,6 +165,7 @@ try {
       apiKey: 'ollama-secret-key',
     });
     assert(up.status === 200 && up.json.settings.hasApiKey === true, `ollama upsert ${up.status} ${JSON.stringify(up.json)}`);
+    assert(Array.isArray(up.json.models) && up.json.models.includes('llama3'), 'upsert returns models');
     assert(!JSON.stringify(up.json).includes('ollama-secret-key'), 'no apiKey leakage');
     const test = await post('/api/v1/ai/ollama-settings', {
       action: 'test',
@@ -226,9 +232,21 @@ try {
     const soloOk = await post('/api/v1/ai/provider-credentials', { action: 'list' }, soloApp);
     assert(soloOk.status === 200 && soloOk.json.status === 'ok', 'solo AUTH_NOT_CONFIGURED allowed');
 
+    const rebind = await post(
+      '/api/v1/ai/provider-credentials',
+      { action: 'delete', providerId: 'meshy' },
+      soloApp,
+      { host: 'evil.example:8787', origin: 'http://evil.example:8787' },
+    );
+    assert(rebind.status === 403 && rebind.json.code === 'HOST_DENIED', 'solo non-loopback Host denied');
+
     const plain = await soloApp.request('/api/v1/ai/provider-credentials', {
       method: 'POST',
-      headers: { 'content-type': 'text/plain', Accept: 'application/json' },
+      headers: {
+        'content-type': 'text/plain',
+        Accept: 'application/json',
+        host: '127.0.0.1:8787',
+      },
       body: JSON.stringify({ action: 'delete', providerId: 'meshy' }),
     });
     assert(plain.status === 415, 'non-JSON Content-Type rejected');

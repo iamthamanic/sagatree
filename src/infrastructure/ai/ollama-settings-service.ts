@@ -12,7 +12,8 @@ import { createAiInvoke, type AiInvokeFn } from './host-ai-invoke';
 
 type FunctionResponse =
   | { status: 'ok' } & Record<string, unknown>
-  | { status: 'error'; message: string; code?: string };
+  | { status: 'error'; message: string; code?: string }
+  | { status: 'not-configured'; message: string; code?: string };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -23,9 +24,12 @@ function parseResponse(value: unknown): FunctionResponse {
     return { status: 'error', message: 'Ungültige Serverantwort.' };
   }
   if (value.status === 'ok') return value as FunctionResponse;
-  if (value.status === 'error' && typeof value.message === 'string') {
+  if (
+    (value.status === 'error' || value.status === 'not-configured') &&
+    typeof value.message === 'string'
+  ) {
     return {
-      status: 'error',
+      status: value.status,
       message: value.message,
       code: typeof value.code === 'string' ? value.code : undefined,
     };

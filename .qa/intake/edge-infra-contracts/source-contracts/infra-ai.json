@@ -9,11 +9,11 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
+      "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "sha256": "64628ae62a82039cda3a85c33a01ec3c2a4c021c96bb1a7ad3503928649b4197"
+      "sha256": "aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116"
     }
   ],
   "supportingSourceFiles": [
@@ -233,26 +233,26 @@
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 110,
-      "endLine": 142,
+      "line": 115,
+      "endLine": 147,
       "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 144,
-      "endLine": 144,
+      "line": 149,
+      "endLine": 149,
       "text": "export const defaultAiInvoke = createAiInvoke();"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 64,
-      "endLine": 142,
+      "line": 68,
+      "endLine": 146,
       "text": "export class OllamaSettingsService {\n  private readonly invokeFn: AiInvokeFn;\n\n  constructor(invokeFn: AiInvokeFn = createAiInvoke()) {\n    this.invokeFn = invokeFn;\n  }\n\n  private async invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n    return parseResponse(await this.invokeFn('ollama-settings', body));\n  }\n\n  async get(): Promise<OllamaSettingsView> {\n    const response = await this.invoke({ action: 'get' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Einstellungen unvollständig.');\n    return settings;\n  }\n\n  async upsert(input: OllamaSettingsUpsertInput): Promise<{\n    settings: OllamaSettingsView;\n    models: string[];\n  }> {\n    const response = await this.invoke({\n      action: 'upsert',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      model: input.model,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Speicher-Antwort unvollständig.');\n    return { settings, models: parseModels(response.models) };\n  }\n\n  async test(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    model?: string;\n    apiKey?: string;\n  }): Promise<{ message: string; models: string[] }> {\n    const response = await this.invoke({\n      action: 'test',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.model ? { model: input.model } : {}),\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return {\n      message: typeof response.message === 'string' ? response.message : 'Verbindung OK.',\n      models: parseModels(response.models),\n    };\n  }\n\n  async listModels(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    apiKey?: string;\n  }): Promise<string[]> {\n    const response = await this.invoke({\n      action: 'listModels',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return parseModels(response.models);\n  }\n\n  async clear(): Promise<OllamaSettingsView> {\n    const response = await this.invoke({ action: 'clear' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Reset-Antwort unvollständig.');\n    return settings;\n  }\n}"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 144,
-      "endLine": 144,
+      "line": 148,
+      "endLine": 148,
       "text": "export const ollamaSettingsService = new OllamaSettingsService();"
     }
   ],
@@ -393,91 +393,91 @@
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
       "line": 76,
-      "endLine": 104,
+      "endLine": 109,
       "name": "invokeHost",
-      "text": "async function invokeHost(\n  path: 'provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n  fetchImpl: typeof fetch,\n  env: EnvLike,\n): Promise<unknown> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  const response = await fetchImpl(`${base}/api/v1/ai/${path}`, {\n    method: 'POST',\n    credentials: 'include',\n    headers: { Accept: 'application/json', 'content-type': 'application/json' },\n    body: JSON.stringify(body),\n  });\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  const envelope = parseHostAiEnvelope(data);\n  if (!envelope) throw new Error(unreachableMessage);\n  if (!response.ok) {\n    // Preserve Edge-shaped error objects for client parsers (status/error/not-configured).\n    return envelope;\n  }\n  return envelope;\n}"
+      "text": "async function invokeHost(\n  path: 'provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n  fetchImpl: typeof fetch,\n  env: EnvLike,\n): Promise<unknown> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}/api/v1/ai/${path}`, {\n      method: 'POST',\n      credentials: 'include',\n      headers: { Accept: 'application/json', 'content-type': 'application/json' },\n      body: JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  let data: unknown;\n  try {\n    data = await response.json();\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  const envelope = parseHostAiEnvelope(data);\n  if (!envelope) throw new Error(unreachableMessage);\n  if (!response.ok) {\n    // Preserve Edge-shaped error objects for client parsers (status/error/not-configured).\n    return envelope;\n  }\n  return envelope;\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 110,
-      "endLine": 142,
+      "line": 115,
+      "endLine": 147,
       "name": "createAiInvoke",
       "text": "export function createAiInvoke(options?: {\n  readonly fetchImpl?: typeof fetch;\n  readonly env?: EnvLike;\n  /** Force Edge even when host AI opt-in is set (tests). */\n  readonly forceEdge?: boolean;\n}): AiInvokeFn {\n  const fetchImpl = options?.fetchImpl ?? fetch;\n  const env = options?.env ?? ((import.meta as ImportMeta & { env?: EnvLike }).env ?? {});\n  const forceEdge = options?.forceEdge === true;\n\n  return async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/host-ai-invoke.ts",
-      "line": 120,
-      "endLine": 141,
+      "line": 125,
+      "endLine": 146,
       "name": "callback",
       "text": "async (path, body) => {\n    const preferHost =\n      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);\n    if (preferHost) {\n      return invokeHost(\n        path,\n        body,\n        path === 'ollama-settings'\n          ? 'Ollama-Einstellungen nicht erreichbar.'\n          : 'AI-Provider-Dienst nicht erreichbar.',\n        fetchImpl,\n        env,\n      );\n    }\n    return invokeEdge(\n      path === 'ollama-settings' ? 'ollama-settings' : 'ai-provider-credentials',\n      body,\n      path === 'ollama-settings'\n        ? 'Ollama-Einstellungen nicht erreichbar.'\n        : 'AI-Provider-Dienst nicht erreichbar.',\n    );\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 17,
-      "endLine": 19,
+      "line": 18,
+      "endLine": 20,
       "name": "isRecord",
       "text": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 21,
-      "endLine": 34,
+      "line": 22,
+      "endLine": 38,
       "name": "parseResponse",
-      "text": "function parseResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Ungültige Serverantwort.' };\n  }\n  if (value.status === 'ok') return value as FunctionResponse;\n  if (value.status === 'error' && typeof value.message === 'string') {\n    return {\n      status: 'error',\n      message: value.message,\n      code: typeof value.code === 'string' ? value.code : undefined,\n    };\n  }\n  return { status: 'error', message: 'Ungültige Serverantwort.' };\n}"
+      "text": "function parseResponse(value: unknown): FunctionResponse {\n  if (!isRecord(value) || typeof value.status !== 'string') {\n    return { status: 'error', message: 'Ungültige Serverantwort.' };\n  }\n  if (value.status === 'ok') return value as FunctionResponse;\n  if (\n    (value.status === 'error' || value.status === 'not-configured') &&\n    typeof value.message === 'string'\n  ) {\n    return {\n      status: value.status,\n      message: value.message,\n      code: typeof value.code === 'string' ? value.code : undefined,\n    };\n  }\n  return { status: 'error', message: 'Ungültige Serverantwort.' };\n}"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 36,
-      "endLine": 57,
+      "line": 40,
+      "endLine": 61,
       "name": "parseSettings",
       "text": "function parseSettings(value: unknown): OllamaSettingsView | null {\n  if (!isRecord(value)) return null;\n  if (typeof value.baseUrl !== 'string') return null;\n  return {\n    useCloud: value.useCloud === true,\n    baseUrl: value.baseUrl,\n    model: typeof value.model === 'string' ? value.model : '',\n    hasApiKey: value.hasApiKey === true,\n    keyHint: typeof value.keyHint === 'string' ? value.keyHint : null,\n    status: typeof value.status === 'string' ? value.status : null,\n    updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null,\n    source: value.source === 'user' ? 'user' : 'env',\n    cloudDefaultUrl:\n      typeof value.cloudDefaultUrl === 'string'\n        ? value.cloudDefaultUrl\n        : OLLAMA_CLOUD_OPENAI_BASE,\n    localDefaultUrl:\n      typeof value.localDefaultUrl === 'string'\n        ? value.localDefaultUrl\n        : 'http://ollama:11434',\n  };\n}"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 59,
-      "endLine": 62,
+      "line": 63,
+      "endLine": 66,
       "name": "parseModels",
       "text": "function parseModels(value: unknown): string[] {\n  if (!Array.isArray(value)) return [];\n  return value.filter((m): m is string => typeof m === 'string' && m.trim().length > 0);\n}"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 61,
-      "endLine": 61,
+      "line": 65,
+      "endLine": 65,
       "name": "callback",
       "text": "(m): m is string => typeof m === 'string' && m.trim().length > 0"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 75,
-      "endLine": 81,
+      "line": 79,
+      "endLine": 85,
       "name": "get",
       "text": "async get(): Promise<OllamaSettingsView> {\n    const response = await this.invoke({ action: 'get' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Einstellungen unvollständig.');\n    return settings;\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 83,
-      "endLine": 98,
+      "line": 87,
+      "endLine": 102,
       "name": "upsert",
       "text": "async upsert(input: OllamaSettingsUpsertInput): Promise<{\n    settings: OllamaSettingsView;\n    models: string[];\n  }> {\n    const response = await this.invoke({\n      action: 'upsert',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      model: input.model,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Speicher-Antwort unvollständig.');\n    return { settings, models: parseModels(response.models) };\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 100,
-      "endLine": 118,
+      "line": 104,
+      "endLine": 122,
       "name": "test",
       "text": "async test(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    model?: string;\n    apiKey?: string;\n  }): Promise<{ message: string; models: string[] }> {\n    const response = await this.invoke({\n      action: 'test',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.model ? { model: input.model } : {}),\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return {\n      message: typeof response.message === 'string' ? response.message : 'Verbindung OK.',\n      models: parseModels(response.models),\n    };\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 120,
-      "endLine": 133,
+      "line": 124,
+      "endLine": 137,
       "name": "listModels",
       "text": "async listModels(input: {\n    useCloud: boolean;\n    baseUrl: string;\n    apiKey?: string;\n  }): Promise<string[]> {\n    const response = await this.invoke({\n      action: 'listModels',\n      useCloud: input.useCloud,\n      baseUrl: input.baseUrl,\n      ...(input.apiKey?.trim() ? { apiKey: input.apiKey.trim() } : {}),\n    });\n    if (response.status !== 'ok') throw new Error(response.message);\n    return parseModels(response.models);\n  }"
     },
     {
       "path": "src/infrastructure/ai/ollama-settings-service.ts",
-      "line": 135,
-      "endLine": 141,
+      "line": 139,
+      "endLine": 145,
       "name": "clear",
       "text": "async clear(): Promise<OllamaSettingsView> {\n    const response = await this.invoke({ action: 'clear' });\n    if (response.status !== 'ok') throw new Error(response.message);\n    const settings = parseSettings(response.settings);\n    if (!settings) throw new Error('Reset-Antwort unvollständig.');\n    return settings;\n  }"
     }

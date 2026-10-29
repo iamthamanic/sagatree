@@ -11,6 +11,7 @@ import type { Actor } from '../modules/identity/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
+import { isLoopbackHost } from '../auth/solo/bind-guard.ts';
 import { authDenyStatus } from './errors.ts';
 
 export type AiHttpDeps = {
@@ -55,6 +56,32 @@ async function readJsonBody(c: Context): Promise<
   }
 }
 
+function requestHostName(headers: Headers): string {
+  const raw = (headers.get('host') ?? '').trim().toLowerCase();
+  if (!raw) return '';
+  if (raw.startsWith('[')) {
+    const end = raw.indexOf(']');
+    return end >= 0 ? raw.slice(1, end) : raw;
+  }
+  return raw.split(':')[0] ?? '';
+}
+
+/**
+ * Solo fallback is only for loopback hosts without a cookie profile mounted.
+ * AUTH_NOT_CONFIGURED alone is insufficient — require loopback Host (+ Origin)
+ * so DNS-rebinding attackers cannot inherit the solo owner actor.
+ */
+function soloAuthNotConfiguredAllowed(headers: Headers): boolean {
+  if (!isLoopbackHost(requestHostName(headers))) return false;
+  const origin = headers.get('origin');
+  if (!origin) return true;
+  try {
+    return isLoopbackHost(new URL(origin).hostname);
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Solo fallback is only for local hosts without a cookie profile mounted.
  * ORIGIN_DENIED / HOST_DENIED / forged identity claims stay fail-closed (CSRF).
@@ -70,6 +97,9 @@ async function resolveActor(
   });
   if (remote.ok) return { ok: true, actor: remote.actor };
   if (deps.hostMode === 'solo' && remote.code === 'AUTH_NOT_CONFIGURED') {
+    if (!soloAuthNotConfiguredAllowed(headers)) {
+      return { ok: false, status: 403, error: 'HOST_DENIED' };
+    }
     return { ok: true, actor: deps.identity.resolveSoloActor() };
   }
   return { ok: false, status: authDenyStatus(remote.code), error: remote.code };

@@ -82,12 +82,17 @@ async function invokeHost(
 ): Promise<unknown> {
   const base = getHostAuthBaseUrl(env);
   if (!base) throw new Error(unreachableMessage);
-  const response = await fetchImpl(`${base}/api/v1/ai/${path}`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { Accept: 'application/json', 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}/api/v1/ai/${path}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json', 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error(unreachableMessage);
+  }
   let data: unknown;
   try {
     data = await response.json();

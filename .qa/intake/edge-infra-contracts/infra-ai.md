@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `0838be36fdafedfb9e26ab8b238ee3ba30bae290d951154962d7ace0f7cf46e7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `8042aca0facae9dee39021517042bb1d0e298b2fc3575e6f8eb61a8f8a2f1913`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -137,7 +137,7 @@ export type AiInvokeFn = (
 ) => Promise<unknown>;
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:110
+### src/infrastructure/ai/host-ai-invoke.ts:115
 
 ```ts
 export function createAiInvoke(options?: {
@@ -175,13 +175,13 @@ export function createAiInvoke(options?: {
 }
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:144
+### src/infrastructure/ai/host-ai-invoke.ts:149
 
 ```ts
 export const defaultAiInvoke = createAiInvoke();
 ```
 
-### src/infrastructure/ai/ollama-settings-service.ts:64
+### src/infrastructure/ai/ollama-settings-service.ts:68
 
 ```ts
 export class OllamaSettingsService {
@@ -265,7 +265,7 @@ export class OllamaSettingsService {
 }
 ```
 
-### src/infrastructure/ai/ollama-settings-service.ts:144
+### src/infrastructure/ai/ollama-settings-service.ts:148
 
 ```ts
 export const ollamaSettingsService = new OllamaSettingsService();
@@ -300,8 +300,8 @@ async function invokeEdge(
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
-| `src/infrastructure/ai/host-ai-invoke.ts` | `324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce` |
-| `src/infrastructure/ai/ollama-settings-service.ts` | `64628ae62a82039cda3a85c33a01ec3c2a4c021c96bb1a7ad3503928649b4197` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e` |
+| `src/infrastructure/ai/ollama-settings-service.ts` | `aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116` |
 | `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 

@@ -112,7 +112,7 @@ export type AiPorts = {
   readonly upsertOllamaSettings: (
     actor: Actor,
     input: { useCloud: boolean; baseUrl: string; model: string; apiKey?: string },
-  ) => Promise<AiResult<{ status: 'ok'; settings: OllamaSettingsView }>>;
+  ) => Promise<AiResult<{ status: 'ok'; settings: OllamaSettingsView; models: readonly string[] }>>;
   readonly testOllamaSettings: (
     actor: Actor,
     input?: { useCloud?: boolean; baseUrl?: string; model?: string; apiKey?: string },
@@ -450,7 +450,8 @@ export function createAiPorts(deps: {
         return { ok: false, error: 'Einstellungen konnten nicht gespeichert werden.', status: 500 };
       }
       const settings = await ollamaView(userId);
-      return { ok: true, value: { status: 'ok', settings } };
+      // Edge parity: upsert returns probed models so Organize UI can refresh the list.
+      return { ok: true, value: { status: 'ok', settings, models: probed.models } };
     },
 
     async testOllamaSettings(actor, input) {
