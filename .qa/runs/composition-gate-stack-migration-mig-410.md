@@ -2,6 +2,7 @@
 
 - HEAD_SHA: 0d00d5379df84e8f39e4a3c6d7e7737c6ea7466e
 - BASE_SHA: a99f4ee1cff9c6be6fa7cd7f19b24626ecc17ad0
+- HOP_DIGEST: 59507d90d41757c3a2da2bf77569292926abb4d36c948b5452c684d65c7fbd60
 - Date: 2026-10-29
 - Verdict: CLEAR
 - note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
