@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-423 (#839)
 
-- HEAD_SHA: cbf1a2ce98f4e3c2cd83bc1368bbe8ddb233f35c
+- HEAD_SHA: ba0f80a1be3ac86b40a6ca3d20b397e52ac81646
 - BASE_SHA: 3a74b497afa514497715eb46026ce41865070459
 - HOP_DIGEST: spellbook-edge-quarantine-v1
 - Date: 2026-10-29
