@@ -15,3 +15,11 @@ export {
   generateItem,
   type QuarantineItem,
 } from './internal/items-quarantine.ts';
+
+export {
+  ITEM_MODEL3D_PUBLIC_ACTIVATION_AUTHORIZED,
+  ITEM_MODEL3D_RATE_LIMIT,
+  createItemModel3dStore,
+  describeItemModel3dLegacyDefects,
+  type ItemModel3dStore,
+} from './internal/item-model3d.ts';
