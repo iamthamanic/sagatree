@@ -1111,11 +1111,11 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "sha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054"
+      "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb"
+      "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",

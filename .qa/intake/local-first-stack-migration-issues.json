@@ -14004,6 +14004,8 @@
           "src/domains/saga/permissions/catalog.ts",
           "src/domains/saga/permissions/index.ts",
           "src/domains/saga/permissions/lore-timeline.ts",
+          "src/infrastructure/project/host-project-adapter.ts",
+          "src/infrastructure/project/host-project-ports.contract.ts",
           "src/infrastructure/project/project-member-service.ts",
           "src/infrastructure/project/project-service.ts",
           "src/infrastructure/project/saga-overview-service.ts",
@@ -14188,7 +14190,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/project/contracts/project.types.ts, src/domains/project/contracts/saga-overview.ts, src/domains/saga/permissions/catalog.ts, src/domains/saga/permissions/index.ts, src/domains/saga/permissions/lore-timeline.ts, src/infrastructure/project/project-member-service.ts, src/infrastructure/project/project-service.ts, src/infrastructure/project/saga-overview-service.ts, src/infrastructure/project/saga-permission-service.ts, src/lib/authenticatedUser.ts, src/lib/localAdmin.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-project.md, .qa/intake/edge-infra-contracts/source-contracts/infra-project.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/project/contracts/project.types.ts, src/domains/project/contracts/saga-overview.ts, src/domains/saga/permissions/catalog.ts, src/domains/saga/permissions/index.ts, src/domains/saga/permissions/lore-timeline.ts, src/infrastructure/project/host-project-adapter.ts, src/infrastructure/project/host-project-ports.contract.ts, src/infrastructure/project/project-member-service.ts, src/infrastructure/project/project-service.ts, src/infrastructure/project/saga-overview-service.ts, src/infrastructure/project/saga-permission-service.ts, src/lib/authenticatedUser.ts, src/lib/localAdmin.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-project.md, .qa/intake/edge-infra-contracts/source-contracts/infra-project.json.",
         "nachher": "src/infrastructure/project: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .",
         "verhalten": "src/infrastructure/project: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.",
         "sicherheit": "Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.",

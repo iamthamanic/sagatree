@@ -1128,6 +1128,18 @@ function checkMig307NpcAdapter() {
   );
 }
 
+function checkMig308ProjectAdapter() {
+  console.log('MIG-308 project adapter (#807): host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-308-project-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3269,6 +3281,7 @@ checkMig306MediaAdapter();
 checkMig301AiAdapter();
 checkMig304LookAdapter();
 checkMig307NpcAdapter();
+checkMig308ProjectAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();

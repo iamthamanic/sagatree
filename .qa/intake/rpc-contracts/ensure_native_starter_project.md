@@ -190,9 +190,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-service.ts:323
+### src/infrastructure/project/project-service.ts:327
 
-AST-Auflösung: `string-literal`; SHA-256 `0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb`.
+AST-Auflösung: `string-literal`; SHA-256 `b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -237,7 +237,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |

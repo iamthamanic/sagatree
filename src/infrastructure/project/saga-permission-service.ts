@@ -3,6 +3,10 @@
  * Location: src/infrastructure/project/saga-permission-service.ts
  *
  * Clients never write grant/binding tables directly.
+ *
+ * Dual-path (MIG-308): production remains Supabase RPCs. Host ports are bound via
+ * `createHostProjectAdapter` for tests / future cutover (no accidental cutover —
+ * VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import {

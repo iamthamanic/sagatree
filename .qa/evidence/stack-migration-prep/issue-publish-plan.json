@@ -1044,8 +1044,8 @@
         "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-308.md",
-      "sha256": "6152113ecf86b6d1b180042f5646b134fccca6c6703948efc5bec3ce42987aa1",
-      "payloadSha256": "2490e54f9bcee9c4149073d7731a7fe10a8e3f82158c50f95dcfcb00cd86f4b5"
+      "sha256": "7e60fbdc352b506a273c78adf7af28e4abfb5114a35f1cffdaca54ae97aab5c2",
+      "payloadSha256": "01c45a3db8d92c9850498e3474d26c8596c86e7a800341d8a693337d596b357b"
     },
     {
       "localId": "MIG-309",

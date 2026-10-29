@@ -1,6 +1,10 @@
 /**
  * project-member-service — Supabase adapter for project membership RPCs.
  * Location: src/infrastructure/project/project-member-service.ts
+ *
+ * Dual-path (MIG-308): production remains Supabase RPCs/tables. Host ports are
+ * bound via `createHostProjectAdapter` for tests / future cutover (no accidental
+ * cutover — VITE host flags alone do not redirect this facade).
  */
 
 import { supabase } from '../../lib/supabase';
