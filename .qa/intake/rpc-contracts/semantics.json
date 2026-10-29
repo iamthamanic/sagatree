@@ -9683,8 +9683,8 @@
   "increment_marketplace_downloads": {
     "summary": "Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.",
     "authorization": [
-      "Keine auth.uid-/Owner-/Statusprüfung im Funktionsbody. Beide alternativen Installationsskripte lassen PUBLIC EXECUTE bestehen; ein Skript gewährt anon zusätzlich explizit.",
-      "SECURITY DEFINER ohne gesetzten search_path; effektive Installation und Plattform-ACL sind für diese optionale Funktion nicht durch den Migrationskatalog nachgewiesen."
+      "SECURITY DEFINER mit search_path=public,pg_temp; EXECUTE nur für authenticated (kein anon/PUBLIC) nach #675.",
+      "Keine auth.uid-/Owner-Prüfung im Funktionsbody; Zählerinkrement bleibt absichtlich für authentifizierte Aufrufer ohne Autorenbindung."
     ],
     "behavior": [
       "UPDATE marketplace_items SET downloads=downloads+1 WHEREid=item_id; Rückgabevoid. Unbekannte ID ist No-op; NULL-downloads bleibt bei SQL-AdditionNULL.",
@@ -9736,7 +9736,7 @@
       },
       {
         "path": "src/supabase/deploy_marketplace.sql",
-        "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+        "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
       }
     ],
     "reviewedEffectiveSql": [

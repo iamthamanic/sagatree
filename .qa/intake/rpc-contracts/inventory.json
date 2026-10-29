@@ -41857,7 +41857,7 @@
           },
           {
             "path": "src/supabase/deploy_marketplace.sql",
-            "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+            "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
           }
         ],
         "reviewEvidence": {
@@ -41887,9 +41887,9 @@
         },
         {
           "path": "src/supabase/deploy_marketplace.sql",
-          "startLine": 128,
-          "endLine": 141,
-          "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+          "startLine": 141,
+          "endLine": 155,
+          "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
         }
       ],
       "callerContracts": [
@@ -42073,8 +42073,8 @@
       },
       "summary": "Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.",
       "authorization": [
-        "Keine auth.uid-/Owner-/Statusprüfung im Funktionsbody. Beide alternativen Installationsskripte lassen PUBLIC EXECUTE bestehen; ein Skript gewährt anon zusätzlich explizit.",
-        "SECURITY DEFINER ohne gesetzten search_path; effektive Installation und Plattform-ACL sind für diese optionale Funktion nicht durch den Migrationskatalog nachgewiesen."
+        "SECURITY DEFINER mit search_path=public,pg_temp; EXECUTE nur für authenticated (kein anon/PUBLIC) nach #675.",
+        "Keine auth.uid-/Owner-Prüfung im Funktionsbody; Zählerinkrement bleibt absichtlich für authentifizierte Aufrufer ohne Autorenbindung."
       ],
       "behavior": [
         "UPDATE marketplace_items SET downloads=downloads+1 WHEREid=item_id; Rückgabevoid. Unbekannte ID ist No-op; NULL-downloads bleibt bei SQL-AdditionNULL.",
@@ -42129,7 +42129,7 @@
         },
         {
           "path": "src/supabase/deploy_marketplace.sql",
-          "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+          "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
         }
       ],
       "securityDefiner": true,
@@ -42162,28 +42162,37 @@
         {
           "source": {
             "path": "src/supabase/deploy_marketplace.sql",
-            "startLine": 128,
-            "endLine": 141,
-            "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+            "startLine": 141,
+            "endLine": 155,
+            "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
           },
           "grantHistory": [
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 141,
-                "endLine": 143,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "startLine": 155,
+                "endLine": 157,
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
-              "statement": "GRANT EXECUTE ON FUNCTION increment_marketplace_downloads (uuid) TO authenticated"
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION increment_marketplace_downloads (uuid) FROM PUBLIC"
             },
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 143,
-                "endLine": 144,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "startLine": 157,
+                "endLine": 158,
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
-              "statement": "GRANT EXECUTE ON FUNCTION increment_marketplace_downloads (uuid) TO anon"
+              "statement": "REVOKE ALL PRIVILEGES ON FUNCTION increment_marketplace_downloads (uuid) FROM anon"
+            },
+            {
+              "source": {
+                "path": "src/supabase/deploy_marketplace.sql",
+                "startLine": 158,
+                "endLine": 159,
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+              },
+              "statement": "GRANT EXECUTE ON FUNCTION increment_marketplace_downloads (uuid) TO authenticated"
             }
           ],
           "executeGrants": [
@@ -42197,7 +42206,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 1,
                 "endLine": 22,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE TABLE IF NOT EXISTS marketplace_items (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), type text NOT NULL CHECK (type IN ('world', 'adventure', 'character', 'item', 'ruleset')), title text NOT NULL, description text, author_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE, data jsonb NOT NULL DEFAULT '{}', rating numeric(3, 2) NOT NULL DEFAULT 0.00 CHECK (rating >= 0 AND rating <= 5), downloads integer NOT NULL DEFAULT 0, price numeric(10, 2) NOT NULL DEFAULT 0.00 CHECK (price >= 0), image_url text, tags text[] DEFAULT CAST(ARRAY[] AS text[]), is_featured boolean NOT NULL DEFAULT FALSE, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now())"
             },
@@ -42206,7 +42215,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 31,
                 "endLine": 34,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "ALTER TABLE marketplace_items ENABLE ROW LEVEL SECURITY "
             },
@@ -42215,7 +42224,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 34,
                 "endLine": 40,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE POLICY \"Marketplace items are viewable by everyone\" ON marketplace_items AS PERMISSIVE FOR select TO PUBLIC USING (TRUE)"
             },
@@ -42224,7 +42233,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 40,
                 "endLine": 47,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE POLICY \"Authenticated users can create marketplace items\" ON marketplace_items AS PERMISSIVE FOR insert TO authenticated WITH CHECK (auth.uid() = author_id)"
             },
@@ -42233,7 +42242,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 47,
                 "endLine": 55,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE POLICY \"Authors can update their own marketplace items\" ON marketplace_items AS PERMISSIVE FOR update TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id)"
             },
@@ -42242,7 +42251,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 55,
                 "endLine": 62,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE POLICY \"Authors can delete their own marketplace items\" ON marketplace_items AS PERMISSIVE FOR delete TO authenticated USING (auth.uid() = author_id)"
             },
@@ -42251,16 +42260,16 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 71,
                 "endLine": 76,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE TRIGGER marketplace_updated_at BEFORE UPDATE ON marketplace_items FOR EACH ROW EXECUTE PROCEDURE update_marketplace_updated_at()"
             },
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 110,
-                "endLine": 114,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "startLine": 112,
+                "endLine": 116,
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "statement": "CREATE TRIGGER marketplace_items_guard_privileged_columns BEFORE INSERT OR UPDATE ON public.marketplace_items FOR EACH ROW EXECUTE PROCEDURE public.marketplace_items_guard_privileged_columns()"
             }
@@ -42271,7 +42280,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 62,
                 "endLine": 71,
-                "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
               },
               "effectiveSql": "CREATE OR REPLACE FUNCTION update_marketplace_updated_at() RETURNS trigger AS $$\nBEGIN\n  NEW.updated_at = now();\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql",
               "semantics": {
@@ -82379,7 +82388,7 @@
       },
       {
         "path": "src/supabase/deploy_marketplace.sql",
-        "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
+        "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
       },
       {
         "path": "supabase/migrations/001_initial.sql",

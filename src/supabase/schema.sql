@@ -75,9 +75,14 @@ CREATE TABLE IF NOT EXISTS marketplace_items (
   downloads INTEGER DEFAULT 0,
   price DECIMAL(10,2) DEFAULT 0.00,
   image_url TEXT,
+  tags TEXT[] DEFAULT ARRAY[]::TEXT[],
+  is_featured BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE marketplace_items ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE marketplace_items ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false;
 
 -- Row Level Security (RLS) Policies
 
@@ -231,3 +236,68 @@ CREATE TRIGGER update_adventures_updated_at BEFORE UPDATE ON adventures
 
 CREATE TRIGGER update_marketplace_items_updated_at BEFORE UPDATE ON marketplace_items
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Client-trust (#675): privileged columns are server-authority only
+CREATE OR REPLACE FUNCTION public.marketplace_items_guard_privileged_columns()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF current_user NOT IN ('anon', 'authenticated') THEN
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'INSERT' THEN
+    IF auth.uid() IS NULL THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    NEW.author_id := auth.uid();
+    NEW.rating := 0;
+    NEW.downloads := 0;
+    NEW.is_featured := false;
+    NEW.created_at := now();
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'UPDATE' THEN
+    NEW.author_id := OLD.author_id;
+    NEW.rating := OLD.rating;
+    NEW.downloads := OLD.downloads;
+    NEW.is_featured := OLD.is_featured;
+    NEW.created_at := OLD.created_at;
+    RETURN NEW;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS marketplace_items_guard_privileged_columns ON public.marketplace_items;
+CREATE TRIGGER marketplace_items_guard_privileged_columns
+  BEFORE INSERT OR UPDATE ON public.marketplace_items
+  FOR EACH ROW
+  EXECUTE FUNCTION public.marketplace_items_guard_privileged_columns();
+
+REVOKE ALL ON TABLE public.marketplace_items FROM PUBLIC;
+REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM anon;
+REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM authenticated;
+GRANT SELECT ON TABLE public.marketplace_items TO anon, authenticated;
+GRANT INSERT (
+  type,
+  title,
+  description,
+  data,
+  price,
+  image_url,
+  tags
+) ON TABLE public.marketplace_items TO authenticated;
+GRANT UPDATE (
+  type,
+  title,
+  description,
+  data,
+  price,
+  image_url,
+  tags,
+  updated_at
+) ON TABLE public.marketplace_items TO authenticated;
+GRANT DELETE ON TABLE public.marketplace_items TO authenticated;
