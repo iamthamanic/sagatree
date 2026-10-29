@@ -192,6 +192,10 @@ assert(monster.challengeRating === 1, 'monster CR parseFloat fractional → 1');
 assert(mapOpen5eMonster({ cr: '2' }).challengeRating === 2, 'monster CR numeric string');
 assert(mapOpen5eMonster({ cr: 'not-a-number' }).challengeRating === 0, 'monster CR NaN → 0');
 assert(monster.hp === 7 && monster.ac === 15 && monster.actions.length === 0, 'monster fields');
+const diceHp = mapOpen5eMonster({ hit_points: '7 (1d8)', armor_class: '15 (natural armor)' });
+assert(diceHp.hp === '7 (1d8)' && diceHp.ac === '15 (natural armor)', 'monster hp/ac raw passthrough');
+assert(applyRulesetCreateDefaults({ id: { nested: true } }, 42).id === 'custom-42', 'object id → custom fallback');
+assert(applyRulesetCreateDefaults({ id: true }, 43).id === 'custom-43', 'boolean id → custom fallback');
 
 const item = mapOpen5eItem({ slug: 'longsword', name: 'Longsword', cost: '15 gp', desc: 'A sword' });
 assert(item.type === 'weapon' && item.rarity === 'common' && item.weight === 0, 'item defaults');

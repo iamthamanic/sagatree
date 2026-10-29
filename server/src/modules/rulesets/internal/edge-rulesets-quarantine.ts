@@ -36,8 +36,9 @@ export type QuarantineMonster = {
   readonly type: string;
   readonly size: string;
   readonly challengeRating: number;
-  readonly hp: number;
-  readonly ac: number;
+  /** Legacy assigns Open5e raw hit_points / armor_class (may be string). */
+  readonly hp: unknown;
+  readonly ac: unknown;
   readonly speed: string;
   readonly str: number;
   readonly dex: number;
@@ -147,11 +148,15 @@ export function applyRulesetCreateDefaults(
   data: Record<string, unknown>,
   nowMs: number,
 ): QuarantineRuleset {
-  // Legacy: `data.id || \`custom-${Date.now()}\`` — any truthy id (incl. number) is kept.
-  const id =
-    data.id || (`custom-${nowMs}` as string | number);
+  // Legacy: `data.id || \`custom-${Date.now()}\``. Quarantine keeps only string|number
+  // truthy ids (Map-safe); other truthy shapes fall back and are listed as a defect.
+  const rawId = data.id;
+  const id: string | number =
+    (typeof rawId === 'string' || typeof rawId === 'number') && rawId
+      ? rawId
+      : `custom-${nowMs}`;
   return {
-    id: id as string | number,
+    id,
     name: (typeof data.name === 'string' && data.name) || 'Custom Ruleset',
     version: (typeof data.version === 'string' && data.version) || '1.0',
     description: typeof data.description === 'string' ? data.description : '',
@@ -226,7 +231,7 @@ export function mapOpen5eSpell(raw: Record<string, unknown>): QuarantineSpell {
   };
 }
 
-/** Exact Open5e monster field mapping from Edge worker. */
+/** Exact Open5e monster field mapping from Edge worker (raw hp/ac passthrough). */
 export function mapOpen5eMonster(raw: Record<string, unknown>): QuarantineMonster {
   return {
     id: String(raw.slug ?? ''),
@@ -234,8 +239,8 @@ export function mapOpen5eMonster(raw: Record<string, unknown>): QuarantineMonste
     type: String(raw.type ?? ''),
     size: String(raw.size ?? ''),
     challengeRating: parseFloat(String(raw.cr ?? '0')) || 0,
-    hp: Number(raw.hit_points) || 0,
-    ac: Number(raw.armor_class) || 0,
+    hp: raw.hit_points,
+    ac: raw.armor_class,
     speed: String(raw.speed ?? ''),
     str: Number(raw.strength) || 0,
     dex: Number(raw.dexterity) || 0,
@@ -355,5 +360,6 @@ export function describeRulesetsLegacyDefects(): ReadonlyArray<string> {
     'Caller-supplied id can overwrite an existing Map entry',
     'Open5e fetches have no explicit timeout, status check, or pagination beyond limit=500',
     'limit=500 does not guarantee all remote records',
+    'Legacy create accepts any truthy JSON id as Map key; quarantine keeps string|number only',
   ]);
 }
