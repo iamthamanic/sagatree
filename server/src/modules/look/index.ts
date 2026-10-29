@@ -88,15 +88,15 @@ function assertProfileId(profileId: string): string | null {
 
 /** Owner ids the actor may read/mutate (remote account + linked solo). */
 function actorOwnerIds(actor: Actor): readonly string[] {
-  const ids = [actor.actorId];
+  const ids = new Set<string>([actor.actorId]);
   if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
     for (const linked of actor.linkedSoloActorIds) {
-      if (typeof linked === 'string' && linked.length > 0 && !ids.includes(linked)) {
-        ids.push(linked);
+      if (typeof linked === 'string' && linked.length > 0) {
+        ids.add(linked);
       }
     }
   }
-  return ids;
+  return [...ids];
 }
 
 function actorOwnsProfile(actor: Actor, ownerUserId: string): boolean {
@@ -121,8 +121,10 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
           merged.push(row);
         }
       }
-      merged.sort((a, b) => b.current.createdAtIso.localeCompare(a.current.createdAtIso));
-      return { ok: true, value: merged };
+      const sorted = merged.toSorted((a, b) =>
+        b.current.createdAtIso.localeCompare(a.current.createdAtIso),
+      );
+      return { ok: true, value: sorted };
     },
 
     getProfileById(actor, profileId) {
@@ -190,10 +192,11 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
       if (!actorOwnsProfile(actor, source.profile.ownerId)) {
         return { ok: false, error: 'not-authorized' };
       }
+      const suffix = ' (Kopie)';
       const name =
         typeof displayName === 'string' && displayName.trim().length > 0
           ? displayName.trim()
-          : `${source.current.displayName} (Kopie)`;
+          : `${source.current.displayName.slice(0, 200 - suffix.length)}${suffix}`;
       const created = store.create(actor.actorId, {
         displayName: name,
         source: source.current.source,

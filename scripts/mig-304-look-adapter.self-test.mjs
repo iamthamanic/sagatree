@@ -129,6 +129,14 @@ try {
   assert(dup.value.profile.currentVersion === 1, 'dup starts at v1');
   assert(/\(Kopie\)/.test(dup.value.current.displayName), 'copy name');
 
+  const longName = 'L'.repeat(200);
+  const longCreated = look.createProfile(owner, { ...draft, displayName: longName });
+  assert(longCreated.ok, `create long name: ${longCreated.ok ? '' : longCreated.error}`);
+  const longDup = look.duplicateProfile(owner, longCreated.value.profile.id);
+  assert(longDup.ok, `duplicate long name: ${longDup.ok ? '' : longDup.error}`);
+  assert(longDup.value.current.displayName.length <= 200, 'dup name clamped to 200');
+  assert(/\(Kopie\)/.test(longDup.value.current.displayName), 'dup long keeps suffix');
+
   const archived = look.archiveProfile(owner, profileId);
   assert(archived.ok && archived.value.status === 'archived', 'archived');
   assert(archived.value.profile.publicId === publicId, 'public id after archive');
