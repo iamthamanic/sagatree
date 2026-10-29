@@ -912,6 +912,18 @@ function checkMig418QuestsQuarantine() {
   );
 }
 
+function checkMig419RulesetsQuarantine() {
+  console.log('MIG-419 (#835): rulesets edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-419-rulesets-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3189,6 +3201,7 @@ checkMig415MarketplaceQuarantine();
 checkMig416MediaQuarantine();
 checkMig417NpcsQuarantine();
 checkMig418QuestsQuarantine();
+checkMig419RulesetsQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();

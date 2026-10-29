@@ -4,6 +4,7 @@
  *
  * Official/public rows stay readable; custom mutations require creator ownership.
  * Client-claimed roles never elevate write. Official rows are immutable via ports.
+ * Also exports MIG-419 Edge `rulesets` quarantine (unmounted Maps; no HTTP mount).
  */
 import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
@@ -173,3 +174,28 @@ export function createRulesetPortsStub(): RulesetPorts {
     },
   };
 }
+
+/** MIG-419 Edge rulesets Map quarantine — not a public host route. */
+export {
+  OPEN5E_API_BASE,
+  RULESETS_MAP_IS_HOST_CATALOG_POLICY,
+  RULESETS_PUBLIC_ACTIVATION_AUTHORIZED,
+  applyRulesetCreateDefaults,
+  createSeededRulesetCatalog,
+  describeRulesetsLegacyDefects,
+  enrichRulesetWithOpen5e,
+  fetchOpen5eItems,
+  fetchOpen5eMonsters,
+  fetchOpen5eSpells,
+  getRuleset,
+  getRulesetFromCatalog,
+  mapOpen5eItem,
+  mapOpen5eMonster,
+  mapOpen5eSpell,
+  putRuleset,
+  type Open5eFetch,
+  type QuarantineItem,
+  type QuarantineMonster,
+  type QuarantineRuleset,
+  type QuarantineSpell,
+} from './internal/edge-rulesets-quarantine.ts';
