@@ -109,12 +109,16 @@ export function decodeStrictBase64(contentBase64: string): Uint8Array {
     .replace(/^data:application\/octet-stream;base64,/, '')
     .trim();
   if (!cleaned) throw new Error('Empty GLB payload');
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleaned) || cleaned.length % 4 !== 0) {
+  // Edge uses atob: reject only remainder 1; pad rem 2/3 to multiple of 4.
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleaned) || cleaned.length % 4 === 1) {
     throw new Error('Invalid base64 payload');
   }
-  const buf = Buffer.from(cleaned, 'base64');
-  // Round-trip: reject silent ignore of invalid chars
-  if (buf.toString('base64').replace(/=+$/, '') !== cleaned.replace(/=+$/, '')) {
+  const padded = cleaned.padEnd(cleaned.length + ((4 - (cleaned.length % 4)) % 4), '=');
+  const padding = padded.endsWith('==') ? 2 : padded.endsWith('=') ? 1 : 0;
+  const expectedBytes = (padded.length / 4) * 3 - padding;
+  const buf = Buffer.from(padded, 'base64');
+  // Length check rejects chars Buffer silently ignores — no re-encode heap cost.
+  if (buf.byteLength !== expectedBytes) {
     throw new Error('Invalid base64 payload');
   }
   return new Uint8Array(buf);
@@ -451,15 +455,13 @@ export function itemModel3dStatus(
         } catch {
           job.status = 'failed';
           job.errorMessage = 'Definition no longer mutable';
-          // do not create asset
-          const outEarly: Record<string, unknown> = {
+          return {
             status: 'ok',
             jobId: job.id,
             jobStatus: job.status,
             progress: job.progress,
+            ...(job.errorMessage ? { errorMessage: job.errorMessage } : {}),
           };
-          if (job.errorMessage) outEarly.errorMessage = job.errorMessage;
-          return outEarly as ItemModel3dResult;
         }
         job.materializeClaimedBy = claimerId;
         job.status = 'succeeded';
@@ -485,18 +487,19 @@ export function itemModel3dStatus(
       }
     }
   }
-  const out: Record<string, unknown> = {
+  return {
     status: 'ok',
     jobId: job.id,
     jobStatus: job.status,
     progress: job.progress,
+    ...(job.errorMessage ? { errorMessage: job.errorMessage } : {}),
+    ...(job.assetId
+      ? {
+          model3d: buildItemModel3dAssetKey(job.assetId),
+          signedUrl: signedUrlFor(job.assetId),
+        }
+      : {}),
   };
-  if (job.errorMessage) out.errorMessage = job.errorMessage;
-  if (job.assetId) {
-    out.model3d = buildItemModel3dAssetKey(job.assetId);
-    out.signedUrl = signedUrlFor(job.assetId);
-  }
-  return out as ItemModel3dResult;
 }
 
 export function itemModel3dResolve(

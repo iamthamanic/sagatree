@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-mig-409 (#825)
 
-- HEAD_SHA: cf6c147f31f414e02cb8a15ca42ad24fa788cf01
+- HEAD_SHA: 2220a11fc04ac65cd98c8188462dc9c5b1eb0871
 - BASE_SHA: 3b6831adfbb3f1d6a1bb709c523a8ad32aa1b5e2
 - Date: 2026-10-29
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
