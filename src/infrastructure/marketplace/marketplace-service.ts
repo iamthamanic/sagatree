@@ -1,8 +1,16 @@
 /**
  * marketplace-service — Supabase adapter for marketplace catalog/downloads.
  * Location: src/infrastructure/marketplace/marketplace-service.ts
+ *
+ * Client-trust (#675): mutations scope to authenticated author_id; update/create
+ * DTOs are allowlisted — never spread rating/downloads/author_id from the client.
  */
 import { supabase } from '../../lib/supabase';
+import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
+import {
+  whitelistMarketplaceCreateDto,
+  whitelistMarketplaceUpdatePatch,
+} from '../../domains/marketplace/client-trust';
 import type {
   MarketplaceItem,
   CreateMarketplaceItemDTO,
@@ -130,23 +138,20 @@ export async function createMarketplaceItem(
   dto: CreateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated to create marketplace items');
-    }
+    const userId = await getAuthenticatedUserId();
+    const safe = whitelistMarketplaceCreateDto(dto);
 
     const { data, error } = await supabase
       .from('marketplace_items')
       .insert({
-        type: dto.type,
-        title: dto.title,
-        description: dto.description || null,
-        author_id: user.id,
-        data: dto.data,
-        price: dto.price || 0,
-        image_url: dto.image_url || null,
-        tags: dto.tags || [],
+        type: safe.type,
+        title: safe.title,
+        description: safe.description || null,
+        author_id: userId,
+        data: safe.data,
+        price: safe.price || 0,
+        image_url: safe.image_url || null,
+        tags: safe.tags || [],
         rating: 0,
         downloads: 0,
       })
@@ -173,19 +178,32 @@ export async function updateMarketplaceItem(
   dto: UpdateMarketplaceItemDTO
 ): Promise<MarketplaceItem> {
   try {
+    const userId = await getAuthenticatedUserId();
+    const patch = whitelistMarketplaceUpdatePatch(dto);
+    if (Object.keys(patch).length === 0) {
+      throw new Error('Keine erlaubten Update-Felder');
+    }
+
     const { data, error } = await supabase
       .from('marketplace_items')
       .update({
-        ...dto,
+        ...patch,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
+      .eq('author_id', userId)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error updating marketplace item:', error);
       throw new Error(`Failed to update marketplace item: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error(
+        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',
+      );
     }
 
     return data;
@@ -200,14 +218,24 @@ export async function updateMarketplaceItem(
  */
 export async function deleteMarketplaceItem(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase
+    const userId = await getAuthenticatedUserId();
+
+    const { data, error } = await supabase
       .from('marketplace_items')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('author_id', userId)
+      .select('id');
 
     if (error) {
       console.error('Error deleting marketplace item:', error);
       throw new Error(`Failed to delete marketplace item: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',
+      );
     }
 
     return true;
@@ -218,7 +246,8 @@ export async function deleteMarketplaceItem(id: string): Promise<boolean> {
 }
 
 /**
- * Increment downloads counter when a user downloads an item
+ * Increment downloads counter when a user downloads an item.
+ * Counters are server-authority only — no client write fallback (#675).
  */
 export async function incrementDownloads(id: string): Promise<void> {
   try {
@@ -227,19 +256,10 @@ export async function incrementDownloads(id: string): Promise<void> {
     });
 
     if (error) {
-      // Fallback if RPC doesn't exist yet
-      const { data: item } = await supabase
-        .from('marketplace_items')
-        .select('downloads')
-        .eq('id', id)
-        .single();
-
-      if (item) {
-        await supabase
-          .from('marketplace_items')
-          .update({ downloads: item.downloads + 1 })
-          .eq('id', id);
-      }
+      console.error(
+        'increment_marketplace_downloads RPC failed (no client counter write):',
+        error.message,
+      );
     }
   } catch (error) {
     console.error('Error incrementing downloads:', error);

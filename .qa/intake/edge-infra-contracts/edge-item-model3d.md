@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-item-model3d.json](source-contracts/edge-item-model3d.json) (SHA-256 `a00d97d525219dbafacf2b682912b4e1b0c554ec402d6348aabc672061303c32`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-item-model3d.json](source-contracts/edge-item-model3d.json) (SHA-256 `4cb07b8566d6eca05054ba5519ded9bd79b620674bace9d748eb9a5babb783d9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -94,12 +94,12 @@ Explicit abort call sites (dynamic values resolve in the linked helper declarati
 - `supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
 - `supabase/functions/_shared/item-model3d-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
 - `supabase/functions/_shared/item-thumbnail-image.ts:138` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/item-model3d/index.ts:117` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-model3d/index.ts:138` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/item-model3d/index.ts:227` — `AbortSignal.timeout(60_000)`
-- `supabase/functions/item-model3d/index.ts:246` — `AbortSignal.timeout(30_000)`
-- `supabase/functions/item-model3d/index.ts:265` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/item-model3d/index.ts:287` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/item-model3d/index.ts:118` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/item-model3d/index.ts:139` — `AbortSignal.timeout(20_000)`
+- `supabase/functions/item-model3d/index.ts:228` — `AbortSignal.timeout(60_000)`
+- `supabase/functions/item-model3d/index.ts:247` — `AbortSignal.timeout(30_000)`
+- `supabase/functions/item-model3d/index.ts:266` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/item-model3d/index.ts:288` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
@@ -263,7 +263,7 @@ export function resolveMeshyImageTo3dConfig(
 
 ### CORS_OPTS
 
-`supabase/functions/item-model3d/index.ts:39`
+`supabase/functions/item-model3d/index.ts:40`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -278,7 +278,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-model3d/index.ts:67`
+`supabase/functions/item-model3d/index.ts:68`
 
 ```ts
 DEFAULT_RATE_LIMIT = 2
@@ -286,7 +286,7 @@ DEFAULT_RATE_LIMIT = 2
 
 ### getSupabaseConfig
 
-`supabase/functions/item-model3d/index.ts:83`
+`supabase/functions/item-model3d/index.ts:84`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -300,7 +300,7 @@ function getSupabaseConfig(): SupabaseConfig | null {
 
 ### getRateLimit
 
-`supabase/functions/item-model3d/index.ts:91`
+`supabase/functions/item-model3d/index.ts:92`
 
 ```ts
 function getRateLimit(): number {
@@ -311,7 +311,7 @@ function getRateLimit(): number {
 
 ### resolveProvider
 
-`supabase/functions/item-model3d/index.ts:96`
+`supabase/functions/item-model3d/index.ts:97`
 
 ```ts
 async function resolveProvider(
@@ -401,7 +401,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 
 ### item-model3d:1
 
-Predicate: `action === 'config'`. Source: `supabase/functions/item-model3d/index.ts:433`.
+Predicate: `action === 'config'`. Source: `supabase/functions/item-model3d/index.ts:438`.
 
 
 ```ts
@@ -421,7 +421,7 @@ Predicate: `action === 'config'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:2
 
-Predicate: `action === 'upload'`. Source: `supabase/functions/item-model3d/index.ts:446`.
+Predicate: `action === 'upload'`. Source: `supabase/functions/item-model3d/index.ts:451`.
 
 
 ```ts
@@ -478,7 +478,7 @@ Predicate: `action === 'upload'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:3
 
-Predicate: `action === 'generate'`. Source: `supabase/functions/item-model3d/index.ts:496`.
+Predicate: `action === 'generate'`. Source: `supabase/functions/item-model3d/index.ts:501`.
 
 
 ```ts
@@ -581,7 +581,7 @@ Predicate: `action === 'generate'`. Source: `supabase/functions/item-model3d/ind
 
 ### item-model3d:4
 
-Predicate: `action === 'status'`. Source: `supabase/functions/item-model3d/index.ts:592`.
+Predicate: `action === 'status'`. Source: `supabase/functions/item-model3d/index.ts:597`.
 
 
 ```ts
@@ -766,7 +766,7 @@ Predicate: `action === 'status'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:5
 
-Predicate: `action === 'resolve'`. Source: `supabase/functions/item-model3d/index.ts:770`.
+Predicate: `action === 'resolve'`. Source: `supabase/functions/item-model3d/index.ts:775`.
 
 
 ```ts
@@ -803,7 +803,7 @@ Predicate: `action === 'resolve'`. Source: `supabase/functions/item-model3d/inde
 
 ### item-model3d:6
 
-Predicate: `action === 'remove'`. Source: `supabase/functions/item-model3d/index.ts:800`.
+Predicate: `action === 'remove'`. Source: `supabase/functions/item-model3d/index.ts:805`.
 
 
 ```ts
@@ -854,7 +854,7 @@ Predicate: `action === 'remove'`. Source: `supabase/functions/item-model3d/index
 
 ### item-model3d:7
 
-Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-model3d/index.ts:844`.
+Predicate: `action === 'latest-job'`. Source: `supabase/functions/item-model3d/index.ts:849`.
 
 
 ```ts
@@ -899,6 +899,14 @@ export interface SupabaseServiceConfig {
   url: string;
   serviceRoleKey: string;
 }
+```
+
+### PrivilegedClientBodyKey
+
+`supabase/functions/_shared/client-trust-body.ts:20`
+
+```ts
+export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
 ```
 
 ### CorsOptions
@@ -1055,7 +1063,7 @@ export type ItemThumbnailMime = (typeof ITEM_THUMBNAIL_ALLOWED_MIME)[number];
 
 ### JsonRecord
 
-`supabase/functions/item-model3d/index.ts:37`
+`supabase/functions/item-model3d/index.ts:38`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1063,7 +1071,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/item-model3d/index.ts:48`
+`supabase/functions/item-model3d/index.ts:49`
 
 ```ts
 interface SupabaseConfig {
@@ -1075,7 +1083,7 @@ interface SupabaseConfig {
 
 ### DefinitionRow
 
-`supabase/functions/item-model3d/index.ts:54`
+`supabase/functions/item-model3d/index.ts:55`
 
 ```ts
 interface DefinitionRow {
@@ -1322,7 +1330,7 @@ export function validateThumbnailBytes(
 
 ### CORS_OPTS
 
-`supabase/functions/item-model3d/index.ts:39`
+`supabase/functions/item-model3d/index.ts:40`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1337,7 +1345,7 @@ CORS_OPTS: CorsOptions = {
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/item-model3d/index.ts:65`
+`supabase/functions/item-model3d/index.ts:66`
 
 ```ts
 MAX_REQUEST_BYTES = 70 * 1024 * 1024
@@ -1345,7 +1353,7 @@ MAX_REQUEST_BYTES = 70 * 1024 * 1024
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/item-model3d/index.ts:66`
+`supabase/functions/item-model3d/index.ts:67`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -1353,7 +1361,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/item-model3d/index.ts:67`
+`supabase/functions/item-model3d/index.ts:68`
 
 ```ts
 DEFAULT_RATE_LIMIT = 2
@@ -1361,7 +1369,7 @@ DEFAULT_RATE_LIMIT = 2
 
 ### SIGNED_URL_SECONDS
 
-`supabase/functions/item-model3d/index.ts:68`
+`supabase/functions/item-model3d/index.ts:69`
 
 ```ts
 SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
@@ -1375,6 +1383,7 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 | `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-resolve-meshy.ts` | `b65f8aa91c02871a2661e1ca697c6115f3c7c4ec07c683d1e7ed19c39287a842` |
+| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
@@ -1382,6 +1391,6 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 | `supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
 | `supabase/functions/_shared/item-model3d-rate-limit.ts` | `2fdf5ca32dccf1cca8eac0de1d86d6926a671a9be9e0d1887e1fe607e9670a9d` |
 | `supabase/functions/_shared/item-thumbnail-image.ts` | `caf768022788be451fdfc5dfeadf837fd48e2edecc26a68d14794f6a21853713` |
-| `supabase/functions/item-model3d/index.ts` | `929ede1136b60facc537d6f83e9678daf6f84abd7101f1fc4e0e1a7a40818dab` |
+| `supabase/functions/item-model3d/index.ts` | `edeeb59c996bbb11fd6ca32a1dcf749a574ab2b233b2eb8888c1ab7ef6c304ae` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

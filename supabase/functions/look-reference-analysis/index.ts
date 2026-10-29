@@ -29,6 +29,7 @@ import {
   jsonResponse as sharedJsonResponse,
   type CorsOptions,
 } from '../_shared/cors.ts';
+import { privilegedClientBodyRejectionMessage } from '../_shared/client-trust-body.ts';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -241,6 +242,10 @@ serve(async (request) => {
     }
 
     const body: unknown = await request.json();
+    const privilegedReject = privilegedClientBodyRejectionMessage(body);
+    if (privilegedReject) {
+      return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);
+    }
     if (!isRecord(body) || body.action !== 'analyze') {
       return jsonResponse(
         request,

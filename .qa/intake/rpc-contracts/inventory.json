@@ -41845,7 +41845,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "sha256": "84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000"
+            "sha256": "e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -41897,17 +41897,19 @@
           "rpc": "increment_marketplace_downloads",
           "resolution": "string-literal",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 225,
-          "sourceSha256": "84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000",
+          "line": 254,
+          "sourceSha256": "e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594",
           "requestExpression": "{\n      item_id: id,\n    }",
           "requestKeys": [
             "item_id"
           ],
           "callExpression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
           "enclosingCallable": "incrementDownloads",
-          "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
+          "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
+            "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
+            "import {\n  whitelistMarketplaceCreateDto,\n  whitelistMarketplaceUpdatePatch,\n} from '../../domains/marketplace/client-trust';",
             "import type {\n  MarketplaceItem,\n  CreateMarketplaceItemDTO,\n  UpdateMarketplaceItemDTO,\n  MarketplaceFilters,\n} from '../../domains/marketplace/contracts/marketplace.types';"
           ],
           "supportingDeclarations": [
@@ -42077,14 +42079,14 @@
       "behavior": [
         "UPDATE marketplace_items SET downloads=downloads+1 WHEREid=item_id; Rückgabevoid. Unbekannte ID ist No-op; NULL-downloads bleibt bei SQL-AdditionNULL.",
         "add_marketplace_rpc.sql und deploy_marketplace.sql enthalten denselben Funktionsbody, keine zwei gleichzeitig gültigen Overloads.",
-        "Der Marketplace-Adapter fällt bei RPC-Fehler auf direkten Tabellen-Read/Update zurück; dessen RLS/Race-Verhalten ist Teil des Caller-Vertrags.",
+        "Der Marketplace-Adapter (#675) ruft nur die RPC auf und schreibt downloads bei RPC-Fehler nicht mehr clientseitig — Counter bleiben server-authority only.",
         "Bei Installation über deploy_marketplace.sql setzt der BEFORE-UPDATE-Trigger marketplace_updated_at zusätzlich updated_at=now(); die reine add_marketplace_rpc.sql setzt diese Tabellen-/Triggerinstallation voraus und belegt sie nicht."
       ],
       "requiredTests": [
         "Optionale Installation ausdrücklich auswählen und im Zielmodell bestätigen; full-migration-chain darf nicht fälschlich eine vorhandene Funktion behaupten.",
         "Vorhandenes Item erhöht atomar um1; unbekannteID/NULLID sind No-op, NULLZähler-Verhalten separat prüfen.",
         "Öffentliche/anon Aufrufbarkeit und DEFINER/search_path-Scope durch expliziten Nachfolgervertrag festlegen; kein stiller authenticated-only Anspruch.",
-        "RPC fehlt bzw. liefertFehler: exakten Client-Fallback samt parallelem Download/RLS prüfen, damit Zählverluste sichtbar werden."
+        "RPC fehlt bzw. liefertFehler: Adapter loggt und bricht ab ohne direkten downloads-Update (#675 client-trust); Zählverlust sichtbar, kein privilegierter Client-Write."
       ],
       "legacyDefects": [
         {
@@ -42093,7 +42095,7 @@
           "status": "blocked-successor-acceptance",
           "summary": "Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.",
           "sourceEvidence": "src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.",
-          "requiredSuccessorAcceptance": "Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.",
+          "requiredSuccessorAcceptance": "Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.",
           "deployedExploitVerified": false
         },
         {
@@ -42109,13 +42111,13 @@
       "operations": [],
       "transportObservations": [],
       "transactionAndIdempotency": [
-        "SQL-Inkrement ist ein atomisches UPDATE; Wiederholung zählt erneut. Client-Fallback ist getrenntes Read/Update und besitzt diesen atomischen Zählvertrag nicht."
+        "SQL-Inkrement ist ein atomisches UPDATE; Wiederholung zählt erneut. Ohne RPC gibt es keinen Client-Fallback-Zählvertrag (#675)."
       ],
       "removedOverloads": [],
       "sourceFiles": [
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "sha256": "84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000"
+          "sha256": "e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594"
         },
         {
           "path": "src/lib/supabase.ts",

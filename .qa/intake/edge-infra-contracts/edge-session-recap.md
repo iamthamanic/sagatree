@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `f9a713a4ec8aadd75fa73d60a7cf81733ea39457429532a6c9bbb43314f6b621`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-session-recap.json](source-contracts/edge-session-recap.json) (SHA-256 `ce55d2d0b769febe24d6e6e5697ce22892b7161896e4555780a041e50bb78543`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -80,8 +80,8 @@ Explicit abort call sites (dynamic values resolve in the linked helper declarati
 - `supabase/functions/_shared/character-lore-provider.ts:111` — `AbortSignal.timeout(60_000)`
 - `supabase/functions/_shared/ollama-llm-resolve.ts:134` — `AbortSignal.timeout(10_000)`
 - `supabase/functions/_shared/session-recap-rate-limit.ts:50` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:100` — `AbortSignal.timeout(10_000)`
-- `supabase/functions/session-recap/index.ts:123` — `AbortSignal.timeout(15_000)`
+- `supabase/functions/session-recap/index.ts:101` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/session-recap/index.ts:124` — `AbortSignal.timeout(15_000)`
 
 ## Exact environment defaults and configuration resolution
 
@@ -371,7 +371,7 @@ export function resolveSessionRecapProviderConfig(): CharacterLoreProviderConfig
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:31`
+`supabase/functions/session-recap/index.ts:32`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -382,7 +382,7 @@ CORS_OPTS: CorsOptions = {
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:37`
+`supabase/functions/session-recap/index.ts:38`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -390,7 +390,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### getRateLimit
 
-`supabase/functions/session-recap/index.ts:65`
+`supabase/functions/session-recap/index.ts:66`
 
 ```ts
 function getRateLimit(): number {
@@ -408,7 +408,7 @@ function getRateLimit(): number {
 
 ### getSupabaseConfig
 
-`supabase/functions/session-recap/index.ts:77`
+`supabase/functions/session-recap/index.ts:78`
 
 ```ts
 function getSupabaseConfig(): SupabaseConfig | null {
@@ -499,7 +499,7 @@ async generateDraft(sessionId: string): Promise<SessionRecapAiGenerateResult> {
 
 ### session-recap:handler
 
-Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-recap/index.ts:144`.
+Predicate: `Complete handler with ordered method/auth/body guards`. Source: `supabase/functions/session-recap/index.ts:145`.
 
 
 ```ts
@@ -584,6 +584,11 @@ serve(async (request: Request) => {
 
   if (!isRecord(body)) {
     return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);
+  }
+
+  const privilegedReject = privilegedClientBodyRejectionMessage(body);
+  if (privilegedReject) {
+    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);
   }
 
   const sessionId =
@@ -876,6 +881,14 @@ export interface CharacterLoreProviderConfig {
 }
 ```
 
+### PrivilegedClientBodyKey
+
+`supabase/functions/_shared/client-trust-body.ts:20`
+
+```ts
+export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
+```
+
 ### CorsOptions
 
 `supabase/functions/_shared/cors.ts:13`
@@ -1012,7 +1025,7 @@ type FetchLike = (
 
 ### JsonRecord
 
-`supabase/functions/session-recap/index.ts:29`
+`supabase/functions/session-recap/index.ts:30`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1020,7 +1033,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### SupabaseConfig
 
-`supabase/functions/session-recap/index.ts:41`
+`supabase/functions/session-recap/index.ts:42`
 
 ```ts
 interface SupabaseConfig {
@@ -1195,7 +1208,7 @@ RATE_LIMIT_RPC = '/rest/v1/rpc/consume_session_recap_rate_limit'
 
 ### CORS_OPTS
 
-`supabase/functions/session-recap/index.ts:31`
+`supabase/functions/session-recap/index.ts:32`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -1206,7 +1219,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT_WINDOW_SECONDS
 
-`supabase/functions/session-recap/index.ts:36`
+`supabase/functions/session-recap/index.ts:37`
 
 ```ts
 RATE_LIMIT_WINDOW_SECONDS = 60
@@ -1214,7 +1227,7 @@ RATE_LIMIT_WINDOW_SECONDS = 60
 
 ### DEFAULT_RATE_LIMIT
 
-`supabase/functions/session-recap/index.ts:37`
+`supabase/functions/session-recap/index.ts:38`
 
 ```ts
 DEFAULT_RATE_LIMIT = 6
@@ -1222,7 +1235,7 @@ DEFAULT_RATE_LIMIT = 6
 
 ### MAX_SUMMARY_LENGTH
 
-`supabase/functions/session-recap/index.ts:38`
+`supabase/functions/session-recap/index.ts:39`
 
 ```ts
 MAX_SUMMARY_LENGTH = 4_000
@@ -1230,7 +1243,7 @@ MAX_SUMMARY_LENGTH = 4_000
 
 ### MAX_REQUEST_BYTES
 
-`supabase/functions/session-recap/index.ts:39`
+`supabase/functions/session-recap/index.ts:40`
 
 ```ts
 MAX_REQUEST_BYTES = 8_000
@@ -1238,7 +1251,7 @@ MAX_REQUEST_BYTES = 8_000
 
 ### parseHighlightLines
 
-`supabase/functions/session-recap/index.ts:127`
+`supabase/functions/session-recap/index.ts:128`
 
 ```ts
 function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
@@ -1268,6 +1281,7 @@ function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
 | `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |
+| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
@@ -1277,5 +1291,5 @@ function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {
 | `supabase/functions/_shared/session-recap-provider.ts` | `01f140b2bc6a9f13fa53681a16304c38fe71e74d8167d7ce8487fc31e6a32d80` |
 | `supabase/functions/_shared/session-recap-rate-limit.ts` | `bd67b9f9969d139c784b1febee3d59cac29b029c0df010764f60779ba443501b` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
-| `supabase/functions/session-recap/index.ts` | `96e46b0b4fcbb1fbccf2925fe69cf3a6a55d5ac467494e5244f054e9390f1d01` |
+| `supabase/functions/session-recap/index.ts` | `cf8e7b651789373626e5175890c46e22cd887805a916cb3d6205872ccaac6a19` |
 

@@ -58,6 +58,7 @@ import {
   jsonResponse as sharedJsonResponse,
   type CorsOptions,
 } from '../_shared/cors.ts';
+import { privilegedClientBodyRejectionMessage } from '../_shared/client-trust-body.ts';
 
 type JsonRecord = Record<string, unknown>;
 type GenerationMode = 'text' | 'image';
@@ -348,6 +349,11 @@ serve(async (request) => {
     payload = raw;
   } catch {
     return json(400, { status: 'error', message: 'Ungültiger JSON-Body.' }, request);
+  }
+
+  const privilegedReject = privilegedClientBodyRejectionMessage(payload);
+  if (privilegedReject) {
+    return json(400, { status: 'error', message: privilegedReject }, request);
   }
 
   const action = typeof payload.action === 'string' ? payload.action : '';

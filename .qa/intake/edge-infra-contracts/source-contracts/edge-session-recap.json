@@ -16,6 +16,10 @@
       "sha256": "355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e"
     },
     {
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "sha256": "33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95"
+    },
+    {
       "path": "supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
@@ -41,7 +45,7 @@
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "sha256": "96e46b0b4fcbb1fbccf2925fe69cf3a6a55d5ac467494e5244f054e9390f1d01"
+      "sha256": "cf8e7b651789373626e5175890c46e22cd887805a916cb3d6205872ccaac6a19"
     }
   ],
   "operations": [
@@ -49,8 +53,8 @@
       "id": "session-recap:handler",
       "condition": "Complete handler with ordered method/auth/body guards",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 144,
-      "endLine": 401,
+      "line": 145,
+      "endLine": 407,
       "requestReads": [
         "body.adventure",
         "body.highlights",
@@ -63,139 +67,145 @@
       "returns": [
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 146,
-          "endLine": 146,
+          "line": 147,
+          "endLine": 147,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 149,
+          "endLine": 149,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 156,
-          "endLine": 156,
+          "line": 157,
+          "endLine": 157,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 161,
-          "endLine": 161,
+          "line": 162,
+          "endLine": 162,
           "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 167,
-          "endLine": 174,
+          "line": 168,
+          "endLine": 175,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 188,
-          "endLine": 195,
+          "line": 189,
+          "endLine": 196,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 202,
-          "endLine": 209,
+          "line": 203,
+          "endLine": 210,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 216,
-          "endLine": 216,
+          "line": 217,
+          "endLine": 217,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 220,
-          "endLine": 220,
+          "line": 221,
+          "endLine": 221,
           "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 224,
-          "endLine": 224,
+          "line": 225,
+          "endLine": 225,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
           "line": 230,
           "endLine": 230,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 236,
+          "endLine": 236,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 241,
-          "endLine": 245,
+          "line": 247,
+          "endLine": 251,
           "expression": "jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 272,
-          "endLine": 276,
+          "line": 278,
+          "endLine": 282,
           "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 287,
-          "endLine": 287,
-          "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
           "line": 293,
           "endLine": 293,
+          "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 299,
+          "endLine": 299,
           "expression": "jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 296,
-          "endLine": 303,
+          "line": 302,
+          "endLine": 309,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 313,
-          "endLine": 313,
+          "line": 319,
+          "endLine": 319,
           "expression": "jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 323,
+          "endLine": 323,
           "expression": "jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 377,
-          "endLine": 385,
+          "line": 383,
+          "endLine": 391,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    })"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 391,
-          "endLine": 399,
+          "line": 397,
+          "endLine": 405,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    )"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 144,
-          "endLine": 401,
+          "line": 145,
+          "endLine": 407,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 145,
-          "endLine": 145,
+          "line": 146,
+          "endLine": 146,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -204,8 +214,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 149,
+          "endLine": 149,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -215,8 +225,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 154,
-          "endLine": 154,
+          "line": 155,
+          "endLine": 155,
           "expression": "Number.parseInt",
           "arguments": [
             "request.headers.get('content-length') || '0'",
@@ -225,8 +235,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 154,
-          "endLine": 154,
+          "line": 155,
+          "endLine": 155,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -234,8 +244,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 155,
-          "endLine": 155,
+          "line": 156,
+          "endLine": 156,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -243,8 +253,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 156,
-          "endLine": 156,
+          "line": 157,
+          "endLine": 157,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -254,8 +264,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 159,
-          "endLine": 159,
+          "line": 160,
+          "endLine": 160,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -263,8 +273,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 161,
-          "endLine": 161,
+          "line": 162,
+          "endLine": 162,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -274,15 +284,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 164,
-          "endLine": 164,
+          "line": 165,
+          "endLine": 165,
           "expression": "getSupabaseConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 166,
-          "endLine": 166,
+          "line": 167,
+          "endLine": 167,
           "expression": "console.error",
           "arguments": [
             "'session-recap: missing service-role configuration'"
@@ -290,8 +300,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 167,
-          "endLine": 174,
+          "line": 168,
+          "endLine": 175,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -301,8 +311,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 178,
-          "endLine": 186,
+          "line": 179,
+          "endLine": 187,
           "expression": "consumePersistentSessionRecapRateLimit",
           "arguments": [
             "{\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      }",
@@ -311,15 +321,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 182,
-          "endLine": 182,
+          "line": 183,
+          "endLine": 183,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 188,
-          "endLine": 195,
+          "line": 189,
+          "endLine": 196,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -329,8 +339,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 198,
-          "endLine": 201,
+          "line": 199,
+          "endLine": 202,
           "expression": "console.error",
           "arguments": [
             "'session-recap rate limit failed:'",
@@ -339,8 +349,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 202,
-          "endLine": 209,
+          "line": 203,
+          "endLine": 210,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -350,15 +360,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 214,
-          "endLine": 214,
+          "line": 215,
+          "endLine": 215,
           "expression": "request.text",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 215,
-          "endLine": 215,
+          "line": 216,
+          "endLine": 216,
           "expression": "new TextEncoder().encode",
           "arguments": [
             "rawBody"
@@ -366,8 +376,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 216,
-          "endLine": 216,
+          "line": 217,
+          "endLine": 217,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -377,8 +387,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 218,
-          "endLine": 218,
+          "line": 219,
+          "endLine": 219,
           "expression": "JSON.parse",
           "arguments": [
             "rawBody"
@@ -386,8 +396,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 220,
-          "endLine": 220,
+          "line": 221,
+          "endLine": 221,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -397,8 +407,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 223,
-          "endLine": 223,
+          "line": 224,
+          "endLine": 224,
           "expression": "isRecord",
           "arguments": [
             "body"
@@ -406,8 +416,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 224,
-          "endLine": 224,
+          "line": 225,
+          "endLine": 225,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -419,16 +429,9 @@
           "path": "supabase/functions/session-recap/index.ts",
           "line": 228,
           "endLine": 228,
-          "expression": "body.sessionId.trim",
-          "arguments": []
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 229,
-          "endLine": 229,
-          "expression": "isUuid",
+          "expression": "privilegedClientBodyRejectionMessage",
           "arguments": [
-            "sessionId"
+            "body"
           ]
         },
         {
@@ -438,14 +441,41 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 234,
+          "endLine": 234,
+          "expression": "body.sessionId.trim",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 235,
+          "endLine": 235,
+          "expression": "isUuid",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 236,
+          "endLine": 236,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{ status: 'error', message: 'Ungültige Session-ID.' }",
             "400"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 241,
-          "endLine": 245,
+          "line": 247,
+          "endLine": 251,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -455,8 +485,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 251,
-          "endLine": 257,
+          "line": 257,
+          "endLine": 263,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "{\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }",
@@ -465,8 +495,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 259,
-          "endLine": 259,
+          "line": 265,
+          "endLine": 265,
           "expression": "prefsToProviderConfig",
           "arguments": [
             "stored"
@@ -474,8 +504,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 263,
-          "endLine": 266,
+          "line": 269,
+          "endLine": 272,
           "expression": "console.error",
           "arguments": [
             "'session-recap ollama prefs:'",
@@ -484,15 +514,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 269,
-          "endLine": 269,
+          "line": 275,
+          "endLine": 275,
           "expression": "resolveSessionRecapProviderConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 272,
-          "endLine": 276,
+          "line": 278,
+          "endLine": 282,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -501,8 +531,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 280,
-          "endLine": 283,
+          "line": 286,
+          "endLine": 289,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -511,15 +541,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 291,
+          "endLine": 291,
           "expression": "sessionRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 292,
+          "endLine": 292,
           "expression": "Array.isArray",
           "arguments": [
             "sessions"
@@ -527,22 +557,11 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 292,
+          "endLine": 292,
           "expression": "isRecord",
           "arguments": [
             "sessions[0]"
-          ]
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 287,
-          "endLine": 287,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{ status: 'error', message: 'Session nicht gefunden.' }",
-            "404"
           ]
         },
         {
@@ -552,14 +571,25 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{ status: 'error', message: 'Session nicht gefunden.' }",
+            "404"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 299,
+          "endLine": 299,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{ status: 'error', message: 'Session ungültig.' }",
             "400"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 296,
-          "endLine": 303,
+          "line": 302,
+          "endLine": 309,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -569,8 +599,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 306,
-          "endLine": 309,
+          "line": 312,
+          "endLine": 315,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -579,15 +609,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 311,
-          "endLine": 311,
+          "line": 317,
+          "endLine": 317,
           "expression": "projectRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 312,
-          "endLine": 312,
+          "line": 318,
+          "endLine": 318,
           "expression": "Array.isArray",
           "arguments": [
             "projects"
@@ -595,8 +625,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 312,
-          "endLine": 312,
+          "line": 318,
+          "endLine": 318,
           "expression": "isRecord",
           "arguments": [
             "projects[0]"
@@ -604,8 +634,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 313,
-          "endLine": 313,
+          "line": 319,
+          "endLine": 319,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -615,8 +645,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 323,
+          "endLine": 323,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -626,8 +656,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 321,
-          "endLine": 328,
+          "line": 327,
+          "endLine": 334,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -637,8 +667,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 326,
-          "endLine": 326,
+          "line": 332,
+          "endLine": 332,
           "expression": "JSON.stringify",
           "arguments": [
             "{ p_session_id: sessionId }"
@@ -646,8 +676,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 330,
-          "endLine": 330,
+          "line": 336,
+          "endLine": 336,
           "expression": "console.error",
           "arguments": [
             "'session-recap upsert failed'",
@@ -656,8 +686,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 334,
-          "endLine": 337,
+          "line": 340,
+          "endLine": 343,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -666,15 +696,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 339,
-          "endLine": 339,
+          "line": 345,
+          "endLine": 345,
           "expression": "recapRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 340,
-          "endLine": 340,
+          "line": 346,
+          "endLine": 346,
           "expression": "Array.isArray",
           "arguments": [
             "recaps"
@@ -682,8 +712,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 340,
-          "endLine": 340,
+          "line": 346,
+          "endLine": 346,
           "expression": "isRecord",
           "arguments": [
             "recaps[0]"
@@ -691,8 +721,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 341,
-          "endLine": 341,
+          "line": 347,
+          "endLine": 347,
           "expression": "isRecord",
           "arguments": [
             "recap.snapshot"
@@ -700,8 +730,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 342,
-          "endLine": 342,
+          "line": 348,
+          "endLine": 348,
           "expression": "parseHighlightLines",
           "arguments": [
             "recap?.highlight_lines"
@@ -709,8 +739,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 344,
-          "endLine": 352,
+          "line": 350,
+          "endLine": 358,
           "expression": "buildSessionRecapPrompt",
           "arguments": [
             "{\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    }"
@@ -718,8 +748,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 349,
-          "endLine": 351,
+          "line": 355,
+          "endLine": 357,
           "expression": "parseHighlightLines",
           "arguments": [
             "Array.isArray(snapshot.consequences) ? snapshot.consequences : []"
@@ -727,8 +757,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 356,
+          "endLine": 356,
           "expression": "Array.isArray",
           "arguments": [
             "snapshot.consequences"
@@ -736,8 +766,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 354,
-          "endLine": 354,
+          "line": 360,
+          "endLine": 360,
           "expression": "generateSessionRecapSummary",
           "arguments": [
             "providerConfig",
@@ -746,8 +776,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 359,
-          "endLine": 371,
+          "line": 365,
+          "endLine": 377,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -757,8 +787,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 365,
-          "endLine": 369,
+          "line": 371,
+          "endLine": 375,
           "expression": "JSON.stringify",
           "arguments": [
             "{\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }"
@@ -766,15 +796,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 368,
-          "endLine": 368,
+          "line": 374,
+          "endLine": 374,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 373,
-          "endLine": 373,
+          "line": 379,
+          "endLine": 379,
           "expression": "console.error",
           "arguments": [
             "'session-recap draft patch failed'",
@@ -783,8 +813,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 377,
-          "endLine": 385,
+          "line": 383,
+          "endLine": 391,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -793,8 +823,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 387,
-          "endLine": 390,
+          "line": 393,
+          "endLine": 396,
           "expression": "console.error",
           "arguments": [
             "'session-recap generation failed:'",
@@ -803,8 +833,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 391,
-          "endLine": 399,
+          "line": 397,
+          "endLine": 405,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -813,128 +843,134 @@
           ]
         }
       ],
-      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n});"
+      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n});"
     }
   ],
   "responseSites": [
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 56,
-      "endLine": 56,
+      "line": 57,
+      "endLine": 57,
       "expression": "sharedJsonResponse(request, body, status, CORS_OPTS)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 148,
-      "endLine": 148,
+      "line": 149,
+      "endLine": 149,
       "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 156,
-      "endLine": 156,
+      "line": 157,
+      "endLine": 157,
       "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 161,
-      "endLine": 161,
+      "line": 162,
+      "endLine": 162,
       "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 167,
-      "endLine": 174,
+      "line": 168,
+      "endLine": 175,
       "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 188,
-      "endLine": 195,
+      "line": 189,
+      "endLine": 196,
       "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 202,
-      "endLine": 209,
+      "line": 203,
+      "endLine": 210,
       "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 216,
-      "endLine": 216,
+      "line": 217,
+      "endLine": 217,
       "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 220,
-      "endLine": 220,
+      "line": 221,
+      "endLine": 221,
       "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 224,
-      "endLine": 224,
+      "line": 225,
+      "endLine": 225,
       "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
       "line": 230,
       "endLine": 230,
+      "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+    },
+    {
+      "path": "supabase/functions/session-recap/index.ts",
+      "line": 236,
+      "endLine": 236,
       "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 241,
-      "endLine": 245,
+      "line": 247,
+      "endLine": 251,
       "expression": "jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 272,
-      "endLine": 276,
+      "line": 278,
+      "endLine": 282,
       "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
-    },
-    {
-      "path": "supabase/functions/session-recap/index.ts",
-      "line": 287,
-      "endLine": 287,
-      "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
       "line": 293,
       "endLine": 293,
+      "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
+    },
+    {
+      "path": "supabase/functions/session-recap/index.ts",
+      "line": 299,
+      "endLine": 299,
       "expression": "jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 296,
-      "endLine": 303,
+      "line": 302,
+      "endLine": 309,
       "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 313,
-      "endLine": 313,
+      "line": 319,
+      "endLine": 319,
       "expression": "jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 317,
-      "endLine": 317,
+      "line": 323,
+      "endLine": 323,
       "expression": "jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 377,
-      "endLine": 385,
+      "line": 383,
+      "endLine": 391,
       "expression": "jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    })"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 391,
-      "endLine": 399,
+      "line": 397,
+      "endLine": 405,
       "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    )"
     }
   ],
@@ -985,14 +1021,14 @@
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 100,
-      "endLine": 100,
+      "line": 101,
+      "endLine": 101,
       "expression": "AbortSignal.timeout(10_000)"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 123,
-      "endLine": 123,
+      "line": 124,
+      "endLine": 124,
       "expression": "AbortSignal.timeout(15_000)"
     }
   ],
@@ -1023,53 +1059,53 @@
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 95,
-      "endLine": 101,
+      "line": 96,
+      "endLine": 102,
       "expression": "fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  })"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 114,
-      "endLine": 124,
+      "line": 115,
+      "endLine": 125,
       "expression": "fetch(`${config.url}${path}`, {\n    ...init,\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      Accept: 'application/json',\n      'Content-Type': 'application/json',\n      ...(init?.headers ?? {}),\n    },\n    signal: init?.signal ?? AbortSignal.timeout(15_000),\n  })"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 280,
-      "endLine": 283,
+      "line": 286,
+      "endLine": 289,
       "expression": "serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 306,
-      "endLine": 309,
+      "line": 312,
+      "endLine": 315,
       "expression": "serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 321,
-      "endLine": 328,
+      "line": 327,
+      "endLine": 334,
       "expression": "serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 334,
-      "endLine": 337,
+      "line": 340,
+      "endLine": 343,
       "expression": "serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    )"
     },
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 359,
-      "endLine": 371,
+      "line": 365,
+      "endLine": 377,
       "expression": "serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    )"
     }
   ],
   "handler": [
     {
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 144,
-      "endLine": 401,
-      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n});",
+      "line": 145,
+      "endLine": 407,
+      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n});",
       "requestReads": [
         "body.adventure",
         "body.highlights",
@@ -1082,139 +1118,145 @@
       "returns": [
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 146,
-          "endLine": 146,
+          "line": 147,
+          "endLine": 147,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 149,
+          "endLine": 149,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 156,
-          "endLine": 156,
+          "line": 157,
+          "endLine": 157,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 161,
-          "endLine": 161,
+          "line": 162,
+          "endLine": 162,
           "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 167,
-          "endLine": 174,
+          "line": 168,
+          "endLine": 175,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 188,
-          "endLine": 195,
+          "line": 189,
+          "endLine": 196,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 202,
-          "endLine": 209,
+          "line": 203,
+          "endLine": 210,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 216,
-          "endLine": 216,
+          "line": 217,
+          "endLine": 217,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 220,
-          "endLine": 220,
+          "line": 221,
+          "endLine": 221,
           "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 224,
-          "endLine": 224,
+          "line": 225,
+          "endLine": 225,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
           "line": 230,
           "endLine": 230,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 236,
+          "endLine": 236,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 241,
-          "endLine": 245,
+          "line": 247,
+          "endLine": 251,
           "expression": "jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 272,
-          "endLine": 276,
+          "line": 278,
+          "endLine": 282,
           "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 287,
-          "endLine": 287,
-          "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
           "line": 293,
           "endLine": 293,
+          "expression": "jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404)"
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 299,
+          "endLine": 299,
           "expression": "jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 296,
-          "endLine": 303,
+          "line": 302,
+          "endLine": 309,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      )"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 313,
-          "endLine": 313,
+          "line": 319,
+          "endLine": 319,
           "expression": "jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 323,
+          "endLine": 323,
           "expression": "jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403)"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 377,
-          "endLine": 385,
+          "line": 383,
+          "endLine": 391,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    })"
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 391,
-          "endLine": 399,
+          "line": 397,
+          "endLine": 405,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    )"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 144,
-          "endLine": 401,
+          "line": 145,
+          "endLine": 407,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  // Silence unused import warning pattern for corsHeaders side use\n  void getCorsHeaders;\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('session-recap: missing service-role configuration');\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  try {\n    const allowed = await consumePersistentSessionRecapRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n        },\n        429,\n      );\n    }\n  } catch (error) {\n    console.error(\n      'session-recap rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Session-Recap ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n      },\n      503,\n    );\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  if (!isRecord(body)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Anfrage.' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!isUuid(sessionId)) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Session-ID.' }, 400);\n  }\n\n  // Reject client-supplied prompt/secret payloads (Postel harden).\n  if (\n    body.prompt != null ||\n    body.highlights != null ||\n    body.adventure != null ||\n    body.worldState != null ||\n    body.summaryText != null\n  ) {\n    return jsonResponse(\n      request,\n      { status: 'error', message: 'Client-Prompt-Payload ist nicht erlaubt.' },\n      400,\n    );\n  }\n\n  let providerConfig = null as ReturnType<typeof resolveSessionRecapProviderConfig>;\n  try {\n    if (supabaseConfig.serviceRoleKey) {\n      const stored = await loadOllamaSettingsForUser(\n        {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        },\n        userId,\n      );\n      if (stored) {\n        providerConfig = prefsToProviderConfig(stored);\n      }\n    }\n  } catch (error) {\n    console.error(\n      'session-recap ollama prefs:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n  }\n  if (!providerConfig) {\n    providerConfig = resolveSessionRecapProviderConfig();\n  }\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Session-Recap-KI ist noch nicht konfiguriert. Hinterlege Provider und Modell unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const sessionRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/sessions?id=eq.${sessionId}&select=id,name,status,project_id,world_state`,\n    );\n    if (!sessionRes.ok) throw new Error(`session lookup ${sessionRes.status}`);\n    const sessions: unknown = await sessionRes.json();\n    if (!Array.isArray(sessions) || sessions.length === 0 || !isRecord(sessions[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Session nicht gefunden.' }, 404);\n    }\n    const session = sessions[0];\n    const projectId = typeof session.project_id === 'string' ? session.project_id : '';\n    const status = typeof session.status === 'string' ? session.status : '';\n    if (!projectId) {\n      return jsonResponse(request, { status: 'error', message: 'Session ungültig.' }, 400);\n    }\n    if (status !== 'completed' && status !== 'cancelled') {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: 'Zusammenfassung nur für abgeschlossene Sessions.',\n        },\n        400,\n      );\n    }\n\n    const projectRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/projects?id=eq.${projectId}&select=id,name,gm_user_id`,\n    );\n    if (!projectRes.ok) throw new Error(`project lookup ${projectRes.status}`);\n    const projects: unknown = await projectRes.json();\n    if (!Array.isArray(projects) || !isRecord(projects[0])) {\n      return jsonResponse(request, { status: 'error', message: 'Saga nicht gefunden.' }, 404);\n    }\n    const project = projects[0];\n    if (project.gm_user_id !== userId) {\n      return jsonResponse(request, { status: 'error', message: 'Nur der Gamemaster darf generieren.' }, 403);\n    }\n\n    // Ensure recap skeleton exists / load snapshot via RPC helper (service role).\n    const upsertRes = await serviceFetch(\n      supabaseConfig,\n      '/rest/v1/rpc/sagatree_upsert_session_recap',\n      {\n        method: 'POST',\n        body: JSON.stringify({ p_session_id: sessionId }),\n      },\n    );\n    if (!upsertRes.ok) {\n      console.error('session-recap upsert failed', upsertRes.status);\n      throw new Error('recap upsert failed');\n    }\n\n    const recapRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}&select=snapshot,highlight_lines,summary_text,summary_status`,\n    );\n    if (!recapRes.ok) throw new Error(`recap lookup ${recapRes.status}`);\n    const recaps: unknown = await recapRes.json();\n    const recap = Array.isArray(recaps) && isRecord(recaps[0]) ? recaps[0] : null;\n    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};\n    const linesFromDb = parseHighlightLines(recap?.highlight_lines);\n    // Player-safe lines only: visibility public/shared (builder filters gm_only).\n    const prompt = buildSessionRecapPrompt({\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    });\n\n    const summary = await generateSessionRecapSummary(providerConfig, prompt);\n    if (!summary || summary.length > MAX_SUMMARY_LENGTH) {\n      throw new Error('Generated summary length is invalid');\n    }\n\n    const patchRes = await serviceFetch(\n      supabaseConfig,\n      `/rest/v1/session_recaps?session_id=eq.${sessionId}`,\n      {\n        method: 'PATCH',\n        headers: { Prefer: 'return=minimal' },\n        body: JSON.stringify({\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }),\n      },\n    );\n    if (!patchRes.ok) {\n      console.error('session-recap draft patch failed', patchRes.status);\n      throw new Error('draft persist failed');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      summaryText: summary,\n      summaryStatus: 'draft',\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n      eventCount: prompt.eventCount,\n    });\n  } catch (error) {\n    console.error(\n      'session-recap generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message:\n          'Zusammenfassung konnte nicht generiert werden. Du kannst den Text manuell schreiben.',\n      },\n      500,\n    );\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 145,
-          "endLine": 145,
+          "line": 146,
+          "endLine": 146,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -1223,8 +1265,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 148,
-          "endLine": 148,
+          "line": 149,
+          "endLine": 149,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1234,8 +1276,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 154,
-          "endLine": 154,
+          "line": 155,
+          "endLine": 155,
           "expression": "Number.parseInt",
           "arguments": [
             "request.headers.get('content-length') || '0'",
@@ -1244,8 +1286,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 154,
-          "endLine": 154,
+          "line": 155,
+          "endLine": 155,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -1253,8 +1295,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 155,
-          "endLine": 155,
+          "line": 156,
+          "endLine": 156,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -1262,8 +1304,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 156,
-          "endLine": 156,
+          "line": 157,
+          "endLine": 157,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1273,8 +1315,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 159,
-          "endLine": 159,
+          "line": 160,
+          "endLine": 160,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -1282,8 +1324,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 161,
-          "endLine": 161,
+          "line": 162,
+          "endLine": 162,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1293,15 +1335,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 164,
-          "endLine": 164,
+          "line": 165,
+          "endLine": 165,
           "expression": "getSupabaseConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 166,
-          "endLine": 166,
+          "line": 167,
+          "endLine": 167,
           "expression": "console.error",
           "arguments": [
             "'session-recap: missing service-role configuration'"
@@ -1309,8 +1351,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 167,
-          "endLine": 174,
+          "line": 168,
+          "endLine": 175,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1320,8 +1362,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 178,
-          "endLine": 186,
+          "line": 179,
+          "endLine": 187,
           "expression": "consumePersistentSessionRecapRateLimit",
           "arguments": [
             "{\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      }",
@@ -1330,15 +1372,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 182,
-          "endLine": 182,
+          "line": 183,
+          "endLine": 183,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 188,
-          "endLine": 195,
+          "line": 189,
+          "endLine": 196,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1348,8 +1390,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 198,
-          "endLine": 201,
+          "line": 199,
+          "endLine": 202,
           "expression": "console.error",
           "arguments": [
             "'session-recap rate limit failed:'",
@@ -1358,8 +1400,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 202,
-          "endLine": 209,
+          "line": 203,
+          "endLine": 210,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1369,15 +1411,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 214,
-          "endLine": 214,
+          "line": 215,
+          "endLine": 215,
           "expression": "request.text",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 215,
-          "endLine": 215,
+          "line": 216,
+          "endLine": 216,
           "expression": "new TextEncoder().encode",
           "arguments": [
             "rawBody"
@@ -1385,8 +1427,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 216,
-          "endLine": 216,
+          "line": 217,
+          "endLine": 217,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1396,8 +1438,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 218,
-          "endLine": 218,
+          "line": 219,
+          "endLine": 219,
           "expression": "JSON.parse",
           "arguments": [
             "rawBody"
@@ -1405,8 +1447,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 220,
-          "endLine": 220,
+          "line": 221,
+          "endLine": 221,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1416,8 +1458,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 223,
-          "endLine": 223,
+          "line": 224,
+          "endLine": 224,
           "expression": "isRecord",
           "arguments": [
             "body"
@@ -1425,8 +1467,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 224,
-          "endLine": 224,
+          "line": 225,
+          "endLine": 225,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1438,16 +1480,9 @@
           "path": "supabase/functions/session-recap/index.ts",
           "line": 228,
           "endLine": 228,
-          "expression": "body.sessionId.trim",
-          "arguments": []
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 229,
-          "endLine": 229,
-          "expression": "isUuid",
+          "expression": "privilegedClientBodyRejectionMessage",
           "arguments": [
-            "sessionId"
+            "body"
           ]
         },
         {
@@ -1457,14 +1492,41 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 234,
+          "endLine": 234,
+          "expression": "body.sessionId.trim",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 235,
+          "endLine": 235,
+          "expression": "isUuid",
+          "arguments": [
+            "sessionId"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 236,
+          "endLine": 236,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{ status: 'error', message: 'Ungültige Session-ID.' }",
             "400"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 241,
-          "endLine": 245,
+          "line": 247,
+          "endLine": 251,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1474,8 +1536,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 251,
-          "endLine": 257,
+          "line": 257,
+          "endLine": 263,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "{\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }",
@@ -1484,8 +1546,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 259,
-          "endLine": 259,
+          "line": 265,
+          "endLine": 265,
           "expression": "prefsToProviderConfig",
           "arguments": [
             "stored"
@@ -1493,8 +1555,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 263,
-          "endLine": 266,
+          "line": 269,
+          "endLine": 272,
           "expression": "console.error",
           "arguments": [
             "'session-recap ollama prefs:'",
@@ -1503,15 +1565,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 269,
-          "endLine": 269,
+          "line": 275,
+          "endLine": 275,
           "expression": "resolveSessionRecapProviderConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 272,
-          "endLine": 276,
+          "line": 278,
+          "endLine": 282,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1520,8 +1582,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 280,
-          "endLine": 283,
+          "line": 286,
+          "endLine": 289,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -1530,15 +1592,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 291,
+          "endLine": 291,
           "expression": "sessionRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 292,
+          "endLine": 292,
           "expression": "Array.isArray",
           "arguments": [
             "sessions"
@@ -1546,22 +1608,11 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 292,
+          "endLine": 292,
           "expression": "isRecord",
           "arguments": [
             "sessions[0]"
-          ]
-        },
-        {
-          "path": "supabase/functions/session-recap/index.ts",
-          "line": 287,
-          "endLine": 287,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{ status: 'error', message: 'Session nicht gefunden.' }",
-            "404"
           ]
         },
         {
@@ -1571,14 +1622,25 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{ status: 'error', message: 'Session nicht gefunden.' }",
+            "404"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-recap/index.ts",
+          "line": 299,
+          "endLine": 299,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{ status: 'error', message: 'Session ungültig.' }",
             "400"
           ]
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 296,
-          "endLine": 303,
+          "line": 302,
+          "endLine": 309,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1588,8 +1650,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 306,
-          "endLine": 309,
+          "line": 312,
+          "endLine": 315,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -1598,15 +1660,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 311,
-          "endLine": 311,
+          "line": 317,
+          "endLine": 317,
           "expression": "projectRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 312,
-          "endLine": 312,
+          "line": 318,
+          "endLine": 318,
           "expression": "Array.isArray",
           "arguments": [
             "projects"
@@ -1614,8 +1676,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 312,
-          "endLine": 312,
+          "line": 318,
+          "endLine": 318,
           "expression": "isRecord",
           "arguments": [
             "projects[0]"
@@ -1623,8 +1685,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 313,
-          "endLine": 313,
+          "line": 319,
+          "endLine": 319,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1634,8 +1696,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 323,
+          "endLine": 323,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1645,8 +1707,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 321,
-          "endLine": 328,
+          "line": 327,
+          "endLine": 334,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -1656,8 +1718,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 326,
-          "endLine": 326,
+          "line": 332,
+          "endLine": 332,
           "expression": "JSON.stringify",
           "arguments": [
             "{ p_session_id: sessionId }"
@@ -1665,8 +1727,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 330,
-          "endLine": 330,
+          "line": 336,
+          "endLine": 336,
           "expression": "console.error",
           "arguments": [
             "'session-recap upsert failed'",
@@ -1675,8 +1737,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 334,
-          "endLine": 337,
+          "line": 340,
+          "endLine": 343,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -1685,15 +1747,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 339,
-          "endLine": 339,
+          "line": 345,
+          "endLine": 345,
           "expression": "recapRes.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 340,
-          "endLine": 340,
+          "line": 346,
+          "endLine": 346,
           "expression": "Array.isArray",
           "arguments": [
             "recaps"
@@ -1701,8 +1763,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 340,
-          "endLine": 340,
+          "line": 346,
+          "endLine": 346,
           "expression": "isRecord",
           "arguments": [
             "recaps[0]"
@@ -1710,8 +1772,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 341,
-          "endLine": 341,
+          "line": 347,
+          "endLine": 347,
           "expression": "isRecord",
           "arguments": [
             "recap.snapshot"
@@ -1719,8 +1781,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 342,
-          "endLine": 342,
+          "line": 348,
+          "endLine": 348,
           "expression": "parseHighlightLines",
           "arguments": [
             "recap?.highlight_lines"
@@ -1728,8 +1790,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 344,
-          "endLine": 352,
+          "line": 350,
+          "endLine": 358,
           "expression": "buildSessionRecapPrompt",
           "arguments": [
             "{\n      sessionName: typeof session.name === 'string' ? session.name : 'Episode',\n      sagaTitle: typeof project.name === 'string' ? project.name : null,\n      highlightLines: linesFromDb.length\n        ? linesFromDb\n        : parseHighlightLines(\n            Array.isArray(snapshot.consequences) ? snapshot.consequences : [],\n          ),\n    }"
@@ -1737,8 +1799,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 349,
-          "endLine": 351,
+          "line": 355,
+          "endLine": 357,
           "expression": "parseHighlightLines",
           "arguments": [
             "Array.isArray(snapshot.consequences) ? snapshot.consequences : []"
@@ -1746,8 +1808,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 356,
+          "endLine": 356,
           "expression": "Array.isArray",
           "arguments": [
             "snapshot.consequences"
@@ -1755,8 +1817,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 354,
-          "endLine": 354,
+          "line": 360,
+          "endLine": 360,
           "expression": "generateSessionRecapSummary",
           "arguments": [
             "providerConfig",
@@ -1765,8 +1827,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 359,
-          "endLine": 371,
+          "line": 365,
+          "endLine": 377,
           "expression": "serviceFetch",
           "arguments": [
             "supabaseConfig",
@@ -1776,8 +1838,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 365,
-          "endLine": 369,
+          "line": 371,
+          "endLine": 375,
           "expression": "JSON.stringify",
           "arguments": [
             "{\n          summary_text: summary,\n          summary_status: 'draft',\n          updated_at: new Date().toISOString(),\n        }"
@@ -1785,15 +1847,15 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 368,
-          "endLine": 368,
+          "line": 374,
+          "endLine": 374,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 373,
-          "endLine": 373,
+          "line": 379,
+          "endLine": 379,
           "expression": "console.error",
           "arguments": [
             "'session-recap draft patch failed'",
@@ -1802,8 +1864,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 377,
-          "endLine": 385,
+          "line": 383,
+          "endLine": 391,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1812,8 +1874,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 387,
-          "endLine": 390,
+          "line": 393,
+          "endLine": 396,
           "expression": "console.error",
           "arguments": [
             "'session-recap generation failed:'",
@@ -1822,8 +1884,8 @@
         },
         {
           "path": "supabase/functions/session-recap/index.ts",
-          "line": 391,
-          "endLine": 399,
+          "line": 397,
+          "endLine": 405,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2034,6 +2096,46 @@
       "line": 124,
       "endLine": 131,
       "text": "export async function generateCharacterLore(\n  config: CharacterLoreProviderConfig,\n  prompt: CharacterLorePrompt,\n): Promise<string> {\n  return config.provider === 'openai-compatible'\n    ? generateOpenAiCompatible(config, prompt)\n    : generateOllama(config, prompt);\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED_CLIENT_BODY_KEYS",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 9,
+      "endLine": 18,
+      "text": "PRIVILEGED_CLIENT_BODY_KEYS = [\n  'author_id',\n  'owner_user_id',\n  'rating',\n  'downloads',\n  'roles',\n  'permissions',\n  'is_admin',\n  'service_role',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrivilegedClientBodyKey",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "PRIVILEGED = new Set<string>(PRIVILEGED_CLIENT_BODY_KEYS)"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "findPrivilegedClientBodyKeys",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export function findPrivilegedClientBodyKeys(\n  body: unknown,\n): PrivilegedClientBodyKey[] {\n  if (body === null || typeof body !== 'object' || Array.isArray(body)) {\n    return [];\n  }\n  const found: PrivilegedClientBodyKey[] = [];\n  for (const key of Object.keys(body as Record<string, unknown>)) {\n    if (PRIVILEGED.has(key)) {\n      found.push(key as PrivilegedClientBodyKey);\n    }\n  }\n  return found;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "privilegedClientBodyRejectionMessage",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 40,
+      "endLine": 46,
+      "text": "export function privilegedClientBodyRejectionMessage(\n  body: unknown,\n): string | null {\n  const found = findPrivilegedClientBodyKeys(body);\n  if (found.length === 0) return null;\n  return `Client darf privilegierte Felder nicht setzen: ${found.join(', ')}`;\n}"
     },
     {
       "kind": "VariableDeclaration",
@@ -2415,128 +2517,128 @@
       "kind": "TypeAliasDeclaration",
       "name": "JsonRecord",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 29,
-      "endLine": 29,
+      "line": 30,
+      "endLine": 30,
       "text": "type JsonRecord = Record<string, unknown>;"
     },
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 31,
-      "endLine": 34,
+      "line": 32,
+      "endLine": 35,
       "text": "CORS_OPTS: CorsOptions = {\n  methods: 'POST, OPTIONS',\n  envKeys: ['SESSION_RECAP_AI_ALLOWED_ORIGIN', 'CHARACTER_AI_ALLOWED_ORIGIN'],\n}"
     },
     {
       "kind": "VariableDeclaration",
       "name": "RATE_LIMIT_WINDOW_SECONDS",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 36,
-      "endLine": 36,
+      "line": 37,
+      "endLine": 37,
       "text": "RATE_LIMIT_WINDOW_SECONDS = 60"
     },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_RATE_LIMIT",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 37,
-      "endLine": 37,
+      "line": 38,
+      "endLine": 38,
       "text": "DEFAULT_RATE_LIMIT = 6"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_SUMMARY_LENGTH",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 38,
-      "endLine": 38,
+      "line": 39,
+      "endLine": 39,
       "text": "MAX_SUMMARY_LENGTH = 4_000"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_REQUEST_BYTES",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 39,
-      "endLine": 39,
+      "line": 40,
+      "endLine": 40,
       "text": "MAX_REQUEST_BYTES = 8_000"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "SupabaseConfig",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 41,
-      "endLine": 45,
+      "line": 42,
+      "endLine": 46,
       "text": "interface SupabaseConfig {\n  url: string;\n  anonKey: string;\n  serviceRoleKey?: string;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isRecord",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 47,
-      "endLine": 49,
+      "line": 48,
+      "endLine": 50,
       "text": "function isRecord(value: unknown): value is JsonRecord {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getCorsHeaders",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 51,
-      "endLine": 53,
+      "line": 52,
+      "endLine": 54,
       "text": "function getCorsHeaders(request: Request): HeadersInit {\n  return corsHeaders(request, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 55,
-      "endLine": 57,
+      "line": 56,
+      "endLine": 58,
       "text": "function jsonResponse(request: Request, body: JsonRecord, status = 200): Response {\n  return sharedJsonResponse(request, body, status, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isUuid",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 59,
-      "endLine": 63,
+      "line": 60,
+      "endLine": 64,
       "text": "function isUuid(value: string): boolean {\n  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(\n    value,\n  );\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getRateLimit",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 65,
-      "endLine": 75,
+      "line": 66,
+      "endLine": 76,
       "text": "function getRateLimit(): number {\n  const configured = Number.parseInt(\n    Deno.env.get('SESSION_RECAP_AI_RATE_LIMIT_PER_MINUTE') ||\n      Deno.env.get('CHARACTER_AI_RATE_LIMIT_PER_MINUTE') ||\n      '',\n    10,\n  );\n  return Number.isFinite(configured) && configured > 0\n    ? Math.min(configured, 60)\n    : DEFAULT_RATE_LIMIT;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getSupabaseConfig",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 77,
-      "endLine": 88,
+      "line": 78,
+      "endLine": 89,
       "text": "function getSupabaseConfig(): SupabaseConfig | null {\n  const url = Deno.env.get('SUPABASE_URL')?.trim();\n  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim();\n  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim();\n  return url && anonKey\n    ? {\n        url: url.replace(/\\/+$/, ''),\n        anonKey,\n        serviceRoleKey: serviceRoleKey || undefined,\n      }\n    : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "authenticate",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 90,
-      "endLine": 106,
+      "line": 91,
+      "endLine": 107,
       "text": "async function authenticate(request: Request): Promise<string | null> {\n  const config = getSupabaseConfig();\n  const authorization = request.headers.get('Authorization');\n  if (!config || !authorization?.startsWith('Bearer ')) return null;\n\n  const response = await fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) return null;\n\n  const body: unknown = await response.json();\n  return isRecord(body) && typeof body.id === 'string' ? body.id : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "serviceFetch",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 108,
-      "endLine": 125,
+      "line": 109,
+      "endLine": 126,
       "text": "async function serviceFetch(\n  config: SupabaseConfig,\n  path: string,\n  init?: RequestInit,\n): Promise<Response> {\n  if (!config.serviceRoleKey) throw new Error('service role missing');\n  return fetch(`${config.url}${path}`, {\n    ...init,\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      Accept: 'application/json',\n      'Content-Type': 'application/json',\n      ...(init?.headers ?? {}),\n    },\n    signal: init?.signal ?? AbortSignal.timeout(15_000),\n  });\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseHighlightLines",
       "path": "supabase/functions/session-recap/index.ts",
-      "line": 127,
-      "endLine": 142,
+      "line": 128,
+      "endLine": 143,
       "text": "function parseHighlightLines(raw: unknown): SessionRecapPromptLine[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SessionRecapPromptLine[] = [];\n  for (const item of raw.slice(0, 40)) {\n    if (!isRecord(item)) continue;\n    const summary = typeof item.summary === 'string' ? item.summary : '';\n    if (!summary.trim()) continue;\n    out.push({\n      id: typeof item.id === 'string' ? item.id : summary.slice(0, 32),\n      kind: typeof item.kind === 'string' ? item.kind : 'generic',\n      summary,\n      visibility: typeof item.visibility === 'string' ? item.visibility : 'shared',\n    });\n  }\n  return out;\n}"
     }
   ]

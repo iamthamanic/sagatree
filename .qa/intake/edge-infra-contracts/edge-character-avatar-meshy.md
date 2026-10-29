@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [edge-character-avatar-meshy.json](source-contracts/edge-character-avatar-meshy.json) (SHA-256 `bc07aeeb47baebdbc1bf41bb47c184ce479782f67eaf5cc46f209346b5e763db`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [edge-character-avatar-meshy.json](source-contracts/edge-character-avatar-meshy.json) (SHA-256 `3f3753720d2a1dc0c75ab8719db4de505bb0b358aaa8ad603e4d8734968c88e8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Exposure and purpose
 
@@ -83,7 +83,7 @@ Explicit abort call sites (dynamic values resolve in the linked helper declarati
 - `supabase/functions/_shared/item-model3d-glb.ts:211` — `AbortSignal.timeout(timeoutMs)`
 - `supabase/functions/_shared/item-model3d-meshy.ts:183` — `AbortSignal.timeout(30_000)`
 - `supabase/functions/_shared/item-model3d-meshy.ts:203` — `AbortSignal.timeout(20_000)`
-- `supabase/functions/character-avatar-meshy/index.ts:255` — `AbortSignal.timeout(10_000)`
+- `supabase/functions/character-avatar-meshy/index.ts:256` — `AbortSignal.timeout(10_000)`
 
 ## Exact environment defaults and configuration resolution
 
@@ -313,7 +313,7 @@ export function resolveMeshyImageTo3dConfig(
 
 ### CORS_OPTS
 
-`supabase/functions/character-avatar-meshy/index.ts:65`
+`supabase/functions/character-avatar-meshy/index.ts:66`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -326,7 +326,7 @@ CORS_OPTS: CorsOptions = {
 
 ### resolveTextProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:263`
+`supabase/functions/character-avatar-meshy/index.ts:264`
 
 ```ts
 function resolveTextProvider(apiKey: string | null): MeshyTextTo3dProvider | null {
@@ -341,7 +341,7 @@ function resolveTextProvider(apiKey: string | null): MeshyTextTo3dProvider | nul
 
 ### resolveImageProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:272`
+`supabase/functions/character-avatar-meshy/index.ts:273`
 
 ```ts
 function resolveImageProvider(apiKey: string | null): MeshyImageTo3dProvider | null {
@@ -356,7 +356,7 @@ function resolveImageProvider(apiKey: string | null): MeshyImageTo3dProvider | n
 
 ### resolveRemeshProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:281`
+`supabase/functions/character-avatar-meshy/index.ts:282`
 
 ```ts
 function resolveRemeshProvider(apiKey: string | null): MeshyRemeshProvider | null {
@@ -372,7 +372,7 @@ function resolveRemeshProvider(apiKey: string | null): MeshyRemeshProvider | nul
 
 ### resolveRiggingProvider
 
-`supabase/functions/character-avatar-meshy/index.ts:291`
+`supabase/functions/character-avatar-meshy/index.ts:292`
 
 ```ts
 function resolveRiggingProvider(apiKey: string | null): MeshyRiggingProvider | null {
@@ -446,7 +446,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 
 ### character-avatar-meshy:1
 
-Predicate: `action === 'config'`. Source: `supabase/functions/character-avatar-meshy/index.ts:361`.
+Predicate: `action === 'config'`. Source: `supabase/functions/character-avatar-meshy/index.ts:367`.
 
 
 ```ts
@@ -474,7 +474,7 @@ Predicate: `action === 'config'`. Source: `supabase/functions/character-avatar-m
 
 ### character-avatar-meshy:2
 
-Predicate: `action === 'start'`. Source: `supabase/functions/character-avatar-meshy/index.ts:382`.
+Predicate: `action === 'start'`. Source: `supabase/functions/character-avatar-meshy/index.ts:388`.
 
 
 ```ts
@@ -669,7 +669,7 @@ Predicate: `action === 'start'`. Source: `supabase/functions/character-avatar-me
 
 ### character-avatar-meshy:3
 
-Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:570`.
+Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:576`.
 
 
 ```ts
@@ -1560,7 +1560,7 @@ Predicate: `action === 'poll' \|\| action === 'retry'`. Source: `supabase/functi
 
 ### character-avatar-meshy:4
 
-Predicate: `action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:587`.
+Predicate: `action === 'retry'`. Source: `supabase/functions/character-avatar-meshy/index.ts:593`.
 
 
 ```ts
@@ -1856,6 +1856,14 @@ export interface MeshyTextTo3dProvider {
 type FetchLike = typeof fetch;
 ```
 
+### PrivilegedClientBodyKey
+
+`supabase/functions/_shared/client-trust-body.ts:20`
+
+```ts
+export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];
+```
+
 ### CorsOptions
 
 `supabase/functions/_shared/cors.ts:13`
@@ -1978,7 +1986,7 @@ type FetchLike = typeof fetch;
 
 ### JsonRecord
 
-`supabase/functions/character-avatar-meshy/index.ts:62`
+`supabase/functions/character-avatar-meshy/index.ts:63`
 
 ```ts
 type JsonRecord = Record<string, unknown>;
@@ -1986,7 +1994,7 @@ type JsonRecord = Record<string, unknown>;
 
 ### GenerationMode
 
-`supabase/functions/character-avatar-meshy/index.ts:63`
+`supabase/functions/character-avatar-meshy/index.ts:64`
 
 ```ts
 type GenerationMode = 'text' | 'image';
@@ -1994,7 +2002,7 @@ type GenerationMode = 'text' | 'image';
 
 ### PublicMeshyFailure
 
-`supabase/functions/character-avatar-meshy/index.ts:81`
+`supabase/functions/character-avatar-meshy/index.ts:82`
 
 ```ts
 type PublicMeshyFailure =
@@ -2010,7 +2018,7 @@ type PublicMeshyFailure =
 
 ### AvatarMeshyTask
 
-`supabase/functions/character-avatar-meshy/index.ts:129`
+`supabase/functions/character-avatar-meshy/index.ts:130`
 
 ```ts
 type AvatarMeshyTask = {
@@ -2530,7 +2538,7 @@ function parseTask(body: unknown): MeshyImageTo3dTask {
 
 ### CORS_OPTS
 
-`supabase/functions/character-avatar-meshy/index.ts:65`
+`supabase/functions/character-avatar-meshy/index.ts:66`
 
 ```ts
 CORS_OPTS: CorsOptions = {
@@ -2543,7 +2551,7 @@ CORS_OPTS: CorsOptions = {
 
 ### RATE_LIMIT
 
-`supabase/functions/character-avatar-meshy/index.ts:73`
+`supabase/functions/character-avatar-meshy/index.ts:74`
 
 ```ts
 RATE_LIMIT = 2
@@ -2551,7 +2559,7 @@ RATE_LIMIT = 2
 
 ### RATE_WINDOW_SECONDS
 
-`supabase/functions/character-avatar-meshy/index.ts:74`
+`supabase/functions/character-avatar-meshy/index.ts:75`
 
 ```ts
 RATE_WINDOW_SECONDS = 60
@@ -2559,7 +2567,7 @@ RATE_WINDOW_SECONDS = 60
 
 ### SIGNED_URL_SECONDS
 
-`supabase/functions/character-avatar-meshy/index.ts:76`
+`supabase/functions/character-avatar-meshy/index.ts:77`
 
 ```ts
 SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
@@ -2567,7 +2575,7 @@ SIGNED_URL_SECONDS = 60 * 60 * 24 * 7
 
 ### IMAGE_PLACEHOLDER_PROMPT
 
-`supabase/functions/character-avatar-meshy/index.ts:77`
+`supabase/functions/character-avatar-meshy/index.ts:78`
 
 ```ts
 IMAGE_PLACEHOLDER_PROMPT = 'Image-to-3D reference'
@@ -2575,7 +2583,7 @@ IMAGE_PLACEHOLDER_PROMPT = 'Image-to-3D reference'
 
 ### IMAGE_MAX_BYTES
 
-`supabase/functions/character-avatar-meshy/index.ts:78`
+`supabase/functions/character-avatar-meshy/index.ts:79`
 
 ```ts
 IMAGE_MAX_BYTES = 4 * 1024 * 1024
@@ -2583,7 +2591,7 @@ IMAGE_MAX_BYTES = 4 * 1024 * 1024
 
 ### validatePrompt
 
-`supabase/functions/character-avatar-meshy/index.ts:166`
+`supabase/functions/character-avatar-meshy/index.ts:167`
 
 ```ts
 function validatePrompt(prompt: unknown): { ok: true; prompt: string } | { ok: false; message: string } {
@@ -2597,7 +2605,7 @@ function validatePrompt(prompt: unknown): { ok: true; prompt: string } | { ok: f
 
 ### validateOptionalTexturePrompt
 
-`supabase/functions/character-avatar-meshy/index.ts:174`
+`supabase/functions/character-avatar-meshy/index.ts:175`
 
 ```ts
 function validateOptionalTexturePrompt(
@@ -2615,7 +2623,7 @@ function validateOptionalTexturePrompt(
 
 ### validateImageDataUri
 
-`supabase/functions/character-avatar-meshy/index.ts:186`
+`supabase/functions/character-avatar-meshy/index.ts:187`
 
 ```ts
 function validateImageDataUri(
@@ -2637,7 +2645,7 @@ function validateImageDataUri(
 
 ### parseGenerationMode
 
-`supabase/functions/character-avatar-meshy/index.ts:242`
+`supabase/functions/character-avatar-meshy/index.ts:243`
 
 ```ts
 function parseGenerationMode(value: unknown): GenerationMode {
@@ -2658,11 +2666,12 @@ function parseGenerationMode(value: unknown): GenerationMode {
 | `supabase/functions/_shared/avatar-meshy-remesh.ts` | `cb2133152780c8d8ffb9b69e5358c676c672a41eb1e103b98c29c9dc16fe31e0` |
 | `supabase/functions/_shared/avatar-meshy-rigging.ts` | `2d1686c1b38dfdeea5299565756adbbc72db600bec8e98dfe73ce9ba55abca6b` |
 | `supabase/functions/_shared/avatar-meshy-text-to-3d.ts` | `247fbcf43b0b9425f147b4b87337f13bfca52199c575bbf27cbd25b8c55be2ca` |
+| `supabase/functions/_shared/client-trust-body.ts` | `33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95` |
 | `supabase/functions/_shared/cors.ts` | `f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38` |
 | `supabase/functions/_shared/edge-dispatcher-allowlist.ts` | `6d1ae7bde0ba9e41fcaa7b61247732168a62699e7811fb8574cef266cfad3a27` |
 | `supabase/functions/_shared/edge-jwt-gate.ts` | `14a871697b051b7fcbee09dbce1dee8bc8ed5ea6a6eca0bec7b2e771b32d0f0c` |
 | `supabase/functions/_shared/item-model3d-glb.ts` | `f227056ed5d1041def2009c37224c8df1139098bb3be8859bba984845fb7410e` |
 | `supabase/functions/_shared/item-model3d-meshy.ts` | `8b194b23304884c8ca3d2c0935e8b67e27decfaca3e1e2657b1901dfb69d8355` |
-| `supabase/functions/character-avatar-meshy/index.ts` | `9ecc7e8d08a76b4aefa695981c07895821060e9dffc08e81be60383156f651eb` |
+| `supabase/functions/character-avatar-meshy/index.ts` | `c29eca334121056bf317025aecd3d2c9eb91bac9a16cea94bebbeae8f4148200` |
 | `supabase/functions/main/index.ts` | `92f3bf56bf3c776e01595d980246079c4a9f8775e417959abea9d7da003bc53e` |
 

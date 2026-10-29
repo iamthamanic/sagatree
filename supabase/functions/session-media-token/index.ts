@@ -16,6 +16,7 @@ import {
   mintLiveKitAccessToken,
   resolveEdgeMediaGrant,
 } from '../_shared/session-media-token.ts';
+import { privilegedClientBodyRejectionMessage } from '../_shared/client-trust-body.ts';
 
 const CORS_OPTS: CorsOptions = {
   methods: 'POST, OPTIONS',
@@ -157,6 +158,20 @@ serve(async (req: Request) => {
         degraded: true,
         reason: 'bad_request',
         message: 'Ungültiger JSON-Body.',
+      },
+      400,
+    );
+  }
+
+  const privilegedReject = privilegedClientBodyRejectionMessage(body);
+  if (privilegedReject) {
+    return json(
+      req,
+      {
+        ok: false,
+        degraded: true,
+        reason: 'bad_request',
+        message: privilegedReject,
       },
       400,
     );
