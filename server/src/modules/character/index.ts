@@ -56,6 +56,19 @@ export {
   type StartAvatarMeshyInput,
 } from './internal/character-avatar-meshy.ts';
 
+export {
+  CHARACTER_LORE_DEFAULT_RATE_LIMIT,
+  CHARACTER_LORE_MAX_REQUEST_BYTES,
+  CHARACTER_LORE_PUBLIC_ACTIVATION_AUTHORIZED,
+  CHARACTER_LORE_RATE_WINDOW_SECONDS,
+  canUseWorldLoreReference,
+  createCharacterLoreStore,
+  describeCharacterLoreAuthDenialLegacyDefect,
+  generateCharacterLoreBackground,
+  parseCharacterLoreRequestBody,
+  type CharacterLoreStore,
+} from './internal/character-lore.ts';
+
 export type { CharacterMembershipCheck, SeededPc };
 
 export type CharacterPorts = {
