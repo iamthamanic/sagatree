@@ -924,6 +924,18 @@ function checkMig419RulesetsQuarantine() {
   );
 }
 
+function checkMig420SessionMediaToken() {
+  console.log('MIG-420 (#836): session-media-token host isolated-contract fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-420-session-media-token.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3202,6 +3214,7 @@ checkMig416MediaQuarantine();
 checkMig417NpcsQuarantine();
 checkMig418QuestsQuarantine();
 checkMig419RulesetsQuarantine();
+checkMig420SessionMediaToken();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
