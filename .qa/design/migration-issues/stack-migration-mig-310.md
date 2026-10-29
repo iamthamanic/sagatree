@@ -23,7 +23,7 @@ src/infrastructure/saga: bestehende Aufrufer über den freigegebenen Host transp
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/saga/saga-definition-service.ts`, `src/infrastructure/saga/session-outcome-promotion-service.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/saga/host-saga-adapter.ts`, `src/infrastructure/saga/host-saga-ports.contract.ts`, `src/infrastructure/saga/saga-definition-service.ts`, `src/infrastructure/saga/session-outcome-promotion-service.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-saga.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-saga.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -191,7 +191,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/saga/saga-definition-service.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Isolated deliverable under `src/domains/saga/contracts/saga-definition.ts`, `src/domains/session/contracts/session-outcome-promotion.ts`, `src/infrastructure/saga/host-saga-adapter.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | TBD by dependency successors: MIG-012/#791, MIG-013/#792, MIG-020/#795, RPC-SAGA-AUTHORING/#871, RPC-SAGA-PROVISION/#873, RPC-SAGA-VERSION-READ/#872, RPC-SAGA-PROJECTIONS/#876, MIG-014/#793 |
 | **FEATURE VERIFIED** | ATLAS-LIVE-E2E/#770 + MIG-602/#847 |

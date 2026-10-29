@@ -4,12 +4,20 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "sha256": "7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "sha256": "c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649"
+    },
+    {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "sha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4"
+      "sha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "sha256": "f6e4246d0c8bf4dc93557c2a82a91d4638e1f2e5755cd79494b7a18fa49205c3"
+      "sha256": "068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399"
     }
   ],
   "supportingSourceFiles": [
@@ -165,8 +173,8 @@
       "kind": "rpc",
       "name": "get_saga_definition_version",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 19,
-      "endLine": 19,
+      "line": 23,
+      "endLine": 23,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('get_saga_definition_version', { p_version_id: versionId })",
       "chain": "supabase.rpc('get_saga_definition_version', { p_version_id: versionId })",
@@ -176,8 +184,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 17,
-        "endLine": 27,
+        "line": 21,
+        "endLine": 31,
         "text": "async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_definition_version', { p_version_id: versionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga-Definition Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga-Definition konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionVersion(data);\n  }"
       }
     },
@@ -185,8 +193,8 @@
       "kind": "rpc",
       "name": "get_native_saga_definition_by_slug",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 31,
-      "endLine": 31,
+      "line": 35,
+      "endLine": 35,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug })",
       "chain": "supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug })",
@@ -196,8 +204,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 29,
-        "endLine": 39,
+        "line": 33,
+        "endLine": 43,
         "text": "async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Native Saga Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Native Saga konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionVersion(data);\n  }"
       }
     },
@@ -205,8 +213,8 @@
       "kind": "rpc",
       "name": "get_saga_definition_editor",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 43,
-      "endLine": 43,
+      "line": 47,
+      "endLine": 47,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId })",
       "chain": "supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId })",
@@ -216,8 +224,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 41,
-        "endLine": 51,
+        "line": 45,
+        "endLine": 55,
         "text": "async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga-Editor Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga-Editor konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionEditor(data);\n  }"
       }
     },
@@ -225,8 +233,8 @@
       "kind": "rpc",
       "name": "save_saga_definition_draft",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 60,
-      "endLine": 64,
+      "line": 64,
+      "endLine": 68,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('save_saga_definition_draft', {\n        p_saga_id: input.sagaId,\n        p_payload: payload,\n        p_expected_revision: input.expectedRevision,\n      })",
       "chain": "supabase.rpc('save_saga_definition_draft', {\n        p_saga_id: input.sagaId,\n        p_payload: payload,\n        p_expected_revision: input.expectedRevision,\n      })",
@@ -236,8 +244,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 53,
-        "endLine": 79,
+        "line": 57,
+        "endLine": 83,
         "text": "async saveDraft(input: {\n    readonly sagaId: string;\n    readonly draft: SagaDefinitionDraft;\n    readonly expectedRevision: number;\n  }): Promise<{ readonly revision: number; readonly versionId: string }> {\n    const payload = draftToPayload(input.draft);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_saga_definition_draft', {\n        p_saga_id: input.sagaId,\n        p_payload: payload,\n        p_expected_revision: input.expectedRevision,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Entwurf konnte nicht gespeichert werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Speicher-Antwort');\n    }\n    const row = data as { revision?: number; versionId?: string };\n    if (typeof row.revision !== 'number' || typeof row.versionId !== 'string') {\n      throw new Error('Speicher-Antwort unvollständig');\n    }\n    return { revision: row.revision, versionId: row.versionId };\n  }"
       }
     },
@@ -245,8 +253,8 @@
       "kind": "rpc",
       "name": "publish_saga_definition_version",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 86,
-      "endLine": 89,
+      "line": 90,
+      "endLine": 93,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('publish_saga_definition_version', {\n        p_saga_id: input.sagaId,\n        p_expected_revision: input.expectedRevision,\n      })",
       "chain": "supabase.rpc('publish_saga_definition_version', {\n        p_saga_id: input.sagaId,\n        p_expected_revision: input.expectedRevision,\n      })",
@@ -256,8 +264,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 81,
-        "endLine": 107,
+        "line": 85,
+        "endLine": 111,
         "text": "async publishVersion(input: {\n    readonly sagaId: string;\n    readonly expectedRevision: number;\n  }): Promise<{ readonly versionId: string; readonly versionLabel: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('publish_saga_definition_version', {\n        p_saga_id: input.sagaId,\n        p_expected_revision: input.expectedRevision,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Veröffentlichen Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Fassung konnte nicht veröffentlicht werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Publish-Antwort');\n    }\n    const row = data as { versionId?: string; versionLabel?: string };\n    if (typeof row.versionId !== 'string') {\n      throw new Error('Publish ohne versionId');\n    }\n    return {\n      versionId: row.versionId,\n      versionLabel: typeof row.versionLabel === 'string' ? row.versionLabel : 'v?',\n    };\n  }"
       }
     },
@@ -265,8 +273,8 @@
       "kind": "rpc",
       "name": "copy_native_saga_definition",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 111,
-      "endLine": 111,
+      "line": 115,
+      "endLine": 115,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId })",
       "chain": "supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId })",
@@ -276,8 +284,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 109,
-        "endLine": 126,
+        "line": 113,
+        "endLine": 130,
         "text": "async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Kopie Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Kopie konnte nicht erstellt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Kopie-Antwort');\n    }\n    const row = data as { sagaId?: string };\n    if (typeof row.sagaId !== 'string') {\n      throw new Error('Kopie ohne sagaId');\n    }\n    return { sagaId: row.sagaId };\n  }"
       }
     },
@@ -285,8 +293,8 @@
       "kind": "rpc",
       "name": "create_user_saga_definition",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 133,
-      "endLine": 136,
+      "line": 137,
+      "endLine": 140,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('create_user_saga_definition', {\n        p_title: input.title,\n        p_blurb: input.blurb ?? '',\n      })",
       "chain": "supabase.rpc('create_user_saga_definition', {\n        p_title: input.title,\n        p_blurb: input.blurb ?? '',\n      })",
@@ -296,8 +304,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 128,
-        "endLine": 151,
+        "line": 132,
+        "endLine": 155,
         "text": "async createUserSaga(input: {\n    readonly title: string;\n    readonly blurb?: string;\n  }): Promise<{ readonly sagaId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('create_user_saga_definition', {\n        p_title: input.title,\n        p_blurb: input.blurb ?? '',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga anlegen Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga konnte nicht angelegt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Create-Antwort');\n    }\n    const row = data as { sagaId?: string };\n    if (typeof row.sagaId !== 'string') {\n      throw new Error('Create ohne sagaId');\n    }\n    return { sagaId: row.sagaId };\n  }"
       }
     },
@@ -305,8 +313,8 @@
       "kind": "rpc",
       "name": "create_project_from_saga_version",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 159,
-      "endLine": 163,
+      "line": 163,
+      "endLine": 167,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('create_project_from_saga_version', {\n        p_saga_id: input.sagaId,\n        p_version_id: input.versionId,\n        p_name: input.name ?? null,\n      })",
       "chain": "supabase.rpc('create_project_from_saga_version', {\n        p_saga_id: input.sagaId,\n        p_version_id: input.versionId,\n        p_name: input.name ?? null,\n      })",
@@ -316,8 +324,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 153,
-        "endLine": 181,
+        "line": 157,
+        "endLine": 185,
         "text": "async createProjectFromVersion(input: {\n    readonly sagaId: string;\n    readonly versionId: string;\n    readonly name?: string;\n  }): Promise<{ readonly id: string; readonly publicId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('create_project_from_saga_version', {\n        p_saga_id: input.sagaId,\n        p_version_id: input.versionId,\n        p_name: input.name ?? null,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Gruppe Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Gruppe konnte nicht erstellt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Projekt-Antwort');\n    }\n    const row = data as { id?: string; public_id?: string };\n    if (typeof row.id !== 'string') {\n      throw new Error('Projekt ohne ID');\n    }\n    return {\n      id: row.id,\n      publicId: typeof row.public_id === 'string' ? row.public_id : '',\n    };\n  }"
       }
     },
@@ -325,8 +333,8 @@
       "kind": "rpc",
       "name": "duplicate_saga_playthrough",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 191,
-      "endLine": 194,
+      "line": 195,
+      "endLine": 198,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('duplicate_saga_playthrough', {\n        p_project_id: input.projectId,\n        p_mode: input.mode,\n      })",
       "chain": "supabase.rpc('duplicate_saga_playthrough', {\n        p_project_id: input.projectId,\n        p_mode: input.mode,\n      })",
@@ -336,8 +344,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/saga-definition-service.ts",
-        "line": 186,
-        "endLine": 213,
+        "line": 190,
+        "endLine": 217,
         "text": "async duplicatePlaythrough(input: {\n    readonly projectId: string;\n    readonly mode: 'fresh' | 'with_progress';\n  }): Promise<{ readonly id: string; readonly publicId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('duplicate_saga_playthrough', {\n        p_project_id: input.projectId,\n        p_mode: input.mode,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Duplizieren Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga konnte nicht dupliziert werden');\n    }\n    const row = Array.isArray(data) ? data[0] : data;\n    if (!row || typeof row !== 'object') {\n      throw new Error('Ungültige Duplikat-Antwort');\n    }\n    const parsed = row as { id?: string; public_id?: string };\n    if (typeof parsed.id !== 'string') {\n      throw new Error('Duplikat ohne ID');\n    }\n    return {\n      id: parsed.id,\n      publicId: typeof parsed.public_id === 'string' ? parsed.public_id : '',\n    };\n  }"
       }
     },
@@ -345,8 +353,8 @@
       "kind": "rpc",
       "name": "promote_session_outcome_to_saga",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 16,
-      "endLine": 19,
+      "line": 20,
+      "endLine": 23,
       "resolution": "finite-literal-union",
       "expression": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
       "chain": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
@@ -356,8 +364,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "line": 11,
-        "endLine": 28,
+        "line": 15,
+        "endLine": 32,
         "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
       }
     },
@@ -365,8 +373,8 @@
       "kind": "rpc",
       "name": "promote_session_outcome_to_world",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 16,
-      "endLine": 19,
+      "line": 20,
+      "endLine": 23,
       "resolution": "finite-literal-union",
       "expression": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
       "chain": "supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  })",
@@ -376,49 +384,65 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-        "line": 11,
-        "endLine": 28,
+        "line": 15,
+        "endLine": 32,
         "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
       }
     }
   ],
   "imports": [
     {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-saga-ports.contract",
+      "resolvedPath": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "expression": "import type { HostSagaPorts } from './host-saga-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-saga-ports.contract",
+      "resolvedPath": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "expression": "import { HOST_SAGA_OPS, HOST_SAGA_RPC_NAMES } from './host-saga-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 9,
+      "endLine": 9,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 6,
-      "endLine": 6,
+      "line": 10,
+      "endLine": 10,
       "module": "../../lib/networkTimeout",
       "resolvedPath": "src/lib/networkTimeout.ts",
       "expression": "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 7,
-      "endLine": 14,
+      "line": 11,
+      "endLine": 18,
       "module": "../../domains/saga/contracts/saga-definition",
       "resolvedPath": "src/domains/saga/contracts/saga-definition.ts",
       "expression": "import {\n  draftToPayload,\n  parseSagaDefinitionEditor,\n  parseSagaDefinitionVersion,\n  type SagaDefinitionDraft,\n  type SagaDefinitionEditorVm,\n  type SagaDefinitionVersionVm,\n} from '../../domains/saga/contracts/saga-definition';"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 9,
+      "endLine": 9,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 6,
-      "endLine": 9,
+      "line": 10,
+      "endLine": 13,
       "module": "../../domains/session/contracts/session-outcome-promotion",
       "resolvedPath": "src/domains/session/contracts/session-outcome-promotion.ts",
       "expression": "import {\n  parsePromoteRpcResult,\n  type PromoteRpcResult,\n} from '../../domains/session/contracts/session-outcome-promotion';"
@@ -426,100 +450,262 @@
   ],
   "publicDeclarations": [
     {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 12,
+      "endLine": 16,
+      "text": "export type HostSagaAdapter = HostSagaPorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_SAGA_OPS;\n  readonly rpcNames: typeof HOST_SAGA_RPC_NAMES;\n};"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 22,
+      "endLine": 50,
+      "text": "export function createHostSagaAdapter(ports: HostSagaPorts): HostSagaAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SAGA_OPS,\n    rpcNames: HOST_SAGA_RPC_NAMES,\n    copyNativeSagaDefinition: (actorId, sourceSagaId) =>\n      ports.copyNativeSagaDefinition(actorId, sourceSagaId),\n    createProjectFromSagaVersion: (actorId, sagaId, versionId, name) =>\n      ports.createProjectFromSagaVersion(actorId, sagaId, versionId, name),\n    createUserSagaDefinition: (actorId, title, blurb) =>\n      ports.createUserSagaDefinition(actorId, title, blurb),\n    duplicateSagaPlaythrough: (actorId, projectId, mode) =>\n      ports.duplicateSagaPlaythrough(actorId, projectId, mode),\n    getNativeSagaDefinitionBySlug: (actorId, slug) =>\n      ports.getNativeSagaDefinitionBySlug(actorId, slug),\n    getSagaDefinitionEditor: (actorId, sagaId) =>\n      ports.getSagaDefinitionEditor(actorId, sagaId),\n    getSagaDefinitionVersion: (actorId, versionId) =>\n      ports.getSagaDefinitionVersion(actorId, versionId),\n    promoteSessionOutcomeToSaga: (actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToSaga(actorId, sessionId, consequenceId),\n    promoteSessionOutcomeToWorld: (actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToWorld(actorId, sessionId, consequenceId),\n    publishSagaDefinitionVersion: (actorId, sagaId, expectedRevision) =>\n      ports.publishSagaDefinitionVersion(actorId, sagaId, expectedRevision),\n    saveSagaDefinitionDraft: (actorId, sagaId, payload, expectedRevision) =>\n      ports.saveSagaDefinitionDraft(actorId, sagaId, payload, expectedRevision),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "export type HostSagaResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string; readonly detail?: string };"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 15,
+      "endLine": 19,
+      "text": "export type HostSagaIdVm = {\n  readonly sagaId: string;\n  readonly versionId?: string;\n  readonly revision?: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 21,
+      "endLine": 24,
+      "text": "export type HostSagaProjectVm = {\n  readonly id: string;\n  readonly publicId: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 26,
+      "endLine": 29,
+      "text": "export type HostSagaEditorVm = Readonly<Record<string, unknown>> & {\n  readonly sagaId: string;\n  readonly canEdit: boolean;\n};"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 31,
+      "endLine": 31,
+      "text": "export type HostSagaVersionVm = Readonly<Record<string, unknown>>;"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 32,
+      "endLine": 32,
+      "text": "export type HostPromoteVm = Readonly<Record<string, unknown>>;"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 38,
+      "endLine": 112,
+      "text": "export type HostSagaPorts = {\n  readonly copyNativeSagaDefinition: (\n    actorId: string,\n    sourceSagaId: string,\n  ) => Promise<HostSagaResult<{ readonly sagaId: string; readonly versionId: string }>>;\n  readonly createProjectFromSagaVersion: (\n    actorId: string,\n    sagaId: string,\n    versionId: string,\n    name?: string | null,\n  ) => Promise<HostSagaResult<HostSagaProjectVm>>;\n  readonly createUserSagaDefinition: (\n    actorId: string,\n    title: string,\n    blurb?: string,\n  ) => Promise<\n    HostSagaResult<{\n      readonly sagaId: string;\n      readonly versionId: string;\n      readonly revision: number;\n    }>\n  >;\n  readonly duplicateSagaPlaythrough: (\n    actorId: string,\n    projectId: string,\n    mode?: string | null,\n  ) => Promise<HostSagaResult<HostSagaProjectVm>>;\n  readonly getNativeSagaDefinitionBySlug: (\n    actorId: string,\n    slug: string,\n  ) => Promise<HostSagaResult<HostSagaVersionVm>>;\n  readonly getSagaDefinitionEditor: (\n    actorId: string,\n    sagaId: string,\n  ) => Promise<HostSagaResult<HostSagaEditorVm>>;\n  readonly getSagaDefinitionVersion: (\n    actorId: string,\n    versionId: string,\n  ) => Promise<HostSagaResult<HostSagaVersionVm>>;\n  readonly promoteSessionOutcomeToSaga: (\n    actorId: string,\n    sessionId: string,\n    consequenceId: string,\n  ) => Promise<HostSagaResult<HostPromoteVm>>;\n  readonly promoteSessionOutcomeToWorld: (\n    actorId: string,\n    sessionId: string,\n    consequenceId: string,\n  ) => Promise<HostSagaResult<HostPromoteVm>>;\n  readonly publishSagaDefinitionVersion: (\n    actorId: string,\n    sagaId: string,\n    expectedRevision: number,\n  ) => Promise<\n    HostSagaResult<{\n      readonly sagaId: string;\n      readonly versionId: string;\n      readonly versionLabel: string;\n      readonly revision: number;\n    }>\n  >;\n  readonly saveSagaDefinitionDraft: (\n    actorId: string,\n    sagaId: string,\n    payload: Record<string, unknown>,\n    expectedRevision: number,\n  ) => Promise<\n    HostSagaResult<{\n      readonly sagaId: string;\n      readonly versionId: string;\n      readonly revision: number;\n      readonly payload: Record<string, unknown>;\n    }>\n  >;\n};"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 115,
+      "endLine": 127,
+      "text": "export const HOST_SAGA_RPC_NAMES = [\n  'copy_native_saga_definition',\n  'create_project_from_saga_version',\n  'create_user_saga_definition',\n  'duplicate_saga_playthrough',\n  'get_native_saga_definition_by_slug',\n  'get_saga_definition_editor',\n  'get_saga_definition_version',\n  'promote_session_outcome_to_saga',\n  'promote_session_outcome_to_world',\n  'publish_saga_definition_version',\n  'save_saga_definition_draft',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 129,
+      "endLine": 129,
+      "text": "export type HostSagaRpcName = (typeof HOST_SAGA_RPC_NAMES)[number];"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 132,
+      "endLine": 144,
+      "text": "export const HOST_SAGA_OPS = [\n  'copyNativeSagaDefinition',\n  'createProjectFromSagaVersion',\n  'createUserSagaDefinition',\n  'duplicateSagaPlaythrough',\n  'getNativeSagaDefinitionBySlug',\n  'getSagaDefinitionEditor',\n  'getSagaDefinitionVersion',\n  'promoteSessionOutcomeToSaga',\n  'promoteSessionOutcomeToWorld',\n  'publishSagaDefinitionVersion',\n  'saveSagaDefinitionDraft',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-ports.contract.ts",
+      "line": 146,
+      "endLine": 146,
+      "text": "export type HostSagaOp = (typeof HOST_SAGA_OPS)[number];"
+    },
+    {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 216,
-      "endLine": 216,
+      "line": 220,
+      "endLine": 220,
       "text": "export const sagaDefinitionService = new SagaDefinitionService();"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 30,
-      "endLine": 37,
+      "line": 34,
+      "endLine": 41,
       "text": "export const sessionOutcomePromotionService = {\n  promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_saga', sessionId, consequenceId);\n  },\n  promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_world', sessionId, consequenceId);\n  },\n};"
     }
   ],
   "operationDeclarations": [
     {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 22,
+      "endLine": 50,
+      "name": "createHostSagaAdapter",
+      "text": "export function createHostSagaAdapter(ports: HostSagaPorts): HostSagaAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SAGA_OPS,\n    rpcNames: HOST_SAGA_RPC_NAMES,\n    copyNativeSagaDefinition: (actorId, sourceSagaId) =>\n      ports.copyNativeSagaDefinition(actorId, sourceSagaId),\n    createProjectFromSagaVersion: (actorId, sagaId, versionId, name) =>\n      ports.createProjectFromSagaVersion(actorId, sagaId, versionId, name),\n    createUserSagaDefinition: (actorId, title, blurb) =>\n      ports.createUserSagaDefinition(actorId, title, blurb),\n    duplicateSagaPlaythrough: (actorId, projectId, mode) =>\n      ports.duplicateSagaPlaythrough(actorId, projectId, mode),\n    getNativeSagaDefinitionBySlug: (actorId, slug) =>\n      ports.getNativeSagaDefinitionBySlug(actorId, slug),\n    getSagaDefinitionEditor: (actorId, sagaId) =>\n      ports.getSagaDefinitionEditor(actorId, sagaId),\n    getSagaDefinitionVersion: (actorId, versionId) =>\n      ports.getSagaDefinitionVersion(actorId, versionId),\n    promoteSessionOutcomeToSaga: (actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToSaga(actorId, sessionId, consequenceId),\n    promoteSessionOutcomeToWorld: (actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToWorld(actorId, sessionId, consequenceId),\n    publishSagaDefinitionVersion: (actorId, sagaId, expectedRevision) =>\n      ports.publishSagaDefinitionVersion(actorId, sagaId, expectedRevision),\n    saveSagaDefinitionDraft: (actorId, sagaId, payload, expectedRevision) =>\n      ports.saveSagaDefinitionDraft(actorId, sagaId, payload, expectedRevision),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 27,
+      "endLine": 28,
+      "name": "callback",
+      "text": "(actorId, sourceSagaId) =>\n      ports.copyNativeSagaDefinition(actorId, sourceSagaId)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 29,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(actorId, sagaId, versionId, name) =>\n      ports.createProjectFromSagaVersion(actorId, sagaId, versionId, name)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 31,
+      "endLine": 32,
+      "name": "callback",
+      "text": "(actorId, title, blurb) =>\n      ports.createUserSagaDefinition(actorId, title, blurb)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 33,
+      "endLine": 34,
+      "name": "callback",
+      "text": "(actorId, projectId, mode) =>\n      ports.duplicateSagaPlaythrough(actorId, projectId, mode)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 35,
+      "endLine": 36,
+      "name": "callback",
+      "text": "(actorId, slug) =>\n      ports.getNativeSagaDefinitionBySlug(actorId, slug)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 37,
+      "endLine": 38,
+      "name": "callback",
+      "text": "(actorId, sagaId) =>\n      ports.getSagaDefinitionEditor(actorId, sagaId)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 39,
+      "endLine": 40,
+      "name": "callback",
+      "text": "(actorId, versionId) =>\n      ports.getSagaDefinitionVersion(actorId, versionId)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 41,
+      "endLine": 42,
+      "name": "callback",
+      "text": "(actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToSaga(actorId, sessionId, consequenceId)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 43,
+      "endLine": 44,
+      "name": "callback",
+      "text": "(actorId, sessionId, consequenceId) =>\n      ports.promoteSessionOutcomeToWorld(actorId, sessionId, consequenceId)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 45,
+      "endLine": 46,
+      "name": "callback",
+      "text": "(actorId, sagaId, expectedRevision) =>\n      ports.publishSagaDefinitionVersion(actorId, sagaId, expectedRevision)"
+    },
+    {
+      "path": "src/infrastructure/saga/host-saga-adapter.ts",
+      "line": 47,
+      "endLine": 48,
+      "name": "callback",
+      "text": "(actorId, sagaId, payload, expectedRevision) =>\n      ports.saveSagaDefinitionDraft(actorId, sagaId, payload, expectedRevision)"
+    },
+    {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 17,
-      "endLine": 27,
+      "line": 21,
+      "endLine": 31,
       "name": "getVersionById",
       "text": "async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_definition_version', { p_version_id: versionId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga-Definition Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga-Definition konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionVersion(data);\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 29,
-      "endLine": 39,
+      "line": 33,
+      "endLine": 43,
       "name": "getNativeBySlug",
       "text": "async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Native Saga Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Native Saga konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionVersion(data);\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 41,
-      "endLine": 51,
+      "line": 45,
+      "endLine": 55,
       "name": "getEditor",
       "text": "async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga-Editor Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga-Editor konnte nicht geladen werden');\n    }\n    return parseSagaDefinitionEditor(data);\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 53,
-      "endLine": 79,
+      "line": 57,
+      "endLine": 83,
       "name": "saveDraft",
       "text": "async saveDraft(input: {\n    readonly sagaId: string;\n    readonly draft: SagaDefinitionDraft;\n    readonly expectedRevision: number;\n  }): Promise<{ readonly revision: number; readonly versionId: string }> {\n    const payload = draftToPayload(input.draft);\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('save_saga_definition_draft', {\n        p_saga_id: input.sagaId,\n        p_payload: payload,\n        p_expected_revision: input.expectedRevision,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Speichern Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Entwurf konnte nicht gespeichert werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Speicher-Antwort');\n    }\n    const row = data as { revision?: number; versionId?: string };\n    if (typeof row.revision !== 'number' || typeof row.versionId !== 'string') {\n      throw new Error('Speicher-Antwort unvollständig');\n    }\n    return { revision: row.revision, versionId: row.versionId };\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 81,
-      "endLine": 107,
+      "line": 85,
+      "endLine": 111,
       "name": "publishVersion",
       "text": "async publishVersion(input: {\n    readonly sagaId: string;\n    readonly expectedRevision: number;\n  }): Promise<{ readonly versionId: string; readonly versionLabel: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('publish_saga_definition_version', {\n        p_saga_id: input.sagaId,\n        p_expected_revision: input.expectedRevision,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Veröffentlichen Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Fassung konnte nicht veröffentlicht werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Publish-Antwort');\n    }\n    const row = data as { versionId?: string; versionLabel?: string };\n    if (typeof row.versionId !== 'string') {\n      throw new Error('Publish ohne versionId');\n    }\n    return {\n      versionId: row.versionId,\n      versionLabel: typeof row.versionLabel === 'string' ? row.versionLabel : 'v?',\n    };\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 109,
-      "endLine": 126,
+      "line": 113,
+      "endLine": 130,
       "name": "createCopyFromNative",
       "text": "async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Kopie Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Kopie konnte nicht erstellt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Kopie-Antwort');\n    }\n    const row = data as { sagaId?: string };\n    if (typeof row.sagaId !== 'string') {\n      throw new Error('Kopie ohne sagaId');\n    }\n    return { sagaId: row.sagaId };\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 128,
-      "endLine": 151,
+      "line": 132,
+      "endLine": 155,
       "name": "createUserSaga",
       "text": "async createUserSaga(input: {\n    readonly title: string;\n    readonly blurb?: string;\n  }): Promise<{ readonly sagaId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('create_user_saga_definition', {\n        p_title: input.title,\n        p_blurb: input.blurb ?? '',\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Saga anlegen Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga konnte nicht angelegt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Create-Antwort');\n    }\n    const row = data as { sagaId?: string };\n    if (typeof row.sagaId !== 'string') {\n      throw new Error('Create ohne sagaId');\n    }\n    return { sagaId: row.sagaId };\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 153,
-      "endLine": 181,
+      "line": 157,
+      "endLine": 185,
       "name": "createProjectFromVersion",
       "text": "async createProjectFromVersion(input: {\n    readonly sagaId: string;\n    readonly versionId: string;\n    readonly name?: string;\n  }): Promise<{ readonly id: string; readonly publicId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('create_project_from_saga_version', {\n        p_saga_id: input.sagaId,\n        p_version_id: input.versionId,\n        p_name: input.name ?? null,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Neue Gruppe Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Gruppe konnte nicht erstellt werden');\n    }\n    if (!data || typeof data !== 'object') {\n      throw new Error('Ungültige Projekt-Antwort');\n    }\n    const row = data as { id?: string; public_id?: string };\n    if (typeof row.id !== 'string') {\n      throw new Error('Projekt ohne ID');\n    }\n    return {\n      id: row.id,\n      publicId: typeof row.public_id === 'string' ? row.public_id : '',\n    };\n  }"
     },
     {
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 186,
-      "endLine": 213,
+      "line": 190,
+      "endLine": 217,
       "name": "duplicatePlaythrough",
       "text": "async duplicatePlaythrough(input: {\n    readonly projectId: string;\n    readonly mode: 'fresh' | 'with_progress';\n  }): Promise<{ readonly id: string; readonly publicId: string }> {\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('duplicate_saga_playthrough', {\n        p_project_id: input.projectId,\n        p_mode: input.mode,\n      }),\n      SUPABASE_QUERY_TIMEOUT_MS,\n      'Duplizieren Zeitüberschreitung',\n    );\n    if (error) {\n      throw new Error(error.message || 'Saga konnte nicht dupliziert werden');\n    }\n    const row = Array.isArray(data) ? data[0] : data;\n    if (!row || typeof row !== 'object') {\n      throw new Error('Ungültige Duplikat-Antwort');\n    }\n    const parsed = row as { id?: string; public_id?: string };\n    if (typeof parsed.id !== 'string') {\n      throw new Error('Duplikat ohne ID');\n    }\n    return {\n      id: parsed.id,\n      publicId: typeof parsed.public_id === 'string' ? parsed.public_id : '',\n    };\n  }"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 11,
-      "endLine": 28,
+      "line": 15,
+      "endLine": 32,
       "name": "callPromote",
       "text": "async function callPromote(\n  rpc: 'promote_session_outcome_to_saga' | 'promote_session_outcome_to_world',\n  sessionId: string,\n  consequenceId: string,\n): Promise<PromoteRpcResult> {\n  const { data, error } = await supabase.rpc(rpc, {\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  });\n  if (error) {\n    console.error(`[session-outcome-promotion] ${rpc} failed`, error);\n    return {\n      ok: false,\n      messageDe: error.message || 'Übernehmen fehlgeschlagen',\n    };\n  }\n  return parsePromoteRpcResult(data);\n}"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 31,
-      "endLine": 33,
+      "line": 35,
+      "endLine": 37,
       "name": "promoteToSaga",
       "text": "promoteToSaga(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_saga', sessionId, consequenceId);\n  }"
     },
     {
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 34,
-      "endLine": 36,
+      "line": 38,
+      "endLine": 40,
       "name": "promoteToWorld",
       "text": "promoteToWorld(sessionId: string, consequenceId: string): Promise<PromoteRpcResult> {\n    return callPromote('promote_session_outcome_to_world', sessionId, consequenceId);\n  }"
     }

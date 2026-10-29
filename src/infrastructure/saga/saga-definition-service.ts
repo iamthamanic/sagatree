@@ -1,6 +1,10 @@
 /**
  * saga-definition-service — Load/save/publish saga definitions via RPC (#574 / #575).
  * Location: src/infrastructure/saga/saga-definition-service.ts
+ *
+ * Dual-path (MIG-310): production remains Supabase RPCs. Host ports are
+ * bound via `createHostSagaAdapter` for tests / future cutover (no accidental
+ * cutover — VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
