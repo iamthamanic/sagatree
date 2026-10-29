@@ -22,6 +22,11 @@ import {
 } from '../modules/world/index.ts';
 import { createProjectPorts } from '../modules/project/index.ts';
 import {
+  createProjectInfraPorts,
+  createProjectInfraPortsStub,
+  type ProjectInfraPorts,
+} from '../application/project-infra/index.ts';
+import {
   createAssetPorts,
   createAssetPortsStub,
   type AssetPorts,
@@ -95,6 +100,8 @@ export type HostInstance = {
   readonly look: LookProfilePorts;
   /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
   readonly npcCreature: NpcCreaturePorts;
+  /** MIG-308 composed project infra ports — 11 RPCs (HTTP cutover → MIG-600). */
+  readonly projectInfra: ProjectInfraPorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
   readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
@@ -262,10 +269,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     };
 
     // Session runtime + realtime rooms share one onCommitted publisher (ADR-ST-08).
+    // Project ports required for lifecycle/access/recap ACL (create_project_session etc.).
     let realtimeRooms: ReturnType<typeof createRealtimeSessionRooms> | undefined;
     const sessionPorts = db
       ? createSessionPorts({
           db,
+          project,
           onCommitted: (event) => {
             realtimeRooms?.onCommitted(event);
           },
@@ -274,6 +283,18 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     realtimeRooms = sessionPorts
       ? createRealtimeSessionRooms({ session: sessionPorts, onFanout })
       : undefined;
+
+    const projectInfra: ProjectInfraPorts =
+      db && sessionPorts
+        ? createProjectInfraPorts({
+            project,
+            character,
+            saga,
+            world,
+            permissions,
+            session: sessionPorts,
+          })
+        : createProjectInfraPortsStub();
 
     const recordPing = () => {
       if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
@@ -351,6 +372,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       rulesets,
       look,
       npcCreature,
+      projectInfra,
       saga,
       getAuth: () => betterAuth,
       isReady: () => ready,

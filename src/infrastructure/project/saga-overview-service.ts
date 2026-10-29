@@ -4,6 +4,10 @@
  *
  * Hides RPC transport; maps JSON → SagaOverviewVm via domain parse.
  * Does not SELECT sensitive project/session columns directly (RPC only).
+ *
+ * Dual-path (MIG-308): production remains Supabase RPC. Host ports are bound via
+ * `createHostProjectAdapter` for tests / future cutover (no accidental cutover —
+ * VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';

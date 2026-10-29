@@ -4,6 +4,10 @@
  *
  * #569: Never select projects.adventure_runtime or sessions.world_state/notes —
  * those columns are revoked for authenticated; use projected session RPCs.
+ *
+ * Dual-path (MIG-308): production remains Supabase RPCs/tables. Host ports are
+ * bound via `createHostProjectAdapter` for tests / future cutover (no accidental
+ * cutover — VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
