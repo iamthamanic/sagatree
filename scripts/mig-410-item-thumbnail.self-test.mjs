@@ -64,12 +64,12 @@ const pngB64 = Buffer.from(pngBytes).toString('base64');
 assert(sniffItemThumbnailMime(pngBytes) === 'image/png', 'png sniff');
 assert(validateItemThumbnailBytes(pngBytes, 'image/png').mime === 'image/png', 'png validate');
 
-process.env.MESHY_ASSET_BASE_URL =
-  process.env.MESHY_ASSET_BASE_URL?.trim() || 'https://cdn.meshy.ai';
+/** Deterministic offline fixture — never inherit ambient MESHY_ASSET_BASE_URL. */
+const ITEM_THUMBNAIL_TEST_ASSET_BASE_URL = 'https://assets.test.invalid';
 
 function createStore(meshyConfigured = true) {
   return createItemThumbnailStore(meshyConfigured, {
-    assetBaseUrl: process.env.MESHY_ASSET_BASE_URL,
+    assetBaseUrl: ITEM_THUMBNAIL_TEST_ASSET_BASE_URL,
   });
 }
 
