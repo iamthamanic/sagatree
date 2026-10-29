@@ -5,7 +5,7 @@
  * Isolated-contract host surface. Edge allowlisted worker remains live; no cutover.
  */
 // Public identity contract is `modules/identity/index.ts` (no separate actor.ts);
- // matches established application/* use-case ports (item-thumbnail, character-lore, …).
+// matches established application/* use-case ports (item-thumbnail, character-lore, …).
 import type { Actor } from '../../modules/identity/index.ts';
 import {
   SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -19,6 +19,24 @@ import {
 function actorUserId(actor: Actor): string | null {
   const id = typeof actor?.actorId === 'string' ? actor.actorId.trim() : '';
   return id || null;
+}
+
+/** Primary + linked solo ids — same expansion as session module ports. */
+function actorMembershipIds(actor: Actor): readonly string[] {
+  const primary = actorUserId(actor);
+  if (!primary) return [];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds)
+  ) {
+    return [
+      primary,
+      ...actor.linkedSoloActorIds.filter(
+        (id) => typeof id === 'string' && id.trim().length > 0,
+      ),
+    ];
+  }
+  return [primary];
 }
 
 export type SessionMediaTokenUseCaseDeps = {
@@ -43,8 +61,10 @@ export function createSessionMediaTokenUseCases(
         readonly clientRoom?: unknown;
       },
     ): Promise<SessionMediaTokenResult> => {
+      const userId = actorUserId(actor);
       const issueInput: SessionMediaTokenIssueInput = {
-        userId: actorUserId(actor),
+        userId,
+        membershipUserIds: actorMembershipIds(actor),
         method: input.method ?? 'POST',
         body: input.body,
         clientRole: input.clientRole,

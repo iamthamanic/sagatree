@@ -100,7 +100,13 @@ export type SessionMediaTokenError = {
 export type SessionMediaTokenResult = SessionMediaTokenSuccess | SessionMediaTokenError;
 
 export type SessionMediaTokenIssueInput = {
+  /** Primary caller id — used for auth + LiveKit JWT identity (`user:${userId}`). */
   userId: string | null;
+  /**
+   * Membership lookup ids (primary + linked solo). Defaults to `[userId]`.
+   * Matches other session ports: linked solo owners keep access after account link.
+   */
+  membershipUserIds?: readonly string[];
   method: string;
   body: unknown;
   /** Caller-supplied role/capabilities/room must never influence grants (ignored). */
@@ -360,16 +366,21 @@ function degraded(
 function loadMembership(
   store: SessionMediaTokenStore,
   sessionId: string,
-  userId: string,
+  userIds: readonly string[],
 ): { role: string; capabilities: string[] } | null {
   const session = store.sessions.get(sessionId);
   if (!session) return null;
-  const member = store.projectMembers.get(memberKey(session.project_id, userId));
-  if (!member || member.status !== 'active') return null;
-  // Edge loads capabilities as null and treats them as []. Never from client /
-  // session_players.
-  void store.sessionPlayers;
-  return { role: member.role, capabilities: [] };
+  for (const userId of userIds) {
+    if (!userId) continue;
+    const member = store.projectMembers.get(memberKey(session.project_id, userId));
+    if (member && member.status === 'active') {
+      // Edge loads capabilities as null and treats them as []. Never from client /
+      // session_players.
+      void store.sessionPlayers;
+      return { role: member.role, capabilities: [] };
+    }
+  }
+  return null;
 }
 
 /**
@@ -437,7 +448,11 @@ export async function issueSessionMediaToken(
     );
   }
 
-  const membership = loadMembership(store, sessionId, input.userId);
+  const membershipUserIds =
+    input.membershipUserIds && input.membershipUserIds.length > 0
+      ? input.membershipUserIds
+      : [input.userId];
+  const membership = loadMembership(store, sessionId, membershipUserIds);
   if (!membership) {
     return degraded(
       403,

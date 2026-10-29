@@ -359,4 +359,43 @@ function configuredStore() {
   );
 }
 
+// --- Linked solo: membership via linkedSoloActorIds; JWT identity stays remote ---
+{
+  const SOLO = 'solo-owner-1';
+  const REMOTE = 'remote-account-1';
+  const store = createSessionMediaTokenStore({
+    livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
+    supabaseConfigured: true,
+    membershipLookupConfigured: true,
+  });
+  seedSessionMediaTokenSession(store, { id: SESSION_ID, project_id: PROJECT_ID });
+  seedSessionMediaTokenMember(store, PROJECT_ID, {
+    user_id: SOLO,
+    role: 'player',
+    status: 'active',
+    character_id: null,
+  });
+  const uc = createSessionMediaTokenUseCases({ store });
+  const remoteActor = {
+    kind: 'remote-account',
+    actorId: REMOTE,
+    sessionId: 'sess-cookie',
+    email: null,
+    linkedSoloActorIds: [SOLO],
+  };
+  const linked = await uc.issue(remoteActor, { body: { sessionId: SESSION_ID } });
+  assert(linked.status === 'ok', 'linked solo membership grants token');
+  const claims = await verifyLiveKitAccessToken(linked.token, API_SECRET);
+  assert(claims?.sub === `user:${REMOTE}`, 'JWT identity is remote account');
+  const remoteOnly = {
+    kind: 'remote-account',
+    actorId: REMOTE,
+    sessionId: 'sess-cookie',
+    email: null,
+    linkedSoloActorIds: [],
+  };
+  const denied = await uc.issue(remoteOnly, { body: { sessionId: SESSION_ID } });
+  assert(denied.httpStatus === 403, 'remote without linked solo still 403');
+}
+
 console.log('PASS: mig-420-session-media-token.self-test');
