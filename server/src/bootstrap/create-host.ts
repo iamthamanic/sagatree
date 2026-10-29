@@ -39,6 +39,11 @@ import {
   type RulesetPorts,
 } from '../modules/rulesets/index.ts';
 import {
+  createLookPorts,
+  createLookPortsStub,
+  type LookProfilePorts,
+} from '../modules/look/index.ts';
+import {
   createSagaPorts,
   createSagaPortsStub,
   type SagaPorts,
@@ -78,6 +83,8 @@ export type HostInstance = {
   readonly ai: AiPorts;
   /** MIG-309 ruleset catalog ports. */
   readonly rulesets: RulesetPorts;
+  /** MIG-304 LookProfile repository ports (HTTP cutover → MIG-600). */
+  readonly look: LookProfilePorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
   readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
@@ -180,6 +187,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     const rulesets: RulesetPorts = db
       ? createRulesetPorts({ db, authorize: permissions.authorize })
       : createRulesetPortsStub();
+    const look: LookProfilePorts = db ? createLookPorts({ db }) : createLookPortsStub();
     const character = db ? createCharacterPorts(db) : createCharacterPorts();
     const saga: SagaPorts = db
       ? createSagaPorts({
@@ -310,6 +318,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       media,
       ai,
       rulesets,
+      look,
       saga,
       getAuth: () => betterAuth,
       isReady: () => ready,

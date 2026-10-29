@@ -2,6 +2,10 @@
  * look-service — app-facing facade for LookProfile persistence (#340).
  * App slices must not query look_* tables directly.
  * Location: src/infrastructure/look/look-service.ts
+ *
+ * Dual-path (MIG-304): production remains Supabase repository. Host ports are
+ * bound via `createHostLookAdapter` for tests / future cutover (no accidental
+ * cutover — VITE host flags alone do not redirect this facade).
  */
 
 import type {

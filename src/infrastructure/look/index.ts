@@ -32,6 +32,19 @@ export {
 
 export { supabaseLookProfileRepository } from './supabase-look.repository';
 
+export {
+  createHostLookAdapter,
+  type HostLookAdapter,
+} from './host-look-adapter';
+export {
+  HOST_LOOK_PROFILE_OPS,
+  type HostLookProfileOp,
+  type HostLookProfilePorts,
+  type HostLookProfileRecord,
+  type HostLookProfileResult,
+  type HostLookProfileVersion,
+} from './host-look-ports.contract';
+
 export { createLookRuntime, LookRuntime, type LookRuntimeOptions } from './look-runtime';
 export { classifyLookMaterialRole, isTintableLookMaterialRole } from './look-material-roles';
 export type {
