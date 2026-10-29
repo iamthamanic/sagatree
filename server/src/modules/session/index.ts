@@ -345,3 +345,12 @@ export {
   type SessionMediaTokenResult,
   type SessionMediaTokenStore,
 } from './session-media-token.ts';
+
+/** MIG-421 session-recap generate isolated-contract surface — Edge remains live mount. */
+export {
+  SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED,
+  createSessionRecapGenerateStore,
+  generateSessionRecap,
+  type SessionRecapGenerateResult,
+  type SessionRecapGenerateStore,
+} from './session-recap-generate.ts';

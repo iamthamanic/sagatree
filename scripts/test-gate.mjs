@@ -936,6 +936,18 @@ function checkMig420SessionMediaToken() {
   );
 }
 
+function checkMig421SessionRecap() {
+  console.log('MIG-421 (#837): session-recap host isolated-contract fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-421-session-recap.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3215,6 +3227,7 @@ checkMig417NpcsQuarantine();
 checkMig418QuestsQuarantine();
 checkMig419RulesetsQuarantine();
 checkMig420SessionMediaToken();
+checkMig421SessionRecap();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
