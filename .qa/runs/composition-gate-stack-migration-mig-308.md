@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-308 (#807)
 
-- HEAD_SHA: 65d212cd82cb2166cb2404216ba1e0761d42ada7
+- HEAD_SHA: db3a2b8fb52953841241e0d6ac38b0ea7ff99bf0
 - BASE_SHA: 9b5c04fe9f298ebd70c90c381932bfdb207f4d52
 - Date: 2026-10-29
 - Verdict: CLEAR
