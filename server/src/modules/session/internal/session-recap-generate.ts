@@ -81,6 +81,11 @@ export type SessionRecapGenerateStore = {
   draftPersistCount: number;
   /** Counts any publish/approve transition — must stay 0 for Edge parity. */
   publishCount: number;
+  /**
+   * When true, the draft PATCH stand-in fails (Edge PATCH non-OK → generic 500).
+   * Isolated-contract fixture for persistence-failure acceptance.
+   */
+  draftPersistFails: boolean;
   /** Captures last prompt lines that reached the provider (for sentinel checks). */
   lastPromptLines: SessionRecapPromptLine[] | null;
   lastProviderPrompt: SessionRecapPrompt | null;
@@ -100,6 +105,7 @@ export function createSessionRecapGenerateStore(
     upsertCount: 0,
     draftPersistCount: 0,
     publishCount: 0,
+    draftPersistFails: false,
     lastPromptLines: null,
     lastProviderPrompt: null,
   };
@@ -266,8 +272,11 @@ export function resolveSessionRecapProviderConfig(
     envGet('SESSION_RECAP_AI_BASE_URL') ||
     envGet('CHARACTER_AI_BASE_URL') ||
     envGet('OLLAMA_HOST') ||
-    'http://ollama:11434'
+    ''
   ).trim();
+  // Host fail-closed: no Docker-literal hostname. Edge may still default
+  // `http://ollama:11434`; missing env here → not-configured / null.
+  if (!baseUrl) return null;
 
   return {
     provider: providerValue,
@@ -477,7 +486,17 @@ export async function generateSessionRecap(
     return { status: 'error', message: rate.message, httpStatus: rate.status };
   }
 
-  const decodedSize = checkSessionRecapBodySize(null, input.rawBodyUtf8Bytes);
+  // After quota: enforce decoded UTF-8 size. Prefer explicit adapter bytes;
+  // otherwise measure the JSON body (covers chunked requests without Content-Length).
+  let measuredBytes = input.rawBodyUtf8Bytes;
+  if (typeof measuredBytes !== 'number' || !Number.isFinite(measuredBytes)) {
+    try {
+      measuredBytes = new TextEncoder().encode(JSON.stringify(input.body ?? null)).byteLength;
+    } catch {
+      measuredBytes = SESSION_RECAP_MAX_REQUEST_BYTES + 1;
+    }
+  }
+  const decodedSize = checkSessionRecapBodySize(null, measuredBytes);
   if (!decodedSize.ok) {
     return {
       status: 'error',
@@ -575,16 +594,19 @@ export async function generateSessionRecap(
       };
     }
 
+    // Mirror sagatree_upsert_session_recap: refresh skeleton from current session state.
     deps.store.upsertCount += 1;
-    if (!deps.store.recaps.has(sessionId)) {
-      deps.store.recaps.set(sessionId, {
-        session_id: sessionId,
-        snapshot: {},
-        highlight_lines: [],
-        summary_text: null,
-        summary_status: 'none',
-      });
-    }
+    const derivedSnapshot = isRecord(session.world_state)
+      ? { ...session.world_state }
+      : {};
+    const existingBefore = deps.store.recaps.get(sessionId);
+    deps.store.recaps.set(sessionId, {
+      session_id: sessionId,
+      snapshot: derivedSnapshot,
+      highlight_lines: existingBefore?.highlight_lines ?? [],
+      summary_text: existingBefore?.summary_text ?? null,
+      summary_status: existingBefore?.summary_status ?? 'none',
+    });
 
     const recap = deps.store.recaps.get(sessionId) ?? null;
     const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};
@@ -613,6 +635,9 @@ export async function generateSessionRecap(
     const existing = deps.store.recaps.get(sessionId);
     if (!existing) {
       throw new Error('recap missing after upsert');
+    }
+    if (deps.store.draftPersistFails) {
+      throw new Error('draft persist failed');
     }
     deps.store.recaps.set(sessionId, {
       ...existing,

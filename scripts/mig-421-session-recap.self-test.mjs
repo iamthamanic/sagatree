@@ -95,11 +95,26 @@ function seedBase(store) {
   seedSessionRecapMember(store, PROJECT_ID, GM);
   seedSessionRecapMember(store, PROJECT_ID, MEMBER);
   seedSessionRecapMember(store, PROJECT_ID, PLAYER);
+  const consequences = [
+    {
+      id: 'c1',
+      kind: 'travel',
+      summary: SHARED_LINE,
+      visibility: 'shared',
+    },
+    {
+      id: 'c2',
+      kind: 'secret',
+      summary: GM_ONLY_SENTINEL,
+      visibility: 'gm_only',
+    },
+  ];
   seedSessionRecapSession(store, {
     id: SESSION_ENDED,
     name: 'Episode 3',
     status: 'completed',
     project_id: PROJECT_ID,
+    world_state: { consequences },
   });
   seedSessionRecapSession(store, {
     id: SESSION_ACTIVE,
@@ -109,22 +124,7 @@ function seedBase(store) {
   });
   seedSessionRecapRow(store, {
     session_id: SESSION_ENDED,
-    snapshot: {
-      consequences: [
-        {
-          id: 'c1',
-          kind: 'travel',
-          summary: SHARED_LINE,
-          visibility: 'shared',
-        },
-        {
-          id: 'c2',
-          kind: 'secret',
-          summary: GM_ONLY_SENTINEL,
-          visibility: 'gm_only',
-        },
-      ],
-    },
+    snapshot: { consequences },
     highlight_lines: [
       {
         id: 'h1',
@@ -331,6 +331,35 @@ function makeUc(storeOpts = {}) {
   assert(overUc.store.publishCount === 0, 'no publish on overlong');
   assert(overUc.store.draftPersistCount === 0, 'no draft on overlong');
 
+  const persistFailUc = makeUc();
+  persistFailUc.store.draftPersistFails = true;
+  const persistFail = await persistFailUc.generate(actor(GM), {
+    contentLengthHeader: '50',
+    body: { sessionId: SESSION_ENDED },
+  });
+  assert(persistFail.httpStatus === 500, 'draft persist fail → 500');
+  assert(persistFailUc.store.draftPersistCount === 0, 'no draft count on persist fail');
+  assert(persistFailUc.store.publishCount === 0, 'no publish on persist fail');
+  assert(
+    persistFailUc.store.recaps.get(SESSION_ENDED)?.summary_status === 'none',
+    'persist fail leaves summary_status none',
+  );
+
+  // Upsert refresh from world_state when no prior recap row
+  const freshUc = makeUc();
+  freshUc.store.recaps.delete(SESSION_ENDED);
+  const fromWorld = await freshUc.generate(actor(GM), {
+    contentLengthHeader: '50',
+    body: { sessionId: SESSION_ENDED },
+  });
+  assert(fromWorld.status === 'ok', 'generate from world_state skeleton');
+  assert(
+    freshUc.store.lastProviderPrompt &&
+      !freshUc.store.lastProviderPrompt.user.includes(GM_ONLY_SENTINEL) &&
+      freshUc.store.lastProviderPrompt.user.includes(SHARED_LINE),
+    'world_state consequences filtered into prompt',
+  );
+
   const down = makeUc({ persistent: false });
   const unavailable = await down.generate(actor(GM), {
     contentLengthHeader: '50',
@@ -366,6 +395,14 @@ function makeUc(storeOpts = {}) {
   assert(
     resolveSessionRecapProviderConfig(() => undefined) === null,
     'missing model → null',
+  );
+  assert(
+    resolveSessionRecapProviderConfig((k) => {
+      if (k === 'SESSION_RECAP_AI_PROVIDER') return 'ollama';
+      if (k === 'SESSION_RECAP_AI_MODEL') return 'llama';
+      return undefined;
+    }) === null,
+    'model without base URL → null (no docker literal)',
   );
 
   const stripped = stripSessionRecapSecrets({
