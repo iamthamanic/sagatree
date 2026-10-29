@@ -83,6 +83,36 @@ export {
   type WorldNode,
 } from './internal/lorekeeper-quarantine.ts';
 
+/** Edge `world` Map quarantine — MIG-424 fixtures only; not a public HTTP surface. */
+export {
+  WORLD_EDGE_MAP_IS_DURABLE,
+  WORLD_EDGE_PUBLIC_ACTIVATION_AUTHORIZED,
+  addQuarantineEvent,
+  addQuarantineFaction,
+  addQuarantineLocation,
+  advanceQuarantineTime,
+  bodyFieldsAreNotAuthority,
+  createQuarantineWorld,
+  createWorldEdgeQuarantineStore,
+  describeWorldEdgeLegacyDefects,
+  discoverQuarantineLocation,
+  getQuarantineEvents,
+  getQuarantineWorld,
+  getQuarantineWorldByProject,
+  randomQuarantineWeather,
+  setQuarantineWeather,
+  updateQuarantineFactionRelationship,
+  updateQuarantineLocation,
+  updateQuarantineWorld,
+  type QuarantineFaction,
+  type QuarantineLocation,
+  type QuarantineWeather,
+  type QuarantineWorld,
+  type QuarantineWorldEvent,
+  type QuarantineWorldTime,
+  type WorldEdgeQuarantineStore,
+} from './internal/world-edge-quarantine.ts';
+
 function actorIdentityIds(actor: Actor): readonly string[] {
   const ids = [actor.actorId];
   if (
