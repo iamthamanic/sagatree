@@ -429,6 +429,20 @@ function rejectClientPromptPayload(body: JsonRecord): boolean {
 }
 
 /**
+ * Mirror `sagadrive_upsert_session_recap`: snapshot = world_state.shared.adventure.
+ * Returns `null` when world_state is absent so callers keep any existing snapshot.
+ */
+export function deriveAdventureSnapshotFromWorldState(
+  worldState: unknown,
+): Record<string, unknown> | null {
+  if (!isRecord(worldState)) return null;
+  const shared = isRecord(worldState.shared) ? worldState.shared : {};
+  const adventure = shared.adventure;
+  if (!isRecord(adventure)) return {};
+  return { ...adventure };
+}
+
+/**
  * Isolated generate-recap use-case body.
  * Ordering matches Edge: method → Content-Length → auth → quota → decoded-body →
  * parse → client-payload reject → provider-absent → session/GM → upsert → generate → draft PATCH.
@@ -594,22 +608,35 @@ export async function generateSessionRecap(
       };
     }
 
-    // Mirror sagatree_upsert_session_recap: refresh skeleton from current session state.
+    // Mirror sagadrive_upsert_session_recap: snapshot = world_state.shared.adventure.
+    // Missing world_state keeps any prior snapshot (do not wipe on provider failure path).
     deps.store.upsertCount += 1;
-    const derivedSnapshot = isRecord(session.world_state)
-      ? { ...session.world_state }
-      : {};
+    const derivedSnapshot = deriveAdventureSnapshotFromWorldState(session.world_state);
     const existingBefore = deps.store.recaps.get(sessionId);
+    const snapshot =
+      derivedSnapshot !== null
+        ? derivedSnapshot
+        : existingBefore?.snapshot
+          ? { ...existingBefore.snapshot }
+          : {};
+    const highlightLinesFromAdventure =
+      derivedSnapshot !== null
+        ? parseHighlightLines(
+            Array.isArray(derivedSnapshot.consequences)
+              ? derivedSnapshot.consequences
+              : [],
+          )
+        : null;
     deps.store.recaps.set(sessionId, {
       session_id: sessionId,
-      snapshot: derivedSnapshot,
-      highlight_lines: existingBefore?.highlight_lines ?? [],
+      snapshot,
+      highlight_lines:
+        highlightLinesFromAdventure ?? existingBefore?.highlight_lines ?? [],
       summary_text: existingBefore?.summary_text ?? null,
       summary_status: existingBefore?.summary_status ?? 'none',
     });
 
     const recap = deps.store.recaps.get(sessionId) ?? null;
-    const snapshot = recap && isRecord(recap.snapshot) ? recap.snapshot : {};
     const linesFromDb = parseHighlightLines(recap?.highlight_lines);
     const highlightLines = linesFromDb.length
       ? linesFromDb

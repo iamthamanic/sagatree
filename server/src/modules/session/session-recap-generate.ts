@@ -17,6 +17,7 @@ export {
   checkSessionRecapBodySize,
   consumeSessionRecapRateLimit,
   createSessionRecapGenerateStore,
+  deriveAdventureSnapshotFromWorldState,
   describeSessionRecapLegacyDefects,
   filterSpoilerSafeHighlightLines,
   generateSessionRecap,

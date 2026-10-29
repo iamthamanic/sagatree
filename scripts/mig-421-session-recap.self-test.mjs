@@ -114,7 +114,7 @@ function seedBase(store) {
     name: 'Episode 3',
     status: 'completed',
     project_id: PROJECT_ID,
-    world_state: { consequences },
+    world_state: { shared: { adventure: { consequences } } },
   });
   seedSessionRecapSession(store, {
     id: SESSION_ACTIVE,
@@ -345,19 +345,40 @@ function makeUc(storeOpts = {}) {
     'persist fail leaves summary_status none',
   );
 
-  // Upsert refresh from world_state when no prior recap row
+  // Upsert refresh from world_state.shared.adventure when no prior recap row
   const freshUc = makeUc();
   freshUc.store.recaps.delete(SESSION_ENDED);
   const fromWorld = await freshUc.generate(actor(GM), {
     contentLengthHeader: '50',
     body: { sessionId: SESSION_ENDED },
   });
-  assert(fromWorld.status === 'ok', 'generate from world_state skeleton');
+  assert(fromWorld.status === 'ok', 'generate from adventure skeleton');
   assert(
     freshUc.store.lastProviderPrompt &&
       !freshUc.store.lastProviderPrompt.user.includes(GM_ONLY_SENTINEL) &&
       freshUc.store.lastProviderPrompt.user.includes(SHARED_LINE),
-    'world_state consequences filtered into prompt',
+    'adventure consequences filtered into prompt',
+  );
+
+  // Missing world_state must not wipe an existing snapshot
+  const keepUc = makeUc();
+  const priorSnap = keepUc.store.recaps.get(SESSION_ENDED)?.snapshot;
+  assert(priorSnap && Array.isArray(priorSnap.consequences), 'prior snapshot seeded');
+  const sess = keepUc.store.sessions.get(SESSION_ENDED);
+  assert(sess, 'session row present');
+  keepUc.store.sessions.set(SESSION_ENDED, {
+    ...sess,
+    world_state: undefined,
+  });
+  keepUc.store.draftPersistFails = true;
+  const wiped = await keepUc.generate(actor(GM), {
+    contentLengthHeader: '50',
+    body: { sessionId: SESSION_ENDED },
+  });
+  assert(wiped.httpStatus === 500, 'provider/persist path still 500');
+  assert(
+    Array.isArray(keepUc.store.recaps.get(SESSION_ENDED)?.snapshot?.consequences),
+    'missing world_state keeps prior snapshot',
   );
 
   const down = makeUc({ persistent: false });
