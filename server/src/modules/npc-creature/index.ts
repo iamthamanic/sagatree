@@ -1,5 +1,5 @@
 /**
- * npc-creature module public API — quarantine + NPC instances (#819/#877).
+ * npc-creature module public API — quarantine + NPC instances (#819/#833/#877).
  * Location: server/src/modules/npc-creature/index.ts
  */
 import type { Actor } from '../identity/index.ts';
@@ -25,6 +25,29 @@ export {
   searchMonsters,
   type QuarantineMonster,
 } from './internal/bestiary-quarantine.ts';
+
+export {
+  NPCS_MAP_IS_NPC_CREATURE_POLICY,
+  NPCS_PUBLIC_ACTIVATION_AUTHORIZED,
+  NPC_CLASSES,
+  NPC_DISPOSITIONS,
+  NPC_LOCATIONS,
+  NPC_RACE_NAMES,
+  applyNpcCreateDefaults,
+  applyNpcImportDefaults,
+  buildDialogueLine,
+  createSeededRng,
+  describeNpcsLegacyDefects,
+  generateDescription,
+  generateNpc,
+  generateStats,
+  parseNpcStats,
+  setRelationship,
+  sliceMemories,
+  type QuarantineDialogueLine,
+  type QuarantineNpc,
+  type QuarantineNpcStats,
+} from './internal/npcs-quarantine.ts';
 
 export type { ControllerAssignmentRow, NpcInstanceRow };
 

@@ -888,6 +888,18 @@ function checkMig416MediaQuarantine() {
   );
 }
 
+function checkMig417NpcsQuarantine() {
+  console.log('MIG-417 (#833): npcs edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-417-npcs-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3163,6 +3175,7 @@ checkMig412LookReferenceAnalysis();
 checkMig413LorekeeperQuarantine();
 checkMig415MarketplaceQuarantine();
 checkMig416MediaQuarantine();
+checkMig417NpcsQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
