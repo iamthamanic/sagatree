@@ -86,6 +86,10 @@ export type ItemThumbnailStore = {
 
 const DEFAULT_PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
+/** Isolated-contract fixture URL — must stay on MESHY_HOST_ALLOWLIST (not assetBaseUrl). */
+export const ITEM_THUMBNAIL_FIXTURE_PROVIDER_IMAGE_URL =
+  'https://cdn.meshy.ai/images/ok.png' as const;
+
 const ITEM_THUMBNAIL_ART_DIRECTION =
   'single centered inventory item illustration, isolated object, clean quiet neutral background, no text, no logos, no watermarks, no brand or artist style names';
 
@@ -490,7 +494,7 @@ export function itemThumbnailGenerate(
       paidCreateDone: true,
       providerTaskId: `meshy-${jobId}`,
       providerPollStatus: 'succeeded',
-      providerImageUrl: `${store.assetBaseUrl.replace(/\/$/, '')}/images/ok.png`,
+      providerImageUrl: ITEM_THUMBNAIL_FIXTURE_PROVIDER_IMAGE_URL,
       providerImageBytes: DEFAULT_PNG,
       userExtra: normalizedUserExtra,
       prompt,

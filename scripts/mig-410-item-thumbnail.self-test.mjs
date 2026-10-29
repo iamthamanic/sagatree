@@ -64,9 +64,12 @@ const pngB64 = Buffer.from(pngBytes).toString('base64');
 assert(sniffItemThumbnailMime(pngBytes) === 'image/png', 'png sniff');
 assert(validateItemThumbnailBytes(pngBytes, 'image/png').mime === 'image/png', 'png validate');
 
+process.env.MESHY_ASSET_BASE_URL =
+  process.env.MESHY_ASSET_BASE_URL?.trim() || 'https://cdn.meshy.ai';
+
 function createStore(meshyConfigured = true) {
   return createItemThumbnailStore(meshyConfigured, {
-    assetBaseUrl: 'https://cdn.meshy.ai',
+    assetBaseUrl: process.env.MESHY_ASSET_BASE_URL,
   });
 }
 
