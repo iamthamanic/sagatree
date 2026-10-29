@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-424 (#840)
 
-- HEAD_SHA: 037f9491ecf6cc71cc97d3cc004119de00b526a2
+- HEAD_SHA: 85f3b2f9dd58d28c98d8bfbf6b5d970807cc0ee9
 - BASE_SHA: 15f0348e6c114188c4d577fec91e2e7a303a0886
 - HOP_DIGEST: world-edge-quarantine-v1
 - Date: 2026-10-29
