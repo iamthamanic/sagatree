@@ -1,29 +1,37 @@
 # Composition Gate — sec-client-trust-marketplace-edge-whitelist (#675)
 
-## Verdict
-CLEAR
+- HEAD_SHA: d4386763112c0c3f455725cf1fdf5b6f9b169817
+- BASE_SHA: 383f355620053904379d8a666ff527c79b06b862
+- Date: 2026-10-29
+- Verdict: CLEAR
+- Scope: committed HEAD (marketplace client-trust + Edge body whitelist + DB guard)
 
-## Scope
-Marketplace adapter mutations + allowlisted Edge POST body privilege rejection.
+## Event
+
+Authenticated marketplace author creates/updates/deletes own listings via infrastructure adapter; privileged counters/ownership never accepted from client bodies. Allowlisted Edge POSTs reject privileged keys. Optional marketplace SQL deploy/schema installs DB guard so PostgREST cannot rewrite author_id/rating/downloads/is_featured/created_at.
+
+## Hop chain
+
+1. Producer: Marketplace UI / adapter caller supplies create/update DTO
+2. Authorize: getAuthenticatedUserId + author_id scope on update/delete; domain whitelist rejects privileged keys
+3. Persist: Supabase marketplace_items (RLS + privileged-column trigger/grants when table deployed)
+4. Project: MarketplaceItem row without client-set counters
+5. Consumer: browse/list UI; Edge allowlisted workers reject privileged POST keys independently
 
 ## Simulations
 
-### N-actors (foreign author DENY)
-- Actor A owns marketplace row (`author_id = A`).
-- Actor B authenticates and calls `updateMarketplaceItem` / `deleteMarketplaceItem` for A's id.
-- Adapter always `.eq('author_id', userId)` with B's JWT id → `maybeSingle`/empty select → throw / false (never success on foreign rows).
+### N-actors
+Owner update/delete succeeds under author_id=JWT. Foreign author → empty maybeSingle / delete false. Edge privileged keys → 400 for any actor.
 
-### Invalid privileged keys rejected
-- Client POST to allowlisted Edge with `{ author_id, rating, downloads, roles, … }` → `privilegedClientBodyRejectionMessage` → HTTP 400 before action handlers.
-- Client update DTO with privileged keys → `whitelistMarketplaceUpdatePatch` throws (no DB write).
+### Invalid/missing
+Missing auth → adapter throws. Privileged DTO keys / unknown fields → throw. Edge body with author_id/rating/downloads/roles → 400. DB insert without JWT → 42501 from guard.
 
-### Concurrent consumer
-- Single-hop adapter/Edge parsers; no multi-hop invalid fallback. Download counter: RPC only; client write fallback removed.
+### Two consumers / crash
+Download RPC (DEFINER, authenticated-only) increments downloads despite column grants. Client counter fallback removed. Adapter and Edge parsers are single-hop; no invalid multi-consumer fallback path.
 
-## HEAD
-fe2410f360d4132f69697469e558df19781251a6
+## Flags
 
-
-## Evidence
-- `node scripts/sec-client-trust-marketplace-check.mjs` PASS
-- `deno test supabase/functions/_shared/client-trust-body_test.ts` PASS
+- Acceptance tier: product-security
+- Deferred integration: marketplace_items optional outside full migration chain; host cutover unchanged
+- Browser E2E: SKIPPED (adapter/Edge/SQL security; no UI surface change)
+- Skip MIG-305/#804 waiting-dependency; Dependabot #982–#984 deferred
