@@ -156,6 +156,8 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   s = endQuarantineSession(store, a.id, '2026-01-01T03:00:00.000Z');
   assert(s.status === 'completed' && s.endedAt, 'end → completed');
   assert(getQuarantineSessionLogs(store, a.id).length === 2, 'end appends log');
+  assert(getQuarantineSessionLogs(store, a.id, 0).length === 0, 'logs limit 0 → empty');
+  assert(getQuarantineSessionLogs(store, a.id, -1).length === 0, 'logs limit <0 → empty');
 
   let threw = false;
   try {
@@ -203,6 +205,7 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   const hist = getQuarantineChatHistory(store, a.id, 100);
   assert(hist.length === 100, 'chat history default limit 100');
   assert(hist[0].message === 'm5' && hist[99].message === 'm104', 'slice last 100');
+  assert(getQuarantineChatHistory(store, a.id, 0).length === 0, 'chat limit 0 → empty');
 
   // restore world for save fixture
   store.sessions.set(a.id, {

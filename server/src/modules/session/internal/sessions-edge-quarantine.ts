@@ -310,6 +310,8 @@ export function getQuarantineChatHistory(
   sessionId: string,
   limit = 100,
 ): QuarantineChatMessage[] {
+  // slice(-0) === slice(0); treat non-positive limits as empty.
+  if (limit <= 0) return [];
   const messages = store.chatMessages.get(sessionId) || [];
   return messages.slice(-limit);
 }
@@ -319,6 +321,8 @@ export function getQuarantineSessionLogs(
   sessionId: string,
   limit = 100,
 ): QuarantineSessionLog[] {
+  // slice(-0) === slice(0); treat non-positive limits as empty.
+  if (limit <= 0) return [];
   const logs = store.sessionLogs.get(sessionId) || [];
   return logs.slice(-limit);
 }
