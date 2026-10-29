@@ -358,9 +358,10 @@ export function updateQuarantineFactionRelationship(
 
 /**
  * Edge calendar roll (30-day months). Falsy `hours` → 1 (`hours || 1`).
- * Non-finite hours also fall back to 1 so the host event loop cannot hang
- * (Edge while-loop would not terminate on Infinity — quarantine hardens this).
- * Day/month/year advance is arithmetic (same final calendar as the Edge loop).
+ * Non-finite and negative hours fall back to 1 so the host cannot hang on
+ * Infinity (Edge while never exits) and cannot write year ≤ 0 via arithmetic
+ * reverse-roll (Edge while only advances when hour ≥ 24, leaving negative hour).
+ * Day/month/year advance is arithmetic (same final calendar as Edge for ≥0).
  */
 export function advanceQuarantineTime(
   store: WorldEdgeQuarantineStore,
@@ -371,7 +372,7 @@ export function advanceQuarantineTime(
   const world = store.worlds.get(worldId);
   if (!world) throw new Error('World not found');
   const raw = hours || 1;
-  const delta = Number.isFinite(raw) ? raw : 1;
+  const delta = Number.isFinite(raw) && raw > 0 ? raw : 1;
   const time: QuarantineWorldTime = { ...world.time };
   time.current += delta;
   const totalHours = time.hour + delta;

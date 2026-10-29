@@ -255,6 +255,11 @@ const now = '2026-01-01T00:00:00.000Z';
   // Nonfinite must not hang the host event loop (Edge while never exits on Infinity).
   const inf = advanceQuarantineTime(store, 'w-bound', Number.POSITIVE_INFINITY, now);
   assert(Number.isFinite(inf.current) && inf.current === 1e6 + 1, 'Infinity hours → 1');
+  // Negative hours must not reverse-roll into year ≤ 0 (Edge leaves calendar fields).
+  const beforeNeg = getQuarantineWorld(store, 'w-bound');
+  const neg = advanceQuarantineTime(store, 'w-bound', -9, now);
+  assert(neg.year === beforeNeg.time.year && neg.year >= 1, 'negative hours do not drop year');
+  assert(neg.current === beforeNeg.time.current + 1, 'negative hours → 1');
 
   const authority = bodyFieldsAreNotAuthority();
   assert(authority.some((d) => /ownership|authority/i.test(d)), 'body not authority');
