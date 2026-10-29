@@ -169,21 +169,23 @@ function normalizeReward(raw: unknown): QuarantineReward {
 }
 
 /**
- * Legacy completeObjective — missing objective is a no-op; when all completed,
- * status becomes completed. Does not grant rewards (QUESTS_MAP_GRANTS_REWARDS=false).
+ * Legacy completeObjective — `find` marks only the first matching id; missing
+ * objective is a no-op. When the id is found (even if already completed), legacy
+ * always bumps updatedAt and re-evaluates status. Does not grant rewards
+ * (QUESTS_MAP_GRANTS_REWARDS=false).
  */
 export function completeObjective(
   quest: QuarantineQuest,
   objectiveId: string,
   nowIso: string,
 ): QuarantineQuest {
-  const objectives = quest.objectives.map((o) =>
-    o.id === objectiveId ? { ...o, completed: true } : o,
-  );
-  const touched = objectives.some((o, i) => o.completed !== quest.objectives[i]!.completed);
-  if (!touched) {
+  const matchIndex = quest.objectives.findIndex((o) => o.id === objectiveId);
+  if (matchIndex === -1) {
     return quest;
   }
+  const objectives = quest.objectives.map((o, i) =>
+    i === matchIndex ? { ...o, completed: true } : o,
+  );
   const allDone = objectives.length > 0 && objectives.every((o) => o.completed);
   return {
     ...quest,

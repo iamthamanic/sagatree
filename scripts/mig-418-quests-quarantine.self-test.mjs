@@ -138,6 +138,26 @@ assert(all.status === 'completed' && all.objectives.every((o) => o.completed), '
 assert(QUESTS_MAP_GRANTS_REWARDS === false, 'completion does not grant rewards');
 assert(all.rewards[0].amount === 50, 'reward payload unchanged (not granted)');
 
+const dupIds = applyQuestDefaults(
+  {
+    objectives: [
+      { id: 'dup', description: 'A', completed: false },
+      { id: 'dup', description: 'B', completed: false },
+    ],
+  },
+  'q-dup',
+  now,
+);
+const firstOnly = completeObjective(dupIds, 'dup', '2026-01-01T04:00:00.000Z');
+assert(
+  firstOnly.objectives[0].completed === true && firstOnly.objectives[1].completed === false,
+  'completeObjective marks first matching id only (legacy find)',
+);
+assert(firstOnly.status === 'available', 'duplicate ids do not complete whole quest');
+const already = completeObjective(firstOnly, 'dup', '2026-01-01T05:00:00.000Z');
+assert(already.updatedAt === '2026-01-01T05:00:00.000Z', 'found id always bumps updatedAt');
+assert(already.objectives[1].completed === false, 're-complete still first-match only');
+
 const listed = filterQuests([defaults, withObjs], { projectId: 'p1' });
 assert(listed.length === 1 && listed[0].id === 'q2', 'projectId filter');
 
