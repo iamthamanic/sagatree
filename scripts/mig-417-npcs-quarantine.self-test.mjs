@@ -31,6 +31,7 @@ const {
   describeNpcsLegacyDefects,
   generateNpc,
   generateStats,
+  parseNpcStats,
   setRelationship,
   sliceMemories,
 } = await import(modUrl);
@@ -223,5 +224,18 @@ const statsSample = generateStats(createSeededRng(1));
 for (const v of Object.values(statsSample)) {
   assert(v >= 3 && v <= 17, `stat ${v} in 3..17`);
 }
+
+const badStats = parseNpcStats({ strength: 'hoch' }, createSeededRng(2));
+assert(typeof badStats.strength === 'number' && Number.isFinite(badStats.strength), 'bad stats regenerate');
+const goodStats = parseNpcStats(
+  { strength: 10, dexterity: 11, constitution: 12, intelligence: 13, wisdom: 14, charisma: 15 },
+  createSeededRng(3),
+);
+assert(goodStats.charisma === 15, 'valid stats accepted');
+
+const protoRace = generateNpc({ race: 'constructor' }, 'proto', now, createSeededRng(5));
+assert(typeof protoRace.name === 'string' && protoRace.name.length > 0, 'constructor race falls back');
+const protoRace2 = generateNpc({ race: '__proto__' }, 'proto2', now, createSeededRng(6));
+assert(typeof protoRace2.name === 'string' && protoRace2.name.length > 0, '__proto__ race falls back');
 
 console.log('PASS mig-417-npcs-quarantine.self-test');

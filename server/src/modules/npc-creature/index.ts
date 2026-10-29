@@ -41,6 +41,7 @@ export {
   generateDescription,
   generateNpc,
   generateStats,
+  parseNpcStats,
   setRelationship,
   sliceMemories,
   type QuarantineDialogueLine,

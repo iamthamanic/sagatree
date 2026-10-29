@@ -314,10 +314,42 @@ export function generateDescription(
 }
 
 function generateName(race: string, gender: 'male' | 'female', rng: () => number): string {
-  const key = race.toLowerCase() as keyof typeof NPC_RACE_NAMES;
-  const raceNames = NPC_RACE_NAMES[key] ?? NPC_RACE_NAMES.human;
-  const pool = raceNames[gender] ?? raceNames.male;
+  const key = race.toLowerCase();
+  const raceNames =
+    Object.hasOwn(NPC_RACE_NAMES, key)
+      ? NPC_RACE_NAMES[key as keyof typeof NPC_RACE_NAMES]
+      : NPC_RACE_NAMES.human;
+  const pool = Object.hasOwn(raceNames, gender) ? raceNames[gender] : raceNames.male;
   return randomFrom(pool, rng);
+}
+
+/** Accept only finite numeric ability bags; otherwise regenerate (no unsafe cast). */
+export function parseNpcStats(raw: unknown, rng: () => number): QuarantineNpcStats {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return generateStats(rng);
+  const rec = raw as Record<string, unknown>;
+  const strength = rec.strength;
+  const dexterity = rec.dexterity;
+  const constitution = rec.constitution;
+  const intelligence = rec.intelligence;
+  const wisdom = rec.wisdom;
+  const charisma = rec.charisma;
+  if (
+    typeof strength !== 'number' ||
+    !Number.isFinite(strength) ||
+    typeof dexterity !== 'number' ||
+    !Number.isFinite(dexterity) ||
+    typeof constitution !== 'number' ||
+    !Number.isFinite(constitution) ||
+    typeof intelligence !== 'number' ||
+    !Number.isFinite(intelligence) ||
+    typeof wisdom !== 'number' ||
+    !Number.isFinite(wisdom) ||
+    typeof charisma !== 'number' ||
+    !Number.isFinite(charisma)
+  ) {
+    return generateStats(rng);
+  }
+  return { strength, dexterity, constitution, intelligence, wisdom, charisma };
 }
 
 function buildNpcRecord(
@@ -355,10 +387,7 @@ function buildNpcRecord(
           Object.entries(data.relationships as Record<string, unknown>).map(([k, v]) => [k, String(v)]),
         )
       : {};
-  const stats =
-    data.stats && typeof data.stats === 'object'
-      ? (data.stats as QuarantineNpcStats)
-      : generateStats(rng);
+  const stats = parseNpcStats(data.stats, rng);
   const abilities = Array.isArray(data.abilities) ? data.abilities.map(String) : [];
   const actions = Array.isArray(data.actions) ? data.actions.map(String) : [];
   const inventory = Array.isArray(data.inventory) ? data.inventory.map(String) : [];

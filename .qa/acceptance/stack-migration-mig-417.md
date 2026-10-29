@@ -1,4 +1,4 @@
-# Acceptance — MIG-417 npcs quarantine (#833)
+# Acceptance — MIG-417 Npcs Quarantine (#833)
 
 ## Intent
 Capture the legacy-unmounted Edge `npcs` worker; keep production host/dispatcher at 404 until a separate human activation. Isolated characterization fixtures only — no public host route or RLS invention for in-memory Maps.
