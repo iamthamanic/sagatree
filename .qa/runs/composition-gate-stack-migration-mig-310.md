@@ -1,10 +1,10 @@
 # Composition Gate — stack-migration-mig-310 (#809)
 
-- HEAD_SHA: PENDING_COMMIT
+- HEAD_SHA: 0275c1f29134d71aefca0189020740a1191cc31c
 - BASE_SHA: a83f47f577c94279798acfb4b7e728203524ac94
 - Date: 2026-10-29
 - Verdict: CLEAR
-- Scope: WORKTREE (will match PR HEAD after commit)
+- Scope: committed HEAD
 
 ## Event
 
