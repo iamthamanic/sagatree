@@ -337,6 +337,15 @@ try {
     });
     assert(!('error' in host), `createHost: ${'error' in host ? host.error : ''}`);
     assert(host.sagaInfra?.moduleId === 'saga-infra', 'create-host exposes sagaInfra');
+    // Distinguish real ports from createSagaInfraPortsStub (same moduleId, all ops store-unavailable).
+    const wiringProbe = host.sagaInfra.getNativeSagaDefinitionBySlug(
+      { kind: 'solo-local', actorId: 'probe-actor' },
+      'nope',
+    );
+    assert(
+      !wiringProbe.ok && wiringProbe.error !== 'store-unavailable',
+      `sagaInfra wired to real ports, got ${wiringProbe.ok ? 'ok' : wiringProbe.error}`,
+    );
   } finally {
     rmSync(hostWork, { recursive: true, force: true });
   }
