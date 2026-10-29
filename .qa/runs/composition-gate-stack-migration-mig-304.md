@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-304 (#803)
 
-- HEAD_SHA: WORKTREE (pre-commit; update after commit)
+- HEAD_SHA: 3c1bc3283e9c46f837f05bd0b9d18019a322bc47
 - Date: 2026-10-29
 - Verdict: CLEAR
 
