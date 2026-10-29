@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `eb05a60867b2db56b7d3784b2692935c4a52fce06843bd0f1d11fe0bd78b48e6`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-user-profile.json](source-contracts/infra-user-profile.json) (SHA-256 `26a60ad6e14bc3e4a447516cd4dd579c240b2e5ed53d4fc7b7dc06f6ca4b7d4e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -325,13 +325,109 @@ export function ensureAccountAvatarLoaded(
 }
 ```
 
+### src/infrastructure/user-profile/host-user-profile-adapter.ts:12
+
+```ts
+export type HostUserProfileAdapter = HostUserProfilePorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_USER_PROFILE_OPS;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-adapter.ts:21
+
+```ts
+export function createHostUserProfileAdapter(
+  ports: HostUserProfilePorts,
+): HostUserProfileAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_USER_PROFILE_OPS,
+    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),
+    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),
+    getProfilesByUserIds: (actorId, userIds) =>
+      ports.getProfilesByUserIds(actorId, userIds),
+    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),
+  };
+}
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:11
+
+```ts
+export type HostUserProfileResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string; readonly code?: string };
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:15
+
+```ts
+export type HostUserProfileVm = {
+  readonly id: string;
+  readonly displayName: string | null;
+  readonly avatarPath: string | null;
+  readonly avatarUrl: string | null;
+  readonly updatedAt: string | null;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:23
+
+```ts
+export type HostUploadUserAvatarInput = {
+  readonly bytes: Uint8Array;
+  readonly contentType?: string;
+  /** Never trusted — foreign claim → DENY on host. */
+  readonly claimedOwnerUserId?: string;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:34
+
+```ts
+export type HostUserProfilePorts = {
+  readonly ensureOwnProfileRow: (
+    actorId: string,
+  ) => Promise<HostUserProfileResult<void>>;
+  readonly getOwnProfile: (
+    actorId: string,
+  ) => Promise<HostUserProfileResult<HostUserProfileVm | null>>;
+  readonly getProfilesByUserIds: (
+    actorId: string,
+    userIds: readonly string[],
+  ) => Promise<HostUserProfileResult<readonly HostUserProfileVm[]>>;
+  readonly uploadAvatar: (
+    actorId: string,
+    input: HostUploadUserAvatarInput,
+  ) => Promise<HostUserProfileResult<HostUserProfileVm>>;
+};
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:52
+
+```ts
+export const HOST_USER_PROFILE_OPS = [
+  'ensureOwnProfileRow',
+  'getOwnProfile',
+  'getProfilesByUserIds',
+  'uploadAvatar',
+] as const;
+```
+
+### src/infrastructure/user-profile/host-user-profile-ports.contract.ts:59
+
+```ts
+export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];
+```
+
 ### src/infrastructure/user-profile/supabase-user-profile.repository.ts:211
 
 ```ts
 export const supabaseUserProfileRepository = new SupabaseUserProfileRepository();
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:8
+### src/infrastructure/user-profile/user-profile-service.ts:12
 
 ```ts
 export type UploadUserAvatarOptions = {
@@ -344,7 +440,7 @@ export type UploadUserAvatarOptions = {
 };
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:21
+### src/infrastructure/user-profile/user-profile-service.ts:25
 
 ```ts
 export async function prepareUserAvatarFile(
@@ -390,7 +486,7 @@ export async function prepareUserAvatarFile(
 }
 ```
 
-### src/infrastructure/user-profile/user-profile-service.ts:63
+### src/infrastructure/user-profile/user-profile-service.ts:67
 
 ```ts
 export const userProfileService = {
@@ -586,8 +682,11 @@ async uploadAvatar(file: File): Promise<UserProfileVm> {
 | `src/infrastructure/media/optimizer/media-optimizer.ts` | `7d58424f12b7855ccb3c0153270628850e03afc15c285b1fc2b47218918255d9` |
 | `src/infrastructure/user-profile/account-avatar-changed.ts` | `79b2b404b93bdf7174d30341c08b23662aaa412686c9b3251106e1d79fc42045` |
 | `src/infrastructure/user-profile/account-avatar-store.ts` | `ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb` |
+| `src/infrastructure/user-profile/host-user-profile-adapter.ts` | `c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604` |
+| `src/infrastructure/user-profile/host-user-profile-ports.contract.ts` | `7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511` |
+| `src/infrastructure/user-profile/index.ts` | `5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a` |
 | `src/infrastructure/user-profile/supabase-user-profile.repository.ts` | `21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076` |
-| `src/infrastructure/user-profile/user-profile-service.ts` | `049906c505155c6b73f71355d44b607d251d556a565a03d44bc7ed86a5a8c981` |
+| `src/infrastructure/user-profile/user-profile-service.ts` | `0363483f748d866d6b361edcd5d94b6963cfb1a4d4e35a218e57801d166713d0` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |

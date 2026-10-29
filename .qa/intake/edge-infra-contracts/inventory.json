@@ -43360,6 +43360,9 @@
       "files": [
         "src/infrastructure/user-profile/account-avatar-changed.ts",
         "src/infrastructure/user-profile/account-avatar-store.ts",
+        "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+        "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+        "src/infrastructure/user-profile/index.ts",
         "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
         "src/infrastructure/user-profile/user-profile-service.ts"
       ],
@@ -43452,12 +43455,24 @@
             "sha256": "ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb"
           },
           {
+            "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+            "sha256": "c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604"
+          },
+          {
+            "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+            "sha256": "7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511"
+          },
+          {
+            "path": "src/infrastructure/user-profile/index.ts",
+            "sha256": "5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a"
+          },
+          {
             "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
             "sha256": "21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076"
           },
           {
             "path": "src/infrastructure/user-profile/user-profile-service.ts",
-            "sha256": "049906c505155c6b73f71355d44b607d251d556a565a03d44bc7ed86a5a8c981"
+            "sha256": "0363483f748d866d6b361edcd5d94b6963cfb1a4d4e35a218e57801d166713d0"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -43481,7 +43496,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-user-profile.json",
-      "sourceContractSha256": "eb05a60867b2db56b7d3784b2692935c4a52fce06843bd0f1d11fe0bd78b48e6",
+      "sourceContractSha256": "26a60ad6e14bc3e4a447516cd4dd579c240b2e5ed53d4fc7b7dc06f6ca4b7d4e",
       "rpcUsed": [],
       "tablesTouched": [
         "user_profiles"
@@ -43871,6 +43886,12 @@
           "name": "ensureAccountAvatarLoaded"
         },
         {
+          "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+          "line": 21,
+          "endLine": 33,
+          "name": "createHostUserProfileAdapter"
+        },
+        {
           "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
           "line": 29,
           "endLine": 57,
@@ -43920,26 +43941,26 @@
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 21,
-          "endLine": 61,
+          "line": 25,
+          "endLine": 65,
           "name": "prepareUserAvatarFile"
-        },
-        {
-          "path": "src/infrastructure/user-profile/user-profile-service.ts",
-          "line": 64,
-          "endLine": 66,
-          "name": "getOwnProfile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
           "line": 68,
           "endLine": 70,
-          "name": "getProfilesByUserIds"
+          "name": "getOwnProfile"
         },
         {
           "path": "src/infrastructure/user-profile/user-profile-service.ts",
           "line": 72,
-          "endLine": 77,
+          "endLine": 74,
+          "name": "getProfilesByUserIds"
+        },
+        {
+          "path": "src/infrastructure/user-profile/user-profile-service.ts",
+          "line": 76,
+          "endLine": 81,
           "name": "uploadAvatar"
         }
       ],
