@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-418 (#834)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: eba9c672d7fc163689aee3474e46c6b016b44313
 - BASE_SHA: 877494e3db0c7add1ab6eae070694d477b207db2
 - Date: 2026-10-29
 - Verdict: CLEAR
@@ -33,3 +33,5 @@ Legacy Edge `quests` Map quarantined under saga module; host/dispatcher keep 404
 ## Non-claims
 
 No cutover, no Supabase shutdown, no desktop release, no FEATURE VERIFIED.
+
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
