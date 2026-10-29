@@ -53,7 +53,18 @@ const thumb = read('supabase/functions/item-thumbnail/index.ts');
 check(thumb.includes('resolveMeshyApiKeyForUser'), 'item-thumbnail uses user key resolver');
 
 const clientSvc = read('src/infrastructure/ai/ai-provider-credentials-service.ts');
-check(clientSvc.includes("invoke('ai-provider-credentials'"), 'client invokes credentials edge');
+const hostInvoke = read('src/infrastructure/ai/host-ai-invoke.ts');
+check(
+  clientSvc.includes("invokeFn('provider-credentials'") ||
+    clientSvc.includes("invoke('ai-provider-credentials'"),
+  'client invokes credentials via host dual-path or edge',
+);
+check(
+  hostInvoke.includes("functions.invoke") &&
+    hostInvoke.includes('ai-provider-credentials') &&
+    hostInvoke.includes('/api/v1/ai/'),
+  'host-ai-invoke keeps Edge fallback and host HTTP path',
+);
 check(!/msy_[A-Za-z0-9]{8,}/.test(clientSvc), 'client service has no hardcoded meshy key');
 
 const panel = read('src/app/profile/AiProviderCredentialsPanel.tsx');
