@@ -4,6 +4,8 @@
  *
  * Isolated-contract host surface. Edge allowlisted worker remains live; no cutover.
  */
+// Public identity contract is `modules/identity/index.ts` (no separate actor.ts);
+ // matches established application/* use-case ports (item-thumbnail, character-lore, …).
 import type { Actor } from '../../modules/identity/index.ts';
 import {
   SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED,

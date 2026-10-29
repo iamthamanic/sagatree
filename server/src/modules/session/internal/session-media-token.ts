@@ -124,8 +124,9 @@ export function createSessionMediaTokenStore(
     projectMembers: new Map(),
     sessionPlayers: [],
     livekit: options?.livekit ?? null,
-    supabaseConfigured: options?.supabaseConfigured ?? true,
-    membershipLookupConfigured: options?.membershipLookupConfigured ?? true,
+    // Fail-closed defaults — fixtures / wired hosts must opt in explicitly.
+    supabaseConfigured: options?.supabaseConfigured ?? false,
+    membershipLookupConfigured: options?.membershipLookupConfigured ?? false,
     writeCount: 0,
     livekitHttpCalls: 0,
   };
@@ -184,12 +185,21 @@ export function resolveSessionMediaGrant(input: {
   };
 }
 
-export function clampSessionMediaTtlSeconds(value: unknown): number {
-  const ttlRaw =
-    typeof value === 'number' ? value : SESSION_MEDIA_TOKEN_DEFAULT_TTL_SECONDS;
+/**
+ * Clamp TTL to [30, 300]; omitted/non-number → default 120.
+ * Non-finite numbers return null (successor hardening — Edge left NaN through
+ * to RangeError / exp:null; host rejects instead of throwing).
+ */
+export function clampSessionMediaTtlSeconds(value: unknown): number | null {
+  if (typeof value !== 'number') {
+    return SESSION_MEDIA_TOKEN_DEFAULT_TTL_SECONDS;
+  }
+  if (!Number.isFinite(value)) {
+    return null;
+  }
   return Math.min(
     SESSION_MEDIA_TOKEN_MAX_TTL_SECONDS,
-    Math.max(SESSION_MEDIA_TOKEN_MIN_TTL_SECONDS, Math.floor(ttlRaw)),
+    Math.max(SESSION_MEDIA_TOKEN_MIN_TTL_SECONDS, Math.floor(value)),
   );
 }
 
@@ -275,8 +285,9 @@ function decodeBase64UrlJson(segment: string): unknown {
   const padded = segment.replace(/-/g, '+').replace(/_/g, '/');
   const padLen = (4 - (padded.length % 4)) % 4;
   const b64 = padded + '='.repeat(padLen);
-  const json = atob(b64);
-  return JSON.parse(json) as unknown;
+  const binary = atob(b64);
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes)) as unknown;
 }
 
 /** Verify HS256 LiveKit token for isolated-contract assertions. */
@@ -402,11 +413,20 @@ export async function issueSessionMediaToken(
   if (body === null || typeof body !== 'object' || Array.isArray(body)) {
     return degraded(400, 'bad_request', 'Ungültiger JSON-Body.');
   }
+  // Manual runtime validation at the trust boundary (repo has no zod dependency;
+  // same field checks as Edge worker — no schema cast of untrusted values into typed DTOs).
   const record = body as Record<string, unknown>;
   const sessionId =
     typeof record.sessionId === 'string' ? record.sessionId.trim() : '';
   if (!sessionId) {
     return degraded(400, 'bad_request', 'sessionId fehlt.');
+  }
+  if (
+    'ttlSeconds' in record &&
+    record.ttlSeconds !== undefined &&
+    typeof record.ttlSeconds !== 'number'
+  ) {
+    return degraded(400, 'bad_request', 'Ungültiger ttlSeconds.');
   }
 
   if (!store.membershipLookupConfigured) {
@@ -439,7 +459,10 @@ export async function issueSessionMediaToken(
   }
 
   const livekit = store.livekit;
-  if (!livekit?.apiKey || !livekit.apiSecret || !livekit.url) {
+  const apiKey = livekit?.apiKey?.trim() ?? '';
+  const apiSecret = livekit?.apiSecret?.trim() ?? '';
+  const livekitUrl = livekit?.url?.trim() ?? '';
+  if (!apiKey || !apiSecret || !livekitUrl) {
     return degraded(
       503,
       'media_service_unavailable',
@@ -448,12 +471,15 @@ export async function issueSessionMediaToken(
   }
 
   const ttlSeconds = clampSessionMediaTtlSeconds(record.ttlSeconds);
+  if (ttlSeconds === null) {
+    return degraded(400, 'bad_request', 'Ungültiger ttlSeconds.');
+  }
   const roomId = deriveMediaRoomId(sessionId);
   const identity = `user:${input.userId}`;
 
   const minted = await mintLiveKitAccessToken({
-    apiKey: livekit.apiKey,
-    apiSecret: livekit.apiSecret,
+    apiKey,
+    apiSecret,
     identity,
     roomName: roomId,
     ttlSeconds,
@@ -466,7 +492,7 @@ export async function issueSessionMediaToken(
     httpStatus: 200,
     ok: true,
     token: minted.token,
-    url: livekit.url,
+    url: livekitUrl,
     roomId,
     expiresAt: minted.expiresAt,
     ttlSeconds,
@@ -478,12 +504,12 @@ export async function issueSessionMediaToken(
   };
 }
 
-/** Documented Edge gaps — successor must keep these as required negative tests. */
+/** Documented Edge gaps — host successor hardens TTL; remaining gaps stay required tests. */
 export function describeSessionMediaTokenLegacyDefects(): readonly string[] {
   return [
-    'No explicit fetch timeout on auth/membership HTTP',
-    'No worker-wide exception normalization (null body / non-finite TTL / network throw not caught)',
-    'No finite TTL guard beyond Math.floor clamp (NaN floors to default path only when typeof !== number)',
+    'No explicit fetch timeout on auth/membership HTTP (Edge; host fixtures are in-memory)',
+    'No worker-wide exception normalization for network throws (Edge)',
+    'Edge had no finite TTL guard (NaN → RangeError/exp:null); host rejects non-finite with 400',
   ] as const;
 }
 

@@ -293,10 +293,29 @@ function configuredStore() {
   });
   assert(method.httpStatus === 405 && method.methodNotAllowed === true, 'GET 405');
 
-  // Non-finite TTL: typeof number but Math.floor(NaN)=NaN → clamp via Math.max/min still yields NaN.
-  // Edge does not separately reject; record as required successor input/error characterization.
-  const nanTtl = clampSessionMediaTtlSeconds(Number.NaN);
-  assert(Number.isNaN(nanTtl), 'non-finite TTL not separately rejected (legacy gap)');
+  // Successor hardening: non-finite TTL rejected (Edge left NaN through — documented legacy gap).
+  assert(clampSessionMediaTtlSeconds(Number.NaN) === null, 'NaN TTL → null');
+  assert(clampSessionMediaTtlSeconds(Number.POSITIVE_INFINITY) === null, 'Infinity TTL → null');
+  const nanRes = await uc.issue(actor(PLAYER), {
+    body: { sessionId: SESSION_ID, ttlSeconds: Number.NaN },
+  });
+  assert(nanRes.httpStatus === 400 && nanRes.reason === 'bad_request', 'NaN TTL → 400');
+
+  const whitespaceLk = createSessionMediaTokenStore({
+    livekit: { apiKey: '  ', apiSecret: API_SECRET, url: LIVEKIT_URL },
+    supabaseConfigured: true,
+    membershipLookupConfigured: true,
+  });
+  seedBase(whitespaceLk);
+  const wsRes = await createSessionMediaTokenUseCases({ store: whitespaceLk }).issue(
+    actor(PLAYER),
+    { body: { sessionId: SESSION_ID } },
+  );
+  assert(wsRes.httpStatus === 503, 'whitespace LiveKit key → 503');
+
+  const failClosed = createSessionMediaTokenStore();
+  assert(failClosed.supabaseConfigured === false, 'default supabase fail-closed');
+  assert(failClosed.membershipLookupConfigured === false, 'default membership fail-closed');
 
   const noSupabase = createSessionMediaTokenStore({
     livekit: { apiKey: API_KEY, apiSecret: API_SECRET, url: LIVEKIT_URL },
