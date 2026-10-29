@@ -209,9 +209,10 @@ const SRD_SEED: QuarantineSpell[] = [
   },
 ];
 
+/** Edge parity: `crypto.randomUUID()`. Optional store bump keeps seq for tests. */
 function nextGeneratedId(store: SpellbookEdgeQuarantineStore): string {
   store.idSeq += 1;
-  return `spell-q-${store.idSeq}`;
+  return crypto.randomUUID();
 }
 
 export function createSpellbookEdgeQuarantineStore(): SpellbookEdgeQuarantineStore {
@@ -247,9 +248,13 @@ export function getQuarantineSpell(
   return store.spells.get(id) ?? null;
 }
 
+/**
+ * Edge parity: always allocates a new id (`crypto.randomUUID`); body `id` is
+ * never authority. Optional third `id` is test-only fixture injection.
+ */
 export function createQuarantineSpell(
   store: SpellbookEdgeQuarantineStore,
-  data: Partial<QuarantineSpell>,
+  data: Omit<Partial<QuarantineSpell>, 'id'>,
   id?: string,
 ): QuarantineSpell {
   const spellId = id ?? nextGeneratedId(store);

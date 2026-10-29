@@ -160,7 +160,13 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   } catch (e) {
     threw = e instanceof Error && e.message === 'Spell already exists';
   }
-  assert(threw, 'duplicate spell id rejected');
+  assert(threw, 'duplicate fixture spell id rejected');
+
+  const auto = createQuarantineSpell(store, { name: 'Auto Id Spell', level: 0 });
+  assert(
+    typeof auto.id === 'string' && auto.id.length >= 32 && auto.id !== 'custom-bolt',
+    'auto id uses randomUUID Edge parity',
+  );
 
   const book = getQuarantineSpellbook(store, 'char-a');
   assert(book.spells.length === 0 && book.characterId === 'char-a', 'GET creates empty book');
