@@ -1132,8 +1132,8 @@
       "rpc": "create_project_session",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 743,
-      "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+      "line": 747,
+      "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
       "requestExpression": "{\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -1179,32 +1179,32 @@
           "name": "isRecord",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 32,
-          "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+          "line": 36,
+          "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
           "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
         },
         {
           "name": "isSessionStatus",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 114,
-          "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+          "line": 118,
+          "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
           "source": "function isSessionStatus(value: unknown): value is SessionDto['status'] {\n  return (\n    value === 'scheduled'\n    || value === 'waiting'\n    || value === 'active'\n    || value === 'paused'\n    || value === 'completed'\n    || value === 'cancelled'\n  );\n}"
         },
         {
           "name": "isSessionDto",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 125,
-          "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+          "line": 129,
+          "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
           "source": "function isSessionDto(value: unknown): value is SessionDto {\n  if (!isRecord(value)) return false;\n  const durationOk =\n    value.duration_minutes === undefined\n    || typeof value.duration_minutes === 'number'\n    || value.duration_minutes === null;\n  const publicIdOk =\n    typeof value.public_id === 'string'\n    || value.public_id === undefined\n    || value.public_id === null;\n  const lookOk =\n    value.look_profile_id === undefined\n    || value.look_profile_id === null\n    || typeof value.look_profile_id === 'string';\n  const notesOk =\n    value.notes === undefined\n    || typeof value.notes === 'string'\n    || value.notes === null;\n  return (\n    typeof value.id === 'string'\n    && publicIdOk\n    && typeof value.project_id === 'string'\n    && typeof value.session_number === 'number'\n    && (typeof value.name === 'string' || value.name === null)\n    && notesOk\n    && isSessionStatus(value.status)\n    && (typeof value.started_at === 'string' || value.started_at === null)\n    && (typeof value.ended_at === 'string' || value.ended_at === null)\n    && durationOk\n    && lookOk\n    && typeof value.created_at === 'string'\n    && typeof value.updated_at === 'string'\n  );\n}"
         },
         {
           "name": "normalizeSessionDto",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 160,
-          "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+          "line": 164,
+          "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
           "source": "function normalizeSessionDto(value: SessionDto): SessionDto {\n  return {\n    ...value,\n    // #569: notes column not selectable by authenticated — treat missing as null.\n    notes: value.notes ?? null,\n    duration_minutes: value.duration_minutes ?? null,\n  };\n}"
         },
         {
@@ -1956,8 +1956,8 @@
       "rpc": "ensure_native_starter_project",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 323,
-      "sourceSha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb",
+      "line": 327,
+      "sourceSha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257",
       "requestExpression": "{\n      p_slug: slug,\n    }",
       "requestKeys": [
         "p_slug"
@@ -2168,8 +2168,8 @@
       "rpc": "get_my_saga_permissions",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 125,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 129,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
       "requestKeys": [
         "p_public_id"
@@ -2187,32 +2187,32 @@
           "name": "SagaMyPermissionsVm",
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 22,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 26,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "export type SagaMyPermissionsVm = {\n  readonly projectId: string;\n  readonly bundleId: SagaBundleId | null;\n  readonly isGm: boolean;\n  readonly keys: readonly SagaPermissionKey[];\n};"
         },
         {
           "name": "asString",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 48,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 52,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
         },
         {
           "name": "parseKeys",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 52,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 56,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function parseKeys(raw: unknown): SagaPermissionKey[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaPermissionKey[] = [];\n  for (const item of raw) {\n    if (isSagaPermissionKey(item) && !out.includes(item)) out.push(item);\n  }\n  return out;\n}"
         },
         {
           "name": "parseMyPermissions",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 61,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 65,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function parseMyPermissions(raw: unknown): SagaMyPermissionsVm {\n  if (!raw || typeof raw !== 'object') {\n    throw new Error('Berechtigungen konnten nicht geladen werden');\n  }\n  const row = raw as Record<string, unknown>;\n  const projectId = asString(row.projectId);\n  if (!projectId) throw new Error('Berechtigungen ohne projectId');\n  const bundleRaw = row.bundleId;\n  return {\n    projectId,\n    bundleId: isSagaBundleId(bundleRaw) ? bundleRaw : null,\n    isGm: row.isGm === true,\n    keys: parseKeys(row.keys),\n  };\n}"
         },
         {
@@ -2836,8 +2836,8 @@
       "rpc": "get_saga_lore_timeline",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 196,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 200,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
       "requestKeys": [
         "p_public_id"
@@ -2961,8 +2961,8 @@
       "rpc": "get_saga_overview",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-overview-service.ts",
-      "line": 27,
-      "sourceSha256": "6792071b53ea4e1d1907679d6c2c7d3f774bfb6710f6761aac1e90a0e13ec1e3",
+      "line": 31,
+      "sourceSha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074",
       "requestExpression": "{ p_public_id: publicId }",
       "requestKeys": [
         "p_public_id"
@@ -3188,8 +3188,8 @@
           "name": "SAGA_OVERVIEW_TIMEOUT_MS",
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/project/saga-overview-service.ts",
-          "line": 17,
-          "sourceSha256": "6792071b53ea4e1d1907679d6c2c7d3f774bfb6710f6761aac1e90a0e13ec1e3",
+          "line": 21,
+          "sourceSha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074",
           "source": "SAGA_OVERVIEW_TIMEOUT_MS = Math.max(SUPABASE_QUERY_TIMEOUT_MS, 12_000)"
         },
         {
@@ -3832,8 +3832,8 @@
       "rpc": "join_project_by_code",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 38,
-      "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+      "line": 42,
+      "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
       "requestExpression": "{\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    }",
       "requestKeys": [
         "p_code",
@@ -3867,16 +3867,16 @@
           "name": "UUID_PATTERN",
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 9,
-          "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+          "line": 13,
+          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
           "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
         },
         {
           "name": "requireUuid",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 11,
-          "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+          "line": 15,
+          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
           "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
         },
         {
@@ -4124,8 +4124,8 @@
       "rpc": "list_saga_bindings",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 165,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 169,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    }",
       "requestKeys": [
         "p_public_id",
@@ -4144,24 +4144,24 @@
           "name": "SagaAssetBindingVm",
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 38,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 42,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "export type SagaAssetBindingVm = {\n  readonly id: string;\n  readonly assetKind: SagaAssetKind;\n  readonly assetId: string;\n  readonly reveal: SagaRevealStatus;\n  readonly label: string;\n  /** Linked world_places.id when location is mapped to Donalu place model. */\n  readonly worldPlaceId?: string | null;\n};"
         },
         {
           "name": "asString",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 48,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 52,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
         },
         {
           "name": "parseBindings",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 99,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 103,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function parseBindings(raw: unknown): SagaAssetBindingVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaAssetBindingVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const id = asString(row.id);\n    const assetKind = asString(row.assetKind) as SagaAssetKind;\n    const assetId = asString(row.assetId);\n    const reveal = parseSagaRevealStatus(row.reveal);\n    if (!id || !assetId || !reveal) continue;\n    const worldPlaceRaw = row.worldPlaceId;\n    out.push({\n      id,\n      assetKind,\n      assetId,\n      reveal,\n      label: asString(row.label),\n      worldPlaceId: typeof worldPlaceRaw === 'string' && worldPlaceRaw ? worldPlaceRaw : null,\n    });\n  }\n  return out;\n}"
         },
         {
@@ -4218,8 +4218,8 @@
       "rpc": "list_saga_member_permission_state",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 137,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 141,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
       "requestKeys": [
         "p_public_id"
@@ -4237,24 +4237,24 @@
           "name": "SagaMemberPermissionStateVm",
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 29,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 33,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "export type SagaMemberPermissionStateVm = {\n  readonly memberId: string;\n  readonly userId: string;\n  readonly role: string;\n  readonly status: string;\n  readonly bundleId: SagaBundleId | null;\n  readonly canSetBundle: boolean;\n};"
         },
         {
           "name": "asString",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 48,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 52,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
         },
         {
           "name": "parseMemberState",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 77,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 81,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function parseMemberState(raw: unknown): SagaMemberPermissionStateVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaMemberPermissionStateVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const memberId = asString(row.memberId);\n    const userId = asString(row.userId);\n    if (!memberId || !userId) continue;\n    const bundleRaw = row.bundleId;\n    out.push({\n      memberId,\n      userId,\n      role: asString(row.role),\n      status: asString(row.status, 'active'),\n      bundleId: isSagaBundleId(bundleRaw) ? bundleRaw : null,\n      canSetBundle: row.canSetBundle === true,\n    });\n  }\n  return out;\n}"
         },
         {
@@ -6152,8 +6152,8 @@
       "rpc": "set_my_project_character",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 61,
-      "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+      "line": 65,
+      "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
       "requestExpression": "{\n      p_project_id: projectId,\n      p_character_id: characterId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -6179,16 +6179,16 @@
           "name": "UUID_PATTERN",
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 9,
-          "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+          "line": 13,
+          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
           "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
         },
         {
           "name": "requireUuid",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 11,
-          "sourceSha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054",
+          "line": 15,
+          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
           "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
         },
         {
@@ -6245,8 +6245,8 @@
       "rpc": "set_saga_binding_reveal",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 180,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 184,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -6266,24 +6266,24 @@
           "name": "SagaAssetBindingVm",
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 38,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 42,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "export type SagaAssetBindingVm = {\n  readonly id: string;\n  readonly assetKind: SagaAssetKind;\n  readonly assetId: string;\n  readonly reveal: SagaRevealStatus;\n  readonly label: string;\n  /** Linked world_places.id when location is mapped to Donalu place model. */\n  readonly worldPlaceId?: string | null;\n};"
         },
         {
           "name": "asString",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 48,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 52,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
         },
         {
           "name": "parseBindings",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 99,
-          "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+          "line": 103,
+          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
           "source": "function parseBindings(raw: unknown): SagaAssetBindingVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaAssetBindingVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const id = asString(row.id);\n    const assetKind = asString(row.assetKind) as SagaAssetKind;\n    const assetId = asString(row.assetId);\n    const reveal = parseSagaRevealStatus(row.reveal);\n    if (!id || !assetId || !reveal) continue;\n    const worldPlaceRaw = row.worldPlaceId;\n    out.push({\n      id,\n      assetKind,\n      assetId,\n      reveal,\n      label: asString(row.label),\n      worldPlaceId: typeof worldPlaceRaw === 'string' && worldPlaceRaw ? worldPlaceRaw : null,\n    });\n  }\n  return out;\n}"
         },
         {
@@ -6340,8 +6340,8 @@
       "rpc": "set_saga_member_bundle",
       "resolution": "string-literal",
       "path": "src/infrastructure/project/saga-permission-service.ts",
-      "line": 151,
-      "sourceSha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931",
+      "line": 155,
+      "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
       "requestExpression": "{\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    }",
       "requestKeys": [
         "p_project_id",

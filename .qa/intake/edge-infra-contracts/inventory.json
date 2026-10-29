@@ -30198,11 +30198,11 @@
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054"
+            "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb"
+            "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
           },
           {
             "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -30254,7 +30254,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "4e4159a6dbd30aab5a571659d832f530d0095b21d7aca6e5c828af0c0b0cfae2",
+      "sourceContractSha256": "7febfe95c274f60a5b29436c449660ca34881606b77072f6176fb1c3c3b95d46",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -39409,6 +39409,8 @@
       "area": "project",
       "implementationIssue": 807,
       "files": [
+        "src/infrastructure/project/host-project-adapter.ts",
+        "src/infrastructure/project/host-project-ports.contract.ts",
         "src/infrastructure/project/project-member-service.ts",
         "src/infrastructure/project/project-service.ts",
         "src/infrastructure/project/saga-overview-service.ts",
@@ -39439,20 +39441,28 @@
             "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
           },
           {
+            "path": "src/infrastructure/project/host-project-adapter.ts",
+            "sha256": "41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70"
+          },
+          {
+            "path": "src/infrastructure/project/host-project-ports.contract.ts",
+            "sha256": "4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902"
+          },
+          {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "573f8aa8d8cf55347cdac8062cc8449c9ca6a7db57ed17d1e76cc1d5dafbf054"
+            "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "0afb7b8014dc8eb7ac2e5f9481c72105ba266534a73faff8143e048da1308eeb"
+            "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
           },
           {
             "path": "src/infrastructure/project/saga-overview-service.ts",
-            "sha256": "6792071b53ea4e1d1907679d6c2c7d3f774bfb6710f6761aac1e90a0e13ec1e3"
+            "sha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "d7ecf2801db6206f7e6cc6314f3783c22b453f84ccfd7de62166b238aeebc931"
+            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -39476,7 +39486,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "5fc15ca732c40d23bc8bca7491fed63c41c8658a1e0a6978973432f8867219da",
+      "sourceContractSha256": "49a9c95183c2a00733edbc4531eec8f2a65481350f236d83639e202d55dbcc07",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -39503,16 +39513,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 256,
-          "endLine": 256,
+          "line": 260,
+          "endLine": 260,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 255,
-            "endLine": 289,
+            "line": 259,
+            "endLine": 293,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -39520,16 +39530,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 332,
-          "endLine": 332,
+          "line": 336,
+          "endLine": 336,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39537,16 +39547,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 459,
-          "endLine": 459,
+          "line": 463,
+          "endLine": 463,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 458,
-            "endLine": 522,
+            "line": 462,
+            "endLine": 526,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -39554,16 +39564,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 670,
-          "endLine": 670,
+          "line": 674,
+          "endLine": 674,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 669,
-            "endLine": 672,
+            "line": 673,
+            "endLine": 676,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         }
@@ -39576,8 +39586,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 23,
-          "endLine": 24,
+          "line": 27,
+          "endLine": 28,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at')",
@@ -39586,8 +39596,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 22,
-            "endLine": 31,
+            "line": 26,
+            "endLine": 35,
             "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
@@ -39595,8 +39605,8 @@
           "kind": "rpc",
           "name": "join_project_by_code",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 38,
-          "endLine": 41,
+          "line": 42,
+          "endLine": 45,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
           "chain": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
@@ -39606,8 +39616,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 37,
-            "endLine": 54,
+            "line": 41,
+            "endLine": 58,
             "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -39615,8 +39625,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 46,
-          "endLine": 47,
+          "line": 50,
+          "endLine": 51,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single()",
@@ -39625,8 +39635,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 37,
-            "endLine": 54,
+            "line": 41,
+            "endLine": 58,
             "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -39634,8 +39644,8 @@
           "kind": "rpc",
           "name": "set_my_project_character",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 61,
-          "endLine": 64,
+          "line": 65,
+          "endLine": 68,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
           "chain": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
@@ -39645,8 +39655,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 60,
-            "endLine": 77,
+            "line": 64,
+            "endLine": 81,
             "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -39654,8 +39664,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 69,
-          "endLine": 70,
+          "line": 73,
+          "endLine": 74,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single()",
@@ -39664,8 +39674,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 60,
-            "endLine": 77,
+            "line": 64,
+            "endLine": 81,
             "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
           }
         },
@@ -39673,8 +39683,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 83,
-          "endLine": 84,
+          "line": 87,
+          "endLine": 88,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId)",
@@ -39683,8 +39693,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 82,
-            "endLine": 90,
+            "line": 86,
+            "endLine": 94,
             "text": "async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  }"
           }
         },
@@ -39692,8 +39702,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 96,
-          "endLine": 97,
+          "line": 100,
+          "endLine": 101,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('project_members')",
           "chain": "supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false })",
@@ -39702,8 +39712,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "line": 95,
-            "endLine": 108,
+            "line": 99,
+            "endLine": 112,
             "text": "async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  }"
           }
         },
@@ -39711,16 +39721,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 256,
-          "endLine": 256,
+          "line": 260,
+          "endLine": 260,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 255,
-            "endLine": 289,
+            "line": 259,
+            "endLine": 293,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -39728,8 +39738,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 270,
-          "endLine": 271,
+          "line": 274,
+          "endLine": 275,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single()",
@@ -39738,8 +39748,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 255,
-            "endLine": 289,
+            "line": 259,
+            "endLine": 293,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -39747,8 +39757,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 281,
-          "endLine": 281,
+          "line": 285,
+          "endLine": 285,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.membersTableName)",
           "chain": "supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    })",
@@ -39757,8 +39767,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 255,
-            "endLine": 289,
+            "line": 259,
+            "endLine": 293,
             "text": "async createProject(payload: CreateProjectDto): Promise<ProjectVm> {\n    const userId = await getAuthenticatedUserId();\n\n    const code = this.generateProjectCode();\n\n    const projectData: Partial<ProjectDto> = {\n      code,\n      name: payload.name,\n      description: payload.description || null,\n      world_id: payload.world_id || null,\n      world_profile_id: payload.world_profile_id || null,\n      gm_user_id: userId,\n      status: 'active',\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(projectData)\n      .select(PROJECT_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to create project: ${error.message}`);\n    }\n\n    // The GM-controlled membership policy permits this bootstrap row.\n    await supabase.from(this.membersTableName).insert({\n      project_id: data.id,\n      user_id: userId,\n      role: 'gm',\n      status: 'active',\n    });\n\n    return this.mapToViewModel(data, [], []);\n  }"
           }
         },
@@ -39766,8 +39776,8 @@
           "kind": "rpc",
           "name": "ensure_native_starter_project",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 323,
-          "endLine": 325,
+          "line": 327,
+          "endLine": 329,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    })",
           "chain": "supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    })",
@@ -39777,8 +39787,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 322,
-            "endLine": 329,
+            "line": 326,
+            "endLine": 333,
             "text": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    const { error } = await supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    });\n    if (error) {\n      console.warn('[project-service] ensure_native_starter_project:', error.message);\n    }\n  }"
           }
         },
@@ -39786,16 +39796,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 332,
-          "endLine": 332,
+          "line": 336,
+          "endLine": 336,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39803,8 +39813,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 340,
-          "endLine": 341,
+          "line": 344,
+          "endLine": 345,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false })",
@@ -39813,8 +39823,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39822,8 +39832,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 350,
-          "endLine": 351,
+          "line": 354,
+          "endLine": 355,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active')",
@@ -39832,8 +39842,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39841,8 +39851,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 414,
-          "endLine": 414,
+          "line": 418,
+          "endLine": 418,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.membersTableName)",
           "chain": "supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds)",
@@ -39851,8 +39861,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39860,8 +39870,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 415,
-          "endLine": 415,
+          "line": 419,
+          "endLine": 419,
           "resolution": "literal-or-constant",
           "expression": "supabase.from(this.sessionsTableName)",
           "chain": "supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds)",
@@ -39870,8 +39880,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 331,
-            "endLine": 456,
+            "line": 335,
+            "endLine": 460,
             "text": "private async fetchUserProjectSummaries(): Promise<ProjectSummaryVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    // Bridge native saga_definitions → selectable GM project (SessionJoin / Library).\n    await this.ensureNativeStarterProject();\n\n    const projectSummarySelect =\n      'id, public_id, code, name, description, world_id, world_profile_id, gm_user_id, status, saga_id, saga_version_id, saga_definitions(title, origin, slug)';\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(projectSummarySelect)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`projects!inner(${projectSummarySelect})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    type ProjectSummaryRow = Pick<\n      ProjectDto,\n      'id' | 'code' | 'name' | 'description' | 'gm_user_id' | 'status'\n    > & {\n      public_id?: string | null;\n      world_id?: string | null;\n      world_profile_id?: string | null;\n      saga_id?: string | null;\n      saga_version_id?: string | null;\n      saga_definitions?: { title?: string | null; origin?: string | null; slug?: string | null } | null;\n    };\n    const combined = new Map<string, ProjectSummaryRow>();\n\n    const normalizeSummaryRow = (raw: unknown): ProjectSummaryRow | null => {\n      if (!isProjectSummaryRow(raw)) return null;\n      const row = raw as ProjectSummaryRow & { saga_definitions?: unknown };\n      let def: ProjectSummaryRow['saga_definitions'] = null;\n      if (Array.isArray(row.saga_definitions)) {\n        const first = row.saga_definitions[0];\n        if (isRecord(first)) {\n          def = {\n            title: typeof first.title === 'string' ? first.title : null,\n            origin: typeof first.origin === 'string' ? first.origin : null,\n            slug: typeof first.slug === 'string' ? first.slug : null,\n          };\n        }\n      } else if (isRecord(row.saga_definitions)) {\n        def = {\n          title: typeof row.saga_definitions.title === 'string' ? row.saga_definitions.title : null,\n          origin: typeof row.saga_definitions.origin === 'string' ? row.saga_definitions.origin : null,\n          slug: typeof row.saga_definitions.slug === 'string' ? row.saga_definitions.slug : null,\n        };\n      }\n      return { ...row, saga_definitions: def };\n    };\n\n    for (const project of gmProjects ?? []) {\n      const normalized = normalizeSummaryRow(project);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    for (const record of memberRecords ?? []) {\n      if (!isRecord(record)) continue;\n      const normalized = normalizeSummaryRow(record.projects);\n      if (!normalized) continue;\n      combined.set(normalized.id, normalized);\n    }\n\n    const projectIds = [...combined.keys()];\n    if (projectIds.length === 0) return [];\n\n    const [{ data: memberRows, error: membersBatchError }, { data: sessionRows, error: sessionsBatchError }] =\n      await Promise.all([\n        supabase.from(this.membersTableName).select('project_id').in('project_id', projectIds),\n        supabase.from(this.sessionsTableName).select('project_id').in('project_id', projectIds),\n      ]);\n\n    if (membersBatchError) {\n      throw new Error(`Failed to fetch project members: ${membersBatchError.message}`);\n    }\n    if (sessionsBatchError) {\n      throw new Error(`Failed to fetch project sessions: ${sessionsBatchError.message}`);\n    }\n\n    const memberCounts = this.countByProjectId((memberRows ?? []) as Array<{ project_id: string }>);\n    const sessionCounts = this.countByProjectId((sessionRows ?? []) as Array<{ project_id: string }>);\n\n    return projectIds.map((id) => {\n      const project = combined.get(id)!;\n      const def = project.saga_definitions;\n      const originRaw = def && typeof def.origin === 'string' ? def.origin : null;\n      const sagaOrigin =\n        originRaw === 'native' || originRaw === 'user' || originRaw === 'private_backfill'\n          ? originRaw\n          : null;\n      return {\n        id: project.id,\n        publicId: typeof project.public_id === 'string' ? project.public_id : '',\n        code: project.code,\n        name: project.name,\n        description: project.description,\n        worldId: typeof project.world_id === 'string' ? project.world_id : null,\n        worldProfileId:\n          typeof project.world_profile_id === 'string' ? project.world_profile_id : null,\n        sagaId: typeof project.saga_id === 'string' ? project.saga_id : null,\n        sagaVersionId: typeof project.saga_version_id === 'string' ? project.saga_version_id : null,\n        sagaTitle: def && typeof def.title === 'string' ? def.title : null,\n        sagaSlug: def && typeof def.slug === 'string' ? def.slug : null,\n        sagaOrigin,\n        gmUserId: project.gm_user_id,\n        status: project.status,\n        memberCount: memberCounts.get(id) ?? 0,\n        sessionCount: sessionCounts.get(id) ?? 0,\n      };\n    });\n  }"
           }
         },
@@ -39879,16 +39889,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 459,
-          "endLine": 459,
+          "line": 463,
+          "endLine": 463,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 458,
-            "endLine": 522,
+            "line": 462,
+            "endLine": 526,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -39896,8 +39906,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 461,
-          "endLine": 462,
+          "line": 465,
+          "endLine": 466,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false })",
@@ -39906,8 +39916,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 458,
-            "endLine": 522,
+            "line": 462,
+            "endLine": 526,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -39915,8 +39925,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 471,
-          "endLine": 472,
+          "line": 475,
+          "endLine": 476,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active')",
@@ -39925,8 +39935,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 458,
-            "endLine": 522,
+            "line": 462,
+            "endLine": 526,
             "text": "private async fetchUserProjects(): Promise<ProjectVm[]> {\n    const userId = await getAuthenticatedUserId();\n\n    const { data: gmProjects, error: gmError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('gm_user_id', userId)\n      .order('created_at', { ascending: false });\n\n    if (gmError) {\n      throw new Error(`Failed to fetch GM projects: ${gmError.message}`);\n    }\n\n    const { data: memberRecords, error: memberError } = await supabase\n      .from(this.membersTableName)\n      .select(`*, projects!inner(${PROJECT_SAFE_COLUMNS})`)\n      .eq('user_id', userId)\n      .eq('status', 'active');\n\n    if (memberError) {\n      console.error('Failed to fetch player projects:', memberError);\n    }\n\n    const playerProjects: ProjectDto[] = [];\n    for (const record of memberRecords || []) {\n      if (!isRecord(record)) continue;\n      const project = record.projects;\n      if (isProjectDto(project)) playerProjects.push(project);\n    }\n\n    const allProjectIds = new Set<string>();\n    const combinedProjects: ProjectDto[] = [];\n    for (const project of [...(gmProjects || []), ...playerProjects]) {\n      if (!isProjectDto(project) || allProjectIds.has(project.id)) continue;\n      allProjectIds.add(project.id);\n      combinedProjects.push(project);\n    }\n\n    return Promise.all(\n      combinedProjects.map(async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      })\n    );\n  }"
           }
         },
@@ -39934,8 +39944,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 498,
-          "endLine": 499,
+          "line": 502,
+          "endLine": 503,
           "resolution": "literal-or-constant",
           "expression": "supabase\n          .from(this.membersTableName)",
           "chain": "supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id)",
@@ -39944,8 +39954,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 497,
-            "endLine": 520,
+            "line": 501,
+            "endLine": 524,
             "text": "async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      }"
           }
         },
@@ -39953,8 +39963,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 503,
-          "endLine": 504,
+          "line": 507,
+          "endLine": 508,
           "resolution": "literal-or-constant",
           "expression": "supabase\n          .from(this.sessionsTableName)",
           "chain": "supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true })",
@@ -39963,8 +39973,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 497,
-            "endLine": 520,
+            "line": 501,
+            "endLine": 524,
             "text": "async (project) => {\n        const { data: members } = await supabase\n          .from(this.membersTableName)\n          .select('*')\n          .eq('project_id', project.id);\n\n        const { data: sessions } = await supabase\n          .from(this.sessionsTableName)\n          .select(SESSION_SAFE_COLUMNS)\n          .eq('project_id', project.id)\n          .order('session_number', { ascending: true });\n\n        const sessionRows: SessionDto[] = [];\n        for (const row of sessions || []) {\n          if (!isSessionDto(row)) continue;\n          sessionRows.push(\n            normalizeSessionDto({\n              ...row,\n              notes: row.notes ?? null,\n            }),\n          );\n        }\n        return this.mapToViewModel(project, members || [], sessionRows);\n      }"
           }
         },
@@ -39972,8 +39982,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 537,
-          "endLine": 538,
+          "line": 541,
+          "endLine": 542,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
@@ -39982,8 +39992,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 536,
-            "endLine": 569,
+            "line": 540,
+            "endLine": 573,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -39991,8 +40001,8 @@
           "kind": "table",
           "name": "project_members",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 547,
-          "endLine": 548,
+          "line": 551,
+          "endLine": 552,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.membersTableName)",
           "chain": "supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id)",
@@ -40001,8 +40011,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 536,
-            "endLine": 569,
+            "line": 540,
+            "endLine": 573,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -40010,8 +40020,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 552,
-          "endLine": 553,
+          "line": 556,
+          "endLine": 557,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.sessionsTableName)",
           "chain": "supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true })",
@@ -40020,8 +40030,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 536,
-            "endLine": 569,
+            "line": 540,
+            "endLine": 573,
             "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
           }
         },
@@ -40029,8 +40039,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 575,
-          "endLine": 576,
+          "line": 579,
+          "endLine": 580,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id)",
@@ -40039,8 +40049,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 574,
-            "endLine": 585,
+            "line": 578,
+            "endLine": 589,
             "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to update project: ${error.message}`);\n    }\n\n    return this.getProjectById(id);\n  }"
           }
         },
@@ -40048,8 +40058,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 621,
-          "endLine": 622,
+          "line": 625,
+          "endLine": 626,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.sessionsTableName)",
           "chain": "supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single()",
@@ -40058,8 +40068,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 617,
-            "endLine": 650,
+            "line": 621,
+            "endLine": 654,
             "text": "async updateSessionLookSettings(\n    sessionId: string,\n    settings: { lookProfileId: string | null },\n  ): Promise<SessionVm> {\n    const { data, error } = await supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to update session look: ${error.message}`);\n    }\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to update session look: invalid response');\n    }\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
           }
         },
@@ -40067,8 +40077,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 656,
-          "endLine": 657,
+          "line": 660,
+          "endLine": 661,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)",
@@ -40077,8 +40087,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 655,
-            "endLine": 664,
+            "line": 659,
+            "endLine": 668,
             "text": "async deleteProject(id: string): Promise<void> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to delete project: ${error.message}`);\n    }\n  }"
           }
         },
@@ -40086,16 +40096,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 670,
-          "endLine": 670,
+          "line": 674,
+          "endLine": 674,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 669,
-            "endLine": 672,
+            "line": 673,
+            "endLine": 676,
             "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
           }
         },
@@ -40103,8 +40113,8 @@
           "kind": "table",
           "name": "projects",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 678,
-          "endLine": 679,
+          "line": 682,
+          "endLine": 683,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from(this.tableName)",
           "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single()",
@@ -40113,8 +40123,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 677,
-            "endLine": 689,
+            "line": 681,
+            "endLine": 693,
             "text": "async getProjectByPublicId(publicId: string): Promise<ProjectVm> {\n    const { data: project, error } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single();\n\n    if (error || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    return this.getProjectById(project.id);\n  }"
           }
         },
@@ -40122,8 +40132,8 @@
           "kind": "table",
           "name": "sessions",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 703,
-          "endLine": 704,
+          "line": 707,
+          "endLine": 708,
           "resolution": "literal-or-constant",
           "expression": "supabase\n        .from(this.sessionsTableName)",
           "chain": "supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle()",
@@ -40132,8 +40142,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 694,
-            "endLine": 733,
+            "line": 698,
+            "endLine": 737,
             "text": "async getSessionByPublicIds(\n    sagaPublicId: string,\n    sessionPublicId: string,\n  ): Promise<{ project: ProjectVm; session: SessionVm }> {\n    const project = await this.getProjectByPublicId(sagaPublicId);\n    const wanted = sessionPublicId.trim().toUpperCase();\n    let session = project.sessions.find((row) => row.publicId === wanted);\n    if (!session) {\n      // Direct lookup — avoids dropping rows when status filters/mapping lag behind create.\n      const { data: row, error } = await supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle();\n      if (error || !row || !isSessionDto(row)) {\n        throw new Error('Session not found in saga');\n      }\n      const normalized = normalizeSessionDto({\n        ...row,\n        notes: row.notes ?? null,\n      });\n      session = {\n        id: normalized.id,\n        publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n        projectId: normalized.project_id,\n        sessionNumber: normalized.session_number,\n        name: normalized.name,\n        notes: normalized.notes,\n        status: normalized.status,\n        startedAt: normalized.started_at,\n        endedAt: normalized.ended_at,\n        durationMinutes: normalized.duration_minutes ?? null,\n        lookProfileId:\n          typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n        createdAt: normalized.created_at,\n      };\n    }\n    return { project, session };\n  }"
           }
         },
@@ -40141,8 +40151,8 @@
           "kind": "rpc",
           "name": "create_project_session",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 743,
-          "endLine": 747,
+          "line": 747,
+          "endLine": 751,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
           "chain": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
@@ -40152,8 +40162,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/project-service.ts",
-            "line": 738,
-            "endLine": 773,
+            "line": 742,
+            "endLine": 777,
             "text": "async createProjectSession(payload: {\n    projectId: string;\n    name?: string;\n    notes?: string;\n  }): Promise<SessionVm> {\n    const { data, error } = await supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    });\n\n    if (error) {\n      throw new Error(`Failed to create session: ${error.message}`);\n    }\n\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to create session: invalid response');\n    }\n\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
           }
         },
@@ -40161,8 +40171,8 @@
           "kind": "rpc",
           "name": "get_saga_overview",
           "path": "src/infrastructure/project/saga-overview-service.ts",
-          "line": 27,
-          "endLine": 27,
+          "line": 31,
+          "endLine": 31,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('get_saga_overview', { p_public_id: publicId })",
           "chain": "supabase.rpc('get_saga_overview', { p_public_id: publicId })",
@@ -40172,8 +40182,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-overview-service.ts",
-            "line": 20,
-            "endLine": 50,
+            "line": 24,
+            "endLine": 54,
             "text": "async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (!publicId) {\n      throw new Error('Saga-ID fehlt');\n    }\n\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_overview', { p_public_id: publicId }),\n      SAGA_OVERVIEW_TIMEOUT_MS,\n      'Saga-Übersicht Zeitüberschreitung',\n    );\n\n    if (error) {\n      const message = error.message || 'Saga-Übersicht fehlgeschlagen';\n      if (/not authenticated|forbidden|42501/i.test(message)) {\n        throw new Error('Kein Zugriff auf diese Saga');\n      }\n      if (/not found|P0002/i.test(message)) {\n        throw new Error('Saga nicht gefunden');\n      }\n      throw new Error(message);\n    }\n\n    if (data == null) {\n      throw new Error('Saga-Übersicht leer');\n    }\n\n    const vm = parseSagaOverview(data);\n    assertSagaOverviewAudienceSafe(vm);\n    return vm;\n  }"
           }
         },
@@ -40181,8 +40191,8 @@
           "kind": "rpc",
           "name": "get_my_saga_permissions",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 125,
-          "endLine": 127,
+          "line": 129,
+          "endLine": 131,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('get_my_saga_permissions', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
           "chain": "supabase.rpc('get_my_saga_permissions', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
@@ -40192,8 +40202,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 124,
-            "endLine": 132,
+            "line": 128,
+            "endLine": 136,
             "text": "async getMyPermissions(sagaPublicId: string): Promise<SagaMyPermissionsVm> {\n    const { data, error } = await supabase.rpc('get_my_saga_permissions', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Berechtigungen: ${error.message}`);\n    }\n    return parseMyPermissions(data);\n  }"
           }
         },
@@ -40201,8 +40211,8 @@
           "kind": "rpc",
           "name": "list_saga_member_permission_state",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 137,
-          "endLine": 139,
+          "line": 141,
+          "endLine": 143,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
           "chain": "supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
@@ -40212,8 +40222,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 134,
-            "endLine": 144,
+            "line": 138,
+            "endLine": 148,
             "text": "async listMemberPermissionState(\n    sagaPublicId: string,\n  ): Promise<SagaMemberPermissionStateVm[]> {\n    const { data, error } = await supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Mitglieder-Rechte: ${error.message}`);\n    }\n    return parseMemberState(data);\n  }"
           }
         },
@@ -40221,8 +40231,8 @@
           "kind": "rpc",
           "name": "set_saga_member_bundle",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 151,
-          "endLine": 155,
+          "line": 155,
+          "endLine": 159,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    })",
           "chain": "supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    })",
@@ -40232,8 +40242,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 146,
-            "endLine": 159,
+            "line": 150,
+            "endLine": 163,
             "text": "async setMemberBundle(input: {\n    projectId: string;\n    memberId: string;\n    bundleId: SagaBundleId;\n  }): Promise<void> {\n    const { error } = await supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    });\n    if (error) {\n      throw new Error(`Bundle konnte nicht gesetzt werden: ${error.message}`);\n    }\n  }"
           }
         },
@@ -40241,8 +40251,8 @@
           "kind": "rpc",
           "name": "list_saga_bindings",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 165,
-          "endLine": 168,
+          "line": 169,
+          "endLine": 172,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('list_saga_bindings', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    })",
           "chain": "supabase.rpc('list_saga_bindings', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    })",
@@ -40252,8 +40262,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 161,
-            "endLine": 173,
+            "line": 165,
+            "endLine": 177,
             "text": "async listBindings(\n    sagaPublicId: string,\n    assetKind?: SagaAssetKind | null,\n  ): Promise<SagaAssetBindingVm[]> {\n    const { data, error } = await supabase.rpc('list_saga_bindings', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    });\n    if (error) {\n      throw new Error(`Bindings: ${error.message}`);\n    }\n    return parseBindings(data);\n  }"
           }
         },
@@ -40261,8 +40271,8 @@
           "kind": "rpc",
           "name": "set_saga_binding_reveal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 180,
-          "endLine": 184,
+          "line": 184,
+          "endLine": 188,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    })",
           "chain": "supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    })",
@@ -40272,8 +40282,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 175,
-            "endLine": 193,
+            "line": 179,
+            "endLine": 197,
             "text": "async setBindingReveal(input: {\n    projectId: string;\n    bindingId: string;\n    reveal: SagaRevealStatus;\n  }): Promise<SagaAssetBindingVm> {\n    const { data, error } = await supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    });\n    if (error) {\n      throw new Error(`Sichtbarkeit: ${error.message}`);\n    }\n    const parsed = parseBindings([data]);\n    if (parsed.length === 0) {\n      throw new Error('Sichtbarkeit konnte nicht gelesen werden');\n    }\n    return parsed[0]!;\n  }"
           }
         },
@@ -40281,8 +40291,8 @@
           "kind": "rpc",
           "name": "get_saga_lore_timeline",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 196,
-          "endLine": 198,
+          "line": 200,
+          "endLine": 202,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
           "chain": "supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
@@ -40292,8 +40302,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "line": 195,
-            "endLine": 203,
+            "line": 199,
+            "endLine": 207,
             "text": "async getLoreTimeline(sagaPublicId: string): Promise<SagaLoreTimelineVm> {\n    const { data, error } = await supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Lore/Verlauf: ${error.message}`);\n    }\n    return parseSagaLoreTimeline(data);\n  }"
           }
         }
@@ -40397,249 +40407,255 @@
       "legacyDefects": [],
       "publicOperationSources": [
         {
+          "path": "src/infrastructure/project/host-project-adapter.ts",
+          "line": 22,
+          "endLine": 49,
+          "name": "createHostProjectAdapter"
+        },
+        {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 11,
-          "endLine": 16,
+          "line": 15,
+          "endLine": 20,
           "name": "requireUuid"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 22,
-          "endLine": 31,
+          "line": 26,
+          "endLine": 35,
           "name": "getMembers"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 37,
-          "endLine": 54,
+          "line": 41,
+          "endLine": 58,
           "name": "joinByCode"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 60,
-          "endLine": 77,
+          "line": 64,
+          "endLine": 81,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 82,
-          "endLine": 90,
+          "line": 86,
+          "endLine": 94,
           "name": "leave"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 95,
-          "endLine": 108,
+          "line": 99,
+          "endLine": 112,
           "name": "getMyProjects"
-        },
-        {
-          "path": "src/infrastructure/project/project-service.ts",
-          "line": 32,
-          "endLine": 34,
-          "name": "isRecord"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
           "line": 36,
           "endLine": 38,
-          "name": "isProjectStatus"
+          "name": "isRecord"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
           "line": 40,
-          "endLine": 72,
+          "endLine": 42,
+          "name": "isProjectStatus"
+        },
+        {
+          "path": "src/infrastructure/project/project-service.ts",
+          "line": 44,
+          "endLine": 76,
           "name": "isProjectDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 78,
-          "endLine": 112,
+          "line": 82,
+          "endLine": 116,
           "name": "isProjectSummaryRow"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 114,
-          "endLine": 123,
+          "line": 118,
+          "endLine": 127,
           "name": "isSessionStatus"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 125,
-          "endLine": 158,
+          "line": 129,
+          "endLine": 162,
           "name": "isSessionDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 160,
-          "endLine": 167,
+          "line": 164,
+          "endLine": 171,
           "name": "normalizeSessionDto"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 255,
-          "endLine": 289,
+          "line": 259,
+          "endLine": 293,
           "name": "createProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 294,
-          "endLine": 300,
+          "line": 298,
+          "endLine": 304,
           "name": "getUserProjectSummaries"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 302,
-          "endLine": 308,
+          "line": 306,
+          "endLine": 312,
           "name": "getUserProjects"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 322,
-          "endLine": 329,
+          "line": 326,
+          "endLine": 333,
           "name": "ensureNativeStarterProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 373,
-          "endLine": 394,
+          "line": 377,
+          "endLine": 398,
           "name": "normalizeSummaryRow"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 528,
-          "endLine": 531,
+          "line": 532,
+          "endLine": 535,
           "name": "joinProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 536,
-          "endLine": 569,
+          "line": 540,
+          "endLine": 573,
           "name": "getProjectById"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 574,
-          "endLine": 585,
+          "line": 578,
+          "endLine": 589,
           "name": "updateProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 590,
-          "endLine": 595,
+          "line": 594,
+          "endLine": 599,
           "name": "updateProjectWorldProfile"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 600,
-          "endLine": 611,
+          "line": 604,
+          "endLine": 615,
           "name": "updateProjectLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 617,
-          "endLine": 650,
+          "line": 621,
+          "endLine": 654,
           "name": "updateSessionLookSettings"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 655,
-          "endLine": 664,
+          "line": 659,
+          "endLine": 668,
           "name": "deleteProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 669,
-          "endLine": 672,
+          "line": 673,
+          "endLine": 676,
           "name": "leaveProject"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 677,
-          "endLine": 689,
+          "line": 681,
+          "endLine": 693,
           "name": "getProjectByPublicId"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 694,
-          "endLine": 733,
+          "line": 698,
+          "endLine": 737,
           "name": "getSessionByPublicIds"
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 738,
-          "endLine": 773,
+          "line": 742,
+          "endLine": 777,
           "name": "createProjectSession"
         },
         {
           "path": "src/infrastructure/project/saga-overview-service.ts",
-          "line": 20,
-          "endLine": 50,
+          "line": 24,
+          "endLine": 54,
           "name": "getOverviewByPublicId"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 48,
-          "endLine": 50,
+          "line": 52,
+          "endLine": 54,
           "name": "asString"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 52,
-          "endLine": 59,
+          "line": 56,
+          "endLine": 63,
           "name": "parseKeys"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 61,
-          "endLine": 75,
+          "line": 65,
+          "endLine": 79,
           "name": "parseMyPermissions"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 77,
-          "endLine": 97,
+          "line": 81,
+          "endLine": 101,
           "name": "parseMemberState"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 99,
-          "endLine": 121,
+          "line": 103,
+          "endLine": 125,
           "name": "parseBindings"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 124,
-          "endLine": 132,
+          "line": 128,
+          "endLine": 136,
           "name": "getMyPermissions"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 134,
-          "endLine": 144,
+          "line": 138,
+          "endLine": 148,
           "name": "listMemberPermissionState"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 146,
-          "endLine": 159,
+          "line": 150,
+          "endLine": 163,
           "name": "setMemberBundle"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 161,
-          "endLine": 173,
+          "line": 165,
+          "endLine": 177,
           "name": "listBindings"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 175,
-          "endLine": 193,
+          "line": 179,
+          "endLine": 197,
           "name": "setBindingReveal"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 195,
-          "endLine": 203,
+          "line": 199,
+          "endLine": 207,
           "name": "getLoreTimeline"
         }
       ],
