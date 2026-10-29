@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `e0c19cd66e7c7af64212240980641d6b85276c7484f5d3dbcb0012aa21193ca2`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `4f399c7ce2d27e792a2a05039fcd1a75798d3a26cc59d972b053743e2b05ab98`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -508,7 +508,7 @@ All backend operations are included in the public declarations above.
 
 | Path | SHA-256 |
 |---|---|
-| `src/domains/marketplace/client-trust.ts` | `02ff80caab306905a0eb91bc49a90634c01caf4bdfd6e6740c70273b081d7764` |
+| `src/domains/marketplace/client-trust.ts` | `35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34` |
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
 | `src/infrastructure/marketplace/marketplace-service.ts` | `e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |

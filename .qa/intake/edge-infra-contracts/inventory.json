@@ -37716,7 +37716,7 @@
         "sourceFiles": [
           {
             "path": "src/domains/marketplace/client-trust.ts",
-            "sha256": "02ff80caab306905a0eb91bc49a90634c01caf4bdfd6e6740c70273b081d7764"
+            "sha256": "35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34"
           },
           {
             "path": "src/domains/marketplace/contracts/marketplace.types.ts",
@@ -37748,7 +37748,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "e0c19cd66e7c7af64212240980641d6b85276c7484f5d3dbcb0012aa21193ca2",
+      "sourceContractSha256": "4f399c7ce2d27e792a2a05039fcd1a75798d3a26cc59d972b053743e2b05ab98",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],

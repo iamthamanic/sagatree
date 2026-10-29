@@ -11,7 +11,7 @@
   "supportingSourceFiles": [
     {
       "path": "src/domains/marketplace/client-trust.ts",
-      "sha256": "02ff80caab306905a0eb91bc49a90634c01caf4bdfd6e6740c70273b081d7764"
+      "sha256": "35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34"
     },
     {
       "path": "src/domains/marketplace/contracts/marketplace.types.ts",
@@ -39,8 +39,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "MarketplacePrivilegedClientKey",
       "path": "src/domains/marketplace/client-trust.ts",
-      "line": 27,
-      "endLine": 28,
+      "line": 30,
+      "endLine": 31,
       "text": "export type MarketplacePrivilegedClientKey =\n  (typeof MARKETPLACE_PRIVILEGED_CLIENT_KEYS)[number];"
     },
     {
