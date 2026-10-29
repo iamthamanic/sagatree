@@ -900,6 +900,18 @@ function checkMig417NpcsQuarantine() {
   );
 }
 
+function checkMig418QuestsQuarantine() {
+  console.log('MIG-418 (#834): quests edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-418-quests-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3176,6 +3188,7 @@ checkMig413LorekeeperQuarantine();
 checkMig415MarketplaceQuarantine();
 checkMig416MediaQuarantine();
 checkMig417NpcsQuarantine();
+checkMig418QuestsQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
