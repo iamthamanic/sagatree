@@ -848,8 +848,8 @@
       "rpc": "copy_native_saga_definition",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 111,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 115,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{ p_source_saga_id: sourceSagaId }",
       "requestKeys": [
         "p_source_saga_id"
@@ -1045,8 +1045,8 @@
       "rpc": "create_project_from_saga_version",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 159,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 163,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{\n        p_saga_id: input.sagaId,\n        p_version_id: input.versionId,\n        p_name: input.name ?? null,\n      }",
       "requestKeys": [
         "p_saga_id",
@@ -1348,8 +1348,8 @@
       "rpc": "create_user_saga_definition",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 133,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 137,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{\n        p_title: input.title,\n        p_blurb: input.blurb ?? '',\n      }",
       "requestKeys": [
         "p_title",
@@ -1726,8 +1726,8 @@
       "rpc": "duplicate_saga_playthrough",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 191,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 195,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{\n        p_project_id: input.projectId,\n        p_mode: input.mode,\n      }",
       "requestKeys": [
         "p_project_id",
@@ -2269,8 +2269,8 @@
       "rpc": "get_native_saga_definition_by_slug",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 31,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 35,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{ p_slug: slug }",
       "requestKeys": [
         "p_slug"
@@ -2458,8 +2458,8 @@
       "rpc": "get_saga_definition_editor",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 43,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 47,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{ p_saga_id: sagaId }",
       "requestKeys": [
         "p_saga_id"
@@ -2647,8 +2647,8 @@
       "rpc": "get_saga_definition_version",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 19,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 23,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{ p_version_id: versionId }",
       "requestKeys": [
         "p_version_id"
@@ -4901,8 +4901,8 @@
       "rpc": "promote_session_outcome_to_saga",
       "resolution": "literal-union-parameter",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 16,
-      "sourceSha256": "f6e4246d0c8bf4dc93557c2a82a91d4638e1f2e5755cd79494b7a18fa49205c3",
+      "line": 20,
+      "sourceSha256": "068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399",
       "requestExpression": "{\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  }",
       "requestKeys": [
         "p_session_id",
@@ -4986,8 +4986,8 @@
       "rpc": "promote_session_outcome_to_world",
       "resolution": "literal-union-parameter",
       "path": "src/infrastructure/saga/session-outcome-promotion-service.ts",
-      "line": 16,
-      "sourceSha256": "f6e4246d0c8bf4dc93557c2a82a91d4638e1f2e5755cd79494b7a18fa49205c3",
+      "line": 20,
+      "sourceSha256": "068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399",
       "requestExpression": "{\n    p_session_id: sessionId,\n    p_consequence_id: consequenceId,\n  }",
       "requestKeys": [
         "p_session_id",
@@ -5071,8 +5071,8 @@
       "rpc": "publish_saga_definition_version",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 86,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 90,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{\n        p_saga_id: input.sagaId,\n        p_expected_revision: input.expectedRevision,\n      }",
       "requestKeys": [
         "p_saga_id",
@@ -5821,8 +5821,8 @@
       "rpc": "save_saga_definition_draft",
       "resolution": "string-literal",
       "path": "src/infrastructure/saga/saga-definition-service.ts",
-      "line": 60,
-      "sourceSha256": "f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4",
+      "line": 64,
+      "sourceSha256": "4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611",
       "requestExpression": "{\n        p_saga_id: input.sagaId,\n        p_payload: payload,\n        p_expected_revision: input.expectedRevision,\n      }",
       "requestKeys": [
         "p_saga_id",

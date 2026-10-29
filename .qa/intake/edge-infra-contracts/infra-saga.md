@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `12e248c7b9b9c345ebc8bed2046b9f0b06d5fae07b5da7e19b15f4bd0182c785`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-saga.json](source-contracts/infra-saga.json) (SHA-256 `16534dec6ca81e00d3bdf75428df0b09e825933ce23aabcdc73f103b9c043d8d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -68,37 +68,37 @@ None in the reviewed source.
 
 ### rpc: get_saga_definition_version
 
-`src/infrastructure/saga/saga-definition-service.ts:19` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:23` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_saga_definition_version', { p_version_id: versionId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:17`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:21`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_native_saga_definition_by_slug
 
-`src/infrastructure/saga/saga-definition-service.ts:31` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:35` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_native_saga_definition_by_slug', { p_slug: slug })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:29`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:33`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_saga_definition_editor
 
-`src/infrastructure/saga/saga-definition-service.ts:43` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:47` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_saga_definition_editor', { p_saga_id: sagaId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:41`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: save_saga_definition_draft
 
-`src/infrastructure/saga/saga-definition-service.ts:60` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:64` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -109,10 +109,10 @@ supabase.rpc('save_saga_definition_draft', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:53`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:57`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: publish_saga_definition_version
 
-`src/infrastructure/saga/saga-definition-service.ts:86` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:90` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -122,20 +122,20 @@ supabase.rpc('publish_saga_definition_version', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:81`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: copy_native_saga_definition
 
-`src/infrastructure/saga/saga-definition-service.ts:111` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:115` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('copy_native_saga_definition', { p_source_saga_id: sourceSagaId })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:109`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:113`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_user_saga_definition
 
-`src/infrastructure/saga/saga-definition-service.ts:133` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:137` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -145,10 +145,10 @@ supabase.rpc('create_user_saga_definition', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:128`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:132`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_project_from_saga_version
 
-`src/infrastructure/saga/saga-definition-service.ts:159` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:163` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -159,10 +159,10 @@ supabase.rpc('create_project_from_saga_version', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:153`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:157`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: duplicate_saga_playthrough
 
-`src/infrastructure/saga/saga-definition-service.ts:191` — literal-or-constant.
+`src/infrastructure/saga/saga-definition-service.ts:195` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -172,10 +172,10 @@ supabase.rpc('duplicate_saga_playthrough', {
       })
 ```
 
-Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:186`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/saga-definition-service.ts:190`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: promote_session_outcome_to_saga
 
-`src/infrastructure/saga/session-outcome-promotion-service.ts:16` — finite-literal-union.
+`src/infrastructure/saga/session-outcome-promotion-service.ts:20` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
@@ -185,10 +185,10 @@ supabase.rpc(rpc, {
   })
 ```
 
-Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:11`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:15`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: promote_session_outcome_to_world
 
-`src/infrastructure/saga/session-outcome-promotion-service.ts:16` — finite-literal-union.
+`src/infrastructure/saga/session-outcome-promotion-service.ts:20` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
@@ -198,17 +198,237 @@ supabase.rpc(rpc, {
   })
 ```
 
-Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:11`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/saga/session-outcome-promotion-service.ts:15`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
-### src/infrastructure/saga/saga-definition-service.ts:216
+### src/infrastructure/saga/host-saga-adapter.ts:12
+
+```ts
+export type HostSagaAdapter = HostSagaPorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_SAGA_OPS;
+  readonly rpcNames: typeof HOST_SAGA_RPC_NAMES;
+};
+```
+
+### src/infrastructure/saga/host-saga-adapter.ts:22
+
+```ts
+export function createHostSagaAdapter(ports: HostSagaPorts): HostSagaAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_SAGA_OPS,
+    rpcNames: HOST_SAGA_RPC_NAMES,
+    copyNativeSagaDefinition: (actorId, sourceSagaId) =>
+      ports.copyNativeSagaDefinition(actorId, sourceSagaId),
+    createProjectFromSagaVersion: (actorId, sagaId, versionId, name) =>
+      ports.createProjectFromSagaVersion(actorId, sagaId, versionId, name),
+    createUserSagaDefinition: (actorId, title, blurb) =>
+      ports.createUserSagaDefinition(actorId, title, blurb),
+    duplicateSagaPlaythrough: (actorId, projectId, mode) =>
+      ports.duplicateSagaPlaythrough(actorId, projectId, mode),
+    getNativeSagaDefinitionBySlug: (actorId, slug) =>
+      ports.getNativeSagaDefinitionBySlug(actorId, slug),
+    getSagaDefinitionEditor: (actorId, sagaId) =>
+      ports.getSagaDefinitionEditor(actorId, sagaId),
+    getSagaDefinitionVersion: (actorId, versionId) =>
+      ports.getSagaDefinitionVersion(actorId, versionId),
+    promoteSessionOutcomeToSaga: (actorId, sessionId, consequenceId) =>
+      ports.promoteSessionOutcomeToSaga(actorId, sessionId, consequenceId),
+    promoteSessionOutcomeToWorld: (actorId, sessionId, consequenceId) =>
+      ports.promoteSessionOutcomeToWorld(actorId, sessionId, consequenceId),
+    publishSagaDefinitionVersion: (actorId, sagaId, expectedRevision) =>
+      ports.publishSagaDefinitionVersion(actorId, sagaId, expectedRevision),
+    saveSagaDefinitionDraft: (actorId, sagaId, payload, expectedRevision) =>
+      ports.saveSagaDefinitionDraft(actorId, sagaId, payload, expectedRevision),
+  };
+}
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:10
+
+```ts
+export type HostSagaResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string; readonly detail?: string };
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:15
+
+```ts
+export type HostSagaIdVm = {
+  readonly sagaId: string;
+  readonly versionId?: string;
+  readonly revision?: number;
+};
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:21
+
+```ts
+export type HostSagaProjectVm = {
+  readonly id: string;
+  readonly publicId: string;
+};
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:26
+
+```ts
+export type HostSagaEditorVm = Readonly<Record<string, unknown>> & {
+  readonly sagaId: string;
+  readonly canEdit: boolean;
+};
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:31
+
+```ts
+export type HostSagaVersionVm = Readonly<Record<string, unknown>>;
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:32
+
+```ts
+export type HostPromoteVm = Readonly<Record<string, unknown>>;
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:38
+
+```ts
+export type HostSagaPorts = {
+  readonly copyNativeSagaDefinition: (
+    actorId: string,
+    sourceSagaId: string,
+  ) => Promise<HostSagaResult<{ readonly sagaId: string; readonly versionId: string }>>;
+  readonly createProjectFromSagaVersion: (
+    actorId: string,
+    sagaId: string,
+    versionId: string,
+    name?: string | null,
+  ) => Promise<HostSagaResult<HostSagaProjectVm>>;
+  readonly createUserSagaDefinition: (
+    actorId: string,
+    title: string,
+    blurb?: string,
+  ) => Promise<
+    HostSagaResult<{
+      readonly sagaId: string;
+      readonly versionId: string;
+      readonly revision: number;
+    }>
+  >;
+  readonly duplicateSagaPlaythrough: (
+    actorId: string,
+    projectId: string,
+    mode?: string | null,
+  ) => Promise<HostSagaResult<HostSagaProjectVm>>;
+  readonly getNativeSagaDefinitionBySlug: (
+    actorId: string,
+    slug: string,
+  ) => Promise<HostSagaResult<HostSagaVersionVm>>;
+  readonly getSagaDefinitionEditor: (
+    actorId: string,
+    sagaId: string,
+  ) => Promise<HostSagaResult<HostSagaEditorVm>>;
+  readonly getSagaDefinitionVersion: (
+    actorId: string,
+    versionId: string,
+  ) => Promise<HostSagaResult<HostSagaVersionVm>>;
+  readonly promoteSessionOutcomeToSaga: (
+    actorId: string,
+    sessionId: string,
+    consequenceId: string,
+  ) => Promise<HostSagaResult<HostPromoteVm>>;
+  readonly promoteSessionOutcomeToWorld: (
+    actorId: string,
+    sessionId: string,
+    consequenceId: string,
+  ) => Promise<HostSagaResult<HostPromoteVm>>;
+  readonly publishSagaDefinitionVersion: (
+    actorId: string,
+    sagaId: string,
+    expectedRevision: number,
+  ) => Promise<
+    HostSagaResult<{
+      readonly sagaId: string;
+      readonly versionId: string;
+      readonly versionLabel: string;
+      readonly revision: number;
+    }>
+  >;
+  readonly saveSagaDefinitionDraft: (
+    actorId: string,
+    sagaId: string,
+    payload: Record<string, unknown>,
+    expectedRevision: number,
+  ) => Promise<
+    HostSagaResult<{
+      readonly sagaId: string;
+      readonly versionId: string;
+      readonly revision: number;
+      readonly payload: Record<string, unknown>;
+    }>
+  >;
+};
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:115
+
+```ts
+export const HOST_SAGA_RPC_NAMES = [
+  'copy_native_saga_definition',
+  'create_project_from_saga_version',
+  'create_user_saga_definition',
+  'duplicate_saga_playthrough',
+  'get_native_saga_definition_by_slug',
+  'get_saga_definition_editor',
+  'get_saga_definition_version',
+  'promote_session_outcome_to_saga',
+  'promote_session_outcome_to_world',
+  'publish_saga_definition_version',
+  'save_saga_definition_draft',
+] as const;
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:129
+
+```ts
+export type HostSagaRpcName = (typeof HOST_SAGA_RPC_NAMES)[number];
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:132
+
+```ts
+export const HOST_SAGA_OPS = [
+  'copyNativeSagaDefinition',
+  'createProjectFromSagaVersion',
+  'createUserSagaDefinition',
+  'duplicateSagaPlaythrough',
+  'getNativeSagaDefinitionBySlug',
+  'getSagaDefinitionEditor',
+  'getSagaDefinitionVersion',
+  'promoteSessionOutcomeToSaga',
+  'promoteSessionOutcomeToWorld',
+  'publishSagaDefinitionVersion',
+  'saveSagaDefinitionDraft',
+] as const;
+```
+
+### src/infrastructure/saga/host-saga-ports.contract.ts:146
+
+```ts
+export type HostSagaOp = (typeof HOST_SAGA_OPS)[number];
+```
+
+### src/infrastructure/saga/saga-definition-service.ts:220
 
 ```ts
 export const sagaDefinitionService = new SagaDefinitionService();
 ```
 
-### src/infrastructure/saga/session-outcome-promotion-service.ts:30
+### src/infrastructure/saga/session-outcome-promotion-service.ts:34
 
 ```ts
 export const sessionOutcomePromotionService = {
@@ -224,7 +444,7 @@ export const sessionOutcomePromotionService = {
 
 ## Remaining backend helper operations
 
-### src/infrastructure/saga/saga-definition-service.ts:17
+### src/infrastructure/saga/saga-definition-service.ts:21
 
 ```ts
 async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {
@@ -240,7 +460,7 @@ async getVersionById(versionId: string): Promise<SagaDefinitionVersionVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:29
+### src/infrastructure/saga/saga-definition-service.ts:33
 
 ```ts
 async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {
@@ -256,7 +476,7 @@ async getNativeBySlug(slug: string): Promise<SagaDefinitionVersionVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:41
+### src/infrastructure/saga/saga-definition-service.ts:45
 
 ```ts
 async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {
@@ -272,7 +492,7 @@ async getEditor(sagaId: string): Promise<SagaDefinitionEditorVm> {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:53
+### src/infrastructure/saga/saga-definition-service.ts:57
 
 ```ts
 async saveDraft(input: {
@@ -304,7 +524,7 @@ async saveDraft(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:81
+### src/infrastructure/saga/saga-definition-service.ts:85
 
 ```ts
 async publishVersion(input: {
@@ -336,7 +556,7 @@ async publishVersion(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:109
+### src/infrastructure/saga/saga-definition-service.ts:113
 
 ```ts
 async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: string }> {
@@ -359,7 +579,7 @@ async createCopyFromNative(sourceSagaId: string): Promise<{ readonly sagaId: str
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:128
+### src/infrastructure/saga/saga-definition-service.ts:132
 
 ```ts
 async createUserSaga(input: {
@@ -388,7 +608,7 @@ async createUserSaga(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:153
+### src/infrastructure/saga/saga-definition-service.ts:157
 
 ```ts
 async createProjectFromVersion(input: {
@@ -422,7 +642,7 @@ async createProjectFromVersion(input: {
   }
 ```
 
-### src/infrastructure/saga/saga-definition-service.ts:186
+### src/infrastructure/saga/saga-definition-service.ts:190
 
 ```ts
 async duplicatePlaythrough(input: {
@@ -455,7 +675,7 @@ async duplicatePlaythrough(input: {
   }
 ```
 
-### src/infrastructure/saga/session-outcome-promotion-service.ts:11
+### src/infrastructure/saga/session-outcome-promotion-service.ts:15
 
 ```ts
 async function callPromote(
@@ -485,8 +705,10 @@ async function callPromote(
 |---|---|
 | `src/domains/saga/contracts/saga-definition.ts` | `69b8fab72a158942d4f807e8b9fabcdae815506fb18e4e82434a71d0cdb9ee05` |
 | `src/domains/session/contracts/session-outcome-promotion.ts` | `d3c26e886f5f1da3b617723feaad5510218d486413ea7953bbc382593578bedd` |
-| `src/infrastructure/saga/saga-definition-service.ts` | `f822494e28a12fb507a934430baeed0e77e8b60ed1f84e17eca2e3f68e6ed6a4` |
-| `src/infrastructure/saga/session-outcome-promotion-service.ts` | `f6e4246d0c8bf4dc93557c2a82a91d4638e1f2e5755cd79494b7a18fa49205c3` |
+| `src/infrastructure/saga/host-saga-adapter.ts` | `7f0c52eaafcd6ee4f0deec9e5e4a5a282dc1d2ded67bd3a0e00a65636097aa62` |
+| `src/infrastructure/saga/host-saga-ports.contract.ts` | `c3734bbd18e4a04460915e128bbc2c46626934cf7bde76305918355f0ba85649` |
+| `src/infrastructure/saga/saga-definition-service.ts` | `4d361fe8dff964fdd8fc2a15a7a7c8a8254dd936f7536ad543637b52280fd611` |
+| `src/infrastructure/saga/session-outcome-promotion-service.ts` | `068813032aab3e73e4a304a55eb62b2fd9c45c92cc627eba698ad7875feab399` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 
