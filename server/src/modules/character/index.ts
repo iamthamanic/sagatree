@@ -108,3 +108,24 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     seedPcForTests: (input) => store.seedPcForTests(input),
   };
 }
+
+/** MIG-423 Edge spellbook Map quarantine — not a public host route. */
+export {
+  SPELLBOOK_EDGE_MAP_IS_DURABLE,
+  SPELLBOOK_EDGE_PUBLIC_ACTIVATION_AUTHORIZED,
+  castQuarantineSpell,
+  characterIdPathIsNotAuthority,
+  createQuarantineSpell,
+  createSpellbookEdgeQuarantineStore,
+  describeSpellbookEdgeLegacyDefects,
+  getQuarantineSpell,
+  getQuarantineSpellbook,
+  learnQuarantineSpell,
+  listQuarantineSpells,
+  prepareQuarantineSpell,
+  restoreQuarantineSpellSlots,
+  unprepareQuarantineSpell,
+  type QuarantineCharacterSpellbook,
+  type QuarantineSpell,
+  type SpellbookEdgeQuarantineStore,
+} from './internal/spellbook-edge-quarantine.ts';

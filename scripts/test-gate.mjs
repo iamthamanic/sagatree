@@ -960,6 +960,18 @@ function checkMig422SessionsQuarantine() {
   );
 }
 
+function checkMig423SpellbookQuarantine() {
+  console.log('MIG-423 (#839): spellbook edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-423-spellbook-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3241,6 +3253,7 @@ checkMig419RulesetsQuarantine();
 checkMig420SessionMediaToken();
 checkMig421SessionRecap();
 checkMig422SessionsQuarantine();
+checkMig423SpellbookQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
