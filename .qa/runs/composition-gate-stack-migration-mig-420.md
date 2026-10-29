@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-420 (#836)
 
-- HEAD_SHA: 23c570d9f44a9159202012aa077be288883d9c73
+- HEAD_SHA: 603572ce11f2a820ba2fb4c79a3ba81f6400a897
 - BASE_SHA: 12bcbc9bcff4a349bf41edcf2944ba42a1ba3efd
 - HOP_DIGEST: session-media-token-isolated-v1
 - Date: 2026-10-29
