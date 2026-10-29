@@ -10,6 +10,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { getRequestListener } from '@hono/node-server';
 import type { createHealthUseCase } from '../application/health/index.ts';
 import type { TransportUseCase } from '../application/transport/index.ts';
+import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
+import type { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
@@ -55,6 +57,9 @@ export type RouteRegistryDeps = {
     actorId: string;
     worldId: string;
   }) => { ok: true; mutated: boolean } | { ok: false; status: number; error: string };
+  /** MIG-301 AI host HTTP adapters. */
+  readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
+  readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
 };
 
 export function sendJson(
@@ -99,6 +104,8 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     recordPing: deps.recordPing,
     tryAuthorizedProjectTouch: deps.tryAuthorizedProjectTouch,
     tryAuthorizedWorldTouch: deps.tryAuthorizedWorldTouch,
+    aiCredentials: deps.aiCredentials,
+    aiOllama: deps.aiOllama,
   });
   const honoListener = getRequestListener(app.fetch, { overrideGlobalObjects: false });
 

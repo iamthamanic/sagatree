@@ -235,17 +235,21 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/ai/ai-provider-credentials-service.ts:57
+### src/infrastructure/ai/host-ai-invoke.ts:68
 
 
 ```ts
-async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {
-  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });
+async function invokeEdge(
+  functionName: 'ai-provider-credentials' | 'ollama-settings',
+  body: Record<string, unknown>,
+  unreachableMessage: string,
+): Promise<unknown> {
+  const { data, error } = await supabase.functions.invoke(functionName, { body });
   if (error) {
-    const serverMessage = await getFunctionErrorMessage(error);
-    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');
+    const serverMessage = await edgeErrorMessage(error);
+    throw new Error(serverMessage ?? unreachableMessage);
   }
-  return parseResponse(data);
+  return data;
 }
 ```
 
@@ -877,7 +881,7 @@ async function validateProviderApiKey(
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/ai/ai-provider-credentials-service.ts` | `2d8233ab5816f88afd6b20db580e87d6f8d8b447a28e0f02d02d7c7425249d50` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
 | `supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |

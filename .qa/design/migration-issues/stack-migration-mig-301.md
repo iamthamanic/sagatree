@@ -23,7 +23,7 @@ src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transpor
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/ai-providers/contracts.ts`, `src/domains/ai-providers/index.ts`, `src/domains/ai-providers/ollama-settings.ts`, `src/infrastructure/ai/ai-provider-credentials-service.ts`, `src/infrastructure/ai/ollama-settings-service.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/ai-providers/contracts.ts`, `src/domains/ai-providers/index.ts`, `src/domains/ai-providers/ollama-settings.ts`, `src/infrastructure/ai/ai-provider-credentials-service.ts`, `src/infrastructure/ai/host-ai-invoke.ts`, `src/infrastructure/ai/ollama-settings-service.ts`, `src/lib/hostAuthBridge.ts`, `src/lib/supabase.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-ai.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-ai.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 

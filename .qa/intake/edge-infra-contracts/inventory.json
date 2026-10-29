@@ -1063,8 +1063,8 @@
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "sourceFiles": [
           {
-            "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-            "sha256": "2d8233ab5816f88afd6b20db580e87d6f8d8b447a28e0f02d02d7c7425249d50"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -1234,28 +1234,28 @@
         "behavior": "handleOptions returns204. Default methods GET,POST,PUT,DELETE,OPTIONS and headers authorization,x-client-info,apikey,content-type with Vary:Origin. First nonempty envKeys value wins; default CHARACTER_AI_ALLOWED_ORIGIN. Explicit star returns star; matching CSV origin echoed; localhost allowed if unconfigured or opt-in. Unmatched origin omits header unless configured-or-star, which emits configured raw value or star. CORS never supplies account authorization."
       },
       "callSites": [
-        "src/infrastructure/ai/ai-provider-credentials-service.ts"
+        "src/infrastructure/ai/host-ai-invoke.ts"
       ],
       "adapterCalls": [
         {
           "area": "ai",
           "kind": "edge",
           "name": "ai-provider-credentials",
-          "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 57,
-          "endLine": 57,
-          "resolution": "literal-or-constant",
-          "expression": "supabase.functions.invoke('ai-provider-credentials', { body })",
-          "chain": "supabase.functions.invoke('ai-provider-credentials', { body })",
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 68,
+          "endLine": 68,
+          "resolution": "finite-literal-union",
+          "expression": "supabase.functions.invoke(functionName, { body })",
+          "chain": "supabase.functions.invoke(functionName, { body })",
           "arguments": [
-            "'ai-provider-credentials'",
+            "functionName",
             "{ body }"
           ],
           "enclosingOperation": {
-            "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-            "line": 56,
-            "endLine": 63,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "line": 63,
+            "endLine": 74,
+            "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
       ],
@@ -20361,8 +20361,8 @@
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "sourceFiles": [
           {
-            "path": "src/infrastructure/ai/ollama-settings-service.ts",
-            "sha256": "e7b2dede5b175b22e3b3218f10e2c897deb2135dcac131dcefc1e87796891a91"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -20582,28 +20582,28 @@
         "behavior": "handleOptions returns204. Default methods GET,POST,PUT,DELETE,OPTIONS and headers authorization,x-client-info,apikey,content-type with Vary:Origin. First nonempty envKeys value wins; default CHARACTER_AI_ALLOWED_ORIGIN. Explicit star returns star; matching CSV origin echoed; localhost allowed if unconfigured or opt-in. Unmatched origin omits header unless configured-or-star, which emits configured raw value or star. CORS never supplies account authorization."
       },
       "callSites": [
-        "src/infrastructure/ai/ollama-settings-service.ts"
+        "src/infrastructure/ai/host-ai-invoke.ts"
       ],
       "adapterCalls": [
         {
           "area": "ai",
           "kind": "edge",
           "name": "ollama-settings",
-          "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 52,
-          "endLine": 52,
-          "resolution": "literal-or-constant",
-          "expression": "supabase.functions.invoke('ollama-settings', { body })",
-          "chain": "supabase.functions.invoke('ollama-settings', { body })",
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 68,
+          "endLine": 68,
+          "resolution": "finite-literal-union",
+          "expression": "supabase.functions.invoke(functionName, { body })",
+          "chain": "supabase.functions.invoke(functionName, { body })",
           "arguments": [
-            "'ollama-settings'",
+            "functionName",
             "{ body }"
           ],
           "enclosingOperation": {
-            "path": "src/infrastructure/ai/ollama-settings-service.ts",
-            "line": 51,
-            "endLine": 58,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ollama-settings', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Ollama-Einstellungen nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "line": 63,
+            "endLine": 74,
+            "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
       ],
@@ -28736,6 +28736,7 @@
       "implementationIssue": 800,
       "files": [
         "src/infrastructure/ai/ai-provider-credentials-service.ts",
+        "src/infrastructure/ai/host-ai-invoke.ts",
         "src/infrastructure/ai/ollama-settings-service.ts"
       ],
       "verification": {
@@ -28756,11 +28757,19 @@
           },
           {
             "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-            "sha256": "2d8233ab5816f88afd6b20db580e87d6f8d8b447a28e0f02d02d7c7425249d50"
+            "sha256": "deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51"
+          },
+          {
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "sha256": "2ca0b59aa92fc669d37349ff52ee4b701ed6abcdfd476a7e8847dda23271c44e"
           },
           {
             "path": "src/infrastructure/ai/ollama-settings-service.ts",
-            "sha256": "e7b2dede5b175b22e3b3218f10e2c897deb2135dcac131dcefc1e87796891a91"
+            "sha256": "aaf53b0f3004f001018518dade230a67f923c98897413476c9635f7d0aae1116"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -28772,7 +28781,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "12fceac5fa232fcf0be1497c6ad17006a35c2a091f994a1254ff0edce6ad5a19",
+      "sourceContractSha256": "8042aca0facae9dee39021517042bb1d0e298b2fc3575e6f8eb61a8f8a2f1913",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28789,41 +28798,41 @@
         {
           "kind": "edge",
           "name": "ai-provider-credentials",
-          "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 57,
-          "endLine": 57,
-          "resolution": "literal-or-constant",
-          "expression": "supabase.functions.invoke('ai-provider-credentials', { body })",
-          "chain": "supabase.functions.invoke('ai-provider-credentials', { body })",
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 68,
+          "endLine": 68,
+          "resolution": "finite-literal-union",
+          "expression": "supabase.functions.invoke(functionName, { body })",
+          "chain": "supabase.functions.invoke(functionName, { body })",
           "arguments": [
-            "'ai-provider-credentials'",
+            "functionName",
             "{ body }"
           ],
           "enclosingOperation": {
-            "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-            "line": 56,
-            "endLine": 63,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ai-provider-credentials', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'AI-Provider-Dienst nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "line": 63,
+            "endLine": 74,
+            "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         },
         {
           "kind": "edge",
           "name": "ollama-settings",
-          "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 52,
-          "endLine": 52,
-          "resolution": "literal-or-constant",
-          "expression": "supabase.functions.invoke('ollama-settings', { body })",
-          "chain": "supabase.functions.invoke('ollama-settings', { body })",
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 68,
+          "endLine": 68,
+          "resolution": "finite-literal-union",
+          "expression": "supabase.functions.invoke(functionName, { body })",
+          "chain": "supabase.functions.invoke(functionName, { body })",
           "arguments": [
-            "'ollama-settings'",
+            "functionName",
             "{ body }"
           ],
           "enclosingOperation": {
-            "path": "src/infrastructure/ai/ollama-settings-service.ts",
-            "line": 51,
-            "endLine": 58,
-            "text": "async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> {\n  const { data, error } = await supabase.functions.invoke('ollama-settings', { body });\n  if (error) {\n    const serverMessage = await getFunctionErrorMessage(error);\n    throw new Error(serverMessage ?? 'Ollama-Einstellungen nicht erreichbar.');\n  }\n  return parseResponse(data);\n}"
+            "path": "src/infrastructure/ai/host-ai-invoke.ts",
+            "line": 63,
+            "endLine": 74,
+            "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
       ],
@@ -28863,139 +28872,151 @@
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
           "line": 41,
-          "endLine": 43,
-          "name": "hasResponseContext"
-        },
-        {
-          "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 45,
-          "endLine": 54,
-          "name": "getFunctionErrorMessage"
-        },
-        {
-          "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 56,
-          "endLine": 63,
-          "name": "invoke"
-        },
-        {
-          "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 65,
-          "endLine": 68,
+          "endLine": 44,
           "name": "parseModality"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 70,
-          "endLine": 72,
+          "line": 46,
+          "endLine": 48,
           "name": "parseAuth"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 74,
-          "endLine": 77,
+          "line": 50,
+          "endLine": 53,
           "name": "parseStatus"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 79,
-          "endLine": 102,
+          "line": 55,
+          "endLine": 79,
           "name": "parseProviderView"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 105,
-          "endLine": 115,
+          "line": 92,
+          "endLine": 102,
           "name": "list"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 117,
-          "endLine": 127,
+          "line": 104,
+          "endLine": 114,
           "name": "upsert"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 129,
-          "endLine": 135,
+          "line": 116,
+          "endLine": 122,
           "name": "refresh"
         },
         {
           "path": "src/infrastructure/ai/ai-provider-credentials-service.ts",
-          "line": 137,
-          "endLine": 140,
+          "line": 124,
+          "endLine": 127,
           "name": "delete"
         },
         {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 31,
+          "endLine": 33,
+          "name": "isRecord"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 35,
+          "endLine": 38,
+          "name": "isHostAiEnabled"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 40,
+          "endLine": 46,
+          "name": "parseHostAiEnvelope"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 48,
+          "endLine": 50,
+          "name": "hasResponseContext"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 52,
+          "endLine": 61,
+          "name": "edgeErrorMessage"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 63,
+          "endLine": 74,
+          "name": "invokeEdge"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 76,
+          "endLine": 109,
+          "name": "invokeHost"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 115,
+          "endLine": 147,
+          "name": "createAiInvoke"
+        },
+        {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 17,
-          "endLine": 19,
+          "line": 18,
+          "endLine": 20,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 21,
-          "endLine": 34,
+          "line": 22,
+          "endLine": 38,
           "name": "parseResponse"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 36,
-          "endLine": 38,
-          "name": "hasResponseContext"
-        },
-        {
-          "path": "src/infrastructure/ai/ollama-settings-service.ts",
           "line": 40,
-          "endLine": 49,
-          "name": "getFunctionErrorMessage"
-        },
-        {
-          "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 51,
-          "endLine": 58,
-          "name": "invoke"
-        },
-        {
-          "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 60,
-          "endLine": 81,
+          "endLine": 61,
           "name": "parseSettings"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 83,
-          "endLine": 86,
+          "line": 63,
+          "endLine": 66,
           "name": "parseModels"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 89,
-          "endLine": 95,
+          "line": 79,
+          "endLine": 85,
           "name": "get"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 97,
-          "endLine": 112,
+          "line": 87,
+          "endLine": 102,
           "name": "upsert"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 114,
-          "endLine": 135,
+          "line": 104,
+          "endLine": 122,
           "name": "test"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 137,
-          "endLine": 150,
+          "line": 124,
+          "endLine": 137,
           "name": "listModels"
         },
         {
           "path": "src/infrastructure/ai/ollama-settings-service.ts",
-          "line": 152,
-          "endLine": 158,
+          "line": 139,
+          "endLine": 145,
           "name": "clear"
         }
       ],

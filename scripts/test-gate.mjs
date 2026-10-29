@@ -1068,6 +1068,18 @@ function checkMig306MediaAdapter() {
   );
 }
 
+function checkMig301AiAdapter() {
+  console.log('MIG-301 AI adapter (#800): host HTTP + client dual-path...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-301-ai-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig309Rulesets() {
   console.log('MIG-309 rulesets (#808): catalog load/save + ownership deny...');
   execFileSync(
@@ -3230,6 +3242,7 @@ checkCompositionGateSelfTest();
 checkMig500LocalAssets();
 checkMig501ResumableUploads();
 checkMig306MediaAdapter();
+checkMig301AiAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();
