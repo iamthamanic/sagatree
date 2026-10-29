@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-422 (#838)
 
-- HEAD_SHA: 6673855bb60a1b0a0549b022bad42eeccae58dca
+- HEAD_SHA: 2c5351288cfe1b61c81b0df6005beb354836be2d
 - BASE_SHA: 509f92026b74451057b3187a1820e743abbc58f0
 - HOP_DIGEST: sessions-edge-quarantine-v1
 - Date: 2026-10-29
