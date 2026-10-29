@@ -71,12 +71,19 @@ function requestHostName(headers: Headers): string {
  * AUTH_NOT_CONFIGURED alone is insufficient — require loopback Host (+ Origin)
  * so DNS-rebinding attackers cannot inherit the solo owner actor.
  */
+function normalizeHostname(hostname: string): string {
+  const raw = hostname.trim().toLowerCase();
+  // URL.hostname keeps IPv6 brackets (`[::1]`); strip for loopback allowlist match.
+  if (raw.startsWith('[') && raw.endsWith(']')) return raw.slice(1, -1);
+  return raw;
+}
+
 function soloAuthNotConfiguredAllowed(headers: Headers): boolean {
   if (!isLoopbackHost(requestHostName(headers))) return false;
   const origin = headers.get('origin');
   if (!origin) return true;
   try {
-    return isLoopbackHost(new URL(origin).hostname);
+    return isLoopbackHost(normalizeHostname(new URL(origin).hostname));
   } catch {
     return false;
   }

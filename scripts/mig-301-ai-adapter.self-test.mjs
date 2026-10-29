@@ -240,6 +240,14 @@ try {
     );
     assert(rebind.status === 403 && rebind.json.code === 'HOST_DENIED', 'solo non-loopback Host denied');
 
+    const ipv6 = await post(
+      '/api/v1/ai/provider-credentials',
+      { action: 'list' },
+      soloApp,
+      { host: '[::1]:8787', origin: 'http://[::1]:8787' },
+    );
+    assert(ipv6.status === 200 && ipv6.json.status === 'ok', 'solo IPv6 loopback Origin allowed');
+
     const plain = await soloApp.request('/api/v1/ai/provider-credentials', {
       method: 'POST',
       headers: {
