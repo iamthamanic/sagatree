@@ -59,6 +59,11 @@ import {
   type NpcCreaturePorts,
 } from '../modules/npc-creature/index.ts';
 import {
+  createUserProfilePorts,
+  createUserProfilePortsStub,
+  type UserProfilePorts,
+} from '../modules/user-profile/index.ts';
+import {
   createSagaPorts,
   createSagaPortsStub,
   type SagaPorts,
@@ -105,6 +110,8 @@ export type HostInstance = {
   readonly look: LookProfilePorts;
   /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
   readonly npcCreature: NpcCreaturePorts;
+  /** MIG-312 user_profiles + user-avatars ports (HTTP cutover → MIG-600). */
+  readonly userProfile: UserProfilePorts;
   /** MIG-308 composed project infra ports — 11 RPCs (HTTP cutover → MIG-600). */
   readonly projectInfra: ProjectInfraPorts;
   /** MIG-310 composed saga infra ports — 11 RPCs (HTTP cutover → MIG-600). */
@@ -248,6 +255,9 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           },
         })
       : createNpcCreaturePortsStub();
+    const userProfile: UserProfilePorts = db
+      ? createUserProfilePorts({ db, dataDir: config.dataDir })
+      : createUserProfilePortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
@@ -383,6 +393,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       rulesets,
       look,
       npcCreature,
+      userProfile,
       projectInfra,
       sagaInfra,
       saga,

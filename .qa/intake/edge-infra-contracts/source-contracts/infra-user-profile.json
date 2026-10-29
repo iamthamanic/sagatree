@@ -12,12 +12,24 @@
       "sha256": "ca478b00af6f5b52a531dcb244e8a2d5f92e4765bde69d1d52afa80e1542dbdb"
     },
     {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "sha256": "c9625210b18534d7340c84a3f4202e3f775a933dbefed8de66b489c1bba9f604"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "sha256": "7f4aaaa098bd0a8625e916074ae7c4a0e2d34b99d4effd1ccb0a890148f01511"
+    },
+    {
+      "path": "src/infrastructure/user-profile/index.ts",
+      "sha256": "5f2fbf0152a79c17b98a666612a79bfbef708482587e665604fa71cd16016e7a"
+    },
+    {
       "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
       "sha256": "21c6318bd3941ea565a1160598a9ad6203c75d9a4d74a2ec10be33fe990dd076"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "sha256": "049906c505155c6b73f71355d44b607d251d556a565a03d44bc7ed86a5a8c981"
+      "sha256": "0363483f748d866d6b361edcd5d94b6963cfb1a4d4e35a218e57801d166713d0"
     }
   ],
   "supportingSourceFiles": [
@@ -681,6 +693,22 @@
       "expression": "import {\n  publishAccountAvatarUrl,\n  subscribeAccountAvatarUrl,\n} from './account-avatar-store';"
     },
     {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-user-profile-ports.contract",
+      "resolvedPath": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "expression": "import type { HostUserProfilePorts } from './host-user-profile-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-user-profile-ports.contract",
+      "resolvedPath": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "expression": "import { HOST_USER_PROFILE_OPS } from './host-user-profile-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
       "line": 5,
       "endLine": 5,
@@ -706,24 +734,24 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 9,
+      "endLine": 9,
       "module": "../../domains/user-profile",
       "resolvedPath": "src/domains/user-profile/index.ts",
       "expression": "import type { UserProfileVm } from '../../domains/user-profile';"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 6,
-      "endLine": 6,
+      "line": 10,
+      "endLine": 10,
       "module": "./supabase-user-profile.repository",
       "resolvedPath": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
       "expression": "import { supabaseUserProfileRepository } from './supabase-user-profile.repository';"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 25,
-      "endLine": 25,
+      "line": 29,
+      "endLine": 29,
       "module": "../media/optimizer",
       "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
       "expression": "import('../media/optimizer')",
@@ -792,6 +820,54 @@
       "text": "export function ensureAccountAvatarLoaded(\n  userId: string,\n  loadProfile: ProfileLoader,\n): Promise<void> {\n  if (remoteLoadedUserId === userId) {\n    return Promise.resolve();\n  }\n  if (loadInFlight) return loadInFlight;\n\n  loadInFlight = (async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  })();\n\n  return loadInFlight;\n}"
     },
     {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostUserProfileAdapter = HostUserProfilePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_USER_PROFILE_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 21,
+      "endLine": 33,
+      "text": "export function createHostUserProfileAdapter(\n  ports: HostUserProfilePorts,\n): HostUserProfileAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_USER_PROFILE_OPS,\n    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),\n    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),\n    getProfilesByUserIds: (actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds),\n    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 11,
+      "endLine": 13,
+      "text": "export type HostUserProfileResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string; readonly code?: string };"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 15,
+      "endLine": 21,
+      "text": "export type HostUserProfileVm = {\n  readonly id: string;\n  readonly displayName: string | null;\n  readonly avatarPath: string | null;\n  readonly avatarUrl: string | null;\n  readonly updatedAt: string | null;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 23,
+      "endLine": 28,
+      "text": "export type HostUploadUserAvatarInput = {\n  readonly bytes: Uint8Array;\n  readonly contentType?: string;\n  /** Never trusted — foreign claim → DENY on host. */\n  readonly claimedOwnerUserId?: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 34,
+      "endLine": 49,
+      "text": "export type HostUserProfilePorts = {\n  readonly ensureOwnProfileRow: (\n    actorId: string,\n  ) => Promise<HostUserProfileResult<void>>;\n  readonly getOwnProfile: (\n    actorId: string,\n  ) => Promise<HostUserProfileResult<HostUserProfileVm | null>>;\n  readonly getProfilesByUserIds: (\n    actorId: string,\n    userIds: readonly string[],\n  ) => Promise<HostUserProfileResult<readonly HostUserProfileVm[]>>;\n  readonly uploadAvatar: (\n    actorId: string,\n    input: HostUploadUserAvatarInput,\n  ) => Promise<HostUserProfileResult<HostUserProfileVm>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 52,
+      "endLine": 57,
+      "text": "export const HOST_USER_PROFILE_OPS = [\n  'ensureOwnProfileRow',\n  'getOwnProfile',\n  'getProfilesByUserIds',\n  'uploadAvatar',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-ports.contract.ts",
+      "line": 59,
+      "endLine": 59,
+      "text": "export type HostUserProfileOp = (typeof HOST_USER_PROFILE_OPS)[number];"
+    },
+    {
       "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
       "line": 211,
       "endLine": 211,
@@ -799,20 +875,20 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 8,
-      "endLine": 15,
+      "line": 12,
+      "endLine": 19,
       "text": "export type UploadUserAvatarOptions = {\n  /**\n   * When true, skip client optimize (caller already ran user-avatar intake).\n   * Storage MIME/magic-byte/owner checks still run in the repository.\n   */\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 21,
-      "endLine": 61,
+      "line": 25,
+      "endLine": 65,
       "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 63,
-      "endLine": 80,
+      "line": 67,
+      "endLine": 84,
       "text": "export const userProfileService = {\n  async getOwnProfile(): Promise<UserProfileVm | null> {\n    return supabaseUserProfileRepository.getOwnProfile();\n  },\n\n  async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  },\n\n  async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  },\n\n  prepareAvatarFile: prepareUserAvatarFile,\n};"
     }
   ],
@@ -886,6 +962,41 @@
       "endLine": 80,
       "name": "callback",
       "text": "async () => {\n    try {\n      const row = await loadProfile();\n      const remote = row?.avatarUrl ?? null;\n      remoteLoadedUserId = userId;\n      if (remote) {\n        publishAccountAvatarUrl(remote);\n      }\n      // else: keep optimistic cache (local Object URL) if present\n    } catch (err) {\n      console.error('Account avatar remote load failed:', err);\n      remoteLoadedUserId = userId;\n    } finally {\n      loadInFlight = null;\n    }\n  }"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 21,
+      "endLine": 33,
+      "name": "createHostUserProfileAdapter",
+      "text": "export function createHostUserProfileAdapter(\n  ports: HostUserProfilePorts,\n): HostUserProfileAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_USER_PROFILE_OPS,\n    ensureOwnProfileRow: (actorId) => ports.ensureOwnProfileRow(actorId),\n    getOwnProfile: (actorId) => ports.getOwnProfile(actorId),\n    getProfilesByUserIds: (actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds),\n    uploadAvatar: (actorId, input) => ports.uploadAvatar(actorId, input),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId) => ports.ensureOwnProfileRow(actorId)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 28,
+      "endLine": 28,
+      "name": "callback",
+      "text": "(actorId) => ports.getOwnProfile(actorId)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 29,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(actorId, userIds) =>\n      ports.getProfilesByUserIds(actorId, userIds)"
+    },
+    {
+      "path": "src/infrastructure/user-profile/host-user-profile-adapter.ts",
+      "line": 31,
+      "endLine": 31,
+      "name": "callback",
+      "text": "(actorId, input) => ports.uploadAvatar(actorId, input)"
     },
     {
       "path": "src/infrastructure/user-profile/supabase-user-profile.repository.ts",
@@ -973,36 +1084,36 @@
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 21,
-      "endLine": 61,
+      "line": 25,
+      "endLine": 65,
       "name": "prepareUserAvatarFile",
       "text": "export async function prepareUserAvatarFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'user-avatar',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Avatar-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'avatar';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Avatar-Optimierung abgebrochen.');\n  }\n\n  throw new Error(\n    result.message || `Avatar-Optimierung fehlgeschlagen (${result.status}).`,\n  );\n}"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 34,
-      "endLine": 36,
+      "line": 38,
+      "endLine": 40,
       "name": "callback",
       "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 64,
-      "endLine": 66,
+      "line": 68,
+      "endLine": 70,
       "name": "getOwnProfile",
       "text": "async getOwnProfile(): Promise<UserProfileVm | null> {\n    return supabaseUserProfileRepository.getOwnProfile();\n  }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 68,
-      "endLine": 70,
+      "line": 72,
+      "endLine": 74,
       "name": "getProfilesByUserIds",
       "text": "async getProfilesByUserIds(userIds: readonly string[]): Promise<UserProfileVm[]> {\n    return supabaseUserProfileRepository.getProfilesByUserIds(userIds);\n  }"
     },
     {
       "path": "src/infrastructure/user-profile/user-profile-service.ts",
-      "line": 72,
-      "endLine": 77,
+      "line": 76,
+      "endLine": 81,
       "name": "uploadAvatar",
       "text": "async uploadAvatar(file: File, options?: UploadUserAvatarOptions): Promise<UserProfileVm> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareUserAvatarFile(file, options?.signal);\n    return supabaseUserProfileRepository.uploadAvatar(prepared);\n  }"
     }

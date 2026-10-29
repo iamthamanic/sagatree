@@ -1,6 +1,10 @@
 /**
  * User profile service — optimize + upload account avatars (#682).
  * Location: src/infrastructure/user-profile/user-profile-service.ts
+ *
+ * Dual-path (MIG-312): production remains Supabase repository/tables/storage.
+ * Host ports are bound via `createHostUserProfileAdapter` for tests / future
+ * cutover (no accidental cutover — VITE host flags alone do not redirect this facade).
  */
 import type { UserProfileVm } from '../../domains/user-profile';
 import { supabaseUserProfileRepository } from './supabase-user-profile.repository';
