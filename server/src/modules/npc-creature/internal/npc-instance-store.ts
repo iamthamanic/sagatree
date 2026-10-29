@@ -254,29 +254,26 @@ export class NpcInstanceStore {
     return generateNpcCreaturePublicId();
   }
 
-  #ensurePublicId(rowId: string, existing: string | null): string | null {
-    const trimmed =
-      typeof existing === 'string' ? existing.trim().toUpperCase() : '';
-    if (isNpcCreaturePublicId(trimmed)) return trimmed;
-    const publicId = this.#uniquePublicId();
-    this.#db
-      .prepare(`UPDATE npc_creature_definitions SET public_id = ? WHERE id = ?`)
-      .run(publicId, rowId);
-    return publicId;
-  }
-
-  #mapDefinitionRow(row: {
-    readonly id: string;
-    readonly public_id: string | null;
-    readonly scope: string;
-    readonly world_profile_id: string | null;
-    readonly owner_user_id: string | null;
-    readonly status: string;
-    readonly payload: string;
-    readonly payload_version: number | null;
-    readonly created_at: string;
-    readonly updated_at: string;
-  }): NpcDefinitionRecord | null {
+  /**
+   * Map a definition row. Does not write.
+   * When `requirePublicId` is false, missing public_id yields a placeholder so
+   * callers can authorize before `#persistMissingPublicId`.
+   */
+  #mapDefinitionRow(
+    row: {
+      readonly id: string;
+      readonly public_id: string | null;
+      readonly scope: string;
+      readonly world_profile_id: string | null;
+      readonly owner_user_id: string | null;
+      readonly status: string;
+      readonly payload: string;
+      readonly payload_version: number | null;
+      readonly created_at: string;
+      readonly updated_at: string;
+    },
+    requirePublicId = true,
+  ): NpcDefinitionRecord | null {
     let payload: Record<string, unknown>;
     try {
       const parsed: unknown = JSON.parse(row.payload);
@@ -287,8 +284,9 @@ export class NpcInstanceStore {
     } catch {
       return null;
     }
-    const publicId = this.#ensurePublicId(row.id, row.public_id);
-    if (!publicId) return null;
+    const trimmed =
+      typeof row.public_id === 'string' ? row.public_id.trim().toUpperCase() : '';
+    const publicId = isNpcCreaturePublicId(trimmed) ? trimmed : '';
     if (
       row.scope !== 'personal' &&
       row.scope !== 'world' &&
@@ -297,10 +295,11 @@ export class NpcInstanceStore {
     ) {
       return null;
     }
+    if (!publicId && requirePublicId) return null;
     const status = row.status === 'archived' ? 'archived' : 'active';
     return {
       id: row.id,
-      publicId,
+      publicId: publicId || 'NPCC-PENDING',
       scope: row.scope,
       worldProfileId: row.world_profile_id,
       ownerUserId: row.owner_user_id,
@@ -315,7 +314,34 @@ export class NpcInstanceStore {
     };
   }
 
-  #loadDefinition(id: string): NpcDefinitionRecord | null {
+  /** Persist a missing public_id only after the caller authorized the actor. */
+  #persistMissingPublicId(definitionId: string): NpcDefinitionRecord | null {
+    try {
+      const publicId = this.#uniquePublicId();
+      this.#db
+        .prepare(
+          `UPDATE npc_creature_definitions SET public_id = ?
+           WHERE id = ? AND (public_id IS NULL OR trim(public_id) = '')`,
+        )
+        .run(publicId, definitionId);
+    } catch {
+      return null;
+    }
+    return this.#loadDefinition(definitionId);
+  }
+
+  #loadDefinitionRow(id: string): {
+    id: string;
+    public_id: string | null;
+    scope: string;
+    world_profile_id: string | null;
+    owner_user_id: string | null;
+    status: string;
+    payload: string;
+    payload_version: number | null;
+    created_at: string;
+    updated_at: string;
+  } | null {
     const row = this.#db
       .prepare(
         `SELECT id, public_id, scope, world_profile_id, owner_user_id, status, payload,
@@ -336,8 +362,13 @@ export class NpcInstanceStore {
           updated_at: string;
         }
       | undefined;
+    return row ?? null;
+  }
+
+  #loadDefinition(id: string): NpcDefinitionRecord | null {
+    const row = this.#loadDefinitionRow(id);
     if (!row) return null;
-    return this.#mapDefinitionRow(row);
+    return this.#mapDefinitionRow(row, true);
   }
 
   #definitionReadableForActor(
@@ -444,12 +475,19 @@ export class NpcInstanceStore {
     if (id.length < 10 || id.length > 160) {
       return { ok: false, error: 'P0001:invalid definition id' };
     }
-    const record = this.#loadDefinition(id);
-    if (!record) return { ok: true, value: null };
-    if (!this.#definitionReadableForActor(actorIds, record)) {
+    const row = this.#loadDefinitionRow(id);
+    if (!row) return { ok: true, value: null };
+    const probe = this.#mapDefinitionRow(row, false);
+    if (!probe) return { ok: true, value: null };
+    if (!this.#definitionReadableForActor(actorIds, probe)) {
       return { ok: false, error: 'not-authorized' };
     }
-    return { ok: true, value: record };
+    if (probe.publicId === 'NPCC-PENDING') {
+      const filled = this.#persistMissingPublicId(id);
+      if (!filled) return { ok: false, error: 'public-id-backfill-failed' };
+      return { ok: true, value: filled };
+    }
+    return { ok: true, value: probe };
   }
 
   createDefinition(

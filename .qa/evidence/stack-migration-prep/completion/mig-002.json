@@ -5,7 +5,7 @@
   "result": "PASS",
   "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
   "checks": [
     {
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "b8cb4ceb48f6820c880014f606c115ae9c8b97bfb20377e00e6f281b8cca1e1a"
+      "sha256": "d3ed449a86f09d7dea8159ccd007ea14134ba0f4bd646e3caa2be5e3345224ae"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "bc0206f6a1ea1850e14f1ec8d3b4fa2777da5bfd2818afcd2f6e6c04fa0791e9"
+      "sha256": "70455fc57e72d4d6b08116b0bb6394dd9008e0cd2f86102f560417a9bda2be6d"
     }
   ]
 }

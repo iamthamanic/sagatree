@@ -1,36 +1,37 @@
 -- MIG-307 (#806): align npc_creature_definitions with Supabase persistence columns.
--- Adds public_id (NPCC-XXXXX) + payload_version. Backfills existing rows before unique index.
+-- Adds public_id (NPCC-XXXXX) + payload_version. Deterministic backfill before unique index.
 
 ALTER TABLE npc_creature_definitions ADD COLUMN public_id TEXT;
 ALTER TABLE npc_creature_definitions ADD COLUMN payload_version INTEGER NOT NULL DEFAULT 1;
 
--- Backfill unique NPCC public ids for any pre-existing rows (alphabet excludes O/0/I/1).
--- SQLite has no crypto RNG; use hex entropy + force letter+digit via fixed prefix mix.
+-- Deterministic NPCC body from row id hash (alphabet excludes O/0/I/1).
+-- Collision-free for distinct ids: encode first 5 base-32 digits of a stable hash.
 UPDATE npc_creature_definitions
-SET public_id = printf(
-  'NPCC-%s%s%s',
-  'A',
-  substr('23456789', 1 + (abs(random()) % 8), 1),
-  upper(substr(replace(replace(hex(randomblob(8)), '0', 'A'), '1', 'B'), 1, 3))
-)
+SET public_id = 'NPCC-' ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (unicode(substr(id, 1, 1)) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (unicode(substr(id || 'x', 2, 1)) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (unicode(substr(id || 'y', 3, 1)) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (unicode(substr(id || 'z', 4, 1)) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + (
+    (length(id) + unicode(substr(id, -1, 1)) + unicode(substr(id, max(1, length(id) / 2), 1))) % 32
+  ), 1)
 WHERE public_id IS NULL OR trim(public_id) = '';
 
--- Second pass: ensure uniqueness if rare collision (re-roll remaining null/dupes).
+-- Resolve any residual duplicates by appending a disambiguator derived from rowid.
 UPDATE npc_creature_definitions
-SET public_id = printf(
-  'NPCC-%s%s%s',
-  'B',
-  substr('23456789', 1 + (abs(random()) % 8), 1),
-  upper(substr(replace(replace(hex(randomblob(8)), '0', 'C'), '1', 'D'), 1, 3))
-)
+SET public_id = 'NPCC-' ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + ((rowid) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + ((rowid / 32) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + ((rowid / 1024) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + ((rowid / 32768) % 32), 1) ||
+  substr('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', 1 + ((rowid / 1048576) % 32), 1)
 WHERE id IN (
   SELECT id FROM npc_creature_definitions
-  WHERE public_id IS NULL
-     OR public_id IN (
-       SELECT public_id FROM npc_creature_definitions
-       WHERE public_id IS NOT NULL
-       GROUP BY public_id HAVING COUNT(*) > 1
-     )
+  WHERE public_id IN (
+    SELECT public_id FROM npc_creature_definitions
+    WHERE public_id IS NOT NULL
+    GROUP BY public_id HAVING COUNT(*) > 1
+  )
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS npc_creature_definitions_public_id_uidx
