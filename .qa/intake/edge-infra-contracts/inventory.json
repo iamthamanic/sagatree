@@ -1064,7 +1064,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7"
+            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -1242,8 +1242,8 @@
           "kind": "edge",
           "name": "ai-provider-credentials",
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 39,
-          "endLine": 39,
+          "line": 68,
+          "endLine": 68,
           "resolution": "finite-literal-union",
           "expression": "supabase.functions.invoke(functionName, { body })",
           "chain": "supabase.functions.invoke(functionName, { body })",
@@ -1253,8 +1253,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "line": 34,
-            "endLine": 45,
+            "line": 63,
+            "endLine": 74,
             "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
@@ -20362,7 +20362,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7"
+            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
           },
           {
             "path": "supabase/functions/_shared/ai-provider-crypto.ts",
@@ -20590,8 +20590,8 @@
           "kind": "edge",
           "name": "ollama-settings",
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 39,
-          "endLine": 39,
+          "line": 68,
+          "endLine": 68,
           "resolution": "finite-literal-union",
           "expression": "supabase.functions.invoke(functionName, { body })",
           "chain": "supabase.functions.invoke(functionName, { body })",
@@ -20601,8 +20601,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "line": 34,
-            "endLine": 45,
+            "line": 63,
+            "endLine": 74,
             "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
@@ -28761,7 +28761,7 @@
           },
           {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "sha256": "04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7"
+            "sha256": "324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce"
           },
           {
             "path": "src/infrastructure/ai/ollama-settings-service.ts",
@@ -28781,7 +28781,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "8b2d14b6a889e3c299643262f4a8343b9cc4c1a5e139759c16a0fad4ee5670d4",
+      "sourceContractSha256": "0838be36fdafedfb9e26ab8b238ee3ba30bae290d951154962d7ace0f7cf46e7",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -28799,8 +28799,8 @@
           "kind": "edge",
           "name": "ai-provider-credentials",
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 39,
-          "endLine": 39,
+          "line": 68,
+          "endLine": 68,
           "resolution": "finite-literal-union",
           "expression": "supabase.functions.invoke(functionName, { body })",
           "chain": "supabase.functions.invoke(functionName, { body })",
@@ -28810,8 +28810,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "line": 34,
-            "endLine": 45,
+            "line": 63,
+            "endLine": 74,
             "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         },
@@ -28819,8 +28819,8 @@
           "kind": "edge",
           "name": "ollama-settings",
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 39,
-          "endLine": 39,
+          "line": 68,
+          "endLine": 68,
           "resolution": "finite-literal-union",
           "expression": "supabase.functions.invoke(functionName, { body })",
           "chain": "supabase.functions.invoke(functionName, { body })",
@@ -28830,8 +28830,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/ai/host-ai-invoke.ts",
-            "line": 34,
-            "endLine": 45,
+            "line": 63,
+            "endLine": 74,
             "text": "async function invokeEdge(\n  functionName: 'ai-provider-credentials' | 'ollama-settings',\n  body: Record<string, unknown>,\n  unreachableMessage: string,\n): Promise<unknown> {\n  const { data, error } = await supabase.functions.invoke(functionName, { body });\n  if (error) {\n    const serverMessage = await edgeErrorMessage(error);\n    throw new Error(serverMessage ?? unreachableMessage);\n  }\n  return data;\n}"
           }
         }
@@ -28919,38 +28919,50 @@
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 15,
-          "endLine": 17,
+          "line": 31,
+          "endLine": 33,
           "name": "isRecord"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 19,
-          "endLine": 21,
+          "line": 35,
+          "endLine": 38,
+          "name": "isHostAiEnabled"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 40,
+          "endLine": 46,
+          "name": "parseHostAiEnvelope"
+        },
+        {
+          "path": "src/infrastructure/ai/host-ai-invoke.ts",
+          "line": 48,
+          "endLine": 50,
           "name": "hasResponseContext"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 23,
-          "endLine": 32,
+          "line": 52,
+          "endLine": 61,
           "name": "edgeErrorMessage"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 34,
-          "endLine": 45,
+          "line": 63,
+          "endLine": 74,
           "name": "invokeEdge"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 47,
-          "endLine": 78,
+          "line": 76,
+          "endLine": 104,
           "name": "invokeHost"
         },
         {
           "path": "src/infrastructure/ai/host-ai-invoke.ts",
-          "line": 84,
-          "endLine": 115,
+          "line": 110,
+          "endLine": 142,
           "name": "createAiInvoke"
         },
         {

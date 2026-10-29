@@ -408,7 +408,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/ai/host-ai-invoke.ts:39
+### src/infrastructure/ai/host-ai-invoke.ts:68
 
 
 ```ts
@@ -1194,7 +1194,7 @@ function parseModelNames(body: unknown): string[] {
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/ai/host-ai-invoke.ts` | `04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/character-lore-prompt.ts` | `54fffb4ba316515dff7add1998b2d6f02280ddc336c30e48d2a4ee045a60f818` |
 | `supabase/functions/_shared/character-lore-provider.ts` | `355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e` |

@@ -6,6 +6,7 @@
  * No production cutover — Edge allowlist remains until an explicit cutover ticket.
  */
 import type { Hono } from 'hono';
+import type { Context } from 'hono';
 import type { Actor } from '../modules/identity/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
 import type { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
@@ -21,22 +22,43 @@ export type AiHttpDeps = {
 
 type JsonBody = Record<string, unknown>;
 
+const CREDENTIAL_ACTIONS = new Set(['list', 'upsert', 'refresh', 'delete']);
+const OLLAMA_ACTIONS = new Set(['get', 'upsert', 'test', 'listModels', 'clear']);
+const CREDENTIAL_MODALITIES = new Set(['image', '3d', 'video', 'audio']);
+
 function isRecord(value: unknown): value is JsonBody {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-async function readJsonSafe(c: {
-  req: { text: () => Promise<string> };
-}): Promise<{ ok: true; body: unknown } | { ok: false }> {
+function contentTypeIsJson(c: Context): boolean {
+  const raw = c.req.header('content-type') ?? '';
+  return raw.toLowerCase().includes('application/json');
+}
+
+async function readJsonBody(c: Context): Promise<
+  { ok: true; body: JsonBody } | { ok: false; status: number; message: string }
+> {
+  // Reject non-JSON Content-Type so cross-origin "simple" text/plain POSTs cannot mutate.
+  if (!contentTypeIsJson(c)) {
+    return { ok: false, status: 415, message: 'Content-Type application/json erforderlich.' };
+  }
   try {
     const text = await c.req.text();
     if (!text || text.trim().length === 0) return { ok: true, body: {} };
-    return { ok: true, body: JSON.parse(text) as unknown };
+    const parsed: unknown = JSON.parse(text);
+    if (!isRecord(parsed)) {
+      return { ok: false, status: 400, message: 'Ungültiger Request-Body.' };
+    }
+    return { ok: true, body: parsed };
   } catch {
-    return { ok: false };
+    return { ok: false, status: 400, message: 'Ungültiger Request-Body.' };
   }
 }
 
+/**
+ * Solo fallback is only for local hosts without a cookie profile mounted.
+ * ORIGIN_DENIED / HOST_DENIED / forged identity claims stay fail-closed (CSRF).
+ */
 async function resolveActor(
   deps: AiHttpDeps,
   headers: Headers,
@@ -47,7 +69,7 @@ async function resolveActor(
     body,
   });
   if (remote.ok) return { ok: true, actor: remote.actor };
-  if (deps.hostMode === 'solo') {
+  if (deps.hostMode === 'solo' && remote.code === 'AUTH_NOT_CONFIGURED') {
     return { ok: true, actor: deps.identity.resolveSoloActor() };
   }
   return { ok: false, status: authDenyStatus(remote.code), error: remote.code };
@@ -60,16 +82,40 @@ function aiFailBody(error: string, status: number, code?: string) {
   return { status: 'error' as const, message: error, ...(code ? { code } : {}) };
 }
 
+function parseCredentialAction(body: JsonBody): string | null {
+  return typeof body.action === 'string' && CREDENTIAL_ACTIONS.has(body.action)
+    ? body.action
+    : null;
+}
+
+function parseOllamaAction(body: JsonBody): string | null {
+  return typeof body.action === 'string' && OLLAMA_ACTIONS.has(body.action) ? body.action : null;
+}
+
+function parseProviderId(body: JsonBody): string {
+  return typeof body.providerId === 'string' ? body.providerId.trim() : '';
+}
+
+function parseApiKey(body: JsonBody): string {
+  return typeof body.apiKey === 'string' ? body.apiKey : '';
+}
+
+function parseModality(body: JsonBody): string | null {
+  return typeof body.modality === 'string' && CREDENTIAL_MODALITIES.has(body.modality)
+    ? body.modality
+    : null;
+}
+
 /**
  * Mount MIG-301 AI credential + Ollama settings HTTP adapters on a Hono app.
  */
 export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
   app.post('/api/v1/ai/provider-credentials', async (c) => {
-    const parsed = await readJsonSafe(c);
+    const parsed = await readJsonBody(c);
     if (!parsed.ok) {
-      return c.json({ status: 'error', message: 'Ungültige Serverantwort.' }, 400);
+      return c.json({ status: 'error', message: parsed.message }, parsed.status);
     }
-    const body = isRecord(parsed.body) ? parsed.body : {};
+    const body = parsed.body;
     const actorResult = await resolveActor(deps, c.req.raw.headers, body);
     if (!actorResult.ok) {
       return c.json(
@@ -77,11 +123,14 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
         actorResult.status,
       );
     }
-    const action = typeof body.action === 'string' ? body.action : '';
+    const action = parseCredentialAction(body);
+    if (!action) {
+      return c.json({ status: 'error', message: 'Unbekannte Aktion.' }, 400);
+    }
     const actor = actorResult.actor;
 
     if (action === 'list') {
-      const modality = typeof body.modality === 'string' ? body.modality : null;
+      const modality = parseModality(body);
       const result = await deps.credentials.list(actor, modality);
       if (!result.ok) {
         return c.json(aiFailBody(result.error, result.status, result.code), result.status);
@@ -89,8 +138,11 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
       return c.json(result.value, 200);
     }
     if (action === 'upsert') {
-      const providerId = typeof body.providerId === 'string' ? body.providerId : '';
-      const apiKey = typeof body.apiKey === 'string' ? body.apiKey : '';
+      const providerId = parseProviderId(body);
+      const apiKey = parseApiKey(body);
+      if (!providerId || !apiKey.trim()) {
+        return c.json({ status: 'error', message: 'providerId und apiKey sind erforderlich.' }, 400);
+      }
       const result = await deps.credentials.upsert(actor, providerId, apiKey);
       if (!result.ok) {
         return c.json(aiFailBody(result.error, result.status, result.code), result.status);
@@ -98,30 +150,34 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
       return c.json(result.value, 200);
     }
     if (action === 'refresh') {
-      const providerId = typeof body.providerId === 'string' ? body.providerId : '';
+      const providerId = parseProviderId(body);
+      if (!providerId) {
+        return c.json({ status: 'error', message: 'providerId ist erforderlich.' }, 400);
+      }
       const result = await deps.credentials.refresh(actor, providerId);
       if (!result.ok) {
         return c.json(aiFailBody(result.error, result.status, result.code), result.status);
       }
       return c.json(result.value, 200);
     }
-    if (action === 'delete') {
-      const providerId = typeof body.providerId === 'string' ? body.providerId : '';
-      const result = await deps.credentials.delete(actor, providerId);
-      if (!result.ok) {
-        return c.json(aiFailBody(result.error, result.status, result.code), result.status);
-      }
-      return c.json(result.value, 200);
+    // action === 'delete'
+    const providerId = parseProviderId(body);
+    if (!providerId) {
+      return c.json({ status: 'error', message: 'providerId ist erforderlich.' }, 400);
     }
-    return c.json({ status: 'error', message: 'Unbekannte Aktion.' }, 400);
+    const result = await deps.credentials.delete(actor, providerId);
+    if (!result.ok) {
+      return c.json(aiFailBody(result.error, result.status, result.code), result.status);
+    }
+    return c.json(result.value, 200);
   });
 
   app.post('/api/v1/ai/ollama-settings', async (c) => {
-    const parsed = await readJsonSafe(c);
+    const parsed = await readJsonBody(c);
     if (!parsed.ok) {
-      return c.json({ status: 'error', message: 'Ungültige Serverantwort.' }, 400);
+      return c.json({ status: 'error', message: parsed.message }, parsed.status);
     }
-    const body = isRecord(parsed.body) ? parsed.body : {};
+    const body = parsed.body;
     const actorResult = await resolveActor(deps, c.req.raw.headers, body);
     if (!actorResult.ok) {
       return c.json(
@@ -129,7 +185,10 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
         actorResult.status,
       );
     }
-    const action = typeof body.action === 'string' ? body.action : '';
+    const action = parseOllamaAction(body);
+    if (!action) {
+      return c.json({ status: 'error', message: 'Unbekannte Aktion.' }, 400);
+    }
     const actor = actorResult.actor;
 
     if (action === 'get') {
@@ -180,13 +239,11 @@ export function mountAiHttpRoutes(app: Hono, deps: AiHttpDeps): void {
       }
       return c.json(result.value, 200);
     }
-    if (action === 'clear') {
-      const result = await deps.ollama.clear(actor);
-      if (!result.ok) {
-        return c.json(aiFailBody(result.error, result.status, result.code), result.status);
-      }
-      return c.json(result.value, 200);
+    // action === 'clear'
+    const result = await deps.ollama.clear(actor);
+    if (!result.ok) {
+      return c.json(aiFailBody(result.error, result.status, result.code), result.status);
     }
-    return c.json({ status: 'error', message: 'Unbekannte Aktion.' }, 400);
+    return c.json(result.value, 200);
   });
 }

@@ -69,11 +69,12 @@ try {
   const credentials = createAiProviderCredentialsUseCases(ai);
   const ollama = createOllamaSettingsUseCases(ai);
 
-  /** @type {{ current: ReturnType<typeof actor> | null }} */
-  const session = { current: actor('owner-o') };
+  /** @type {{ current: ReturnType<typeof actor> | null; denyCode: string | null }} */
+  const session = { current: actor('owner-o'), denyCode: null };
   const identity = {
     resolveSoloActor: () => actor('solo-default'),
     resolveRemoteSession: async () => {
+      if (session.denyCode) return { ok: false, code: session.denyCode };
       if (!session.current) return { ok: false, code: 'UNAUTHENTICATED' };
       return { ok: true, actor: session.current };
     },
@@ -88,8 +89,16 @@ try {
     ollama,
   });
 
-  async function post(path, body) {
-    const res = await app.request(path, {
+  const soloApp = new Hono();
+  mountAiHttpRoutes(soloApp, {
+    identity,
+    hostMode: 'solo',
+    credentials,
+    ollama,
+  });
+
+  async function post(path, body, target = app) {
+    const res = await target.request(path, {
       method: 'POST',
       headers: { 'content-type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body),
@@ -202,6 +211,31 @@ try {
     assert(missing.status === 401 && missing.json.status === 'error', 'missing session 401');
   }
 
+  // --- CSRF / solo fail-closed: ORIGIN_DENIED stays denied; AUTH_NOT_CONFIGURED may solo ---
+  {
+    session.current = null;
+    session.denyCode = 'ORIGIN_DENIED';
+    const denied = await post(
+      '/api/v1/ai/provider-credentials',
+      { action: 'delete', providerId: 'meshy' },
+      soloApp,
+    );
+    assert(denied.status === 403 && denied.json.code === 'ORIGIN_DENIED', 'solo ORIGIN_DENIED fail-closed');
+
+    session.denyCode = 'AUTH_NOT_CONFIGURED';
+    const soloOk = await post('/api/v1/ai/provider-credentials', { action: 'list' }, soloApp);
+    assert(soloOk.status === 200 && soloOk.json.status === 'ok', 'solo AUTH_NOT_CONFIGURED allowed');
+
+    const plain = await soloApp.request('/api/v1/ai/provider-credentials', {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain', Accept: 'application/json' },
+      body: JSON.stringify({ action: 'delete', providerId: 'meshy' }),
+    });
+    assert(plain.status === 415, 'non-JSON Content-Type rejected');
+    session.denyCode = null;
+    session.current = actor('owner-o');
+  }
+
   // Client dual-path source wiring (no production cutover — Edge fallback remains)
   const credSrc = readFileSync(
     join(root, 'src/infrastructure/ai/ai-provider-credentials-service.ts'),
@@ -212,8 +246,12 @@ try {
   assert(/host-ai-invoke/.test(credSrc), 'credentials service uses host-ai-invoke');
   assert(/host-ai-invoke/.test(ollamaSrc), 'ollama service uses host-ai-invoke');
   assert(/VITE_SAGATREE_HOST_AUTH_URL/.test(invokeSrc), 'host URL gate');
+  assert(/VITE_SAGATREE_HOST_AI/.test(invokeSrc), 'explicit AI host opt-in');
   assert(/ai-provider-credentials/.test(invokeSrc) && /ollama-settings/.test(invokeSrc), 'Edge fallback');
   assert(/credentials:\s*'include'/.test(invokeSrc), 'cookie credentials');
+  const routesSrc = readFileSync(join(root, 'server/src/api/ai-routes.ts'), 'utf8');
+  assert(/AUTH_NOT_CONFIGURED/.test(routesSrc), 'solo fallback gated');
+  assert(/application\/json/.test(routesSrc), 'JSON Content-Type required');
 
   const allow = readFileSync(
     join(root, 'supabase/functions/_shared/edge-dispatcher-allowlist.ts'),

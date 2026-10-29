@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `8b2d14b6a889e3c299643262f4a8343b9cc4c1a5e139759c16a0fad4ee5670d4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-ai.json](source-contracts/infra-ai.json) (SHA-256 `0838be36fdafedfb9e26ab8b238ee3ba30bae290d951154962d7ace0f7cf46e7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -48,24 +48,24 @@ None in the reviewed source.
 
 ### edge: ai-provider-credentials
 
-`src/infrastructure/ai/host-ai-invoke.ts:39` — finite-literal-union.
+`src/infrastructure/ai/host-ai-invoke.ts:68` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke(functionName, { body })
 ```
 
-Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:34`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:63`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: ollama-settings
 
-`src/infrastructure/ai/host-ai-invoke.ts:39` — finite-literal-union.
+`src/infrastructure/ai/host-ai-invoke.ts:68` — finite-literal-union.
 
 Exact call/query chain:
 ```ts
 supabase.functions.invoke(functionName, { body })
 ```
 
-Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:34`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/ai/host-ai-invoke.ts:63`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -128,19 +128,22 @@ export class AiProviderCredentialsService {
 export const aiProviderCredentialsService = new AiProviderCredentialsService();
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:11
+### src/infrastructure/ai/host-ai-invoke.ts:12
 
 ```ts
-export type AiInvokeFn = (path: 'provider-credentials' | 'ollama-settings', body: Record<string, unknown>) => Promise<unknown>;
+export type AiInvokeFn = (
+  path: 'provider-credentials' | 'ollama-settings',
+  body: Record<string, unknown>,
+) => Promise<unknown>;
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:84
+### src/infrastructure/ai/host-ai-invoke.ts:110
 
 ```ts
 export function createAiInvoke(options?: {
   readonly fetchImpl?: typeof fetch;
   readonly env?: EnvLike;
-  /** Force Edge even when host URL is set (tests). */
+  /** Force Edge even when host AI opt-in is set (tests). */
   readonly forceEdge?: boolean;
 }): AiInvokeFn {
   const fetchImpl = options?.fetchImpl ?? fetch;
@@ -148,7 +151,8 @@ export function createAiInvoke(options?: {
   const forceEdge = options?.forceEdge === true;
 
   return async (path, body) => {
-    const preferHost = !forceEdge && getHostAuthBaseUrl(env) !== null;
+    const preferHost =
+      !forceEdge && getHostAuthBaseUrl(env) !== null && isHostAiEnabled(env);
     if (preferHost) {
       return invokeHost(
         path,
@@ -171,7 +175,7 @@ export function createAiInvoke(options?: {
 }
 ```
 
-### src/infrastructure/ai/host-ai-invoke.ts:117
+### src/infrastructure/ai/host-ai-invoke.ts:144
 
 ```ts
 export const defaultAiInvoke = createAiInvoke();
@@ -270,7 +274,7 @@ export const ollamaSettingsService = new OllamaSettingsService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/ai/host-ai-invoke.ts:34
+### src/infrastructure/ai/host-ai-invoke.ts:63
 
 ```ts
 async function invokeEdge(
@@ -296,7 +300,7 @@ async function invokeEdge(
 | `src/domains/ai-providers/index.ts` | `460e4fa3639a12e0e028b19de91b947e482fee90585dc9844d6f8cfa70df2f05` |
 | `src/domains/ai-providers/ollama-settings.ts` | `f3cbc6de1a3822b21cf3edf08f6debb19ea27299b46f54dbd1bfac0eaf83150c` |
 | `src/infrastructure/ai/ai-provider-credentials-service.ts` | `deabff23986dd311748c7efff1539c2fe977465fa8357c5a1fda1577c5562e51` |
-| `src/infrastructure/ai/host-ai-invoke.ts` | `04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce` |
 | `src/infrastructure/ai/ollama-settings-service.ts` | `64628ae62a82039cda3a85c33a01ec3c2a4c021c96bb1a7ad3503928649b4197` |
 | `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

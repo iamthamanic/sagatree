@@ -235,7 +235,7 @@ CORS_OPTS: CorsOptions = {
 
 ## All adapter call sites
 
-### src/infrastructure/ai/host-ai-invoke.ts:39
+### src/infrastructure/ai/host-ai-invoke.ts:68
 
 
 ```ts
@@ -881,7 +881,7 @@ async function validateProviderApiKey(
 
 | Path | SHA-256 |
 |---|---|
-| `src/infrastructure/ai/host-ai-invoke.ts` | `04a0e0f0562a8516fa05ce13370ba225ade03892f488e973cca9a050982d6fd7` |
+| `src/infrastructure/ai/host-ai-invoke.ts` | `324d3608b819a051ad9ee2a9e8c977ad46c03a7f8d49ad945bb6e01b2aa005ce` |
 | `supabase/functions/_shared/ai-provider-crypto.ts` | `45e60f76f744077e8d9b243719dcdba5d58a047d36a1c141df830afa2de16532` |
 | `supabase/functions/_shared/ai-provider-meshy.ts` | `8cfcb3698217a8352e91ddd46986bb5e3232caf843dc6d2b7a64585f920cc9a7` |
 | `supabase/functions/_shared/ai-provider-registry.ts` | `3c0f5266905d025d4174f7ff58dec37efa2036571c2bdbf518640bd0282fb478` |

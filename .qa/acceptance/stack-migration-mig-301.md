@@ -1,4 +1,4 @@
-# Acceptance — MIG-301 infrastructure/ai host adapters (#800)
+# Acceptance — MIG-301 Infrastructure/AI Host Adapters (#800)
 
 ## Intent
 Port `src/infrastructure/ai` callers onto approved host HTTP adapters for BYOK credentials + Ollama Organize prefs while Edge remains allowlisted (no production cutover).

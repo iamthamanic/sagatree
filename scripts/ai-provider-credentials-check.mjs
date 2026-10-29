@@ -60,10 +60,11 @@ check(
   'client invokes credentials via host dual-path or edge',
 );
 check(
-  hostInvoke.includes("functions.invoke") &&
+  hostInvoke.includes('functions.invoke') &&
     hostInvoke.includes('ai-provider-credentials') &&
-    hostInvoke.includes('/api/v1/ai/'),
-  'host-ai-invoke keeps Edge fallback and host HTTP path',
+    hostInvoke.includes('/api/v1/ai/') &&
+    hostInvoke.includes('VITE_SAGATREE_HOST_AI'),
+  'host-ai-invoke keeps Edge fallback, host HTTP path, and explicit AI opt-in',
 );
 check(!/msy_[A-Za-z0-9]{8,}/.test(clientSvc), 'client service has no hardcoded meshy key');
 
