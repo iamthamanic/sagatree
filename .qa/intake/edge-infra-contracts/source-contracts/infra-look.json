@@ -12,8 +12,16 @@
       "sha256": "4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb"
     },
     {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "sha256": "f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "sha256": "f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f"
+    },
+    {
       "path": "src/infrastructure/look/index.ts",
-      "sha256": "eadd350c8c0e50352b4c1d40eae7581a05bd43ec32fb9c3a311235cf8a57140d"
+      "sha256": "c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0"
     },
     {
       "path": "src/infrastructure/look/look-material-roles.ts",
@@ -33,7 +41,7 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "sha256": "343b0633794f4aaa3fddc22bf97c0c6a24f4d70210460cf2d0a9d1779f79b10e"
+      "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",
@@ -1050,6 +1058,22 @@
       "expression": "import type { LookRuntimeApplyResult, LookStyleAdapter } from '../look-runtime-types';"
     },
     {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-look-ports.contract",
+      "resolvedPath": "src/infrastructure/look/host-look-ports.contract.ts",
+      "expression": "import type { HostLookProfilePorts } from './host-look-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-look-ports.contract",
+      "resolvedPath": "src/infrastructure/look/host-look-ports.contract.ts",
+      "expression": "import { HOST_LOOK_PROFILE_OPS } from './host-look-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/look/look-material-roles.ts",
       "line": 7,
       "endLine": 7,
@@ -1115,32 +1139,32 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 7,
-      "endLine": 15,
+      "line": 11,
+      "endLine": 19,
       "module": "../../domains/look",
       "resolvedPath": "src/domains/look/index.ts",
       "expression": "import type {\n  AppendLookProfileVersionInput,\n  CreateLookProfileInput,\n  DuplicateLookProfileInput,\n  LookProfileRecord,\n  LookProfileVersion,\n  LookReferenceAnalysisDraft,\n  LookReferenceAnalysisOutcome,\n} from '../../domains/look';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 16,
-      "endLine": 16,
+      "line": 20,
+      "endLine": 20,
       "module": "../../domains/look",
       "resolvedPath": "src/domains/look/index.ts",
       "expression": "import { buildLookProfileWriteDraftFromAnalysis } from '../../domains/look';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 17,
-      "endLine": 20,
+      "line": 21,
+      "endLine": 24,
       "module": "./look-reference-analysis-service",
       "resolvedPath": "src/infrastructure/look/look-reference-analysis-service.ts",
       "expression": "import {\n  analyzeLookReferences,\n  type LookReferenceAnalysisRequest,\n} from './look-reference-analysis-service';"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 21,
-      "endLine": 21,
+      "line": 25,
+      "endLine": 25,
       "module": "./supabase-look.repository",
       "resolvedPath": "src/infrastructure/look/supabase-look.repository.ts",
       "expression": "import { supabaseLookProfileRepository } from './supabase-look.repository';"
@@ -1206,6 +1230,66 @@
       "line": 26,
       "endLine": 37,
       "text": "export function createToonLabLookAdapter(): LookStyleAdapter {\n  const decision = evaluateToonLabCompatibilitySpike();\n  const available = decision.verdict === 'GO';\n\n  return {\n    id: 'toonlab',\n    isAvailable: () => available,\n    unavailableReasonDe: available ? null : BLOCKED_DE,\n    apply: ({ version }) => blockedResult(version.profileId, version.version),\n    restoreBaseline: () => blockedResult(null, null),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostLookAdapter = HostLookProfilePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_LOOK_PROFILE_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 21,
+      "endLine": 35,
+      "text": "export function createHostLookAdapter(ports: HostLookProfilePorts): HostLookAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_LOOK_PROFILE_OPS,\n    listProfiles: (actorId, options) => ports.listProfiles(actorId, options),\n    getProfileById: (actorId, profileId) => ports.getProfileById(actorId, profileId),\n    createProfile: (actorId, draft) => ports.createProfile(actorId, draft),\n    appendVersion: (actorId, profileId, draft) =>\n      ports.appendVersion(actorId, profileId, draft),\n    archiveProfile: (actorId, profileId) => ports.archiveProfile(actorId, profileId),\n    duplicateProfile: (actorId, sourceProfileId, displayName) =>\n      ports.duplicateProfile(actorId, sourceProfileId, displayName),\n    listVersions: (actorId, profileId) => ports.listVersions(actorId, profileId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "export type HostLookProfileResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 14,
+      "endLine": 20,
+      "text": "export type HostLookReference = {\n  readonly id: string;\n  readonly kind: 'style' | 'content';\n  readonly uri: string;\n  readonly label?: string;\n  readonly weight?: number;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 22,
+      "endLine": 31,
+      "text": "export type HostLookProfileVersion = {\n  readonly profileId: string;\n  readonly version: number;\n  readonly source: string;\n  readonly displayName: string;\n  readonly references: readonly HostLookReference[];\n  readonly capabilities: readonly string[];\n  readonly executionModes: readonly string[];\n  readonly createdAtIso: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 33,
+      "endLine": 39,
+      "text": "export type HostLookProfileIdentity = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly currentVersion: number;\n  readonly ownerScope: string;\n  readonly ownerId: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 41,
+      "endLine": 45,
+      "text": "export type HostLookProfileRecord = {\n  readonly profile: HostLookProfileIdentity;\n  readonly status: 'active' | 'archived';\n  readonly current: HostLookProfileVersion;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 51,
+      "endLine": 82,
+      "text": "export type HostLookProfilePorts = {\n  readonly listProfiles: (\n    actorId: string,\n    options?: { readonly includeArchived?: boolean },\n  ) => Promise<HostLookProfileResult<readonly HostLookProfileRecord[]>>;\n  readonly getProfileById: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord | null>>;\n  readonly createProfile: (\n    actorId: string,\n    draft: unknown,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly appendVersion: (\n    actorId: string,\n    profileId: string,\n    draft: unknown,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly archiveProfile: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly duplicateProfile: (\n    actorId: string,\n    sourceProfileId: string,\n    displayName?: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly listVersions: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<readonly HostLookProfileVersion[]>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 85,
+      "endLine": 93,
+      "text": "export const HOST_LOOK_PROFILE_OPS = [\n  'listProfiles',\n  'getProfileById',\n  'createProfile',\n  'appendVersion',\n  'archiveProfile',\n  'duplicateProfile',\n  'listVersions',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 95,
+      "endLine": 95,
+      "text": "export type HostLookProfileOp = (typeof HOST_LOOK_PROFILE_OPS)[number];"
     },
     {
       "path": "src/infrastructure/look/look-material-roles.ts",
@@ -1311,56 +1395,56 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 23,
-      "endLine": 27,
+      "line": 27,
+      "endLine": 31,
       "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 29,
-      "endLine": 33,
+      "line": 33,
+      "endLine": 37,
       "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 35,
-      "endLine": 39,
+      "line": 39,
+      "endLine": 43,
       "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 41,
-      "endLine": 45,
+      "line": 45,
+      "endLine": 49,
       "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 47,
-      "endLine": 51,
+      "line": 51,
+      "endLine": 55,
       "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 53,
-      "endLine": 57,
+      "line": 57,
+      "endLine": 61,
       "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 59,
-      "endLine": 63,
+      "line": 63,
+      "endLine": 67,
       "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 66,
-      "endLine": 70,
+      "line": 70,
+      "endLine": 74,
       "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 76,
-      "endLine": 84,
+      "line": 80,
+      "endLine": 88,
       "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
     },
     {
@@ -1576,6 +1660,62 @@
       "text": "() => blockedResult(null, null)"
     },
     {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 21,
+      "endLine": 35,
+      "name": "createHostLookAdapter",
+      "text": "export function createHostLookAdapter(ports: HostLookProfilePorts): HostLookAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_LOOK_PROFILE_OPS,\n    listProfiles: (actorId, options) => ports.listProfiles(actorId, options),\n    getProfileById: (actorId, profileId) => ports.getProfileById(actorId, profileId),\n    createProfile: (actorId, draft) => ports.createProfile(actorId, draft),\n    appendVersion: (actorId, profileId, draft) =>\n      ports.appendVersion(actorId, profileId, draft),\n    archiveProfile: (actorId, profileId) => ports.archiveProfile(actorId, profileId),\n    duplicateProfile: (actorId, sourceProfileId, displayName) =>\n      ports.duplicateProfile(actorId, sourceProfileId, displayName),\n    listVersions: (actorId, profileId) => ports.listVersions(actorId, profileId),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 25,
+      "endLine": 25,
+      "name": "callback",
+      "text": "(actorId, options) => ports.listProfiles(actorId, options)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 26,
+      "endLine": 26,
+      "name": "callback",
+      "text": "(actorId, profileId) => ports.getProfileById(actorId, profileId)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId, draft) => ports.createProfile(actorId, draft)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 28,
+      "endLine": 29,
+      "name": "callback",
+      "text": "(actorId, profileId, draft) =>\n      ports.appendVersion(actorId, profileId, draft)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 30,
+      "endLine": 30,
+      "name": "callback",
+      "text": "(actorId, profileId) => ports.archiveProfile(actorId, profileId)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 31,
+      "endLine": 32,
+      "name": "callback",
+      "text": "(actorId, sourceProfileId, displayName) =>\n      ports.duplicateProfile(actorId, sourceProfileId, displayName)"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 33,
+      "endLine": 33,
+      "name": "callback",
+      "text": "(actorId, profileId) => ports.listVersions(actorId, profileId)"
+    },
+    {
       "path": "src/infrastructure/look/look-material-roles.ts",
       "line": 26,
       "endLine": 35,
@@ -1710,64 +1850,64 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 23,
-      "endLine": 27,
+      "line": 27,
+      "endLine": 31,
       "name": "listLookProfiles",
       "text": "export async function listLookProfiles(options?: {\n  includeArchived?: boolean;\n}): Promise<LookProfileRecord[]> {\n  return supabaseLookProfileRepository.listProfiles(options);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 29,
-      "endLine": 33,
+      "line": 33,
+      "endLine": 37,
       "name": "getLookProfile",
       "text": "export async function getLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord | null> {\n  return supabaseLookProfileRepository.getProfileById(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 35,
-      "endLine": 39,
+      "line": 39,
+      "endLine": 43,
       "name": "createLookProfile",
       "text": "export async function createLookProfile(\n  input: CreateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.createProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 41,
-      "endLine": 45,
+      "line": 45,
+      "endLine": 49,
       "name": "appendLookProfileVersion",
       "text": "export async function appendLookProfileVersion(\n  input: AppendLookProfileVersionInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.appendVersion(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 47,
-      "endLine": 51,
+      "line": 51,
+      "endLine": 55,
       "name": "archiveLookProfile",
       "text": "export async function archiveLookProfile(\n  profileId: string,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.archiveProfile(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 53,
-      "endLine": 57,
+      "line": 57,
+      "endLine": 61,
       "name": "duplicateLookProfile",
       "text": "export async function duplicateLookProfile(\n  input: DuplicateLookProfileInput,\n): Promise<LookProfileRecord> {\n  return supabaseLookProfileRepository.duplicateProfile(input);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 59,
-      "endLine": 63,
+      "line": 63,
+      "endLine": 67,
       "name": "listLookProfileVersions",
       "text": "export async function listLookProfileVersions(\n  profileId: string,\n): Promise<LookProfileVersion[]> {\n  return supabaseLookProfileRepository.listVersions(profileId);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 66,
-      "endLine": 70,
+      "line": 70,
+      "endLine": 74,
       "name": "analyzeLookReferencesForDraft",
       "text": "export async function analyzeLookReferencesForDraft(\n  request: LookReferenceAnalysisRequest,\n): Promise<LookReferenceAnalysisOutcome> {\n  return analyzeLookReferences(request);\n}"
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "line": 76,
-      "endLine": 84,
+      "line": 80,
+      "endLine": 88,
       "name": "createLookProfileFromReferenceAnalysis",
       "text": "export async function createLookProfileFromReferenceAnalysis(\n  draft: LookReferenceAnalysisDraft,\n): Promise<LookProfileRecord> {\n  const writeDraft = buildLookProfileWriteDraftFromAnalysis(draft);\n  if (writeDraft.source !== 'reference-analysis') {\n    throw new Error('Look analysis draft rejected: invalid source');\n  }\n  return supabaseLookProfileRepository.createProfile({ draft: writeDraft });\n}"
     },

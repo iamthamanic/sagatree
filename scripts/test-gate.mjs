@@ -1104,6 +1104,18 @@ function checkMig313WorldAdapter() {
   );
 }
 
+function checkMig304LookAdapter() {
+  console.log('MIG-304 look adapter (#803): LookProfile host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-304-look-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3243,6 +3255,7 @@ checkMig500LocalAssets();
 checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig301AiAdapter();
+checkMig304LookAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();

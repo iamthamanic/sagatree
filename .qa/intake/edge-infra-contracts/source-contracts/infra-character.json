@@ -1018,8 +1018,16 @@
       "sha256": "4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb"
     },
     {
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "sha256": "f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1"
+    },
+    {
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "sha256": "f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f"
+    },
+    {
       "path": "src/infrastructure/look/index.ts",
-      "sha256": "eadd350c8c0e50352b4c1d40eae7581a05bd43ec32fb9c3a311235cf8a57140d"
+      "sha256": "c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0"
     },
     {
       "path": "src/infrastructure/look/look-material-roles.ts",
@@ -1039,7 +1047,7 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "sha256": "343b0633794f4aaa3fddc22bf97c0c6a24f4d70210460cf2d0a9d1779f79b10e"
+      "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",
@@ -7378,6 +7386,70 @@
       "line": 49,
       "endLine": 51,
       "text": "export type ForkDefinitionTarget =\n  | { scope: 'personal' }\n  | { scope: 'world'; worldProfileId: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookAdapter",
+      "path": "src/infrastructure/look/host-look-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostLookAdapter = HostLookProfilePorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_LOOK_PROFILE_OPS;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfileResult",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "export type HostLookProfileResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookReference",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 14,
+      "endLine": 20,
+      "text": "export type HostLookReference = {\n  readonly id: string;\n  readonly kind: 'style' | 'content';\n  readonly uri: string;\n  readonly label?: string;\n  readonly weight?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfileVersion",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 22,
+      "endLine": 31,
+      "text": "export type HostLookProfileVersion = {\n  readonly profileId: string;\n  readonly version: number;\n  readonly source: string;\n  readonly displayName: string;\n  readonly references: readonly HostLookReference[];\n  readonly capabilities: readonly string[];\n  readonly executionModes: readonly string[];\n  readonly createdAtIso: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfileIdentity",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 33,
+      "endLine": 39,
+      "text": "export type HostLookProfileIdentity = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly currentVersion: number;\n  readonly ownerScope: string;\n  readonly ownerId: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfileRecord",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 41,
+      "endLine": 45,
+      "text": "export type HostLookProfileRecord = {\n  readonly profile: HostLookProfileIdentity;\n  readonly status: 'active' | 'archived';\n  readonly current: HostLookProfileVersion;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfilePorts",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 51,
+      "endLine": 82,
+      "text": "export type HostLookProfilePorts = {\n  readonly listProfiles: (\n    actorId: string,\n    options?: { readonly includeArchived?: boolean },\n  ) => Promise<HostLookProfileResult<readonly HostLookProfileRecord[]>>;\n  readonly getProfileById: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord | null>>;\n  readonly createProfile: (\n    actorId: string,\n    draft: unknown,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly appendVersion: (\n    actorId: string,\n    profileId: string,\n    draft: unknown,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly archiveProfile: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly duplicateProfile: (\n    actorId: string,\n    sourceProfileId: string,\n    displayName?: string,\n  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;\n  readonly listVersions: (\n    actorId: string,\n    profileId: string,\n  ) => Promise<HostLookProfileResult<readonly HostLookProfileVersion[]>>;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLookProfileOp",
+      "path": "src/infrastructure/look/host-look-ports.contract.ts",
+      "line": 95,
+      "endLine": 95,
+      "text": "export type HostLookProfileOp = (typeof HOST_LOOK_PROFILE_OPS)[number];"
     },
     {
       "kind": "TypeAliasDeclaration",

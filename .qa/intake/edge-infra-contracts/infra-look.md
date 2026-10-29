@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `66770f2e8778c9c33e74177e262e0442b4aada04afbf4a9c9becceab93da2b8f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `0c6aaa5032f6671256b75f088180eed4eca756146c8460a3d9f0a2a230bb0163`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -368,6 +368,149 @@ export function createToonLabLookAdapter(): LookStyleAdapter {
 }
 ```
 
+### src/infrastructure/look/host-look-adapter.ts:12
+
+```ts
+export type HostLookAdapter = HostLookProfilePorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_LOOK_PROFILE_OPS;
+};
+```
+
+### src/infrastructure/look/host-look-adapter.ts:21
+
+```ts
+export function createHostLookAdapter(ports: HostLookProfilePorts): HostLookAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_LOOK_PROFILE_OPS,
+    listProfiles: (actorId, options) => ports.listProfiles(actorId, options),
+    getProfileById: (actorId, profileId) => ports.getProfileById(actorId, profileId),
+    createProfile: (actorId, draft) => ports.createProfile(actorId, draft),
+    appendVersion: (actorId, profileId, draft) =>
+      ports.appendVersion(actorId, profileId, draft),
+    archiveProfile: (actorId, profileId) => ports.archiveProfile(actorId, profileId),
+    duplicateProfile: (actorId, sourceProfileId, displayName) =>
+      ports.duplicateProfile(actorId, sourceProfileId, displayName),
+    listVersions: (actorId, profileId) => ports.listVersions(actorId, profileId),
+  };
+}
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:10
+
+```ts
+export type HostLookProfileResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:14
+
+```ts
+export type HostLookReference = {
+  readonly id: string;
+  readonly kind: 'style' | 'content';
+  readonly uri: string;
+  readonly label?: string;
+  readonly weight?: number;
+};
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:22
+
+```ts
+export type HostLookProfileVersion = {
+  readonly profileId: string;
+  readonly version: number;
+  readonly source: string;
+  readonly displayName: string;
+  readonly references: readonly HostLookReference[];
+  readonly capabilities: readonly string[];
+  readonly executionModes: readonly string[];
+  readonly createdAtIso: string;
+};
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:33
+
+```ts
+export type HostLookProfileIdentity = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly currentVersion: number;
+  readonly ownerScope: string;
+  readonly ownerId: string;
+};
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:41
+
+```ts
+export type HostLookProfileRecord = {
+  readonly profile: HostLookProfileIdentity;
+  readonly status: 'active' | 'archived';
+  readonly current: HostLookProfileVersion;
+};
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:51
+
+```ts
+export type HostLookProfilePorts = {
+  readonly listProfiles: (
+    actorId: string,
+    options?: { readonly includeArchived?: boolean },
+  ) => Promise<HostLookProfileResult<readonly HostLookProfileRecord[]>>;
+  readonly getProfileById: (
+    actorId: string,
+    profileId: string,
+  ) => Promise<HostLookProfileResult<HostLookProfileRecord | null>>;
+  readonly createProfile: (
+    actorId: string,
+    draft: unknown,
+  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;
+  readonly appendVersion: (
+    actorId: string,
+    profileId: string,
+    draft: unknown,
+  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;
+  readonly archiveProfile: (
+    actorId: string,
+    profileId: string,
+  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;
+  readonly duplicateProfile: (
+    actorId: string,
+    sourceProfileId: string,
+    displayName?: string,
+  ) => Promise<HostLookProfileResult<HostLookProfileRecord>>;
+  readonly listVersions: (
+    actorId: string,
+    profileId: string,
+  ) => Promise<HostLookProfileResult<readonly HostLookProfileVersion[]>>;
+};
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:85
+
+```ts
+export const HOST_LOOK_PROFILE_OPS = [
+  'listProfiles',
+  'getProfileById',
+  'createProfile',
+  'appendVersion',
+  'archiveProfile',
+  'duplicateProfile',
+  'listVersions',
+] as const;
+```
+
+### src/infrastructure/look/host-look-ports.contract.ts:95
+
+```ts
+export type HostLookProfileOp = (typeof HOST_LOOK_PROFILE_OPS)[number];
+```
+
 ### src/infrastructure/look/look-material-roles.ts:26
 
 ```ts
@@ -686,7 +829,7 @@ export function createLookRuntime(options?: LookRuntimeOptions): LookRuntime {
 }
 ```
 
-### src/infrastructure/look/look-service.ts:23
+### src/infrastructure/look/look-service.ts:27
 
 ```ts
 export async function listLookProfiles(options?: {
@@ -696,7 +839,7 @@ export async function listLookProfiles(options?: {
 }
 ```
 
-### src/infrastructure/look/look-service.ts:29
+### src/infrastructure/look/look-service.ts:33
 
 ```ts
 export async function getLookProfile(
@@ -706,7 +849,7 @@ export async function getLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:35
+### src/infrastructure/look/look-service.ts:39
 
 ```ts
 export async function createLookProfile(
@@ -716,7 +859,7 @@ export async function createLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:41
+### src/infrastructure/look/look-service.ts:45
 
 ```ts
 export async function appendLookProfileVersion(
@@ -726,7 +869,7 @@ export async function appendLookProfileVersion(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:47
+### src/infrastructure/look/look-service.ts:51
 
 ```ts
 export async function archiveLookProfile(
@@ -736,7 +879,7 @@ export async function archiveLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:53
+### src/infrastructure/look/look-service.ts:57
 
 ```ts
 export async function duplicateLookProfile(
@@ -746,7 +889,7 @@ export async function duplicateLookProfile(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:59
+### src/infrastructure/look/look-service.ts:63
 
 ```ts
 export async function listLookProfileVersions(
@@ -756,7 +899,7 @@ export async function listLookProfileVersions(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:66
+### src/infrastructure/look/look-service.ts:70
 
 ```ts
 export async function analyzeLookReferencesForDraft(
@@ -766,7 +909,7 @@ export async function analyzeLookReferencesForDraft(
 }
 ```
 
-### src/infrastructure/look/look-service.ts:76
+### src/infrastructure/look/look-service.ts:80
 
 ```ts
 export async function createLookProfileFromReferenceAnalysis(
@@ -1217,12 +1360,14 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/character/avatar/toonlab-compatibility-spike.ts` | `e896927b2a2fa4c4ad74550b0909a681596d41bdc356980a31afd42b493f5d30` |
 | `src/infrastructure/look/adapters/host-mtoon-look-adapter.ts` | `19b2f7008ffa27b5bd6c951019a55bde20d82f195ff9f798aa91b4d0a729e3a5` |
 | `src/infrastructure/look/adapters/toonlab-look-adapter.ts` | `4edeab261bda3b114a4a9c9d7dcdb16a1cc73c24df0db23539480aa3a0834acb` |
-| `src/infrastructure/look/index.ts` | `eadd350c8c0e50352b4c1d40eae7581a05bd43ec32fb9c3a311235cf8a57140d` |
+| `src/infrastructure/look/host-look-adapter.ts` | `f1c8129f9ff83fb5e586da01b59cf26e3d6e54385f20e631ee353d0802c409c1` |
+| `src/infrastructure/look/host-look-ports.contract.ts` | `f815bac34628b904e1c813d4929872b688d6dc140bebdf2a17a586c11556cf0f` |
+| `src/infrastructure/look/index.ts` | `c51fc97d92ac25e40f1427086c846cb000990dd7556f2f1aab7deb14a9ccccd0` |
 | `src/infrastructure/look/look-material-roles.ts` | `2e8161b18a046bb073664a586bb645dc1428c5796d04ade0b625c9339f8cfcdb` |
 | `src/infrastructure/look/look-reference-analysis-service.ts` | `a032b123fff9a4fe81429f04cc3113fb776d296f069952f147293f350ebf50a3` |
 | `src/infrastructure/look/look-runtime-types.ts` | `c31d27eaf600ed47e69f16120e584b06a985f29618923118a4c08570f276b2c6` |
 | `src/infrastructure/look/look-runtime.ts` | `64487d02f2831514e86b721d41b0964ac8e99b37faf1a33b8771b4fa7b955d23` |
-| `src/infrastructure/look/look-service.ts` | `343b0633794f4aaa3fddc22bf97c0c6a24f4d70210460cf2d0a9d1779f79b10e` |
+| `src/infrastructure/look/look-service.ts` | `0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44` |
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |

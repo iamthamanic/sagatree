@@ -958,8 +958,8 @@
         "waiting-dependency"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-302.md",
-      "sha256": "6b6f8251ffe9a904c7826f9e52bfb685f8c1857417b7813457227d71fad23e19",
-      "payloadSha256": "06e41e50d7190fcdd784237c0e16b3cffa66f70f9238972e85c9b79282de1427"
+      "sha256": "04de11afa6495c7e3962738c4664153ce1b19f20d181695bf8b5491d9afc7c3d",
+      "payloadSha256": "393e74824a53b7169eb06916d86a94f64f21a580ef866b649fc9f221aeb9e205"
     },
     {
       "localId": "MIG-303",
@@ -987,8 +987,8 @@
         "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-304.md",
-      "sha256": "175acf0df057936b4ec0176cbe40b9434a261df27e76fe1752380dd70b4274fc",
-      "payloadSha256": "3436c971e996ba8f27a2bd2da2573a9b297f4024ff4b5b8408875b98c7ba86ee"
+      "sha256": "e56e92a2e62cd40d35ddb1c5a6951c175c743bfc61406d6c5a108c345c3bd072",
+      "payloadSha256": "913283a20948b6699a0bb9c6f9dbc82f2eea260e929a228d126e5eb97eccf592"
     },
     {
       "localId": "MIG-305",
