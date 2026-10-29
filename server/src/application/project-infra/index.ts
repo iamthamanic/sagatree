@@ -138,7 +138,16 @@ function mapSession(
         ? value.project_id
         : '';
   if (!id || !projectId) return { ok: false, error: 'P0002' };
-  return { ok: true, value: { ...value, id, projectId } };
+  // Audience-safe projection (#569): never leak joinCode / notes / world_state.
+  const publicId = typeof value.publicId === 'string' ? value.publicId : '';
+  const status = typeof value.status === 'string' ? value.status : '';
+  const sessionNumber =
+    typeof value.sessionNumber === 'number' ? value.sessionNumber : null;
+  const name = typeof value.name === 'string' ? value.name : null;
+  return {
+    ok: true,
+    value: { id, projectId, publicId, status, sessionNumber, name },
+  };
 }
 
 export function createProjectInfraPorts(deps: {

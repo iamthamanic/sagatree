@@ -258,12 +258,23 @@ try {
   // DENY: stranger / missing actor / foreign character
   assert(!infra.getMySagaPermissions(Stranger, publicId).ok, 'stranger perms DENY');
   assert(!infra.getSagaOverview(Stranger, publicId).ok, 'stranger overview DENY');
+  assert(!infra.getSagaLoreTimeline(Stranger, publicId).ok, 'stranger lore DENY');
+  assert(!infra.listSagaBindings(Stranger, publicId, 'npc').ok, 'stranger bindings DENY');
+  assert(
+    !infra.listSagaMemberPermissionState(Stranger, publicId).ok,
+    'stranger member state DENY',
+  );
   assert(!infra.joinProjectByCode(Stranger, 'ZZZZZZZZ', null).ok, 'unknown code DENY');
   assert(!infra.createProjectSession(Stranger, projectId, 'X').ok, 'stranger session DENY');
   assert(
     !infra.setSagaBindingReveal(Stranger, projectId, partyId, 'unlisted').ok,
     'stranger reveal DENY',
   );
+  // Session projection must not leak joinCode / notes / world_state (#569 / Kodus Critical).
+  assert(!('joinCode' in sess.value), 'session VM has no joinCode');
+  assert(!('notes' in sess.value), 'session VM has no notes');
+  assert(!('worldState' in sess.value), 'session VM has no worldState');
+  assert(typeof sess.value.publicId === 'string', 'session publicId projected');
   assert(
     !infra.setSagaMemberBundle(Player, projectId, playerMember.id, 'bundle.saga.gm').ok,
     'player cannot set bundle',
