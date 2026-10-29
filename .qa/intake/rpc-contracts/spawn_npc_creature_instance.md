@@ -127,7 +127,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:385
+### src/infrastructure/npc-creature/npc-creature-service.ts:389
 
 AST-Auflösung: `string-literal`; SHA-256 `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015`.
 
@@ -209,10 +209,10 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `toNpcCreatureInstance` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 75 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | `toInstanceRuntimePayload` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 91 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
 | `toInstanceSnapshotPayload` | [src/infrastructure/npc-creature/npc-creature-instance.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature-instance.persistence.ts) | 102 | `00aaa3e07b5cdc72305da5381e0c8e0754b2a159df623a4a6355748cb269776f` |
-| `INSTANCES_TABLE` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 50 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
-| `resolveDefinitionForInstance` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 301 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
-| `isBuiltinOrCoreDefinitionId` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 312 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
-| `listNpcCreatureInstances` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 318 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
+| `INSTANCES_TABLE` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 54 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
+| `resolveDefinitionForInstance` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 305 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
+| `isBuiltinOrCoreDefinitionId` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 316 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
+| `listNpcCreatureInstances` | [src/infrastructure/npc-creature/npc-creature-service.ts](../../../src/infrastructure/npc-creature/npc-creature-service.ts) | 322 | `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015` |
 | `PersistedNpcCreatureScope` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 18 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `NpcCreatureDefinitionDto` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 21 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `NPC_CREATURE_DEFINITION_COLUMNS` | [src/infrastructure/npc-creature/npc-creature.persistence.ts](../../../src/infrastructure/npc-creature/npc-creature.persistence.ts) | 34 | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |

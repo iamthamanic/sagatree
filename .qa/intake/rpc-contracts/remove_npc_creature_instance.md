@@ -90,7 +90,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/npc-creature/npc-creature-service.ts:448
+### src/infrastructure/npc-creature/npc-creature-service.ts:452
 
 AST-Auflösung: `string-literal`; SHA-256 `6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015`.
 
