@@ -201,7 +201,12 @@ export function updateQuarantineWorld(
 export function addQuarantineLocation(
   store: WorldEdgeQuarantineStore,
   worldId: string,
-  data: Omit<QuarantineLocation, 'id'> & { discovered?: boolean },
+  data: Omit<QuarantineLocation, 'id' | 'discovered' | 'connections' | 'npcs' | 'items'> & {
+    discovered?: boolean;
+    connections?: string[];
+    npcs?: string[];
+    items?: string[];
+  },
   nowIso: string,
   id?: string,
 ): QuarantineLocation {
@@ -352,9 +357,10 @@ export function updateQuarantineFactionRelationship(
 }
 
 /**
- * Edge parity: 30-day months labeled Gregorian; `hours` uses `hours || 1` default
- * (falsy → 1). Negative/nonfinite hours are intentionally unbounded here —
- * replacements must bound them independently before activation.
+ * Edge calendar roll (30-day months). Falsy `hours` → 1 (`hours || 1`).
+ * Non-finite hours also fall back to 1 so the host event loop cannot hang
+ * (Edge while-loop would not terminate on Infinity — quarantine hardens this).
+ * Day/month/year advance is arithmetic (same final calendar as the Edge loop).
  */
 export function advanceQuarantineTime(
   store: WorldEdgeQuarantineStore,
@@ -364,22 +370,20 @@ export function advanceQuarantineTime(
 ): QuarantineWorldTime {
   const world = store.worlds.get(worldId);
   if (!world) throw new Error('World not found');
-  const delta = hours || 1;
+  const raw = hours || 1;
+  const delta = Number.isFinite(raw) ? raw : 1;
   const time: QuarantineWorldTime = { ...world.time };
   time.current += delta;
-  time.hour += delta;
-  while (time.hour >= 24) {
-    time.hour -= 24;
-    time.day += 1;
-    if (time.day > 30) {
-      time.day = 1;
-      time.month += 1;
-      if (time.month > 12) {
-        time.month = 1;
-        time.year += 1;
-      }
-    }
-  }
+  const totalHours = time.hour + delta;
+  const dayCarry = Math.floor(totalHours / 24);
+  time.hour = ((totalHours % 24) + 24) % 24;
+  let dayIndex = time.day - 1 + dayCarry;
+  const monthCarry = Math.floor(dayIndex / 30);
+  time.day = ((dayIndex % 30) + 30) % 30 + 1;
+  let monthIndex = time.month - 1 + monthCarry;
+  const yearCarry = Math.floor(monthIndex / 12);
+  time.month = ((monthIndex % 12) + 12) % 12 + 1;
+  time.year += yearCarry;
   store.worlds.set(worldId, { ...world, time, updatedAt: nowIso });
   return { ...time };
 }

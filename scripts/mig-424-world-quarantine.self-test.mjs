@@ -245,13 +245,16 @@ const now = '2026-01-01T00:00:00.000Z';
   assert(t.current === 16 + 29 * 24 + 1 && t.hour === 1, 'hours||1 default');
 }
 
-// Fall 3: replacements must bound hours; durable world ports stay separate
+// Fall 3: quarantine hardens nonfinite hours; durable world ports stay separate
 {
   const store = createWorldEdgeQuarantineStore();
   createQuarantineWorld(store, { projectId: 'p2', name: 'Bound' }, now, 'w-bound');
-  // Legacy leaves nonfinite/huge unbounded — characterize that defect, do not "fix" here.
+  // Finite huge hours still advance arithmetically (Edge while would be O(hours)).
   const huge = advanceQuarantineTime(store, 'w-bound', 1e6, now);
-  assert(Number.isFinite(huge.current) && huge.current === 1e6, 'legacy accepts huge hours');
+  assert(Number.isFinite(huge.current) && huge.current === 1e6, 'finite huge hours advance');
+  // Nonfinite must not hang the host event loop (Edge while never exits on Infinity).
+  const inf = advanceQuarantineTime(store, 'w-bound', Number.POSITIVE_INFINITY, now);
+  assert(Number.isFinite(inf.current) && inf.current === 1e6 + 1, 'Infinity hours → 1');
 
   const authority = bodyFieldsAreNotAuthority();
   assert(authority.some((d) => /ownership|authority/i.test(d)), 'body not authority');
