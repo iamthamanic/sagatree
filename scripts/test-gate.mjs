@@ -948,6 +948,18 @@ function checkMig421SessionRecap() {
   );
 }
 
+function checkMig422SessionsQuarantine() {
+  console.log('MIG-422 (#838): sessions edge stays unmounted + quarantine fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-422-sessions-quarantine.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig401AiGmQuarantine() {
   console.log('MIG-401 (#817): ai-gm edge stays unmounted + quarantine fixtures...');
   execFileSync(
@@ -3228,6 +3240,7 @@ checkMig418QuestsQuarantine();
 checkMig419RulesetsQuarantine();
 checkMig420SessionMediaToken();
 checkMig421SessionRecap();
+checkMig422SessionsQuarantine();
 checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
