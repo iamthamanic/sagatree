@@ -103,6 +103,10 @@ export function checkItemModel3dContentLengthHeader(
   return { ok: true };
 }
 
+/**
+ * Strict base64 decode with Edge `atob` padding parity and O(n) validity
+ * (expected byte length) — rejects invalid alphabet without a re-encode pass.
+ */
 export function decodeStrictBase64(contentBase64: string): Uint8Array {
   const cleaned = contentBase64
     .replace(/^data:model\/gltf-binary;base64,/, '')
