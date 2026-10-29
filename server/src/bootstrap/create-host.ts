@@ -27,6 +27,11 @@ import {
   type ProjectInfraPorts,
 } from '../application/project-infra/index.ts';
 import {
+  createSagaInfraPorts,
+  createSagaInfraPortsStub,
+  type SagaInfraPorts,
+} from '../application/saga-infra/index.ts';
+import {
   createAssetPorts,
   createAssetPortsStub,
   type AssetPorts,
@@ -102,6 +107,8 @@ export type HostInstance = {
   readonly npcCreature: NpcCreaturePorts;
   /** MIG-308 composed project infra ports — 11 RPCs (HTTP cutover → MIG-600). */
   readonly projectInfra: ProjectInfraPorts;
+  /** MIG-310 composed saga infra ports — 11 RPCs (HTTP cutover → MIG-600). */
+  readonly sagaInfra: SagaInfraPorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
   readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
@@ -296,6 +303,10 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           })
         : createProjectInfraPortsStub();
 
+    const sagaInfra: SagaInfraPorts = db
+      ? createSagaInfraPorts({ saga, project, world })
+      : createSagaInfraPortsStub();
+
     const recordPing = () => {
       if (!acceptingMutations) return { ok: false as const, status: 503, error: 'host-shutting-down' };
       writeFileSync(pingLogPath, `${JSON.stringify({ at: new Date().toISOString() })}\n`, {
@@ -373,6 +384,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       npcCreature,
       projectInfra,
+      sagaInfra,
       saga,
       getAuth: () => betterAuth,
       isReady: () => ready,

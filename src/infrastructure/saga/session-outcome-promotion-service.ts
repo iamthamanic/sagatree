@@ -1,6 +1,10 @@
 /**
  * session-outcome-promotion-service — RPC wrappers for #582 promote.
  * Location: src/infrastructure/saga/session-outcome-promotion-service.ts
+ *
+ * Dual-path (MIG-310): production remains Supabase RPCs via typed callPromote.
+ * Host ports are bound via `createHostSagaAdapter` for tests / future cutover
+ * (no accidental cutover — VITE host flags alone do not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import {

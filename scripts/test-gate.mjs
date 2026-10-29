@@ -1140,6 +1140,18 @@ function checkMig308ProjectAdapter() {
   );
 }
 
+function checkMig310SagaAdapter() {
+  console.log('MIG-310 saga adapter (#809): host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-310-saga-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3282,6 +3294,7 @@ checkMig301AiAdapter();
 checkMig304LookAdapter();
 checkMig307NpcAdapter();
 checkMig308ProjectAdapter();
+checkMig310SagaAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();
