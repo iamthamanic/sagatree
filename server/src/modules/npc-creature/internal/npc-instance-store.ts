@@ -1,13 +1,35 @@
 /**
- * NPC instance + controller RPCs (#877). Private — npc-creature public API only.
+ * NPC definition CRUD (#806) + instance/controller RPCs (#877).
+ * Private — npc-creature public API only.
  * Location: server/src/modules/npc-creature/internal/npc-instance-store.ts
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 import type { ProjectPorts } from '../../project/index.ts';
+import {
+  normalizeNpcDefinitionDraft,
+  personalCopyName,
+} from './npc-definition-draft.ts';
+import {
+  generateNpcCreaturePublicId,
+  isNpcCreaturePublicId,
+} from './public-npc-creature-id.ts';
 
 export type NpcError = { readonly ok: false; readonly error: string };
 export type Ok<T> = { readonly ok: true; readonly value: T };
+
+export type NpcDefinitionRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly scope: 'personal' | 'world' | 'core' | 'builtin';
+  readonly worldProfileId: string | null;
+  readonly ownerUserId: string | null;
+  readonly status: 'active' | 'archived';
+  readonly payload: Record<string, unknown>;
+  readonly payloadVersion: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
 
 export type NpcInstanceRow = {
   readonly id: string;
@@ -62,6 +84,10 @@ export type NpcSessionLookup = {
 /** World ACL via owning module / composition — no worlds SQL inside npc-creature. */
 export type NpcWorldLookup = {
   readonly canReadWorldProfile: (
+    actorIds: readonly string[],
+    worldProfileId: string,
+  ) => boolean;
+  readonly canEditWorldProfile: (
     actorIds: readonly string[],
     worldProfileId: string,
   ) => boolean;
@@ -192,14 +218,17 @@ export class NpcInstanceStore {
     readonly worldProfileId?: string | null;
     readonly status?: 'active' | 'archived';
     readonly sheetMode?: string;
+    readonly publicId?: string;
   }): void {
     const now = nowIso();
     const payload = JSON.stringify({ sheetMode: input.sheetMode ?? 'full' });
+    const publicId = input.publicId ?? this.#uniquePublicId();
     this.#db
       .prepare(
         `INSERT OR REPLACE INTO npc_creature_definitions
-           (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+           (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at,
+            public_id, payload_version)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
       )
       .run(
         input.id,
@@ -210,7 +239,393 @@ export class NpcInstanceStore {
         payload,
         now,
         now,
+        publicId,
       );
+  }
+
+  #uniquePublicId(): string {
+    for (let attempt = 0; attempt < 32; attempt += 1) {
+      const publicId = generateNpcCreaturePublicId();
+      const hit = this.#db
+        .prepare(`SELECT 1 AS o FROM npc_creature_definitions WHERE public_id = ? LIMIT 1`)
+        .get(publicId);
+      if (!hit) return publicId;
+    }
+    return generateNpcCreaturePublicId();
+  }
+
+  /**
+   * Map a definition row. Does not write.
+   * When `requirePublicId` is false, missing public_id yields a placeholder so
+   * callers can authorize before `#persistMissingPublicId`.
+   */
+  #mapDefinitionRow(
+    row: {
+      readonly id: string;
+      readonly public_id: string | null;
+      readonly scope: string;
+      readonly world_profile_id: string | null;
+      readonly owner_user_id: string | null;
+      readonly status: string;
+      readonly payload: string;
+      readonly payload_version: number | null;
+      readonly created_at: string;
+      readonly updated_at: string;
+    },
+    requirePublicId = true,
+  ): NpcDefinitionRecord | null {
+    let payload: Record<string, unknown>;
+    try {
+      const parsed: unknown = JSON.parse(row.payload);
+      if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return null;
+      }
+      payload = parsed as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+    const trimmed =
+      typeof row.public_id === 'string' ? row.public_id.trim().toUpperCase() : '';
+    const publicId = isNpcCreaturePublicId(trimmed) ? trimmed : '';
+    if (
+      row.scope !== 'personal' &&
+      row.scope !== 'world' &&
+      row.scope !== 'core' &&
+      row.scope !== 'builtin'
+    ) {
+      return null;
+    }
+    if (!publicId && requirePublicId) return null;
+    const status = row.status === 'archived' ? 'archived' : 'active';
+    return {
+      id: row.id,
+      publicId: publicId || 'NPCC-PENDING',
+      scope: row.scope,
+      worldProfileId: row.world_profile_id,
+      ownerUserId: row.owner_user_id,
+      status,
+      payload,
+      payloadVersion:
+        typeof row.payload_version === 'number' && row.payload_version >= 1
+          ? row.payload_version
+          : 1,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  /** Persist a missing public_id only after the caller authorized the actor. */
+  #persistMissingPublicId(definitionId: string): NpcDefinitionRecord | null {
+    try {
+      const publicId = this.#uniquePublicId();
+      this.#db
+        .prepare(
+          `UPDATE npc_creature_definitions SET public_id = ?
+           WHERE id = ? AND (public_id IS NULL OR trim(public_id) = '')`,
+        )
+        .run(publicId, definitionId);
+    } catch {
+      return null;
+    }
+    return this.#loadDefinition(definitionId);
+  }
+
+  #loadDefinitionRow(id: string): {
+    id: string;
+    public_id: string | null;
+    scope: string;
+    world_profile_id: string | null;
+    owner_user_id: string | null;
+    status: string;
+    payload: string;
+    payload_version: number | null;
+    created_at: string;
+    updated_at: string;
+  } | null {
+    const row = this.#db
+      .prepare(
+        `SELECT id, public_id, scope, world_profile_id, owner_user_id, status, payload,
+                payload_version, created_at, updated_at
+         FROM npc_creature_definitions WHERE id = ?`,
+      )
+      .get(id) as
+      | {
+          id: string;
+          public_id: string | null;
+          scope: string;
+          world_profile_id: string | null;
+          owner_user_id: string | null;
+          status: string;
+          payload: string;
+          payload_version: number | null;
+          created_at: string;
+          updated_at: string;
+        }
+      | undefined;
+    return row ?? null;
+  }
+
+  #loadDefinition(id: string): NpcDefinitionRecord | null {
+    const row = this.#loadDefinitionRow(id);
+    if (!row) return null;
+    return this.#mapDefinitionRow(row, true);
+  }
+
+  #definitionReadableForActor(
+    actorIds: readonly string[],
+    record: NpcDefinitionRecord,
+  ): boolean {
+    if (record.scope === 'core' || record.scope === 'builtin') return true;
+    if (record.scope === 'personal') {
+      return Boolean(record.ownerUserId && actorIds.includes(record.ownerUserId));
+    }
+    if (record.scope === 'world' && record.worldProfileId) {
+      return this.#world.canReadWorldProfile(actorIds, record.worldProfileId);
+    }
+    return false;
+  }
+
+  #definitionMutableForActor(
+    actorIds: readonly string[],
+    record: NpcDefinitionRecord,
+  ): boolean {
+    if (record.scope === 'personal') {
+      return Boolean(record.ownerUserId && actorIds.includes(record.ownerUserId));
+    }
+    if (record.scope === 'world' && record.worldProfileId) {
+      return this.#world.canEditWorldProfile(actorIds, record.worldProfileId);
+    }
+    return false;
+  }
+
+  listDefinitions(
+    actorIds: readonly string[],
+    options?: {
+      readonly scope?: 'personal' | 'world' | 'core' | 'builtin';
+      readonly worldProfileId?: string | null;
+      readonly includeArchived?: boolean;
+    },
+  ): Ok<readonly NpcDefinitionRecord[]> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const includeArchived = options?.includeArchived === true;
+    const scope = options?.scope ?? null;
+    const worldProfileId = options?.worldProfileId ?? null;
+    const ownerPlaceholders = actorIds.map(() => '?').join(', ');
+    // Candidate set: own personal rows + world/core/builtin (+ optional filters).
+    // World ACL is memoized per world_profile_id below (not N queries blindly).
+    const rows = this.#db
+      .prepare(
+        `SELECT id, public_id, scope, world_profile_id, owner_user_id, status, payload,
+                payload_version, created_at, updated_at
+         FROM npc_creature_definitions
+         WHERE (? = 1 OR status = 'active')
+           AND (? IS NULL OR scope = ?)
+           AND (? IS NULL OR world_profile_id = ?)
+           AND (
+             (scope = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
+             OR scope IN ('world', 'core', 'builtin')
+           )
+         ORDER BY updated_at DESC`,
+      )
+      .all(
+        includeArchived ? 1 : 0,
+        scope,
+        scope,
+        worldProfileId,
+        worldProfileId,
+        ...actorIds,
+      ) as Array<{
+      id: string;
+      public_id: string | null;
+      scope: string;
+      world_profile_id: string | null;
+      owner_user_id: string | null;
+      status: string;
+      payload: string;
+      payload_version: number | null;
+      created_at: string;
+      updated_at: string;
+    }>;
+    const worldReadCache = new Map<string, boolean>();
+    const out: NpcDefinitionRecord[] = [];
+    for (const row of rows) {
+      const mapped = this.#mapDefinitionRow(row);
+      if (!mapped) continue;
+      if (mapped.scope === 'world' && mapped.worldProfileId) {
+        let allowed = worldReadCache.get(mapped.worldProfileId);
+        if (allowed === undefined) {
+          allowed = this.#world.canReadWorldProfile(actorIds, mapped.worldProfileId);
+          worldReadCache.set(mapped.worldProfileId, allowed);
+        }
+        if (!allowed) continue;
+      } else if (!this.#definitionReadableForActor(actorIds, mapped)) {
+        continue;
+      }
+      out.push(mapped);
+    }
+    return { ok: true, value: out };
+  }
+
+  getDefinition(
+    actorIds: readonly string[],
+    definitionId: string,
+  ): Ok<NpcDefinitionRecord | null> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (id.length < 10 || id.length > 160) {
+      return { ok: false, error: 'P0001:invalid definition id' };
+    }
+    const row = this.#loadDefinitionRow(id);
+    if (!row) return { ok: true, value: null };
+    const probe = this.#mapDefinitionRow(row, false);
+    if (!probe) return { ok: true, value: null };
+    if (!this.#definitionReadableForActor(actorIds, probe)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    if (probe.publicId === 'NPCC-PENDING') {
+      const filled = this.#persistMissingPublicId(id);
+      if (!filled) return { ok: false, error: 'public-id-backfill-failed' };
+      return { ok: true, value: filled };
+    }
+    return { ok: true, value: probe };
+  }
+
+  createDefinition(
+    actorIds: readonly string[],
+    input: {
+      readonly scope: 'personal' | 'world';
+      readonly worldProfileId?: string | null;
+      readonly draft: unknown;
+    },
+  ): Ok<NpcDefinitionRecord> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const normalized = normalizeNpcDefinitionDraft(input.draft);
+    if (!normalized.ok) return { ok: false, error: normalized.error };
+    if (input.scope === 'world') {
+      const worldProfileId =
+        typeof input.worldProfileId === 'string' ? input.worldProfileId.trim() : '';
+      if (!worldProfileId) return { ok: false, error: 'missing-world-profile' };
+      if (!this.#world.canEditWorldProfile(actorIds, worldProfileId)) {
+        return { ok: false, error: 'not-authorized' };
+      }
+      return this.#insertDefinition('world', actorIds[0], worldProfileId, normalized.payload);
+    }
+    return this.#insertDefinition('personal', actorIds[0], null, normalized.payload);
+  }
+
+  #insertDefinition(
+    scope: 'personal' | 'world',
+    ownerUserId: string,
+    worldProfileId: string | null,
+    payload: Record<string, unknown>,
+  ): Ok<NpcDefinitionRecord> | NpcError {
+    const id = `${scope}:${randomUUID()}`;
+    const publicId = this.#uniquePublicId();
+    const now = nowIso();
+    try {
+      this.#db
+        .prepare(
+          `INSERT INTO npc_creature_definitions
+             (id, scope, owner_user_id, world_profile_id, status, payload, created_at, updated_at,
+              public_id, payload_version)
+           VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?, 1)`,
+        )
+        .run(
+          id,
+          scope,
+          ownerUserId,
+          worldProfileId,
+          JSON.stringify(payload),
+          now,
+          now,
+          publicId,
+        );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return { ok: false, error: `definition-create-failed:${message}` };
+    }
+    const loaded = this.#loadDefinition(id);
+    if (!loaded) return { ok: false, error: 'definition-create-unreadable' };
+    return { ok: true, value: loaded };
+  }
+
+  updateDefinition(
+    actorIds: readonly string[],
+    definitionId: string,
+    draft: unknown,
+  ): Ok<NpcDefinitionRecord> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (id.length < 10 || id.length > 160) {
+      return { ok: false, error: 'P0001:invalid definition id' };
+    }
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#definitionMutableForActor(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    const normalized = normalizeNpcDefinitionDraft(draft);
+    if (!normalized.ok) return { ok: false, error: normalized.error };
+    const now = nowIso();
+    this.#db
+      .prepare(
+        `UPDATE npc_creature_definitions
+         SET payload = ?, payload_version = 1, updated_at = ?
+         WHERE id = ?`,
+      )
+      .run(JSON.stringify(normalized.payload), now, id);
+    const loaded = this.#loadDefinition(id);
+    if (!loaded) return { ok: false, error: 'definition-update-unreadable' };
+    return { ok: true, value: loaded };
+  }
+
+  setDefinitionStatus(
+    actorIds: readonly string[],
+    definitionId: string,
+    status: 'active' | 'archived',
+  ): Ok<NpcDefinitionRecord> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const id = typeof definitionId === 'string' ? definitionId.trim() : '';
+    if (id.length < 10 || id.length > 160) {
+      return { ok: false, error: 'P0001:invalid definition id' };
+    }
+    const existing = this.#loadDefinition(id);
+    if (!existing) return { ok: false, error: 'not-found' };
+    if (!this.#definitionMutableForActor(actorIds, existing)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    const now = nowIso();
+    this.#db
+      .prepare(
+        `UPDATE npc_creature_definitions SET status = ?, updated_at = ? WHERE id = ?`,
+      )
+      .run(status, now, id);
+    const loaded = this.#loadDefinition(id);
+    if (!loaded) return { ok: false, error: 'definition-status-unreadable' };
+    return { ok: true, value: loaded };
+  }
+
+  duplicateDefinition(
+    actorIds: readonly string[],
+    sourceDefinitionId: string,
+  ): Ok<NpcDefinitionRecord> | NpcError {
+    if (!actorIds[0]) return { ok: false, error: 'P0001:not authenticated' };
+    const sourceId =
+      typeof sourceDefinitionId === 'string' ? sourceDefinitionId.trim() : '';
+    if (sourceId.length < 10 || sourceId.length > 160) {
+      return { ok: false, error: 'P0001:invalid definition id' };
+    }
+    const source = this.#loadDefinition(sourceId);
+    if (!source) return { ok: false, error: 'not-found' };
+    if (!this.#definitionReadableForActor(actorIds, source)) {
+      return { ok: false, error: 'not-authorized' };
+    }
+    const name =
+      typeof source.payload.name === 'string'
+        ? personalCopyName(source.payload.name)
+        : personalCopyName('Figur');
+    const draft = { ...source.payload, name };
+    return this.#insertDefinition('personal', actorIds[0], null, draft);
   }
 
   assignController(

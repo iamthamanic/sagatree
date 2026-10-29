@@ -44,6 +44,11 @@ import {
   type LookProfilePorts,
 } from '../modules/look/index.ts';
 import {
+  createNpcCreaturePorts,
+  createNpcCreaturePortsStub,
+  type NpcCreaturePorts,
+} from '../modules/npc-creature/index.ts';
+import {
   createSagaPorts,
   createSagaPortsStub,
   type SagaPorts,
@@ -54,7 +59,10 @@ import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
 import { createAiProviderCredentialsUseCases } from '../application/ai-provider-credentials/index.ts';
 import { createOllamaSettingsUseCases } from '../application/ollama-settings/index.ts';
-import { createSessionPorts } from '../modules/session/index.ts';
+import {
+  createSessionPorts,
+  createSessionProjectLookup,
+} from '../modules/session/index.ts';
 import { createRealtimeSessionRooms, type RealtimeFanoutMessage } from '../realtime/index.ts';
 import { createRouteHandler, sendJson } from '../http/route-registry.ts';
 import {
@@ -85,6 +93,8 @@ export type HostInstance = {
   readonly rulesets: RulesetPorts;
   /** MIG-304 LookProfile repository ports (HTTP cutover → MIG-600). */
   readonly look: LookProfilePorts;
+  /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
+  readonly npcCreature: NpcCreaturePorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
   readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
@@ -203,6 +213,27 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
         })
       : createSagaPortsStub();
+    const sessionProjectLookup = db ? createSessionProjectLookup(db) : null;
+    const npcCreature: NpcCreaturePorts = db && sessionProjectLookup
+      ? createNpcCreaturePorts({
+          db,
+          project,
+          session: {
+            sessionProjectId: (sessionId) =>
+              sessionProjectLookup.projectIdForSession(sessionId),
+            sessionBelongsToProject: (sessionId, projectId) =>
+              sessionProjectLookup.projectIdForSession(sessionId) === projectId,
+          },
+          world: {
+            canReadWorldProfile: (actorIds, worldProfileId) => {
+              if (project.actorCanAccessWorld(actorIds, worldProfileId)) return true;
+              return world.canEditWorld(actorIds, worldProfileId);
+            },
+            canEditWorldProfile: (actorIds, worldProfileId) =>
+              world.canEditWorld(actorIds, worldProfileId),
+          },
+        })
+      : createNpcCreaturePortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
@@ -319,6 +350,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ai,
       rulesets,
       look,
+      npcCreature,
       saga,
       getAuth: () => betterAuth,
       isReady: () => ready,

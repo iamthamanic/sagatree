@@ -121,6 +121,12 @@ try {
           .get(worldProfileId);
         return Boolean(owner && actorIds.includes(owner.ownerUserId));
       },
+      canEditWorldProfile(actorIds, worldProfileId) {
+        const owner = db
+          .prepare(`SELECT owner_user_id AS ownerUserId FROM worlds WHERE id = ?`)
+          .get(worldProfileId);
+        return Boolean(owner && actorIds.includes(owner.ownerUserId));
+      },
     },
   });
 

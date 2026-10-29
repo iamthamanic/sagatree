@@ -1116,6 +1116,18 @@ function checkMig304LookAdapter() {
   );
 }
 
+function checkMig307NpcAdapter() {
+  console.log('MIG-307 npc-creature adapter (#806): host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-307-npc-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3256,6 +3268,7 @@ checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig301AiAdapter();
 checkMig304LookAdapter();
+checkMig307NpcAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();

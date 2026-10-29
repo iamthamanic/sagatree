@@ -364,8 +364,8 @@
       "rpc": "assign_npc_creature_controller",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 284,
-      "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+      "line": 288,
+      "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
       "requestExpression": "{\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -671,8 +671,8 @@
       "rpc": "clear_npc_creature_instance_temp_controllers_for_session",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 468,
-      "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+      "line": 472,
+      "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
       "requestExpression": "{\n      p_session_id: sessionId,\n    }",
       "requestKeys": [
         "p_session_id"
@@ -5157,8 +5157,8 @@
       "rpc": "remove_npc_creature_instance",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 448,
-      "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+      "line": 452,
+      "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
       "requestExpression": "{\n      p_instance_id: instanceId,\n    }",
       "requestKeys": [
         "p_instance_id"
@@ -6706,8 +6706,8 @@
       "rpc": "spawn_npc_creature_instance",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 385,
-      "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+      "line": 389,
+      "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
       "requestExpression": "{\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -6792,32 +6792,32 @@
           "name": "INSTANCES_TABLE",
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 50,
-          "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+          "line": 54,
+          "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
           "source": "INSTANCES_TABLE = 'npc_creature_instances'"
         },
         {
           "name": "resolveDefinitionForInstance",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 301,
-          "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+          "line": 305,
+          "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
           "source": "async function resolveDefinitionForInstance(\n  definitionId: string,\n): Promise<NpcCreatureDefinition | null> {\n  const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n  if (builtin) return builtin;\n  const core = getCoreNpcCreatureDefinition(definitionId);\n  if (core) return core;\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n  return record?.definition ?? null;\n}"
         },
         {
           "name": "isBuiltinOrCoreDefinitionId",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 312,
-          "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+          "line": 316,
+          "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
           "source": "function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {\n  if (isCoreNpcCreatureDefinitionId(definitionId)) return true;\n  return Boolean(getBuiltinNpcCreatureDefinition(definitionId));\n}"
         },
         {
           "name": "listNpcCreatureInstances",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 318,
-          "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+          "line": 322,
+          "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
           "source": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
         },
         {
@@ -7090,8 +7090,8 @@
       "rpc": "update_npc_creature_instance_runtime",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 428,
-      "sourceSha256": "8285b65cb239a2b2255fd422c9dfa312f583c36b0ecf99a8cd36d49ab657c759",
+      "line": 432,
+      "sourceSha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015",
       "requestExpression": "{\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }",
       "requestKeys": [
         "p_instance_id",

@@ -321,6 +321,27 @@ export function createSessionPorts(deps: {
   };
 }
 
+/**
+ * Read-only play_sessions → project_id lookup for cross-module composition
+ * (e.g. npc-creature). Keeps play_sessions SQL inside the session module.
+ */
+export function createSessionProjectLookup(db: HostDatabase): {
+  readonly projectIdForSession: (sessionId: string) => string | null;
+} {
+  return {
+    projectIdForSession(sessionId: string): string | null {
+      const trimmed = typeof sessionId === 'string' ? sessionId.trim() : '';
+      if (!trimmed) return null;
+      const row = db
+        .prepare(
+          `SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`,
+        )
+        .get(trimmed) as { projectId: string } | undefined;
+      return row?.projectId ?? null;
+    },
+  };
+}
+
 /** MIG-407 quarantine surface — not a public host route. */
 export {
   DM_TOOLS_PUBLIC_ACTIVATION_AUTHORIZED,

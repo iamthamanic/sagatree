@@ -4,6 +4,10 @@
  * and adventure/session instances (#201).
  * App slices must not query tables directly.
  * Location: src/infrastructure/npc-creature/npc-creature-service.ts
+ *
+ * Dual-path (MIG-307): production remains Supabase repository/RPCs. Host ports are
+ * bound via `createHostNpcCreatureAdapter` for tests / future cutover (no accidental
+ * cutover — VITE host flags alone do not redirect this facade).
  */
 import {
   assertFullSheetHasNoSilentIllegalAttributes,
