@@ -336,3 +336,12 @@ export {
   type CombatState,
   type DiceResult,
 } from './internal/dm-tools-quarantine.ts';
+
+/** MIG-420 session-media-token isolated-contract surface — Edge remains live mount. */
+export {
+  SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED,
+  createSessionMediaTokenStore,
+  issueSessionMediaToken,
+  type SessionMediaTokenResult,
+  type SessionMediaTokenStore,
+} from './session-media-token.ts';
