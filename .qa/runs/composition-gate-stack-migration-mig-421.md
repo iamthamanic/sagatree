@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-421 (#837)
 
-- HEAD_SHA: 5ff1455775735431987f82eab29b13c0daa77199
+- HEAD_SHA: d7d520cea9df3de0a17f6e915ac434d8ef6b9094
 - BASE_SHA: 0ea1f801539da6738258c0394ba81a6baba90f35
 - HOP_DIGEST: session-recap-generate-isolated-v1
 - Date: 2026-10-29
