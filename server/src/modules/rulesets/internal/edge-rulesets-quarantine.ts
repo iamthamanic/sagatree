@@ -61,7 +61,8 @@ export type QuarantineItem = {
 };
 
 export type QuarantineRuleset = {
-  readonly id: string;
+  /** Legacy create may store a truthy non-string JSON `id` (e.g. number) via `data.id || …`. */
+  readonly id: string | number;
   readonly name: string;
   readonly version: string;
   readonly description: string;
@@ -92,8 +93,8 @@ const DEFAULT_ABILITIES = Object.freeze([
 const DEFAULT_DICE = Object.freeze(['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100']);
 
 /** Minimal seeded SRD stub — enough for enrich/id fixtures (not full Edge dump). */
-export function createSeededRulesetCatalog(): Map<string, QuarantineRuleset> {
-  const catalog = new Map<string, QuarantineRuleset>();
+export function createSeededRulesetCatalog(): Map<string | number, QuarantineRuleset> {
+  const catalog = new Map<string | number, QuarantineRuleset>();
   catalog.set(
     'dnd5e-srd',
     Object.freeze({
@@ -117,9 +118,9 @@ export function createSeededRulesetCatalog(): Map<string, QuarantineRuleset> {
     }),
   );
   catalog.set(
-    'pathfinder2e',
+    'pf2e-core',
     Object.freeze({
-      id: 'pathfinder2e',
+      id: 'pf2e-core',
       name: 'Pathfinder 2e',
       version: '2.0',
       description: 'Pathfinder Second Edition',
@@ -146,10 +147,11 @@ export function applyRulesetCreateDefaults(
   data: Record<string, unknown>,
   nowMs: number,
 ): QuarantineRuleset {
+  // Legacy: `data.id || \`custom-${Date.now()}\`` — any truthy id (incl. number) is kept.
   const id =
-    typeof data.id === 'string' && data.id.length > 0 ? data.id : `custom-${nowMs}`;
+    data.id || (`custom-${nowMs}` as string | number);
   return {
-    id,
+    id: id as string | number,
     name: (typeof data.name === 'string' && data.name) || 'Custom Ruleset',
     version: (typeof data.version === 'string' && data.version) || '1.0',
     description: typeof data.description === 'string' ? data.description : '',
@@ -180,9 +182,9 @@ export function applyRulesetCreateDefaults(
   };
 }
 
-/** Put into catalog — same id overwrites (legacy Map.set). */
+/** Put into catalog — same id overwrites (legacy Map.set; keys may be non-string). */
 export function putRuleset(
-  catalog: Map<string, QuarantineRuleset>,
+  catalog: Map<string | number, QuarantineRuleset>,
   ruleset: QuarantineRuleset,
 ): QuarantineRuleset {
   catalog.set(ruleset.id, ruleset);
@@ -190,8 +192,8 @@ export function putRuleset(
 }
 
 export function getRulesetFromCatalog(
-  catalog: ReadonlyMap<string, QuarantineRuleset>,
-  id: string,
+  catalog: ReadonlyMap<string | number, QuarantineRuleset>,
+  id: string | number,
 ): QuarantineRuleset | null {
   return catalog.get(id) ?? null;
 }
@@ -201,16 +203,13 @@ export type Open5eFetch = (input: string) => Promise<{
   readonly json: () => Promise<unknown>;
 }>;
 
-/** Exact Open5e spell field mapping from Edge worker. */
+/**
+ * Exact Open5e spell field mapping from Edge worker.
+ * Malformed rows (non-string `components` / `dnd_class`) throw — fetch helper returns [].
+ */
 export function mapOpen5eSpell(raw: Record<string, unknown>): QuarantineSpell {
-  const components =
-    typeof raw.components === 'string'
-      ? raw.components.split(',').map((c) => c.trim())
-      : [];
-  const classes =
-    typeof raw.dnd_class === 'string'
-      ? raw.dnd_class.split(',').map((c) => c.trim().toLowerCase())
-      : [];
+  const components = (raw.components as string).split(',').map((c: string) => c.trim());
+  const classes = (raw.dnd_class as string).split(',').map((c: string) => c.trim().toLowerCase());
   return {
     id: String(raw.slug ?? ''),
     name: String(raw.name ?? ''),
@@ -317,8 +316,8 @@ export async function fetchOpen5eItems(fetchImpl: Open5eFetch): Promise<Readonly
  * Does not assume limit=500 paginates or includes all remote records.
  */
 export async function enrichRulesetWithOpen5e(
-  catalog: ReadonlyMap<string, QuarantineRuleset>,
-  rulesetId: string,
+  catalog: ReadonlyMap<string | number, QuarantineRuleset>,
+  rulesetId: string | number,
   fetchImpl: Open5eFetch,
 ): Promise<QuarantineRuleset | null> {
   const ruleset = catalog.get(rulesetId);
@@ -338,8 +337,8 @@ export async function enrichRulesetWithOpen5e(
 }
 
 export async function getRuleset(
-  catalog: ReadonlyMap<string, QuarantineRuleset>,
-  id: string,
+  catalog: ReadonlyMap<string | number, QuarantineRuleset>,
+  id: string | number,
   enrich: boolean,
   fetchImpl: Open5eFetch,
 ): Promise<QuarantineRuleset | null> {

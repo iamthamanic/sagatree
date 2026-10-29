@@ -123,7 +123,8 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
 });
 
 const catalog = createSeededRulesetCatalog();
-assert(catalog.has('dnd5e-srd') && catalog.has('pathfinder2e'), 'seeded catalog');
+assert(catalog.has('dnd5e-srd') && catalog.has('pf2e-core'), 'seeded catalog uses pf2e-core id');
+assert(!catalog.has('pathfinder2e'), 'no invented pathfinder2e id');
 
 let networkCalls = 0;
 const trackingFetch = async () => {
@@ -146,6 +147,11 @@ const overwriteA = putRuleset(catalog, applyRulesetCreateDefaults({ id: 'overwri
 const overwriteB = putRuleset(catalog, applyRulesetCreateDefaults({ id: 'overwrite-me', name: 'B' }, 2));
 assert(overwriteA.name === 'A' && overwriteB.name === 'B', 'create names');
 assert(catalog.get('overwrite-me').name === 'B', 'caller id overwrites Map entry');
+const numericId = applyRulesetCreateDefaults({ id: 123, name: 'Numeric' }, 9);
+assert(numericId.id === 123, 'truthy non-string id retained (legacy data.id || fallback)');
+putRuleset(catalog, numericId);
+assert(catalog.get(123)?.name === 'Numeric', 'numeric Map key lookup');
+assert(catalog.get('123') == null, 'string key does not alias numeric id');
 
 const spell = mapOpen5eSpell({
   slug: 'fireball',
@@ -230,8 +236,8 @@ assert(enriched.items.some((i) => i.id === 'dagger'), 'enrich merges items');
 assert(urls.every((u) => u.startsWith(OPEN5E_API_BASE) && u.includes('limit=500')), 'Open5e URLs');
 assert(urls.length === 3, 'three enrich fetches');
 
-const pf = await enrichRulesetWithOpen5e(catalog, 'pathfinder2e', enrichFetch);
-assert(pf && pf.id === 'pathfinder2e' && urls.length === 3, 'non-srd enrich skips network');
+const pf = await enrichRulesetWithOpen5e(catalog, 'pf2e-core', enrichFetch);
+assert(pf && pf.id === 'pf2e-core' && urls.length === 3, 'non-srd enrich skips network');
 
 const failFetch = async () => {
   throw new Error('boom');
@@ -241,6 +247,13 @@ const badJsonFetch = async () => ({ json: async () => 'not-json-object' });
 assert((await fetchOpen5eSpells(badJsonFetch)).length === 0, 'bad JSON → empty');
 const noResultsFetch = async () => ({ json: async () => ({ count: 1 }) });
 assert((await fetchOpen5eSpells(noResultsFetch)).length === 0, 'missing results → empty');
+const malformedSpellFetch = async () => ({
+  json: async () => ({ results: [{ slug: 'bad', name: 'Bad', components: null }] }),
+});
+assert(
+  (await fetchOpen5eSpells(malformedSpellFetch)).length === 0,
+  'malformed spell row throws → empty supplement (legacy all-or-empty)',
+);
 
 const defects = describeRulesetsLegacyDefects();
 assert(defects.some((d) => /auth|owner/i.test(d)), 'auth defect listed');
