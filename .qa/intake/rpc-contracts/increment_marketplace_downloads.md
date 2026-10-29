@@ -83,7 +83,7 @@ Dies sind unabhängige Skriptvarianten derselben Signatur, keine nebeneinander w
 
 ### src/supabase/deploy_marketplace.sql
 
-[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 76–89, SHA-256 `9a3ac08ec02d458e955203754b7e6cb566462dfe64c95ea5c1ede62730fdb903`)
+[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 128–141, SHA-256 `53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1`)
 
 **Deklarierte EXECUTE-Rollen:** PUBLIC, anon, authenticated.
 
@@ -97,6 +97,7 @@ CREATE POLICY "Authenticated users can create marketplace items" ON marketplace_
 CREATE POLICY "Authors can update their own marketplace items" ON marketplace_items AS PERMISSIVE FOR update TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id);
 CREATE POLICY "Authors can delete their own marketplace items" ON marketplace_items AS PERMISSIVE FOR delete TO authenticated USING (auth.uid() = author_id);
 CREATE TRIGGER marketplace_updated_at BEFORE UPDATE ON marketplace_items FOR EACH ROW EXECUTE PROCEDURE update_marketplace_updated_at();
+CREATE TRIGGER marketplace_items_guard_privileged_columns BEFORE INSERT OR UPDATE ON public.marketplace_items FOR EACH ROW EXECUTE PROCEDURE public.marketplace_items_guard_privileged_columns();
 ```
 
 **Mitinstallierter Trigger-Helper:**
@@ -184,4 +185,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
-| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `9a3ac08ec02d458e955203754b7e6cb566462dfe64c95ea5c1ede62730fdb903` |
+| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1` |

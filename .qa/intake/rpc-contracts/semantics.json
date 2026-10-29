@@ -9736,7 +9736,7 @@
       },
       {
         "path": "src/supabase/deploy_marketplace.sql",
-        "sha256": "9a3ac08ec02d458e955203754b7e6cb566462dfe64c95ea5c1ede62730fdb903"
+        "sha256": "53c1d0c47f17146d626e74058b78166ccad402b05a09bcbac1c73e9ba5a9f1c1"
       }
     ],
     "reviewedEffectiveSql": [
@@ -9748,4 +9748,3 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
   }
 }
-

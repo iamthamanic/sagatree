@@ -53,5 +53,6 @@ CLEAR — see `.qa/runs/composition-gate-sec-client-trust-marketplace-edge-white
 - Domain: `src/domains/marketplace/client-trust.ts` whitelist create/update + privileged key reject.
 - Infra: `marketplace-service.ts` uses JWT user id + whitelist; foreign author → throw / false.
 - Edge: `_shared/client-trust-body.ts` wired into all 9 dispatcher-allowlisted mutating workers.
+- DB boundary (Codex P1): `src/supabase/deploy_marketplace.sql` adds BEFORE INSERT/UPDATE guard + column UPDATE grants so PostgREST cannot set `author_id`/`rating`/`downloads`/`is_featured`. Table remains optional (not in full migration chain); guard ships with the same optional deploy as the RLS policies.
 - Marketplace Edge worker stays denied by #668 allowlist (out of polish scope).
 - Claimed on branch `issue-675-marketplace-client-trust-hardening` off main@383f3556 after MIG-312 merge.
