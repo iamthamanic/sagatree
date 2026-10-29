@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-301 (#800)
 
-- HEAD_SHA: bc2038706b8ad7235db88a932540811401fb2e82
+- HEAD_SHA: b7d28768ca9d77a4cdf1f6ac1fefe496a0c74f2a
 - BASE_SHA: b0afac23cd648cbcce8dd1c69fe8995edb050250
 - HOP_DIGEST: infra-ai-host-http-v1
 - Date: 2026-10-29
