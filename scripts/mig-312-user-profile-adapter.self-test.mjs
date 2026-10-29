@@ -20,8 +20,8 @@ function assert(cond, msg) {
   }
 }
 
-function actor(id) {
-  return { kind: 'remote-account', actorId: id, sessionId: `auth-${id}`, email: null };
+function actor(id, email = `${id}@example.com`) {
+  return { kind: 'remote-account', actorId: id, sessionId: `auth-${id}`, email };
 }
 
 /** Minimal valid 1×1 PNG */
@@ -137,6 +137,14 @@ try {
   const own = ports.getOwnProfile(owner);
   assert(own.ok && own.value && own.value.id === owner.actorId, 'getOwnProfile');
   assert(own.value.avatarPath === null && own.value.avatarUrl === null, 'no avatar yet');
+  assert(own.value.displayName === 'owner-o', 'displayName seeded from email local-part');
+
+  // Incomplete PNG magic (4-byte only) rejected
+  const badPngPrefix = ports.uploadAvatar(owner, {
+    bytes: new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0, 0, 0, 0]),
+    contentType: 'image/png',
+  });
+  assert(!badPngPrefix.ok && /Ungültiger Dateityp/.test(badPngPrefix.error), 'incomplete PNG signature rejected');
 
   // --- Fall 2: Batch trim/dedupe, absent omitted, signing fail → avatarUrl null ---
   ports.ensureOwnProfileRow(teammate);
@@ -294,6 +302,13 @@ try {
       probe.ok || probe.error !== 'store-unavailable',
       `userProfile wired to real ports, got ${probe.ok ? 'ok' : probe.error}`,
     );
+    // Default signer returns null (no pseudo-URL) until cutover injects a real signer.
+    const defaultSigned = host.userProfile.uploadAvatar(
+      { kind: 'remote-account', actorId: 'probe-actor', sessionId: 's', email: 'p@ex.com' },
+      { bytes: PNG_BYTES, contentType: 'image/png' },
+    );
+    assert(defaultSigned.ok && defaultSigned.value.avatarUrl === null, 'default signer → null URL');
+    assert(defaultSigned.value.avatarPath !== null, 'path still stored without signed URL');
   } finally {
     rmSync(hostWork, { recursive: true, force: true });
   }

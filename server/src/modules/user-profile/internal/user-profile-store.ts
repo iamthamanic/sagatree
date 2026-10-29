@@ -51,14 +51,22 @@ export function createUserProfileStore(db: HostDatabase) {
 
     /**
      * Select-then-insert. Concurrent insert race (SQLite UNIQUE) is success — mirrors 23505.
+     * `displayName` seeds first insert only (Supabase signup-trigger parity); never overwrites.
      */
-    ensureOwn(userId: string): { ok: true } | { ok: false; error: string; code?: string } {
+    ensureOwn(
+      userId: string,
+      displayName?: string | null,
+    ): { ok: true } | { ok: false; error: string; code?: string } {
       try {
         const existing = this.getById(userId);
         if (existing) return { ok: true };
+        const name =
+          typeof displayName === 'string' && displayName.trim().length > 0
+            ? displayName.trim().slice(0, 200)
+            : null;
         db.prepare(
-          `INSERT INTO user_profiles (id, display_name, avatar_path, updated_at) VALUES (?, NULL, NULL, ?)`,
-        ).run(userId, nowIso());
+          `INSERT INTO user_profiles (id, display_name, avatar_path, updated_at) VALUES (?, ?, NULL, ?)`,
+        ).run(userId, name, nowIso());
         return { ok: true };
       } catch (err) {
         if (isUniqueConstraint(err)) return { ok: true };

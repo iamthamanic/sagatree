@@ -11,7 +11,6 @@ import type { HostDatabase } from '../../persistence/open-database.ts';
 import {
   USER_AVATAR_MAX_BYTES,
   USER_AVATAR_MIME_EXTENSIONS,
-  USER_AVATAR_SIGNED_SECONDS,
   sniffUserAvatarMime,
   type UserAvatarMime,
 } from './internal/user-avatar-mime.ts';
@@ -88,17 +87,28 @@ function mapRow(row: UserProfileRow, avatarUrl: string | null): UserProfileVm {
   };
 }
 
-function defaultSignAvatarUrl(path: string | null): string | null {
-  if (!path) return null;
-  return `sagatree-user-avatar://${encodeURIComponent(path)}?ttl=${USER_AVATAR_SIGNED_SECONDS}`;
+/**
+ * Isolated-contract default: no resolvable signed URL until cutover injects a real
+ * asset/media signer (MIG-600). Returning null matches FE “signing failure → avatarUrl null”.
+ */
+function defaultSignAvatarUrl(_path: string | null): string | null {
+  return null;
+}
+
+function initialDisplayNameFromActor(actor: Actor): string | null {
+  if (actor.kind === 'remote-account' && typeof actor.email === 'string') {
+    const local = actor.email.split('@')[0]?.trim() ?? '';
+    return local.length > 0 ? local.slice(0, 200) : null;
+  }
+  return null;
 }
 
 export function createUserProfilePorts(deps: {
   readonly db: HostDatabase;
   readonly dataDir: string;
   /**
-   * Optional signer; return null to simulate signing failure (batch avatarUrl null).
-   * Defaults to opaque local signed URL (not HTTP public).
+   * Optional signer. Default returns null (no pseudo-URL) until cutover wires a real
+   * signed-read path. Inject in tests to prove non-null avatarUrl / sign-fail→null.
    */
   readonly signAvatarUrl?: (path: string | null) => string | null;
   /**
@@ -118,7 +128,7 @@ export function createUserProfilePorts(deps: {
       if (!requireActor(actor)) {
         return { ok: false, error: 'missing-actor', code: '42501' };
       }
-      const ensured = store.ensureOwn(actor.actorId);
+      const ensured = store.ensureOwn(actor.actorId, initialDisplayNameFromActor(actor));
       if (!ensured.ok) {
         return {
           ok: false,
@@ -133,7 +143,7 @@ export function createUserProfilePorts(deps: {
       if (!requireActor(actor)) {
         return { ok: false, error: 'missing-actor', code: '42501' };
       }
-      const ensured = store.ensureOwn(actor.actorId);
+      const ensured = store.ensureOwn(actor.actorId, initialDisplayNameFromActor(actor));
       if (!ensured.ok) {
         return {
           ok: false,
@@ -180,7 +190,7 @@ export function createUserProfilePorts(deps: {
         return { ok: false, error: 'not-authorized', code: '42501' };
       }
 
-      const ensured = store.ensureOwn(actor.actorId);
+      const ensured = store.ensureOwn(actor.actorId, initialDisplayNameFromActor(actor));
       if (!ensured.ok) {
         return {
           ok: false,
