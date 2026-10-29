@@ -354,3 +354,23 @@ export {
   type SessionRecapGenerateResult,
   type SessionRecapGenerateStore,
 } from './session-recap-generate.ts';
+
+/** MIG-422 Edge sessions Map quarantine — not a public host route. */
+export {
+  SESSIONS_EDGE_MAP_IS_DURABLE,
+  SESSIONS_EDGE_PUBLIC_ACTIVATION_AUTHORIZED,
+  bodyFieldsAreNotAuthority,
+  createQuarantineSavePoint,
+  createQuarantineSession,
+  createSessionsEdgeQuarantineStore,
+  defaultWorldState,
+  describeSessionsEdgeLegacyDefects,
+  endQuarantineSession,
+  getQuarantineChatHistory,
+  loadQuarantineSavePoint,
+  pauseQuarantineSession,
+  sendQuarantineChat,
+  startQuarantineSession,
+  type QuarantineSession,
+  type SessionsEdgeQuarantineStore,
+} from './internal/sessions-edge-quarantine.ts';
