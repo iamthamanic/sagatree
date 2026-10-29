@@ -83,7 +83,7 @@ Dies sind unabhängige Skriptvarianten derselben Signatur, keine nebeneinander w
 
 ### src/supabase/deploy_marketplace.sql
 
-[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 141–155, SHA-256 `ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db`)
+[src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) (Zeilen 146–160, SHA-256 `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b`)
 
 **Deklarierte EXECUTE-Rollen:** PUBLIC, anon, authenticated.
 
@@ -185,4 +185,4 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
-| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db` |
+| [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |

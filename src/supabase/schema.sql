@@ -281,11 +281,16 @@ REVOKE ALL ON TABLE public.marketplace_items FROM PUBLIC;
 REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM anon;
 REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM authenticated;
 GRANT SELECT ON TABLE public.marketplace_items TO anon, authenticated;
+-- Include author_id/rating/downloads so PostgREST INSERT privilege checks pass;
+-- the BEFORE INSERT guard still overwrites them from auth.uid()/zeros.
 GRANT INSERT (
   type,
   title,
   description,
+  author_id,
   data,
+  rating,
+  downloads,
   price,
   image_url,
   tags

@@ -41857,7 +41857,7 @@
           },
           {
             "path": "src/supabase/deploy_marketplace.sql",
-            "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+            "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
           }
         ],
         "reviewEvidence": {
@@ -41887,9 +41887,9 @@
         },
         {
           "path": "src/supabase/deploy_marketplace.sql",
-          "startLine": 141,
-          "endLine": 155,
-          "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+          "startLine": 146,
+          "endLine": 160,
+          "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
         }
       ],
       "callerContracts": [
@@ -42129,7 +42129,7 @@
         },
         {
           "path": "src/supabase/deploy_marketplace.sql",
-          "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+          "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
         }
       ],
       "securityDefiner": true,
@@ -42162,35 +42162,35 @@
         {
           "source": {
             "path": "src/supabase/deploy_marketplace.sql",
-            "startLine": 141,
-            "endLine": 155,
-            "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+            "startLine": 146,
+            "endLine": 160,
+            "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
           },
           "grantHistory": [
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 155,
-                "endLine": 157,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "startLine": 160,
+                "endLine": 162,
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "REVOKE ALL PRIVILEGES ON FUNCTION increment_marketplace_downloads (uuid) FROM PUBLIC"
             },
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 157,
-                "endLine": 158,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "startLine": 162,
+                "endLine": 163,
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "REVOKE ALL PRIVILEGES ON FUNCTION increment_marketplace_downloads (uuid) FROM anon"
             },
             {
               "source": {
                 "path": "src/supabase/deploy_marketplace.sql",
-                "startLine": 158,
-                "endLine": 159,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "startLine": 163,
+                "endLine": 164,
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "GRANT EXECUTE ON FUNCTION increment_marketplace_downloads (uuid) TO authenticated"
             }
@@ -42206,7 +42206,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 1,
                 "endLine": 22,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE TABLE IF NOT EXISTS marketplace_items (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), type text NOT NULL CHECK (type IN ('world', 'adventure', 'character', 'item', 'ruleset')), title text NOT NULL, description text, author_id uuid NOT NULL REFERENCES auth.users (id) ON DELETE CASCADE, data jsonb NOT NULL DEFAULT '{}', rating numeric(3, 2) NOT NULL DEFAULT 0.00 CHECK (rating >= 0 AND rating <= 5), downloads integer NOT NULL DEFAULT 0, price numeric(10, 2) NOT NULL DEFAULT 0.00 CHECK (price >= 0), image_url text, tags text[] DEFAULT CAST(ARRAY[] AS text[]), is_featured boolean NOT NULL DEFAULT FALSE, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now())"
             },
@@ -42215,7 +42215,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 31,
                 "endLine": 34,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "ALTER TABLE marketplace_items ENABLE ROW LEVEL SECURITY "
             },
@@ -42224,7 +42224,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 34,
                 "endLine": 40,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE POLICY \"Marketplace items are viewable by everyone\" ON marketplace_items AS PERMISSIVE FOR select TO PUBLIC USING (TRUE)"
             },
@@ -42233,7 +42233,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 40,
                 "endLine": 47,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE POLICY \"Authenticated users can create marketplace items\" ON marketplace_items AS PERMISSIVE FOR insert TO authenticated WITH CHECK (auth.uid() = author_id)"
             },
@@ -42242,7 +42242,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 47,
                 "endLine": 55,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE POLICY \"Authors can update their own marketplace items\" ON marketplace_items AS PERMISSIVE FOR update TO authenticated USING (auth.uid() = author_id) WITH CHECK (auth.uid() = author_id)"
             },
@@ -42251,7 +42251,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 55,
                 "endLine": 62,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE POLICY \"Authors can delete their own marketplace items\" ON marketplace_items AS PERMISSIVE FOR delete TO authenticated USING (auth.uid() = author_id)"
             },
@@ -42260,7 +42260,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 71,
                 "endLine": 76,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE TRIGGER marketplace_updated_at BEFORE UPDATE ON marketplace_items FOR EACH ROW EXECUTE PROCEDURE update_marketplace_updated_at()"
             },
@@ -42269,7 +42269,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 112,
                 "endLine": 116,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "statement": "CREATE TRIGGER marketplace_items_guard_privileged_columns BEFORE INSERT OR UPDATE ON public.marketplace_items FOR EACH ROW EXECUTE PROCEDURE public.marketplace_items_guard_privileged_columns()"
             }
@@ -42280,7 +42280,7 @@
                 "path": "src/supabase/deploy_marketplace.sql",
                 "startLine": 62,
                 "endLine": 71,
-                "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+                "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
               },
               "effectiveSql": "CREATE OR REPLACE FUNCTION update_marketplace_updated_at() RETURNS trigger AS $$\nBEGIN\n  NEW.updated_at = now();\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql",
               "semantics": {
@@ -82388,7 +82388,7 @@
       },
       {
         "path": "src/supabase/deploy_marketplace.sql",
-        "sha256": "ad6373c9f2767ed86e3cb6171d14ab2cd1aaa18700c9ad522782e9b20e4854db"
+        "sha256": "fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b"
       },
       {
         "path": "supabase/migrations/001_initial.sql",
