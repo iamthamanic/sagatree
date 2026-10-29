@@ -367,10 +367,12 @@ export {
   describeSessionsEdgeLegacyDefects,
   endQuarantineSession,
   getQuarantineChatHistory,
+  getQuarantineSessionLogs,
   loadQuarantineSavePoint,
   pauseQuarantineSession,
   sendQuarantineChat,
   startQuarantineSession,
   type QuarantineSession,
+  type QuarantineSessionLog,
   type SessionsEdgeQuarantineStore,
 } from './internal/sessions-edge-quarantine.ts';

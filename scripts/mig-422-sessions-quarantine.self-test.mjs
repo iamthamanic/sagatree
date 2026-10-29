@@ -28,6 +28,7 @@ const {
   describeSessionsEdgeLegacyDefects,
   endQuarantineSession,
   getQuarantineChatHistory,
+  getQuarantineSessionLogs,
   loadQuarantineSavePoint,
   pauseQuarantineSession,
   sendQuarantineChat,
@@ -149,10 +150,47 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
 
   let s = startQuarantineSession(store, a.id, '2026-01-01T01:00:00.000Z');
   assert(s.status === 'active' && s.startedAt, 'start → active');
+  assert(getQuarantineSessionLogs(store, a.id).length === 1, 'start appends log');
   s = pauseQuarantineSession(store, a.id, '2026-01-01T02:00:00.000Z');
   assert(s.status === 'paused', 'pause');
   s = endQuarantineSession(store, a.id, '2026-01-01T03:00:00.000Z');
   assert(s.status === 'completed' && s.endedAt, 'end → completed');
+  assert(getQuarantineSessionLogs(store, a.id).length === 2, 'end appends log');
+
+  let threw = false;
+  try {
+    createQuarantineSession(store, { projectId: 'p1', name: 'Dup' }, now, a.id);
+  } catch (e) {
+    threw = e instanceof Error && e.message === 'Session already exists';
+  }
+  assert(threw, 'duplicate session id rejected');
+
+  threw = false;
+  try {
+    sendQuarantineChat(
+      store,
+      'missing-sess',
+      { userId: 'u1', message: 'x', type: 'player' },
+      now,
+    );
+  } catch (e) {
+    threw = e instanceof Error && e.message === 'Session not found';
+  }
+  assert(threw, 'chat on missing session rejected');
+
+  const sharedWs = { activeQuests: ['q1'], inventory: ['sword'] };
+  const c1 = createQuarantineSession(
+    store,
+    { projectId: 'p2', name: 'Share1', worldState: sharedWs },
+    now,
+  );
+  const c2 = createQuarantineSession(
+    store,
+    { projectId: 'p2', name: 'Share2', worldState: sharedWs },
+    now,
+  );
+  c1.worldState.activeQuests.push('q2');
+  assert(c2.worldState.activeQuests.length === 1, 'worldState containers not shared');
 
   for (let i = 0; i < 105; i += 1) {
     sendQuarantineChat(
@@ -194,6 +232,10 @@ await withHandler(stubDeps({ trustedOrigins: [] }), async (base) => {
   );
   assert(save.worldState.location === 'Dungeon', 'save clones worldState');
   assert(save.playerStates[0].characterName === 'Aria', 'save playerStates shape');
+  assert(
+    store.sessions.get(a.id).updatedAt === '2026-01-01T03:00:00.000Z',
+    'createSavePoint does not bump updatedAt (Edge parity)',
+  );
 
   store.sessions.set(a.id, {
     ...store.sessions.get(a.id),

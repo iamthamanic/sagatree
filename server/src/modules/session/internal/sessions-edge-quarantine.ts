@@ -89,10 +89,20 @@ export type QuarantineSessionPlayer = {
   lastActivity: string;
 };
 
+export type QuarantineSessionLog = {
+  id: string;
+  sessionId: string;
+  type: 'action' | 'combat' | 'dialogue' | 'exploration' | 'rest' | 'level-up';
+  description: string;
+  details?: Record<string, unknown>;
+  timestamp: string;
+};
+
 export type SessionsEdgeQuarantineStore = {
   readonly sessions: Map<string, QuarantineSession>;
   readonly sessionPlayers: Map<string, QuarantineSessionPlayer[]>;
   readonly chatMessages: Map<string, QuarantineChatMessage[]>;
+  readonly sessionLogs: Map<string, QuarantineSessionLog[]>;
   idSeq: number;
 };
 
@@ -101,13 +111,26 @@ export function createSessionsEdgeQuarantineStore(): SessionsEdgeQuarantineStore
     sessions: new Map(),
     sessionPlayers: new Map(),
     chatMessages: new Map(),
+    sessionLogs: new Map(),
     idSeq: 0,
   };
 }
 
 function nextId(store: SessionsEdgeQuarantineStore, prefix: string): string {
   store.idSeq += 1;
-  return `${prefix}-${store.idSeq}`;
+  let candidate = `${prefix}-${store.idSeq}`;
+  // Skip collisions with caller-supplied session ids (Edge used randomUUID).
+  while (
+    prefix === 'sess' &&
+    (store.sessions.has(candidate) ||
+      store.sessionPlayers.has(candidate) ||
+      store.chatMessages.has(candidate) ||
+      store.sessionLogs.has(candidate))
+  ) {
+    store.idSeq += 1;
+    candidate = `${prefix}-${store.idSeq}`;
+  }
+  return candidate;
 }
 
 export function defaultWorldState(
@@ -118,11 +141,13 @@ export function defaultWorldState(
     time: partial?.time || 'Morning',
     weather: partial?.weather,
     date: partial?.date,
-    activeQuests: partial?.activeQuests || [],
-    exploredLocations: partial?.exploredLocations || [],
-    npcs: partial?.npcs || {},
-    flags: partial?.flags || {},
-    inventory: partial?.inventory || [],
+    activeQuests: partial?.activeQuests ? [...partial.activeQuests] : [],
+    exploredLocations: partial?.exploredLocations
+      ? [...partial.exploredLocations]
+      : [],
+    npcs: partial?.npcs ? { ...partial.npcs } : {},
+    flags: partial?.flags ? { ...partial.flags } : {},
+    inventory: partial?.inventory ? [...partial.inventory] : [],
   };
 }
 
@@ -145,6 +170,9 @@ export function createQuarantineSession(
     }
   }
   const sessionId = id ?? nextId(store, 'sess');
+  if (store.sessions.has(sessionId)) {
+    throw new Error('Session already exists');
+  }
   const session: QuarantineSession = {
     id: sessionId,
     projectId: data.projectId,
@@ -160,7 +188,25 @@ export function createQuarantineSession(
   store.sessions.set(sessionId, session);
   store.sessionPlayers.set(sessionId, []);
   store.chatMessages.set(sessionId, []);
+  store.sessionLogs.set(sessionId, []);
   return session;
+}
+
+function appendSessionLog(
+  store: SessionsEdgeQuarantineStore,
+  sessionId: string,
+  description: string,
+  nowIso: string,
+): void {
+  const logs = store.sessionLogs.get(sessionId) || [];
+  logs.push({
+    id: nextId(store, 'log'),
+    sessionId,
+    type: 'action',
+    description,
+    timestamp: nowIso,
+  });
+  store.sessionLogs.set(sessionId, logs);
 }
 
 export function startQuarantineSession(
@@ -177,6 +223,12 @@ export function startQuarantineSession(
     updatedAt: nowIso,
   };
   store.sessions.set(sessionId, updated);
+  appendSessionLog(
+    store,
+    sessionId,
+    `Session ${session.sessionNumber} started: ${session.name}`,
+    nowIso,
+  );
   return updated;
 }
 
@@ -210,6 +262,12 @@ export function endQuarantineSession(
     updatedAt: nowIso,
   };
   store.sessions.set(sessionId, updated);
+  appendSessionLog(
+    store,
+    sessionId,
+    `Session ${session.sessionNumber} ended`,
+    nowIso,
+  );
   return updated;
 }
 
@@ -227,6 +285,9 @@ export function sendQuarantineChat(
   },
   nowIso: string,
 ): QuarantineChatMessage {
+  if (!store.sessions.has(sessionId)) {
+    throw new Error('Session not found');
+  }
   const messages = store.chatMessages.get(sessionId) || [];
   const msg: QuarantineChatMessage = {
     id: nextId(store, 'msg'),
@@ -253,6 +314,15 @@ export function getQuarantineChatHistory(
   return messages.slice(-limit);
 }
 
+export function getQuarantineSessionLogs(
+  store: SessionsEdgeQuarantineStore,
+  sessionId: string,
+  limit = 100,
+): QuarantineSessionLog[] {
+  const logs = store.sessionLogs.get(sessionId) || [];
+  return logs.slice(-limit);
+}
+
 export function createQuarantineSavePoint(
   store: SessionsEdgeQuarantineStore,
   sessionId: string,
@@ -273,10 +343,10 @@ export function createQuarantineSavePoint(
     playerStates: data.playerStates.map((p) => ({ ...p })),
     createdAt: nowIso,
   };
+  // Edge createSavePoint appends savePoints without bumping updatedAt.
   const updated: QuarantineSession = {
     ...session,
     savePoints: [...session.savePoints, savePoint],
-    updatedAt: nowIso,
   };
   store.sessions.set(sessionId, updated);
   return savePoint;
