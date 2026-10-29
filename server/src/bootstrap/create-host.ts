@@ -44,6 +44,11 @@ import {
   type LookProfilePorts,
 } from '../modules/look/index.ts';
 import {
+  createNpcCreaturePorts,
+  createNpcCreaturePortsStub,
+  type NpcCreaturePorts,
+} from '../modules/npc-creature/index.ts';
+import {
   createSagaPorts,
   createSagaPortsStub,
   type SagaPorts,
@@ -85,6 +90,8 @@ export type HostInstance = {
   readonly rulesets: RulesetPorts;
   /** MIG-304 LookProfile repository ports (HTTP cutover → MIG-600). */
   readonly look: LookProfilePorts;
+  /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
+  readonly npcCreature: NpcCreaturePorts;
   /** RPC-SAGA-AUTHORING saga definition ports (#871). */
   readonly saga: SagaPorts;
   /** Better Auth instance when cookie profile is enabled (tests only). */
@@ -203,6 +210,38 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           characterNames: { getDisplayName: (id) => character.getDisplayName(id) },
         })
       : createSagaPortsStub();
+    const npcCreature: NpcCreaturePorts = db
+      ? createNpcCreaturePorts({
+          db,
+          project,
+          session: {
+            sessionProjectId: (sessionId) => {
+              const row = db
+                .prepare(
+                  `SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`,
+                )
+                .get(sessionId) as { projectId: string } | undefined;
+              return row?.projectId ?? null;
+            },
+            sessionBelongsToProject: (sessionId, projectId) => {
+              const row = db
+                .prepare(
+                  `SELECT project_id AS projectId FROM play_sessions WHERE session_id = ?`,
+                )
+                .get(sessionId) as { projectId: string } | undefined;
+              return Boolean(row && row.projectId === projectId);
+            },
+          },
+          world: {
+            canReadWorldProfile: (actorIds, worldProfileId) => {
+              if (project.actorCanAccessWorld(actorIds, worldProfileId)) return true;
+              return world.canEditWorld(actorIds, worldProfileId);
+            },
+            canEditWorldProfile: (actorIds, worldProfileId) =>
+              world.canEditWorld(actorIds, worldProfileId),
+          },
+        })
+      : createNpcCreaturePortsStub();
     const ops = createOpsPorts({
       isReady: () => ready,
       acceptMutations: () => acceptingMutations,
@@ -319,6 +358,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ai,
       rulesets,
       look,
+      npcCreature,
       saga,
       getAuth: () => betterAuth,
       isReady: () => ready,
