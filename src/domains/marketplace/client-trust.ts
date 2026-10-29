@@ -2,6 +2,9 @@
  * marketplace client-trust — Reject privileged client fields; whitelist update patches (#675).
  * Location: src/domains/marketplace/client-trust.ts
  * Pure domain rules — no React, no Supabase.
+ *
+ * Hand parsers (not Zod): frontend has no zod dependency; issue #675 Non-Goals /
+ * Assumptions allow equivalent hand parsers / shared helpers at this boundary.
  */
 
 import type {
@@ -29,16 +32,16 @@ export type MarketplacePrivilegedClientKey =
 
 const PRIVILEGED = new Set<string>(MARKETPLACE_PRIVILEGED_CLIENT_KEYS);
 
-const UPDATE_ALLOWED = [
+const UPDATE_ALLOWED = new Set([
   'title',
   'description',
   'data',
   'price',
   'image_url',
   'tags',
-] as const;
+]);
 
-const CREATE_ALLOWED = [
+const CREATE_ALLOWED = new Set([
   'type',
   'title',
   'description',
@@ -46,15 +49,23 @@ const CREATE_ALLOWED = [
   'price',
   'image_url',
   'tags',
-] as const;
+]);
 
-const ITEM_TYPES = new Set<string>([
+const ITEM_TYPES: ReadonlySet<MarketplaceItemType> = new Set([
   'world',
   'adventure',
   'character',
   'item',
   'ruleset',
 ]);
+
+function isMarketplaceItemType(value: string): value is MarketplaceItemType {
+  return ITEM_TYPES.has(value as MarketplaceItemType);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === 'string');
+}
 
 export function findMarketplacePrivilegedClientKeys(
   input: unknown,
@@ -98,7 +109,7 @@ export function whitelistMarketplaceUpdatePatch(
 
   const patch: UpdateMarketplaceItemDTO = {};
   for (const key of Object.keys(dto)) {
-    if (!(UPDATE_ALLOWED as readonly string[]).includes(key)) {
+    if (!UPDATE_ALLOWED.has(key)) {
       throw new Error(`Unbekanntes Update-Feld: ${key}`);
     }
   }
@@ -110,9 +121,7 @@ export function whitelistMarketplaceUpdatePatch(
     patch.price = dto.price;
   }
   if (typeof dto.image_url === 'string') patch.image_url = dto.image_url;
-  if (Array.isArray(dto.tags) && dto.tags.every((t) => typeof t === 'string')) {
-    patch.tags = dto.tags as string[];
-  }
+  if (isStringArray(dto.tags)) patch.tags = dto.tags;
 
   return patch;
 }
@@ -129,12 +138,12 @@ export function whitelistMarketplaceCreateDto(
   }
 
   for (const key of Object.keys(dto)) {
-    if (!(CREATE_ALLOWED as readonly string[]).includes(key)) {
+    if (!CREATE_ALLOWED.has(key)) {
       throw new Error(`Unbekanntes Create-Feld: ${key}`);
     }
   }
 
-  if (typeof dto.type !== 'string' || !ITEM_TYPES.has(dto.type)) {
+  if (typeof dto.type !== 'string' || !isMarketplaceItemType(dto.type)) {
     throw new Error('Ungültiger Marketplace-Typ');
   }
   if (typeof dto.title !== 'string' || dto.title.trim().length === 0) {
@@ -145,7 +154,7 @@ export function whitelistMarketplaceCreateDto(
   }
 
   const out: CreateMarketplaceItemDTO = {
-    type: dto.type as MarketplaceItemType,
+    type: dto.type,
     title: dto.title.trim(),
     data: dto.data,
   };
@@ -155,9 +164,7 @@ export function whitelistMarketplaceCreateDto(
     out.price = dto.price;
   }
   if (typeof dto.image_url === 'string') out.image_url = dto.image_url;
-  if (Array.isArray(dto.tags) && dto.tags.every((t) => typeof t === 'string')) {
-    out.tags = dto.tags as string[];
-  }
+  if (isStringArray(dto.tags)) out.tags = dto.tags;
 
   return out;
 }
