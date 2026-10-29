@@ -86,6 +86,23 @@ function assertProfileId(profileId: string): string | null {
   return trimmed;
 }
 
+/** Owner ids the actor may read/mutate (remote account + linked solo). */
+function actorOwnerIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (actor.kind === 'remote-account' && Array.isArray(actor.linkedSoloActorIds)) {
+    for (const linked of actor.linkedSoloActorIds) {
+      if (typeof linked === 'string' && linked.length > 0 && !ids.includes(linked)) {
+        ids.push(linked);
+      }
+    }
+  }
+  return ids;
+}
+
+function actorOwnsProfile(actor: Actor, ownerUserId: string): boolean {
+  return actorOwnerIds(actor).includes(ownerUserId);
+}
+
 export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfilePorts {
   const store = createLookProfileStore(deps.db);
 
@@ -94,22 +111,31 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
 
     listProfiles(actor, options) {
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
-      return {
-        ok: true,
-        value: store.listForOwner(actor.actorId, options?.includeArchived === true),
-      };
+      const includeArchived = options?.includeArchived === true;
+      const merged: LookProfileRecord[] = [];
+      const seen = new Set<string>();
+      for (const ownerId of actorOwnerIds(actor)) {
+        for (const row of store.listForOwner(ownerId, includeArchived)) {
+          if (seen.has(row.profile.id)) continue;
+          seen.add(row.profile.id);
+          merged.push(row);
+        }
+      }
+      merged.sort((a, b) => b.current.createdAtIso.localeCompare(a.current.createdAtIso));
+      return { ok: true, value: merged };
     },
 
     getProfileById(actor, profileId) {
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       const id = assertProfileId(profileId);
       if (!id) return { ok: false, error: 'invalid-profile-id' };
-      const record = store.loadRecord(id);
-      if (!record) return { ok: true, value: null };
-      if (record.profile.ownerId !== actor.actorId) {
-        return { ok: false, error: 'not-authorized' };
+      for (const ownerId of actorOwnerIds(actor)) {
+        const record = store.loadRecord(id, ownerId);
+        if (record) return { ok: true, value: record };
       }
-      return { ok: true, value: record };
+      const any = store.loadRecord(id);
+      if (!any) return { ok: true, value: null };
+      return { ok: false, error: 'not-authorized' };
     },
 
     createProfile(actor, draft) {
@@ -123,7 +149,12 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       const id = assertProfileId(profileId);
       if (!id) return { ok: false, error: 'invalid-profile-id' };
-      const updated = store.appendVersion(actor.actorId, id, draft);
+      const probe = store.loadRecord(id);
+      if (!probe) return { ok: false, error: 'not-found' };
+      if (!actorOwnsProfile(actor, probe.profile.ownerId)) {
+        return { ok: false, error: 'not-authorized' };
+      }
+      const updated = store.appendVersion(probe.profile.ownerId, id, draft);
       if ('error' in updated) {
         if (/Berechtigung/i.test(updated.error)) return { ok: false, error: 'not-authorized' };
         if (/nicht gefunden/i.test(updated.error)) return { ok: false, error: 'not-found' };
@@ -136,7 +167,12 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       const id = assertProfileId(profileId);
       if (!id) return { ok: false, error: 'invalid-profile-id' };
-      const archived = store.archive(actor.actorId, id);
+      const probe = store.loadRecord(id);
+      if (!probe) return { ok: false, error: 'not-found' };
+      if (!actorOwnsProfile(actor, probe.profile.ownerId)) {
+        return { ok: false, error: 'not-authorized' };
+      }
+      const archived = store.archive(probe.profile.ownerId, id);
       if ('error' in archived) {
         if (/Berechtigung/i.test(archived.error)) return { ok: false, error: 'not-authorized' };
         if (/nicht gefunden/i.test(archived.error)) return { ok: false, error: 'not-found' };
@@ -151,7 +187,7 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
       if (!sourceId) return { ok: false, error: 'invalid-profile-id' };
       const source = store.loadRecord(sourceId);
       if (!source) return { ok: false, error: 'not-found' };
-      if (source.profile.ownerId !== actor.actorId) {
+      if (!actorOwnsProfile(actor, source.profile.ownerId)) {
         return { ok: false, error: 'not-authorized' };
       }
       const name =
@@ -174,7 +210,12 @@ export function createLookPorts(deps: { readonly db: HostDatabase }): LookProfil
       if (!requireActor(actor)) return { ok: false, error: 'missing-actor' };
       const id = assertProfileId(profileId);
       if (!id) return { ok: false, error: 'invalid-profile-id' };
-      const versions = store.listVersions(actor.actorId, id);
+      const probe = store.loadRecord(id);
+      if (!probe) return { ok: false, error: 'not-found' };
+      if (!actorOwnsProfile(actor, probe.profile.ownerId)) {
+        return { ok: false, error: 'not-authorized' };
+      }
+      const versions = store.listVersions(probe.profile.ownerId, id);
       if ('error' in versions) {
         if (/Berechtigung/i.test(versions.error)) return { ok: false, error: 'not-authorized' };
         if (/nicht gefunden/i.test(versions.error)) return { ok: false, error: 'not-found' };

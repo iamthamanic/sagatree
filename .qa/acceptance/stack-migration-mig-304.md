@@ -1,4 +1,4 @@
-# Acceptance — MIG-304 LookProfile host adapters (#803)
+# Acceptance — MIG-304 LookProfile Host Adapters (#803)
 
 ## Intent
 Port `src/infrastructure/look` LookProfile persistence callers onto approved host repository ports while Supabase remains the live default (no production cutover). Reference-analysis quarantine stays MIG-412; local runtime style adapters stay browser-side.

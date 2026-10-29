@@ -154,9 +154,15 @@ export function createLookProfileStore(db: HostDatabase) {
     return row ?? null;
   }
 
-  function loadRecord(profileId: string): LookProfileRecord | null {
+  function loadRecord(
+    profileId: string,
+    ownerUserId?: string,
+  ): LookProfileRecord | null {
     const profile = loadProfileRow(profileId);
     if (!profile) return null;
+    if (ownerUserId !== undefined && profile.owner_user_id !== ownerUserId) {
+      return null;
+    }
     const version = loadVersion(profileId, profile.current_version);
     if (!version) return null;
     return mapRecord(profile, version);
@@ -189,27 +195,53 @@ export function createLookProfileStore(db: HostDatabase) {
     loadRecord,
 
     listForOwner(ownerUserId: string, includeArchived: boolean): LookProfileRecord[] {
-      const rows = (
-        includeArchived
-          ? db
-              .prepare(
-                `SELECT id FROM look_profiles
-                 WHERE owner_user_id = ?
-                 ORDER BY updated_at DESC`,
-              )
-              .all(ownerUserId)
-          : db
-              .prepare(
-                `SELECT id FROM look_profiles
-                 WHERE owner_user_id = ? AND status = 'active'
-                 ORDER BY updated_at DESC`,
-              )
-              .all(ownerUserId)
-      ) as { id: string }[];
+      const sql = includeArchived
+        ? `SELECT p.id, p.public_id, p.owner_user_id, p.owner_scope, p.current_version,
+                  p.status, p.created_at, p.updated_at,
+                  v.profile_id, v.version, v.source, v.display_name, v.capabilities_json,
+                  v.execution_modes_json, v.look_references_json, v.created_at AS version_created_at
+           FROM look_profiles p
+           INNER JOIN look_profile_versions v
+             ON v.profile_id = p.id AND v.version = p.current_version
+           WHERE p.owner_user_id = ?
+           ORDER BY p.updated_at DESC`
+        : `SELECT p.id, p.public_id, p.owner_user_id, p.owner_scope, p.current_version,
+                  p.status, p.created_at, p.updated_at,
+                  v.profile_id, v.version, v.source, v.display_name, v.capabilities_json,
+                  v.execution_modes_json, v.look_references_json, v.created_at AS version_created_at
+           FROM look_profiles p
+           INNER JOIN look_profile_versions v
+             ON v.profile_id = p.id AND v.version = p.current_version
+           WHERE p.owner_user_id = ? AND p.status = 'active'
+           ORDER BY p.updated_at DESC`;
+      const rows = db.prepare(sql).all(ownerUserId) as Array<
+        ProfileRow & VersionRow & { version_created_at: string }
+      >;
       const out: LookProfileRecord[] = [];
       for (const row of rows) {
-        const record = loadRecord(row.id);
-        if (record) out.push(record);
+        const mapped = mapRecord(
+          {
+            id: row.id,
+            public_id: row.public_id,
+            owner_user_id: row.owner_user_id,
+            owner_scope: row.owner_scope,
+            current_version: row.current_version,
+            status: row.status,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+          },
+          {
+            profile_id: row.profile_id,
+            version: row.version,
+            source: row.source,
+            display_name: row.display_name,
+            capabilities_json: row.capabilities_json,
+            execution_modes_json: row.execution_modes_json,
+            look_references_json: row.look_references_json,
+            created_at: row.version_created_at,
+          },
+        );
+        if (mapped) out.push(mapped);
       }
       return out;
     },
@@ -241,7 +273,7 @@ export function createLookProfileStore(db: HostDatabase) {
         return { error: `LookProfile konnte nicht angelegt werden: ${message}` };
       }
 
-      const record = loadRecord(profileId);
+      const record = loadRecord(profileId, ownerUserId);
       if (!record) return { error: 'LookProfile nach Create nicht lesbar.' };
       return record;
     },
@@ -254,9 +286,10 @@ export function createLookProfileStore(db: HostDatabase) {
       const normalized = normalizeLookProfileWriteDraft(draftRaw);
       if (!normalized.ok) return { error: normalized.error };
       const draft = normalized.draft;
-      const existing = loadRecord(profileId);
-      if (!existing) return { error: 'LookProfile nicht gefunden.' };
-      if (existing.profile.ownerId !== ownerUserId) {
+      const existing = loadRecord(profileId, ownerUserId);
+      if (!existing) {
+        const any = loadProfileRow(profileId);
+        if (!any) return { error: 'LookProfile nicht gefunden.' };
         return { error: 'Keine Berechtigung für dieses LookProfile.' };
       }
       if (existing.status === 'archived') {
@@ -273,10 +306,14 @@ export function createLookProfileStore(db: HostDatabase) {
           .prepare(
             `UPDATE look_profiles
              SET current_version = ?, updated_at = ?
-             WHERE id = ? AND owner_user_id = ? AND current_version = ?`,
+             WHERE id = ? AND owner_user_id = ? AND current_version = ? AND status = 'active'`,
           )
           .run(nextVersion, createdAt, profileId, ownerUserId, existing.profile.currentVersion);
         if (bumped.changes !== 1) {
+          const row = loadProfileRow(profileId);
+          if (row?.status === 'archived') {
+            throw new Error('archived-locked');
+          }
           throw new Error('version-conflict');
         }
         db.exec('COMMIT');
@@ -287,6 +324,11 @@ export function createLookProfileStore(db: HostDatabase) {
           /* ignore */
         }
         const message = err instanceof Error ? err.message : String(err);
+        if (/archived-locked/i.test(message)) {
+          return {
+            error: 'Archivierte Looks können nicht versioniert werden. Bitte duplizieren.',
+          };
+        }
         if (/UNIQUE|constraint|version-conflict/i.test(message)) {
           return {
             error:
@@ -296,7 +338,7 @@ export function createLookProfileStore(db: HostDatabase) {
         return { error: `Neue Look-Version fehlgeschlagen: ${message}` };
       }
 
-      const record = loadRecord(profileId);
+      const record = loadRecord(profileId, ownerUserId);
       if (!record || record.profile.currentVersion !== nextVersion) {
         return {
           error: 'Konflikt: LookProfile wurde parallel aktualisiert. Bitte erneut versuchen.',
@@ -306,16 +348,17 @@ export function createLookProfileStore(db: HostDatabase) {
     },
 
     archive(ownerUserId: string, profileId: string): LookProfileRecord | { error: string } {
-      const existing = loadRecord(profileId);
-      if (!existing) return { error: 'LookProfile nicht gefunden.' };
-      if (existing.profile.ownerId !== ownerUserId) {
+      const existing = loadRecord(profileId, ownerUserId);
+      if (!existing) {
+        const any = loadProfileRow(profileId);
+        if (!any) return { error: 'LookProfile nicht gefunden.' };
         return { error: 'Keine Berechtigung für dieses LookProfile.' };
       }
       db.prepare(
         `UPDATE look_profiles SET status = 'archived', updated_at = ?
          WHERE id = ? AND owner_user_id = ?`,
       ).run(nowIso(), profileId, ownerUserId);
-      const record = loadRecord(profileId);
+      const record = loadRecord(profileId, ownerUserId);
       if (!record) return { error: 'LookProfile nach Archivierung nicht lesbar.' };
       return record;
     },

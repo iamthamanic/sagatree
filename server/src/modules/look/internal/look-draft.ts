@@ -47,14 +47,14 @@ export type LookProfileWriteDraft = {
   readonly ownerScope: LookScope;
 };
 
-const FORBIDDEN_PROVIDER_KEYS = [
+const FORBIDDEN_PROVIDER_KEYS = new Set([
   'toonlab',
   'toonLab',
   'ToonLab',
   'providerRaw',
   'providerBlob',
   'rawProvider',
-] as const;
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -70,7 +70,7 @@ function rejectProviderKeys(value: unknown, path: string): string | null {
   }
   if (!isRecord(value)) return null;
   for (const key of Object.keys(value)) {
-    if ((FORBIDDEN_PROVIDER_KEYS as readonly string[]).includes(key)) {
+    if (FORBIDDEN_PROVIDER_KEYS.has(key)) {
       return `Forbidden provider key "${key}" at ${path}`;
     }
     const nested = rejectProviderKeys(value[key], `${path}.${key}`);
@@ -118,7 +118,10 @@ export function normalizeLookProfileWriteDraft(raw: unknown): LookDraftValidatio
   if (typeof raw.displayName !== 'string' || raw.displayName.trim().length === 0) {
     return { ok: false, error: 'displayName is required' };
   }
-  const displayName = raw.displayName.trim().slice(0, 200);
+  const displayName = raw.displayName.trim();
+  if (displayName.length > 200) {
+    return { ok: false, error: 'displayName exceeds 200 characters' };
+  }
 
   if (typeof raw.source !== 'string' || !(LOOK_SOURCES as readonly string[]).includes(raw.source)) {
     return { ok: false, error: 'invalid source' };
@@ -149,9 +152,18 @@ export function normalizeLookProfileWriteDraft(raw: unknown): LookDraftValidatio
   const references: LookReference[] = [];
   if (raw.references !== undefined) {
     if (!Array.isArray(raw.references)) return { ok: false, error: 'references must be array' };
+    const byId = new Map<string, LookReferenceKind>();
     for (const ref of raw.references) {
       const parsed = parseReference(ref);
       if (!parsed) return { ok: false, error: 'invalid reference' };
+      const existingKind = byId.get(parsed.id);
+      if (existingKind && existingKind !== parsed.kind) {
+        return {
+          ok: false,
+          error: `LookReference id "${parsed.id}" cannot be both style and content`,
+        };
+      }
+      byId.set(parsed.id, parsed.kind);
       references.push(parsed);
     }
   }

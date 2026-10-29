@@ -171,6 +171,48 @@ try {
   });
   assert(badDraft.ok === false, 'provider blob rejected');
 
+  const kindClash = look.createProfile(owner, {
+    displayName: 'Clash',
+    source: 'manual',
+    executionModes: ['realtime'],
+    references: [
+      { id: 'same', kind: 'style', uri: 'asset://a' },
+      { id: 'same', kind: 'content', uri: 'asset://b' },
+    ],
+  });
+  assert(kindClash.ok === false && /style and content/i.test(kindClash.error), 'kind collision');
+
+  const tooLong = look.createProfile(owner, {
+    displayName: 'x'.repeat(201),
+    source: 'manual',
+    executionModes: ['realtime'],
+  });
+  assert(tooLong.ok === false && /200/i.test(tooLong.error), 'overlong displayName rejected');
+
+  // Linked solo: remote account may read/mutate profiles owned by linked solo id
+  const soloOwned = look.createProfile(actor('solo-1'), {
+    displayName: 'Solo Look',
+    source: 'manual',
+    references: [],
+    capabilities: ['character'],
+    executionModes: ['realtime'],
+  });
+  assert(soloOwned.ok, 'solo create');
+  const linkedRemote = {
+    kind: 'remote-account',
+    actorId: 'remote-r',
+    sessionId: 'auth-remote-r',
+    email: null,
+    linkedSoloActorIds: ['solo-1'],
+  };
+  const linkedList = look.listProfiles(linkedRemote);
+  assert(
+    linkedList.ok && linkedList.value.some((r) => r.profile.id === soloOwned.value.profile.id),
+    'linked solo visible to remote',
+  );
+  const linkedGet = look.getProfileById(linkedRemote, soloOwned.value.profile.id);
+  assert(linkedGet.ok && linkedGet.value?.profile.id === soloOwned.value.profile.id, 'linked get');
+
   // Dual-path adapter seam: bind host ports through FE contract
   const bound = createHostLookAdapter({
     listProfiles: async (actorId, options) =>
