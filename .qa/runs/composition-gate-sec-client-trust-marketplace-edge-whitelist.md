@@ -21,7 +21,8 @@ Marketplace adapter mutations + allowlisted Edge POST body privilege rejection.
 - Single-hop adapter/Edge parsers; no multi-hop invalid fallback. Download counter: RPC only; client write fallback removed.
 
 ## HEAD
-4ede1fde303910af63e4f45c5d4a8127cdd4e8f3
+fe2410f360d4132f69697469e558df19781251a6
+
 
 ## Evidence
 - `node scripts/sec-client-trust-marketplace-check.mjs` PASS
