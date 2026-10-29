@@ -5,7 +5,22 @@
  * Owner-scoped drafts/publishes; native definitions are immutable. Client roles
  * never elevate. Revision conflicts return SQLSTATE-shaped `40001`.
  * Version reads (#872) project GM vs player payloads via host helper.
+ * Also exports MIG-418 Edge `quests` quarantine (unmounted Maps; no HTTP mount).
  */
+export {
+  QUESTS_MAP_GRANTS_REWARDS,
+  QUESTS_PUBLIC_ACTIVATION_AUTHORIZED,
+  applyQuestDefaults,
+  completeObjective,
+  createSeededRng,
+  describeQuestsLegacyDefects,
+  filterQuests,
+  generateQuest,
+  type QuarantineObjective,
+  type QuarantineQuest,
+  type QuarantineReward,
+} from './internal/quests-quarantine.ts';
+
 import type { Actor } from '../identity/index.ts';
 import type { PolicyDecision, PolicyOp, PolicyResource } from '../permissions/index.ts';
 import type { ProjectPorts } from '../project/index.ts';
