@@ -936,6 +936,18 @@ function checkMig409ItemModel3d() {
   );
 }
 
+function checkMig410ItemThumbnail() {
+  console.log('MIG-410 (#826): item-thumbnail host isolated-contract fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-410-item-thumbnail.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig502ExportImportBundles() {
   console.log('MIG-502 export/import bundles (#843): checksum / traversal / restore drill...');
   execFileSync(
@@ -3155,6 +3167,7 @@ checkMig401AiGmQuarantine();
 checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
 checkMig409ItemModel3d();
+checkMig410ItemThumbnail();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

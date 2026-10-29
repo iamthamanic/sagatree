@@ -30,3 +30,11 @@ export {
   itemModel3dUpload,
   type ItemModel3dStore,
 } from './internal/item-model3d.ts';
+
+export {
+  ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED,
+  ITEM_THUMBNAIL_RATE_LIMIT,
+  createItemThumbnailStore,
+  describeItemThumbnailLegacyDefects,
+  type ItemThumbnailStore,
+} from './internal/item-thumbnail.ts';

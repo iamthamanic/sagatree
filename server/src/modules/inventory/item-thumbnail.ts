@@ -1,0 +1,36 @@
+/**
+ * Slim public entry for item-thumbnail host port (MIG-410 / #826).
+ * Location: server/src/modules/inventory/item-thumbnail.ts
+ */
+export {
+  ITEM_THUMBNAIL_ALLOWED_MIME,
+  ITEM_THUMBNAIL_ASSET_PREFIX,
+  ITEM_THUMBNAIL_HEADER_MAX_BYTES,
+  ITEM_THUMBNAIL_MAX_BYTES,
+  ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED,
+  ITEM_THUMBNAIL_RATE_LIMIT,
+  ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS,
+  assertItemThumbnailDefinitionAuthorized,
+  buildItemThumbnailAssetKey,
+  buildItemThumbnailPrompt,
+  buildItemThumbnailStoragePath,
+  checkItemThumbnailContentLengthHeader,
+  createItemThumbnailStore,
+  decodeStrictBase64Image,
+  describeItemThumbnailLegacyDefects,
+  resolveItemThumbnailAssetBaseUrl,
+  isAllowedItemThumbnailMeshyHost,
+  itemThumbnailConfig,
+  itemThumbnailGenerate,
+  itemThumbnailLatestJob,
+  itemThumbnailRemove,
+  itemThumbnailResolve,
+  itemThumbnailStatus,
+  itemThumbnailUpload,
+  normalizeItemThumbnailUserExtra,
+  seedItemThumbnailDefinition,
+  sniffItemThumbnailMime,
+  stripItemThumbnailSecrets,
+  validateItemThumbnailBytes,
+  type ItemThumbnailStore,
+} from './internal/item-thumbnail.ts';
