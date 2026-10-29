@@ -58,6 +58,10 @@ export type ItemThumbnailJob = {
   providerTaskId?: string;
   providerPollStatus?: 'succeeded' | 'failed' | 'in_progress' | 'canceled';
   providerImageUrl?: string;
+  /** Isolated fixture bytes for materialize (Edge downloads provider image). */
+  providerImageBytes?: Uint8Array;
+  userExtra?: string;
+  prompt?: string;
   materializeClaimedBy?: string | null;
   paidCreateDone: boolean;
 };
@@ -74,9 +78,13 @@ export type ItemThumbnailStore = {
   providerCreates: number;
   meshyConfigured: boolean;
   persistentQuotaAvailable: boolean;
+  /** Injectable asset host for signed URLs / fixtures (isolated-contract). */
+  assetBaseUrl: string;
   nextId: number;
   readonly bodyLimitMode: 'header-only';
 };
+
+const DEFAULT_PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 export function createItemThumbnailStore(meshyConfigured = true): ItemThumbnailStore {
   return {
@@ -89,6 +97,7 @@ export function createItemThumbnailStore(meshyConfigured = true): ItemThumbnailS
     providerCreates: 0,
     meshyConfigured,
     persistentQuotaAvailable: true,
+    assetBaseUrl: 'https://cdn.meshy.ai',
     nextId: 1,
     bodyLimitMode: 'header-only',
   };
@@ -109,16 +118,21 @@ export function checkItemThumbnailContentLengthHeader(
  */
 export function decodeStrictBase64Image(contentBase64: string): Uint8Array {
   const cleaned = contentBase64.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, '').trim();
-  if (!cleaned) throw new Error('Empty image payload');
+  if (!cleaned) {
+    throw Object.assign(new Error('Empty image payload'), { httpStatus: 400 });
+  }
   if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleaned) || cleaned.length % 4 === 1) {
-    throw new Error('Invalid base64 payload');
+    throw Object.assign(new Error('Invalid base64 payload'), { httpStatus: 400 });
   }
   const padded = cleaned.padEnd(cleaned.length + ((4 - (cleaned.length % 4)) % 4), '=');
   const padding = padded.endsWith('==') ? 2 : padded.endsWith('=') ? 1 : 0;
   const expectedBytes = (padded.length / 4) * 3 - padding;
+  if (expectedBytes > ITEM_THUMBNAIL_MAX_BYTES) {
+    throw Object.assign(new Error('Image exceeds 10 MB limit'), { httpStatus: 413 });
+  }
   const buf = Buffer.from(padded, 'base64');
   if (buf.byteLength !== expectedBytes) {
-    throw new Error('Invalid base64 payload');
+    throw Object.assign(new Error('Invalid base64 payload'), { httpStatus: 400 });
   }
   return new Uint8Array(buf);
 }
@@ -160,14 +174,24 @@ export function validateItemThumbnailBytes(
   bytes: Uint8Array,
   claimedMime?: string,
 ): { mime: ItemThumbnailMime; bytes: Uint8Array } {
-  if (bytes.byteLength === 0) throw new Error('Empty image');
-  if (bytes.byteLength > ITEM_THUMBNAIL_MAX_BYTES) throw new Error('Image exceeds 10 MB limit');
+  if (bytes.byteLength === 0) {
+    throw Object.assign(new Error('Empty image'), { httpStatus: 400 });
+  }
+  if (bytes.byteLength > ITEM_THUMBNAIL_MAX_BYTES) {
+    throw Object.assign(new Error('Image exceeds 10 MB limit'), { httpStatus: 413 });
+  }
   const sniffed = sniffItemThumbnailMime(bytes);
-  if (!sniffed) throw new Error('Only PNG, JPEG and WebP images are allowed');
+  if (!sniffed) {
+    throw Object.assign(new Error('Only PNG, JPEG and WebP images are allowed'), {
+      httpStatus: 400,
+    });
+  }
   if (claimedMime) {
     const normalized = claimedMime === 'image/jpg' ? 'image/jpeg' : claimedMime;
     if (normalized !== sniffed && claimedMime !== 'application/octet-stream') {
-      throw new Error('Declared MIME does not match image contents');
+      throw Object.assign(new Error('Declared MIME does not match image contents'), {
+        httpStatus: 400,
+      });
     }
   }
   return { mime: sniffed, bytes };
@@ -288,8 +312,19 @@ export type ItemThumbnailResult =
   | { status: 'not-configured'; message: string; httpStatus: 503 }
   | { status: 'error'; message: string; code?: string; httpStatus: number };
 
-function signedUrlFor(assetId: string): string {
-  return `https://assets.meshy.ai/signed/${assetId}?ttl=${ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS}`;
+function signedUrlFor(store: ItemThumbnailStore, assetId: string): string {
+  const base = store.assetBaseUrl.replace(/\/$/, '');
+  return `${base}/signed/${assetId}?ttl=${ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS}`;
+}
+
+export function buildItemThumbnailPrompt(
+  def: ItemThumbnailDefinition,
+  userExtra: string,
+): string {
+  const name = (def.payload.name || '').slice(0, 80);
+  const description = (def.payload.description || '').slice(0, 220);
+  const parts = [name, description, userExtra].filter(Boolean);
+  return parts.join(' ').slice(0, 600);
 }
 
 function httpFromError(e: unknown): number {
@@ -329,6 +364,9 @@ export function itemThumbnailUpload(
     if (typeof input.contentBase64 !== 'string' || !input.contentBase64.trim()) {
       return { status: 'error', message: 'contentBase64 required', httpStatus: 400 };
     }
+    if (input.contentBase64.length > ITEM_THUMBNAIL_HEADER_MAX_BYTES * 2) {
+      return { status: 'error', message: 'Request body too large', httpStatus: 413 };
+    }
     const def = assertItemThumbnailDefinitionAuthorized(store, userId, input.definitionId.trim());
     const bytes = decodeStrictBase64Image(input.contentBase64);
     const validated = validateItemThumbnailBytes(bytes, input.mime);
@@ -355,7 +393,7 @@ export function itemThumbnailUpload(
       status: 'ok',
       assetId,
       assetKey: buildItemThumbnailAssetKey(assetId),
-      signedUrl: signedUrlFor(assetId),
+      signedUrl: signedUrlFor(store, assetId),
       mime: validated.mime,
       byteSize: validated.bytes.byteLength,
     };
@@ -382,11 +420,12 @@ export function itemThumbnailGenerate(
       httpStatus: 503,
     };
   }
+  let normalizedUserExtra = '';
   try {
     if (typeof definitionId !== 'string' || !definitionId.trim()) {
       return { status: 'error', message: 'definitionId required', httpStatus: 400 };
     }
-    normalizeItemThumbnailUserExtra(userExtra);
+    normalizedUserExtra = normalizeItemThumbnailUserExtra(userExtra);
   } catch (e) {
     return {
       status: 'error',
@@ -406,6 +445,7 @@ export function itemThumbnailGenerate(
   }
   try {
     const def = assertItemThumbnailDefinitionAuthorized(store, userId, definitionId.trim());
+    const prompt = buildItemThumbnailPrompt(def, normalizedUserExtra);
     // Legacy: paid create before jobs INSERT.
     store.providerCreates += 1;
     const jobId = nextId(store, 'job');
@@ -420,10 +460,13 @@ export function itemThumbnailGenerate(
       paidCreateDone: true,
       providerTaskId: `meshy-${jobId}`,
       providerPollStatus: 'succeeded',
-      providerImageUrl: 'https://cdn.meshy.ai/images/ok.png',
+      providerImageUrl: `${store.assetBaseUrl.replace(/\/$/, '')}/images/ok.png`,
+      providerImageBytes: DEFAULT_PNG,
+      userExtra: normalizedUserExtra,
+      prompt,
       materializeClaimedBy: null,
     });
-    return { status: 'ok', jobId, jobStatus: 'waiting', progress: 5 };
+    return { status: 'ok', jobId, jobStatus: 'waiting', progress: 5, prompt };
   } catch (e) {
     return {
       status: 'error',
@@ -482,30 +525,37 @@ export function itemThumbnailStatus(
             ...(job.errorMessage ? { errorMessage: job.errorMessage } : {}),
           };
         }
-        job.materializeClaimedBy = claimerId;
-        job.status = 'succeeded';
-        job.progress = 100;
-        const assetId = nextId(store, 'asset');
-        const def = store.definitions.get(job.definitionId);
-        const mime: ItemThumbnailMime = 'image/png';
-        const storagePath = buildItemThumbnailStoragePath({
-          ownerUserId: userId,
-          definitionId: job.definitionId,
-          worldProfileId: def?.worldProfileId,
-          assetId,
-          mime,
-        });
-        store.assets.set(assetId, {
-          id: assetId,
-          ownerUserId: userId,
-          definitionId: job.definitionId,
-          storagePath,
-          deletedAt: null,
-          byteSize: 1024,
-          mime,
-        });
-        job.assetId = assetId;
-        if (def) def.payload.assetKey = buildItemThumbnailAssetKey(assetId);
+        try {
+          const bytes = job.providerImageBytes ?? DEFAULT_PNG;
+          const validated = validateItemThumbnailBytes(bytes);
+          job.materializeClaimedBy = claimerId;
+          job.status = 'succeeded';
+          job.progress = 100;
+          const assetId = nextId(store, 'asset');
+          const def = store.definitions.get(job.definitionId);
+          const storagePath = buildItemThumbnailStoragePath({
+            ownerUserId: userId,
+            definitionId: job.definitionId,
+            worldProfileId: def?.worldProfileId,
+            assetId,
+            mime: validated.mime,
+          });
+          store.storageWrites.push(storagePath);
+          store.assets.set(assetId, {
+            id: assetId,
+            ownerUserId: userId,
+            definitionId: job.definitionId,
+            storagePath,
+            deletedAt: null,
+            byteSize: validated.bytes.byteLength,
+            mime: validated.mime,
+          });
+          job.assetId = assetId;
+          if (def) def.payload.assetKey = buildItemThumbnailAssetKey(assetId);
+        } catch (e) {
+          job.status = 'failed';
+          job.errorMessage = e instanceof Error ? e.message : 'materialize validation failed';
+        }
       }
     }
   }
@@ -518,7 +568,7 @@ export function itemThumbnailStatus(
     ...(job.assetId
       ? {
           assetKey: buildItemThumbnailAssetKey(job.assetId),
-          signedUrl: signedUrlFor(job.assetId),
+          signedUrl: signedUrlFor(store, job.assetId),
         }
       : {}),
   };
@@ -546,11 +596,13 @@ export function itemThumbnailResolve(
     return {
       status: 'ok',
       assetKey: buildItemThumbnailAssetKey(assetId),
-      signedUrl: signedUrlFor(assetId),
+      signedUrl: signedUrlFor(store, assetId),
     };
   }
   for (const def of store.definitions.values()) {
     if (
+      def.scope === 'world' &&
+      def.status !== 'archived' &&
       def.payload.assetKey === buildItemThumbnailAssetKey(assetId) &&
       def.worldProfileId &&
       store.worldOwners.get(def.worldProfileId) === userId
@@ -558,7 +610,7 @@ export function itemThumbnailResolve(
       return {
         status: 'ok',
         assetKey: buildItemThumbnailAssetKey(assetId),
-        signedUrl: signedUrlFor(assetId),
+        signedUrl: signedUrlFor(store, assetId),
       };
     }
   }
@@ -571,6 +623,9 @@ export function itemThumbnailRemove(
   definitionId: string,
 ): ItemThumbnailResult {
   try {
+    if (typeof definitionId !== 'string' || !definitionId.trim()) {
+      return { status: 'error', message: 'definitionId required', httpStatus: 400 };
+    }
     const def = assertItemThumbnailDefinitionAuthorized(store, userId, definitionId.trim());
     const key = def.payload.assetKey;
     def.payload.assetKey = undefined;
@@ -596,6 +651,9 @@ export function itemThumbnailLatestJob(
   userId: string,
   definitionId: string,
 ): ItemThumbnailResult {
+  if (typeof definitionId !== 'string' || !definitionId.trim()) {
+    return { status: 'error', message: 'definitionId required', httpStatus: 400 };
+  }
   try {
     assertItemThumbnailDefinitionAuthorized(store, userId, definitionId.trim());
   } catch (e) {

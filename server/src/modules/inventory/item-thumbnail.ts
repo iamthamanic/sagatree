@@ -12,6 +12,7 @@ export {
   ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS,
   assertItemThumbnailDefinitionAuthorized,
   buildItemThumbnailAssetKey,
+  buildItemThumbnailPrompt,
   buildItemThumbnailStoragePath,
   checkItemThumbnailContentLengthHeader,
   createItemThumbnailStore,

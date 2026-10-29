@@ -125,6 +125,25 @@ assert(g5.httpStatus === 429 && g5.code === 'RATE_LIMIT', '5th 429');
 assert(uc.config(actor(OWNER)).status === 'ok', 'config uncharged');
 assert(store.providerCreates === 4, 'quota blocks before paid create');
 
+const authz = createItemThumbnailStore(true);
+seedStore(authz);
+const authzUc = createItemThumbnailUseCases(authz);
+assert(authzUc.generate(actor(GM), 'def-personal').httpStatus === 403, 'gm generate 403');
+assert(authzUc.generate(actor(MEMBER), 'def-personal').httpStatus === 403, 'member generate 403');
+assert(authzUc.generate(actor(STRANGER), 'def-personal').httpStatus === 403, 'stranger generate 403');
+assert(authzUc.generate(actor(OWNER), 'def-archived').httpStatus === 403, 'archived generate 403');
+assert(authz.providerCreates === 0, 'denied generate never creates paid task');
+
+const promptStore = createItemThumbnailStore(true);
+seedStore(promptStore);
+promptStore.definitions.get('def-personal').payload.description = 'sharp blade';
+const promptUc = createItemThumbnailUseCases(promptStore);
+const prompted = promptUc.generate(actor(OWNER), 'def-personal', 'glowing');
+assert(
+  prompted.status === 'ok' && String(prompted.prompt).includes('Sword') && String(prompted.prompt).includes('glowing'),
+  'prompt carries name+userExtra',
+);
+
 const down = createItemThumbnailStore(true);
 seedStore(down);
 down.persistentQuotaAvailable = false;
