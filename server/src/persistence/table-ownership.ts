@@ -59,6 +59,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   ai_provider_credential_rate_limits: 'ai',
   look_profiles: 'look',
   look_profile_versions: 'look',
+  user_profiles: 'user-profile',
 });
 
 export function owningModuleForTable(table: string): HostModuleId | null {

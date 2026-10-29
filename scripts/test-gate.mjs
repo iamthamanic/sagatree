@@ -1152,6 +1152,18 @@ function checkMig310SagaAdapter() {
   );
 }
 
+function checkMig312UserProfileAdapter() {
+  console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-312-user-profile-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig503PgSqliteDryRun() {
   console.log('MIG-503 PG→SQLite dry-run (#844): fixture transfer / checksum / abort-retry...');
   execFileSync(
@@ -3295,6 +3307,7 @@ checkMig304LookAdapter();
 checkMig307NpcAdapter();
 checkMig308ProjectAdapter();
 checkMig310SagaAdapter();
+checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();
 checkRpcSagaAuthoring();
