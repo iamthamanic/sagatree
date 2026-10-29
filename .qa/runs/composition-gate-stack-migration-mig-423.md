@@ -5,6 +5,7 @@
 - HOP_DIGEST: spellbook-edge-quarantine-v1
 - Date: 2026-10-29
 - Verdict: CLEAR
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
