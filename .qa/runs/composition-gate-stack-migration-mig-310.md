@@ -1,14 +1,14 @@
 # Composition Gate — stack-migration-mig-310 (#809)
 
-- HEAD_SHA: bc3dad99b40abb6f5b013a53acb8b7b0e49dd2ad
+- HEAD_SHA: 7c1b507d14846aeec8056692981a5eca931c164e
 - BASE_SHA: a83f47f577c94279798acfb4b7e728203524ac94
 - Date: 2026-10-29
 - Verdict: CLEAR
-- Scope: committed HEAD
+- Scope: committed HEAD (includes fingerprint renewal)
 
 ## Event
 
-Authenticated owner creates/edits/saves/publishes saga definitions, copies native, instantiates project, duplicates playthrough, and GM promotes session outcomes via host `sagaInfra` ports. Foreign actors receive DENY. Supabase saga facades remain production default. No HTTP public activation.
+Authenticated owner creates/edits/saves/publishes saga definitions, copies native, instantiates project, duplicates playthrough, and GM promotes session outcomes via host `sagaInfra` ports. Foreign actors receive DENY. Supabase saga facades remain production default. No HTTP public activation. Source fingerprints renewed for dual-path notes.
 
 ## Hop chain
 
@@ -27,7 +27,7 @@ Owner creates user saga, saves draft, publishes v1, copies native, instantiates 
 Missing actor → 42501. Native immutable for draft save. Only native copyable (22023). Revision conflict → 40001. Foreign duplicate/promote DENY.
 
 ### Two consumers / crash
-Publish retains version snapshot; adapter promote of already-promoted consequence returns idempotent. Adapter seam returns same editor projection as host ports. createHost exposes sagaInfra moduleId.
+Publish retains version snapshot; adapter promote of already-promoted consequence returns idempotent. Adapter seam returns same editor projection as host ports. createHost exposes sagaInfra moduleId. Prep-check fingerprints match renewed dual-path notes.
 
 ## Flags
 
@@ -37,5 +37,4 @@ Publish retains version snapshot; adapter promote of already-promoted consequenc
 - No saga-infra HTTP mount in this slice
 - Skip MIG-305/#804 waiting-dependency; Dependabot #982–#984 deferred
 - Browser E2E: SKIPPED (no UI surface in this slice)
-
 - note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
