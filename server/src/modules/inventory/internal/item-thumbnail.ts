@@ -86,7 +86,22 @@ export type ItemThumbnailStore = {
 
 const DEFAULT_PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
-export function createItemThumbnailStore(meshyConfigured = true): ItemThumbnailStore {
+const ITEM_THUMBNAIL_ART_DIRECTION =
+  'single centered inventory item illustration, isolated object, clean quiet neutral background, no text, no logos, no watermarks, no brand or artist style names';
+
+export function resolveItemThumbnailAssetBaseUrl(
+  env: { MESHY_ASSET_BASE_URL?: string } = process.env,
+): string {
+  const fromEnv = env.MESHY_ASSET_BASE_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, '');
+  throw new Error('MESHY_ASSET_BASE_URL must be set');
+}
+
+export function createItemThumbnailStore(
+  meshyConfigured = true,
+  options?: { assetBaseUrl?: string },
+): ItemThumbnailStore {
+  const assetBaseUrl = options?.assetBaseUrl?.replace(/\/$/, '') || resolveItemThumbnailAssetBaseUrl();
   return {
     definitions: new Map(),
     worldOwners: new Map(),
@@ -97,7 +112,7 @@ export function createItemThumbnailStore(meshyConfigured = true): ItemThumbnailS
     providerCreates: 0,
     meshyConfigured,
     persistentQuotaAvailable: true,
-    assetBaseUrl: 'https://cdn.meshy.ai',
+    assetBaseUrl,
     nextId: 1,
     bodyLimitMode: 'header-only',
   };
@@ -317,14 +332,29 @@ function signedUrlFor(store: ItemThumbnailStore, assetId: string): string {
   return `${base}/signed/${assetId}?ttl=${ITEM_THUMBNAIL_SIGNED_URL_TTL_SECONDS}`;
 }
 
+function sanitizeItemThumbnailPromptPart(value: string, max: number): string {
+  return value
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
 export function buildItemThumbnailPrompt(
   def: ItemThumbnailDefinition,
   userExtra: string,
 ): string {
-  const name = (def.payload.name || '').slice(0, 80);
-  const description = (def.payload.description || '').slice(0, 220);
-  const parts = [name, description, userExtra].filter(Boolean);
-  return parts.join(' ').slice(0, 600);
+  const name = sanitizeItemThumbnailPromptPart(def.payload.name ?? '', 80) || 'item';
+  const description = sanitizeItemThumbnailPromptPart(def.payload.description ?? '', 220);
+  const extra = sanitizeItemThumbnailPromptPart(userExtra, 120);
+  return [
+    `Inventory icon of ${name}`,
+    description ? `: ${description}` : '',
+    extra ? `. Details: ${extra}` : '',
+    `. Style: ${ITEM_THUMBNAIL_ART_DIRECTION}.`,
+  ]
+    .join('')
+    .slice(0, 600);
 }
 
 function httpFromError(e: unknown): number {
@@ -525,36 +555,40 @@ export function itemThumbnailStatus(
             ...(job.errorMessage ? { errorMessage: job.errorMessage } : {}),
           };
         }
-        try {
-          const bytes = job.providerImageBytes ?? DEFAULT_PNG;
-          const validated = validateItemThumbnailBytes(bytes);
-          job.materializeClaimedBy = claimerId;
-          job.status = 'succeeded';
-          job.progress = 100;
-          const assetId = nextId(store, 'asset');
-          const def = store.definitions.get(job.definitionId);
-          const storagePath = buildItemThumbnailStoragePath({
-            ownerUserId: userId,
-            definitionId: job.definitionId,
-            worldProfileId: def?.worldProfileId,
-            assetId,
-            mime: validated.mime,
-          });
-          store.storageWrites.push(storagePath);
-          store.assets.set(assetId, {
-            id: assetId,
-            ownerUserId: userId,
-            definitionId: job.definitionId,
-            storagePath,
-            deletedAt: null,
-            byteSize: validated.bytes.byteLength,
-            mime: validated.mime,
-          });
-          job.assetId = assetId;
-          if (def) def.payload.assetKey = buildItemThumbnailAssetKey(assetId);
-        } catch (e) {
+        if (!job.providerImageBytes || job.providerImageBytes.byteLength === 0) {
           job.status = 'failed';
-          job.errorMessage = e instanceof Error ? e.message : 'materialize validation failed';
+          job.errorMessage = 'Provider image bytes missing';
+        } else {
+          try {
+            const validated = validateItemThumbnailBytes(job.providerImageBytes);
+            job.materializeClaimedBy = claimerId;
+            job.status = 'succeeded';
+            job.progress = 100;
+            const assetId = nextId(store, 'asset');
+            const def = store.definitions.get(job.definitionId);
+            const storagePath = buildItemThumbnailStoragePath({
+              ownerUserId: userId,
+              definitionId: job.definitionId,
+              worldProfileId: def?.worldProfileId,
+              assetId,
+              mime: validated.mime,
+            });
+            store.storageWrites.push(storagePath);
+            store.assets.set(assetId, {
+              id: assetId,
+              ownerUserId: userId,
+              definitionId: job.definitionId,
+              storagePath,
+              deletedAt: null,
+              byteSize: validated.bytes.byteLength,
+              mime: validated.mime,
+            });
+            job.assetId = assetId;
+            if (def) def.payload.assetKey = buildItemThumbnailAssetKey(assetId);
+          } catch (e) {
+            job.status = 'failed';
+            job.errorMessage = e instanceof Error ? e.message : 'materialize validation failed';
+          }
         }
       }
     }

@@ -18,6 +18,7 @@ export {
   createItemThumbnailStore,
   decodeStrictBase64Image,
   describeItemThumbnailLegacyDefects,
+  resolveItemThumbnailAssetBaseUrl,
   isAllowedItemThumbnailMeshyHost,
   itemThumbnailConfig,
   itemThumbnailGenerate,

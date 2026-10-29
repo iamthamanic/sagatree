@@ -23,17 +23,20 @@ function actorUserId(actor: Actor): string | null {
   return id || null;
 }
 
-export function createItemThumbnailUseCases(
-  store: ItemThumbnailStore = createItemThumbnailStore(),
-) {
+export function createItemThumbnailUseCases(store?: ItemThumbnailStore) {
+  const resolved =
+    store ??
+    createItemThumbnailStore(true, {
+      assetBaseUrl: process.env.MESHY_ASSET_BASE_URL?.trim(),
+    });
   return {
     publicActivationAuthorized: ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED,
-    store,
+    store: resolved,
     config: (actor: Actor) => {
       if (!actorUserId(actor)) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailConfig(store);
+      return itemThumbnailConfig(resolved);
     },
     upload: (
       actor: Actor,
@@ -43,42 +46,42 @@ export function createItemThumbnailUseCases(
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailUpload(store, userId, input);
+      return itemThumbnailUpload(resolved, userId, input);
     },
     generate: (actor: Actor, definitionId: string, userExtra?: unknown) => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailGenerate(store, userId, definitionId, userExtra);
+      return itemThumbnailGenerate(resolved, userId, definitionId, userExtra);
     },
     status: (actor: Actor, jobId: string, claimerId = 'poller') => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailStatus(store, userId, jobId, claimerId);
+      return itemThumbnailStatus(resolved, userId, jobId, claimerId);
     },
     resolve: (actor: Actor, input: { assetKey?: string; assetId?: string }) => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailResolve(store, userId, input);
+      return itemThumbnailResolve(resolved, userId, input);
     },
     remove: (actor: Actor, definitionId: string) => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailRemove(store, userId, definitionId);
+      return itemThumbnailRemove(resolved, userId, definitionId);
     },
     latestJob: (actor: Actor, definitionId: string) => {
       const userId = actorUserId(actor);
       if (!userId) {
         return { status: 'error' as const, message: 'Authentication required', httpStatus: 401 };
       }
-      return itemThumbnailLatestJob(store, userId, definitionId);
+      return itemThumbnailLatestJob(resolved, userId, definitionId);
     },
   };
 }

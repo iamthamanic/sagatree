@@ -64,6 +64,12 @@ const pngB64 = Buffer.from(pngBytes).toString('base64');
 assert(sniffItemThumbnailMime(pngBytes) === 'image/png', 'png sniff');
 assert(validateItemThumbnailBytes(pngBytes, 'image/png').mime === 'image/png', 'png validate');
 
+function createStore(meshyConfigured = true) {
+  return createItemThumbnailStore(meshyConfigured, {
+    assetBaseUrl: 'https://cdn.meshy.ai',
+  });
+}
+
 function seedStore(store) {
   seedItemThumbnailDefinition(store, {
     id: 'def-personal',
@@ -92,7 +98,7 @@ function seedStore(store) {
   store.worldOwners.set(WORLD_ID, WORLD_OWNER);
 }
 
-const store = createItemThumbnailStore(true);
+const store = createStore(true);
 seedStore(store);
 const uc = createItemThumbnailUseCases(store);
 
@@ -125,7 +131,7 @@ assert(g5.httpStatus === 429 && g5.code === 'RATE_LIMIT', '5th 429');
 assert(uc.config(actor(OWNER)).status === 'ok', 'config uncharged');
 assert(store.providerCreates === 4, 'quota blocks before paid create');
 
-const authz = createItemThumbnailStore(true);
+const authz = createStore(true);
 seedStore(authz);
 const authzUc = createItemThumbnailUseCases(authz);
 assert(authzUc.generate(actor(GM), 'def-personal').httpStatus === 403, 'gm generate 403');
@@ -134,23 +140,26 @@ assert(authzUc.generate(actor(STRANGER), 'def-personal').httpStatus === 403, 'st
 assert(authzUc.generate(actor(OWNER), 'def-archived').httpStatus === 403, 'archived generate 403');
 assert(authz.providerCreates === 0, 'denied generate never creates paid task');
 
-const promptStore = createItemThumbnailStore(true);
+const promptStore = createStore(true);
 seedStore(promptStore);
 promptStore.definitions.get('def-personal').payload.description = 'sharp blade';
 const promptUc = createItemThumbnailUseCases(promptStore);
 const prompted = promptUc.generate(actor(OWNER), 'def-personal', 'glowing');
 assert(
-  prompted.status === 'ok' && String(prompted.prompt).includes('Sword') && String(prompted.prompt).includes('glowing'),
-  'prompt carries name+userExtra',
+  prompted.status === 'ok' &&
+    String(prompted.prompt).includes('Inventory icon of Sword') &&
+    String(prompted.prompt).includes('glowing') &&
+    String(prompted.prompt).includes('Style:'),
+  'prompt carries Edge-shaped name+userExtra',
 );
 
-const down = createItemThumbnailStore(true);
+const down = createStore(true);
 seedStore(down);
 down.persistentQuotaAvailable = false;
 const gDown = createItemThumbnailUseCases(down).generate(actor(OWNER), 'def-personal');
 assert(gDown.httpStatus === 500 && down.providerCreates === 0, 'quota store down');
 
-const noMeshy = createItemThumbnailStore(false);
+const noMeshy = createStore(false);
 seedStore(noMeshy);
 const noCfg = createItemThumbnailUseCases(noMeshy).generate(actor(OWNER), 'def-personal');
 assert(noCfg.status === 'not-configured' && noCfg.httpStatus === 503, 'not-configured 503');
@@ -160,13 +169,13 @@ assert(uc.generate(actor(OWNER), 'def-personal', 12).httpStatus === 400, 'non-st
 // Fall 3: unions + latest null + signed TTL
 assert(uc.config(actor(OWNER)).maxBytes === ITEM_THUMBNAIL_MAX_BYTES, 'config maxBytes');
 assert(String(upOwner.signedUrl).includes('ttl=604800'), 'signed ttl');
-const fresh = createItemThumbnailStore(true);
+const fresh = createStore(true);
 seedStore(fresh);
 const freshUc = createItemThumbnailUseCases(fresh);
 assert(freshUc.latestJob(actor(OWNER), 'def-personal').job === null, 'latest null');
 
 // Fall 4/5: status materialize, foreign, allowlist, concurrent claim
-const st = createItemThumbnailStore(true);
+const st = createStore(true);
 seedStore(st);
 const stUc = createItemThumbnailUseCases(st);
 const job = stUc.generate(actor(OWNER), 'def-personal');
@@ -177,8 +186,7 @@ assert(s2.jobStatus === 'succeeded' && st.providerCreates === 1, 'no second paid
 assert(stUc.status(actor(STRANGER), job.jobId).httpStatus === 404, 'foreign job 404');
 assert(stUc.resolve(actor(STRANGER), { assetKey: s1.assetKey }).httpStatus === 403, 'foreign resolve 403');
 
-st.jobs.get(job.jobId); // keep
-const pollStore = createItemThumbnailStore(true);
+const pollStore = createStore(true);
 seedStore(pollStore);
 const pollUc = createItemThumbnailUseCases(pollStore);
 const pj = pollUc.generate(actor(OWNER), 'def-personal');
@@ -186,8 +194,15 @@ pollStore.jobs.get(pj.jobId).providerPollStatus = 'succeeded';
 pollStore.jobs.get(pj.jobId).providerImageUrl = 'https://evil.example/x.png';
 assert(pollUc.status(actor(OWNER), pj.jobId).jobStatus === 'failed', 'off-allowlist fail');
 
+const missingBytes = createStore(true);
+seedStore(missingBytes);
+const missingUc = createItemThumbnailUseCases(missingBytes);
+const mj = missingUc.generate(actor(OWNER), 'def-personal');
+delete missingBytes.jobs.get(mj.jobId).providerImageBytes;
+assert(missingUc.status(actor(OWNER), mj.jobId).jobStatus === 'failed', 'missing bytes fail');
+
 // remove pointer without deleting foreign asset
-const rem = createItemThumbnailStore(true);
+const rem = createStore(true);
 seedStore(rem);
 const remUc = createItemThumbnailUseCases(rem);
 const wu = remUc.upload(actor(WORLD_OWNER), { definitionId: 'def-world', contentBase64: pngB64 });
