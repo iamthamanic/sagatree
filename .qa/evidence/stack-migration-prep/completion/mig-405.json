@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-405",
+  "result": "PASS",
+  "testedCommit": "3b6831adfbb3f1d6a1bb709c523a8ad32aa1b5e2",
+  "githubClosed": true,
+  "mergeRef": "PR #1019 \u2192 main (#821)",
+  "note": "character-lore isolated host port; Edge remains live mount.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-405-character-lore.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-405.md",
+      "sha256": "3539483e5d03ab2a2fa58d704d76e63b01af40692a08482c31c1c57c800fc351"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-405.md",
+      "sha256": "3ea2714a681f0ed01c424d0ba43d01f4253696428067c1f2ba69be3020664d3a"
+    }
+  ]
+}

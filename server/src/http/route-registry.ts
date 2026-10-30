@@ -5,7 +5,22 @@
  * GATE-03 Variant B: Hono owns typed HTTP; Better Auth keeps `/api/auth/*`.
  * MIG-021 mounts authorized session-room join/resync on the Hono app.
  * Credentialed CORS + remote ping auth from MIG-014/015 hardening.
+ *
+ * MIG-414/#830: Edge `main` dispatcher isolated-contract lives in
+ * `./edge-main-dispatcher.ts` (re-exported below). Public `/functions/v1/*`
+ * host cutover stays unauthorized — live Edge `main` remains the mount.
  */
+export {
+  EDGE_MAIN_DISPATCHER_STATUS,
+  EDGE_MAIN_PUBLIC_ACTIVATION_AUTHORIZED,
+  EDGE_MAIN_WORKER_MEMORY_LIMIT_MB,
+  EDGE_MAIN_WORKER_TIMEOUT_MS,
+  describeEdgeMainLegacyDefects,
+  dispatchEdgeMainRequest,
+  isHostEdgeDispatcherAllowed,
+  resolveEdgeMainServiceName,
+  toEdgeMainWorkerPathname,
+} from './edge-main-dispatcher.ts';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { getRequestListener } from '@hono/node-server';
 import type { createHealthUseCase } from '../application/health/index.ts';

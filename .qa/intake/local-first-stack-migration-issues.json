@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 20,
-    "issuesBlockedOrNeedsDesign": 17,
+    "issuesReady": 18,
+    "issuesBlockedOrNeedsDesign": 13,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -9413,7 +9413,7 @@
       "title": "Port Edge Function `character-avatar-meshy` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-404",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-404.md",
       "dependsOn": [
@@ -9550,9 +9550,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-404.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "start creates provider task before DB insert; replay key uses prompt length rather than content hash. Equal-length changed input may collide and concurrent starts may orphan a paid provider task. Successor cutover requires an explicit tested idempotency/compensation decision; current worker is allowlisted.",
@@ -9592,7 +9593,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-046",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -9601,7 +9602,7 @@
       "title": "Port Edge Function `character-lore` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-405",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-405.md",
       "dependsOn": [
@@ -9727,9 +9728,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-405.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Reference-authorization denials currently use generic500, not403; preserve or explicitly revise this documented error behavior."
@@ -9766,7 +9768,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-047",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10191,7 +10193,7 @@
       "title": "Port Edge Function `item-model3d` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-409",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-409.md",
       "dependsOn": [
@@ -10347,9 +10349,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-409.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
@@ -10392,7 +10395,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-051",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -10401,7 +10404,7 @@
       "title": "Port Edge Function `item-thumbnail` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-410",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-410.md",
       "dependsOn": [
@@ -10549,9 +10552,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-410.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "Header-only body limit, paid create before insert, no status claim/idempotent materialization and several ignored PATCH statuses are observed source behavior; migration must make a tested decision for each.",
@@ -10592,7 +10596,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-052",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -11705,7 +11709,7 @@
       "title": "Port Edge Function `session-media-token` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-420",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-420.md",
       "dependsOn": [
@@ -11823,9 +11827,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-420.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "No explicit fetch timeout, no worker-wide exception normalization, no finite TTL guard; source verification does not approve those gaps."
@@ -11862,7 +11867,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-061",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -11871,7 +11876,7 @@
       "title": "Port Edge Function `session-recap` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-421",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-421.md",
       "dependsOn": [
@@ -11989,9 +11994,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-421.json",
       "verification": {
         "sourceStatus": "source-verified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -12026,7 +12032,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-062",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -12035,7 +12041,7 @@
       "title": "Port Edge Function `main` to Node host service/adapter",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-414",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-414.md",
       "dependsOn": [
@@ -12199,8 +12205,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-063",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -12735,7 +12740,7 @@
       "title": "Port infrastructure/character adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-302",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-302.md",
       "dependsOn": [
@@ -13144,8 +13149,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-068",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -13154,7 +13158,7 @@
       "title": "Port infrastructure/inventory adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-303",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-303.md",
       "dependsOn": [
@@ -13342,8 +13346,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-069",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -14628,7 +14631,7 @@
       "title": "Port infrastructure/session adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-311",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-311.md",
       "dependsOn": [
@@ -14956,8 +14959,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-077",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
