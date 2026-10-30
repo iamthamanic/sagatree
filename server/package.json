@@ -8,11 +8,12 @@
   },
   "scripts": {
     "start": "node --experimental-strip-types src/bootstrap/main.ts",
-    "self-test": "node --experimental-strip-types ../scripts/mig-010-host-skeleton.self-test.mjs && node --experimental-strip-types ../scripts/mig-011-sqlite-schema.self-test.mjs && node --experimental-strip-types ../scripts/mig-014-better-auth-host.self-test.mjs && node --experimental-strip-types ../scripts/mig-015-solo-local-identity.self-test.mjs && node --experimental-strip-types ../scripts/mig-020-http-transport.self-test.mjs"
+    "self-test": "node --experimental-strip-types ../scripts/mig-010-host-skeleton.self-test.mjs && node --experimental-strip-types ../scripts/mig-011-sqlite-schema.self-test.mjs && node --experimental-strip-types ../scripts/gate-01-drizzle-host-persistence.self-test.mjs && node --experimental-strip-types ../scripts/mig-014-better-auth-host.self-test.mjs && node --experimental-strip-types ../scripts/mig-015-solo-local-identity.self-test.mjs && node --experimental-strip-types ../scripts/mig-020-http-transport.self-test.mjs"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",
     "better-auth": "1.7.12",
+    "drizzle-orm": "1.0.0-rc.5",
     "hono": "^4.13.13"
   }
 }

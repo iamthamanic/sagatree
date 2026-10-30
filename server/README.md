@@ -71,8 +71,9 @@ Typed command/query routes under `/api/v1/sessions/:sessionId/*` (pipeline: vali
 
 Structured errors: `401` unauthenticated, `403` policy deny, `409` stale revision / idempotency conflict, `422` validation. Idempotent retries return the same application result without a second mutation. Full durable SessionRuntimeState is MIG-022; Colyseus rooms are MIG-021+.
 
-## Persistence (MIG-011)
+## Persistence (MIG-011 + GATE-01 follow-up #1043)
 
+- Runtime ORM: **Drizzle** (`drizzle-orm` / `node-sqlite`) on Node `node:sqlite` `DatabaseSync` — product adapters use `HostDatabase` (`prepare` bridge or query builder). Exceptions: [`docs/architecture/gate-01-drizzle-host-exceptions.md`](../docs/architecture/gate-01-drizzle-host-exceptions.md)
 - Driver: Node `node:sqlite` with GATE-04 PRAGMAs (`WAL`, `synchronous=FULL`, `busy_timeout=250`, `foreign_keys=ON`)
 - Upgrade exclusivity: SQLite `BEGIN IMMEDIATE` per migration step; `schema_version` re-read inside the transaction (no PID/file lock authority)
 - Legacy `schema-upgrade.lock`: **fail-closed** if present (may mean an old host is mid-upgrade). Never auto-deleted. Clear only via `clearLegacySchemaUpgradeLockAfterVerifiedStandstill({ oldHostVerifiedStopped: true })` after the old host is confirmed stopped

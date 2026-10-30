@@ -1,9 +1,11 @@
 /**
- * World insert/update/delete store for owned world rows (#873 / MIG-313).
+ * World insert/update/delete store via Drizzle (ADR-ST-05 / #1043).
  * Private — import only from world public API.
  * Location: server/src/modules/world/internal/world-write-store.ts
  */
+import { and, eq, inArray } from 'drizzle-orm';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+import { worlds, worldMaps } from '../../../persistence/schema/world.ts';
 
 export type WorldWriteStore = {
   readonly insertOwned: (input: {
@@ -26,34 +28,40 @@ export type WorldWriteStore = {
 };
 
 export function createSqliteWorldWriteStore(db: HostDatabase): WorldWriteStore {
+  const orm = db.orm;
   return {
     insertOwned(input) {
-      db.prepare(
-        `INSERT INTO worlds (id, owner_user_id, title, created_at) VALUES (?, ?, ?, ?)`,
-      ).run(input.id, input.ownerUserId, input.title, input.createdAt);
+      orm
+        .insert(worlds)
+        .values({
+          id: input.id,
+          ownerUserId: input.ownerUserId,
+          title: input.title,
+          createdAt: input.createdAt,
+        })
+        .run();
     },
     updateOwnedTitle(input) {
       const ids = input.ownerUserIds.filter((id) => typeof id === 'string' && id.length > 0);
       if (ids.length === 0) return 0;
-      const placeholders = ids.map(() => '?').join(', ');
-      const result = db
-        .prepare(
-          `UPDATE worlds SET title = ? WHERE id = ? AND owner_user_id IN (${placeholders})`,
-        )
-        .run(input.title, input.id, ...ids);
+      const result = orm
+        .update(worlds)
+        .set({ title: input.title })
+        .where(and(eq(worlds.id, input.id), inArray(worlds.ownerUserId, ids)))
+        .run();
       return Number(result.changes ?? 0);
     },
     deleteOwned(input) {
       const ids = input.ownerUserIds.filter((id) => typeof id === 'string' && id.length > 0);
       if (ids.length === 0) return 0;
-      const placeholders = ids.map(() => '?').join(', ');
-      const result = db
-        .prepare(`DELETE FROM worlds WHERE id = ? AND owner_user_id IN (${placeholders})`)
-        .run(input.id, ...ids);
+      const result = orm
+        .delete(worlds)
+        .where(and(eq(worlds.id, input.id), inArray(worlds.ownerUserId, ids)))
+        .run();
       return Number(result.changes ?? 0);
     },
     deleteWorldMapRow(worldId) {
-      db.prepare(`DELETE FROM world_maps WHERE world_id = ?`).run(worldId);
+      orm.delete(worldMaps).where(eq(worldMaps.worldId, worldId)).run();
     },
   };
 }
