@@ -5,6 +5,7 @@
  *
  * Acceptance tier: isolated-contract. Supabase facades stay live (no cutover).
  * Creator/VRM rendering utilities remain client-side under src/infrastructure/character.
+ * Also asserts soft-deleted PC + npc parent artifact seed/resolve DENY (Kodus coverage).
  */
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
