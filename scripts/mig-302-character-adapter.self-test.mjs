@@ -95,10 +95,29 @@ try {
   const characterId = draft.value.id;
   const publicId = draft.value.publicId;
 
+  const incompleteElevate = character.updateOwnedCharacter(owner, characterId, {
+    sheetStatus: 'complete',
+    name: 'Lyra Dawn',
+    sheet: { attributes: { dex: 16 }, notes: 'incomplete elevate' },
+  });
+  assert(
+    incompleteElevate.ok === false && incompleteElevate.error === 'incomplete-sheet',
+    'empty complete elevation DENY',
+  );
+
+  const completeSheet = {
+    class: 'Scout',
+    race: 'Elf',
+    profile: { origin: 'Nordlicht' },
+    attributes: { dex: 16 },
+    skills: { stealth: 2 },
+    notes: 'complete',
+  };
   const complete = character.updateOwnedCharacter(owner, characterId, {
     sheetStatus: 'complete',
     name: 'Lyra Dawn',
-    sheet: { attributes: { dex: 16 }, notes: 'complete' },
+    level: 2,
+    sheet: completeSheet,
   });
   assert(complete.ok, `update complete: ${complete.ok ? '' : complete.error}`);
   assert(complete.value.sheetStatus === 'complete', 'complete status');
@@ -188,6 +207,14 @@ try {
   const alive = character.createOwnedCharacter(owner, {
     name: 'Artifact PC',
     sheetStatus: 'complete',
+    level: 1,
+    sheet: {
+      class: 'Fighter',
+      race: 'Human',
+      profile: {},
+      attributes: { str: 12 },
+      skills: { athletics: 1 },
+    },
     portraitStoragePath: `${owner}/portraits/a.webp`,
   });
   assert(alive.ok, `alive create: ${alive.ok ? '' : alive.error}`);
@@ -197,6 +224,27 @@ try {
     storagePath: `${owner}/avatars/model.glb`,
   });
   assert(seededArt.ok, `seed artifact: ${seededArt.ok ? '' : seededArt.error}`);
+  const crossOwnerArt = character.seedArtifactForTests({
+    ownerUserId: owner,
+    characterId: alive.value.id,
+    storagePath: `${owner}/avatars/hijack.glb`,
+  });
+  // Path owner matches; now attempt stranger character id under owner path fails ownership.
+  const strangerPc = character.createOwnedCharacter(stranger, {
+    name: 'Stranger PC',
+    sheetStatus: 'draft',
+  });
+  assert(strangerPc.ok, 'stranger draft create');
+  const fkDeny = character.seedArtifactForTests({
+    ownerUserId: owner,
+    characterId: strangerPc.value.id,
+    storagePath: `${owner}/avatars/cross.glb`,
+  });
+  assert(
+    fkDeny.ok === false && fkDeny.error === 'foreign-character-owner',
+    'cross-owner artifact FK DENY',
+  );
+  assert(crossOwnerArt.ok, 'same-owner second artifact ok');
 
   const ownResolve = character.resolveOwnedArtifact(owner, `${owner}/avatars/model.glb`);
   assert(ownResolve.ok && ownResolve.value.characterId === alive.value.id, 'own artifact resolve');
@@ -246,8 +294,26 @@ try {
     const hostCreate = host.character.createOwnedCharacter('host-owner', {
       name: 'Host PC',
       sheetStatus: 'complete',
+      level: 1,
+      sheet: {
+        class: 'Mage',
+        race: 'Human',
+        profile: {},
+        attributes: { int: 14 },
+        skills: { arcana: 1 },
+      },
     });
     assert(hostCreate.ok, `host create: ${hostCreate.ok ? '' : hostCreate.error}`);
+    const deletedBind = host.character.deleteOwnedCharacter(
+      'host-owner',
+      hostCreate.value.id,
+    );
+    assert(deletedBind.ok, 'host soft-delete');
+    const membership = host.character.assertOwnedCompletePc(
+      'host-owner',
+      hostCreate.value.id,
+    );
+    assert(membership.ok === false, 'soft-deleted PC fails membership complete check');
   } finally {
     rmSync(hostWork, { recursive: true, force: true });
   }

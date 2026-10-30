@@ -68,6 +68,41 @@ function parseCharacterType(value: unknown): 'pc' | 'npc' | 'gm_presence' {
   return value === 'npc' || value === 'gm_presence' ? value : 'pc';
 }
 
+function stringField(
+  sheet: Readonly<Record<string, unknown>>,
+  keys: readonly string[],
+): string | null {
+  for (const key of keys) {
+    const value = sheet[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+/** Host parity with supabase/migrations/035_guard_sheet_status_complete.sql (sheet_json). */
+export function isCompleteSheetPayload(
+  name: string,
+  level: number,
+  sheet: Readonly<Record<string, unknown>>,
+): boolean {
+  if (!name.trim()) return false;
+  if (!Number.isFinite(level) || level < 1 || level > 20) return false;
+  if (!stringField(sheet, ['class', 'archetype', 'className'])) return false;
+  if (!stringField(sheet, ['race', 'species'])) return false;
+  const hasProfile = sheet.sagadrive_profile != null || sheet.profile != null;
+  const hasAttributes = sheet.attributes != null && typeof sheet.attributes === 'object';
+  const hasSkills = sheet.skills != null && typeof sheet.skills === 'object';
+  return Boolean(hasProfile && hasAttributes && hasSkills);
+}
+
+function parseSheetJson(raw: string | null | undefined): Record<string, unknown> {
+  try {
+    return asObject(JSON.parse(raw || '{}'));
+  } catch {
+    return {};
+  }
+}
+
 type CharacterRow = {
   id: string;
   public_id: string | null;
@@ -85,12 +120,7 @@ type CharacterRow = {
 };
 
 function mapRow(row: CharacterRow): CharacterSheetRecord {
-  let sheet: Record<string, unknown> = {};
-  try {
-    sheet = asObject(JSON.parse(row.sheet_json || '{}'));
-  } catch {
-    sheet = {};
-  }
+  const sheet = parseSheetJson(row.sheet_json);
   return {
     id: row.id,
     publicId: typeof row.public_id === 'string' && row.public_id ? row.public_id : row.id,
@@ -164,6 +194,9 @@ export class CharacterSheetStore {
     if (characterType !== 'pc') return { ok: false, error: 'pc-only' };
     const description = typeof draft.description === 'string' ? draft.description : '';
     const sheet = asObject(draft.sheet);
+    if (sheetStatus === 'complete' && !isCompleteSheetPayload(name, level, sheet)) {
+      return { ok: false, error: 'incomplete-sheet' };
+    }
     let portrait: string | null = null;
     if (draft.portraitStoragePath !== undefined && draft.portraitStoragePath !== null) {
       if (typeof draft.portraitStoragePath !== 'string') {
@@ -175,28 +208,39 @@ export class CharacterSheetStore {
     }
 
     const id = randomUUID();
-    const publicId = this.#uniquePublicId();
     const createdAt = nowIso();
-    this.#db
-      .prepare(
-        `INSERT INTO characters (
-           id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
-           updated_at, description, level, sheet_json, portrait_storage_path, deleted_at
-         ) VALUES (?, ?, 'pc', ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
-      )
-      .run(
-        id,
-        actorId,
-        sheetStatus,
-        name,
-        createdAt,
-        publicId,
-        createdAt,
-        description,
-        level,
-        JSON.stringify(sheet),
-        portrait,
-      );
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const publicId = this.#uniquePublicId();
+      this.#db
+        .prepare(
+          `INSERT INTO characters (
+             id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
+             updated_at, description, level, sheet_json, portrait_storage_path, deleted_at
+           ) VALUES (?, ?, 'pc', ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
+        )
+        .run(
+          id,
+          actorId,
+          sheetStatus,
+          name,
+          createdAt,
+          publicId,
+          createdAt,
+          description,
+          level,
+          JSON.stringify(sheet),
+          portrait,
+        );
+      this.#db.exec('COMMIT');
+    } catch {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: 'create-failed' };
+    }
     const created = this.getOwned(actorId, id);
     if (!created.ok || !created.value) return { ok: false, error: 'create-failed' };
     return { ok: true, value: created.value };
@@ -224,6 +268,9 @@ export class CharacterSheetStore {
     const sheetStatus = parseSheetStatus(draft.sheetStatus, existing.value.sheetStatus);
     const sheet =
       draft.sheet !== undefined ? asObject(draft.sheet) : { ...existing.value.sheet };
+    if (sheetStatus === 'complete' && !isCompleteSheetPayload(name, level, sheet)) {
+      return { ok: false, error: 'incomplete-sheet' };
+    }
 
     let portrait = existing.value.portraitStoragePath;
     if (draft.portraitStoragePath === null) {
@@ -299,9 +346,10 @@ export class CharacterSheetStore {
         publicId: row.public_id,
         slug: row.slug,
         displayName: row.display_name,
-        visibility: row.visibility === 'owner' ? 'owner' : 'public',
+        // Restrictive default: only explicit 'public' is public; unknown → owner.
+        visibility: row.visibility === 'public' ? 'public' : 'owner',
         ownerUserId: row.owner_user_id,
-        sheet: asObject(JSON.parse(row.sheet_json || '{}')),
+        sheet: parseSheetJson(row.sheet_json),
       })),
     };
   }
@@ -366,20 +414,31 @@ export class CharacterSheetStore {
   }): CharacterSheetResult<{ readonly id: string }> {
     const pathCheck = assertCharacterOwnerStoragePath(input.ownerUserId, input.storagePath);
     if (!pathCheck.ok) return pathCheck;
-    const id = randomUUID();
-    this.#db
+    const owned = this.#db
       .prepare(
-        `INSERT INTO character_avatar_artifacts
-           (id, character_id, owner_user_id, storage_path, kind, created_at)
-         VALUES (?, ?, ?, ?, 'artifact', ?)`,
+        `SELECT 1 AS o FROM characters
+         WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
       )
-      .run(
-        id,
-        input.characterId,
-        input.ownerUserId,
-        input.storagePath.trim().replace(/^\/+/, ''),
-        nowIso(),
-      );
+      .get(input.characterId, input.ownerUserId);
+    if (!owned) return { ok: false, error: 'foreign-character-owner' };
+    const id = randomUUID();
+    try {
+      this.#db
+        .prepare(
+          `INSERT INTO character_avatar_artifacts
+             (id, character_id, owner_user_id, storage_path, kind, created_at)
+           VALUES (?, ?, ?, ?, 'artifact', ?)`,
+        )
+        .run(
+          id,
+          input.characterId,
+          input.ownerUserId,
+          input.storagePath.trim().replace(/^\/+/, ''),
+          nowIso(),
+        );
+    } catch {
+      return { ok: false, error: 'create-failed' };
+    }
     return { ok: true, value: { id } };
   }
 
