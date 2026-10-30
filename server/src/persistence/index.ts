@@ -4,7 +4,15 @@
  */
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openHostDatabase, foreignKeysEnabled, isSqliteBusyError, type HostDatabase } from './open-database.ts';
+import {
+  openHostDatabase,
+  foreignKeysEnabled,
+  isSqliteBusyError,
+  createHostDatabase,
+  unwrapSqliteClient,
+  isHostDatabase,
+  type HostDatabase,
+} from './open-database.ts';
 import {
   runMigrations,
   listMigrationFiles,
@@ -23,11 +31,16 @@ import {
 } from './integrity-check.ts';
 import { TABLE_OWNERSHIP, assertUniqueTableOwnership, owningModuleForTable } from './table-ownership.ts';
 import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
+import { hostSchema } from './schema/index.ts';
 
 export {
   openHostDatabase,
   foreignKeysEnabled,
   isSqliteBusyError,
+  createHostDatabase,
+  unwrapSqliteClient,
+  isHostDatabase,
+  hostSchema,
   runMigrations,
   listMigrationFiles,
   readMigrationFailure,

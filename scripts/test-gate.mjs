@@ -440,6 +440,18 @@ function checkMig012WorldReadPort() {
   );
 }
 
+function checkGate01DrizzleHostPersistence() {
+  console.log('GATE-01 follow-up (#1043): Drizzle host persistence runtime + parity self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/gate-01-drizzle-host-persistence.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig014BetterAuthHost() {
   console.log('MIG-014 Better Auth host accounts (#793): cookie profile + HTTP/WS self-test...');
   execFileSync(
@@ -3300,6 +3312,7 @@ checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();
 checkMig012WorldReadPort();
+checkGate01DrizzleHostPersistence();
 checkMig014BetterAuthHost();
 checkMig015SoloLocalIdentity();
 checkEccMergeGateUnit();

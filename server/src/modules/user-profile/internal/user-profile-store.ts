@@ -15,10 +15,24 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function errorMessageChain(err: unknown): string {
+  const parts: string[] = [];
+  let current: unknown = err;
+  let depth = 0;
+  while (current && typeof current === 'object' && depth < 4) {
+    if ('message' in current && (current as { message?: unknown }).message != null) {
+      parts.push(String((current as { message?: unknown }).message));
+    }
+    current = 'cause' in current ? (current as { cause?: unknown }).cause : undefined;
+    depth += 1;
+  }
+  return parts.join('\n');
+}
+
 function isUniqueConstraint(err: unknown): boolean {
   if (!err || typeof err !== 'object') return false;
   const code = 'code' in err ? String((err as { code?: unknown }).code ?? '') : '';
-  const message = 'message' in err ? String((err as { message?: unknown }).message ?? '') : '';
+  const message = errorMessageChain(err);
   return (
     code === 'SQLITE_CONSTRAINT_PRIMARYKEY' ||
     code === 'SQLITE_CONSTRAINT_UNIQUE' ||

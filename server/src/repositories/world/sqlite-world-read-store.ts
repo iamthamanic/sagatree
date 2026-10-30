@@ -1,45 +1,57 @@
 /**
- * SQLite adapter for world read store (MIG-012).
+ * Drizzle adapter for world read store (MIG-012 / #1043 GATE-01 follow-up).
  * Location: server/src/repositories/world/sqlite-world-read-store.ts
  *
  * Wired only from the host composition root — not imported by other modules.
+ * Executes through Drizzle query builder inside the persistence session.
  */
+import { desc, asc, eq } from 'drizzle-orm';
 import type { HostDatabase } from '../../persistence/open-database.ts';
+import { worlds } from '../../persistence/schema/world.ts';
 import type { WorldReadStore, WorldStoredRow } from '../../modules/world/index.ts';
 
-type WorldsSqlRow = {
+function mapRow(row: {
   id: string;
-  owner_user_id: string;
+  ownerUserId: string;
   title: string;
-  created_at: string;
-};
-
-function mapRow(row: WorldsSqlRow): WorldStoredRow {
+  createdAt: string;
+}): WorldStoredRow {
   return {
     id: row.id,
-    ownerUserId: row.owner_user_id,
+    ownerUserId: row.ownerUserId,
     title: row.title,
-    createdAt: row.created_at,
+    createdAt: row.createdAt,
   };
 }
 
 export function createSqliteWorldReadStore(db: HostDatabase): WorldReadStore {
+  const orm = db.orm;
   return {
     listByOwner(ownerUserId: string): readonly WorldStoredRow[] {
-      const rows = db
-        .prepare(
-          `SELECT id, owner_user_id, title, created_at
-           FROM worlds
-           WHERE owner_user_id = ?
-           ORDER BY created_at DESC, id ASC`,
-        )
-        .all(ownerUserId) as WorldsSqlRow[];
+      const rows = orm
+        .select({
+          id: worlds.id,
+          ownerUserId: worlds.ownerUserId,
+          title: worlds.title,
+          createdAt: worlds.createdAt,
+        })
+        .from(worlds)
+        .where(eq(worlds.ownerUserId, ownerUserId))
+        .orderBy(desc(worlds.createdAt), asc(worlds.id))
+        .all();
       return rows.map(mapRow);
     },
     findById(worldId: string): WorldStoredRow | null {
-      const row = db
-        .prepare(`SELECT id, owner_user_id, title, created_at FROM worlds WHERE id = ?`)
-        .get(worldId) as WorldsSqlRow | undefined;
+      const row = orm
+        .select({
+          id: worlds.id,
+          ownerUserId: worlds.ownerUserId,
+          title: worlds.title,
+          createdAt: worlds.createdAt,
+        })
+        .from(worlds)
+        .where(eq(worlds.id, worldId))
+        .get();
       return row ? mapRow(row) : null;
     },
   };

@@ -1,5 +1,5 @@
 /**
- * Open host SQLite with GATE-04 PRAGMAs and foreign_keys=ON on every connection.
+ * Open host SQLite with GATE-04 PRAGMAs and wrap in Drizzle HostDatabase (#1043).
  * Location: server/src/persistence/open-database.ts
  *
  * Schema-upgrade exclusivity lives in migration-runner via BEGIN IMMEDIATE
@@ -7,25 +7,28 @@
  */
 import { DatabaseSync } from 'node:sqlite';
 import { SQLITE_HOST_POLICY } from './sqlite-policy.ts';
+import { createHostDatabase, type HostDatabase } from './host-drizzle.ts';
 
-export type HostDatabase = DatabaseSync;
+export type { HostDatabase };
+export { createHostDatabase, unwrapSqliteClient, isHostDatabase } from './host-drizzle.ts';
+export type { HostDrizzle, HostStatement, HostStatementResult } from './host-drizzle.ts';
 
 export type OpenDatabaseResult =
   | { ok: true; db: HostDatabase }
   | { ok: false; error: string; code: 'OPEN' };
 
-function applyPragmas(db: HostDatabase): void {
-  db.exec(`PRAGMA busy_timeout=${SQLITE_HOST_POLICY.busyTimeoutMs}`);
-  db.exec('PRAGMA foreign_keys=ON');
-  db.exec(`PRAGMA journal_mode=${SQLITE_HOST_POLICY.journalMode}`);
-  db.exec(`PRAGMA synchronous=${SQLITE_HOST_POLICY.synchronous}`);
+function applyPragmas(client: DatabaseSync): void {
+  client.exec(`PRAGMA busy_timeout=${SQLITE_HOST_POLICY.busyTimeoutMs}`);
+  client.exec('PRAGMA foreign_keys=ON');
+  client.exec(`PRAGMA journal_mode=${SQLITE_HOST_POLICY.journalMode}`);
+  client.exec(`PRAGMA synchronous=${SQLITE_HOST_POLICY.synchronous}`);
 }
 
 export function openHostDatabase(dbPath: string): OpenDatabaseResult {
   try {
-    const db = new DatabaseSync(dbPath);
-    applyPragmas(db);
-    return { ok: true, db };
+    const client = new DatabaseSync(dbPath);
+    applyPragmas(client);
+    return { ok: true, db: createHostDatabase(client) };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'failed to open database';
     return {
@@ -36,8 +39,9 @@ export function openHostDatabase(dbPath: string): OpenDatabaseResult {
   }
 }
 
-export function foreignKeysEnabled(db: HostDatabase): boolean {
-  const row = db.prepare('PRAGMA foreign_keys').get() as { foreign_keys: number } | undefined;
+export function foreignKeysEnabled(db: HostDatabase | DatabaseSync): boolean {
+  const client = db instanceof DatabaseSync ? db : db.$client;
+  const row = client.prepare('PRAGMA foreign_keys').get() as { foreign_keys: number } | undefined;
   return row?.foreign_keys === 1;
 }
 
@@ -47,6 +51,7 @@ export function isSqliteBusyError(err: unknown): boolean {
   const code = 'code' in err ? String((err as { code: unknown }).code) : '';
   const message = err instanceof Error ? err.message : String(err);
   return (
-    code === 'ERR_SQLITE_ERROR' && /SQLITE_BUSY|database is locked|locked/i.test(message)
-  ) || /SQLITE_BUSY|database is locked/i.test(message);
+    (code === 'ERR_SQLITE_ERROR' && /SQLITE_BUSY|database is locked|locked/i.test(message)) ||
+    /SQLITE_BUSY|database is locked/i.test(message)
+  );
 }
