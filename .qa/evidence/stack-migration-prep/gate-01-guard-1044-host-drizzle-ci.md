@@ -8,7 +8,8 @@
 ## Proof
 
 - Live repo boundary check PASS with #1043 HostDatabase wiring
-- Self-test negatives: application drizzle, api node:sqlite, public module drizzle, domain re-export, missing drizzle-orm dep
+- Self-test (inline fixture policy mirroring live allowlist shapes): application drizzle, api node:sqlite, modules/*/persistence PASS, exact node:sqlite sibling FAIL, commented-out import ignored, missing server/src → violation (not throw), missing policy / comment-only proof tokens
+- Composition: tooling/docs-only range is auto-SKIPPED by `scripts/composition-gate.mjs` (no hand-maintained `.qa/runs` record)
 
 ## Fold into later gates (SoT only)
 
