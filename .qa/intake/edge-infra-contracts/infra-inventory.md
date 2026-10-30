@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `7bca19bc4336280727a7f0d284397338cb1062e633b3128d3924d476f1f6ef42`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `6957aef74dd23f01ffe1eb08334f60b5e4f88c64545d755522fd13ddbb9c0c07`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -364,6 +364,111 @@ supabase
 Enclosing operation: `src/infrastructure/inventory/supabase-item-catalog.repository.ts:427`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
+
+### src/infrastructure/inventory/host-inventory-adapter.ts:10
+
+```ts
+export type HostInventoryAdapter = HostInventoryPorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_INVENTORY_OPS;
+};
+```
+
+### src/infrastructure/inventory/host-inventory-adapter.ts:15
+
+```ts
+export function createHostInventoryAdapter(ports: HostInventoryPorts): HostInventoryAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_INVENTORY_OPS,
+    getOwnedInventory: (actorId, characterId) => ports.getOwnedInventory(actorId, characterId),
+    putOwnedInventory: (actorId, characterId, inventory) =>
+      ports.putOwnedInventory(actorId, characterId, inventory),
+    listCatalog: (actorId, options) => ports.listCatalog(actorId, options),
+    createDefinition: (actorId, draft) => ports.createDefinition(actorId, draft),
+  };
+}
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:9
+
+```ts
+export type HostInventoryResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:13
+
+```ts
+export type HostInventoryStateRecord = {
+  readonly characterId: string;
+  readonly schemaVersion: number;
+  readonly inventory: Readonly<Record<string, unknown>>;
+  readonly updatedAt: string;
+};
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:20
+
+```ts
+export type HostInventoryDefinitionRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly origin: 'standard' | 'personal' | 'world';
+  readonly ownerUserId: string | null;
+  readonly worldProfileId: string | null;
+  readonly status: 'active' | 'archived';
+  readonly name: string;
+  readonly payload: Readonly<Record<string, unknown>>;
+};
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:31
+
+```ts
+export type HostInventoryDefinitionDraft = {
+  readonly name?: unknown;
+  readonly origin?: unknown;
+  readonly worldProfileId?: unknown;
+  readonly payload?: unknown;
+};
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:38
+
+```ts
+export type HostInventoryPorts = {
+  readonly getOwnedInventory: (
+    actorId: string,
+    characterId: string,
+  ) => Promise<HostInventoryResult<HostInventoryStateRecord | null>>;
+  readonly putOwnedInventory: (
+    actorId: string,
+    characterId: string,
+    inventory: unknown,
+  ) => Promise<HostInventoryResult<HostInventoryStateRecord>>;
+  readonly listCatalog: (
+    actorId: string,
+    options?: { readonly worldProfileId?: string | null; readonly query?: string },
+  ) => Promise<HostInventoryResult<readonly HostInventoryDefinitionRecord[]>>;
+  readonly createDefinition: (
+    actorId: string,
+    draft: HostInventoryDefinitionDraft,
+  ) => Promise<HostInventoryResult<HostInventoryDefinitionRecord>>;
+};
+```
+
+### src/infrastructure/inventory/host-inventory-ports.contract.ts:58
+
+```ts
+export const HOST_INVENTORY_OPS = [
+  'getOwnedInventory',
+  'putOwnedInventory',
+  'listCatalog',
+  'createDefinition',
+] as const;
+```
 
 ### src/infrastructure/inventory/inventory-persistence.ts:38
 
@@ -1561,6 +1666,8 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
+| `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
+| `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
 | `src/infrastructure/inventory/item-catalog-service.ts` | `f016e6e0f08fcf78532a97df16224280f8e052fa6870744e41a7002d9fd0f723` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
