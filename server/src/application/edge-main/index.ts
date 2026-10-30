@@ -12,6 +12,7 @@ import {
   EDGE_MAIN_WORKER_TIMEOUT_MS,
   describeEdgeMainLegacyDefects,
   dispatchEdgeMainRequest,
+  evaluatePostDispatcherWorkerAuth,
   type EdgeMainDispatchResult,
   type EdgeMainEnv,
 } from '../../http/edge-main-dispatcher.ts';
@@ -22,6 +23,7 @@ export {
   EDGE_MAIN_WORKER_MEMORY_LIMIT_MB,
   EDGE_MAIN_WORKER_TIMEOUT_MS,
   describeEdgeMainLegacyDefects,
+  evaluatePostDispatcherWorkerAuth,
 };
 
 export type EdgeMainUseCaseDeps = {
@@ -49,14 +51,19 @@ export function createEdgeMainUseCases(deps: EdgeMainUseCaseDeps = {}) {
     dispatch: async (input: {
       readonly method: string;
       readonly pathname: string;
+      readonly search?: string;
+      readonly body?: unknown;
       readonly authorization?: string | null;
     }): Promise<EdgeMainDispatchResult> =>
       dispatchEdgeMainRequest({
         method: input.method,
         pathname: input.pathname,
+        search: input.search,
+        body: input.body,
         authorization: input.authorization,
         env,
       }),
+    workerAuth: evaluatePostDispatcherWorkerAuth,
   };
 }
 

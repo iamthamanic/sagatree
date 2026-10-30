@@ -51,6 +51,7 @@ const {
   HOST_EDGE_DISPATCHER_ALLOWLIST,
   describeEdgeMainLegacyDefects,
   dispatchEdgeMainRequest,
+  evaluatePostDispatcherWorkerAuth,
   isHostEdgeDispatcherAllowed,
   isJwtVerificationEnabled,
   resolveEdgeMainServiceName,
@@ -124,18 +125,23 @@ for (const method of ['GET', 'POST', 'OPTIONS']) {
   }
 }
 
-// Fall 2: both URL prefixes reach same allowlisted worker with intact suffix
+// Fall 2: both URL prefixes reach same allowlisted worker with intact suffix/query/method/body
 const token = signHs256({ role: 'anon', exp: Math.floor(Date.now() / 1000) + 3600 }, SECRET);
+const forwardBody = { ping: 'mig-414', n: 1 };
 for (const name of HOST_EDGE_DISPATCHER_ALLOWLIST) {
   const a = await dispatchEdgeMainRequest({
-    method: 'POST',
+    method: 'PUT',
     pathname: `/functions/v1/${name}/nested/path`,
+    search: '?keep=1&x=y',
+    body: forwardBody,
     authorization: `Bearer ${token}`,
     env,
   });
   const b = await dispatchEdgeMainRequest({
-    method: 'POST',
+    method: 'PUT',
     pathname: `/${name}/nested/path`,
+    search: '?keep=1&x=y',
+    body: forwardBody,
     authorization: `Bearer ${token}`,
     env,
   });
@@ -146,13 +152,16 @@ for (const name of HOST_EDGE_DISPATCHER_ALLOWLIST) {
       b.workerPathname === `/functions/v1/${name}/nested/path`,
     `${name} suffix preserved`,
   );
+  assert(a.method === 'PUT' && b.method === 'PUT', `${name} method forwarded`);
+  assert(a.search === '?keep=1&x=y' && b.search === '?keep=1&x=y', `${name} query forwarded`);
+  assert(a.bodyForwarded === true && b.bodyForwarded === true, `${name} body forwarded`);
   assert(a.wouldCreateWorker === false && b.wouldCreateWorker === false, 'no worker create');
   assert(a.memoryLimitMb === 512 && a.workerTimeoutMs === 300_000, 'resource limits');
 }
 
 assert(resolveEdgeMainServiceName('/functions/v1/session-recap/x') === 'session-recap');
 assert(resolveEdgeMainServiceName('/session-recap/x') === 'session-recap');
-assert(toEdgeMainWorkerPathname('/session-recap/a?b=1'.split('?')[0], 'session-recap') === '/functions/v1/session-recap/a');
+assert(toEdgeMainWorkerPathname('/session-recap/a', 'session-recap') === '/functions/v1/session-recap/a');
 assert(resolveEdgeMainServiceName('/') === null);
 
 // Fall 3: JWT gate
@@ -219,9 +228,14 @@ assert(resolveEdgeMainServiceName('/') === null);
 
 // Fall 4: JWT gate acceptance alone never grants end-user authorization
 {
-  const anon = signHs256({ role: 'anon', roleClaim: 'service_role' }, SECRET);
-  const service = signHs256({ role: 'service_role' }, SECRET);
-  for (const jwt of [anon, service]) {
+  const anonPayload = { role: 'anon', roleClaim: 'service_role' };
+  const servicePayload = { role: 'service_role' };
+  const anon = signHs256(anonPayload, SECRET);
+  const service = signHs256(servicePayload, SECRET);
+  for (const [jwt, payload] of [
+    [anon, anonPayload],
+    [service, servicePayload],
+  ]) {
     const result = await dispatchEdgeMainRequest({
       method: 'POST',
       pathname: '/functions/v1/character-lore',
@@ -230,7 +244,17 @@ assert(resolveEdgeMainServiceName('/') === null);
     });
     assert(result.ok === true, 'dispatcher JWT ok');
     assert(result.wouldCreateWorker === false, 'worker auth still required / no create');
+    const worker = evaluatePostDispatcherWorkerAuth({ jwtPayload: payload });
+    assert(worker.ok === false && worker.status === 403, 'worker denies anon/service_role');
   }
+  const missingSub = evaluatePostDispatcherWorkerAuth({
+    jwtPayload: { role: 'authenticated' },
+  });
+  assert(missingSub.ok === false && missingSub.status === 401, 'worker requires sub');
+  const owner = evaluatePostDispatcherWorkerAuth({
+    jwtPayload: { role: 'authenticated', sub: 'user-owner-1' },
+  });
+  assert(owner.ok === true && owner.userId === 'user-owner-1', 'worker accepts end-user sub');
 }
 
 // Fall 5 + legacy regression: resource limits + raw 500 message

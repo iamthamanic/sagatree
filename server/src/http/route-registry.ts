@@ -17,6 +17,7 @@ export {
   EDGE_MAIN_WORKER_TIMEOUT_MS,
   describeEdgeMainLegacyDefects,
   dispatchEdgeMainRequest,
+  evaluatePostDispatcherWorkerAuth,
   isHostEdgeDispatcherAllowed,
   resolveEdgeMainServiceName,
   toEdgeMainWorkerPathname,

@@ -1044,6 +1044,18 @@ function checkMig409ItemModel3d() {
   );
 }
 
+function checkMig414EdgeMain() {
+  console.log('MIG-414 (#830): edge main dispatcher host isolated-contract fixtures...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-414-edge-main.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig410ItemThumbnail() {
   console.log('MIG-410 (#826): item-thumbnail host isolated-contract fixtures...');
   execFileSync(
@@ -3372,6 +3384,7 @@ checkMig404CharacterAvatarMeshy();
 checkMig405CharacterLore();
 checkMig409ItemModel3d();
 checkMig410ItemThumbnail();
+checkMig414EdgeMain();
 checkMig502ExportImportBundles();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();

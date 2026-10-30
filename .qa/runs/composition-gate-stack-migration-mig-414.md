@@ -1,15 +1,33 @@
-# Composition Gate — stack-migration-mig-414
+# Composition Gate — stack-migration-mig-414 (#830)
 
-- HEAD_SHA: 212d9f355c7b664ce077cf7915c1f2d3a62f4415
-- Feature: stack-migration-mig-414
-- Issue: #830 / MIG-414
+- HEAD_SHA: PLACEHOLDER_HEAD
+- BASE_SHA: 25047a21fa959b1d7d000c133f4e19d3bdcde662
+- Date: 2026-10-30
 - Verdict: CLEAR
-- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
-## Intent
+## Event
+
 Host gains isolated Edge `main` dispatcher resolve/allowlist/JWT-gate use-cases while Edge `main` remains the live mount. Public activation stays false; no production cutover.
 
-## Composition
-1. Resolve: `/functions/v1/<name>/suffix` and `/<name>/suffix` → same worker pathname
-2. Authorize: deny unmounted/main/_shared/unknown/traversal with 404 BEFORE JWT; JWT HS256 gate for allowlisted non-OPTIONS
-3. Isolate: wouldCreateWorker stays false until activation authorized; 512MiB / 300s limits recorded
+## Hop chain
+
+1. Producer: Host HTTP `dispatchEdgeMainRequest` + `createEdgeMainUseCases` (pathname/method/search/body + JWT gate)
+2. Authorize: Deny unmounted/main/_shared/unknown/traversal with 404 BEFORE JWT; HS256 JWT gate for allowlisted non-OPTIONS; `evaluatePostDispatcherWorkerAuth` still denies anon/service_role
+3. Persist: No durable writes; wouldCreateWorker stays false; 512MiB / 300s limits recorded only
+4. Consumer: Self-test fixtures + `npm run test-gate` registration; production clients still use Edge until RELEASE APPROVED
+
+## Simulations
+
+### N-actors
+Fifteen unmounted workers plus main/_shared/unknown/traversal → 404 for GET/POST/OPTIONS before JWT; each allowlisted name reachable via both URL prefixes with identical worker pathname.
+
+### Invalid/missing
+Missing function name → 400; missing/wrong/expired/HS512 JWT → 401; missing JWT_SECRET → 500; VERIFY_JWT default on; OPTIONS skip JWT for allowlisted.
+
+### Two consumers / crash
+Dispatcher acceptance of anon/service_role JWT does not create a worker; worker-auth port denies those roles; concurrent dispatch calls stay activation=false and Edge allowlist unchanged.
+
+## Flags
+
+- Acceptance tier: isolated-contract
+- Deferred integration: authorized host HTTP + MIG-600/#845 + MIG-602/#847

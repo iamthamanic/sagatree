@@ -52,6 +52,12 @@ export type EdgeMainDispatchOk = {
   readonly ok: true;
   readonly serviceName: string;
   readonly workerPathname: string;
+  /** Forwarded HTTP method (Edge forwards unchanged). */
+  readonly method: string;
+  /** Forwarded URL search including `?` (empty string when absent). */
+  readonly search: string;
+  /** True when a body reference was supplied for unchanged worker forward. */
+  readonly bodyForwarded: boolean;
   readonly memoryLimitMb: typeof EDGE_MAIN_WORKER_MEMORY_LIMIT_MB;
   readonly workerTimeoutMs: typeof EDGE_MAIN_WORKER_TIMEOUT_MS;
   /** Isolated-contract: would create worker only after activation authorization. */
@@ -210,16 +216,50 @@ export function toEdgeMainWorkerPathname(pathname: string, serviceName: string):
 }
 
 /**
+ * Worker-side account authentication after dispatcher JWT acceptance.
+ * Anon / service_role / missing `sub` never become an owner actor — Edge workers
+ * still authenticate the end-user separately (acceptance Fall 4).
+ */
+export function evaluatePostDispatcherWorkerAuth(input: {
+  readonly jwtPayload: { readonly role?: unknown; readonly sub?: unknown } | null;
+}):
+  | { readonly ok: true; readonly userId: string }
+  | { readonly ok: false; readonly status: 401 | 403; readonly error: string } {
+  const payload = input.jwtPayload;
+  if (!payload || typeof payload !== 'object') {
+    return { ok: false, status: 401, error: 'worker auth requires end-user identity' };
+  }
+  const role = typeof payload.role === 'string' ? payload.role.trim() : '';
+  if (role === 'anon' || role === 'service_role') {
+    return {
+      ok: false,
+      status: 403,
+      error: 'dispatcher JWT role is not end-user authorization',
+    };
+  }
+  const sub = typeof payload.sub === 'string' ? payload.sub.trim() : '';
+  if (!sub) {
+    return { ok: false, status: 401, error: 'worker auth requires end-user sub' };
+  }
+  return { ok: true, userId: sub };
+}
+
+/**
  * Pure dispatch decision. Allowed + JWT-ok → wouldCreateWorker:false while activation is denied.
  * Catch path preserves raw Error.message in 500 body (legacy defect characterization).
  */
 export async function dispatchEdgeMainRequest(input: {
   readonly method: string;
   readonly pathname: string;
+  /** URL search including leading `?`, or empty. */
+  readonly search?: string;
+  /** Opaque body reference; presence is forwarded, contents not inspected here. */
+  readonly body?: unknown;
   readonly authorization?: string | null;
   readonly env: EdgeMainEnv;
 }): Promise<EdgeMainDispatchResult> {
   try {
+    const method = (input.method || 'GET').toUpperCase();
     const serviceName = resolveEdgeMainServiceName(input.pathname);
     if (!serviceName) {
       return { ok: false, status: 400, body: { error: 'missing function name' } };
@@ -231,16 +271,26 @@ export async function dispatchEdgeMainRequest(input: {
     }
 
     const jwtDenied = await gateEdgeMainJwt(
-      input.method,
+      method,
       input.authorization ?? null,
       input.env,
     );
     if (jwtDenied) return jwtDenied;
 
+    const search =
+      typeof input.search === 'string' && input.search.length > 0
+        ? input.search.startsWith('?')
+          ? input.search
+          : `?${input.search}`
+        : '';
+
     return {
       ok: true,
       serviceName,
       workerPathname: toEdgeMainWorkerPathname(input.pathname, serviceName),
+      method,
+      search,
+      bodyForwarded: input.body !== undefined,
       memoryLimitMb: EDGE_MAIN_WORKER_MEMORY_LIMIT_MB,
       workerTimeoutMs: EDGE_MAIN_WORKER_TIMEOUT_MS,
       wouldCreateWorker: false,
