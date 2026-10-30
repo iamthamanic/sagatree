@@ -262,6 +262,57 @@ try {
     'missing artifact not-found',
   );
 
+  // Soft-deleted PC: resolve hides artifacts (parity with seedArtifact deleted_at guard).
+  const softDel = character.deleteOwnedCharacter(owner, alive.value.id);
+  assert(softDel.ok, 'soft-delete artifact PC');
+  const softResolve = character.resolveOwnedArtifact(owner, `${owner}/avatars/model.glb`);
+  assert(
+    softResolve.ok === false && softResolve.error === 'not-found',
+    'soft-deleted PC artifact resolve DENY',
+  );
+  const softReseed = character.seedArtifactForTests({
+    ownerUserId: owner,
+    characterId: alive.value.id,
+    storagePath: `${owner}/avatars/after-delete.glb`,
+  });
+  assert(
+    softReseed.ok === false && softReseed.error === 'foreign-character-owner',
+    'soft-deleted PC seedArtifact DENY',
+  );
+
+  // NPC parent: sheet ports are PC-only — artifact seed/resolve must not bind npc rows.
+  const npcId = 'npc-artifact-parent';
+  boot.db
+    .prepare(
+      `INSERT INTO characters (
+         id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
+         updated_at, description, level, sheet_json, portrait_storage_path, deleted_at
+       ) VALUES (?, ?, 'npc', 'complete', 'NPC Prop', ?, 'CH-NPCART1', ?, '', 1, '{}', NULL, NULL)`,
+    )
+    .run(npcId, owner, new Date().toISOString(), new Date().toISOString());
+  const npcSeed = character.seedArtifactForTests({
+    ownerUserId: owner,
+    characterId: npcId,
+    storagePath: `${owner}/avatars/npc.glb`,
+  });
+  assert(
+    npcSeed.ok === false && npcSeed.error === 'foreign-character-owner',
+    'npc parent seedArtifact DENY',
+  );
+  // Bypass port to plant a legacy artifact row, then confirm resolve still hides npc parents.
+  boot.db
+    .prepare(
+      `INSERT INTO character_avatar_artifacts
+         (id, character_id, owner_user_id, storage_path, kind, created_at)
+       VALUES ('art-npc-1', ?, ?, ?, 'artifact', ?)`,
+    )
+    .run(npcId, owner, `${owner}/avatars/npc-legacy.glb`, new Date().toISOString());
+  const npcResolve = character.resolveOwnedArtifact(owner, `${owner}/avatars/npc-legacy.glb`);
+  assert(
+    npcResolve.ok === false && npcResolve.error === 'not-found',
+    'npc parent artifact resolve DENY',
+  );
+
   // Dual-path adapter seam
   const bound = createHostCharacterAdapter({
     listOwnedCharacters: async (actorId) => character.listOwnedCharacters(actorId),
