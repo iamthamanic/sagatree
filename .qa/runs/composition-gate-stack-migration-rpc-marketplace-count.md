@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-rpc-marketplace-count (#878)
 
-- HEAD_SHA: b89eaae09c551c23bffbab408741bba4affc540b
+- HEAD_SHA: 2f0d742ed321c6737736a43b302b5e450c1bc555
 - BASE_SHA: 655a207a9f62eabdc2423417edf8dd79cdc7add3
 - Date: 2026-10-30
 - Verdict: CLEAR
