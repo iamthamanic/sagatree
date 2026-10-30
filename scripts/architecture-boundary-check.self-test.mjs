@@ -21,6 +21,7 @@ import {
   resolveRelativeImport,
   resolveServerImport,
   runArchitectureBoundaryCheck,
+  stripJsComments,
 } from './architecture-boundary-check.mjs';
 import { mkdirSync, mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -552,6 +553,53 @@ assert(
   commentOnly.some((v) => /missing required import: drizzle-orm\/node-sqlite/.test(v.rule)),
   `comment-only proof token must FAIL, got ${JSON.stringify(commentOnly)}`,
 );
+
+// Literal-preserving strip: '//' / '/**' must not truncate proof imports.
+assert(
+  stripJsComments("const sep = '//';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\n").includes(
+    "from 'drizzle-orm/node-sqlite'",
+  ),
+  'stripJsComments must preserve imports after // inside a string',
+);
+assert(
+  stripJsComments("const glob = 'src/**/*.ts';\nexport function createHostDatabase() {}\n").includes(
+    'export function createHostDatabase',
+  ),
+  'stripJsComments must preserve exports after /* inside a string',
+);
+
+writeFx(
+  'server/src/persistence/host-drizzle.ts',
+  "const sep = '//';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return drizzle; }\n",
+);
+const stringLiteralOk = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  stringLiteralOk.length === 0,
+  `host-drizzle with // inside string must PASS proof, got ${JSON.stringify(stringLiteralOk)}`,
+);
+
+// Missing server/src must return violations (not throw ENOENT).
+const noSrcFx = mkdtempSync(join(tmpdir(), 'drizzle-no-src-'));
+mkdirSync(join(noSrcFx, '.qa/architecture'), { recursive: true });
+writeFileSync(join(noSrcFx, '.qa/architecture/host-drizzle-exceptions.json'), policy);
+mkdirSync(join(noSrcFx, 'server'), { recursive: true });
+writeFileSync(
+  join(noSrcFx, 'server/package.json'),
+  JSON.stringify({ name: '@sagatree/host-fixture', dependencies: { 'drizzle-orm': '1.0.0-rc.5' } }, null, 2),
+);
+let noSrcResult;
+let noSrcThrew = null;
+try {
+  noSrcResult = checkHostDrizzlePersistenceBoundaries(noSrcFx);
+} catch (err) {
+  noSrcThrew = err;
+}
+assert(noSrcThrew === null, `missing server/src must not throw, got ${noSrcThrew}`);
+assert(
+  Array.isArray(noSrcResult) && noSrcResult.some((v) => /missing HostDatabase Drizzle module/.test(v.rule)),
+  `missing server/src must report HostDatabase violation, got ${JSON.stringify(noSrcResult)}`,
+);
+rmSync(noSrcFx, { recursive: true, force: true });
 
 rmSync(drizzleFx, { recursive: true, force: true });
 

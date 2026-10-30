@@ -101,6 +101,7 @@ const CHARACTER_SLICE_PUBLIC = {
 };
 
 export function walkFiles(dir, acc = []) {
+  if (!existsSync(dir)) return acc;
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     const stat = statSync(full);
@@ -135,11 +136,110 @@ export function extractImportPaths(content) {
   return [...paths];
 }
 
-/** Strip // and /* *\/ comments so proof tokens cannot hide in comments. */
+/**
+ * Strip // and /* *\/ comments without mutating string / template / regex literals.
+ * Used so proof tokens cannot hide in comments, while literals like '//' or '/**' stay intact.
+ */
 export function stripJsComments(source) {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+  let out = '';
+  let i = 0;
+  let state = 'code';
+  let quote = '';
+  while (i < source.length) {
+    const ch = source[i];
+    const next = source[i + 1];
+
+    if (state === 'line-comment') {
+      if (ch === '\n') {
+        state = 'code';
+        out += ch;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (state === 'block-comment') {
+      if (ch === '*' && next === '/') {
+        state = 'code';
+        i += 2;
+        continue;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (state === 'string') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === quote) state = 'code';
+      i += 1;
+      continue;
+    }
+
+    if (state === 'template') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === '`') state = 'code';
+      i += 1;
+      continue;
+    }
+
+    if (state === 'regex') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === '/') state = 'code';
+      i += 1;
+      continue;
+    }
+
+    // state === 'code'
+    if (ch === '/' && next === '/') {
+      state = 'line-comment';
+      i += 2;
+      continue;
+    }
+    if (ch === '/' && next === '*') {
+      state = 'block-comment';
+      i += 2;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      state = 'string';
+      quote = ch;
+      out += ch;
+      i += 1;
+      continue;
+    }
+    if (ch === '`') {
+      state = 'template';
+      out += ch;
+      i += 1;
+      continue;
+    }
+    // Heuristic: treat `/` as regex start after code punctuation that cannot end an expression.
+    if (ch === '/' && (out === '' || /[=(:,;!?&|[~+\-*%^<>[{]\s*$/.test(out) || /\b(?:return|case|throw|=>)\s*$/.test(out))) {
+      state = 'regex';
+      out += ch;
+      i += 1;
+      continue;
+    }
+
+    out += ch;
+    i += 1;
+  }
+  return out;
 }
 
 export function resolveRelativeImport(filePath, importPath) {
@@ -605,7 +705,9 @@ export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = 
     }
   }
 
-  const scanRoots = [join(rootDir, 'server', 'src')];
+  const scanRoots = [];
+  const serverSrcAbs = join(rootDir, 'server', 'src');
+  if (existsSync(serverSrcAbs)) scanRoots.push(serverSrcAbs);
   for (const name of ALLOWED_SRC_CODE_ROOTS) {
     const abs = join(rootDir, 'src', name);
     if (existsSync(abs)) scanRoots.push(abs);
