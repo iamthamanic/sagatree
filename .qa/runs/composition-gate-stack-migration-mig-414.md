@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-414
 
-- HEAD_SHA: WORKTREE (pre-commit; MIG-414 isolated dispatcher)
+- HEAD_SHA: 212d9f355c7b664ce077cf7915c1f2d3a62f4415
 - Feature: stack-migration-mig-414
 - Issue: #830 / MIG-414
 - Verdict: CLEAR
