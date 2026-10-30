@@ -1,6 +1,6 @@
 # Composition Gate — sec-client-trust-marketplace-edge-whitelist (#675)
 
-- HEAD_SHA: 7b9095e32abbac4df702d569c99cd1c8919ef88d
+- HEAD_SHA: 88cd84ae0b992e5024d67f4aeeaa111ade39ab95
 - BASE_SHA: 383f355620053904379d8a666ff527c79b06b862
 - Date: 2026-10-29
 - Verdict: CLEAR
