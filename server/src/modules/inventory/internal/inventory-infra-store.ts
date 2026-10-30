@@ -92,6 +92,7 @@ export type InventoryCharacterColumns = {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
+    revalidateUnderLock?: () => CharacterColumnsResult<true>,
   ) => CharacterColumnsResult<CharacterColumnsRecord>;
 };
 
@@ -202,13 +203,14 @@ export class InventoryInfraStore {
     }
     const body = inventory;
     const definitionIds = collectDefinitionIds(body);
-    if (definitionIds.length > 0) {
+    const definitionsVisible = (): boolean => {
+      if (definitionIds.length === 0) return true;
       const visible = this.#visibleDefinitionIds(actorId, definitionIds);
-      for (const id of definitionIds) {
-        if (!visible.has(id)) {
-          return { ok: false, error: 'definition-not-visible' };
-        }
-      }
+      if (visible === null) return false;
+      return definitionIds.every((id) => visible.has(id));
+    };
+    if (!definitionsVisible()) {
+      return { ok: false, error: 'definition-not-visible' };
     }
     const updatedAt = nowIso();
     const written = this.#character.putOwned(
@@ -217,6 +219,13 @@ export class InventoryInfraStore {
       JSON.stringify(body),
       INVENTORY_COLUMN_SCHEMA_VERSION,
       updatedAt,
+      () => {
+        // Re-check under characters write lock (TOCTOU vs archive / ACL revoke).
+        if (!definitionsVisible()) {
+          return { ok: false, error: 'definition-not-visible' };
+        }
+        return { ok: true, value: true as const };
+      },
     );
     if (!written.ok) return written;
     return {
@@ -383,24 +392,32 @@ export class InventoryInfraStore {
     return generateItemPublicId();
   }
 
-  /** Definition ids visible to actor (standard + own personal; world only when ACL allows). */
-  #visibleDefinitionIds(actorId: string, ids: readonly string[]): Set<string> {
+  /**
+   * Definition ids visible to actor (standard + own personal; world only when ACL allows).
+   * Returns null when the lookup fails (e.g. SQLite variable limit) so callers DENY.
+   */
+  #visibleDefinitionIds(actorId: string, ids: readonly string[]): Set<string> | null {
     const visible = new Set<string>();
     if (ids.length === 0) return visible;
     const placeholders = ids.map(() => '?').join(',');
-    const rows = this.#db
-      .prepare(
-        `SELECT id, origin, owner_user_id, world_profile_id, status
-         FROM inventory_item_definitions
-         WHERE id IN (${placeholders}) AND status = 'active'`,
-      )
-      .all(...ids) as Array<{
+    let rows: Array<{
       id: string;
       origin: string;
       owner_user_id: string | null;
       world_profile_id: string | null;
       status: string;
     }>;
+    try {
+      rows = this.#db
+        .prepare(
+          `SELECT id, origin, owner_user_id, world_profile_id, status
+           FROM inventory_item_definitions
+           WHERE id IN (${placeholders}) AND status = 'active'`,
+        )
+        .all(...ids) as typeof rows;
+    } catch {
+      return null;
+    }
     for (const row of rows) {
       if (row.origin === 'standard') {
         visible.add(row.id);

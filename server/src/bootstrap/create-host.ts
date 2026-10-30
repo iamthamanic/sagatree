@@ -239,13 +239,21 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           character: {
             getOwned: (actorId, characterId) =>
               character.getOwnedInventoryColumns(actorId, characterId),
-            putOwned: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
+            putOwned: (
+              actorId,
+              characterId,
+              inventoryJson,
+              schemaVersion,
+              updatedAt,
+              revalidateUnderLock,
+            ) =>
               character.putOwnedInventoryColumns(
                 actorId,
                 characterId,
                 inventoryJson,
                 schemaVersion,
                 updatedAt,
+                revalidateUnderLock,
               ),
           },
         })

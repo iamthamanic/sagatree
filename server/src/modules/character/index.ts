@@ -162,6 +162,7 @@ export type CharacterPorts = {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
+    revalidateUnderLock?: () => CharacterInventoryColumnsResult<true>,
   ) => CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord>;
 };
 
@@ -218,8 +219,22 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     seedArtifactForTests: (input) => sheets.seedArtifact(input),
     getOwnedInventoryColumns: (actorId, characterId) =>
       inventoryColumns.getOwned(actorId, characterId),
-    putOwnedInventoryColumns: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
-      inventoryColumns.putOwned(actorId, characterId, inventoryJson, schemaVersion, updatedAt),
+    putOwnedInventoryColumns: (
+      actorId,
+      characterId,
+      inventoryJson,
+      schemaVersion,
+      updatedAt,
+      revalidateUnderLock,
+    ) =>
+      inventoryColumns.putOwned(
+        actorId,
+        characterId,
+        inventoryJson,
+        schemaVersion,
+        updatedAt,
+        revalidateUnderLock,
+      ),
   };
 }
 

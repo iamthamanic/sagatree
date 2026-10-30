@@ -64,6 +64,7 @@ export class CharacterInventoryColumnsStore {
   /**
    * Replace inventory_json / schema_version for an owned PC under IMMEDIATE lock.
    * Caller (inventory) must validate payload shape before invoking.
+   * Optional `revalidateUnderLock` re-checks invariants after the write lock (TOCTOU).
    */
   putOwned(
     actorId: string,
@@ -71,6 +72,7 @@ export class CharacterInventoryColumnsStore {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
+    revalidateUnderLock?: () => CharacterInventoryColumnsResult<true>,
   ): CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord> {
     let inTx = false;
     try {
@@ -97,6 +99,14 @@ export class CharacterInventoryColumnsStore {
           return { ok: false, error: 'not-authorized' };
         }
         return { ok: false, error: 'not-found' };
+      }
+      if (revalidateUnderLock) {
+        const recheck = revalidateUnderLock();
+        if (!recheck.ok) {
+          this.#db.exec('ROLLBACK');
+          inTx = false;
+          return recheck;
+        }
       }
       const changed = this.#db
         .prepare(
