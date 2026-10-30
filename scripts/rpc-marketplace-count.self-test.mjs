@@ -110,9 +110,14 @@ try {
     `unknown no-op ${JSON.stringify(missing)}`,
   );
 
-  // Empty item id → typed error
+  // Empty / whitespace item id → typed error; null item id → legacy SQL no-op
   const empty = increment(Player, '  ');
   assert(empty.ok === false && empty.error === '22023', `empty id ${JSON.stringify(empty)}`);
+  const nullId = ports.incrementDownloads(Player, /** @type {any} */ (null));
+  assert(
+    nullId.ok === true && nullId.mutated === false,
+    `null id no-op ${JSON.stringify(nullId)}`,
+  );
 
   // RT3 — ACL legacy decisions explicit: authenticated ok; unauthenticated DENY
   // Host requires verified Actor (not PUBLIC/anon SQL EXECUTE). Solo/remote both ok.
@@ -125,6 +130,14 @@ try {
     itemId,
   );
   assert(deny.ok === false && deny.error === '42501', `empty actor DENY ${JSON.stringify(deny)}`);
+  const wsDeny = ports.incrementDownloads(
+    /** @type {any} */ ({ kind: 'remote-account', actorId: '   ', sessionId: 'x', email: null }),
+    itemId,
+  );
+  assert(
+    wsDeny.ok === false && wsDeny.error === '42501',
+    `whitespace actor DENY ${JSON.stringify(wsDeny)}`,
+  );
 
   // RT4 — FE has no client write fallback (#675)
   const fe = readFileSync(join(root, 'src/infrastructure/marketplace/marketplace-service.ts'), 'utf8');

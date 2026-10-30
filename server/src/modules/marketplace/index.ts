@@ -44,7 +44,7 @@ export const MARKETPLACE_COUNT_HOST_SUCCEEDS_OPTIONAL_SQL = true as const;
 export type MarketplaceCountPorts = {
   readonly incrementDownloads: (
     actor: Actor,
-    itemId: string,
+    itemId: string | null | undefined,
   ) => CountOk | CountError;
   /** Test-only seed / read — not a publish API. */
   readonly insertItemForTests: (input: {
@@ -58,8 +58,9 @@ export type MarketplaceCountPorts = {
 };
 
 function actorIdOrDeny(actor: Actor | null | undefined): string | null {
-  if (!actor || typeof actor.actorId !== 'string' || !actor.actorId) return null;
-  return actor.actorId;
+  if (!actor || typeof actor.actorId !== 'string') return null;
+  const id = actor.actorId.trim();
+  return id ? id : null;
 }
 
 export function createMarketplaceCountPorts(db: HostDatabase): MarketplaceCountPorts {

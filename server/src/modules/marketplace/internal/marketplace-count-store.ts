@@ -67,11 +67,15 @@ export class MarketplaceCountStore {
    * Atomic +1 when row exists. Missing id is a no-op (legacy void RPC).
    * Caller must supply a non-empty verified actor id (authenticated).
    */
-  incrementDownloads(actorId: string, itemIdRaw: string): CountOk | CountError {
+  incrementDownloads(actorId: string, itemIdRaw: string | null | undefined): CountOk | CountError {
     if (!actorId || typeof actorId !== 'string') {
       return { ok: false, error: '42501' };
     }
-    const itemId = (itemIdRaw ?? '').trim();
+    // Legacy SQL: WHERE id = NULL matches nothing → void success / no-op.
+    if (itemIdRaw === null || itemIdRaw === undefined) {
+      return { ok: true, itemId: '', downloads: null, mutated: false };
+    }
+    const itemId = String(itemIdRaw).trim();
     if (!itemId) {
       return { ok: false, error: '22023' };
     }
