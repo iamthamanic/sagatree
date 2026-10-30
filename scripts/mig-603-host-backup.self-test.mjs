@@ -160,6 +160,13 @@ try {
     readFileSync(join(restoreHost, 'assets', assetId)).equals(bytes),
     'asset bytes match after restore',
   );
+  assert(existsSync(join(restoreHost, 'auth.sqlite')), 'auth.sqlite restored');
+  const restoredAuth = new DatabaseSync(join(restoreHost, 'auth.sqlite'), { readOnly: true });
+  assert(
+    restoredAuth.prepare('SELECT id FROM session').get()?.id === 'auth-seed',
+    'auth session survives restore',
+  );
+  restoredAuth.close();
 
   const { openHostDatabase } = await import(
     pathToFileURL(join(root, 'server/src/persistence/open-database.ts')).href
