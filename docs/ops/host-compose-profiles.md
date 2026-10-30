@@ -11,8 +11,8 @@ stack in the repo-root `docker-compose.yml`. Never delete volumes
 | Compose file | `deployment/docker-compose.host.yml` |
 | Image | `deployment/Dockerfile.host` |
 | Env example | `deployment/.env.host.example` → copy to `deployment/.env.host` |
-| HTTP | `127.0.0.1:8787` (`SAGATREE_PORT` inside container; override publish via `SAGATREE_HOST_PUBLISH` + matching `SAGATREE_HOST_PORT`) |
-| Auth origin | Compose default `SAGATREE_AUTH_BASE_URL=http://127.0.0.1:${SAGATREE_HOST_PORT:-8787}` (loopback only — never derived from publish bind). Leave unset in `.env.host` so the default applies; set explicitly for LAN/non-loopback. Misaligned Host/origin → `HOST_DENIED` |
+| HTTP | `127.0.0.1:8787` (`SAGATREE_PORT` inside container; override publish via `SAGATREE_HOST_PUBLISH`) |
+| Auth origin | Compose default `SAGATREE_AUTH_BASE_URL=http://127.0.0.1:8787` (flat loopback — never derived from publish bind; no nested Compose defaults). Leave unset in `.env.host` for the default; set explicitly when changing publish port or for LAN. Misaligned Host/origin → `HOST_DENIED` |
 | Data volume | named volume `host-data` → `/data` (`SAGATREE_DATA_DIR`) |
 | Backup mount | `${SAGATREE_BACKUP_MOUNT:-./backups}` → `/backups` |
 | Ollama (profile `ai`) | `127.0.0.1:11434` — image pinned to `ollama/ollama:0.40.13` (digest in Compose; bump deliberately) |

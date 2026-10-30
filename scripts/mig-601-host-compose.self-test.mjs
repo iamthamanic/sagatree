@@ -54,16 +54,19 @@ assert(
   'compose publishes host HTTP on loopback by default',
 );
 assert(
-  /SAGATREE_AUTH_BASE_URL: \$\{SAGATREE_AUTH_BASE_URL:-http:\/\/127\.0\.0\.1:\$\{SAGATREE_HOST_PORT:-8787\}\}/.test(
+  /SAGATREE_AUTH_BASE_URL: \$\{SAGATREE_AUTH_BASE_URL:-http:\/\/127\.0\.0\.1:8787\}/.test(
     compose,
   ),
-  'compose auth default is loopback + HOST_PORT (not derived from publish bind)',
+  'compose auth default is flat loopback URL (no nested Compose defaults)',
 );
 assert(
   !/http:\/\/\$\{SAGATREE_HOST_PUBLISH/.test(compose),
   'compose must not derive AUTH_BASE_URL from SAGATREE_HOST_PUBLISH',
 );
-assert(envEx.includes('SAGATREE_HOST_PORT'), '.env.example documents HOST_PORT');
+assert(
+  !/http:\/\/127\.0\.0\.1:\$\{/.test(compose),
+  'compose must not nest ${…} inside AUTH_BASE_URL default',
+);
 assert(
   /^#\s*SAGATREE_AUTH_BASE_URL=/m.test(envEx),
   '.env.example leaves AUTH_BASE_URL commented so Compose loopback default applies',
