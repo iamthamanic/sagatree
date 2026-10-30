@@ -265,20 +265,10 @@ export class CharacterSheetStore {
     if (!name) return { ok: false, error: 'name-required' };
     const description =
       typeof draft.description === 'string' ? draft.description : existing.value.description;
-    const level =
+    const levelHint =
       typeof draft.level === 'number' && Number.isFinite(draft.level) && draft.level >= 1
         ? Math.floor(draft.level)
-        : existing.value.level;
-    const sheetStatus = parseSheetStatus(draft.sheetStatus, existing.value.sheetStatus);
-    const sheet =
-      draft.sheet !== undefined ? asObject(draft.sheet) : { ...existing.value.sheet };
-    // Enforce completeness only when promoting into `complete` (legacy complete+{} rows stay patchable).
-    const promotingToComplete =
-      sheetStatus === 'complete' && existing.value.sheetStatus !== 'complete';
-    if (promotingToComplete && !isCompleteSheetPayload(name, level, sheet)) {
-      return { ok: false, error: 'incomplete-sheet' };
-    }
-
+        : null;
     let portrait = existing.value.portraitStoragePath;
     if (draft.portraitStoragePath === null) {
       portrait = null;
@@ -289,25 +279,68 @@ export class CharacterSheetStore {
     }
 
     const updatedAt = nowIso();
-    const changed = this.#db
-      .prepare(
-        `UPDATE characters SET
-           name = ?, description = ?, level = ?, sheet_status = ?, sheet_json = ?,
-           portrait_storage_path = ?, updated_at = ?
-         WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
-      )
-      .run(
-        name,
-        description,
-        level,
-        sheetStatus,
-        JSON.stringify(sheet),
-        portrait,
-        updatedAt,
-        characterId,
-        actorId,
-      );
-    if (changed.changes !== 1) return { ok: false, error: 'not-found' };
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const locked = this.#db
+        .prepare(
+          `SELECT * FROM characters
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
+        )
+        .get(characterId, actorId) as CharacterRow | undefined;
+      if (!locked) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'not-found' };
+      }
+      const current = mapRow(locked);
+      const level = levelHint ?? current.level;
+      const sheetStatus = parseSheetStatus(draft.sheetStatus, current.sheetStatus);
+      const sheet = draft.sheet !== undefined ? asObject(draft.sheet) : { ...current.sheet };
+      // Enforce completeness only when promoting into `complete` (revalidated under lock).
+      const promotingToComplete =
+        sheetStatus === 'complete' && current.sheetStatus !== 'complete';
+      if (promotingToComplete && !isCompleteSheetPayload(name, level, sheet)) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'incomplete-sheet' };
+      }
+      const changed = this.#db
+        .prepare(
+          `UPDATE characters SET
+             name = ?, description = ?, level = ?, sheet_status = ?, sheet_json = ?,
+             portrait_storage_path = ?, updated_at = ?
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
+        )
+        .run(
+          name,
+          description,
+          level,
+          sheetStatus,
+          JSON.stringify(sheet),
+          portrait,
+          updatedAt,
+          characterId,
+          actorId,
+        );
+      if (changed.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'not-found' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'update-failed' };
+    }
     const next = this.getOwned(actorId, characterId);
     if (!next.ok || !next.value) return { ok: false, error: 'not-found' };
     return { ok: true, value: next.value };
@@ -404,9 +437,12 @@ export class CharacterSheetStore {
     const normalized = storagePath.trim().replace(/^\/+/, '');
     const row = this.#db
       .prepare(
-        `SELECT character_id AS characterId, storage_path AS storagePath
-         FROM character_avatar_artifacts
-         WHERE owner_user_id = ? AND storage_path = ?
+        `SELECT a.character_id AS characterId, a.storage_path AS storagePath
+         FROM character_avatar_artifacts a
+         INNER JOIN characters c
+           ON c.id = a.character_id
+          AND c.deleted_at IS NULL
+         WHERE a.owner_user_id = ? AND a.storage_path = ?
          LIMIT 1`,
       )
       .get(actorId, normalized) as { characterId: string; storagePath: string } | undefined;
@@ -423,8 +459,10 @@ export class CharacterSheetStore {
     if (!pathCheck.ok) return pathCheck;
     const normalized = input.storagePath.trim().replace(/^\/+/, '');
     const id = randomUUID();
+    let inTx = false;
     try {
       this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
       const owned = this.#db
         .prepare(
           `SELECT 1 AS o FROM characters
@@ -433,6 +471,7 @@ export class CharacterSheetStore {
         .get(input.characterId, input.ownerUserId);
       if (!owned) {
         this.#db.exec('ROLLBACK');
+        inTx = false;
         return { ok: false, error: 'foreign-character-owner' };
       }
       this.#db
@@ -443,11 +482,14 @@ export class CharacterSheetStore {
         )
         .run(id, input.characterId, input.ownerUserId, normalized, nowIso());
       this.#db.exec('COMMIT');
+      inTx = false;
     } catch {
-      try {
-        this.#db.exec('ROLLBACK');
-      } catch {
-        /* ignore */
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
       }
       return { ok: false, error: 'create-failed' };
     }
