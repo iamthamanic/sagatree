@@ -1,0 +1,36 @@
+# Host image build context (deployment/Dockerfile.host → context: .)
+# Keep the transferred context small and free of secrets / local junk.
+
+.git
+.github
+.qa
+.cursor
+.vscode
+.idea
+
+**/node_modules
+**/dist
+**/build
+**/.vite
+**/coverage
+
+supabase
+public/assets
+public/mediapipe
+docs
+e2e
+playwright-report
+test-results
+
+.env
+.env.*
+!**/.env.*.example
+!**/.env.host.example
+
+deployment/backups
+deployment/.env.host
+
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

@@ -99,3 +99,7 @@ public/assets/avatars/canonical/*.vrm
 supabase/config/kong.runtime.yml
 .qa/tmp/
 __pycache__/
+
+# Host Compose local secrets / backup mount (MIG-601)
+deployment/.env.host
+deployment/backups/

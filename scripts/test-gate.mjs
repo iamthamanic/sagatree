@@ -1282,6 +1282,18 @@ function checkComposeHardenDefaults() {
   });
 }
 
+function checkMig601HostCompose() {
+  console.log('MIG-601 host Compose profiles (#846): readiness / capability / runbook...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-601-host-compose.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkNegativeAuthzSuite() {
   console.log('Negative authz suite (#607): JWT gate + deny evidence contract...');
   execFileSync(process.execPath, ['scripts/negative-authz-suite-check.mjs'], {
@@ -3445,6 +3457,7 @@ checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
 checkComposeHardenDefaults();
+checkMig601HostCompose();
 checkNegativeAuthzSuite();
 checkEdgeDispatcherAllowlist();
 checkRlsOpenTables();
