@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-mig-302 (#801)
 
-- HEAD_SHA: (pending commit — fill at PR HEAD)
+- HEAD_SHA: 848dbb7d81f8b34a964cb3342962d9292021739f
 - BASE_SHA: 7422b400d133e26fe78262d876f557a22dc2abf4
 - Date: 2026-10-30
 - Verdict: CLEAR
+- Note: Composition proof authored for implementation HEAD `848dbb7d`; follow-up commit only refreshes this proof SHA pointer when needed.
 
 ## Event
 
