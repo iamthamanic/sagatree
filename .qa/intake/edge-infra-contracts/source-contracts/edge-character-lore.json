@@ -24,6 +24,10 @@
       "sha256": "639be61b3eed8b028b6047786faa319122b072cc2967195ec733236d7f6d162a"
     },
     {
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "sha256": "33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95"
+    },
+    {
       "path": "supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
@@ -37,7 +41,7 @@
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "sha256": "b59beaa65854952a7daabe90446da276dbdb1095ba04fb5136cc86b27cffff00"
+      "sha256": "22a7a50f227b0c7088f97d0eca3d4dc3c957b78c24ab12de25e1d3356bab8320"
     }
   ],
   "operations": [
@@ -45,103 +49,109 @@
       "id": "character-lore:handler",
       "condition": "Complete handler with ordered method/auth/body guards",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 373,
-      "endLine": 492,
+      "line": 374,
+      "endLine": 498,
       "requestReads": [],
       "returns": [
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 375,
-          "endLine": 375,
+          "line": 376,
+          "endLine": 376,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 377,
-          "endLine": 377,
+          "line": 378,
+          "endLine": 378,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 382,
-          "endLine": 382,
+          "line": 383,
+          "endLine": 383,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 388,
+          "endLine": 388,
           "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 393,
-          "endLine": 396,
+          "line": 394,
+          "endLine": 397,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 410,
-          "endLine": 413,
+          "line": 411,
+          "endLine": 414,
           "expression": "jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 420,
-          "endLine": 423,
+          "line": 421,
+          "endLine": 424,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 430,
-          "endLine": 430,
+          "line": 431,
+          "endLine": 431,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 434,
-          "endLine": 434,
+          "line": 435,
+          "endLine": 435,
           "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 439,
-          "endLine": 439,
+          "line": 440,
+          "endLine": 440,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 445,
+          "endLine": 445,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 452,
-          "endLine": 456,
+          "line": 458,
+          "endLine": 462,
           "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 475,
-          "endLine": 481,
+          "line": 481,
+          "endLine": 487,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 487,
-          "endLine": 490,
+          "line": 493,
+          "endLine": 496,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 373,
-          "endLine": 492,
+          "line": 374,
+          "endLine": 498,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 374,
-          "endLine": 374,
+          "line": 375,
+          "endLine": 375,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -150,8 +160,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 377,
-          "endLine": 377,
+          "line": 378,
+          "endLine": 378,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -161,8 +171,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 381,
+          "endLine": 381,
           "expression": "Number.parseInt",
           "arguments": [
             "request.headers.get('content-length') || '0'",
@@ -171,8 +181,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 381,
+          "endLine": 381,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -180,8 +190,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 381,
-          "endLine": 381,
+          "line": 382,
+          "endLine": 382,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -189,8 +199,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 382,
-          "endLine": 382,
+          "line": 383,
+          "endLine": 383,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -200,8 +210,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 385,
-          "endLine": 385,
+          "line": 386,
+          "endLine": 386,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -209,8 +219,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 388,
+          "endLine": 388,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -220,15 +230,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 391,
+          "endLine": 391,
           "expression": "getSupabaseConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 392,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 393,
           "expression": "console.error",
           "arguments": [
             "'Character lore persistent rate limit unavailable: missing service-role configuration'"
@@ -236,8 +246,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 393,
-          "endLine": 396,
+          "line": 394,
+          "endLine": 397,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -247,8 +257,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 400,
-          "endLine": 408,
+          "line": 401,
+          "endLine": 409,
           "expression": "consumePersistentCharacterLoreRateLimit",
           "arguments": [
             "{\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      }",
@@ -257,15 +267,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 404,
-          "endLine": 404,
+          "line": 405,
+          "endLine": 405,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 410,
-          "endLine": 413,
+          "line": 411,
+          "endLine": 414,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -275,8 +285,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 416,
-          "endLine": 419,
+          "line": 417,
+          "endLine": 420,
           "expression": "console.error",
           "arguments": [
             "'Character lore persistent rate limit failed:'",
@@ -285,8 +295,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 420,
-          "endLine": 423,
+          "line": 421,
+          "endLine": 424,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -296,15 +306,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 428,
-          "endLine": 428,
+          "line": 429,
+          "endLine": 429,
           "expression": "request.text",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 429,
-          "endLine": 429,
+          "line": 430,
+          "endLine": 430,
           "expression": "new TextEncoder().encode",
           "arguments": [
             "rawBody"
@@ -312,8 +322,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 430,
-          "endLine": 430,
+          "line": 431,
+          "endLine": 431,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -323,8 +333,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 432,
-          "endLine": 432,
+          "line": 433,
+          "endLine": 433,
           "expression": "JSON.parse",
           "arguments": [
             "rawBody"
@@ -332,8 +342,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 434,
-          "endLine": 434,
+          "line": 435,
+          "endLine": 435,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -343,8 +353,28 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 437,
-          "endLine": 437,
+          "line": 438,
+          "endLine": 438,
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 440,
+          "endLine": 440,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 443,
+          "endLine": 443,
           "expression": "parseRequestBody",
           "arguments": [
             "body"
@@ -352,8 +382,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 439,
-          "endLine": 439,
+          "line": 445,
+          "endLine": 445,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -363,8 +393,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 442,
-          "endLine": 450,
+          "line": 448,
+          "endLine": 456,
           "expression": "resolveLlmProviderForUser",
           "arguments": [
             "supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null",
@@ -373,8 +403,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 452,
-          "endLine": 456,
+          "line": 458,
+          "endLine": 462,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -383,8 +413,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 460,
-          "endLine": 464,
+          "line": 466,
+          "endLine": 470,
           "expression": "getAuthorizedReferenceContext",
           "arguments": [
             "userId",
@@ -394,8 +424,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 465,
-          "endLine": 469,
+          "line": 471,
+          "endLine": 475,
           "expression": "buildCharacterLorePrompt",
           "arguments": [
             "parsed.context",
@@ -405,8 +435,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 470,
-          "endLine": 470,
+          "line": 476,
+          "endLine": 476,
           "expression": "generateCharacterLore",
           "arguments": [
             "providerConfig",
@@ -415,8 +445,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 475,
-          "endLine": 481,
+          "line": 481,
+          "endLine": 487,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -425,8 +455,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 483,
-          "endLine": 486,
+          "line": 489,
+          "endLine": 492,
           "expression": "console.error",
           "arguments": [
             "'Character lore generation failed:'",
@@ -435,8 +465,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 487,
-          "endLine": 490,
+          "line": 493,
+          "endLine": 496,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -445,86 +475,92 @@
           ]
         }
       ],
-      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});"
+      "exactBranch": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});"
     }
   ],
   "responseSites": [
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 71,
-      "endLine": 71,
+      "line": 72,
+      "endLine": 72,
       "expression": "sharedJsonResponse(request, body, status, CORS_OPTS)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 377,
-      "endLine": 377,
+      "line": 378,
+      "endLine": 378,
       "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 382,
-      "endLine": 382,
+      "line": 383,
+      "endLine": 383,
       "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 387,
-      "endLine": 387,
+      "line": 388,
+      "endLine": 388,
       "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 393,
-      "endLine": 396,
+      "line": 394,
+      "endLine": 397,
       "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 410,
-      "endLine": 413,
+      "line": 411,
+      "endLine": 414,
       "expression": "jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 420,
-      "endLine": 423,
+      "line": 421,
+      "endLine": 424,
       "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 430,
-      "endLine": 430,
+      "line": 431,
+      "endLine": 431,
       "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 434,
-      "endLine": 434,
+      "line": 435,
+      "endLine": 435,
       "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 439,
-      "endLine": 439,
+      "line": 440,
+      "endLine": 440,
+      "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+    },
+    {
+      "path": "supabase/functions/character-lore/index.ts",
+      "line": 445,
+      "endLine": 445,
       "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 452,
-      "endLine": 456,
+      "line": 458,
+      "endLine": 462,
       "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 475,
-      "endLine": 481,
+      "line": 481,
+      "endLine": 487,
       "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 487,
-      "endLine": 490,
+      "line": 493,
+      "endLine": 496,
       "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
     }
   ],
@@ -569,14 +605,14 @@
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 244,
-      "endLine": 244,
+      "line": 245,
+      "endLine": 245,
       "expression": "AbortSignal.timeout(10_000)"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 260,
-      "endLine": 260,
+      "line": 261,
+      "endLine": 261,
       "expression": "AbortSignal.timeout(10_000)"
     }
   ],
@@ -607,118 +643,124 @@
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 238,
-      "endLine": 245,
+      "line": 239,
+      "endLine": 246,
       "expression": "fetch(url, {\n    headers: {\n      Authorization: `Bearer ${serviceRoleKey}`,\n      apikey: serviceRoleKey,\n      Accept: 'application/json',\n    },\n    signal: AbortSignal.timeout(10_000),\n  })"
     },
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 255,
-      "endLine": 261,
+      "line": 256,
+      "endLine": 262,
       "expression": "fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  })"
     }
   ],
   "handler": [
     {
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 373,
-      "endLine": 492,
-      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});",
+      "line": 374,
+      "endLine": 498,
+      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n});",
       "requestReads": [],
       "returns": [
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 375,
-          "endLine": 375,
+          "line": 376,
+          "endLine": 376,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 377,
-          "endLine": 377,
+          "line": 378,
+          "endLine": 378,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 382,
-          "endLine": 382,
+          "line": 383,
+          "endLine": 383,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 388,
+          "endLine": 388,
           "expression": "jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 393,
-          "endLine": 396,
+          "line": 394,
+          "endLine": 397,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 410,
-          "endLine": 413,
+          "line": 411,
+          "endLine": 414,
           "expression": "jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 420,
-          "endLine": 423,
+          "line": 421,
+          "endLine": 424,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 430,
-          "endLine": 430,
+          "line": 431,
+          "endLine": 431,
           "expression": "jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 434,
-          "endLine": 434,
+          "line": 435,
+          "endLine": 435,
           "expression": "jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 439,
-          "endLine": 439,
+          "line": 440,
+          "endLine": 440,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 445,
+          "endLine": 445,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400)"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 452,
-          "endLine": 456,
+          "line": 458,
+          "endLine": 462,
           "expression": "jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 475,
-          "endLine": 481,
+          "line": 481,
+          "endLine": 487,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    })"
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 487,
-          "endLine": 490,
+          "line": 493,
+          "endLine": 496,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500)"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 373,
-          "endLine": 492,
+          "line": 374,
+          "endLine": 498,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);\n  if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n    return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n  }\n\n  const userId = await authenticate(request);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Authentication required' }, 401);\n  }\n\n  const supabaseConfig = getSupabaseConfig();\n  if (!supabaseConfig?.serviceRoleKey) {\n    console.error('Character lore persistent rate limit unavailable: missing service-role configuration');\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  try {\n    const allowed = await consumePersistentCharacterLoreRateLimit(\n      {\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      },\n      userId,\n    );\n    if (!allowed) {\n      return jsonResponse(request, {\n        status: 'error',\n        message: 'Zu viele Generierungen. Bitte warte kurz und versuche es erneut.',\n      }, 429);\n    }\n  } catch (error) {\n    console.error(\n      'Character lore persistent rate limit failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Character-Lore ist vorübergehend nicht verfügbar. Bitte versuche es später erneut.',\n    }, 503);\n  }\n\n  let body: unknown;\n  try {\n    const rawBody = await request.text();\n    if (new TextEncoder().encode(rawBody).byteLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(request, { status: 'error', message: 'Request body too large' }, 413);\n    }\n    body = JSON.parse(rawBody);\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Invalid JSON body' }, 400);\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n\n  const parsed = parseRequestBody(body);\n  if (!parsed) {\n    return jsonResponse(request, { status: 'error', message: 'Ungültige Character-Daten für die Generierung.' }, 400);\n  }\n\n  const providerConfig = await resolveLlmProviderForUser(\n    supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null,\n    userId,\n  );\n  if (!providerConfig) {\n    return jsonResponse(request, {\n      status: 'not-configured',\n      message:\n        'Character-AI ist noch nicht konfiguriert. Hinterlege Provider, Modell und gegebenenfalls API-Key unter Einstellungen → AI → Organize oder in der Server-Umgebung.',\n    });\n  }\n\n  try {\n    const reference = await getAuthorizedReferenceContext(\n      userId,\n      parsed.projectId,\n      parsed.worldId,\n    );\n    const prompt = buildCharacterLorePrompt(\n      parsed.context,\n      reference,\n      parsed.currentBackgroundStory,\n    );\n    const story = await generateCharacterLore(providerConfig, prompt);\n    if (!story || story.length > MAX_STORY_LENGTH) {\n      throw new Error('Generated story length is invalid');\n    }\n\n    return jsonResponse(request, {\n      status: 'ok',\n      story,\n      provider: providerConfig.provider,\n      model: providerConfig.model,\n      promptVersion: prompt.version,\n    });\n  } catch (error) {\n    console.error(\n      'Character lore generation failed:',\n      error instanceof Error ? error.message : 'unknown error',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Hintergrundgeschichte konnte nicht generiert werden. Prüfe Provider, Modell und den Lore-Kontext.',\n    }, 500);\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 374,
-          "endLine": 374,
+          "line": 375,
+          "endLine": 375,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -727,8 +769,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 377,
-          "endLine": 377,
+          "line": 378,
+          "endLine": 378,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -738,8 +780,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 381,
+          "endLine": 381,
           "expression": "Number.parseInt",
           "arguments": [
             "request.headers.get('content-length') || '0'",
@@ -748,8 +790,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 381,
+          "endLine": 381,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -757,8 +799,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 381,
-          "endLine": 381,
+          "line": 382,
+          "endLine": 382,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -766,8 +808,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 382,
-          "endLine": 382,
+          "line": 383,
+          "endLine": 383,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -777,8 +819,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 385,
-          "endLine": 385,
+          "line": 386,
+          "endLine": 386,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -786,8 +828,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 388,
+          "endLine": 388,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -797,15 +839,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 391,
+          "endLine": 391,
           "expression": "getSupabaseConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 392,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 393,
           "expression": "console.error",
           "arguments": [
             "'Character lore persistent rate limit unavailable: missing service-role configuration'"
@@ -813,8 +855,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 393,
-          "endLine": 396,
+          "line": 394,
+          "endLine": 397,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -824,8 +866,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 400,
-          "endLine": 408,
+          "line": 401,
+          "endLine": 409,
           "expression": "consumePersistentCharacterLoreRateLimit",
           "arguments": [
             "{\n        url: supabaseConfig.url,\n        serviceRoleKey: supabaseConfig.serviceRoleKey,\n        limit: getRateLimit(),\n        windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n      }",
@@ -834,15 +876,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 404,
-          "endLine": 404,
+          "line": 405,
+          "endLine": 405,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 410,
-          "endLine": 413,
+          "line": 411,
+          "endLine": 414,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -852,8 +894,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 416,
-          "endLine": 419,
+          "line": 417,
+          "endLine": 420,
           "expression": "console.error",
           "arguments": [
             "'Character lore persistent rate limit failed:'",
@@ -862,8 +904,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 420,
-          "endLine": 423,
+          "line": 421,
+          "endLine": 424,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -873,15 +915,15 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 428,
-          "endLine": 428,
+          "line": 429,
+          "endLine": 429,
           "expression": "request.text",
           "arguments": []
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 429,
-          "endLine": 429,
+          "line": 430,
+          "endLine": 430,
           "expression": "new TextEncoder().encode",
           "arguments": [
             "rawBody"
@@ -889,8 +931,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 430,
-          "endLine": 430,
+          "line": 431,
+          "endLine": 431,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -900,8 +942,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 432,
-          "endLine": 432,
+          "line": 433,
+          "endLine": 433,
           "expression": "JSON.parse",
           "arguments": [
             "rawBody"
@@ -909,8 +951,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 434,
-          "endLine": 434,
+          "line": 435,
+          "endLine": 435,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -920,8 +962,28 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 437,
-          "endLine": 437,
+          "line": 438,
+          "endLine": 438,
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 440,
+          "endLine": 440,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/character-lore/index.ts",
+          "line": 443,
+          "endLine": 443,
           "expression": "parseRequestBody",
           "arguments": [
             "body"
@@ -929,8 +991,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 439,
-          "endLine": 439,
+          "line": 445,
+          "endLine": 445,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -940,8 +1002,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 442,
-          "endLine": 450,
+          "line": 448,
+          "endLine": 456,
           "expression": "resolveLlmProviderForUser",
           "arguments": [
             "supabaseConfig.serviceRoleKey\n      ? {\n          url: supabaseConfig.url,\n          serviceRoleKey: supabaseConfig.serviceRoleKey,\n        }\n      : null",
@@ -950,8 +1012,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 452,
-          "endLine": 456,
+          "line": 458,
+          "endLine": 462,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -960,8 +1022,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 460,
-          "endLine": 464,
+          "line": 466,
+          "endLine": 470,
           "expression": "getAuthorizedReferenceContext",
           "arguments": [
             "userId",
@@ -971,8 +1033,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 465,
-          "endLine": 469,
+          "line": 471,
+          "endLine": 475,
           "expression": "buildCharacterLorePrompt",
           "arguments": [
             "parsed.context",
@@ -982,8 +1044,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 470,
-          "endLine": 470,
+          "line": 476,
+          "endLine": 476,
           "expression": "generateCharacterLore",
           "arguments": [
             "providerConfig",
@@ -992,8 +1054,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 475,
-          "endLine": 481,
+          "line": 481,
+          "endLine": 487,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1002,8 +1064,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 483,
-          "endLine": 486,
+          "line": 489,
+          "endLine": 492,
           "expression": "console.error",
           "arguments": [
             "'Character lore generation failed:'",
@@ -1012,8 +1074,8 @@
         },
         {
           "path": "supabase/functions/character-lore/index.ts",
-          "line": 487,
-          "endLine": 490,
+          "line": 493,
+          "endLine": 496,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1272,6 +1334,46 @@
       "line": 15,
       "endLine": 58,
       "text": "export async function consumePersistentCharacterLoreRateLimit(\n  config: CharacterLoreRateLimitConfig,\n  userId: string,\n  fetchImpl: FetchLike = fetch,\n): Promise<boolean> {\n  if (!userId.trim()) throw new Error('Rate limit user id is required');\n  if (!Number.isInteger(config.limit) || config.limit < 1 || config.limit > 60) {\n    throw new Error('Rate limit must be an integer between 1 and 60');\n  }\n  if (\n    !Number.isInteger(config.windowSeconds) ||\n    config.windowSeconds < 1 ||\n    config.windowSeconds > 3600\n  ) {\n    throw new Error('Rate limit window must be an integer between 1 and 3600 seconds');\n  }\n\n  const response = await fetchImpl(`${config.url.replace(/\\/+$/, '')}${RATE_LIMIT_RPC}`, {\n    method: 'POST',\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      'Content-Type': 'application/json',\n      Accept: 'application/json',\n    },\n    body: JSON.stringify({\n      p_user_id: userId,\n      p_limit: config.limit,\n      p_window_seconds: config.windowSeconds,\n    }),\n    signal: AbortSignal.timeout(10_000),\n  });\n\n  if (!response.ok) {\n    throw new Error(`Persistent rate limit RPC returned ${response.status}`);\n  }\n\n  const body: unknown = await response.json();\n  if (typeof body !== 'boolean') {\n    throw new Error('Persistent rate limit RPC returned an invalid response');\n  }\n\n  return body;\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED_CLIENT_BODY_KEYS",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 9,
+      "endLine": 18,
+      "text": "PRIVILEGED_CLIENT_BODY_KEYS = [\n  'author_id',\n  'owner_user_id',\n  'rating',\n  'downloads',\n  'roles',\n  'permissions',\n  'is_admin',\n  'service_role',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrivilegedClientBodyKey",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "PRIVILEGED = new Set<string>(PRIVILEGED_CLIENT_BODY_KEYS)"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "findPrivilegedClientBodyKeys",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export function findPrivilegedClientBodyKeys(\n  body: unknown,\n): PrivilegedClientBodyKey[] {\n  if (body === null || typeof body !== 'object' || Array.isArray(body)) {\n    return [];\n  }\n  const found: PrivilegedClientBodyKey[] = [];\n  for (const key of Object.keys(body as Record<string, unknown>)) {\n    if (PRIVILEGED.has(key)) {\n      found.push(key as PrivilegedClientBodyKey);\n    }\n  }\n  return found;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "privilegedClientBodyRejectionMessage",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 40,
+      "endLine": 46,
+      "text": "export function privilegedClientBodyRejectionMessage(\n  body: unknown,\n): string | null {\n  const found = findPrivilegedClientBodyKeys(body);\n  if (found.length === 0) return null;\n  return `Client darf privilegierte Felder nicht setzen: ${found.join(', ')}`;\n}"
     },
     {
       "kind": "VariableDeclaration",
@@ -1557,248 +1659,248 @@
       "kind": "TypeAliasDeclaration",
       "name": "JsonRecord",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 20,
-      "endLine": 20,
+      "line": 21,
+      "endLine": 21,
       "text": "type JsonRecord = Record<string, unknown>;"
     },
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 22,
-      "endLine": 25,
+      "line": 23,
+      "endLine": 26,
       "text": "CORS_OPTS: CorsOptions = {\n  methods: 'POST, OPTIONS',\n  envKeys: ['CHARACTER_AI_ALLOWED_ORIGIN'],\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "ParsedRequest",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 27,
-      "endLine": 32,
+      "line": 28,
+      "endLine": 33,
       "text": "interface ParsedRequest {\n  context: CharacterLorePromptContext;\n  projectId?: string;\n  worldId?: string;\n  currentBackgroundStory?: string;\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "ProjectRow",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 34,
-      "endLine": 40,
+      "line": 35,
+      "endLine": 41,
       "text": "interface ProjectRow {\n  id: string;\n  name: string;\n  description: string | null;\n  world_id: string | null;\n  gm_user_id: string;\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "WorldRow",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 42,
-      "endLine": 49,
+      "line": 43,
+      "endLine": 50,
       "text": "interface WorldRow {\n  id: string;\n  creator_user_id: string | null;\n  name: string;\n  lore: string | null;\n  setting_type: string | null;\n  is_public: boolean;\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "SupabaseConfig",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 51,
-      "endLine": 55,
+      "line": 52,
+      "endLine": 56,
       "text": "interface SupabaseConfig {\n  url: string;\n  anonKey: string;\n  serviceRoleKey?: string;\n}"
     },
     {
       "kind": "VariableDeclaration",
       "name": "RATE_LIMIT_WINDOW_SECONDS",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 57,
-      "endLine": 57,
+      "line": 58,
+      "endLine": 58,
       "text": "RATE_LIMIT_WINDOW_SECONDS = 60"
     },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_RATE_LIMIT",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 58,
-      "endLine": 58,
+      "line": 59,
+      "endLine": 59,
       "text": "DEFAULT_RATE_LIMIT = 6"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_STORY_LENGTH",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 59,
-      "endLine": 59,
+      "line": 60,
+      "endLine": 60,
       "text": "MAX_STORY_LENGTH = 12_000"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_REQUEST_BYTES",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 60,
-      "endLine": 60,
+      "line": 61,
+      "endLine": 61,
       "text": "MAX_REQUEST_BYTES = 128_000"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isRecord",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 62,
-      "endLine": 64,
+      "line": 63,
+      "endLine": 65,
       "text": "function isRecord(value: unknown): value is JsonRecord {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getCorsHeaders",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 66,
-      "endLine": 68,
+      "line": 67,
+      "endLine": 69,
       "text": "function getCorsHeaders(request: Request): HeadersInit {\n  return corsHeaders(request, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 70,
-      "endLine": 72,
+      "line": 71,
+      "endLine": 73,
       "text": "function jsonResponse(request: Request, body: JsonRecord, status = 200): Response {\n  return sharedJsonResponse(request, body, status, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "readString",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 74,
-      "endLine": 78,
+      "line": 75,
+      "endLine": 79,
       "text": "function readString(record: JsonRecord, key: string, maxLength: number): string {\n  const value = record[key];\n  if (typeof value !== 'string') return '';\n  return value.trim().slice(0, maxLength);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "readOptionalString",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 80,
-      "endLine": 83,
+      "line": 81,
+      "endLine": 84,
       "text": "function readOptionalString(record: JsonRecord, key: string, maxLength: number): string | undefined {\n  const value = readString(record, key, maxLength);\n  return value || undefined;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "readNumber",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 85,
-      "endLine": 89,
+      "line": 86,
+      "endLine": 90,
       "text": "function readNumber(record: JsonRecord, key: string, min: number, max: number, fallback: number): number {\n  const value = record[key];\n  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;\n  return Math.min(max, Math.max(min, value));\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "readStringArray",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 91,
-      "endLine": 102,
+      "line": 92,
+      "endLine": 103,
       "text": "function readStringArray(value: unknown, maxItems: number, maxLength: number): string[] {\n  if (!Array.isArray(value)) return [];\n  return Array.from(\n    new Set(\n      value\n        .slice(0, maxItems)\n        .filter((entry): entry is string => typeof entry === 'string')\n        .map((entry) => entry.trim().slice(0, maxLength))\n        .filter(Boolean),\n    ),\n  );\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isUuid",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 104,
-      "endLine": 106,
+      "line": 105,
+      "endLine": 107,
       "text": "function isUuid(value: string): boolean {\n  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseAttributes",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 108,
-      "endLine": 118,
+      "line": 109,
+      "endLine": 119,
       "text": "function parseAttributes(value: unknown): CharacterLorePromptContext['attributes'] | null {\n  if (!isRecord(value)) return null;\n  return {\n    strength: readNumber(value, 'strength', 1, 30, 10),\n    dexterity: readNumber(value, 'dexterity', 1, 30, 10),\n    constitution: readNumber(value, 'constitution', 1, 30, 10),\n    intelligence: readNumber(value, 'intelligence', 1, 30, 10),\n    wisdom: readNumber(value, 'wisdom', 1, 30, 10),\n    charisma: readNumber(value, 'charisma', 1, 30, 10),\n  };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseAppearance",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 120,
-      "endLine": 132,
+      "line": 121,
+      "endLine": 133,
       "text": "function parseAppearance(value: unknown): CharacterLorePromptContext['appearance'] | null {\n  if (!isRecord(value)) return null;\n  return {\n    bodySize: readNumber(value, 'bodySize', 0, 100, 50),\n    height: readNumber(value, 'height', 0, 100, 50),\n    face: readString(value, 'face', 120),\n    hairStyle: readString(value, 'hairStyle', 120),\n    hairColor: readString(value, 'hairColor', 32),\n    skinTone: readString(value, 'skinTone', 32),\n    clothing: readString(value, 'clothing', 120),\n    accessory: readOptionalString(value, 'accessory', 120),\n  };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseTraits",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 134,
-      "endLine": 142,
+      "line": 135,
+      "endLine": 143,
       "text": "function parseTraits(value: unknown): CharacterLorePromptContext['traits'] | null {\n  if (!isRecord(value)) return null;\n  return {\n    personality: readStringArray(value.personality, 12, 160),\n    ideals: readStringArray(value.ideals, 12, 160),\n    bonds: readStringArray(value.bonds, 12, 160),\n    flaws: readStringArray(value.flaws, 12, 160),\n  };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseAbilities",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 144,
-      "endLine": 160,
+      "line": 145,
+      "endLine": 161,
       "text": "function parseAbilities(value: unknown): CharacterLorePromptContext['abilities'] {\n  if (!Array.isArray(value)) return [];\n  const abilities: CharacterLorePromptContext['abilities'] = [];\n  for (const entry of value.slice(0, 30)) {\n    if (!isRecord(entry)) continue;\n    const type = entry.type;\n    if (type !== 'combat' && type !== 'magic' && type !== 'skill') continue;\n    abilities.push({\n      name: readString(entry, 'name', 120),\n      description: readString(entry, 'description', 600),\n      type,\n      cost: readNumber(entry, 'cost', 0, 10_000, 0),\n      effect: readString(entry, 'effect', 600),\n    });\n  }\n  return abilities.filter((ability) => ability.name.length > 0);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseInventory",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 162,
-      "endLine": 177,
+      "line": 163,
+      "endLine": 178,
       "text": "function parseInventory(value: unknown): CharacterLorePromptContext['inventory'] {\n  if (!Array.isArray(value)) return [];\n  const items: CharacterLorePromptContext['inventory'] = [];\n  for (const entry of value.slice(0, 30)) {\n    if (!isRecord(entry)) continue;\n    const type = entry.type;\n    if (type !== 'weapon' && type !== 'armor' && type !== 'consumable' && type !== 'misc') continue;\n    items.push({\n      name: readString(entry, 'name', 120),\n      description: readString(entry, 'description', 600),\n      type,\n      quantity: Math.round(readNumber(entry, 'quantity', 1, 999, 1)),\n    });\n  }\n  return items.filter((item) => item.name.length > 0);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseRequestBody",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 179,
-      "endLine": 217,
+      "line": 180,
+      "endLine": 218,
       "text": "function parseRequestBody(value: unknown): ParsedRequest | null {\n  if (!isRecord(value) || value.action !== 'generate-background' || !isRecord(value.context)) return null;\n  const source = value.context;\n  const ruleset = source.ruleset;\n  if (ruleset !== 'sagatree-core' && ruleset !== 'dnd-5.5e') return null;\n\n  const attributes = parseAttributes(source.attributes);\n  const appearance = parseAppearance(source.appearance);\n  const traits = parseTraits(source.traits);\n  if (!attributes || !appearance || !traits) return null;\n\n  const projectId = readOptionalString(source, 'projectId', 64);\n  const worldId = readOptionalString(source, 'worldId', 64);\n  if ((projectId && !isUuid(projectId)) || (worldId && !isUuid(worldId))) return null;\n\n  const currentBackgroundStory = readOptionalString(value, 'currentBackgroundStory', 8_000);\n\n  return {\n    context: {\n      ruleset,\n      name: readString(source, 'name', 120),\n      description: readString(source, 'description', 2_000),\n      characterClass: readString(source, 'characterClass', 120),\n      raceOrSpecies: readString(source, 'raceOrSpecies', 120),\n      setting: readOptionalString(source, 'setting', 160),\n      essenceProfile: readOptionalString(source, 'essenceProfile', 160),\n      dndBackground: readOptionalString(source, 'dndBackground', 160),\n      level: Math.round(readNumber(source, 'level', 1, 20, 1)),\n      attributes,\n      abilities: parseAbilities(source.abilities),\n      inventory: parseInventory(source.inventory),\n      appearance,\n      traits,\n    },\n    projectId,\n    worldId,\n    currentBackgroundStory,\n  };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getRateLimit",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 219,
-      "endLine": 222,
+      "line": 220,
+      "endLine": 223,
       "text": "function getRateLimit(): number {\n  const configured = Number.parseInt(Deno.env.get('CHARACTER_AI_RATE_LIMIT_PER_MINUTE') || '', 10);\n  return Number.isFinite(configured) && configured > 0 ? Math.min(configured, 60) : DEFAULT_RATE_LIMIT;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getSupabaseConfig",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 224,
-      "endLine": 235,
+      "line": 225,
+      "endLine": 236,
       "text": "function getSupabaseConfig(): SupabaseConfig | null {\n  const url = Deno.env.get('SUPABASE_URL')?.trim();\n  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim();\n  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim();\n  return url && anonKey\n    ? {\n        url: url.replace(/\\/+$/, ''),\n        anonKey,\n        serviceRoleKey: serviceRoleKey || undefined,\n      }\n    : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "fetchServiceJson",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 237,
-      "endLine": 248,
+      "line": 238,
+      "endLine": 249,
       "text": "async function fetchServiceJson(url: string, serviceRoleKey: string): Promise<unknown> {\n  const response = await fetch(url, {\n    headers: {\n      Authorization: `Bearer ${serviceRoleKey}`,\n      apikey: serviceRoleKey,\n      Accept: 'application/json',\n    },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) throw new Error(`Supabase lookup failed with ${response.status}`);\n  return response.json();\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "authenticate",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 250,
-      "endLine": 266,
+      "line": 251,
+      "endLine": 267,
       "text": "async function authenticate(request: Request): Promise<string | null> {\n  const config = getSupabaseConfig();\n  const authorization = request.headers.get('Authorization');\n  if (!config || !authorization?.startsWith('Bearer ')) return null;\n\n  const response = await fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) return null;\n\n  const body: unknown = await response.json();\n  return isRecord(body) && typeof body.id === 'string' ? body.id : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseProjectRow",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 268,
-      "endLine": 283,
+      "line": 269,
+      "endLine": 284,
       "text": "function parseProjectRow(value: unknown): ProjectRow | null {\n  if (!isRecord(value)) return null;\n  return typeof value.id === 'string' &&\n    typeof value.name === 'string' &&\n    (typeof value.description === 'string' || value.description === null) &&\n    (typeof value.world_id === 'string' || value.world_id === null) &&\n    typeof value.gm_user_id === 'string'\n    ? {\n        id: value.id,\n        name: value.name,\n        description: value.description,\n        world_id: value.world_id,\n        gm_user_id: value.gm_user_id,\n      }\n    : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseWorldRow",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 285,
-      "endLine": 302,
+      "line": 286,
+      "endLine": 303,
       "text": "function parseWorldRow(value: unknown): WorldRow | null {\n  if (!isRecord(value)) return null;\n  return typeof value.id === 'string' &&\n    typeof value.name === 'string' &&\n    (typeof value.creator_user_id === 'string' || value.creator_user_id === null) &&\n    (typeof value.lore === 'string' || value.lore === null) &&\n    (typeof value.setting_type === 'string' || value.setting_type === null) &&\n    typeof value.is_public === 'boolean'\n    ? {\n        id: value.id,\n        creator_user_id: value.creator_user_id,\n        name: value.name,\n        lore: value.lore,\n        setting_type: value.setting_type,\n        is_public: value.is_public,\n      }\n    : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getAuthorizedReferenceContext",
       "path": "supabase/functions/character-lore/index.ts",
-      "line": 304,
-      "endLine": 371,
+      "line": 305,
+      "endLine": 372,
       "text": "async function getAuthorizedReferenceContext(\n  userId: string,\n  projectId?: string,\n  directWorldId?: string,\n): Promise<CharacterLoreReferenceContext> {\n  if (!projectId && !directWorldId) return {};\n  const config = getSupabaseConfig();\n  if (!config?.serviceRoleKey) {\n    throw new Error('Server-side lore lookup is not configured');\n  }\n\n  let project: ProjectRow | null = null;\n  let projectAuthorized = false;\n  if (projectId) {\n    const projectBody = await fetchServiceJson(\n      `${config.url}/rest/v1/projects?select=id,name,description,world_id,gm_user_id&id=eq.${projectId}&limit=1`,\n      config.serviceRoleKey,\n    );\n    const firstProject = Array.isArray(projectBody) ? projectBody[0] : undefined;\n    project = parseProjectRow(firstProject);\n    if (!project) throw new Error('Project not found');\n\n    if (project.gm_user_id === userId) {\n      projectAuthorized = true;\n    } else {\n      const memberBody = await fetchServiceJson(\n        `${config.url}/rest/v1/project_members?select=id&project_id=eq.${projectId}&user_id=eq.${userId}&status=eq.active&limit=1`,\n        config.serviceRoleKey,\n      );\n      projectAuthorized = Array.isArray(memberBody) && memberBody.length > 0;\n    }\n    if (!projectAuthorized) throw new Error('Project access denied');\n  }\n\n  if (projectId && directWorldId && directWorldId !== project?.world_id) {\n    throw new Error('World does not belong to project');\n  }\n  const worldId = directWorldId || project?.world_id || undefined;\n\n  let world: WorldRow | null = null;\n  if (worldId) {\n    const worldBody = await fetchServiceJson(\n      `${config.url}/rest/v1/worlds?select=id,creator_user_id,name,lore,setting_type,is_public&id=eq.${worldId}&limit=1`,\n      config.serviceRoleKey,\n    );\n    const firstWorld = Array.isArray(worldBody) ? worldBody[0] : undefined;\n    world = parseWorldRow(firstWorld);\n    if (!world) throw new Error('World not found');\n    if (!canUseWorldLoreReference(\n      {\n        creatorUserId: world.creator_user_id,\n        isPublic: world.is_public,\n      },\n      userId,\n      project?.gm_user_id,\n    )) {\n      throw new Error('World access denied');\n    }\n  }\n\n  return {\n    projectName: project?.name,\n    projectDescription: project?.description?.slice(0, 2_000) || undefined,\n    worldName: world?.name,\n    worldSettingType: world?.setting_type || undefined,\n    worldLore: world?.lore?.slice(0, 12_000) || undefined,\n  };\n}"
     }
   ]

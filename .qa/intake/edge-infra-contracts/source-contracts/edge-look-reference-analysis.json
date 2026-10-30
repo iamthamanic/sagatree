@@ -4,6 +4,10 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "sha256": "33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95"
+    },
+    {
       "path": "supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
@@ -21,7 +25,7 @@
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "sha256": "26c2585446ccda4e0063afee6a2eef7de94bd0122046a4de3889ea998616f740"
+      "sha256": "9f0da17201e85b482eab07a956dcfbd6b7aa411bec9b04e35580db7f37716874"
     }
   ],
   "operations": [
@@ -29,8 +33,8 @@
       "id": "look-reference-analysis:handler",
       "condition": "Complete handler with ordered method/auth/body guards",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 193,
-      "endLine": 327,
+      "line": 194,
+      "endLine": 332,
       "requestReads": [
         "body.action",
         "body.displayNameHint",
@@ -41,85 +45,91 @@
       "returns": [
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 195,
-          "endLine": 195,
+          "line": 196,
+          "endLine": 196,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 197,
-          "endLine": 197,
+          "line": 198,
+          "endLine": 198,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 203,
-          "endLine": 207,
+          "line": 204,
+          "endLine": 208,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 212,
-          "endLine": 216,
+          "line": 213,
+          "endLine": 217,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 225,
-          "endLine": 232,
+          "line": 226,
+          "endLine": 233,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 237,
-          "endLine": 240,
+          "line": 238,
+          "endLine": 241,
           "expression": "jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      })"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 245,
-          "endLine": 249,
+          "line": 247,
+          "endLine": 247,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 250,
+          "endLine": 254,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 263,
-          "endLine": 263,
+          "line": 268,
+          "endLine": 268,
           "expression": "jsonResponse(request, { status: 'error', message }, 400)"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 287,
-          "endLine": 294,
+          "line": 292,
+          "endLine": 299,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 311,
-          "endLine": 315,
+          "line": 316,
+          "endLine": 320,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    })"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 318,
-          "endLine": 325,
+          "line": 323,
+          "endLine": 330,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    )"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 193,
-          "endLine": 327,
+          "line": 194,
+          "endLine": 332,
           "expression": "serve",
           "arguments": [
-            "async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n}"
+            "async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    const privilegedReject = privilegedClientBodyRejectionMessage(body);\n    if (privilegedReject) {\n      return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n    }\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 194,
-          "endLine": 194,
+          "line": 195,
+          "endLine": 195,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -128,8 +138,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 197,
-          "endLine": 197,
+          "line": 198,
+          "endLine": 198,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -139,8 +149,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 202,
+          "endLine": 202,
           "expression": "Number",
           "arguments": [
             "request.headers.get('content-length') || '0'"
@@ -148,8 +158,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 202,
+          "endLine": 202,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -157,8 +167,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 202,
-          "endLine": 202,
+          "line": 203,
+          "endLine": 203,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -166,8 +176,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 203,
-          "endLine": 207,
+          "line": 204,
+          "endLine": 208,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -177,8 +187,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 210,
-          "endLine": 210,
+          "line": 211,
+          "endLine": 211,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -186,8 +196,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 212,
-          "endLine": 216,
+          "line": 213,
+          "endLine": 217,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -197,8 +207,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 219,
-          "endLine": 223,
+          "line": 220,
+          "endLine": 224,
           "expression": "consumeLookReferenceAnalysisRateLimit",
           "arguments": [
             "{\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    }"
@@ -206,15 +216,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 221,
-          "endLine": 221,
+          "line": 222,
+          "endLine": 222,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 225,
-          "endLine": 232,
+          "line": 226,
+          "endLine": 233,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -224,15 +234,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 235,
-          "endLine": 235,
+          "line": 236,
+          "endLine": 236,
           "expression": "resolveLookRefVisionProviderConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 237,
-          "endLine": 240,
+          "line": 238,
+          "endLine": 241,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -241,15 +251,35 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 243,
-          "endLine": 243,
+          "line": 244,
+          "endLine": 244,
           "expression": "request.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 244,
-          "endLine": 244,
+          "line": 245,
+          "endLine": 245,
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 247,
+          "endLine": 247,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 249,
+          "endLine": 249,
           "expression": "isRecord",
           "arguments": [
             "body"
@@ -257,8 +287,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 245,
-          "endLine": 249,
+          "line": 250,
+          "endLine": 254,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -268,8 +298,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 254,
-          "endLine": 254,
+          "line": 259,
+          "endLine": 259,
           "expression": "body.displayNameHint.trim().slice",
           "arguments": [
             "0",
@@ -278,15 +308,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 254,
-          "endLine": 254,
+          "line": 259,
+          "endLine": 259,
           "expression": "body.displayNameHint.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 259,
-          "endLine": 259,
+          "line": 264,
+          "endLine": 264,
           "expression": "parseReferences",
           "arguments": [
             "body.references"
@@ -294,8 +324,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 263,
-          "endLine": 263,
+          "line": 268,
+          "endLine": 268,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -305,8 +335,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 271,
-          "endLine": 271,
+          "line": 276,
+          "endLine": 276,
           "expression": "decodeLookRefBase64Image",
           "arguments": [
             "ref.contentBase64"
@@ -314,8 +344,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 273,
-          "endLine": 273,
+          "line": 278,
+          "endLine": 278,
           "expression": "fetchOwnerStorageBytes",
           "arguments": [
             "ref.storagePath",
@@ -324,8 +354,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 277,
-          "endLine": 277,
+          "line": 282,
+          "endLine": 282,
           "expression": "validateLookRefImageBytes",
           "arguments": [
             "bytes",
@@ -334,8 +364,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 278,
-          "endLine": 284,
+          "line": 283,
+          "endLine": 289,
           "expression": "visionImages.push",
           "arguments": [
             "{\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        }"
@@ -343,8 +373,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 287,
+          "endLine": 287,
           "expression": "bytesToBase64",
           "arguments": [
             "validated.bytes"
@@ -352,8 +382,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 291,
+          "endLine": 291,
           "expression": "console.error",
           "arguments": [
             "'[look-reference-analysis] image error'",
@@ -363,8 +393,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 287,
-          "endLine": 294,
+          "line": 292,
+          "endLine": 299,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -374,8 +404,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 298,
-          "endLine": 302,
+          "line": 303,
+          "endLine": 307,
           "expression": "analyzeLookReferencesWithVision",
           "arguments": [
             "provider",
@@ -385,15 +415,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 303,
-          "endLine": 303,
+          "line": 308,
+          "endLine": 308,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 311,
-          "endLine": 315,
+          "line": 316,
+          "endLine": 320,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -402,8 +432,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 322,
+          "endLine": 322,
           "expression": "console.error",
           "arguments": [
             "'[look-reference-analysis] failed'",
@@ -412,8 +442,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 318,
-          "endLine": 325,
+          "line": 323,
+          "endLine": 330,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -422,74 +452,80 @@
           ]
         }
       ],
-      "exactBranch": "serve(async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n});"
+      "exactBranch": "serve(async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    const privilegedReject = privilegedClientBodyRejectionMessage(body);\n    if (privilegedReject) {\n      return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n    }\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n});"
     }
   ],
   "responseSites": [
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 53,
-      "endLine": 53,
+      "line": 54,
+      "endLine": 54,
       "expression": "sharedJsonResponse(request, body, status, CORS_OPTS)"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 197,
-      "endLine": 197,
+      "line": 198,
+      "endLine": 198,
       "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 203,
-      "endLine": 207,
+      "line": 204,
+      "endLine": 208,
       "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      )"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 212,
-      "endLine": 216,
+      "line": 213,
+      "endLine": 217,
       "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      )"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 225,
-      "endLine": 232,
+      "line": 226,
+      "endLine": 233,
       "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      )"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 237,
-      "endLine": 240,
+      "line": 238,
+      "endLine": 241,
       "expression": "jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      })"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 245,
-      "endLine": 249,
+      "line": 247,
+      "endLine": 247,
+      "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+    },
+    {
+      "path": "supabase/functions/look-reference-analysis/index.ts",
+      "line": 250,
+      "endLine": 254,
       "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      )"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 263,
-      "endLine": 263,
+      "line": 268,
+      "endLine": 268,
       "expression": "jsonResponse(request, { status: 'error', message }, 400)"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 287,
-      "endLine": 294,
+      "line": 292,
+      "endLine": 299,
       "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        )"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 311,
-      "endLine": 315,
+      "line": 316,
+      "endLine": 320,
       "expression": "jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    })"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 318,
-      "endLine": 325,
+      "line": 323,
+      "endLine": 330,
       "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    )"
     }
   ],
@@ -517,14 +553,14 @@
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 93,
-      "endLine": 93,
+      "line": 94,
+      "endLine": 94,
       "expression": "AbortSignal.timeout(10_000)"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 120,
-      "endLine": 120,
+      "line": 121,
+      "endLine": 121,
       "expression": "AbortSignal.timeout(30_000)"
     }
   ],
@@ -543,23 +579,23 @@
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 88,
-      "endLine": 94,
+      "line": 89,
+      "endLine": 95,
       "expression": "fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  })"
     },
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 115,
-      "endLine": 121,
+      "line": 116,
+      "endLine": 122,
       "expression": "fetch(url, {\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n    },\n    signal: AbortSignal.timeout(30_000),\n  })"
     }
   ],
   "handler": [
     {
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 193,
-      "endLine": 327,
-      "text": "serve(async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n});",
+      "line": 194,
+      "endLine": 332,
+      "text": "serve(async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    const privilegedReject = privilegedClientBodyRejectionMessage(body);\n    if (privilegedReject) {\n      return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n    }\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n});",
       "requestReads": [
         "body.action",
         "body.displayNameHint",
@@ -570,85 +606,91 @@
       "returns": [
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 195,
-          "endLine": 195,
+          "line": 196,
+          "endLine": 196,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 197,
-          "endLine": 197,
+          "line": 198,
+          "endLine": 198,
           "expression": "jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 203,
-          "endLine": 207,
+          "line": 204,
+          "endLine": 208,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 212,
-          "endLine": 216,
+          "line": 213,
+          "endLine": 217,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 225,
-          "endLine": 232,
+          "line": 226,
+          "endLine": 233,
           "expression": "jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 237,
-          "endLine": 240,
+          "line": 238,
+          "endLine": 241,
           "expression": "jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      })"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 245,
-          "endLine": 249,
+          "line": 247,
+          "endLine": 247,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 250,
+          "endLine": 254,
           "expression": "jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 263,
-          "endLine": 263,
+          "line": 268,
+          "endLine": 268,
           "expression": "jsonResponse(request, { status: 'error', message }, 400)"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 287,
-          "endLine": 294,
+          "line": 292,
+          "endLine": 299,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        )"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 311,
-          "endLine": 315,
+          "line": 316,
+          "endLine": 320,
           "expression": "jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    })"
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 318,
-          "endLine": 325,
+          "line": 323,
+          "endLine": 330,
           "expression": "jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    )"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 193,
-          "endLine": 327,
+          "line": 194,
+          "endLine": 332,
           "expression": "serve",
           "arguments": [
-            "async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n}"
+            "async (request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Method not allowed' }, 405);\n  }\n\n  try {\n    const contentLength = Number(request.headers.get('content-length') || '0');\n    if (Number.isFinite(contentLength) && contentLength > MAX_REQUEST_BYTES) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Request too large' },\n        413,\n      );\n    }\n\n    const userId = await authenticate(request);\n    if (!userId) {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Nicht angemeldet.' },\n        401,\n      );\n    }\n\n    const rate = consumeLookReferenceAnalysisRateLimit({\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    });\n    if (rate.ok === false) {\n      return jsonResponse(\n        request,\n        {\n          status: 'error',\n          message: `Zu viele Anfragen. Bitte in ${rate.retryAfterSeconds}s erneut versuchen.`,\n        },\n        429,\n      );\n    }\n\n    const provider = resolveLookRefVisionProviderConfig();\n    if (!provider) {\n      return jsonResponse(request, {\n        status: 'not-configured',\n        message: 'Look-Analyse ist serverseitig nicht konfiguriert.',\n      });\n    }\n\n    const body: unknown = await request.json();\n    const privilegedReject = privilegedClientBodyRejectionMessage(body);\n    if (privilegedReject) {\n      return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n    }\n    if (!isRecord(body) || body.action !== 'analyze') {\n      return jsonResponse(\n        request,\n        { status: 'error', message: 'Ungültige Anfrage.' },\n        400,\n      );\n    }\n\n    const displayNameHint =\n      typeof body.displayNameHint === 'string'\n        ? body.displayNameHint.trim().slice(0, 80)\n        : undefined;\n\n    let parsedRefs: ParsedRef[];\n    try {\n      parsedRefs = parseReferences(body.references);\n    } catch (parseError) {\n      const message =\n        parseError instanceof Error ? parseError.message : 'Invalid references';\n      return jsonResponse(request, { status: 'error', message }, 400);\n    }\n\n    const visionImages: LookRefVisionImagePart[] = [];\n    for (const ref of parsedRefs) {\n      let bytes: Uint8Array;\n      try {\n        if (ref.contentBase64) {\n          bytes = decodeLookRefBase64Image(ref.contentBase64);\n        } else if (ref.storagePath) {\n          bytes = await fetchOwnerStorageBytes(ref.storagePath, userId);\n        } else {\n          throw new Error('Missing image bytes');\n        }\n        const validated = validateLookRefImageBytes(bytes, ref.mime);\n        visionImages.push({\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        });\n      } catch (imageError) {\n        console.error('[look-reference-analysis] image error', ref.id, imageError);\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: `Referenz ${ref.id} konnte nicht gelesen werden.`,\n          },\n          400,\n        );\n      }\n    }\n\n    const payload = await analyzeLookReferencesWithVision(\n      provider,\n      visionImages,\n      displayNameHint,\n    );\n    const analyzedAtIso = new Date().toISOString();\n\n    // Strip accidental secret-like keys before leaving the edge.\n    const safePayload: JsonRecord = { ...payload };\n    delete safePayload.apiKey;\n    delete safePayload.authorization;\n    delete safePayload.providerSecret;\n\n    return jsonResponse(request, {\n      status: 'ok',\n      payload: safePayload,\n      analyzedAtIso,\n    });\n  } catch (error) {\n    console.error('[look-reference-analysis] failed', error);\n    return jsonResponse(\n      request,\n      {\n        status: 'error',\n        message: 'Look-Referenzanalyse fehlgeschlagen. Bitte erneut versuchen.',\n      },\n      500,\n    );\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 194,
-          "endLine": 194,
+          "line": 195,
+          "endLine": 195,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -657,8 +699,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 197,
-          "endLine": 197,
+          "line": 198,
+          "endLine": 198,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -668,8 +710,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 202,
+          "endLine": 202,
           "expression": "Number",
           "arguments": [
             "request.headers.get('content-length') || '0'"
@@ -677,8 +719,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 201,
-          "endLine": 201,
+          "line": 202,
+          "endLine": 202,
           "expression": "request.headers.get",
           "arguments": [
             "'content-length'"
@@ -686,8 +728,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 202,
-          "endLine": 202,
+          "line": 203,
+          "endLine": 203,
           "expression": "Number.isFinite",
           "arguments": [
             "contentLength"
@@ -695,8 +737,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 203,
-          "endLine": 207,
+          "line": 204,
+          "endLine": 208,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -706,8 +748,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 210,
-          "endLine": 210,
+          "line": 211,
+          "endLine": 211,
           "expression": "authenticate",
           "arguments": [
             "request"
@@ -715,8 +757,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 212,
-          "endLine": 216,
+          "line": 213,
+          "endLine": 217,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -726,8 +768,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 219,
-          "endLine": 223,
+          "line": 220,
+          "endLine": 224,
           "expression": "consumeLookReferenceAnalysisRateLimit",
           "arguments": [
             "{\n      userId,\n      limit: getRateLimit(),\n      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,\n    }"
@@ -735,15 +777,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 221,
-          "endLine": 221,
+          "line": 222,
+          "endLine": 222,
           "expression": "getRateLimit",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 225,
-          "endLine": 232,
+          "line": 226,
+          "endLine": 233,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -753,15 +795,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 235,
-          "endLine": 235,
+          "line": 236,
+          "endLine": 236,
           "expression": "resolveLookRefVisionProviderConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 237,
-          "endLine": 240,
+          "line": 238,
+          "endLine": 241,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -770,15 +812,35 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 243,
-          "endLine": 243,
+          "line": 244,
+          "endLine": 244,
           "expression": "request.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 244,
-          "endLine": 244,
+          "line": 245,
+          "endLine": 245,
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 247,
+          "endLine": 247,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/look-reference-analysis/index.ts",
+          "line": 249,
+          "endLine": 249,
           "expression": "isRecord",
           "arguments": [
             "body"
@@ -786,8 +848,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 245,
-          "endLine": 249,
+          "line": 250,
+          "endLine": 254,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -797,8 +859,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 254,
-          "endLine": 254,
+          "line": 259,
+          "endLine": 259,
           "expression": "body.displayNameHint.trim().slice",
           "arguments": [
             "0",
@@ -807,15 +869,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 254,
-          "endLine": 254,
+          "line": 259,
+          "endLine": 259,
           "expression": "body.displayNameHint.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 259,
-          "endLine": 259,
+          "line": 264,
+          "endLine": 264,
           "expression": "parseReferences",
           "arguments": [
             "body.references"
@@ -823,8 +885,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 263,
-          "endLine": 263,
+          "line": 268,
+          "endLine": 268,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -834,8 +896,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 271,
-          "endLine": 271,
+          "line": 276,
+          "endLine": 276,
           "expression": "decodeLookRefBase64Image",
           "arguments": [
             "ref.contentBase64"
@@ -843,8 +905,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 273,
-          "endLine": 273,
+          "line": 278,
+          "endLine": 278,
           "expression": "fetchOwnerStorageBytes",
           "arguments": [
             "ref.storagePath",
@@ -853,8 +915,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 277,
-          "endLine": 277,
+          "line": 282,
+          "endLine": 282,
           "expression": "validateLookRefImageBytes",
           "arguments": [
             "bytes",
@@ -863,8 +925,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 278,
-          "endLine": 284,
+          "line": 283,
+          "endLine": 289,
           "expression": "visionImages.push",
           "arguments": [
             "{\n          id: ref.id,\n          kind: ref.kind,\n          mime: validated.mime,\n          base64: bytesToBase64(validated.bytes),\n          weight: ref.weight,\n        }"
@@ -872,8 +934,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 287,
+          "endLine": 287,
           "expression": "bytesToBase64",
           "arguments": [
             "validated.bytes"
@@ -881,8 +943,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 286,
-          "endLine": 286,
+          "line": 291,
+          "endLine": 291,
           "expression": "console.error",
           "arguments": [
             "'[look-reference-analysis] image error'",
@@ -892,8 +954,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 287,
-          "endLine": 294,
+          "line": 292,
+          "endLine": 299,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -903,8 +965,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 298,
-          "endLine": 302,
+          "line": 303,
+          "endLine": 307,
           "expression": "analyzeLookReferencesWithVision",
           "arguments": [
             "provider",
@@ -914,15 +976,15 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 303,
-          "endLine": 303,
+          "line": 308,
+          "endLine": 308,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 311,
-          "endLine": 315,
+          "line": 316,
+          "endLine": 320,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -931,8 +993,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 317,
-          "endLine": 317,
+          "line": 322,
+          "endLine": 322,
           "expression": "console.error",
           "arguments": [
             "'[look-reference-analysis] failed'",
@@ -941,8 +1003,8 @@
         },
         {
           "path": "supabase/functions/look-reference-analysis/index.ts",
-          "line": 318,
-          "endLine": 325,
+          "line": 323,
+          "endLine": 330,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -954,6 +1016,46 @@
     }
   ],
   "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED_CLIENT_BODY_KEYS",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 9,
+      "endLine": 18,
+      "text": "PRIVILEGED_CLIENT_BODY_KEYS = [\n  'author_id',\n  'owner_user_id',\n  'rating',\n  'downloads',\n  'roles',\n  'permissions',\n  'is_admin',\n  'service_role',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrivilegedClientBodyKey",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "PRIVILEGED = new Set<string>(PRIVILEGED_CLIENT_BODY_KEYS)"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "findPrivilegedClientBodyKeys",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export function findPrivilegedClientBodyKeys(\n  body: unknown,\n): PrivilegedClientBodyKey[] {\n  if (body === null || typeof body !== 'object' || Array.isArray(body)) {\n    return [];\n  }\n  const found: PrivilegedClientBodyKey[] = [];\n  for (const key of Object.keys(body as Record<string, unknown>)) {\n    if (PRIVILEGED.has(key)) {\n      found.push(key as PrivilegedClientBodyKey);\n    }\n  }\n  return found;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "privilegedClientBodyRejectionMessage",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 40,
+      "endLine": 46,
+      "text": "export function privilegedClientBodyRejectionMessage(\n  body: unknown,\n): string | null {\n  const found = findPrivilegedClientBodyKeys(body);\n  if (found.length === 0) return null;\n  return `Client darf privilegierte Felder nicht setzen: ${found.join(', ')}`;\n}"
+    },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_METHODS",
@@ -1190,128 +1292,128 @@
       "kind": "TypeAliasDeclaration",
       "name": "JsonRecord",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 33,
-      "endLine": 33,
+      "line": 34,
+      "endLine": 34,
       "text": "type JsonRecord = Record<string, unknown>;"
     },
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 35,
-      "endLine": 38,
+      "line": 36,
+      "endLine": 39,
       "text": "CORS_OPTS: CorsOptions = {\n  methods: 'POST, OPTIONS',\n  envKeys: ['LOOK_AI_ALLOWED_ORIGIN', 'CHARACTER_AI_ALLOWED_ORIGIN'],\n}"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_REQUEST_BYTES",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 40,
-      "endLine": 40,
+      "line": 41,
+      "endLine": 41,
       "text": "MAX_REQUEST_BYTES = 12 * 1024 * 1024"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MIN_IMAGES",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 41,
-      "endLine": 41,
+      "line": 42,
+      "endLine": 42,
       "text": "MIN_IMAGES = 1"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_IMAGES",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 42,
-      "endLine": 42,
+      "line": 43,
+      "endLine": 43,
       "text": "MAX_IMAGES = 10"
     },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_RATE_LIMIT",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 43,
-      "endLine": 43,
+      "line": 44,
+      "endLine": 44,
       "text": "DEFAULT_RATE_LIMIT = 4"
     },
     {
       "kind": "VariableDeclaration",
       "name": "RATE_LIMIT_WINDOW_SECONDS",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 44,
-      "endLine": 44,
+      "line": 45,
+      "endLine": 45,
       "text": "RATE_LIMIT_WINDOW_SECONDS = 60"
     },
     {
       "kind": "VariableDeclaration",
       "name": "LOOK_MEDIA_BUCKET",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 45,
-      "endLine": 46,
+      "line": 46,
+      "endLine": 47,
       "text": "LOOK_MEDIA_BUCKET =\n  Deno.env.get('LOOK_REFERENCE_STORAGE_BUCKET')?.trim() || 'media'"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isRecord",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 48,
-      "endLine": 50,
+      "line": 49,
+      "endLine": 51,
       "text": "function isRecord(value: unknown): value is JsonRecord {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 52,
-      "endLine": 54,
+      "line": 53,
+      "endLine": 55,
       "text": "function jsonResponse(request: Request, body: JsonRecord, status = 200): Response {\n  return sharedJsonResponse(request, body, status, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getRateLimit",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 56,
-      "endLine": 64,
+      "line": 57,
+      "endLine": 65,
       "text": "function getRateLimit(): number {\n  const configured = Number.parseInt(\n    Deno.env.get('LOOK_AI_RATE_LIMIT_PER_MINUTE') || '',\n    10,\n  );\n  return Number.isFinite(configured) && configured > 0\n    ? Math.min(configured, 30)\n    : DEFAULT_RATE_LIMIT;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getSupabaseConfig",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 66,
-      "endLine": 81,
+      "line": 67,
+      "endLine": 82,
       "text": "function getSupabaseConfig(): {\n  url: string;\n  anonKey: string;\n  serviceRoleKey?: string;\n} | null {\n  const url = Deno.env.get('SUPABASE_URL')?.trim();\n  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim();\n  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim();\n  return url && anonKey\n    ? {\n        url: url.replace(/\\/+$/, ''),\n        anonKey,\n        serviceRoleKey: serviceRoleKey || undefined,\n      }\n    : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "authenticate",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 83,
-      "endLine": 99,
+      "line": 84,
+      "endLine": 100,
       "text": "async function authenticate(request: Request): Promise<string | null> {\n  const config = getSupabaseConfig();\n  const authorization = request.headers.get('Authorization');\n  if (!config || !authorization?.startsWith('Bearer ')) return null;\n\n  const response = await fetch(`${config.url}/auth/v1/user`, {\n    headers: {\n      Authorization: authorization,\n      apikey: config.anonKey,\n    },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) return null;\n\n  const body: unknown = await response.json();\n  return isRecord(body) && typeof body.id === 'string' ? body.id : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "fetchOwnerStorageBytes",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 101,
-      "endLine": 130,
+      "line": 102,
+      "endLine": 131,
       "text": "async function fetchOwnerStorageBytes(\n  storagePath: string,\n  ownerUserId: string,\n): Promise<Uint8Array> {\n  const config = getSupabaseConfig();\n  if (!config?.serviceRoleKey) {\n    throw new Error('Storage lookup is not configured');\n  }\n  const path = assertOwnerScopedStoragePath(storagePath, ownerUserId);\n  const url =\n    `${config.url}/storage/v1/object/${encodeURIComponent(LOOK_MEDIA_BUCKET)}/${path\n      .split('/')\n      .map(encodeURIComponent)\n      .join('/')}`;\n  const response = await fetch(url, {\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n    },\n    signal: AbortSignal.timeout(30_000),\n  });\n  if (!response.ok) {\n    throw new Error(`Storage fetch failed with ${response.status}`);\n  }\n  const buffer = new Uint8Array(await response.arrayBuffer());\n  if (buffer.byteLength > 8 * 1024 * 1024) {\n    throw new Error('Stored image exceeds size limit');\n  }\n  return buffer;\n}"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "ParsedRef",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 132,
-      "endLine": 141,
+      "line": 133,
+      "endLine": 142,
       "text": "type ParsedRef = {\n  id: string;\n  kind: 'style' | 'content';\n  mime: 'image/png' | 'image/jpeg' | 'image/webp';\n  weight?: number;\n  label?: string;\n  uri: string;\n  contentBase64?: string;\n  storagePath?: string;\n};"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseReferences",
       "path": "supabase/functions/look-reference-analysis/index.ts",
-      "line": 143,
-      "endLine": 191,
+      "line": 144,
+      "endLine": 192,
       "text": "function parseReferences(value: unknown): ParsedRef[] {\n  if (!Array.isArray(value)) throw new Error('references must be an array');\n  if (value.length < MIN_IMAGES || value.length > MAX_IMAGES) {\n    throw new Error('references must contain 1 to 10 images');\n  }\n  const out: ParsedRef[] = [];\n  const ids = new Set<string>();\n  for (const entry of value) {\n    if (!isRecord(entry)) throw new Error('invalid reference entry');\n    const id = typeof entry.id === 'string' ? entry.id.trim() : '';\n    const kind = entry.kind;\n    const mime = typeof entry.mime === 'string' ? entry.mime.trim() : '';\n    const uri = typeof entry.uri === 'string' ? entry.uri.trim() : '';\n    if (!id || ids.has(id)) throw new Error('reference id invalid or duplicate');\n    ids.add(id);\n    if (kind !== 'style' && kind !== 'content') {\n      throw new Error('reference kind must be style or content');\n    }\n    if (!isAllowedLookRefAnalysisMime(mime)) {\n      throw new Error('reference mime must be png, jpeg, or webp');\n    }\n    if (!uri) throw new Error('reference uri is required');\n    let weight: number | undefined;\n    if (entry.weight !== undefined) {\n      if (typeof entry.weight !== 'number' || entry.weight < 0 || entry.weight > 1) {\n        throw new Error('reference weight must be between 0 and 1');\n      }\n      weight = entry.weight;\n    }\n    const contentBase64 =\n      typeof entry.contentBase64 === 'string' ? entry.contentBase64 : undefined;\n    const storagePath =\n      typeof entry.storagePath === 'string' ? entry.storagePath.trim() : undefined;\n    if (!contentBase64 && !storagePath) {\n      throw new Error('reference needs contentBase64 or storagePath');\n    }\n    out.push({\n      id,\n      kind,\n      mime,\n      weight,\n      label: typeof entry.label === 'string' ? entry.label.slice(0, 80) : undefined,\n      uri,\n      contentBase64,\n      storagePath,\n    });\n  }\n  return out;\n}"
     }
   ]

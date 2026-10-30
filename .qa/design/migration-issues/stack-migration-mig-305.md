@@ -23,7 +23,7 @@ src/infrastructure/marketplace: bestehende Aufrufer über den freigegebenen Host
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `src/domains/marketplace/contracts/marketplace.types.ts`, `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/supabase.ts`.
+- Quellpfade und bestehende Adapter: `src/domains/marketplace/client-trust.ts`, `src/domains/marketplace/contracts/marketplace.types.ts`, `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/authenticatedUser.ts`, `src/lib/localAdmin.ts`, `src/lib/networkTimeout.ts`, `src/lib/supabase.ts`.
 - Source Contracts: `.qa/intake/edge-infra-contracts/infra-marketplace.md`, `.qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
@@ -132,7 +132,7 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `src/domains/marketplace/contracts/marketplace.types.ts`, `src/infrastructure/marketplace/marketplace-service.ts`, `src/lib/supabase.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Isolated deliverable under `src/domains/marketplace/client-trust.ts`, `src/domains/marketplace/contracts/marketplace.types.ts`, `src/infrastructure/marketplace/marketplace-service.ts` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | MIG-602 feature E2E |
 | **FEATURE VERIFIED** | MIG-311/#810 / MIG-301..313 + MIG-602/#847 |

@@ -75,11 +75,82 @@ CREATE TRIGGER marketplace_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_marketplace_updated_at();
 
--- RPC Function: Increment downloads atomically
+-- Client-trust (#675): privileged columns are server-authority only
+CREATE OR REPLACE FUNCTION public.marketplace_items_guard_privileged_columns()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF current_user NOT IN ('anon', 'authenticated') THEN
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'INSERT' THEN
+    IF auth.uid() IS NULL THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    NEW.author_id := auth.uid();
+    NEW.rating := 0;
+    NEW.downloads := 0;
+    NEW.is_featured := false;
+    NEW.created_at := now();
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'UPDATE' THEN
+    NEW.author_id := OLD.author_id;
+    NEW.rating := OLD.rating;
+    NEW.downloads := OLD.downloads;
+    NEW.is_featured := OLD.is_featured;
+    NEW.created_at := OLD.created_at;
+    RETURN NEW;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS marketplace_items_guard_privileged_columns ON public.marketplace_items;
+CREATE TRIGGER marketplace_items_guard_privileged_columns
+  BEFORE INSERT OR UPDATE ON public.marketplace_items
+  FOR EACH ROW
+  EXECUTE FUNCTION public.marketplace_items_guard_privileged_columns();
+
+REVOKE ALL ON TABLE public.marketplace_items FROM PUBLIC;
+REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM anon;
+REVOKE INSERT, UPDATE ON TABLE public.marketplace_items FROM authenticated;
+GRANT SELECT ON TABLE public.marketplace_items TO anon, authenticated;
+-- Include author_id/rating/downloads so PostgREST INSERT privilege checks pass;
+-- the BEFORE INSERT guard still overwrites them from auth.uid()/zeros.
+GRANT INSERT (
+  type,
+  title,
+  description,
+  author_id,
+  data,
+  rating,
+  downloads,
+  price,
+  image_url,
+  tags
+) ON TABLE public.marketplace_items TO authenticated;
+GRANT UPDATE (
+  type,
+  title,
+  description,
+  data,
+  price,
+  image_url,
+  tags,
+  updated_at
+) ON TABLE public.marketplace_items TO authenticated;
+GRANT DELETE ON TABLE public.marketplace_items TO authenticated;
+
+-- RPC Function: Increment downloads atomically (DEFINER bypasses client column grants)
 CREATE OR REPLACE FUNCTION increment_marketplace_downloads(item_id UUID)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public, pg_temp
 AS $$
 BEGIN
   UPDATE marketplace_items
@@ -88,8 +159,9 @@ BEGIN
 END;
 $$;
 
+REVOKE ALL ON FUNCTION increment_marketplace_downloads(UUID) FROM PUBLIC;
+REVOKE ALL ON FUNCTION increment_marketplace_downloads(UUID) FROM anon;
 GRANT EXECUTE ON FUNCTION increment_marketplace_downloads(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION increment_marketplace_downloads(UUID) TO anon;
 
 -- Success message
 DO $$

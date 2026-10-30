@@ -3007,6 +3007,14 @@ function checkEdgeCorsShared() {
   });
 }
 
+function checkSecClientTrustMarketplace() {
+  console.log('Client-trust marketplace + Edge body whitelist (#675)...');
+  execFileSync(process.execPath, ['scripts/sec-client-trust-marketplace-check.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkItemDomainTaxonomy() {
   console.log('Item domain taxonomy & provenance (#134): ItemDefinition owner, normalize/validate...');
   execFileSync(process.execPath, ['scripts/item-domain-taxonomy-check.mjs'], {
@@ -3192,6 +3200,7 @@ execFileSync('npm', ['run', 'checks'], {
 checkChangedDenoFunctions();
 checkArchitectureBoundaries();
 checkEdgeCorsShared();
+checkSecClientTrustMarketplace();
 checkItemDomainTaxonomy();
 checkSagaTreeItemRulesKernel();
 checkCombatCreateOpportunity();

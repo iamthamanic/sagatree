@@ -3764,17 +3764,19 @@
       "rpc": "increment_marketplace_downloads",
       "resolution": "string-literal",
       "path": "src/infrastructure/marketplace/marketplace-service.ts",
-      "line": 225,
-      "sourceSha256": "84791379ffdc5bcf9f671b6acbdce2d37bc14c07c8947ed4ecd9c84c80f37000",
+      "line": 238,
+      "sourceSha256": "9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05",
       "requestExpression": "{\n      item_id: id,\n    }",
       "requestKeys": [
         "item_id"
       ],
       "callExpression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
       "enclosingCallable": "incrementDownloads",
-      "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      // Fallback if RPC doesn't exist yet\n      const { data: item } = await supabase\n        .from('marketplace_items')\n        .select('downloads')\n        .eq('id', id)\n        .single();\n\n      if (item) {\n        await supabase\n          .from('marketplace_items')\n          .update({ downloads: item.downloads + 1 })\n          .eq('id', id);\n      }\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
+      "callerContract": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}",
       "imports": [
         "import { supabase } from '../../lib/supabase';",
+        "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
+        "import {\n  whitelistMarketplaceCreateDto,\n  whitelistMarketplaceUpdatePatch,\n} from '../../domains/marketplace/client-trust';",
         "import type {\n  MarketplaceItem,\n  CreateMarketplaceItemDTO,\n  UpdateMarketplaceItemDTO,\n  MarketplaceFilters,\n} from '../../domains/marketplace/contracts/marketplace.types';"
       ],
       "supportingDeclarations": [

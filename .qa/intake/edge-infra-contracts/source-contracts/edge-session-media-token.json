@@ -4,6 +4,10 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "sha256": "33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95"
+    },
+    {
       "path": "supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
@@ -13,7 +17,7 @@
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "sha256": "1417d7b81c85612f03000ebca2f55ff852565a728742c725d0eda7addd0f019c"
+      "sha256": "2f245776867cef57a038cc1658b9771e607d529f240bc814aae5b83f59117b1c"
     }
   ],
   "operations": [
@@ -21,8 +25,8 @@
       "id": "session-media-token:handler",
       "condition": "Complete handler with ordered method/auth/body guards",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 111,
-      "endLine": 277,
+      "line": 112,
+      "endLine": 292,
       "requestReads": [
         "body.sessionId",
         "body.sessionId.trim",
@@ -31,85 +35,91 @@
       "returns": [
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 113,
-          "endLine": 113,
+          "line": 114,
+          "endLine": 114,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 116,
-          "endLine": 116,
+          "line": 117,
+          "endLine": 117,
           "expression": "json(req, { error: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 123,
-          "endLine": 132,
+          "line": 124,
+          "endLine": 133,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 137,
-          "endLine": 146,
+          "line": 138,
+          "endLine": 147,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 153,
-          "endLine": 162,
+          "line": 154,
+          "endLine": 163,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 168,
           "endLine": 177,
+          "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    )"
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 183,
+          "endLine": 192,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 181,
-          "endLine": 190,
+          "line": 196,
+          "endLine": 205,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 200,
-          "endLine": 209,
+          "line": 215,
+          "endLine": 224,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 217,
-          "endLine": 226,
+          "line": 232,
+          "endLine": 241,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 233,
-          "endLine": 243,
+          "line": 248,
+          "endLine": 258,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 264,
-          "endLine": 276,
+          "line": 279,
+          "endLine": 291,
           "expression": "json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 111,
-          "endLine": 277,
+          "line": 112,
+          "endLine": 292,
           "expression": "serve",
           "arguments": [
-            "async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n}"
+            "async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n}"
           ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 112,
-          "endLine": 112,
+          "line": 113,
+          "endLine": 113,
           "expression": "handleOptions",
           "arguments": [
             "req",
@@ -118,8 +128,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 116,
-          "endLine": 116,
+          "line": 117,
+          "endLine": 117,
           "expression": "json",
           "arguments": [
             "req",
@@ -129,20 +139,11 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 119,
-          "endLine": 119,
-          "expression": "readEnv",
-          "arguments": [
-            "'SUPABASE_URL'"
-          ]
-        },
-        {
-          "path": "supabase/functions/session-media-token/index.ts",
           "line": 120,
           "endLine": 120,
           "expression": "readEnv",
           "arguments": [
-            "'SUPABASE_ANON_KEY'"
+            "'SUPABASE_URL'"
           ]
         },
         {
@@ -151,13 +152,22 @@
           "endLine": 121,
           "expression": "readEnv",
           "arguments": [
+            "'SUPABASE_ANON_KEY'"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 122,
+          "endLine": 122,
+          "expression": "readEnv",
+          "arguments": [
             "'SUPABASE_SERVICE_ROLE_KEY'"
           ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 123,
-          "endLine": 132,
+          "line": 124,
+          "endLine": 133,
           "expression": "json",
           "arguments": [
             "req",
@@ -167,8 +177,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 135,
-          "endLine": 135,
+          "line": 136,
+          "endLine": 136,
           "expression": "getUserId",
           "arguments": [
             "req",
@@ -178,8 +188,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 137,
-          "endLine": 146,
+          "line": 138,
+          "endLine": 147,
           "expression": "json",
           "arguments": [
             "req",
@@ -189,15 +199,15 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 151,
-          "endLine": 151,
+          "line": 152,
+          "endLine": 152,
           "expression": "req.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 153,
-          "endLine": 162,
+          "line": 154,
+          "endLine": 163,
           "expression": "json",
           "arguments": [
             "req",
@@ -209,13 +219,33 @@
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 166,
           "endLine": 166,
-          "expression": "body.sessionId.trim",
-          "arguments": []
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 168,
           "endLine": 177,
+          "expression": "json",
+          "arguments": [
+            "req",
+            "{\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 181,
+          "endLine": 181,
+          "expression": "body.sessionId.trim",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 183,
+          "endLine": 192,
           "expression": "json",
           "arguments": [
             "req",
@@ -225,8 +255,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 181,
-          "endLine": 190,
+          "line": 196,
+          "endLine": 205,
           "expression": "json",
           "arguments": [
             "req",
@@ -236,8 +266,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 193,
-          "endLine": 198,
+          "line": 208,
+          "endLine": 213,
           "expression": "loadMembership",
           "arguments": [
             "{\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  }"
@@ -245,8 +275,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 200,
-          "endLine": 209,
+          "line": 215,
+          "endLine": 224,
           "expression": "json",
           "arguments": [
             "req",
@@ -256,8 +286,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 212,
-          "endLine": 215,
+          "line": 227,
+          "endLine": 230,
           "expression": "resolveEdgeMediaGrant",
           "arguments": [
             "{\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  }"
@@ -265,8 +295,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 217,
-          "endLine": 226,
+          "line": 232,
+          "endLine": 241,
           "expression": "json",
           "arguments": [
             "req",
@@ -276,8 +306,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 229,
-          "endLine": 229,
+          "line": 244,
+          "endLine": 244,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_API_KEY'"
@@ -285,8 +315,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 230,
-          "endLine": 230,
+          "line": 245,
+          "endLine": 245,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_API_SECRET'"
@@ -294,8 +324,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 231,
-          "endLine": 231,
+          "line": 246,
+          "endLine": 246,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_URL'"
@@ -303,8 +333,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 233,
-          "endLine": 243,
+          "line": 248,
+          "endLine": 258,
           "expression": "json",
           "arguments": [
             "req",
@@ -314,8 +344,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 248,
-          "endLine": 251,
+          "line": 263,
+          "endLine": 266,
           "expression": "Math.min",
           "arguments": [
             "MAX_TTL_SECONDS",
@@ -324,8 +354,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 250,
-          "endLine": 250,
+          "line": 265,
+          "endLine": 265,
           "expression": "Math.max",
           "arguments": [
             "30",
@@ -334,8 +364,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 250,
-          "endLine": 250,
+          "line": 265,
+          "endLine": 265,
           "expression": "Math.floor",
           "arguments": [
             "ttlRaw"
@@ -343,8 +373,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 252,
-          "endLine": 252,
+          "line": 267,
+          "endLine": 267,
           "expression": "deriveMediaRoomId",
           "arguments": [
             "sessionId"
@@ -352,8 +382,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 255,
-          "endLine": 262,
+          "line": 270,
+          "endLine": 277,
           "expression": "mintLiveKitAccessToken",
           "arguments": [
             "{\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  }"
@@ -361,8 +391,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 264,
-          "endLine": 276,
+          "line": 279,
+          "endLine": 291,
           "expression": "json",
           "arguments": [
             "req",
@@ -370,74 +400,80 @@
           ]
         }
       ],
-      "exactBranch": "serve(async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n});"
+      "exactBranch": "serve(async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n});"
     }
   ],
   "responseSites": [
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 31,
-      "endLine": 37,
+      "line": 32,
+      "endLine": 38,
       "expression": "new Response(JSON.stringify(body), {\n    status,\n    headers: {\n      ...corsHeaders(req, CORS_OPTS),\n      'Content-Type': 'application/json',\n    },\n  })"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 116,
-      "endLine": 116,
+      "line": 117,
+      "endLine": 117,
       "expression": "json(req, { error: 'Method not allowed' }, 405)"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 123,
-      "endLine": 132,
+      "line": 124,
+      "endLine": 133,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 137,
-      "endLine": 146,
+      "line": 138,
+      "endLine": 147,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 153,
-      "endLine": 162,
+      "line": 154,
+      "endLine": 163,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
       "line": 168,
       "endLine": 177,
+      "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    )"
+    },
+    {
+      "path": "supabase/functions/session-media-token/index.ts",
+      "line": 183,
+      "endLine": 192,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 181,
-      "endLine": 190,
+      "line": 196,
+      "endLine": 205,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 200,
-      "endLine": 209,
+      "line": 215,
+      "endLine": 224,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 217,
-      "endLine": 226,
+      "line": 232,
+      "endLine": 241,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 233,
-      "endLine": 243,
+      "line": 248,
+      "endLine": 258,
       "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 264,
-      "endLine": 276,
+      "line": 279,
+      "endLine": 291,
       "expression": "json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  })"
     }
   ],
@@ -454,29 +490,29 @@
   "effectSites": [
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 51,
-      "endLine": 53,
+      "line": 52,
+      "endLine": 54,
       "expression": "fetch(`${supabaseUrl}/auth/v1/user`, {\n    headers: { Authorization: auth, apikey: anonKey },\n  })"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 79,
-      "endLine": 82,
+      "line": 80,
+      "endLine": 83,
       "expression": "fetch(\n    `${input.supabaseUrl}/rest/v1/sessions?id=eq.${encodeURIComponent(input.sessionId)}&select=id,project_id`,\n    { headers },\n  )"
     },
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 91,
-      "endLine": 94,
+      "line": 92,
+      "endLine": 95,
       "expression": "fetch(\n    `${input.supabaseUrl}/rest/v1/project_members?project_id=eq.${encodeURIComponent(projectId)}&user_id=eq.${encodeURIComponent(input.userId)}&status=eq.active&select=user_id,role,character_id`,\n    { headers },\n  )"
     }
   ],
   "handler": [
     {
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 111,
-      "endLine": 277,
-      "text": "serve(async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n});",
+      "line": 112,
+      "endLine": 292,
+      "text": "serve(async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n});",
       "requestReads": [
         "body.sessionId",
         "body.sessionId.trim",
@@ -485,85 +521,91 @@
       "returns": [
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 113,
-          "endLine": 113,
+          "line": 114,
+          "endLine": 114,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 116,
-          "endLine": 116,
+          "line": 117,
+          "endLine": 117,
           "expression": "json(req, { error: 'Method not allowed' }, 405)"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 123,
-          "endLine": 132,
+          "line": 124,
+          "endLine": 133,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 137,
-          "endLine": 146,
+          "line": 138,
+          "endLine": 147,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 153,
-          "endLine": 162,
+          "line": 154,
+          "endLine": 163,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 168,
           "endLine": 177,
+          "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    )"
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 183,
+          "endLine": 192,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 181,
-          "endLine": 190,
+          "line": 196,
+          "endLine": 205,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 200,
-          "endLine": 209,
+          "line": 215,
+          "endLine": 224,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 217,
-          "endLine": 226,
+          "line": 232,
+          "endLine": 241,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 233,
-          "endLine": 243,
+          "line": 248,
+          "endLine": 258,
           "expression": "json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    )"
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 264,
-          "endLine": 276,
+          "line": 279,
+          "endLine": 291,
           "expression": "json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 111,
-          "endLine": 277,
+          "line": 112,
+          "endLine": 292,
           "expression": "serve",
           "arguments": [
-            "async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n}"
+            "async (req: Request) => {\n  const optionsResponse = handleOptions(req, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n\n  if (req.method !== 'POST') {\n    return json(req, { error: 'Method not allowed' }, 405);\n  }\n\n  const supabaseUrl = readEnv('SUPABASE_URL');\n  const anonKey = readEnv('SUPABASE_ANON_KEY');\n  const serviceRoleKey = readEnv('SUPABASE_SERVICE_ROLE_KEY');\n  if (!supabaseUrl || !anonKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Supabase config fehlt.',\n      },\n      503,\n    );\n  }\n\n  const userId = await getUserId(req, supabaseUrl, anonKey);\n  if (!userId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'unauthorized',\n        message: 'Authentifizierung erforderlich.',\n      },\n      401,\n    );\n  }\n\n  let body: JsonRecord;\n  try {\n    body = (await req.json()) as JsonRecord;\n  } catch {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'Ungültiger JSON-Body.',\n      },\n      400,\n    );\n  }\n\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      },\n      400,\n    );\n  }\n\n  const sessionId =\n    typeof body.sessionId === 'string' ? body.sessionId.trim() : '';\n  if (!sessionId) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: 'sessionId fehlt.',\n      },\n      400,\n    );\n  }\n\n  if (!serviceRoleKey) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message: 'Membership lookup nicht konfiguriert.',\n      },\n      503,\n    );\n  }\n\n  const membership = await loadMembership({\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  });\n  if (!membership) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Keine aktive Session-Mitgliedschaft.',\n      },\n      403,\n    );\n  }\n\n  const grant = resolveEdgeMediaGrant({\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  });\n  if (!grant || !grant.canSubscribe) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'forbidden',\n        message: 'Rolle darf Media-Token nicht beziehen.',\n      },\n      403,\n    );\n  }\n\n  const apiKey = readEnv('LIVEKIT_API_KEY');\n  const apiSecret = readEnv('LIVEKIT_API_SECRET');\n  const livekitUrl = readEnv('LIVEKIT_URL');\n  if (!apiKey || !apiSecret || !livekitUrl) {\n    return json(\n      req,\n      {\n        ok: false,\n        degraded: true,\n        reason: 'media_service_unavailable',\n        message:\n          'LiveKit nicht konfiguriert — Session läuft ohne Media Plane weiter.',\n      },\n      503,\n    );\n  }\n\n  const ttlRaw =\n    typeof body.ttlSeconds === 'number' ? body.ttlSeconds : DEFAULT_TTL_SECONDS;\n  const ttlSeconds = Math.min(\n    MAX_TTL_SECONDS,\n    Math.max(30, Math.floor(ttlRaw)),\n  );\n  const roomId = deriveMediaRoomId(sessionId);\n  const identity = `user:${userId}`;\n\n  const minted = await mintLiveKitAccessToken({\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  });\n\n  return json(req, {\n    ok: true,\n    token: minted.token,\n    url: livekitUrl,\n    roomId,\n    expiresAt: minted.expiresAt,\n    ttlSeconds,\n    grant: {\n      canPublish: grant.canPublish,\n      canSubscribe: grant.canSubscribe,\n      receiveOnly: grant.receiveOnly,\n    },\n  });\n}"
           ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 112,
-          "endLine": 112,
+          "line": 113,
+          "endLine": 113,
           "expression": "handleOptions",
           "arguments": [
             "req",
@@ -572,8 +614,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 116,
-          "endLine": 116,
+          "line": 117,
+          "endLine": 117,
           "expression": "json",
           "arguments": [
             "req",
@@ -583,20 +625,11 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 119,
-          "endLine": 119,
-          "expression": "readEnv",
-          "arguments": [
-            "'SUPABASE_URL'"
-          ]
-        },
-        {
-          "path": "supabase/functions/session-media-token/index.ts",
           "line": 120,
           "endLine": 120,
           "expression": "readEnv",
           "arguments": [
-            "'SUPABASE_ANON_KEY'"
+            "'SUPABASE_URL'"
           ]
         },
         {
@@ -605,13 +638,22 @@
           "endLine": 121,
           "expression": "readEnv",
           "arguments": [
+            "'SUPABASE_ANON_KEY'"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 122,
+          "endLine": 122,
+          "expression": "readEnv",
+          "arguments": [
             "'SUPABASE_SERVICE_ROLE_KEY'"
           ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 123,
-          "endLine": 132,
+          "line": 124,
+          "endLine": 133,
           "expression": "json",
           "arguments": [
             "req",
@@ -621,8 +663,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 135,
-          "endLine": 135,
+          "line": 136,
+          "endLine": 136,
           "expression": "getUserId",
           "arguments": [
             "req",
@@ -632,8 +674,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 137,
-          "endLine": 146,
+          "line": 138,
+          "endLine": 147,
           "expression": "json",
           "arguments": [
             "req",
@@ -643,15 +685,15 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 151,
-          "endLine": 151,
+          "line": 152,
+          "endLine": 152,
           "expression": "req.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 153,
-          "endLine": 162,
+          "line": 154,
+          "endLine": 163,
           "expression": "json",
           "arguments": [
             "req",
@@ -663,13 +705,33 @@
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 166,
           "endLine": 166,
-          "expression": "body.sessionId.trim",
-          "arguments": []
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
           "line": 168,
           "endLine": 177,
+          "expression": "json",
+          "arguments": [
+            "req",
+            "{\n        ok: false,\n        degraded: true,\n        reason: 'bad_request',\n        message: privilegedReject,\n      }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 181,
+          "endLine": 181,
+          "expression": "body.sessionId.trim",
+          "arguments": []
+        },
+        {
+          "path": "supabase/functions/session-media-token/index.ts",
+          "line": 183,
+          "endLine": 192,
           "expression": "json",
           "arguments": [
             "req",
@@ -679,8 +741,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 181,
-          "endLine": 190,
+          "line": 196,
+          "endLine": 205,
           "expression": "json",
           "arguments": [
             "req",
@@ -690,8 +752,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 193,
-          "endLine": 198,
+          "line": 208,
+          "endLine": 213,
           "expression": "loadMembership",
           "arguments": [
             "{\n    supabaseUrl,\n    serviceRoleKey,\n    sessionId,\n    userId,\n  }"
@@ -699,8 +761,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 200,
-          "endLine": 209,
+          "line": 215,
+          "endLine": 224,
           "expression": "json",
           "arguments": [
             "req",
@@ -710,8 +772,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 212,
-          "endLine": 215,
+          "line": 227,
+          "endLine": 230,
           "expression": "resolveEdgeMediaGrant",
           "arguments": [
             "{\n    role: membership.role,\n    capabilities: membership.capabilities ?? [],\n  }"
@@ -719,8 +781,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 217,
-          "endLine": 226,
+          "line": 232,
+          "endLine": 241,
           "expression": "json",
           "arguments": [
             "req",
@@ -730,8 +792,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 229,
-          "endLine": 229,
+          "line": 244,
+          "endLine": 244,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_API_KEY'"
@@ -739,8 +801,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 230,
-          "endLine": 230,
+          "line": 245,
+          "endLine": 245,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_API_SECRET'"
@@ -748,8 +810,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 231,
-          "endLine": 231,
+          "line": 246,
+          "endLine": 246,
           "expression": "readEnv",
           "arguments": [
             "'LIVEKIT_URL'"
@@ -757,8 +819,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 233,
-          "endLine": 243,
+          "line": 248,
+          "endLine": 258,
           "expression": "json",
           "arguments": [
             "req",
@@ -768,8 +830,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 248,
-          "endLine": 251,
+          "line": 263,
+          "endLine": 266,
           "expression": "Math.min",
           "arguments": [
             "MAX_TTL_SECONDS",
@@ -778,8 +840,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 250,
-          "endLine": 250,
+          "line": 265,
+          "endLine": 265,
           "expression": "Math.max",
           "arguments": [
             "30",
@@ -788,8 +850,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 250,
-          "endLine": 250,
+          "line": 265,
+          "endLine": 265,
           "expression": "Math.floor",
           "arguments": [
             "ttlRaw"
@@ -797,8 +859,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 252,
-          "endLine": 252,
+          "line": 267,
+          "endLine": 267,
           "expression": "deriveMediaRoomId",
           "arguments": [
             "sessionId"
@@ -806,8 +868,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 255,
-          "endLine": 262,
+          "line": 270,
+          "endLine": 277,
           "expression": "mintLiveKitAccessToken",
           "arguments": [
             "{\n    apiKey,\n    apiSecret,\n    identity,\n    roomName: roomId,\n    ttlSeconds,\n    grant,\n  }"
@@ -815,8 +877,8 @@
         },
         {
           "path": "supabase/functions/session-media-token/index.ts",
-          "line": 264,
-          "endLine": 276,
+          "line": 279,
+          "endLine": 291,
           "expression": "json",
           "arguments": [
             "req",
@@ -827,6 +889,46 @@
     }
   ],
   "declarations": [
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED_CLIENT_BODY_KEYS",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 9,
+      "endLine": 18,
+      "text": "PRIVILEGED_CLIENT_BODY_KEYS = [\n  'author_id',\n  'owner_user_id',\n  'rating',\n  'downloads',\n  'roles',\n  'permissions',\n  'is_admin',\n  'service_role',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrivilegedClientBodyKey",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "PRIVILEGED = new Set<string>(PRIVILEGED_CLIENT_BODY_KEYS)"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "findPrivilegedClientBodyKeys",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export function findPrivilegedClientBodyKeys(\n  body: unknown,\n): PrivilegedClientBodyKey[] {\n  if (body === null || typeof body !== 'object' || Array.isArray(body)) {\n    return [];\n  }\n  const found: PrivilegedClientBodyKey[] = [];\n  for (const key of Object.keys(body as Record<string, unknown>)) {\n    if (PRIVILEGED.has(key)) {\n      found.push(key as PrivilegedClientBodyKey);\n    }\n  }\n  return found;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "privilegedClientBodyRejectionMessage",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 40,
+      "endLine": 46,
+      "text": "export function privilegedClientBodyRejectionMessage(\n  body: unknown,\n): string | null {\n  const found = findPrivilegedClientBodyKeys(body);\n  if (found.length === 0) return null;\n  return `Client darf privilegierte Felder nicht setzen: ${found.join(', ')}`;\n}"
+    },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_CORS_METHODS",
@@ -959,72 +1061,72 @@
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 20,
-      "endLine": 23,
+      "line": 21,
+      "endLine": 24,
       "text": "CORS_OPTS: CorsOptions = {\n  methods: 'POST, OPTIONS',\n  missingOriginPolicy: 'configured-or-star',\n}"
     },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_TTL_SECONDS",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 25,
-      "endLine": 25,
+      "line": 26,
+      "endLine": 26,
       "text": "DEFAULT_TTL_SECONDS = 120"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_TTL_SECONDS",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 26,
-      "endLine": 26,
+      "line": 27,
+      "endLine": 27,
       "text": "MAX_TTL_SECONDS = 300"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "JsonRecord",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 28,
-      "endLine": 28,
+      "line": 29,
+      "endLine": 29,
       "text": "type JsonRecord = Record<string, unknown>;"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "json",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 30,
-      "endLine": 38,
+      "line": 31,
+      "endLine": 39,
       "text": "function json(req: Request, body: JsonRecord, status = 200): Response {\n  return new Response(JSON.stringify(body), {\n    status,\n    headers: {\n      ...corsHeaders(req, CORS_OPTS),\n      'Content-Type': 'application/json',\n    },\n  });\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "readEnv",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 40,
-      "endLine": 42,
+      "line": 41,
+      "endLine": 43,
       "text": "function readEnv(name: string): string {\n  return Deno.env.get(name)?.trim() ?? '';\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getUserId",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 44,
-      "endLine": 57,
+      "line": 45,
+      "endLine": 58,
       "text": "async function getUserId(\n  request: Request,\n  supabaseUrl: string,\n  anonKey: string,\n): Promise<string | null> {\n  const auth = request.headers.get('Authorization');\n  if (!auth) return null;\n  const res = await fetch(`${supabaseUrl}/auth/v1/user`, {\n    headers: { Authorization: auth, apikey: anonKey },\n  });\n  if (!res.ok) return null;\n  const body = (await res.json()) as { id?: string };\n  return typeof body.id === 'string' ? body.id : null;\n}"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "MembershipRow",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 59,
-      "endLine": 64,
+      "line": 60,
+      "endLine": 65,
       "text": "type MembershipRow = {\n  user_id: string;\n  role: string;\n  capabilities: string[] | null;\n  character_id: string | null;\n};"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "loadMembership",
       "path": "supabase/functions/session-media-token/index.ts",
-      "line": 66,
-      "endLine": 109,
+      "line": 67,
+      "endLine": 110,
       "text": "async function loadMembership(input: {\n  supabaseUrl: string;\n  serviceRoleKey: string;\n  sessionId: string;\n  userId: string;\n}): Promise<MembershipRow | null> {\n  // Prefer project_members via session → project; fall back to session_players demo table shape.\n  const headers = {\n    Authorization: `Bearer ${input.serviceRoleKey}`,\n    apikey: input.serviceRoleKey,\n    'Content-Type': 'application/json',\n  };\n\n  const sessionRes = await fetch(\n    `${input.supabaseUrl}/rest/v1/sessions?id=eq.${encodeURIComponent(input.sessionId)}&select=id,project_id`,\n    { headers },\n  );\n  if (!sessionRes.ok) return null;\n  const sessions = (await sessionRes.json()) as Array<{\n    id: string;\n    project_id: string;\n  }>;\n  if (!Array.isArray(sessions) || sessions.length === 0) return null;\n  const projectId = sessions[0]!.project_id;\n\n  const memberRes = await fetch(\n    `${input.supabaseUrl}/rest/v1/project_members?project_id=eq.${encodeURIComponent(projectId)}&user_id=eq.${encodeURIComponent(input.userId)}&status=eq.active&select=user_id,role,character_id`,\n    { headers },\n  );\n  if (!memberRes.ok) return null;\n  const members = (await memberRes.json()) as Array<{\n    user_id: string;\n    role: string;\n    character_id: string | null;\n  }>;\n  if (!Array.isArray(members) || members.length === 0) return null;\n  const row = members[0]!;\n  return {\n    user_id: row.user_id,\n    role: row.role,\n    capabilities: null,\n    character_id: row.character_id,\n  };\n}"
     }
   ]

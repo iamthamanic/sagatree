@@ -16,6 +16,10 @@
       "sha256": "355c8635d417fd31f9f2afb93e2ae4fe9f26ddeadaf6c2986a74f0201fb5479e"
     },
     {
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "sha256": "33c68553dbd89d9c7899520b0ebfa35c4f245ed8ab8ebd242c6f79e9852add95"
+    },
+    {
       "path": "supabase/functions/_shared/cors.ts",
       "sha256": "f8286c91d79fa5fc5cfea2fa47081916523fa7a440f234aecd9a47c6a8cf5b38"
     },
@@ -29,7 +33,7 @@
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "sha256": "d4e3ef0169b21f90e68babe41bf7aef1b2eee6a9e77fd9e286997efa33cb45b8"
+      "sha256": "ea0d189eab8b466f775c92ed280bbb01e3d69d16d6496fdc4381ff73c62f87bf"
     }
   ],
   "operations": [
@@ -37,34 +41,34 @@
       "id": "ollama-settings:1",
       "condition": "action === 'get'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 235,
-      "endLine": 262,
+      "line": 240,
+      "endLine": 267,
       "requestReads": [],
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 242,
-          "endLine": 250,
+          "line": 247,
+          "endLine": 255,
           "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 253,
-          "endLine": 256,
-          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
           "line": 258,
           "endLine": 261,
+          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 263,
+          "endLine": 266,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 238,
-          "endLine": 238,
+          "line": 243,
+          "endLine": 243,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -73,8 +77,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 241,
-          "endLine": 241,
+          "line": 246,
+          "endLine": 246,
           "expression": "message.includes",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -82,8 +86,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 242,
-          "endLine": 250,
+          "line": 247,
+          "endLine": 255,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -93,23 +97,12 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 252,
-          "endLine": 252,
+          "line": 257,
+          "endLine": 257,
           "expression": "console.error",
           "arguments": [
             "'ollama get failed:'",
             "message || 'unknown'"
-          ]
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 253,
-          "endLine": 256,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }",
-            "500"
           ]
         },
         {
@@ -119,13 +112,24 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }",
+            "500"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 263,
+          "endLine": 266,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      }"
           ]
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 265,
+          "endLine": 265,
           "expression": "viewPayload",
           "arguments": [
             "toSettingsView(stored)"
@@ -133,8 +137,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 265,
+          "endLine": 265,
           "expression": "toSettingsView",
           "arguments": [
             "stored"
@@ -147,22 +151,22 @@
       "id": "ollama-settings:2",
       "condition": "action === 'upsert' || action === 'test' || action === 'listModels'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 264,
-      "endLine": 277,
+      "line": 269,
+      "endLine": 282,
       "requestReads": [],
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 267,
-          "endLine": 275,
+          "line": 272,
+          "endLine": 280,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 265,
-          "endLine": 265,
+          "line": 270,
+          "endLine": 270,
           "expression": "consumeRateLimit",
           "arguments": [
             "config",
@@ -171,8 +175,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 267,
-          "endLine": 275,
+          "line": 272,
+          "endLine": 280,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -187,8 +191,8 @@
       "id": "ollama-settings:3",
       "condition": "action === 'upsert'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 279,
-      "endLine": 393,
+      "line": 284,
+      "endLine": 398,
       "requestReads": [
         "body.apiKey",
         "body.apiKey.trim",
@@ -202,78 +206,78 @@
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 288,
-          "endLine": 291,
+          "line": 293,
+          "endLine": 296,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 297,
-          "endLine": 297,
+          "line": 302,
+          "endLine": 302,
           "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 306,
-          "endLine": 314,
+          "line": 311,
+          "endLine": 319,
           "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 320,
-          "endLine": 323,
+          "line": 325,
+          "endLine": 328,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 328,
-          "endLine": 328,
+          "line": 333,
+          "endLine": 333,
           "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 331,
-          "endLine": 334,
+          "line": 336,
+          "endLine": 339,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 339,
-          "endLine": 347,
+          "line": 344,
+          "endLine": 352,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        )"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 381,
-          "endLine": 384,
+          "line": 386,
+          "endLine": 389,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 388,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 397,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 287,
+          "endLine": 287,
           "expression": "body.baseUrl.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 283,
-          "endLine": 283,
+          "line": 288,
+          "endLine": 288,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 290,
+          "endLine": 290,
           "expression": "body.apiKey.trim().slice",
           "arguments": [
             "0",
@@ -282,15 +286,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 290,
+          "endLine": 290,
           "expression": "body.apiKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 288,
-          "endLine": 291,
+          "line": 293,
+          "endLine": 296,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -300,15 +304,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 294,
-          "endLine": 294,
+          "line": 299,
+          "endLine": 299,
           "expression": "defaultLocalOllamaBase",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 295,
-          "endLine": 295,
+          "line": 300,
+          "endLine": 300,
           "expression": "assertSafeOllamaBaseUrl",
           "arguments": [
             "baseUrlRaw || defaultUrl"
@@ -316,8 +320,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 297,
-          "endLine": 297,
+          "line": 302,
+          "endLine": 302,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -327,8 +331,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 302,
-          "endLine": 302,
+          "line": 307,
+          "endLine": 307,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -337,8 +341,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 305,
-          "endLine": 305,
+          "line": 310,
+          "endLine": 310,
           "expression": "message.includes",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -346,8 +350,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 306,
-          "endLine": 314,
+          "line": 311,
+          "endLine": 319,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -357,15 +361,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 319,
-          "endLine": 319,
+          "line": 324,
+          "endLine": 324,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 320,
-          "endLine": 323,
+          "line": 325,
+          "endLine": 328,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -375,8 +379,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 326,
-          "endLine": 326,
+          "line": 331,
+          "endLine": 331,
           "expression": "probeTags",
           "arguments": [
             "useCloud",
@@ -386,8 +390,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 328,
-          "endLine": 328,
+          "line": 333,
+          "endLine": 333,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -397,8 +401,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 330,
-          "endLine": 330,
+          "line": 335,
+          "endLine": 335,
           "expression": "probe.models.includes",
           "arguments": [
             "modelRaw"
@@ -406,8 +410,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 331,
-          "endLine": 334,
+          "line": 336,
+          "endLine": 339,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -417,8 +421,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 337,
-          "endLine": 337,
+          "line": 342,
+          "endLine": 342,
           "expression": "parseCredentialsEncryptionKey",
           "arguments": [
             "Deno.env.get('CREDENTIALS_ENCRYPTION_KEY')"
@@ -426,8 +430,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 337,
-          "endLine": 337,
+          "line": 342,
+          "endLine": 342,
           "expression": "Deno.env.get",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -435,8 +439,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 339,
-          "endLine": 347,
+          "line": 344,
+          "endLine": 352,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -446,8 +450,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 355,
+          "endLine": 355,
           "expression": "encryptProviderSecret",
           "arguments": [
             "resolvedKey",
@@ -456,15 +460,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 351,
-          "endLine": 351,
+          "line": 356,
+          "endLine": 356,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 352,
-          "endLine": 352,
+          "line": 357,
+          "endLine": 357,
           "expression": "buildKeyHint",
           "arguments": [
             "resolvedKey"
@@ -472,15 +476,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 354,
-          "endLine": 354,
+          "line": 359,
+          "endLine": 359,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 361,
-          "endLine": 378,
+          "line": 366,
+          "endLine": 383,
           "expression": "serviceFetch",
           "arguments": [
             "config",
@@ -490,8 +494,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 367,
-          "endLine": 376,
+          "line": 372,
+          "endLine": 381,
           "expression": "JSON.stringify",
           "arguments": [
             "{\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }"
@@ -499,8 +503,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 385,
+          "endLine": 385,
           "expression": "console.error",
           "arguments": [
             "'ollama upsert failed'",
@@ -509,8 +513,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 381,
-          "endLine": 384,
+          "line": 386,
+          "endLine": 389,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -520,8 +524,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 392,
+          "endLine": 392,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -530,8 +534,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 388,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 397,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -540,8 +544,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 395,
+          "endLine": 395,
           "expression": "viewPayload",
           "arguments": [
             "toSettingsView(stored)"
@@ -549,8 +553,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 395,
+          "endLine": 395,
           "expression": "toSettingsView",
           "arguments": [
             "stored"
@@ -563,8 +567,8 @@
       "id": "ollama-settings:4",
       "condition": "action === 'test' || action === 'listModels'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 395,
-      "endLine": 471,
+      "line": 400,
+      "endLine": 476,
       "requestReads": [
         "body.apiKey",
         "body.apiKey.trim",
@@ -578,53 +582,53 @@
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 405,
-          "endLine": 405,
+          "line": 410,
+          "endLine": 410,
           "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 418,
-          "endLine": 421,
+          "line": 423,
+          "endLine": 426,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 445,
-          "endLine": 445,
+          "line": 450,
+          "endLine": 450,
           "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 467,
-          "endLine": 470,
+          "line": 472,
+          "endLine": 475,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 398,
-          "endLine": 398,
+          "line": 403,
+          "endLine": 403,
           "expression": "body.baseUrl.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 400,
-          "endLine": 400,
+          "line": 405,
+          "endLine": 405,
           "expression": "body.apiKey.trim().slice",
           "arguments": [
             "0",
@@ -633,22 +637,22 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 400,
-          "endLine": 400,
+          "line": 405,
+          "endLine": 405,
           "expression": "body.apiKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 402,
-          "endLine": 402,
+          "line": 407,
+          "endLine": 407,
           "expression": "defaultLocalOllamaBase",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 403,
-          "endLine": 403,
+          "line": 408,
+          "endLine": 408,
           "expression": "assertSafeOllamaBaseUrl",
           "arguments": [
             "baseUrlRaw || defaultUrl"
@@ -656,8 +660,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 405,
-          "endLine": 405,
+          "line": 410,
+          "endLine": 410,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -667,8 +671,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 410,
-          "endLine": 410,
+          "line": 415,
+          "endLine": 415,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -677,15 +681,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 417,
-          "endLine": 417,
+          "line": 422,
+          "endLine": 422,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 418,
-          "endLine": 421,
+          "line": 423,
+          "endLine": 426,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -695,15 +699,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 426,
-          "endLine": 426,
+          "line": 431,
+          "endLine": 431,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 428,
-          "endLine": 433,
+          "line": 433,
+          "endLine": 438,
           "expression": "prefsToProviderConfig",
           "arguments": [
             "{\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          }"
@@ -711,8 +715,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -722,8 +726,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 443,
-          "endLine": 443,
+          "line": 448,
+          "endLine": 448,
           "expression": "probeTags",
           "arguments": [
             "useCloud",
@@ -733,8 +737,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 445,
-          "endLine": 445,
+          "line": 450,
+          "endLine": 450,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -744,8 +748,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -754,8 +758,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 453,
-          "endLine": 463,
+          "line": 458,
+          "endLine": 468,
           "expression": "viewPayload",
           "arguments": [
             "{\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }"
@@ -763,29 +767,29 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 454,
-          "endLine": 454,
+          "line": 459,
+          "endLine": 459,
           "expression": "buildEnvSettingsView",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 457,
-          "endLine": 457,
+          "line": 462,
+          "endLine": 462,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 458,
-          "endLine": 458,
+          "line": 463,
+          "endLine": 463,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 467,
-          "endLine": 470,
+          "line": 472,
+          "endLine": 475,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -799,8 +803,8 @@
       "id": "ollama-settings:5",
       "condition": "action === 'test'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 425,
-      "endLine": 441,
+      "line": 430,
+      "endLine": 446,
       "requestReads": [
         "body.model",
         "body.model.trim"
@@ -808,23 +812,23 @@
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400)"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 426,
-          "endLine": 426,
+          "line": 431,
+          "endLine": 431,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 428,
-          "endLine": 433,
+          "line": 433,
+          "endLine": 438,
           "expression": "prefsToProviderConfig",
           "arguments": [
             "{\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          }"
@@ -832,8 +836,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -848,8 +852,8 @@
       "id": "ollama-settings:6",
       "condition": "action === 'test'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 448,
-      "endLine": 465,
+      "line": 453,
+      "endLine": 470,
       "requestReads": [
         "body.model",
         "body.model.trim"
@@ -857,16 +861,16 @@
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -875,8 +879,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 453,
-          "endLine": 463,
+          "line": 458,
+          "endLine": 468,
           "expression": "viewPayload",
           "arguments": [
             "{\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }"
@@ -884,22 +888,22 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 454,
-          "endLine": 454,
+          "line": 459,
+          "endLine": 459,
           "expression": "buildEnvSettingsView",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 457,
-          "endLine": 457,
+          "line": 462,
+          "endLine": 462,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 458,
-          "endLine": 458,
+          "line": 463,
+          "endLine": 463,
           "expression": "resolvedKey.trim",
           "arguments": []
         }
@@ -910,34 +914,34 @@
       "id": "ollama-settings:7",
       "condition": "action === 'clear'",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 473,
-      "endLine": 501,
+      "line": 478,
+      "endLine": 506,
       "requestReads": [],
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 476,
-          "endLine": 484,
+          "line": 481,
+          "endLine": 489,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 492,
-          "endLine": 495,
-          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
           "line": 497,
           "endLine": 500,
+          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 502,
+          "endLine": 505,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      })"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 474,
-          "endLine": 474,
+          "line": 479,
+          "endLine": 479,
           "expression": "consumeRateLimit",
           "arguments": [
             "config",
@@ -946,8 +950,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 476,
-          "endLine": 484,
+          "line": 481,
+          "endLine": 489,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -957,8 +961,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 486,
-          "endLine": 490,
+          "line": 491,
+          "endLine": 495,
           "expression": "serviceFetch",
           "arguments": [
             "config",
@@ -968,8 +972,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 488,
-          "endLine": 488,
+          "line": 493,
+          "endLine": 493,
           "expression": "encodeURIComponent",
           "arguments": [
             "userId"
@@ -977,22 +981,11 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 488,
-          "endLine": 488,
+          "line": 493,
+          "endLine": 493,
           "expression": "encodeURIComponent",
           "arguments": [
             "OLLAMA_PROVIDER_ID"
-          ]
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 492,
-          "endLine": 495,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }",
-            "500"
           ]
         },
         {
@@ -1002,13 +995,24 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }",
+            "500"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 502,
+          "endLine": 505,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      }"
           ]
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 499,
-          "endLine": 499,
+          "line": 504,
+          "endLine": 504,
           "expression": "viewPayload",
           "arguments": [
             "buildEnvSettingsView()"
@@ -1016,8 +1020,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 499,
-          "endLine": 499,
+          "line": 504,
+          "endLine": 504,
           "expression": "buildEnvSettingsView",
           "arguments": []
         }
@@ -1028,182 +1032,188 @@
   "responseSites": [
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 60,
-      "endLine": 60,
+      "line": 61,
+      "endLine": 61,
       "expression": "sharedJsonResponse(request, body, status, CORS_OPTS)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 209,
-      "endLine": 209,
+      "line": 210,
+      "endLine": 210,
       "expression": "jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 214,
-      "endLine": 214,
+      "line": 215,
+      "endLine": 215,
       "expression": "jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 219,
-      "endLine": 219,
+      "line": 220,
+      "endLine": 220,
       "expression": "jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 226,
-      "endLine": 226,
+      "line": 227,
+      "endLine": 227,
       "expression": "jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 229,
-      "endLine": 229,
+      "line": 231,
+      "endLine": 231,
+      "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+    },
+    {
+      "path": "supabase/functions/ollama-settings/index.ts",
+      "line": 234,
+      "endLine": 234,
       "expression": "jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 242,
-      "endLine": 250,
+      "line": 247,
+      "endLine": 255,
       "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
-    },
-    {
-      "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 253,
-      "endLine": 256,
-      "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
       "line": 258,
       "endLine": 261,
+      "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
+    },
+    {
+      "path": "supabase/functions/ollama-settings/index.ts",
+      "line": 263,
+      "endLine": 266,
       "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 267,
-      "endLine": 275,
+      "line": 272,
+      "endLine": 280,
       "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 288,
-      "endLine": 291,
+      "line": 293,
+      "endLine": 296,
       "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 297,
-      "endLine": 297,
+      "line": 302,
+      "endLine": 302,
       "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 306,
-      "endLine": 314,
+      "line": 311,
+      "endLine": 319,
       "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 320,
-      "endLine": 323,
+      "line": 325,
+      "endLine": 328,
       "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 328,
-      "endLine": 328,
+      "line": 333,
+      "endLine": 333,
       "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 331,
-      "endLine": 334,
+      "line": 336,
+      "endLine": 339,
       "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 339,
-      "endLine": 347,
+      "line": 344,
+      "endLine": 352,
       "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        )"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 381,
-      "endLine": 384,
+      "line": 386,
+      "endLine": 389,
       "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 388,
-      "endLine": 392,
+      "line": 393,
+      "endLine": 397,
       "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 405,
-      "endLine": 405,
+      "line": 410,
+      "endLine": 410,
       "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 418,
-      "endLine": 421,
+      "line": 423,
+      "endLine": 426,
       "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 435,
-      "endLine": 438,
+      "line": 440,
+      "endLine": 443,
       "expression": "jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 445,
-      "endLine": 445,
+      "line": 450,
+      "endLine": 450,
       "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 449,
-      "endLine": 464,
+      "line": 454,
+      "endLine": 469,
       "expression": "jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 467,
-      "endLine": 470,
+      "line": 472,
+      "endLine": 475,
       "expression": "jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 476,
-      "endLine": 484,
+      "line": 481,
+      "endLine": 489,
       "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
-    },
-    {
-      "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 492,
-      "endLine": 495,
-      "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
       "line": 497,
       "endLine": 500,
+      "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
+    },
+    {
+      "path": "supabase/functions/ollama-settings/index.ts",
+      "line": 502,
+      "endLine": 505,
       "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 503,
-      "endLine": 503,
+      "line": 508,
+      "endLine": 508,
       "expression": "jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 509,
-      "endLine": 512,
+      "line": 514,
+      "endLine": 517,
       "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500)"
     }
   ],
@@ -1244,20 +1254,20 @@
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 86,
-      "endLine": 86,
+      "line": 87,
+      "endLine": 87,
       "expression": "AbortSignal.timeout(10_000)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 108,
-      "endLine": 108,
+      "line": 109,
+      "endLine": 109,
       "expression": "AbortSignal.timeout(20_000)"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 175,
-      "endLine": 175,
+      "line": 176,
+      "endLine": 176,
       "expression": "AbortSignal.timeout(20_000)"
     }
   ],
@@ -1282,47 +1292,47 @@
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 84,
-      "endLine": 87,
+      "line": 85,
+      "endLine": 88,
       "expression": "fetch(`${config.url}/auth/v1/user`, {\n    headers: { Authorization: authorization, apikey: config.anonKey },\n    signal: AbortSignal.timeout(10_000),\n  })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 98,
-      "endLine": 109,
+      "line": 99,
+      "endLine": 110,
       "expression": "fetch(`${config.url}${path}`, {\n    ...init,\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      Accept: 'application/json',\n      'Content-Type': 'application/json',\n      Prefer: 'return=representation',\n      ...(init?.headers ?? {}),\n    },\n    signal: AbortSignal.timeout(20_000),\n  })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 113,
-      "endLine": 124,
+      "line": 114,
+      "endLine": 125,
       "expression": "serviceFetch(\n    config,\n    '/rest/v1/rpc/consume_ai_provider_credential_rate_limit',\n    {\n      method: 'POST',\n      body: JSON.stringify({\n        p_user_id: userId,\n        p_limit: getRateLimit(),\n        p_window_seconds: RATE_WINDOW_SECONDS,\n      }),\n    },\n  )"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 172,
-      "endLine": 176,
+      "line": 173,
+      "endLine": 177,
       "expression": "fetch(tagsUrl, {\n      method: 'GET',\n      headers,\n      signal: AbortSignal.timeout(20_000),\n    })"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 361,
-      "endLine": 378,
+      "line": 366,
+      "endLine": 383,
       "expression": "serviceFetch(\n        config,\n        '/rest/v1/user_ai_provider_credentials?on_conflict=user_id,provider_id',\n        {\n          method: 'POST',\n          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },\n          body: JSON.stringify({\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }),\n        },\n      )"
     },
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 486,
-      "endLine": 490,
+      "line": 491,
+      "endLine": 495,
       "expression": "serviceFetch(\n        config,\n        `/rest/v1/user_ai_provider_credentials?user_id=eq.${encodeURIComponent(userId)}&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}`,\n        { method: 'DELETE', headers: { Prefer: 'return=minimal' } },\n      )"
     }
   ],
   "handler": [
     {
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 205,
-      "endLine": 514,
-      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405);\n  }\n\n  const config = getSupabaseConfig();\n  if (!config) {\n    return jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500);\n  }\n\n  const userId = await authenticate(request, config);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401);\n  }\n\n  let body: unknown;\n  try {\n    body = await request.json();\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400);\n  }\n  if (!isRecord(body) || typeof body.action !== 'string') {\n    return jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400);\n  }\n\n  const action = body.action;\n\n  try {\n    if (action === 'get') {\n      let stored = null;\n      try {\n        stored = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n        console.error('ollama get failed:', message || 'unknown');\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      });\n    }\n\n    if (action === 'upsert' || action === 'test' || action === 'listModels') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n    }\n\n    if (action === 'upsert') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      if (!modelRaw || modelRaw.length > MAX_MODEL_ID_LEN) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400);\n      }\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existing = null;\n      try {\n        existing = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n      }\n\n      const resolvedKey = apiKeyRaw || existing?.apiKey || OLLAMA_NONE_SECRET;\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n      if (!probe.models.includes(modelRaw)) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400);\n      }\n\n      const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));\n      if (!encKey) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        );\n      }\n\n      const ciphertext = await encryptProviderSecret(resolvedKey, encKey);\n      const keyHint = resolvedKey.trim()\n        ? buildKeyHint(resolvedKey)\n        : '••••none';\n      const now = new Date().toISOString();\n      const meta = {\n        useCloud,\n        baseUrl: safe.baseUrl,\n        model: modelRaw,\n      };\n\n      const upsertRes = await serviceFetch(\n        config,\n        '/rest/v1/user_ai_provider_credentials?on_conflict=user_id,provider_id',\n        {\n          method: 'POST',\n          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },\n          body: JSON.stringify({\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }),\n        },\n      );\n      if (!upsertRes.ok) {\n        console.error('ollama upsert failed', upsertRes.status);\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500);\n      }\n\n      const stored = await loadOllamaSettingsForUser(config, userId);\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      });\n    }\n\n    if (action === 'test' || action === 'listModels') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existingKey = '';\n      try {\n        const existing = await loadOllamaSettingsForUser(config, userId);\n        existingKey = existing?.apiKey ?? '';\n      } catch {\n        existingKey = '';\n      }\n      const resolvedKey = apiKeyRaw || existingKey;\n\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      // Ensure config would be usable for LLM calls when model present\n      if (action === 'test') {\n        const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n        if (modelRaw) {\n          const cfg = prefsToProviderConfig({\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          });\n          if (!cfg) {\n            return jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400);\n          }\n        }\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n\n      if (action === 'test') {\n        return jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        });\n      }\n\n      return jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      });\n    }\n\n    if (action === 'clear') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n      const del = await serviceFetch(\n        config,\n        `/rest/v1/user_ai_provider_credentials?user_id=eq.${encodeURIComponent(userId)}&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}`,\n        { method: 'DELETE', headers: { Prefer: 'return=minimal' } },\n      );\n      if (!del.ok) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      });\n    }\n\n    return jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400);\n  } catch (error) {\n    console.error(\n      'ollama-settings failed:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500);\n  }\n});",
+      "line": 206,
+      "endLine": 519,
+      "text": "serve(async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405);\n  }\n\n  const config = getSupabaseConfig();\n  if (!config) {\n    return jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500);\n  }\n\n  const userId = await authenticate(request, config);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401);\n  }\n\n  let body: unknown;\n  try {\n    body = await request.json();\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400);\n  }\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n  if (!isRecord(body) || typeof body.action !== 'string') {\n    return jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400);\n  }\n\n  const action = body.action;\n\n  try {\n    if (action === 'get') {\n      let stored = null;\n      try {\n        stored = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n        console.error('ollama get failed:', message || 'unknown');\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      });\n    }\n\n    if (action === 'upsert' || action === 'test' || action === 'listModels') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n    }\n\n    if (action === 'upsert') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      if (!modelRaw || modelRaw.length > MAX_MODEL_ID_LEN) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400);\n      }\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existing = null;\n      try {\n        existing = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n      }\n\n      const resolvedKey = apiKeyRaw || existing?.apiKey || OLLAMA_NONE_SECRET;\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n      if (!probe.models.includes(modelRaw)) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400);\n      }\n\n      const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));\n      if (!encKey) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        );\n      }\n\n      const ciphertext = await encryptProviderSecret(resolvedKey, encKey);\n      const keyHint = resolvedKey.trim()\n        ? buildKeyHint(resolvedKey)\n        : '••••none';\n      const now = new Date().toISOString();\n      const meta = {\n        useCloud,\n        baseUrl: safe.baseUrl,\n        model: modelRaw,\n      };\n\n      const upsertRes = await serviceFetch(\n        config,\n        '/rest/v1/user_ai_provider_credentials?on_conflict=user_id,provider_id',\n        {\n          method: 'POST',\n          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },\n          body: JSON.stringify({\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }),\n        },\n      );\n      if (!upsertRes.ok) {\n        console.error('ollama upsert failed', upsertRes.status);\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500);\n      }\n\n      const stored = await loadOllamaSettingsForUser(config, userId);\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      });\n    }\n\n    if (action === 'test' || action === 'listModels') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existingKey = '';\n      try {\n        const existing = await loadOllamaSettingsForUser(config, userId);\n        existingKey = existing?.apiKey ?? '';\n      } catch {\n        existingKey = '';\n      }\n      const resolvedKey = apiKeyRaw || existingKey;\n\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      // Ensure config would be usable for LLM calls when model present\n      if (action === 'test') {\n        const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n        if (modelRaw) {\n          const cfg = prefsToProviderConfig({\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          });\n          if (!cfg) {\n            return jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400);\n          }\n        }\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n\n      if (action === 'test') {\n        return jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        });\n      }\n\n      return jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      });\n    }\n\n    if (action === 'clear') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n      const del = await serviceFetch(\n        config,\n        `/rest/v1/user_ai_provider_credentials?user_id=eq.${encodeURIComponent(userId)}&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}`,\n        { method: 'DELETE', headers: { Prefer: 'return=minimal' } },\n      );\n      if (!del.ok) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      });\n    }\n\n    return jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400);\n  } catch (error) {\n    console.error(\n      'ollama-settings failed:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500);\n  }\n});",
       "requestReads": [
         "body.action",
         "body.apiKey",
@@ -1337,199 +1347,205 @@
       "returns": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 207,
-          "endLine": 207,
+          "line": 208,
+          "endLine": 208,
           "expression": "optionsResponse"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 209,
-          "endLine": 209,
+          "line": 210,
+          "endLine": 210,
           "expression": "jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 214,
-          "endLine": 214,
+          "line": 215,
+          "endLine": 215,
           "expression": "jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 219,
-          "endLine": 219,
+          "line": 220,
+          "endLine": 220,
           "expression": "jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 226,
-          "endLine": 226,
+          "line": 227,
+          "endLine": 227,
           "expression": "jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 229,
-          "endLine": 229,
+          "line": 231,
+          "endLine": 231,
+          "expression": "jsonResponse(request, { status: 'error', message: privilegedReject }, 400)"
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 234,
+          "endLine": 234,
           "expression": "jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 242,
-          "endLine": 250,
+          "line": 247,
+          "endLine": 255,
           "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 253,
-          "endLine": 256,
-          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
           "line": 258,
           "endLine": 261,
+          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500)"
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 263,
+          "endLine": 266,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 267,
-          "endLine": 275,
+          "line": 272,
+          "endLine": 280,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 288,
-          "endLine": 291,
+          "line": 293,
+          "endLine": 296,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 297,
-          "endLine": 297,
+          "line": 302,
+          "endLine": 302,
           "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 306,
-          "endLine": 314,
+          "line": 311,
+          "endLine": 319,
           "expression": "jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          )"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 320,
-          "endLine": 323,
+          "line": 325,
+          "endLine": 328,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 328,
-          "endLine": 328,
+          "line": 333,
+          "endLine": 333,
           "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 331,
-          "endLine": 334,
+          "line": 336,
+          "endLine": 339,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 339,
-          "endLine": 347,
+          "line": 344,
+          "endLine": 352,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        )"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 381,
-          "endLine": 384,
+          "line": 386,
+          "endLine": 389,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 388,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 397,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 405,
-          "endLine": 405,
+          "line": 410,
+          "endLine": 410,
           "expression": "jsonResponse(request, { status: 'error', message: safe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 418,
-          "endLine": 421,
+          "line": 423,
+          "endLine": 426,
           "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 445,
-          "endLine": 445,
+          "line": 450,
+          "endLine": 450,
           "expression": "jsonResponse(request, { status: 'error', message: probe.message }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 467,
-          "endLine": 470,
+          "line": 472,
+          "endLine": 475,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 476,
-          "endLine": 484,
+          "line": 481,
+          "endLine": 489,
           "expression": "jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        )"
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 492,
-          "endLine": 495,
-          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
           "line": 497,
           "endLine": 500,
+          "expression": "jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500)"
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 502,
+          "endLine": 505,
           "expression": "jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      })"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 503,
-          "endLine": 503,
+          "line": 508,
+          "endLine": 508,
           "expression": "jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400)"
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 509,
-          "endLine": 512,
+          "line": 514,
+          "endLine": 517,
           "expression": "jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500)"
         }
       ],
       "calls": [
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 205,
-          "endLine": 514,
+          "line": 206,
+          "endLine": 519,
           "expression": "serve",
           "arguments": [
-            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405);\n  }\n\n  const config = getSupabaseConfig();\n  if (!config) {\n    return jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500);\n  }\n\n  const userId = await authenticate(request, config);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401);\n  }\n\n  let body: unknown;\n  try {\n    body = await request.json();\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400);\n  }\n  if (!isRecord(body) || typeof body.action !== 'string') {\n    return jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400);\n  }\n\n  const action = body.action;\n\n  try {\n    if (action === 'get') {\n      let stored = null;\n      try {\n        stored = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n        console.error('ollama get failed:', message || 'unknown');\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      });\n    }\n\n    if (action === 'upsert' || action === 'test' || action === 'listModels') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n    }\n\n    if (action === 'upsert') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      if (!modelRaw || modelRaw.length > MAX_MODEL_ID_LEN) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400);\n      }\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existing = null;\n      try {\n        existing = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n      }\n\n      const resolvedKey = apiKeyRaw || existing?.apiKey || OLLAMA_NONE_SECRET;\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n      if (!probe.models.includes(modelRaw)) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400);\n      }\n\n      const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));\n      if (!encKey) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        );\n      }\n\n      const ciphertext = await encryptProviderSecret(resolvedKey, encKey);\n      const keyHint = resolvedKey.trim()\n        ? buildKeyHint(resolvedKey)\n        : '••••none';\n      const now = new Date().toISOString();\n      const meta = {\n        useCloud,\n        baseUrl: safe.baseUrl,\n        model: modelRaw,\n      };\n\n      const upsertRes = await serviceFetch(\n        config,\n        '/rest/v1/user_ai_provider_credentials?on_conflict=user_id,provider_id',\n        {\n          method: 'POST',\n          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },\n          body: JSON.stringify({\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }),\n        },\n      );\n      if (!upsertRes.ok) {\n        console.error('ollama upsert failed', upsertRes.status);\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500);\n      }\n\n      const stored = await loadOllamaSettingsForUser(config, userId);\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      });\n    }\n\n    if (action === 'test' || action === 'listModels') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existingKey = '';\n      try {\n        const existing = await loadOllamaSettingsForUser(config, userId);\n        existingKey = existing?.apiKey ?? '';\n      } catch {\n        existingKey = '';\n      }\n      const resolvedKey = apiKeyRaw || existingKey;\n\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      // Ensure config would be usable for LLM calls when model present\n      if (action === 'test') {\n        const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n        if (modelRaw) {\n          const cfg = prefsToProviderConfig({\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          });\n          if (!cfg) {\n            return jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400);\n          }\n        }\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n\n      if (action === 'test') {\n        return jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        });\n      }\n\n      return jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      });\n    }\n\n    if (action === 'clear') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n      const del = await serviceFetch(\n        config,\n        `/rest/v1/user_ai_provider_credentials?user_id=eq.${encodeURIComponent(userId)}&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}`,\n        { method: 'DELETE', headers: { Prefer: 'return=minimal' } },\n      );\n      if (!del.ok) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      });\n    }\n\n    return jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400);\n  } catch (error) {\n    console.error(\n      'ollama-settings failed:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500);\n  }\n}"
+            "async (request: Request) => {\n  const optionsResponse = handleOptions(request, CORS_OPTS);\n  if (optionsResponse) return optionsResponse;\n  if (request.method !== 'POST') {\n    return jsonResponse(request, { status: 'error', message: 'Nur POST erlaubt.' }, 405);\n  }\n\n  const config = getSupabaseConfig();\n  if (!config) {\n    return jsonResponse(request, { status: 'error', message: 'Server-Konfiguration fehlt.' }, 500);\n  }\n\n  const userId = await authenticate(request, config);\n  if (!userId) {\n    return jsonResponse(request, { status: 'error', message: 'Nicht angemeldet.' }, 401);\n  }\n\n  let body: unknown;\n  try {\n    body = await request.json();\n  } catch {\n    return jsonResponse(request, { status: 'error', message: 'Ungültiger JSON-Body.' }, 400);\n  }\n  const privilegedReject = privilegedClientBodyRejectionMessage(body);\n  if (privilegedReject) {\n    return jsonResponse(request, { status: 'error', message: privilegedReject }, 400);\n  }\n  if (!isRecord(body) || typeof body.action !== 'string') {\n    return jsonResponse(request, { status: 'error', message: 'action fehlt.' }, 400);\n  }\n\n  const action = body.action;\n\n  try {\n    if (action === 'get') {\n      let stored = null;\n      try {\n        stored = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n        console.error('ollama get failed:', message || 'unknown');\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      });\n    }\n\n    if (action === 'upsert' || action === 'test' || action === 'listModels') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n    }\n\n    if (action === 'upsert') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      if (!modelRaw || modelRaw.length > MAX_MODEL_ID_LEN) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Bitte ein gültiges Modell wählen.',\n        }, 400);\n      }\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existing = null;\n      try {\n        existing = await loadOllamaSettingsForUser(config, userId);\n      } catch (error) {\n        const message = error instanceof Error ? error.message : '';\n        if (message.includes('CREDENTIALS_ENCRYPTION_KEY')) {\n          return jsonResponse(\n            request,\n            {\n              status: 'error',\n              message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n              code: 'encryption-missing',\n            },\n            503,\n          );\n        }\n      }\n\n      const resolvedKey = apiKeyRaw || existing?.apiKey || OLLAMA_NONE_SECRET;\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n      if (!probe.models.includes(modelRaw)) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Gewähltes Modell ist auf dem Endpoint nicht verfügbar.',\n        }, 400);\n      }\n\n      const encKey = parseCredentialsEncryptionKey(Deno.env.get('CREDENTIALS_ENCRYPTION_KEY'));\n      if (!encKey) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Verschlüsselungsschlüssel fehlt auf dem Server.',\n            code: 'encryption-missing',\n          },\n          503,\n        );\n      }\n\n      const ciphertext = await encryptProviderSecret(resolvedKey, encKey);\n      const keyHint = resolvedKey.trim()\n        ? buildKeyHint(resolvedKey)\n        : '••••none';\n      const now = new Date().toISOString();\n      const meta = {\n        useCloud,\n        baseUrl: safe.baseUrl,\n        model: modelRaw,\n      };\n\n      const upsertRes = await serviceFetch(\n        config,\n        '/rest/v1/user_ai_provider_credentials?on_conflict=user_id,provider_id',\n        {\n          method: 'POST',\n          headers: { Prefer: 'resolution=merge-duplicates,return=representation' },\n          body: JSON.stringify({\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }),\n        },\n      );\n      if (!upsertRes.ok) {\n        console.error('ollama upsert failed', upsertRes.status);\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Speichern fehlgeschlagen.',\n        }, 500);\n      }\n\n      const stored = await loadOllamaSettingsForUser(config, userId);\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n        models: probe.models,\n      });\n    }\n\n    if (action === 'test' || action === 'listModels') {\n      const useCloud = body.useCloud === true;\n      const baseUrlRaw =\n        typeof body.baseUrl === 'string' ? body.baseUrl.trim() : '';\n      const apiKeyRaw =\n        typeof body.apiKey === 'string' ? body.apiKey.trim().slice(0, MAX_API_KEY_LEN) : '';\n\n      const defaultUrl = useCloud ? OLLAMA_CLOUD_OPENAI_BASE : defaultLocalOllamaBase();\n      const safe = assertSafeOllamaBaseUrl(baseUrlRaw || defaultUrl);\n      if (!safe.ok) {\n        return jsonResponse(request, { status: 'error', message: safe.message }, 400);\n      }\n\n      let existingKey = '';\n      try {\n        const existing = await loadOllamaSettingsForUser(config, userId);\n        existingKey = existing?.apiKey ?? '';\n      } catch {\n        existingKey = '';\n      }\n      const resolvedKey = apiKeyRaw || existingKey;\n\n      if (useCloud && !resolvedKey.trim()) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Ollama Cloud benötigt einen API-Key.',\n        }, 400);\n      }\n\n      // Ensure config would be usable for LLM calls when model present\n      if (action === 'test') {\n        const modelRaw = typeof body.model === 'string' ? body.model.trim() : '';\n        if (modelRaw) {\n          const cfg = prefsToProviderConfig({\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          });\n          if (!cfg) {\n            return jsonResponse(request, {\n              status: 'error',\n              message: 'Konfiguration ist unvollständig.',\n            }, 400);\n          }\n        }\n      }\n\n      const probe = await probeTags(useCloud, safe.baseUrl, resolvedKey);\n      if (!probe.ok) {\n        return jsonResponse(request, { status: 'error', message: probe.message }, 400);\n      }\n\n      if (action === 'test') {\n        return jsonResponse(request, {\n          status: 'ok',\n          message: `Verbindung OK — ${probe.models.length} Modell(e) gefunden.`,\n          models: probe.models,\n          settings: viewPayload({\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }),\n        });\n      }\n\n      return jsonResponse(request, {\n        status: 'ok',\n        models: probe.models,\n      });\n    }\n\n    if (action === 'clear') {\n      const allowed = await consumeRateLimit(config, userId);\n      if (!allowed) {\n        return jsonResponse(\n          request,\n          {\n            status: 'error',\n            message: 'Zu viele Anfragen. Bitte kurz warten.',\n            code: 'rate-limited',\n          },\n          429,\n        );\n      }\n      const del = await serviceFetch(\n        config,\n        `/rest/v1/user_ai_provider_credentials?user_id=eq.${encodeURIComponent(userId)}&provider_id=eq.${encodeURIComponent(OLLAMA_PROVIDER_ID)}`,\n        { method: 'DELETE', headers: { Prefer: 'return=minimal' } },\n      );\n      if (!del.ok) {\n        return jsonResponse(request, {\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }, 500);\n      }\n      return jsonResponse(request, {\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      });\n    }\n\n    return jsonResponse(request, { status: 'error', message: 'Unbekannte action.' }, 400);\n  } catch (error) {\n    console.error(\n      'ollama-settings failed:',\n      error instanceof Error ? error.message : 'unknown',\n    );\n    return jsonResponse(request, {\n      status: 'error',\n      message: 'Unerwarteter Fehler bei Ollama-Einstellungen.',\n    }, 500);\n  }\n}"
           ]
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 206,
-          "endLine": 206,
+          "line": 207,
+          "endLine": 207,
           "expression": "handleOptions",
           "arguments": [
             "request",
@@ -1538,8 +1554,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 209,
-          "endLine": 209,
+          "line": 210,
+          "endLine": 210,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1549,15 +1565,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 212,
-          "endLine": 212,
+          "line": 213,
+          "endLine": 213,
           "expression": "getSupabaseConfig",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 214,
-          "endLine": 214,
+          "line": 215,
+          "endLine": 215,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1567,8 +1583,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 217,
-          "endLine": 217,
+          "line": 218,
+          "endLine": 218,
           "expression": "authenticate",
           "arguments": [
             "request",
@@ -1577,8 +1593,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 219,
-          "endLine": 219,
+          "line": 220,
+          "endLine": 220,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1588,15 +1604,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 224,
-          "endLine": 224,
+          "line": 225,
+          "endLine": 225,
           "expression": "request.json",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 226,
-          "endLine": 226,
+          "line": 227,
+          "endLine": 227,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1606,8 +1622,28 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 228,
-          "endLine": 228,
+          "line": 229,
+          "endLine": 229,
+          "expression": "privilegedClientBodyRejectionMessage",
+          "arguments": [
+            "body"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 231,
+          "endLine": 231,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
+            "{ status: 'error', message: privilegedReject }",
+            "400"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 233,
+          "endLine": 233,
           "expression": "isRecord",
           "arguments": [
             "body"
@@ -1615,8 +1651,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 229,
-          "endLine": 229,
+          "line": 234,
+          "endLine": 234,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1626,8 +1662,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 238,
-          "endLine": 238,
+          "line": 243,
+          "endLine": 243,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -1636,8 +1672,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 241,
-          "endLine": 241,
+          "line": 246,
+          "endLine": 246,
           "expression": "message.includes",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -1645,8 +1681,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 242,
-          "endLine": 250,
+          "line": 247,
+          "endLine": 255,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1656,23 +1692,12 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 252,
-          "endLine": 252,
+          "line": 257,
+          "endLine": 257,
           "expression": "console.error",
           "arguments": [
             "'ollama get failed:'",
             "message || 'unknown'"
-          ]
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 253,
-          "endLine": 256,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }",
-            "500"
           ]
         },
         {
@@ -1682,13 +1707,24 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{\n          status: 'error',\n          message: 'Einstellungen konnten nicht geladen werden.',\n        }",
+            "500"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 263,
+          "endLine": 266,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{\n        status: 'ok',\n        settings: viewPayload(toSettingsView(stored)),\n      }"
           ]
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 265,
+          "endLine": 265,
           "expression": "viewPayload",
           "arguments": [
             "toSettingsView(stored)"
@@ -1696,8 +1732,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 260,
-          "endLine": 260,
+          "line": 265,
+          "endLine": 265,
           "expression": "toSettingsView",
           "arguments": [
             "stored"
@@ -1705,8 +1741,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 265,
-          "endLine": 265,
+          "line": 270,
+          "endLine": 270,
           "expression": "consumeRateLimit",
           "arguments": [
             "config",
@@ -1715,8 +1751,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 267,
-          "endLine": 275,
+          "line": 272,
+          "endLine": 280,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1726,22 +1762,22 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 282,
-          "endLine": 282,
+          "line": 287,
+          "endLine": 287,
           "expression": "body.baseUrl.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 283,
-          "endLine": 283,
+          "line": 288,
+          "endLine": 288,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 290,
+          "endLine": 290,
           "expression": "body.apiKey.trim().slice",
           "arguments": [
             "0",
@@ -1750,15 +1786,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 285,
-          "endLine": 285,
+          "line": 290,
+          "endLine": 290,
           "expression": "body.apiKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 288,
-          "endLine": 291,
+          "line": 293,
+          "endLine": 296,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1768,15 +1804,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 294,
-          "endLine": 294,
+          "line": 299,
+          "endLine": 299,
           "expression": "defaultLocalOllamaBase",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 295,
-          "endLine": 295,
+          "line": 300,
+          "endLine": 300,
           "expression": "assertSafeOllamaBaseUrl",
           "arguments": [
             "baseUrlRaw || defaultUrl"
@@ -1784,8 +1820,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 297,
-          "endLine": 297,
+          "line": 302,
+          "endLine": 302,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1795,8 +1831,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 302,
-          "endLine": 302,
+          "line": 307,
+          "endLine": 307,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -1805,8 +1841,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 305,
-          "endLine": 305,
+          "line": 310,
+          "endLine": 310,
           "expression": "message.includes",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -1814,8 +1850,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 306,
-          "endLine": 314,
+          "line": 311,
+          "endLine": 319,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1825,15 +1861,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 319,
-          "endLine": 319,
+          "line": 324,
+          "endLine": 324,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 320,
-          "endLine": 323,
+          "line": 325,
+          "endLine": 328,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1843,8 +1879,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 326,
-          "endLine": 326,
+          "line": 331,
+          "endLine": 331,
           "expression": "probeTags",
           "arguments": [
             "useCloud",
@@ -1854,8 +1890,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 328,
-          "endLine": 328,
+          "line": 333,
+          "endLine": 333,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1865,8 +1901,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 330,
-          "endLine": 330,
+          "line": 335,
+          "endLine": 335,
           "expression": "probe.models.includes",
           "arguments": [
             "modelRaw"
@@ -1874,8 +1910,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 331,
-          "endLine": 334,
+          "line": 336,
+          "endLine": 339,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1885,8 +1921,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 337,
-          "endLine": 337,
+          "line": 342,
+          "endLine": 342,
           "expression": "parseCredentialsEncryptionKey",
           "arguments": [
             "Deno.env.get('CREDENTIALS_ENCRYPTION_KEY')"
@@ -1894,8 +1930,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 337,
-          "endLine": 337,
+          "line": 342,
+          "endLine": 342,
           "expression": "Deno.env.get",
           "arguments": [
             "'CREDENTIALS_ENCRYPTION_KEY'"
@@ -1903,8 +1939,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 339,
-          "endLine": 347,
+          "line": 344,
+          "endLine": 352,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1914,8 +1950,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 350,
-          "endLine": 350,
+          "line": 355,
+          "endLine": 355,
           "expression": "encryptProviderSecret",
           "arguments": [
             "resolvedKey",
@@ -1924,15 +1960,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 351,
-          "endLine": 351,
+          "line": 356,
+          "endLine": 356,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 352,
-          "endLine": 352,
+          "line": 357,
+          "endLine": 357,
           "expression": "buildKeyHint",
           "arguments": [
             "resolvedKey"
@@ -1940,15 +1976,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 354,
-          "endLine": 354,
+          "line": 359,
+          "endLine": 359,
           "expression": "new Date().toISOString",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 361,
-          "endLine": 378,
+          "line": 366,
+          "endLine": 383,
           "expression": "serviceFetch",
           "arguments": [
             "config",
@@ -1958,8 +1994,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 367,
-          "endLine": 376,
+          "line": 372,
+          "endLine": 381,
           "expression": "JSON.stringify",
           "arguments": [
             "{\n            user_id: userId,\n            provider_id: OLLAMA_PROVIDER_ID,\n            secret_ciphertext: ciphertext,\n            key_hint: keyHint,\n            status: 'active',\n            last_validated_at: now,\n            meta,\n            updated_at: now,\n          }"
@@ -1967,8 +2003,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 380,
-          "endLine": 380,
+          "line": 385,
+          "endLine": 385,
           "expression": "console.error",
           "arguments": [
             "'ollama upsert failed'",
@@ -1977,8 +2013,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 381,
-          "endLine": 384,
+          "line": 386,
+          "endLine": 389,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -1988,8 +2024,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 387,
-          "endLine": 387,
+          "line": 392,
+          "endLine": 392,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -1998,8 +2034,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 388,
-          "endLine": 392,
+          "line": 393,
+          "endLine": 397,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2008,8 +2044,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 395,
+          "endLine": 395,
           "expression": "viewPayload",
           "arguments": [
             "toSettingsView(stored)"
@@ -2017,8 +2053,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 390,
-          "endLine": 390,
+          "line": 395,
+          "endLine": 395,
           "expression": "toSettingsView",
           "arguments": [
             "stored"
@@ -2026,15 +2062,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 398,
-          "endLine": 398,
+          "line": 403,
+          "endLine": 403,
           "expression": "body.baseUrl.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 400,
-          "endLine": 400,
+          "line": 405,
+          "endLine": 405,
           "expression": "body.apiKey.trim().slice",
           "arguments": [
             "0",
@@ -2043,22 +2079,22 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 400,
-          "endLine": 400,
+          "line": 405,
+          "endLine": 405,
           "expression": "body.apiKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 402,
-          "endLine": 402,
+          "line": 407,
+          "endLine": 407,
           "expression": "defaultLocalOllamaBase",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 403,
-          "endLine": 403,
+          "line": 408,
+          "endLine": 408,
           "expression": "assertSafeOllamaBaseUrl",
           "arguments": [
             "baseUrlRaw || defaultUrl"
@@ -2066,8 +2102,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 405,
-          "endLine": 405,
+          "line": 410,
+          "endLine": 410,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2077,8 +2113,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 410,
-          "endLine": 410,
+          "line": 415,
+          "endLine": 415,
           "expression": "loadOllamaSettingsForUser",
           "arguments": [
             "config",
@@ -2087,15 +2123,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 417,
-          "endLine": 417,
+          "line": 422,
+          "endLine": 422,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 418,
-          "endLine": 421,
+          "line": 423,
+          "endLine": 426,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2105,15 +2141,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 426,
-          "endLine": 426,
+          "line": 431,
+          "endLine": 431,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 428,
-          "endLine": 433,
+          "line": 433,
+          "endLine": 438,
           "expression": "prefsToProviderConfig",
           "arguments": [
             "{\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: modelRaw,\n            apiKey: resolvedKey,\n          }"
@@ -2121,8 +2157,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 435,
-          "endLine": 438,
+          "line": 440,
+          "endLine": 443,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2132,8 +2168,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 443,
-          "endLine": 443,
+          "line": 448,
+          "endLine": 448,
           "expression": "probeTags",
           "arguments": [
             "useCloud",
@@ -2143,8 +2179,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 445,
-          "endLine": 445,
+          "line": 450,
+          "endLine": 450,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2154,8 +2190,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 449,
-          "endLine": 464,
+          "line": 454,
+          "endLine": 469,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2164,8 +2200,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 453,
-          "endLine": 463,
+          "line": 458,
+          "endLine": 468,
           "expression": "viewPayload",
           "arguments": [
             "{\n            ...buildEnvSettingsView(),\n            useCloud,\n            baseUrl: safe.baseUrl,\n            model: typeof body.model === 'string' ? body.model.trim() : '',\n            hasApiKey: resolvedKey.trim().length > 0,\n            keyHint: null,\n            status: 'active',\n            updatedAt: null,\n            source: 'user',\n          }"
@@ -2173,29 +2209,29 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 454,
-          "endLine": 454,
+          "line": 459,
+          "endLine": 459,
           "expression": "buildEnvSettingsView",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 457,
-          "endLine": 457,
+          "line": 462,
+          "endLine": 462,
           "expression": "body.model.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 458,
-          "endLine": 458,
+          "line": 463,
+          "endLine": 463,
           "expression": "resolvedKey.trim",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 467,
-          "endLine": 470,
+          "line": 472,
+          "endLine": 475,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2204,8 +2240,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 474,
-          "endLine": 474,
+          "line": 479,
+          "endLine": 479,
           "expression": "consumeRateLimit",
           "arguments": [
             "config",
@@ -2214,8 +2250,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 476,
-          "endLine": 484,
+          "line": 481,
+          "endLine": 489,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2225,8 +2261,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 486,
-          "endLine": 490,
+          "line": 491,
+          "endLine": 495,
           "expression": "serviceFetch",
           "arguments": [
             "config",
@@ -2236,8 +2272,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 488,
-          "endLine": 488,
+          "line": 493,
+          "endLine": 493,
           "expression": "encodeURIComponent",
           "arguments": [
             "userId"
@@ -2245,22 +2281,11 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 488,
-          "endLine": 488,
+          "line": 493,
+          "endLine": 493,
           "expression": "encodeURIComponent",
           "arguments": [
             "OLLAMA_PROVIDER_ID"
-          ]
-        },
-        {
-          "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 492,
-          "endLine": 495,
-          "expression": "jsonResponse",
-          "arguments": [
-            "request",
-            "{\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }",
-            "500"
           ]
         },
         {
@@ -2270,13 +2295,24 @@
           "expression": "jsonResponse",
           "arguments": [
             "request",
+            "{\n          status: 'error',\n          message: 'Zurücksetzen fehlgeschlagen.',\n        }",
+            "500"
+          ]
+        },
+        {
+          "path": "supabase/functions/ollama-settings/index.ts",
+          "line": 502,
+          "endLine": 505,
+          "expression": "jsonResponse",
+          "arguments": [
+            "request",
             "{\n        status: 'ok',\n        settings: viewPayload(buildEnvSettingsView()),\n      }"
           ]
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 499,
-          "endLine": 499,
+          "line": 504,
+          "endLine": 504,
           "expression": "viewPayload",
           "arguments": [
             "buildEnvSettingsView()"
@@ -2284,15 +2320,15 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 499,
-          "endLine": 499,
+          "line": 504,
+          "endLine": 504,
           "expression": "buildEnvSettingsView",
           "arguments": []
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 503,
-          "endLine": 503,
+          "line": 508,
+          "endLine": 508,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2302,8 +2338,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 505,
-          "endLine": 508,
+          "line": 510,
+          "endLine": 513,
           "expression": "console.error",
           "arguments": [
             "'ollama-settings failed:'",
@@ -2312,8 +2348,8 @@
         },
         {
           "path": "supabase/functions/ollama-settings/index.ts",
-          "line": 509,
-          "endLine": 512,
+          "line": 514,
+          "endLine": 517,
           "expression": "jsonResponse",
           "arguments": [
             "request",
@@ -2524,6 +2560,46 @@
       "line": 124,
       "endLine": 131,
       "text": "export async function generateCharacterLore(\n  config: CharacterLoreProviderConfig,\n  prompt: CharacterLorePrompt,\n): Promise<string> {\n  return config.provider === 'openai-compatible'\n    ? generateOpenAiCompatible(config, prompt)\n    : generateOllama(config, prompt);\n}"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED_CLIENT_BODY_KEYS",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 9,
+      "endLine": 18,
+      "text": "PRIVILEGED_CLIENT_BODY_KEYS = [\n  'author_id',\n  'owner_user_id',\n  'rating',\n  'downloads',\n  'roles',\n  'permissions',\n  'is_admin',\n  'service_role',\n] as const"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "PrivilegedClientBodyKey",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type PrivilegedClientBodyKey = (typeof PRIVILEGED_CLIENT_BODY_KEYS)[number];"
+    },
+    {
+      "kind": "VariableDeclaration",
+      "name": "PRIVILEGED",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "PRIVILEGED = new Set<string>(PRIVILEGED_CLIENT_BODY_KEYS)"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "findPrivilegedClientBodyKeys",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 24,
+      "endLine": 37,
+      "text": "export function findPrivilegedClientBodyKeys(\n  body: unknown,\n): PrivilegedClientBodyKey[] {\n  if (body === null || typeof body !== 'object' || Array.isArray(body)) {\n    return [];\n  }\n  const found: PrivilegedClientBodyKey[] = [];\n  for (const key of Object.keys(body as Record<string, unknown>)) {\n    if (PRIVILEGED.has(key)) {\n      found.push(key as PrivilegedClientBodyKey);\n    }\n  }\n  return found;\n}"
+    },
+    {
+      "kind": "FunctionDeclaration",
+      "name": "privilegedClientBodyRejectionMessage",
+      "path": "supabase/functions/_shared/client-trust-body.ts",
+      "line": 40,
+      "endLine": 46,
+      "text": "export function privilegedClientBodyRejectionMessage(\n  body: unknown,\n): string | null {\n  const found = findPrivilegedClientBodyKeys(body);\n  if (found.length === 0) return null;\n  return `Client darf privilegierte Felder nicht setzen: ${found.join(', ')}`;\n}"
     },
     {
       "kind": "VariableDeclaration",
@@ -2809,136 +2885,136 @@
       "kind": "TypeAliasDeclaration",
       "name": "JsonRecord",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 33,
-      "endLine": 33,
+      "line": 34,
+      "endLine": 34,
       "text": "type JsonRecord = Record<string, unknown>;"
     },
     {
       "kind": "VariableDeclaration",
       "name": "CORS_OPTS",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 35,
-      "endLine": 42,
+      "line": 36,
+      "endLine": 43,
       "text": "CORS_OPTS: CorsOptions = {\n  methods: 'POST, OPTIONS',\n  envKeys: [\n    'CHARACTER_AI_ALLOWED_ORIGIN',\n    'AI_PROVIDER_ALLOWED_ORIGIN',\n    'SESSION_RECAP_AI_ALLOWED_ORIGIN',\n  ],\n}"
     },
     {
       "kind": "InterfaceDeclaration",
       "name": "SupabaseConfig",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 44,
-      "endLine": 48,
+      "line": 45,
+      "endLine": 49,
       "text": "interface SupabaseConfig {\n  url: string;\n  anonKey: string;\n  serviceRoleKey: string;\n}"
     },
     {
       "kind": "VariableDeclaration",
       "name": "DEFAULT_RATE_LIMIT",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 50,
-      "endLine": 50,
+      "line": 51,
+      "endLine": 51,
       "text": "DEFAULT_RATE_LIMIT = 8"
     },
     {
       "kind": "VariableDeclaration",
       "name": "RATE_WINDOW_SECONDS",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 51,
-      "endLine": 51,
+      "line": 52,
+      "endLine": 52,
       "text": "RATE_WINDOW_SECONDS = 60"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_MODEL_ID_LEN",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 52,
-      "endLine": 52,
+      "line": 53,
+      "endLine": 53,
       "text": "MAX_MODEL_ID_LEN = 128"
     },
     {
       "kind": "VariableDeclaration",
       "name": "MAX_API_KEY_LEN",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 53,
-      "endLine": 53,
+      "line": 54,
+      "endLine": 54,
       "text": "MAX_API_KEY_LEN = 512"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "isRecord",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 55,
-      "endLine": 57,
+      "line": 56,
+      "endLine": 58,
       "text": "function isRecord(value: unknown): value is JsonRecord {\n  return typeof value === 'object' && value !== null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "jsonResponse",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 59,
-      "endLine": 61,
+      "line": 60,
+      "endLine": 62,
       "text": "function jsonResponse(request: Request, body: JsonRecord, status = 200): Response {\n  return sharedJsonResponse(request, body, status, CORS_OPTS);\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getSupabaseConfig",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 63,
-      "endLine": 69,
+      "line": 64,
+      "endLine": 70,
       "text": "function getSupabaseConfig(): SupabaseConfig | null {\n  const url = Deno.env.get('SUPABASE_URL')?.trim();\n  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim();\n  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim();\n  if (!url || !anonKey || !serviceRoleKey) return null;\n  return { url: url.replace(/\\/+$/, ''), anonKey, serviceRoleKey };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "getRateLimit",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 71,
-      "endLine": 79,
+      "line": 72,
+      "endLine": 80,
       "text": "function getRateLimit(): number {\n  const configured = Number.parseInt(\n    Deno.env.get('AI_PROVIDER_CREDENTIAL_RATE_LIMIT_PER_MINUTE') || '',\n    10,\n  );\n  return Number.isFinite(configured) && configured > 0\n    ? Math.min(configured, 60)\n    : DEFAULT_RATE_LIMIT;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "authenticate",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 81,
-      "endLine": 91,
+      "line": 82,
+      "endLine": 92,
       "text": "async function authenticate(request: Request, config: SupabaseConfig): Promise<string | null> {\n  const authorization = request.headers.get('Authorization');\n  if (!authorization?.startsWith('Bearer ')) return null;\n  const response = await fetch(`${config.url}/auth/v1/user`, {\n    headers: { Authorization: authorization, apikey: config.anonKey },\n    signal: AbortSignal.timeout(10_000),\n  });\n  if (!response.ok) return null;\n  const body: unknown = await response.json();\n  return isRecord(body) && typeof body.id === 'string' ? body.id : null;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "serviceFetch",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 93,
-      "endLine": 110,
+      "line": 94,
+      "endLine": 111,
       "text": "async function serviceFetch(\n  config: SupabaseConfig,\n  path: string,\n  init?: RequestInit,\n): Promise<Response> {\n  return fetch(`${config.url}${path}`, {\n    ...init,\n    headers: {\n      Authorization: `Bearer ${config.serviceRoleKey}`,\n      apikey: config.serviceRoleKey,\n      Accept: 'application/json',\n      'Content-Type': 'application/json',\n      Prefer: 'return=representation',\n      ...(init?.headers ?? {}),\n    },\n    signal: AbortSignal.timeout(20_000),\n  });\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "consumeRateLimit",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 112,
-      "endLine": 131,
+      "line": 113,
+      "endLine": 132,
       "text": "async function consumeRateLimit(config: SupabaseConfig, userId: string): Promise<boolean> {\n  const response = await serviceFetch(\n    config,\n    '/rest/v1/rpc/consume_ai_provider_credential_rate_limit',\n    {\n      method: 'POST',\n      body: JSON.stringify({\n        p_user_id: userId,\n        p_limit: getRateLimit(),\n        p_window_seconds: RATE_WINDOW_SECONDS,\n      }),\n    },\n  );\n  if (!response.ok) {\n    console.error('ollama-settings rate limit rpc failed', response.status);\n    return false;\n  }\n  const body: unknown = await response.json();\n  return body === true;\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "viewPayload",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 133,
-      "endLine": 146,
+      "line": 134,
+      "endLine": 147,
       "text": "function viewPayload(view: OllamaSettingsView): JsonRecord {\n  return {\n    useCloud: view.useCloud,\n    baseUrl: view.baseUrl,\n    model: view.model,\n    hasApiKey: view.hasApiKey,\n    keyHint: view.keyHint,\n    status: view.status,\n    updatedAt: view.updatedAt,\n    source: view.source,\n    cloudDefaultUrl: view.cloudDefaultUrl,\n    localDefaultUrl: view.localDefaultUrl,\n  };\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "parseModelNames",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 148,
-      "endLine": 157,
+      "line": 149,
+      "endLine": 158,
       "text": "function parseModelNames(body: unknown): string[] {\n  if (!isRecord(body) || !Array.isArray(body.models)) return [];\n  const names: string[] = [];\n  for (const entry of body.models) {\n    if (!isRecord(entry)) continue;\n    const name = typeof entry.name === 'string' ? entry.name.trim() : '';\n    if (name && name.length <= MAX_MODEL_ID_LEN) names.push(name);\n  }\n  return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));\n}"
     },
     {
       "kind": "FunctionDeclaration",
       "name": "probeTags",
       "path": "supabase/functions/ollama-settings/index.ts",
-      "line": 159,
-      "endLine": 203,
+      "line": 160,
+      "endLine": 204,
       "text": "async function probeTags(\n  useCloud: boolean,\n  baseUrl: string,\n  apiKey: string,\n): Promise<{ ok: true; models: string[] } | { ok: false; message: string }> {\n  const tagsUrl = resolveTagsUrl(useCloud, baseUrl);\n  const headers: Record<string, string> = { Accept: 'application/json' };\n  if (apiKey.trim()) {\n    headers.Authorization = `Bearer ${apiKey.trim()}`;\n  }\n\n  let response: Response;\n  try {\n    response = await fetch(tagsUrl, {\n      method: 'GET',\n      headers,\n      signal: AbortSignal.timeout(20_000),\n    });\n  } catch {\n    return {\n      ok: false,\n      message: 'Verbindung fehlgeschlagen. Prüfe URL und Erreichbarkeit vom Server.',\n    };\n  }\n\n  if (response.status === 401 || response.status === 403) {\n    return { ok: false, message: 'Authentifizierung fehlgeschlagen. API-Key prüfen.' };\n  }\n  if (!response.ok) {\n    return {\n      ok: false,\n      message: `Ollama antwortete mit Status ${response.status}.`,\n    };\n  }\n\n  let body: unknown;\n  try {\n    body = await response.json();\n  } catch {\n    return { ok: false, message: 'Ungültige Antwort von Ollama (/api/tags).' };\n  }\n\n  const models = parseModelNames(body);\n  return { ok: true, models };\n}"
     }
   ]
