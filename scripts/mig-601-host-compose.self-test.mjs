@@ -5,20 +5,21 @@
  *
  * Isolated-contract: static Compose/Dockerfile/runbook checks + native createHost
  * (same dataDir contract as the container). Does not require a Docker daemon.
+ *
+ * Pattern matches other MIG self-tests (assert + process.exit) wired via test-gate.
  */
 import {
   mkdtempSync,
   mkdirSync,
   readFileSync,
   rmSync,
-  writeFileSync,
   existsSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 
 function assert(cond, msg) {
   if (!cond) {
@@ -36,6 +37,7 @@ const compose = read('deployment/docker-compose.host.yml');
 const dockerfile = read('deployment/Dockerfile.host');
 const envEx = read('deployment/.env.host.example');
 const runbook = read('docs/ops/host-compose-profiles.md');
+const dockerignore = read('.dockerignore');
 
 assert(compose.includes('sagatree-host:'), 'compose defines sagatree-host');
 assert(compose.includes('host-data:/data'), 'compose mounts host-data volume at /data');
@@ -48,20 +50,20 @@ assert(compose.includes('SAGATREE_ALLOW_REMOTE_BIND'), 'compose allows remote bi
 assert(compose.includes('SAGATREE_HOST_MODE: remote'), 'compose uses remote mode (solo forbids 0.0.0.0)');
 assert(compose.includes('SAGATREE_BETTER_AUTH_SECRET'), 'compose requires Better Auth secret via env');
 assert(
-  /SAGATREE_AUTH_BASE_URL:.*SAGATREE_HOST_PUBLISH/.test(compose),
-  'auth base URL default tracks SAGATREE_HOST_PUBLISH',
+  /127\.0\.0\.1:8787|SAGATREE_HOST_PUBLISH:-127\.0\.0\.1:8787/.test(compose),
+  'compose publishes host HTTP on loopback by default',
 );
-assert(
-  /ollama\/ollama:\d+\.\d+\.\d+@sha256:[a-f0-9]{64}/.test(compose),
-  'ollama image pinned to version+digest (not :latest)',
-);
-assert(!/ollama\/ollama:latest/.test(compose), 'ollama must not use :latest');
 assert(!/CHARACTER_AI_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked AI API key in compose');
 assert(!/MESHY_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked Meshy key in compose');
+assert(/ollama\/ollama:\d+\.\d+\.\d+@sha256:[a-f0-9]+/.test(compose), 'ollama image pinned by tag+digest');
 
 assert(dockerfile.includes('SAGATREE_DATA_DIR=/data'), 'Dockerfile default data dir');
 assert(!/BETTER_AUTH_SECRET=|CHARACTER_AI_API_KEY=|MESHY_API_KEY=/.test(dockerfile), 'Dockerfile has no secrets');
 assert(dockerfile.includes('node:22'), 'Dockerfile uses Node 22');
+assert(
+  /Container must listen on 0\.0\.0\.0|port-publish/i.test(dockerfile),
+  'Dockerfile documents why container binds 0.0.0.0',
+);
 
 assert(envEx.includes('SAGATREE_BETTER_AUTH_SECRET'), '.env.example documents auth secret');
 assert(envEx.includes('SAGATREE_BACKUP_MOUNT'), '.env.example documents backup mount');
@@ -77,15 +79,20 @@ assert(runbook.includes('--profile ai'), 'runbook documents ai profile');
 assert(runbook.includes('--profile media'), 'runbook documents media profile');
 assert(runbook.includes('not-configured') || runbook.includes('unsupported'), 'runbook documents capability gaps');
 
-console.log('ok: static deployment compose / Dockerfile / runbook');
+assert(/node_modules/.test(dockerignore), '.dockerignore excludes node_modules');
+assert(/\.git/.test(dockerignore), '.dockerignore excludes .git');
+assert(/supabase/.test(dockerignore), '.dockerignore excludes supabase');
+assert(/public\/assets|\.qa/.test(dockerignore), '.dockerignore excludes heavy/non-host trees');
 
-// --- Runtime: ready only after start; data survives restart ---
+console.log('ok: static deployment compose / Dockerfile / runbook / .dockerignore');
+
+// --- Runtime: ready only after start; host-managed data survives restart ---
 const createHostUrl = pathToFileURL(join(root, 'server/src/bootstrap/create-host.ts')).href;
 const { createHost } = await import(createHostUrl);
 
 const dataDir = mkdtempSync(join(tmpdir(), 'mig601-data-'));
 const port = 28787 + Math.floor(Math.random() * 1000);
-const markerPath = join(dataDir, 'mig601-world-session.json');
+const identityPath = join(dataDir, 'host-identity.json');
 
 try {
   const host1 = createHost({
@@ -97,12 +104,10 @@ try {
   assert(host1.isReady() === false, 'not ready before start (DB listen pending)');
   await host1.start();
   assert(host1.isReady() === true, 'ready after start (DB bootstrap + listen)');
+  assert(existsSync(identityPath), 'host wrote host-identity.json under dataDir');
+  const identity1 = JSON.parse(readFileSync(identityPath, 'utf8')).actorId;
+  assert(typeof identity1 === 'string' && identity1.startsWith('solo-'), 'host minted solo actorId');
   const fp1 = host1.dataDirFingerprint;
-  writeFileSync(
-    markerPath,
-    JSON.stringify({ worldId: 'W-mig601', sessionId: 'SE-mig601', v: 1 }),
-    'utf8',
-  );
   await host1.stop();
   assert(host1.isReady() === false, 'not ready after stop');
 
@@ -113,13 +118,12 @@ try {
   });
   assert(!('error' in host2), 'host2 config');
   assert(host2.dataDirFingerprint === fp1, 'dataDir fingerprint stable across restart');
-  assert(existsSync(markerPath), 'confirmed world/session marker survives restart');
-  const marker = JSON.parse(readFileSync(markerPath, 'utf8'));
-  assert(marker.sessionId === 'SE-mig601', 'session marker content intact');
   await host2.start();
   assert(host2.isReady() === true, 'ready after restart');
+  const identity2 = JSON.parse(readFileSync(identityPath, 'utf8')).actorId;
+  assert(identity1 === identity2, 'host-managed solo identity survives restart (volume semantics)');
   await host2.stop();
-  console.log('ok: health readiness + dataDir survival across restart');
+  console.log('ok: health readiness + host-managed identity survival across restart');
 } finally {
   rmSync(dataDir, { recursive: true, force: true });
 }

@@ -11,7 +11,9 @@ RUN cd server && npm ci --omit=dev
 COPY server/migrations ./server/migrations
 COPY server/src ./server/src
 
-# Bind defaults for containers; secrets / auth base URL come from Compose env at runtime.
+# Container must listen on 0.0.0.0 so Docker port-publish can reach the process.
+# Host-side exposure stays loopback via Compose (`127.0.0.1:8787:8787`).
+# Secrets / auth base URL come from Compose env at runtime — never baked here.
 ENV NODE_ENV=production \
     SAGATREE_HOST=0.0.0.0 \
     SAGATREE_PORT=8787 \
