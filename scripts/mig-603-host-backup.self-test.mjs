@@ -101,6 +101,14 @@ try {
 
   db.close();
 
+  // Reject path-traversal snapshot ids before any staging I/O.
+  const unsafeId = await createHostSnapshot({
+    dataDir,
+    backupRoot,
+    snapshotId: '../../victim',
+  });
+  assert(unsafeId.ok === false && unsafeId.error === 'unsafe-snapshot-id', 'reject unsafe snapshot id');
+
   // --- Fall 1: snapshot → restore on new host preserves integrity / events / assets ---
   const snap1 = await createHostSnapshot({
     dataDir,

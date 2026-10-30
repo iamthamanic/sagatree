@@ -19,7 +19,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { finished } from 'node:stream/promises';
 
@@ -28,6 +28,9 @@ export const HOST_BACKUP_MANIFEST = 'manifest.json';
 export const HOST_SQLITE = 'host.sqlite';
 export const AUTH_SQLITE = 'auth.sqlite';
 export const ASSETS_DIR = 'assets';
+
+/** Single-segment snapshot ids only (no path traversal). */
+const SAFE_SNAPSHOT_ID = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 
 /**
  * @typedef {{
@@ -43,6 +46,23 @@ export const ASSETS_DIR = 'assets';
  *   eventRevisionLinks: Array<{ sessionId: string, maxEventSequence: number, runtimeRevision: number }>,
  * }} SnapshotManifest
  */
+
+/** @param {string} parent @param {string} child */
+function isPathInside(parent, child) {
+  const root = resolve(parent);
+  const target = resolve(child);
+  return target === root || target.startsWith(`${root}${sep}`);
+}
+
+/** @param {string} snapshotId */
+export function isSafeSnapshotId(snapshotId) {
+  return SAFE_SNAPSHOT_ID.test(snapshotId);
+}
+
+/** Main DB file plus WAL/SHM sidecars. @param {string} baseName */
+function sqliteSidecarNames(baseName) {
+  return [baseName, `${baseName}-wal`, `${baseName}-shm`];
+}
 
 /** @param {string} filePath */
 export async function sha256File(filePath) {
@@ -63,12 +83,15 @@ function ensureDir(dir) {
   mkdirSync(dir, { recursive: true });
 }
 
-/** @param {string} srcDir @param {string} destDir */
+/**
+ * Copy durable asset files. Skips transient `.tmp` and `.uploads` trees.
+ * @param {string} srcDir @param {string} destDir
+ */
 function copyTree(srcDir, destDir) {
   if (!existsSync(srcDir)) return;
   ensureDir(destDir);
   for (const name of readdirSync(srcDir)) {
-    if (name === '.tmp') continue;
+    if (name === '.tmp' || name === '.uploads') continue;
     const src = join(srcDir, name);
     const dest = join(destDir, name);
     const st = statSync(src);
@@ -78,6 +101,36 @@ function copyTree(srcDir, destDir) {
       copyFileSync(src, dest);
     }
   }
+}
+
+/**
+ * Recursively hash durable files under assets/ into the manifest map.
+ * @param {string} assetsRoot
+ * @param {Record<string, { sha256: string, bytes: number }>} files
+ * @returns {Promise<number>}
+ */
+async function hashAssetTree(assetsRoot, files) {
+  let count = 0;
+  /** @param {string} dir @param {string} relPrefix */
+  async function walk(dir, relPrefix) {
+    for (const name of readdirSync(dir)) {
+      if (name === '.tmp' || name === '.uploads') continue;
+      const abs = join(dir, name);
+      const rel = relPrefix ? `${relPrefix}/${name}` : name;
+      const st = statSync(abs);
+      if (st.isDirectory()) {
+        await walk(abs, rel);
+      } else if (st.isFile()) {
+        count += 1;
+        files[`${ASSETS_DIR}/${rel}`] = {
+          sha256: await sha256File(abs),
+          bytes: st.size,
+        };
+      }
+    }
+  }
+  await walk(assetsRoot, '');
+  return count;
 }
 
 /** @param {string} sqlPath */
@@ -94,6 +147,49 @@ function openOpsDb(dbPath) {
   db.exec('PRAGMA foreign_keys=ON');
   db.exec('PRAGMA busy_timeout=5000');
   return db;
+}
+
+/**
+ * VACUUM INTO a consistent single-file snapshot (handles WAL).
+ * @param {string} sourceDbPath
+ * @param {string} destDbPath
+ */
+function vacuumSqliteInto(sourceDbPath, destDbPath) {
+  const db = openOpsDb(sourceDbPath);
+  try {
+    db.exec('BEGIN IMMEDIATE');
+    db.exec('COMMIT');
+    try {
+      db.exec('PRAGMA wal_checkpoint(PASSIVE)');
+    } catch {
+      /* non-WAL DBs still vacuum cleanly */
+    }
+    db.exec(`VACUUM INTO '${escapeSqlPath(destDbPath)}'`);
+  } finally {
+    try {
+      db.close();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+/**
+ * Move live SQLite main + WAL/SHM aside (or remove if dest omitted).
+ * @param {string} dataDir
+ * @param {string} baseName
+ * @param {string | null} previousDir
+ */
+function relocateSqliteLiveFiles(dataDir, baseName, previousDir) {
+  for (const name of sqliteSidecarNames(baseName)) {
+    const live = join(dataDir, name);
+    if (!existsSync(live)) continue;
+    if (previousDir) {
+      renameSync(live, join(previousDir, name));
+    } else {
+      rmSync(live, { force: true });
+    }
+  }
 }
 
 /**
@@ -200,6 +296,30 @@ export function verifyDataDirConsistency(dataDir) {
       }
     }
 
+    const authPath = join(dataDir, AUTH_SQLITE);
+    if (existsSync(authPath)) {
+      let authDb;
+      try {
+        authDb = openOpsDb(authPath);
+        const ik = authDb.prepare('PRAGMA integrity_check').get();
+        const integrity = ik && typeof ik === 'object' ? Object.values(ik)[0] : null;
+        if (integrity !== 'ok') {
+          return { ok: false, error: `auth-integrity_check=${String(integrity)}` };
+        }
+      } catch (err) {
+        return {
+          ok: false,
+          error: err instanceof Error ? `auth-verify:${err.message}` : 'auth-verify-failed',
+        };
+      } finally {
+        try {
+          authDb?.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+
     return {
       ok: true,
       schemaVersion: readSchemaVersion(db),
@@ -232,9 +352,19 @@ export async function createHostSnapshot(options) {
   const dataDir = resolve(options.dataDir);
   const backupRoot = resolve(options.backupRoot);
   const snapshotId = options.snapshotId ?? `snap-${randomUUID().replace(/-/g, '').slice(0, 16)}`;
+  if (!isSafeSnapshotId(snapshotId)) {
+    return { ok: false, error: 'unsafe-snapshot-id', snapshotId };
+  }
   const hostVersion = options.hostVersion ?? 'dev';
-  const stagingRoot = join(backupRoot, '.staging', snapshotId);
-  const publishedRoot = join(backupRoot, snapshotId);
+  const stagingRoot = resolve(backupRoot, '.staging', snapshotId);
+  const publishedRoot = resolve(backupRoot, snapshotId);
+  if (
+    !isPathInside(join(backupRoot, '.staging'), stagingRoot) ||
+    !isPathInside(backupRoot, publishedRoot) ||
+    publishedRoot === backupRoot
+  ) {
+    return { ok: false, error: 'unsafe-snapshot-id', snapshotId };
+  }
 
   ensureDir(backupRoot);
 
@@ -253,20 +383,10 @@ export async function createHostSnapshot(options) {
 
   let writeLockHeldMs = 0;
   const lockStarted = Date.now();
-  let sourceDb;
   try {
-    sourceDb = openOpsDb(sourceDbPath);
     // Serialize writers briefly; VACUUM INTO cannot run inside a transaction.
-    sourceDb.exec('BEGIN IMMEDIATE');
-    sourceDb.exec('COMMIT');
+    vacuumSqliteInto(sourceDbPath, join(stagingRoot, HOST_SQLITE));
     writeLockHeldMs = Math.max(1, Date.now() - lockStarted);
-    try {
-      sourceDb.exec('PRAGMA wal_checkpoint(PASSIVE)');
-    } catch {
-      /* non-WAL DBs still vacuum cleanly */
-    }
-    const stagedSqlite = join(stagingRoot, HOST_SQLITE);
-    sourceDb.exec(`VACUUM INTO '${escapeSqlPath(stagedSqlite)}'`);
   } catch (err) {
     rmSync(stagingRoot, { recursive: true, force: true });
     return {
@@ -275,12 +395,6 @@ export async function createHostSnapshot(options) {
       snapshotId,
       writeLockHeldMs: Date.now() - lockStarted,
     };
-  } finally {
-    try {
-      sourceDb?.close();
-    } catch {
-      /* ignore */
-    }
   }
 
   if (options.failAfterStage === 'sqlite') {
@@ -296,7 +410,18 @@ export async function createHostSnapshot(options) {
 
   const authSrc = join(dataDir, AUTH_SQLITE);
   if (existsSync(authSrc)) {
-    copyFileSync(authSrc, join(stagingRoot, AUTH_SQLITE));
+    try {
+      vacuumSqliteInto(authSrc, join(stagingRoot, AUTH_SQLITE));
+    } catch (err) {
+      rmSync(stagingRoot, { recursive: true, force: true });
+      return {
+        ok: false,
+        error: err instanceof Error ? `auth-vacuum:${err.message}` : 'auth-vacuum-failed',
+        snapshotId,
+        writeLockHeldMs,
+        published: false,
+      };
+    }
   }
 
   const assetsSrc = join(dataDir, ASSETS_DIR);
@@ -345,16 +470,7 @@ export async function createHostSnapshot(options) {
   let assetCount = 0;
   const assetsStaged = join(stagingRoot, ASSETS_DIR);
   if (existsSync(assetsStaged)) {
-    for (const name of readdirSync(assetsStaged)) {
-      if (name === '.tmp') continue;
-      const p = join(assetsStaged, name);
-      if (!statSync(p).isFile()) continue;
-      assetCount += 1;
-      files[`${ASSETS_DIR}/${name}`] = {
-        sha256: await sha256File(p),
-        bytes: statSync(p).size,
-      };
-    }
+    assetCount = await hashAssetTree(assetsStaged, files);
   }
 
   /** @type {SnapshotManifest} */
@@ -385,12 +501,12 @@ export async function createHostSnapshot(options) {
   }
 
   // Atomic publish: rename staging → published. Never leave a half-published id.
+  // On race loss: clean only our staging; never delete a publishedRoot we did not create.
   try {
     ensureDir(dirname(publishedRoot));
     renameSync(stagingRoot, publishedRoot);
   } catch (err) {
     rmSync(stagingRoot, { recursive: true, force: true });
-    rmSync(publishedRoot, { recursive: true, force: true });
     return {
       ok: false,
       error: err instanceof Error ? err.message : 'publish-rename-failed',
@@ -519,34 +635,69 @@ export async function restoreHostSnapshot(options) {
     };
   }
 
-  // Replace live files: move aside previous, then promote staging.
+  // Replace live files: move aside previous (incl. WAL/SHM), then promote staging.
   const previous = join(targetDataDir, `.pre-restore-${Date.now()}`);
   ensureDir(targetDataDir);
   ensureDir(previous);
 
-  for (const name of [HOST_SQLITE, AUTH_SQLITE, ASSETS_DIR]) {
-    const live = join(targetDataDir, name);
-    if (existsSync(live)) {
-      renameSync(live, join(previous, name));
+  /** Roll live tree back from `previous` (SQLite sidecars included). */
+  const rollbackLiveFromPrevious = () => {
+    for (const base of [HOST_SQLITE, AUTH_SQLITE]) {
+      relocateSqliteLiveFiles(targetDataDir, base, null);
+      for (const name of sqliteSidecarNames(base)) {
+        const prev = join(previous, name);
+        if (existsSync(prev)) renameSync(prev, join(targetDataDir, name));
+      }
     }
-  }
+    const brokenAssets = join(targetDataDir, ASSETS_DIR);
+    const prevAssets = join(previous, ASSETS_DIR);
+    if (existsSync(brokenAssets)) rmSync(brokenAssets, { recursive: true, force: true });
+    if (existsSync(prevAssets)) renameSync(prevAssets, brokenAssets);
+  };
 
-  for (const name of [HOST_SQLITE, AUTH_SQLITE, ASSETS_DIR]) {
-    const staged = join(staging, name);
-    if (existsSync(staged)) {
-      renameSync(staged, join(targetDataDir, name));
+  try {
+    relocateSqliteLiveFiles(targetDataDir, HOST_SQLITE, previous);
+    relocateSqliteLiveFiles(targetDataDir, AUTH_SQLITE, previous);
+    const liveAssets = join(targetDataDir, ASSETS_DIR);
+    if (existsSync(liveAssets)) {
+      renameSync(liveAssets, join(previous, ASSETS_DIR));
     }
+
+    for (const name of [HOST_SQLITE, AUTH_SQLITE, ASSETS_DIR]) {
+      const staged = join(staging, name);
+      if (existsSync(staged)) {
+        renameSync(staged, join(targetDataDir, name));
+      }
+    }
+    // Drop any leftover WAL/SHM that could shadow restored main files.
+    for (const base of [HOST_SQLITE, AUTH_SQLITE]) {
+      for (const side of [`${base}-wal`, `${base}-shm`]) {
+        const leftover = join(targetDataDir, side);
+        if (existsSync(leftover)) rmSync(leftover, { force: true });
+      }
+    }
+    rmSync(staging, { recursive: true, force: true });
+  } catch (err) {
+    try {
+      rollbackLiveFromPrevious();
+    } catch {
+      /* best-effort */
+    }
+    rmSync(staging, { recursive: true, force: true });
+    return {
+      ok: false,
+      error: err instanceof Error ? `restore-swap-failed:${err.message}` : 'restore-swap-failed',
+      durationMs: Date.now() - started,
+      published: false,
+    };
   }
-  rmSync(staging, { recursive: true, force: true });
 
   const finalOk = verifyDataDirConsistency(targetDataDir);
   if (!finalOk.ok) {
-    // Roll live back from previous if possible
-    for (const name of [HOST_SQLITE, AUTH_SQLITE, ASSETS_DIR]) {
-      const broken = join(targetDataDir, name);
-      const prev = join(previous, name);
-      if (existsSync(broken)) rmSync(broken, { recursive: true, force: true });
-      if (existsSync(prev)) renameSync(prev, broken);
+    try {
+      rollbackLiveFromPrevious();
+    } catch {
+      /* best-effort */
     }
     return {
       ok: false,
