@@ -29271,6 +29271,8 @@
         "src/infrastructure/character/character-preset-service.ts",
         "src/infrastructure/character/character-service.ts",
         "src/infrastructure/character/character.persistence.ts",
+        "src/infrastructure/character/host-character-adapter.ts",
+        "src/infrastructure/character/host-character-ports.contract.ts",
         "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
         "src/infrastructure/character/liveact/gltf-liveact-avatar-output.ts",
         "src/infrastructure/character/liveact/index.ts",
@@ -30206,6 +30208,14 @@
             "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
           },
           {
+            "path": "src/infrastructure/character/host-character-adapter.ts",
+            "sha256": "13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8"
+          },
+          {
+            "path": "src/infrastructure/character/host-character-ports.contract.ts",
+            "sha256": "a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc"
+          },
+          {
             "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
             "sha256": "e7d40a0bffeb9b24fd3cd472acc3ef6927d25635f1dbfa9b585a3a28413619ff"
           },
@@ -30459,7 +30469,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "7febfe95c274f60a5b29436c449660ca34881606b77072f6176fb1c3c3b95d46",
+      "sourceContractSha256": "1e671aec2c9d29023efec97df07e765913160a95edf4451173de1d7e29a01c2f",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -34487,6 +34497,12 @@
           "line": 263,
           "endLine": 265,
           "name": "preparePortraitFile"
+        },
+        {
+          "path": "src/infrastructure/character/host-character-adapter.ts",
+          "line": 21,
+          "endLine": 36,
+          "name": "createHostCharacterAdapter"
         },
         {
           "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
