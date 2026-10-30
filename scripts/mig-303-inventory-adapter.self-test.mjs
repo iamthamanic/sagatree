@@ -286,7 +286,7 @@ try {
     pc.value.id,
     JSON.stringify(emptyV2()),
     2,
-    new Date().toISOString(),
+    '2026-10-30T12:00:00.000Z',
     () => ({ ok: false, error: 'definition-not-visible' }),
   );
   assert(
