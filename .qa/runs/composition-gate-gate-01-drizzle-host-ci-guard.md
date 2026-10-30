@@ -1,6 +1,6 @@
 # Composition Gate — gate-01-drizzle-host-ci-guard (#1044)
 
-- HEAD_SHA: 6af7fe9ebdd0285b327721e2c2c02e0dabbc159d
+- HEAD_SHA: eb50cd26be05d0c3a6baf82281eae113b817f969
 - BASE_SHA: 881d61ca5d3ede00993aea8977883363a79f4728
 - Date: 2026-10-30
 - Verdict: CLEAR
