@@ -88,4 +88,5 @@ Without `ai-local` and without a reachable `OLLAMA_HOST` / openai-compatible cre
 ## Related
 
 - Harden defaults: [`compose-harden-defaults.md`](compose-harden-defaults.md)
+- Node host Compose (MIG-601): [`host-compose-profiles.md`](host-compose-profiles.md) (`deployment/docker-compose.host.yml`)
 - Self-host overview: [`README_SELFHOST.md`](../../README_SELFHOST.md)

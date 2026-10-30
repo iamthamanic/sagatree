@@ -1,0 +1,93 @@
+# SagaTree Node host — Compose profiles (MIG-601 / #846)
+# Default = host-only (SQLite data volume, no cloud secrets in the image).
+# Optional: --profile ai | --profile media | both
+# Runbook: docs/ops/host-compose-profiles.md
+# Never: docker compose down -v (wipes host-data).
+
+name: sagatree-host
+
+services:
+  sagatree-host:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.host
+    image: sagatree-host:local
+    container_name: sagatree-host
+    restart: unless-stopped
+    ports:
+      # Loopback publish by default — container still binds 0.0.0.0 internally.
+      - "${SAGATREE_HOST_PUBLISH:-127.0.0.1:8787}:8787"
+    environment:
+      SAGATREE_HOST: 0.0.0.0
+      SAGATREE_PORT: "8787"
+      SAGATREE_DATA_DIR: /data
+      # Container bind requires remote mode + allow-remote (solo forbids 0.0.0.0).
+      SAGATREE_HOST_MODE: remote
+      SAGATREE_ALLOW_REMOTE_BIND: "1"
+      SAGATREE_AUTH_BASE_URL: ${SAGATREE_AUTH_BASE_URL:-http://127.0.0.1:8787}
+      SAGATREE_BETTER_AUTH_SECRET: ${SAGATREE_BETTER_AUTH_SECRET:?set SAGATREE_BETTER_AUTH_SECRET (>=32 chars)}
+      SAGATREE_AUTH_TRUSTED_ORIGINS: ${SAGATREE_AUTH_TRUSTED_ORIGINS:-}
+      # Profile markers (ops / diagnostics only — not authorization).
+      SAGATREE_COMPOSE_PROFILE_AI: ${SAGATREE_COMPOSE_PROFILE_AI:-0}
+      SAGATREE_COMPOSE_PROFILE_MEDIA: ${SAGATREE_COMPOSE_PROFILE_MEDIA:-0}
+      # Optional AI/media — inject externally; empty keeps core host usable.
+      CREDENTIALS_ENCRYPTION_KEY: ${CREDENTIALS_ENCRYPTION_KEY:-}
+      CHARACTER_AI_PROVIDER: ${CHARACTER_AI_PROVIDER:-}
+      CHARACTER_AI_BASE_URL: ${CHARACTER_AI_BASE_URL:-}
+      CHARACTER_AI_API_KEY: ${CHARACTER_AI_API_KEY:-}
+      CHARACTER_AI_MODEL: ${CHARACTER_AI_MODEL:-}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
+      MESHY_API_KEY: ${MESHY_API_KEY:-}
+    volumes:
+      - host-data:/data
+      # Backup mount — path is runbook-stable; default ./backups relative to compose cwd.
+      - ${SAGATREE_BACKUP_MOUNT:-./backups}:/backups:rw
+    healthcheck:
+      # Green only after listen + SQLite bootstrap (createHost start); /health → 503 until ready.
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8787/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    networks:
+      - sagatree-host-net
+
+  # Optional local LLM — profile: ai
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sagatree-host-ollama
+    profiles: ["ai"]
+    mem_limit: ${OLLAMA_MEM_LIMIT:-4g}
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - host-ollama-data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    networks:
+      - sagatree-host-net
+
+  # Optional media profile marker — profile: media
+  # Credentials stay out of the image; host media.capability reports explicit unsupported
+  # for audio/video/model3d when external providers are absent.
+  media-capability:
+    image: public.ecr.aws/docker/library/busybox:1.36
+    container_name: sagatree-host-media-capability
+    profiles: ["media"]
+    command: ["sh", "-c", "echo media-profile-ready; sleep infinity"]
+    networks:
+      - sagatree-host-net
+
+volumes:
+  host-data:
+  host-ollama-data:
+
+networks:
+  sagatree-host-net:
+    driver: bridge
