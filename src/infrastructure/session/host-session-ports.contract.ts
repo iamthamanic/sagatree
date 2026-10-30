@@ -73,6 +73,8 @@ export type HostSessionPorts = {
   readonly setSessionPlayerPresence: (
     actorId: string,
     sessionId: string,
+    expectedRevision: number,
+    idempotencyKey: string,
     presence: Readonly<Record<string, unknown>>,
   ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;
   readonly setSessionStatus: (

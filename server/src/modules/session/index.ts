@@ -6,6 +6,14 @@
 
 /** MIG-311: session infra ports stay isolated-contract until HTTP cutover. */
 export const SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+
+export {
+  SESSION_INFRA_PORTS_PUBLIC_ACTIVATION_AUTHORIZED,
+  createSessionInfraPorts,
+  type SessionInfraPorts,
+  type SessionInfraResult,
+  type SessionPortsForInfra,
+} from './session-infra-ports.ts';
 import type { Actor } from '../identity/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import type { ProjectPorts } from '../project/index.ts';

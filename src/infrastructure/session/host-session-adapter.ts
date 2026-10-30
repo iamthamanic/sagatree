@@ -44,8 +44,14 @@ export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAd
     revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),
     saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>
       ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),
-    setSessionPlayerPresence: (actorId, sessionId, presence) =>
-      ports.setSessionPlayerPresence(actorId, sessionId, presence),
+    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>
+      ports.setSessionPlayerPresence(
+        actorId,
+        sessionId,
+        expectedRevision,
+        idempotencyKey,
+        presence,
+      ),
     setSessionStatus: (actorId, sessionId, status) =>
       ports.setSessionStatus(actorId, sessionId, status),
   };

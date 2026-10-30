@@ -51,6 +51,7 @@ const { createWorldPorts, createSqliteWorldWriteStore } = await import(worldUrl)
 const { createSqliteWorldReadStore } = await import(worldReadUrl);
 const {
   createSessionPorts,
+  createSessionInfraPorts,
   SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
   SESSION_MEDIA_TOKEN_PUBLIC_ACTIVATION_AUTHORIZED,
   SESSION_RECAP_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -193,21 +194,32 @@ try {
   const strangerSnap = session.queries.getSnapshot(Stranger, sessionId);
   assert(strangerSnap.ok === false, 'stranger cannot read runtime snapshot');
 
-  const presence = session.commands.apply(Player, {
+  const rev0 = snap.ok ? Number(snap.snapshot.revision) || 0 : 0;
+  // GM is a member writer — exercise presence with required ApplyCommandInput shape.
+  const presence = session.commands.apply(GM, {
     sessionId,
-    kind: 'presence',
-    payload: { status: 'online' },
+    expectedRevision: rev0,
+    idempotencyKey: 'mig311-presence-gm',
+    op: {
+      kind: 'presence',
+      payload: { userId: GM.actorId, isOnline: true, characterId: null },
+    },
   });
-  assert(
-    presence.ok === true || typeof presence.error === 'string',
-    'set_session_player_presence typed',
-  );
+  assert(presence.ok === true, `gm presence: ${presence.ok ? '' : presence.error}`);
   const foreignMutate = session.commands.apply(Stranger, {
     sessionId,
-    kind: 'presence',
-    payload: { status: 'online' },
+    expectedRevision: rev0,
+    idempotencyKey: 'mig311-presence-stranger',
+    op: {
+      kind: 'presence',
+      payload: { userId: Stranger.actorId, isOnline: true, characterId: null },
+    },
   });
-  assert(foreignMutate.ok === false, 'stranger cannot mutate runtime');
+  assert(
+    foreignMutate.ok === false &&
+      (foreignMutate.error === 'FORBIDDEN' || foreignMutate.error === 'SESSION_NOT_FOUND'),
+    `stranger presence DENY got ${JSON.stringify(foreignMutate)}`,
+  );
 
   // --- Recap ---
   const recap = session.recap.getSessionRecap(GM, sessionId);
@@ -255,75 +267,27 @@ try {
     assert(existsSync(join(root, rel)), `client shape: ${rel}`);
   }
 
-  // --- Dual-path adapter binds host ports ---
+  // --- Dual-path: flat sessionInfra bridge → HostSessionAdapter ---
+  const infra = createSessionInfraPorts(session);
+  assert(infra.moduleId === 'session-infra', 'sessionInfra moduleId');
   const bound = createHostSessionAdapter({
-    applySessionRuntimeCommand: async (actorId, command) => {
-      const r = session.commands.apply(actor(actorId), {
-        sessionId: String(command.sessionId ?? ''),
-        kind: String(command.kind ?? 'presence'),
-        payload: command.payload && typeof command.payload === 'object' ? command.payload : {},
-      });
-      return r.ok ? { ok: true, value: r } : { ok: false, error: r.error };
-    },
-    createPlaySession: async (actorId, pid, name) => {
-      const r = session.lifecycle.createPlaySession(actor(actorId), pid, name ?? null);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    createSessionInvite: async (actorId, sid) => {
-      const r = session.access.createSessionInvite(actor(actorId), sid);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    getSessionRecap: async (actorId, sid) => {
-      const r = session.recap.getSessionRecap(actor(actorId), sid);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    getSessionRuntimeSnapshot: async (actorId, sid) => {
-      const r = session.queries.getSnapshot(actor(actorId), sid);
-      return r.ok
-        ? { ok: true, value: { snapshot: r.snapshot, projectId: r.projectId } }
-        : { ok: false, error: r.error };
-    },
-    joinSessionByCode: async (actorId, code, characterId) => {
-      const r = session.access.joinSessionByCode(actor(actorId), code, characterId ?? null);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    leavePlaySession: async (actorId, sid) => {
-      const r = session.access.leavePlaySession(actor(actorId), sid);
-      return r.ok
-        ? { ok: true, value: { sessionId: sid } }
-        : { ok: false, error: r.error };
-    },
-    resolveSessionInvite: async (actorId, t) => {
-      const r = session.access.resolveSessionInvite(actor(actorId), t);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    revokeSessionInvite: async (actorId, t) => {
-      const r = session.access.revokeSessionInvite(actor(actorId), t);
-      return r.ok
-        ? { ok: true, value: { token: t } }
-        : { ok: false, error: r.error };
-    },
-    saveSessionRecapSummary: async (actorId, sid, summaryText, st) => {
-      const r = session.recap.saveSessionRecapSummary(
-        actor(actorId),
-        sid,
-        summaryText,
-        st ?? 'draft',
-      );
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
-    setSessionPlayerPresence: async (actorId, sid, presencePayload) => {
-      const r = session.commands.apply(actor(actorId), {
-        sessionId: sid,
-        kind: 'presence',
-        payload: presencePayload,
-      });
-      return r.ok ? { ok: true, value: r } : { ok: false, error: r.error };
-    },
-    setSessionStatus: async (actorId, sid, st) => {
-      const r = session.lifecycle.setSessionStatus(actor(actorId), sid, st);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
-    },
+    applySessionRuntimeCommand: async (actorId, command) =>
+      infra.applySessionRuntimeCommand(actorId, command),
+    createPlaySession: async (actorId, pid, name) => infra.createPlaySession(actorId, pid, name),
+    createSessionInvite: async (actorId, sid) => infra.createSessionInvite(actorId, sid),
+    getSessionRecap: async (actorId, sid) => infra.getSessionRecap(actorId, sid),
+    getSessionRuntimeSnapshot: async (actorId, sid) =>
+      infra.getSessionRuntimeSnapshot(actorId, sid),
+    joinSessionByCode: async (actorId, code, characterId) =>
+      infra.joinSessionByCode(actorId, code, characterId),
+    leavePlaySession: async (actorId, sid) => infra.leavePlaySession(actorId, sid),
+    resolveSessionInvite: async (actorId, t) => infra.resolveSessionInvite(actorId, t),
+    revokeSessionInvite: async (actorId, t) => infra.revokeSessionInvite(actorId, t),
+    saveSessionRecapSummary: async (actorId, sid, summaryText, st) =>
+      infra.saveSessionRecapSummary(actorId, sid, summaryText, st),
+    setSessionPlayerPresence: async (actorId, sid, expectedRevision, idempotencyKey, presence) =>
+      infra.setSessionPlayerPresence(actorId, sid, expectedRevision, idempotencyKey, presence),
+    setSessionStatus: async (actorId, sid, st) => infra.setSessionStatus(actorId, sid, st),
   });
   assert(bound.transport === 'host', 'adapter transport');
   assert(bound.rpcNames.length === 12, 'adapter rpcNames');
@@ -339,7 +303,10 @@ try {
       SAGATREE_HOST_MODE: 'solo',
     });
     assert(!('error' in host), `createHost: ${'error' in host ? host.error : ''}`);
-    assert(host.session && host.session.moduleId === 'session', 'host exposes session');
+    assert(
+      host.sessionInfra && host.sessionInfra.moduleId === 'session-infra',
+      'host exposes sessionInfra',
+    );
   } finally {
     rmSync(hostWork, { recursive: true, force: true });
   }
