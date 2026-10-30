@@ -744,6 +744,18 @@ function checkRpcNpcInstances() {
   );
 }
 
+function checkRpcMarketplaceCount() {
+  console.log('RPC-MARKETPLACE-COUNT (#878): increment downloads host successor...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/rpc-marketplace-count.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkRpcSessionAccess() {
   console.log('RPC-SESSION-ACCESS (#869): join/leave/invite...');
   execFileSync(
@@ -3399,6 +3411,7 @@ checkRpcProjectMembership();
 checkRpcSagaGovernance();
 checkRpcSessionLifecycle();
 checkRpcNpcInstances();
+checkRpcMarketplaceCount();
 checkRpcSessionAccess();
 checkRpcSessionRecap();
 checkRpcSagaProjections();
