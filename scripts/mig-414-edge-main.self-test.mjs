@@ -154,6 +154,11 @@ for (const name of HOST_EDGE_DISPATCHER_ALLOWLIST) {
   );
   assert(a.method === 'PUT' && b.method === 'PUT', `${name} method forwarded`);
   assert(a.search === '?keep=1&x=y' && b.search === '?keep=1&x=y', `${name} query forwarded`);
+  assert(
+    a.workerRequestPath === `/functions/v1/${name}/nested/path?keep=1&x=y` &&
+      b.workerRequestPath === `/functions/v1/${name}/nested/path?keep=1&x=y`,
+    `${name} workerRequestPath keeps query`,
+  );
   assert(a.bodyForwarded === true && b.bodyForwarded === true, `${name} body forwarded`);
   assert(a.wouldCreateWorker === false && b.wouldCreateWorker === false, 'no worker create');
   assert(a.memoryLimitMb === 512 && a.workerTimeoutMs === 300_000, 'resource limits');
@@ -255,6 +260,12 @@ assert(resolveEdgeMainServiceName('/') === null);
     jwtPayload: { role: 'authenticated', sub: 'user-owner-1' },
   });
   assert(owner.ok === true && owner.userId === 'user-owner-1', 'worker accepts end-user sub');
+  for (const role of ['Service_Role', 'ANON', 'authenticated-admin', '']) {
+    const bypass = evaluatePostDispatcherWorkerAuth({
+      jwtPayload: { role, sub: 'user-owner-1' },
+    });
+    assert(bypass.ok === false && bypass.status === 403, `allowlist denies role=${role || '(empty)'}`);
+  }
 }
 
 // Fall 5 + legacy regression: resource limits + raw 500 message

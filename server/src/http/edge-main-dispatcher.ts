@@ -8,7 +8,13 @@
  *
  * Allowlist must stay byte-equal to supabase/functions/_shared/edge-dispatcher-allowlist.ts
  * (enforced by scripts/mig-414-edge-main.self-test.mjs).
+ *
+ * JWT gate uses `jose` with explicit HS256 allowlist. Issuer/audience are NOT required by
+ * the frozen Edge source contract (incomplete claims; worker auth remains mandatory).
+ * Optional JWT_ISSUER / JWT_AUDIENCE env tighten the host gate when configured.
  */
+import { jwtVerify, errors as joseErrors } from 'jose';
+import { z } from 'zod';
 
 /** Explicit product decision: no automatic host/public activation of the dispatcher. */
 export const EDGE_MAIN_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
@@ -37,6 +43,21 @@ export const HOST_EDGE_DISPATCHER_BLOCKED = new Set(['main', '_shared']);
 
 const ALLOWED = new Set<string>(HOST_EDGE_DISPATCHER_ALLOWLIST);
 
+const JwtHeaderSchema = z.object({
+  alg: z.literal('HS256'),
+  typ: z.string().optional(),
+});
+
+const JwtPayloadSchema = z
+  .object({
+    exp: z.number().finite().optional(),
+    role: z.string().optional(),
+    sub: z.string().optional(),
+    iss: z.string().optional(),
+    aud: z.union([z.string(), z.array(z.string())]).optional(),
+  })
+  .passthrough();
+
 export const EDGE_MAIN_DISPATCHER_STATUS = Object.freeze({
   kind: 'dispatcher' as const,
   dispatcherAllowed: false as const,
@@ -52,6 +73,8 @@ export type EdgeMainDispatchOk = {
   readonly ok: true;
   readonly serviceName: string;
   readonly workerPathname: string;
+  /** workerPathname + search — full forward target path for host adapters. */
+  readonly workerRequestPath: string;
   /** Forwarded HTTP method (Edge forwards unchanged). */
   readonly method: string;
   /** Forwarded URL search including `?` (empty string when absent). */
@@ -85,14 +108,6 @@ function base64UrlToBytes(input: string): Uint8Array {
   return new Uint8Array(binary);
 }
 
-function bytesToBase64Url(bytes: ArrayBuffer): string {
-  return Buffer.from(bytes)
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/g, '');
-}
-
 /** Default on; only explicit false/0/no disables (matches Edge gate). */
 export function isJwtVerificationEnabled(env: EdgeMainEnv): boolean {
   const raw = env.get('VERIFY_JWT');
@@ -107,56 +122,73 @@ export function extractBearerToken(authHeader: string | null): string | null {
   return match?.[1] ?? null;
 }
 
+/**
+ * HS256 verify via jose (constant-time). Optional issuer/audience when env set.
+ * Edge parity: iss/aud are not required when JWT_ISSUER / JWT_AUDIENCE are unset.
+ */
 async function verifyHs256(
   token: string,
   secret: string,
+  env: EdgeMainEnv,
 ): Promise<{ ok: true } | { ok: false; reason: string }> {
   const parts = token.split('.');
   if (parts.length !== 3) return { ok: false, reason: 'invalid jwt header' };
 
-  let header: { alg?: string; typ?: string };
+  let parsedHeader: unknown;
   try {
-    header = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0]))) as {
-      alg?: string;
-      typ?: string;
-    };
+    parsedHeader = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0])));
   } catch {
     return { ok: false, reason: 'invalid jwt header' };
   }
-  if (header.alg !== 'HS256') {
-    return { ok: false, reason: 'unsupported jwt algorithm' };
-  }
-
-  const key = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  const data = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
-  const sig = await crypto.subtle.sign('HMAC', key, data);
-  if (bytesToBase64Url(sig) !== parts[2]) {
-    return { ok: false, reason: 'invalid jwt' };
+  const header = JwtHeaderSchema.safeParse(parsedHeader);
+  if (!header.success) {
+    const alg =
+      parsedHeader &&
+      typeof parsedHeader === 'object' &&
+      'alg' in parsedHeader &&
+      typeof (parsedHeader as { alg?: unknown }).alg === 'string'
+        ? (parsedHeader as { alg: string }).alg
+        : '';
+    if (alg && alg !== 'HS256') return { ok: false, reason: 'unsupported jwt algorithm' };
+    return { ok: false, reason: 'invalid jwt header' };
   }
 
   try {
-    const payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[1]))) as {
-      exp?: number;
-    };
-    if (typeof payload.exp === 'number' && payload.exp * 1000 < Date.now()) {
-      return { ok: false, reason: 'jwt expired' };
+    const payloadRaw = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[1])));
+    if (!JwtPayloadSchema.safeParse(payloadRaw).success) {
+      return { ok: false, reason: 'invalid jwt payload' };
     }
   } catch {
     return { ok: false, reason: 'invalid jwt payload' };
   }
 
-  return { ok: true };
+  const issuer = env.get('JWT_ISSUER')?.trim();
+  const audience = env.get('JWT_AUDIENCE')?.trim();
+  try {
+    await jwtVerify(token, new TextEncoder().encode(secret), {
+      algorithms: ['HS256'],
+      ...(issuer ? { issuer } : {}),
+      ...(audience ? { audience } : {}),
+    });
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof joseErrors.JWTExpired) {
+      return { ok: false, reason: 'jwt expired' };
+    }
+    if (
+      error instanceof joseErrors.JOSEAlgNotAllowed ||
+      (error instanceof Error && /alg/i.test(error.message))
+    ) {
+      return { ok: false, reason: 'unsupported jwt algorithm' };
+    }
+    return { ok: false, reason: 'invalid jwt' };
+  }
 }
 
 /**
  * JWT gate for non-OPTIONS. Returns a denied result or null when the request may proceed.
- * Does not require sub/aud/iss — legacy incomplete-claims behavior preserved.
+ * Does not require sub/aud/iss by default — Edge incomplete-claims behavior preserved
+ * (worker-side account authentication remains mandatory).
  */
 export async function gateEdgeMainJwt(
   method: string,
@@ -184,7 +216,7 @@ export async function gateEdgeMainJwt(
     };
   }
 
-  const verified = await verifyHs256(token, secret);
+  const verified = await verifyHs256(token, secret, env);
   if (!verified.ok) {
     return { ok: false, status: 401, body: { error: verified.reason } };
   }
@@ -215,10 +247,14 @@ export function toEdgeMainWorkerPathname(pathname: string, serviceName: string):
   return `/functions/v1/${serviceName}${suffix}`;
 }
 
+function normalizeSearch(search: string | undefined): string {
+  if (typeof search !== 'string' || search.length === 0) return '';
+  return search.startsWith('?') ? search : `?${search}`;
+}
+
 /**
  * Worker-side account authentication after dispatcher JWT acceptance.
- * Anon / service_role / missing `sub` never become an owner actor — Edge workers
- * still authenticate the end-user separately (acceptance Fall 4).
+ * Only `authenticated` (case-insensitive) + non-empty `sub` become an end-user actor.
  */
 export function evaluatePostDispatcherWorkerAuth(input: {
   readonly jwtPayload: { readonly role?: unknown; readonly sub?: unknown } | null;
@@ -229,8 +265,8 @@ export function evaluatePostDispatcherWorkerAuth(input: {
   if (!payload || typeof payload !== 'object') {
     return { ok: false, status: 401, error: 'worker auth requires end-user identity' };
   }
-  const role = typeof payload.role === 'string' ? payload.role.trim() : '';
-  if (role === 'anon' || role === 'service_role') {
+  const role = typeof payload.role === 'string' ? payload.role.trim().toLowerCase() : '';
+  if (role !== 'authenticated') {
     return {
       ok: false,
       status: 403,
@@ -277,17 +313,14 @@ export async function dispatchEdgeMainRequest(input: {
     );
     if (jwtDenied) return jwtDenied;
 
-    const search =
-      typeof input.search === 'string' && input.search.length > 0
-        ? input.search.startsWith('?')
-          ? input.search
-          : `?${input.search}`
-        : '';
+    const search = normalizeSearch(input.search);
+    const workerPathname = toEdgeMainWorkerPathname(input.pathname, serviceName);
 
     return {
       ok: true,
       serviceName,
-      workerPathname: toEdgeMainWorkerPathname(input.pathname, serviceName),
+      workerPathname,
+      workerRequestPath: `${workerPathname}${search}`,
       method,
       search,
       bodyForwarded: input.body !== undefined,
