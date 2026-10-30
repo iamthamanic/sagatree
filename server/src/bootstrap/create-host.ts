@@ -225,7 +225,31 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       : createRulesetPortsStub();
     const look: LookProfilePorts = db ? createLookPorts({ db }) : createLookPortsStub();
     const character = db ? createCharacterPorts(db) : createCharacterPorts();
-    const inventory = db ? createInventoryPorts(db) : createInventoryPorts();
+    const inventory = db
+      ? createInventoryPorts({
+          db,
+          world: {
+            canReadWorldProfile: (actorIds, worldProfileId) => {
+              if (project.actorCanAccessWorld(actorIds, worldProfileId)) return true;
+              return world.canEditWorld(actorIds, worldProfileId);
+            },
+            canEditWorldProfile: (actorIds, worldProfileId) =>
+              world.canEditWorld(actorIds, worldProfileId),
+          },
+          character: {
+            getOwned: (actorId, characterId) =>
+              character.getOwnedInventoryColumns(actorId, characterId),
+            putOwned: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
+              character.putOwnedInventoryColumns(
+                actorId,
+                characterId,
+                inventoryJson,
+                schemaVersion,
+                updatedAt,
+              ),
+          },
+        })
+      : createInventoryPorts();
     const saga: SagaPorts = db
       ? createSagaPorts({
           db,

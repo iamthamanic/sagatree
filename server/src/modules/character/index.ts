@@ -21,6 +21,11 @@ import {
   type CharacterSheetRecord,
   type CharacterSheetResult,
 } from './internal/character-sheet-store.ts';
+import {
+  CharacterInventoryColumnsStore,
+  type CharacterInventoryColumnsRecord,
+  type CharacterInventoryColumnsResult,
+} from './internal/character-inventory-columns.ts';
 
 export {
   CHARACTERS_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -85,6 +90,8 @@ export type {
   CharacterSheetDraft,
   CharacterSheetRecord,
   CharacterSheetResult,
+  CharacterInventoryColumnsRecord,
+  CharacterInventoryColumnsResult,
 };
 export {
   CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -144,9 +151,25 @@ export type CharacterPorts = {
     readonly characterId: string;
     readonly storagePath: string;
   }) => CharacterSheetResult<{ readonly id: string }>;
+  /** MIG-303: inventory module writes characters.inventory_* via this port only. */
+  readonly getOwnedInventoryColumns: (
+    actorId: string,
+    characterId: string,
+  ) => CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord | null>;
+  readonly putOwnedInventoryColumns: (
+    actorId: string,
+    characterId: string,
+    inventoryJson: string,
+    schemaVersion: number,
+    updatedAt: string,
+  ) => CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord>;
 };
 
 function unavailableSheet<T>(): CharacterSheetResult<T> {
+  return { ok: false, error: 'store-unavailable' };
+}
+
+function unavailableInventoryColumns<T>(): CharacterInventoryColumnsResult<T> {
   return { ok: false, error: 'store-unavailable' };
 }
 
@@ -170,10 +193,13 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
         throw new Error('store-unavailable');
       },
       seedArtifactForTests: () => unavailableSheet(),
+      getOwnedInventoryColumns: () => unavailableInventoryColumns(),
+      putOwnedInventoryColumns: () => unavailableInventoryColumns(),
     };
   }
   const membership = new CharacterMembershipStore(db);
   const sheets = new CharacterSheetStore(db);
+  const inventoryColumns = new CharacterInventoryColumnsStore(db);
   return {
     moduleId: 'character',
     assertOwnedCompletePc: (ownerUserId, characterId) =>
@@ -190,6 +216,10 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
     resolveOwnedArtifact: (actorId, storagePath) => sheets.resolveArtifact(actorId, storagePath),
     seedPublicPresetForTests: (input) => sheets.seedPublicPreset(input),
     seedArtifactForTests: (input) => sheets.seedArtifact(input),
+    getOwnedInventoryColumns: (actorId, characterId) =>
+      inventoryColumns.getOwned(actorId, characterId),
+    putOwnedInventoryColumns: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
+      inventoryColumns.putOwned(actorId, characterId, inventoryJson, schemaVersion, updatedAt),
   };
 }
 

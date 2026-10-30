@@ -20,6 +20,20 @@ function assert(cond, msg) {
   }
 }
 
+/** Minimal valid Inventory v2 state (schemaVersion=1 inside JSON). */
+function emptyV2(overrides = {}) {
+  return {
+    schemaVersion: 1,
+    instances: {},
+    containers: {},
+    equipment: {},
+    baseSlots: Array.from({ length: 20 }, () => null),
+    quickSlots: Array.from({ length: 4 }, () => null),
+    legacyOverflow: [],
+    ...overrides,
+  };
+}
+
 const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts')).href;
 const inventoryUrl = pathToFileURL(join(root, 'server/src/modules/inventory/index.ts')).href;
 const characterUrl = pathToFileURL(join(root, 'server/src/modules/character/index.ts')).href;
@@ -71,9 +85,29 @@ try {
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
 
   const character = createCharacterPorts(boot.db);
-  const inventory = createInventoryPorts(boot.db);
   const owner = 'owner-o';
   const stranger = 'stranger-x';
+  /** Owner may read/edit world-1; stranger has no world ACL. */
+  const inventory = createInventoryPorts({
+    db: boot.db,
+    world: {
+      canReadWorldProfile: (actorIds, worldProfileId) =>
+        actorIds.includes(owner) && worldProfileId === 'world-1',
+      canEditWorldProfile: (actorIds, worldProfileId) =>
+        actorIds.includes(owner) && worldProfileId === 'world-1',
+    },
+    character: {
+      getOwned: (actorId, characterId) => character.getOwnedInventoryColumns(actorId, characterId),
+      putOwned: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
+        character.putOwnedInventoryColumns(
+          actorId,
+          characterId,
+          inventoryJson,
+          schemaVersion,
+          updatedAt,
+        ),
+    },
+  });
 
   const pc = character.createOwnedCharacter(owner, {
     name: 'Bag PC',
@@ -81,39 +115,60 @@ try {
   });
   assert(pc.ok, `pc: ${pc.ok ? '' : pc.error}`);
 
+  // Seed a standard definition first so put can reference a visible id.
+  const sword = inventory.seedStandardDefinitionForTests({
+    name: 'Iron Sword',
+    payload: { assetKey: 'std:sword' },
+  });
+  assert(/^IT-[A-HJ-NP-Z2-9]{5}$/.test(sword.publicId), `public id format: ${sword.publicId}`);
+
   // --- Fall 1: add/equip/consume via put + reload; foreign DENY ---
-  const withSword = inventory.putOwnedInventory(owner, pc.value.id, {
-    instances: {
-      i1: { definitionId: 'std-sword', equipped: false, qty: 1 },
-    },
-    containers: { pack: ['i1'] },
-  });
+  const withSword = inventory.putOwnedInventory(
+    owner,
+    pc.value.id,
+    emptyV2({
+      instances: {
+        i1: { instanceId: 'i1', definitionId: sword.id, quantity: 1 },
+      },
+      containers: { pack: ['i1'] },
+    }),
+  );
   assert(withSword.ok, `put add: ${withSword.ok ? '' : withSword.error}`);
-  assert(withSword.value.schemaVersion === 2, 'schema v2');
+  assert(withSword.value.schemaVersion === 2, 'schema v2 column');
 
-  const equipped = inventory.putOwnedInventory(owner, pc.value.id, {
-    instances: {
-      i1: { definitionId: 'std-sword', equipped: true, qty: 1, slot: 'mainhand' },
-    },
-    containers: { pack: [] },
-  });
-  assert(equipped.ok && equipped.value.inventory.instances.i1.equipped === true, 'equip');
+  const equipped = inventory.putOwnedInventory(
+    owner,
+    pc.value.id,
+    emptyV2({
+      instances: {
+        i1: { instanceId: 'i1', definitionId: sword.id, quantity: 1 },
+      },
+      equipment: { mainhand: 'i1' },
+    }),
+  );
+  assert(equipped.ok && equipped.value.inventory.equipment.mainhand === 'i1', 'equip');
 
-  const consumed = inventory.putOwnedInventory(owner, pc.value.id, {
-    instances: {},
-    containers: { pack: [] },
-  });
+  const consumed = inventory.putOwnedInventory(owner, pc.value.id, emptyV2());
   assert(consumed.ok && Object.keys(consumed.value.inventory.instances).length === 0, 'consume');
 
   const reloaded = inventory.getOwnedInventory(owner, pc.value.id);
   assert(reloaded.ok && reloaded.value?.schemaVersion === 2, 'reload');
 
-  const foreignPut = inventory.putOwnedInventory(stranger, pc.value.id, {
-    instances: { hack: { definitionId: 'x', qty: 1 } },
-  });
+  const foreignPut = inventory.putOwnedInventory(
+    stranger,
+    pc.value.id,
+    emptyV2({
+      instances: {
+        hack: { instanceId: 'hack', definitionId: sword.id, quantity: 1 },
+      },
+    }),
+  );
   assert(foreignPut.ok === false && foreignPut.error === 'not-authorized', 'foreign put DENY');
   const foreignGet = inventory.getOwnedInventory(stranger, pc.value.id);
   assert(foreignGet.ok === false && foreignGet.error === 'not-authorized', 'foreign get DENY');
+
+  const badShape = inventory.putOwnedInventory(owner, pc.value.id, { instances: {} });
+  assert(badShape.ok === false && badShape.error === 'invalid-inventory', 'reject bad v2 shape');
 
   // --- Fall 2: thumbnail/model shapes retained ---
   assert(ITEM_THUMBNAIL_PUBLIC_ACTIVATION_AUTHORIZED === false, 'thumbnail unmounted');
@@ -129,14 +184,14 @@ try {
     assert(existsSync(join(root, rel)), `client shape: ${rel}`);
   }
 
-  // --- Fall 3: catalog origins not client-promoted ---
-  inventory.seedStandardDefinitionForTests({ name: 'Iron Sword', payload: { assetKey: 'std:sword' } });
+  // --- Fall 3: catalog origins not client-promoted + world ACL ---
   const personal = inventory.createDefinition(owner, {
     name: 'My Dagger',
     origin: 'personal',
     payload: { assetKey: 'thumb:1', model3d: 'm:1' },
   });
   assert(personal.ok && personal.value.origin === 'personal', 'personal create');
+  assert(/^IT-[A-HJ-NP-Z2-9]{5}$/.test(personal.value.publicId), 'personal public id');
   assert(personal.value.payload.assetKey === 'thumb:1', 'payload.assetKey');
   assert(personal.value.payload.model3d === 'm:1', 'payload.model3d');
 
@@ -156,6 +211,13 @@ try {
   });
   assert(world.ok && world.value.origin === 'world', 'world create');
 
+  const worldDeny = inventory.createDefinition(owner, {
+    name: 'Foreign World',
+    origin: 'world',
+    worldProfileId: 'world-other',
+  });
+  assert(worldDeny.ok === false && worldDeny.error === 'not-authorized', 'world create ACL');
+
   const listed = inventory.listCatalog(owner, { worldProfileId: 'world-1' });
   assert(listed.ok, 'list ok');
   assert(listed.value.some((d) => d.origin === 'standard'), 'standard visible');
@@ -163,17 +225,40 @@ try {
   assert(listed.value.some((d) => d.id === world.value.id), 'world visible for profile');
 
   const strangerList = inventory.listCatalog(stranger, { worldProfileId: 'world-1' });
+  assert(strangerList.ok === false && strangerList.error === 'not-authorized', 'stranger world DENY');
+
+  const strangerStandard = inventory.listCatalog(stranger);
   assert(
-    strangerList.ok && !strangerList.value.some((d) => d.id === personal.value.id),
+    strangerStandard.ok && !strangerStandard.value.some((d) => d.id === personal.value.id),
     'stranger cannot see personal',
   );
   assert(
-    strangerList.value.some((d) => d.origin === 'standard'),
+    strangerStandard.value.some((d) => d.origin === 'standard'),
     'stranger sees standard',
   );
 
   const search = inventory.listCatalog(owner, { query: 'dagger' });
   assert(search.ok && search.value.every((d) => /dagger/i.test(d.name)), 'search filter');
+
+  const likeEscape = inventory.listCatalog(owner, { query: '%' });
+  assert(
+    likeEscape.ok && !likeEscape.value.some((d) => d.id === personal.value.id),
+    'LIKE % does not match all via wildcard',
+  );
+
+  const foreignDef = inventory.putOwnedInventory(
+    owner,
+    pc.value.id,
+    emptyV2({
+      instances: {
+        x1: { instanceId: 'x1', definitionId: 'not-a-real-def', quantity: 1 },
+      },
+    }),
+  );
+  assert(
+    foreignDef.ok === false && foreignDef.error === 'definition-not-visible',
+    'invisible definition DENY',
+  );
 
   const bound = createHostInventoryAdapter({
     getOwnedInventory: async (a, id) => inventory.getOwnedInventory(a, id),

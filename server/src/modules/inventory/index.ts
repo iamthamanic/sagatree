@@ -10,10 +10,12 @@ import type { HostDatabase } from '../../persistence/open-database.ts';
 import {
   INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
   InventoryInfraStore,
+  type InventoryCharacterColumns,
   type InventoryDefinitionDraft,
   type InventoryDefinitionRecord,
   type InventoryResult,
   type InventoryStateRecord,
+  type InventoryWorldLookup,
 } from './internal/inventory-infra-store.ts';
 
 export {
@@ -53,10 +55,12 @@ export {
 
 export {
   INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
+  type InventoryCharacterColumns,
   type InventoryDefinitionDraft,
   type InventoryDefinitionRecord,
   type InventoryResult,
   type InventoryStateRecord,
+  type InventoryWorldLookup,
 };
 
 export type InventoryPorts = {
@@ -88,8 +92,14 @@ function unavailable<T>(): InventoryResult<T> {
   return { ok: false, error: 'store-unavailable' };
 }
 
-export function createInventoryPorts(db?: HostDatabase): InventoryPorts {
-  if (!db) {
+export type CreateInventoryPortsInput = {
+  readonly db: HostDatabase;
+  readonly world: InventoryWorldLookup;
+  readonly character: InventoryCharacterColumns;
+};
+
+export function createInventoryPorts(input?: CreateInventoryPortsInput): InventoryPorts {
+  if (!input?.db) {
     return {
       moduleId: 'inventory',
       getOwnedInventory: () => unavailable(),
@@ -101,7 +111,7 @@ export function createInventoryPorts(db?: HostDatabase): InventoryPorts {
       },
     };
   }
-  const store = new InventoryInfraStore(db);
+  const store = new InventoryInfraStore(input.db, input.world, input.character);
   return {
     moduleId: 'inventory',
     getOwnedInventory: (actorId, characterId) => store.getOwnedInventory(actorId, characterId),
@@ -109,6 +119,6 @@ export function createInventoryPorts(db?: HostDatabase): InventoryPorts {
       store.putOwnedInventory(actorId, characterId, inventory),
     listCatalog: (actorId, options) => store.listCatalog(actorId, options),
     createDefinition: (actorId, draft) => store.createDefinition(actorId, draft),
-    seedStandardDefinitionForTests: (input) => store.seedStandardDefinition(input),
+    seedStandardDefinitionForTests: (seedInput) => store.seedStandardDefinition(seedInput),
   };
 }

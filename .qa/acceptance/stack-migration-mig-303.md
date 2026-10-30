@@ -18,8 +18,9 @@ MIG-602/#847 feature E2E cutover; FEATURE VERIFIED → MIG-311/#810 + MIG-602/#8
 
 ## Security Coverage
 - Owner-scoped inventory put/get DENY for foreign actors.
-- Catalog: personal only for owner; world gated by worldProfileId; standard public; client cannot promote `standard` origin.
-- No client-claimed owner elevation; actor id is verified host actor only.
+- Catalog: personal only for owner; world list/create requires world ACL (canRead/canEdit); standard public; client cannot promote `standard` origin.
+- putOwnedInventory requires valid Inventory v2 shape + visible definition ids; characters.inventory_* writes via character port only.
+- No client-claimed owner elevation; actor id is verified host actor only (isolated-contract; HTTP binds session later).
 - Launch SC-01…SC-07: N/A — not a launch ticket; inline SC-01/SC-02 covered above.
 
 ## Evidence
