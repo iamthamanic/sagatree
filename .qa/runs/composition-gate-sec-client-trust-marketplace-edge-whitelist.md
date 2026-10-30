@@ -1,6 +1,6 @@
 # Composition Gate — sec-client-trust-marketplace-edge-whitelist (#675)
 
-- HEAD_SHA: e7260fc4807934459eb3d6f7dcaaec6ea31ba455
+- HEAD_SHA: 7b9095e32abbac4df702d569c99cd1c8919ef88d
 - BASE_SHA: 383f355620053904379d8a666ff527c79b06b862
 - Date: 2026-10-29
 - Verdict: CLEAR
@@ -8,7 +8,7 @@
 
 ## Event
 
-Authenticated marketplace author creates/updates/deletes own listings via infrastructure adapter; privileged counters/ownership never accepted from client bodies. Allowlisted Edge POSTs reject privileged keys. schema.sql and deploy_marketplace.sql install DB guard + column grants so PostgREST cannot keep client-set author_id/rating/downloads/is_featured/created_at.
+Authenticated marketplace author creates/updates/deletes own listings via infrastructure adapter; privileged counters/ownership never accepted from client bodies. Allowlisted Edge POSTs reject privileged keys. schema.sql and deploy_marketplace.sql install DB guard + column grants. Featured listings rank by downloads because rating is server-owned.
 
 ## Hop chain
 
