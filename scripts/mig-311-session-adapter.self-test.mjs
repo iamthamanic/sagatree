@@ -329,14 +329,24 @@ try {
       viaSnap.value.snapshot === undefined,
     `adapter snapshot flat RPC shape got keys=${viaSnap.ok ? Object.keys(viaSnap.value).join(',') : ''}`,
   );
-  const viaInvite = await bound.resolveSessionInvite(Player.actorId, token);
-  // Token may already be revoked above — either ok with ids or typed error string.
+  // Fresh invite so the adapter success path is exercised (token above is revoked).
+  const adapterInvite = session.access.createSessionInvite(GM, sessionId);
+  assert(adapterInvite.ok, `adapter invite create: ${adapterInvite.ok ? '' : adapterInvite.error}`);
+  const adapterToken =
+    adapterInvite.value.token ?? adapterInvite.value.inviteToken ?? adapterInvite.value.code;
+  assert(typeof adapterToken === 'string' && adapterToken.length > 0, 'adapter invite token');
+  const viaInvite = await bound.resolveSessionInvite(Player.actorId, adapterToken);
   assert(
-    (viaInvite.ok === true &&
+    viaInvite.ok === true &&
       typeof viaInvite.value.session_id === 'string' &&
-      typeof viaInvite.value.project_id === 'string') ||
-      (viaInvite.ok === false && typeof viaInvite.error === 'string' && viaInvite.error.length > 0),
+      viaInvite.value.session_id === sessionId &&
+      typeof viaInvite.value.project_id === 'string',
     `adapter resolveSessionInvite mapped got ${JSON.stringify(viaInvite)}`,
+  );
+  const viaRevoked = await bound.resolveSessionInvite(Player.actorId, token);
+  assert(
+    viaRevoked.ok === false && viaRevoked.error === 'revoked',
+    `adapter revoked invite maps error_code got ${JSON.stringify(viaRevoked)}`,
   );
   const viaMissing = await bound.resolveSessionInvite(Player.actorId, 'no-such-token');
   assert(
