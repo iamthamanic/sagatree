@@ -23,8 +23,8 @@ Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schrei
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`.
-- Source Contracts: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`.
+- Quellpfade und bestehende Adapter: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`.
+- Source Contracts: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -59,21 +59,28 @@ Out:
 - Gegeben: Mindestens ein Vorgänger aus Welle 0–6 oder Atlas #770 ist offen
 - Wenn: der Cutover-Runner eine Ausführung erwägt
 - Dann: MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.
-- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
+- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`
 
 ### Fall 2
 
 - Gegeben: Eine synthetische Welt/Saga und ein vollständiger Exportstand
 - Wenn: Freeze→Delta→Prüfung→Autoritätswechsel als Drill läuft
 - Dann: Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.
-- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
+- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`
 
 ### Fall 3
 
 - Gegeben: Ein absichtlich fehlerhafter Zielstand im Drill
 - Wenn: Rollback ausgeführt wird
 - Dann: Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
-- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`
+- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`
+
+### Fall 4
+
+- Gegeben: GATE-01 Host Drizzle+Policy und CI-Import-Guard (#1043/#1044) ohne Nachweis
+- Wenn: Freeze/Delta oder RELEASE erwogen wird
+- Dann: Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.
+- Quelle: `docs/architektur-sqlite-based.md`, `.qa/design/atlas-live-e2e-cutover-gate.md`, `docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`
 
 ## Required Tests
 
@@ -82,20 +89,22 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.
 2. Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.
 3. Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.
 - [ ] Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.
 - [ ] Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.
+- [ ] Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Cutover prerequisites checklist and evidence aggregation. |
+| **SLICE DONE** | Cutover prerequisites checklist and evidence aggregation (requires GATE-01 Drizzle+Policy host + CI guard evidence before freeze/delta). |
 | **Acceptance tier** | `release-gate` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | Production cutover + Supabase shutdown require independent human RELEASE APPROVED. |
 | **FEATURE VERIFIED** | human release approval (not agent-mergeable). |
