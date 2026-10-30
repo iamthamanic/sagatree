@@ -32,5 +32,5 @@ Reopen same SQLite file after close retains renamed world title. BEGIN IMMEDIATE
 ## Flags
 
 - Acceptance tier: host-persistence / architecture
+- Deferred integration: #1044 CI import-boundary guard; fold runtime evidence into #847/#849 via Source-of-Truth (no hand-edit of generated contracts in this PR)
 - Browser E2E: SKIPPED (no UI surface; host SQLite/ORM only)
-- Deferred: #1044 CI import-boundary guard; fold runtime evidence into #847/#849 via Source-of-Truth (no hand-edit of generated contracts in this PR)
