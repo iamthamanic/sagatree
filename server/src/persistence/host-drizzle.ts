@@ -55,22 +55,16 @@ function toRunResult(result: { changes: number; lastInsertRowid: number | bigint
 }
 
 /**
- * Drizzle wraps driver failures in DrizzleQueryError; product stores/tests expect
- * the native SQLite message/code (UNIQUE / SQLITE_BUSY / ERR_SQLITE_ERROR).
+ * Drizzle wraps driver failures in DrizzleQueryError (often with SQL + params).
+ * Prefer the nested cause so product stores see native codes/messages and callers
+ * never receive the wrapper's query/params payload.
  */
 function unwrapDrizzleSqliteError(err: unknown): unknown {
   if (!err || typeof err !== 'object') return err;
   const cause = 'cause' in err ? (err as { cause: unknown }).cause : undefined;
   if (!cause || typeof cause !== 'object') return err;
-  const message = 'message' in cause ? String((cause as { message?: unknown }).message ?? '') : '';
-  const code = 'code' in cause ? String((cause as { code?: unknown }).code ?? '') : '';
-  if (
-    code.startsWith('ERR_SQLITE') ||
-    code.startsWith('SQLITE_') ||
-    /UNIQUE constraint failed|PRIMARY KEY must be unique|SQLITE_BUSY|database is locked|FOREIGN KEY/i.test(
-      message,
-    )
-  ) {
+  const name = 'name' in err ? String((err as { name?: unknown }).name ?? '') : '';
+  if (name === 'DrizzleQueryError' || 'query' in err || 'params' in err) {
     return cause;
   }
   return err;
