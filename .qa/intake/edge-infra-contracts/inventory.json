@@ -35349,6 +35349,8 @@
       "area": "inventory",
       "implementationIssue": 802,
       "files": [
+        "src/infrastructure/inventory/host-inventory-adapter.ts",
+        "src/infrastructure/inventory/host-inventory-ports.contract.ts",
         "src/infrastructure/inventory/inventory-persistence.ts",
         "src/infrastructure/inventory/item-catalog-service.ts",
         "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -35561,6 +35563,14 @@
             "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
           },
           {
+            "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
+            "sha256": "705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2"
+          },
+          {
+            "path": "src/infrastructure/inventory/host-inventory-ports.contract.ts",
+            "sha256": "115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2"
+          },
+          {
             "path": "src/infrastructure/inventory/inventory-persistence.ts",
             "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
           },
@@ -35658,7 +35668,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "7bca19bc4336280727a7f0d284397338cb1062e633b3128d3924d476f1f6ef42",
+      "sourceContractSha256": "6957aef74dd23f01ffe1eb08334f60b5e4f88c64545d755522fd13ddbb9c0c07",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36327,6 +36337,12 @@
       "authz": "Personal definitions owner-only; world definitions use world-profile ownership; archived mutations blocked; asset resolve follows existing owner/world policy.",
       "legacyDefects": [],
       "publicOperationSources": [
+        {
+          "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
+          "line": 15,
+          "endLine": 25,
+          "name": "createHostInventoryAdapter"
+        },
         {
           "path": "src/infrastructure/inventory/inventory-persistence.ts",
           "line": 51,

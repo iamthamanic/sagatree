@@ -1140,6 +1140,18 @@ function checkMig302CharacterAdapter() {
   );
 }
 
+function checkMig303InventoryAdapter() {
+  console.log('MIG-303 inventory adapter (#802): inventory host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-303-inventory-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig304LookAdapter() {
   console.log('MIG-304 look adapter (#803): LookProfile host ports + dual-path seam...');
   execFileSync(
@@ -3350,6 +3362,7 @@ checkMig501ResumableUploads();
 checkMig306MediaAdapter();
 checkMig301AiAdapter();
 checkMig302CharacterAdapter();
+checkMig303InventoryAdapter();
 checkMig304LookAdapter();
 checkMig307NpcAdapter();
 checkMig308ProjectAdapter();

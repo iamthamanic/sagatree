@@ -970,8 +970,8 @@
         "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-303.md",
-      "sha256": "2904f6331b50171b318b6205b7f3931d1612a2cfe963f7e97c13a0c561178c35",
-      "payloadSha256": "e3f72ea9b43929629bec16f5741244764b7dc83c472317316e3258a243954402"
+      "sha256": "876a601e7a4b165209293a5f9dcac10c72786cf2817ae7f47b43389fd52c9376",
+      "payloadSha256": "9d44d27ba9a66bce0810f8bab683cfa091521cfa95310d144eadc980d74e0413"
     },
     {
       "localId": "MIG-304",
