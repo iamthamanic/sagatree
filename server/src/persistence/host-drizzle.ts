@@ -54,6 +54,36 @@ function toRunResult(result: { changes: number; lastInsertRowid: number | bigint
   };
 }
 
+/**
+ * Drizzle wraps driver failures in DrizzleQueryError; product stores/tests expect
+ * the native SQLite message/code (UNIQUE / SQLITE_BUSY / ERR_SQLITE_ERROR).
+ */
+function unwrapDrizzleSqliteError(err: unknown): unknown {
+  if (!err || typeof err !== 'object') return err;
+  const cause = 'cause' in err ? (err as { cause: unknown }).cause : undefined;
+  if (!cause || typeof cause !== 'object') return err;
+  const message = 'message' in cause ? String((cause as { message?: unknown }).message ?? '') : '';
+  const code = 'code' in cause ? String((cause as { code?: unknown }).code ?? '') : '';
+  if (
+    code.startsWith('ERR_SQLITE') ||
+    code.startsWith('SQLITE_') ||
+    /UNIQUE constraint failed|PRIMARY KEY must be unique|SQLITE_BUSY|database is locked|FOREIGN KEY/i.test(
+      message,
+    )
+  ) {
+    return cause;
+  }
+  return err;
+}
+
+function runThroughDrizzle<T>(fn: () => T): T {
+  try {
+    return fn();
+  } catch (err) {
+    throw unwrapDrizzleSqliteError(err);
+  }
+}
+
 export function createHostDatabase(client: DatabaseSync): HostDatabase {
   const orm = createOrm(client);
 
@@ -63,13 +93,17 @@ export function createHostDatabase(client: DatabaseSync): HostDatabase {
     prepare(sqlText: string): HostStatement {
       return {
         all<T = Record<string, unknown>>(...params: unknown[]): T[] {
-          return orm.all(bindQuestionMarks(sqlText, params)) as T[];
+          return runThroughDrizzle(() => orm.all(bindQuestionMarks(sqlText, params)) as T[]);
         },
         get<T = Record<string, unknown>>(...params: unknown[]): T | undefined {
-          return orm.get(bindQuestionMarks(sqlText, params)) as T | undefined;
+          return runThroughDrizzle(
+            () => orm.get(bindQuestionMarks(sqlText, params)) as T | undefined,
+          );
         },
         run(...params: unknown[]): HostStatementResult {
-          return toRunResult(orm.run(bindQuestionMarks(sqlText, params)));
+          return runThroughDrizzle(() =>
+            toRunResult(orm.run(bindQuestionMarks(sqlText, params))),
+          );
         },
       };
     },
