@@ -53,6 +53,7 @@ export const TABLE_OWNERSHIP: Readonly<Record<string, HostModuleId>> = Object.fr
   npc_creature_definitions: 'npc-creature',
   npc_creature_controller_assignments: 'npc-creature',
   npc_creature_instances: 'npc-creature',
+  marketplace_items: 'marketplace',
   session_invites: 'session',
   session_players: 'session',
   rulesets: 'rulesets',
