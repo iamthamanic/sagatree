@@ -1,41 +1,40 @@
 # Composition Gate — stack-migration-mig-603 (#848)
 
-- HEAD_SHA: (filled at tip)
+- HEAD_SHA: (filled at commit)
 - BASE_SHA: de267052cb78558fc76ee33c7f3abc0f82cabfe2
 - Date: 2026-10-30
 - Verdict: CLEAR
 
 ## Event
 
-Ops deliverable: host SQLite/WAL/asset snapshots under `scripts/host-backup` with
-atomic staging→publish, restore drills, and runbooks under `docs/ops/host`.
-Snapshots use `VACUUM INTO` (not uncoordinated multi-file copies). Aborted
-staging never becomes a restore point; last published snapshot stays usable.
+Ops deliverable: SQLite/WAL/asset backup + restore + update/rollback drills under
+`docs/ops/host` and `scripts/host-backup`. Snapshots use `BEGIN IMMEDIATE` →
+`COMMIT` → `wal_checkpoint(PASSIVE)` → `VACUUM INTO` (never raw multi-file copies
+under write load). Staging publishes only after integrity + asset-hash verification.
 
 ## Hop chain
 
-1. Operator → `cli.mjs create` / `create-snapshot.mjs`
-2. Library → wal_checkpoint + VACUUM INTO + hashed assets → `.staging/<id>`
-3. Publish → rename to `<backupRoot>/<id>` + `manifest.json`
-4. Restore / rollback-drill → verify integrity + checksums → swap dataDir
-5. Consumer: runbooks + `mig-603-host-backup.self-test.mjs` in test-gate
+1. Producer: operator `node scripts/host-backup/cli.mjs create --data-dir … --backup-root …`
+2. Snapshot: VACUUM INTO host.sqlite + asset tree + manifest (event/revision links)
+3. Verify: `PRAGMA integrity_check` + SHA-256 file map + asset catalog hashes
+4. Restore: stage → verify → swap into target dataDir
+5. Consumer: restore host opens worlds / session_events / assets; rollback drill report
 
 ## Simulations
 
 ### N-actors
-N/A (ops surface). Owner-scoped live data remains policy-gated; backups inherit
-the same confidentiality class as the live dataDir.
+N/A (ops surface). Owner-scoped world row readable after restore (self-test).
 
 ### Invalid/missing
-Aborted create (`failAfterStage`) / aborted restore (`failBeforePublish`) → no
-publish; previous good snapshot / dataDir remains consistent.
+Aborted mid-stage backup (`failAfterStage`) does not publish; last good snapshot
+still verifies. Aborted restore (`failBeforePublish`) leaves prior tree consistent.
 
 ### Two consumers / crash
-Rollback drill mutates then restores; report records duration + writeLockHeldMs
-+ schemaVersion + checksums.
+Poisoned live DB after snapshot → rollback drill restores checksums/schema;
+`writeLockHeldMs` + `measuredDurationMs` recorded in report.
 
 ## Flags
 
 - Acceptance tier: isolated-contract
-- Deferred integration: live Docker-in-CI drills → MIG-602/#847; human release → MIG-700/#849
+- Deferred integration: FEATURE VERIFIED → MIG-700/#849; RELEASE APPROVED → human only
 - SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
