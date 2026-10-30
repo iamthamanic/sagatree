@@ -1,0 +1,29 @@
+{
+  "$schema_note": "Machine-readable GATE-01 host ORM/DB import exceptions (#1044). Paths are repo-relative globs matched with minimatch-style * segments; only exact documented owners.",
+  "version": 1,
+  "nodeSqliteImportAllow": [
+    "server/src/persistence/open-database.ts",
+    "server/src/persistence/host-drizzle.ts",
+    "server/src/auth/cookie-profile.ts"
+  ],
+  "drizzleOrmImportAllow": [
+    "server/src/persistence/**",
+    "server/src/repositories/**",
+    "server/src/modules/*/internal/**",
+    "server/src/modules/*/persistence/**"
+  ],
+  "forbiddenImportZones": [
+    "server/src/application/**",
+    "server/src/api/**",
+    "server/src/http/**",
+    "server/src/bootstrap/**",
+    "src/domains/**",
+    "src/app/**",
+    "src/infrastructure/**"
+  ],
+  "requiredRuntimeProof": {
+    "serverPackageDependency": "drizzle-orm",
+    "hostDrizzleModule": "server/src/persistence/host-drizzle.ts",
+    "mustContain": ["drizzle-orm/node-sqlite", "createHostDatabase"]
+  }
+}
