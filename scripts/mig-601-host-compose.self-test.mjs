@@ -47,6 +47,15 @@ assert(/profiles:\s*\["media"\]/.test(compose), 'media marker on profile media')
 assert(compose.includes('SAGATREE_ALLOW_REMOTE_BIND'), 'compose allows remote bind for container');
 assert(compose.includes('SAGATREE_HOST_MODE: remote'), 'compose uses remote mode (solo forbids 0.0.0.0)');
 assert(compose.includes('SAGATREE_BETTER_AUTH_SECRET'), 'compose requires Better Auth secret via env');
+assert(
+  /SAGATREE_AUTH_BASE_URL:.*SAGATREE_HOST_PUBLISH/.test(compose),
+  'auth base URL default tracks SAGATREE_HOST_PUBLISH',
+);
+assert(
+  /ollama\/ollama:\d+\.\d+\.\d+@sha256:[a-f0-9]{64}/.test(compose),
+  'ollama image pinned to version+digest (not :latest)',
+);
+assert(!/ollama\/ollama:latest/.test(compose), 'ollama must not use :latest');
 assert(!/CHARACTER_AI_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked AI API key in compose');
 assert(!/MESHY_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked Meshy key in compose');
 
@@ -58,6 +67,11 @@ assert(envEx.includes('SAGATREE_BETTER_AUTH_SECRET'), '.env.example documents au
 assert(envEx.includes('SAGATREE_BACKUP_MOUNT'), '.env.example documents backup mount');
 assert(/Never.*down -v|down -v/i.test(runbook), 'runbook forbids volume wipe');
 assert(runbook.includes('127.0.0.1:8787'), 'runbook documents publish port');
+assert(
+  /HOST_DENIED|aligned|SAGATREE_AUTH_BASE_URL/.test(runbook),
+  'runbook documents auth URL / publish port coupling',
+);
+assert(/ollama\/ollama:0\.\d+|pinned/.test(runbook), 'runbook documents pinned ollama image');
 assert(runbook.includes('host-data'), 'runbook documents data volume');
 assert(runbook.includes('--profile ai'), 'runbook documents ai profile');
 assert(runbook.includes('--profile media'), 'runbook documents media profile');
