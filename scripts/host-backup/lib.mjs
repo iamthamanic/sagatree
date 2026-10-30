@@ -12,12 +12,15 @@ import {
   createReadStream,
   existsSync,
   mkdirSync,
+  openSync,
   readFileSync,
+  readSync,
   readdirSync,
   renameSync,
   rmSync,
   statSync,
   writeFileSync,
+  closeSync,
 } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -73,9 +76,117 @@ export async function sha256File(filePath) {
   return hash.digest('hex');
 }
 
+/** Streaming sync hash for verifier paths that must stay sync. @param {string} filePath */
+export function sha256FileSync(filePath) {
+  const hash = createHash('sha256');
+  const fd = openSync(filePath, 'r');
+  try {
+    const buf = Buffer.alloc(64 * 1024);
+    let n;
+    while ((n = readSync(fd, buf, 0, buf.length, null)) > 0) {
+      hash.update(buf.subarray(0, n));
+    }
+  } finally {
+    closeSync(fd);
+  }
+  return hash.digest('hex');
+}
+
 /** @param {Uint8Array | Buffer | string} data */
 export function sha256Bytes(data) {
   return createHash('sha256').update(data).digest('hex');
+}
+
+const SHA256_HEX = /^[a-f0-9]{64}$/;
+
+/**
+ * Strict runtime validation for operator-supplied manifest.json (no zod dep in ops scripts).
+ * @param {unknown} raw
+ * @returns {{ ok: true, manifest: SnapshotManifest } | { ok: false, error: string }}
+ */
+export function parseSnapshotManifest(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  /** @type {Record<string, unknown>} */
+  const m = /** @type {Record<string, unknown>} */ (raw);
+  if (m.formatVersion !== SNAPSHOT_FORMAT_VERSION) {
+    return { ok: false, error: `unsupported-format:${String(m.formatVersion)}` };
+  }
+  if (typeof m.snapshotId !== 'string' || !isSafeSnapshotId(m.snapshotId)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  if (typeof m.createdAt !== 'string' || typeof m.hostVersion !== 'string') {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  if (typeof m.schemaVersion !== 'number' || !Number.isFinite(m.schemaVersion)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  if (typeof m.writeLockHeldMs !== 'number' || typeof m.durationMs !== 'number') {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  if (typeof m.assetCount !== 'number' || !Number.isFinite(m.assetCount)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  if (!m.files || typeof m.files !== 'object' || Array.isArray(m.files)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  /** @type {Record<string, { sha256: string, bytes: number }>} */
+  const files = {};
+  for (const [rel, meta] of Object.entries(/** @type {Record<string, unknown>} */ (m.files))) {
+    if (typeof rel !== 'string' || rel.includes('..') || rel.startsWith('/') || rel.includes('\\')) {
+      return { ok: false, error: `path-traversal:${rel}` };
+    }
+    if (!meta || typeof meta !== 'object' || Array.isArray(meta)) {
+      return { ok: false, error: 'invalid-manifest' };
+    }
+    const entry = /** @type {Record<string, unknown>} */ (meta);
+    if (typeof entry.sha256 !== 'string' || !SHA256_HEX.test(entry.sha256)) {
+      return { ok: false, error: 'invalid-manifest' };
+    }
+    if (typeof entry.bytes !== 'number' || !Number.isFinite(entry.bytes) || entry.bytes < 0) {
+      return { ok: false, error: 'invalid-manifest' };
+    }
+    files[rel] = { sha256: entry.sha256, bytes: entry.bytes };
+  }
+  if (!Array.isArray(m.eventRevisionLinks)) {
+    return { ok: false, error: 'invalid-manifest' };
+  }
+  /** @type {SnapshotManifest['eventRevisionLinks']} */
+  const eventRevisionLinks = [];
+  for (const link of m.eventRevisionLinks) {
+    if (!link || typeof link !== 'object' || Array.isArray(link)) {
+      return { ok: false, error: 'invalid-manifest' };
+    }
+    const row = /** @type {Record<string, unknown>} */ (link);
+    if (
+      typeof row.sessionId !== 'string' ||
+      typeof row.maxEventSequence !== 'number' ||
+      typeof row.runtimeRevision !== 'number'
+    ) {
+      return { ok: false, error: 'invalid-manifest' };
+    }
+    eventRevisionLinks.push({
+      sessionId: row.sessionId,
+      maxEventSequence: row.maxEventSequence,
+      runtimeRevision: row.runtimeRevision,
+    });
+  }
+  return {
+    ok: true,
+    manifest: {
+      formatVersion: SNAPSHOT_FORMAT_VERSION,
+      snapshotId: m.snapshotId,
+      createdAt: m.createdAt,
+      hostVersion: m.hostVersion,
+      schemaVersion: m.schemaVersion,
+      writeLockHeldMs: m.writeLockHeldMs,
+      durationMs: m.durationMs,
+      files,
+      assetCount: m.assetCount,
+      eventRevisionLinks,
+    },
+  };
 }
 
 /** @param {string} dir */
@@ -281,8 +392,7 @@ export function verifyDataDirConsistency(dataDir) {
         if (!existsSync(filePath)) {
           return { ok: false, error: `missing-asset-bytes:${key}` };
         }
-        const bytes = readFileSync(filePath);
-        const digest = sha256Bytes(bytes);
+        const digest = sha256FileSync(filePath);
         if (digest !== String(row.checksum_sha256)) {
           return { ok: false, error: `asset-checksum-mismatch:${key}` };
         }
@@ -562,15 +672,15 @@ export async function verifySnapshot(snapshotPath) {
   /** @type {SnapshotManifest} */
   let manifest;
   try {
-    manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    const parsed = parseSnapshotManifest(JSON.parse(readFileSync(manifestPath, 'utf8')));
+    if (!parsed.ok) {
+      return { ok: false, error: parsed.error };
+    }
+    manifest = parsed.manifest;
   } catch {
     return { ok: false, error: 'invalid-manifest' };
   }
-  if (manifest.formatVersion !== SNAPSHOT_FORMAT_VERSION) {
-    return { ok: false, error: `unsupported-format:${manifest.formatVersion}` };
-  }
-  for (const [rel, meta] of Object.entries(manifest.files ?? {})) {
-    if (rel.includes('..')) return { ok: false, error: `path-traversal:${rel}` };
+  for (const [rel, meta] of Object.entries(manifest.files)) {
     const p = join(root, rel);
     if (!existsSync(p)) return { ok: false, error: `missing-file:${rel}` };
     const digest = await sha256File(p);
