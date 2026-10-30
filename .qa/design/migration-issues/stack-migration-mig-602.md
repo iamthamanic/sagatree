@@ -23,8 +23,8 @@ Host-Unit-, echte DB-/Transport-Integration und Browser-Produktpfade als verläs
 
 - Epic: #773; historische Baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`; keine Produktionszustandsbehauptung.
 - Verbindliche Architektur: `docs/architecture/migration-owner-decisions-2026-10-23.md`.
-- Quellpfade und bestehende Adapter: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`.
-- Source Contracts: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`.
+- Quellpfade und bestehende Adapter: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`.
+- Source Contracts: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`.
 - Zielverhalten: Binding product decisions: docs/architecture/migration-owner-decisions-2026-10-23.md; GATE-01 Drizzle+Policy, GATE-02 Cookie-A, GATE-03 Hono+Colyseus, GATE-04 SQLite single-writer. GATE-05 Tauri+sidecar selected; platform release pending..
 
 ## Scope
@@ -60,21 +60,28 @@ Out:
 - Gegeben: Ein Pull Request ohne externe Datenbank-Secrets
 - Wenn: die erforderlichen CI-Jobs laufen
 - Dann: Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.
-- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`
+- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`
 
 ### Fall 2
 
 - Gegeben: Eine echte Permission-Regression im Fixture-System
 - Wenn: die Canary-Probe ausgelöst wird
 - Dann: Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.
-- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`
+- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`
 
 ### Fall 3
 
 - Gegeben: Ein CI-Lauf auf einem konkreten Commit
 - Wenn: die Ergebnisse archiviert werden
 - Dann: Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.
-- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`
+- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`
+
+### Fall 4
+
+- Gegeben: Host-Persistenz nach GATE-01 (#1043/#1044)
+- Wenn: architecture-boundary-check und gate-01-drizzle-host-persistence.self-test im Test Gate laufen
+- Dann: checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.
+- Quelle: `.github/workflows/verify.yml`, `playwright.config.ts`, `.qa/design/parity-harness/README.md`, `.qa/architecture/host-drizzle-exceptions.json`, `.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md`, `.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md`, `scripts/architecture-boundary-check.mjs`, `scripts/gate-01-drizzle-host-persistence.self-test.mjs`
 
 ## Required Tests
 
@@ -83,20 +90,22 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 1. Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.
 2. Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.
 3. Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.
-4. Touched files: zero type escape hatches (typed-strict / Boy Scout).
+4. checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.
+5. Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance
 
 - [ ] Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.
 - [ ] Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.
 - [ ] Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.
+- [ ] checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.
 - [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Host/DB/transport/browser integration tests for migrated stacks. |
+| **SLICE DONE** | Host/DB/transport/browser integration tests for migrated stacks (incl. GATE-01 Drizzle host persistence + import-boundary CI from #1043/#1044 evidence). |
 | **Acceptance tier** | `feature-e2e` — do not claim a higher tier from lower-tier evidence. |
 | **Deferred integration** | none for integration scope; cutover MIG-700/#849. |
 | **FEATURE VERIFIED** | self (FEATURE VERIFIED for covered journeys when suite PASS). |

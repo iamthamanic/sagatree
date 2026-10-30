@@ -16228,7 +16228,12 @@
         "paths": [
           ".github/workflows/verify.yml",
           "playwright.config.ts",
-          ".qa/design/parity-harness/README.md"
+          ".qa/design/parity-harness/README.md",
+          ".qa/architecture/host-drizzle-exceptions.json",
+          ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+          ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md",
+          "scripts/architecture-boundary-check.mjs",
+          "scripts/gate-01-drizzle-host-persistence.self-test.mjs"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
@@ -16264,6 +16269,7 @@
         "Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.",
         "Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.",
         "Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.",
+        "checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -16274,7 +16280,12 @@
           "sourceRefs": [
             ".github/workflows/verify.yml",
             "playwright.config.ts",
-            ".qa/design/parity-harness/README.md"
+            ".qa/design/parity-harness/README.md",
+            ".qa/architecture/host-drizzle-exceptions.json",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md",
+            "scripts/architecture-boundary-check.mjs",
+            "scripts/gate-01-drizzle-host-persistence.self-test.mjs"
           ]
         },
         {
@@ -16284,7 +16295,12 @@
           "sourceRefs": [
             ".github/workflows/verify.yml",
             "playwright.config.ts",
-            ".qa/design/parity-harness/README.md"
+            ".qa/design/parity-harness/README.md",
+            ".qa/architecture/host-drizzle-exceptions.json",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md",
+            "scripts/architecture-boundary-check.mjs",
+            "scripts/gate-01-drizzle-host-persistence.self-test.mjs"
           ]
         },
         {
@@ -16294,7 +16310,27 @@
           "sourceRefs": [
             ".github/workflows/verify.yml",
             "playwright.config.ts",
-            ".qa/design/parity-harness/README.md"
+            ".qa/design/parity-harness/README.md",
+            ".qa/architecture/host-drizzle-exceptions.json",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md",
+            "scripts/architecture-boundary-check.mjs",
+            "scripts/gate-01-drizzle-host-persistence.self-test.mjs"
+          ]
+        },
+        {
+          "given": "Host-Persistenz nach GATE-01 (#1043/#1044)",
+          "when": "architecture-boundary-check und gate-01-drizzle-host-persistence.self-test im Test Gate laufen",
+          "then": "checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.",
+          "sourceRefs": [
+            ".github/workflows/verify.yml",
+            "playwright.config.ts",
+            ".qa/design/parity-harness/README.md",
+            ".qa/architecture/host-drizzle-exceptions.json",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md",
+            "scripts/architecture-boundary-check.mjs",
+            "scripts/gate-01-drizzle-host-persistence.self-test.mjs"
           ]
         }
       ],
@@ -16306,7 +16342,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: .github/workflows/verify.yml, playwright.config.ts, .qa/design/parity-harness/README.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: .github/workflows/verify.yml, playwright.config.ts, .qa/design/parity-harness/README.md, .qa/architecture/host-drizzle-exceptions.json, .qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md, .qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md, scripts/architecture-boundary-check.mjs, scripts/gate-01-drizzle-host-persistence.self-test.mjs. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
         "nachher": "Host-Unit-, echte DB-/Transport-Integration und Browser-Produktpfade als verlässliche CI-Gates anschließen. Zielpfade: .github/workflows, server/tests, e2e.",
         "verhalten": "Host-Unit-, echte DB-/Transport-Integration und Browser-Produktpfade als verlässliche CI-Gates anschließen.",
         "sicherheit": "CI erzeugt isolierte synthetische Identitäten; fehlende Testinfrastruktur darf kein stiller Skip und kein Zugriff auf eine Produktivinstanz werden.",
@@ -16314,6 +16350,7 @@
           "Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.",
           "Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.",
           "Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.",
+          "checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -16738,7 +16775,10 @@
       "before": {
         "paths": [
           "docs/architektur-sqlite-based.md",
-          ".qa/design/atlas-live-e2e-cutover-gate.md"
+          ".qa/design/atlas-live-e2e-cutover-gate.md",
+          "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+          ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+          ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "scope": "Source-verified repository baseline; isolated DB evidence is separate from a deployed production inventory."
@@ -16772,6 +16812,7 @@
         "MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.",
         "Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.",
         "Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.",
+        "Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -16781,7 +16822,10 @@
           "then": "MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.",
           "sourceRefs": [
             "docs/architektur-sqlite-based.md",
-            ".qa/design/atlas-live-e2e-cutover-gate.md"
+            ".qa/design/atlas-live-e2e-cutover-gate.md",
+            "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md"
           ]
         },
         {
@@ -16790,7 +16834,10 @@
           "then": "Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.",
           "sourceRefs": [
             "docs/architektur-sqlite-based.md",
-            ".qa/design/atlas-live-e2e-cutover-gate.md"
+            ".qa/design/atlas-live-e2e-cutover-gate.md",
+            "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md"
           ]
         },
         {
@@ -16799,7 +16846,22 @@
           "then": "Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.",
           "sourceRefs": [
             "docs/architektur-sqlite-based.md",
-            ".qa/design/atlas-live-e2e-cutover-gate.md"
+            ".qa/design/atlas-live-e2e-cutover-gate.md",
+            "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md"
+          ]
+        },
+        {
+          "given": "GATE-01 Host Drizzle+Policy und CI-Import-Guard (#1043/#1044) ohne Nachweis",
+          "when": "Freeze/Delta oder RELEASE erwogen wird",
+          "then": "Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.",
+          "sourceRefs": [
+            "docs/architektur-sqlite-based.md",
+            ".qa/design/atlas-live-e2e-cutover-gate.md",
+            "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
+            ".qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md",
+            ".qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md"
           ]
         }
       ],
@@ -16811,7 +16873,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: docs/architektur-sqlite-based.md, .qa/design/atlas-live-e2e-cutover-gate.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: docs/architektur-sqlite-based.md, .qa/design/atlas-live-e2e-cutover-gate.md, docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md, .qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md, .qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md. Detaillierte Aufruf-/SQL-Nachweise: die unten referenzierten Anforderungen.",
         "nachher": "Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schreibautorität vorbereiten. Zielpfade: docs/ops/cutover, server/src/migration.",
         "verhalten": "Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schreibautorität vorbereiten.",
         "sicherheit": "Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung sind Scope, Backup, Schreibsperre und menschliche Freigabe konkret zu verlinken.",
@@ -16819,6 +16881,7 @@
           "MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.",
           "Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.",
           "Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.",
+          "Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [

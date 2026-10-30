@@ -243,12 +243,23 @@ export const planContracts = {
     ]),
   'MIG-602': contract(
     'Host-Unit-, echte DB-/Transport-Integration und Browser-Produktpfade als verlässliche CI-Gates anschließen.',
-    ['.github/workflows/verify.yml', 'playwright.config.ts', '.qa/design/parity-harness/README.md'], ['.github/workflows', 'server/tests', 'e2e'],
+    [
+      '.github/workflows/verify.yml',
+      'playwright.config.ts',
+      '.qa/design/parity-harness/README.md',
+      '.qa/architecture/host-drizzle-exceptions.json',
+      '.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md',
+      '.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md',
+      'scripts/architecture-boundary-check.mjs',
+      'scripts/gate-01-drizzle-host-persistence.self-test.mjs',
+    ],
+    ['.github/workflows', 'server/tests', 'e2e'],
     'CI erzeugt isolierte synthetische Identitäten; fehlende Testinfrastruktur darf kein stiller Skip und kein Zugriff auf eine Produktivinstanz werden.',
     [
       ['Ein Pull Request ohne externe Datenbank-Secrets', 'die erforderlichen CI-Jobs laufen', 'Die Jobs starten ihre isolierte Datenbank selbst und führen den GM→Player-Atlas-Pfad samt DB-Assertions aus; fehlender Dienst lässt den Job rot werden.'],
       ['Eine echte Permission-Regression im Fixture-System', 'die Canary-Probe ausgelöst wird', 'Mindestens ein erforderlicher Check wird rot; test.skip, continue-on-error und rein gemockte Ersatzantworten erfüllen dieses Kriterium nicht.'],
       ['Ein CI-Lauf auf einem konkreten Commit', 'die Ergebnisse archiviert werden', 'Logs, Testanzahlen und Revision sind diesem Commit zugeordnet; Browser-, DB- und Vertragsprüfung bleiben als unterschiedliche Nachweise erkennbar.'],
+      ['Host-Persistenz nach GATE-01 (#1043/#1044)', 'architecture-boundary-check und gate-01-drizzle-host-persistence.self-test im Test Gate laufen', 'checkHostDrizzlePersistenceBoundaries und die HostDatabase/Drizzle-Runtime-Proofs bleiben grün; fehlende Policy, omit=dev ORM oder forbidden zone imports machen den Job rot.'],
     ]),
   'MIG-603': contract(
     'SQLite-, WAL- und Asset-Backups sowie Update/Rollback mit tatsächlich ausgeführten Restore-Drills dokumentieren.',
@@ -261,12 +272,20 @@ export const planContracts = {
     ]),
   'MIG-700': contract(
     'Welt-/Saga-Cutover erst nach vollständigen Nachweisen mit einer einzigen Schreibautorität vorbereiten.',
-    ['docs/architektur-sqlite-based.md', '.qa/design/atlas-live-e2e-cutover-gate.md'], ['docs/ops/cutover', 'server/src/migration'],
+    [
+      'docs/architektur-sqlite-based.md',
+      '.qa/design/atlas-live-e2e-cutover-gate.md',
+      'docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md',
+      '.qa/evidence/stack-migration-prep/gate-01-followup-1043-host-drizzle.md',
+      '.qa/evidence/stack-migration-prep/gate-01-guard-1044-host-drizzle-ci.md',
+    ],
+    ['docs/ops/cutover', 'server/src/migration'],
     'Ein Fixture-Drill ist keine Produktivfreigabe. Vor jeder produktiven Umstellung sind Scope, Backup, Schreibsperre und menschliche Freigabe konkret zu verlinken.',
     [
       ['Mindestens ein Vorgänger aus Welle 0–6 oder Atlas #770 ist offen', 'der Cutover-Runner eine Ausführung erwägt', 'MIG-700 bleibt gesperrt; alle betroffenen Vorgänger sind als konkrete GitHub-Blocker im Ticket und in der maschinenlesbaren Reihenfolge vorhanden.'],
       ['Eine synthetische Welt/Saga und ein vollständiger Exportstand', 'Freeze→Delta→Prüfung→Autoritätswechsel als Drill läuft', 'Während des Wechsels existiert genau eine Schreibautorität; IDs, Revisionen, Geheimnisse und Asset-Hashes sind vor und nach dem Wechsel vergleichbar.'],
       ['Ein absichtlich fehlerhafter Zielstand im Drill', 'Rollback ausgeführt wird', 'Der dokumentierte Rückweg stellt den letzten bestätigten Stand samt Assets wieder her; produktive Schritte bleiben bis zur gesonderten menschlichen Freigabe gesperrt.'],
+      ['GATE-01 Host Drizzle+Policy und CI-Import-Guard (#1043/#1044) ohne Nachweis', 'Freeze/Delta oder RELEASE erwogen wird', 'Cutover bleibt gesperrt bis HostDatabase/Drizzle-Runtime-Proof und checkHostDrizzlePersistenceBoundaries in der Cutover-Checkliste verlinkt grün sind; kein RELEASE ohne sie.'],
     ]),
   'MIG-701': contract(
     'Nach dem kontrollierten Wechsel ein definiertes Beobachtungsfenster mit lesender Paritätskontrolle betreiben.',

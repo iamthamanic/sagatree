@@ -445,13 +445,13 @@ function acceptanceTierBlock(issue, byId) {
       tier: 'feature-security',
     },
     'MIG-602': {
-      slice: 'Host/DB/transport/browser integration tests for migrated stacks.',
+      slice: 'Host/DB/transport/browser integration tests for migrated stacks (incl. GATE-01 Drizzle host persistence + import-boundary CI from #1043/#1044 evidence).',
       deferred: `none for integration scope; cutover ${link('MIG-700')}.`,
       feature: 'self (FEATURE VERIFIED for covered journeys when suite PASS).',
       tier: 'feature-e2e',
     },
     'MIG-700': {
-      slice: 'Cutover prerequisites checklist and evidence aggregation.',
+      slice: 'Cutover prerequisites checklist and evidence aggregation (requires GATE-01 Drizzle+Policy host + CI guard evidence before freeze/delta).',
       deferred: 'Production cutover + Supabase shutdown require independent human RELEASE APPROVED.',
       feature: 'human release approval (not agent-mergeable).',
       tier: 'release-gate',
