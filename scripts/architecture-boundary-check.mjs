@@ -121,6 +121,9 @@ export function extractImportPaths(content) {
     /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
     // Static template literals only (no ${...} interpolation).
     /\bimport\s*\(\s*`([^`${]*)`\s*\)/g,
+    // CommonJS / createRequire bypasses for package specs.
+    /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
+    /\bcreateRequire\s*\([^)]*\)\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
   ];
 
   for (const pattern of patterns) {
@@ -130,6 +133,13 @@ export function extractImportPaths(content) {
   }
 
   return [...paths];
+}
+
+/** Strip // and /* *\/ comments so proof tokens cannot hide in comments. */
+export function stripJsComments(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
 }
 
 export function resolveRelativeImport(filePath, importPath) {
@@ -518,7 +528,28 @@ export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = 
   const allowNode = config.nodeSqliteImportAllow ?? [];
   const allowDrizzle = config.drizzleOrmImportAllow ?? [];
   const forbiddenZones = config.forbiddenImportZones ?? [];
-  const proof = config.requiredRuntimeProof ?? {};
+  const proof = config.requiredRuntimeProof;
+  if (!proof || typeof proof !== 'object') {
+    violations.push({
+      file: relative(rootDir, exceptionsPath).replace(/\\/g, '/') || exceptionsPath,
+      rule: 'requiredRuntimeProof missing from host drizzle exceptions policy (fail-closed)',
+      scope: 'host-drizzle-boundary',
+    });
+    return violations;
+  }
+  if (
+    typeof proof.serverPackageDependency !== 'string' ||
+    typeof proof.hostDrizzleModule !== 'string' ||
+    !Array.isArray(proof.mustContainImports) ||
+    !Array.isArray(proof.mustContainExports)
+  ) {
+    violations.push({
+      file: relative(rootDir, exceptionsPath).replace(/\\/g, '/') || exceptionsPath,
+      rule: 'requiredRuntimeProof incomplete (need serverPackageDependency, hostDrizzleModule, mustContainImports, mustContainExports)',
+      scope: 'host-drizzle-boundary',
+    });
+    return violations;
+  }
 
   const serverPkgPath = join(rootDir, 'server', 'package.json');
   if (!existsSync(serverPkgPath)) {
@@ -529,18 +560,18 @@ export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = 
     });
   } else {
     const pkg = JSON.parse(readFileSync(serverPkgPath, 'utf8'));
-    const depName = proof.serverPackageDependency ?? 'drizzle-orm';
-    const deps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) };
-    if (!deps[depName]) {
+    const depName = proof.serverPackageDependency;
+    // Production runtime only — omit=dev installs must still have the ORM.
+    if (!pkg.dependencies?.[depName]) {
       violations.push({
         file: 'server/package.json',
-        rule: `missing runtime dependency ${depName} (GATE-01 Drizzle host persistence)`,
+        rule: `missing runtime dependency ${depName} in dependencies (not only devDependencies)`,
         scope: 'host-drizzle-boundary',
       });
     }
   }
 
-  const hostDrizzleRel = proof.hostDrizzleModule ?? 'server/src/persistence/host-drizzle.ts';
+  const hostDrizzleRel = proof.hostDrizzleModule;
   const hostDrizzleAbs = join(rootDir, hostDrizzleRel);
   if (!existsSync(hostDrizzleAbs)) {
     violations.push({
@@ -549,24 +580,36 @@ export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = 
       scope: 'host-drizzle-boundary',
     });
   } else {
-    const text = readFileSync(hostDrizzleAbs, 'utf8');
-    for (const needle of proof.mustContain ?? []) {
-      if (!text.includes(needle)) {
+    const code = stripJsComments(readFileSync(hostDrizzleAbs, 'utf8'));
+    const importSpecs = extractImportPaths(code);
+    for (const needle of proof.mustContainImports) {
+      if (!importSpecs.some((spec) => spec === needle || spec.startsWith(`${needle}/`))) {
         violations.push({
           file: hostDrizzleRel,
-          rule: `HostDatabase module missing required proof token: ${needle}`,
+          rule: `HostDatabase module missing required import: ${needle}`,
+          scope: 'host-drizzle-boundary',
+        });
+      }
+    }
+    for (const needle of proof.mustContainExports) {
+      const exportRe = new RegExp(
+        String.raw`\b(?:export\s+(?:async\s+)?function\s+${needle}\b|export\s*\{[^}]*\b${needle}\b)`,
+      );
+      if (!exportRe.test(code)) {
+        violations.push({
+          file: hostDrizzleRel,
+          rule: `HostDatabase module missing required export: ${needle}`,
           scope: 'host-drizzle-boundary',
         });
       }
     }
   }
 
-  const scanRoots = [
-    join(rootDir, 'server', 'src'),
-    join(rootDir, 'src', 'domains'),
-    join(rootDir, 'src', 'app'),
-    join(rootDir, 'src', 'infrastructure'),
-  ].filter((p) => existsSync(p));
+  const scanRoots = [join(rootDir, 'server', 'src')];
+  for (const name of ALLOWED_SRC_CODE_ROOTS) {
+    const abs = join(rootDir, 'src', name);
+    if (existsSync(abs)) scanRoots.push(abs);
+  }
 
   for (const scanRoot of scanRoots) {
     for (const file of walkFiles(scanRoot).filter((f) => SOURCE_EXT.test(f))) {
