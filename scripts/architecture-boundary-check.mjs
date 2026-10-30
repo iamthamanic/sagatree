@@ -101,7 +101,6 @@ const CHARACTER_SLICE_PUBLIC = {
 };
 
 export function walkFiles(dir, acc = []) {
-  if (!existsSync(dir)) return acc;
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     const stat = statSync(full);
@@ -716,7 +715,7 @@ export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = 
   for (const scanRoot of scanRoots) {
     for (const file of walkFiles(scanRoot).filter((f) => SOURCE_EXT.test(f))) {
       const rel = relative(rootDir, file).replace(/\\/g, '/');
-      const content = readFileSync(file, 'utf8');
+      const content = stripJsComments(readFileSync(file, 'utf8'));
       for (const importPath of extractImportPaths(content)) {
         const isSqlite = isNodeSqliteImport(importPath);
         const isDrizzle = isDrizzleOrmImport(importPath);

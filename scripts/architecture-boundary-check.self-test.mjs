@@ -455,7 +455,39 @@ function writeFx(rel, body) {
   mkdirSync(join(abs, '..'), { recursive: true });
   writeFileSync(abs, body);
 }
-const policy = readFileSync(join(repoRoot, '.qa/architecture/host-drizzle-exceptions.json'), 'utf8');
+// Inline fixture policy — do not read live repo policy (deterministic / offline-first).
+const policy = JSON.stringify(
+  {
+    version: 2,
+    note: 'self-test fixture (inline; not live repo policy)',
+    nodeSqliteImportAllow: ['server/src/persistence/**'],
+    drizzleOrmImportAllow: [
+      'server/src/persistence/**',
+      'server/src/repositories/**',
+      'server/src/modules/world/internal/world-write-store.ts',
+    ],
+    forbiddenImportZones: [
+      'server/src/application/**',
+      'server/src/api/**',
+      'server/src/http/**',
+      'server/src/bootstrap/**',
+      'src/domains/**',
+      'src/app/**',
+      'src/infrastructure/**',
+      'src/shared/**',
+      'src/lib/**',
+      'src/utils/**',
+    ],
+    requiredRuntimeProof: {
+      serverPackageDependency: 'drizzle-orm',
+      hostDrizzleModule: 'server/src/persistence/host-drizzle.ts',
+      mustContainImports: ['drizzle-orm/node-sqlite'],
+      mustContainExports: ['createHostDatabase'],
+    },
+  },
+  null,
+  2,
+);
 writeFx('.qa/architecture/host-drizzle-exceptions.json', policy);
 writeFx(
   'server/package.json',
@@ -578,7 +610,19 @@ assert(
   `host-drizzle with // inside string must PASS proof, got ${JSON.stringify(stringLiteralOk)}`,
 );
 
-// Missing server/src must return violations (not throw ENOENT).
+// Commented-out drizzle import in forbidden zone must not count as a real import.
+writeFx(
+  'server/src/application/docs.ts',
+  "// import { drizzle } from 'drizzle-orm/node-sqlite';\nexport const note = 'docs';\n",
+);
+const commentImportOk = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  commentImportOk.length === 0,
+  `commented-out drizzle import must PASS (not phantom), got ${JSON.stringify(commentImportOk)}`,
+);
+rmSync(join(drizzleFx, 'server/src/application'), { recursive: true, force: true });
+
+// Missing server/src: fresh temp tree + inline policy; must return violations (not throw).
 const noSrcFx = mkdtempSync(join(tmpdir(), 'drizzle-no-src-'));
 mkdirSync(join(noSrcFx, '.qa/architecture'), { recursive: true });
 writeFileSync(join(noSrcFx, '.qa/architecture/host-drizzle-exceptions.json'), policy);
