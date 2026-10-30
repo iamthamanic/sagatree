@@ -92,7 +92,7 @@ export type InventoryCharacterColumns = {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
-    revalidateUnderLock?: () => CharacterColumnsResult<true>,
+    revalidateUnderLock: () => CharacterColumnsResult<true>,
   ) => CharacterColumnsResult<CharacterColumnsRecord>;
 };
 
@@ -394,46 +394,50 @@ export class InventoryInfraStore {
 
   /**
    * Definition ids visible to actor (standard + own personal; world only when ACL allows).
-   * Returns null when the lookup fails (e.g. SQLite variable limit) so callers DENY.
+   * Returns null when the lookup fails so callers DENY. Chunks IN() to stay under SQLite limits.
    */
   #visibleDefinitionIds(actorId: string, ids: readonly string[]): Set<string> | null {
     const visible = new Set<string>();
     if (ids.length === 0) return visible;
-    const placeholders = ids.map(() => '?').join(',');
-    let rows: Array<{
-      id: string;
-      origin: string;
-      owner_user_id: string | null;
-      world_profile_id: string | null;
-      status: string;
-    }>;
+    const CHUNK = 400;
     try {
-      rows = this.#db
-        .prepare(
-          `SELECT id, origin, owner_user_id, world_profile_id, status
-           FROM inventory_item_definitions
-           WHERE id IN (${placeholders}) AND status = 'active'`,
-        )
-        .all(...ids) as typeof rows;
+      for (let offset = 0; offset < ids.length; offset += CHUNK) {
+        const slice = ids.slice(offset, offset + CHUNK);
+        const placeholders = slice.map(() => '?').join(',');
+        const rows = this.#db
+          .prepare(
+            `SELECT id, origin, owner_user_id, world_profile_id, status
+             FROM inventory_item_definitions
+             WHERE id IN (${placeholders}) AND status = 'active'`,
+          )
+          .all(...slice) as Array<{
+          id: string;
+          origin: string;
+          owner_user_id: string | null;
+          world_profile_id: string | null;
+          status: string;
+        }>;
+        for (const row of rows) {
+          if (typeof row.id !== 'string' || typeof row.origin !== 'string') continue;
+          if (row.origin === 'standard') {
+            visible.add(row.id);
+            continue;
+          }
+          if (row.origin === 'personal' && row.owner_user_id === actorId) {
+            visible.add(row.id);
+            continue;
+          }
+          if (
+            row.origin === 'world' &&
+            typeof row.world_profile_id === 'string' &&
+            this.#world.canReadWorldProfile([actorId], row.world_profile_id)
+          ) {
+            visible.add(row.id);
+          }
+        }
+      }
     } catch {
       return null;
-    }
-    for (const row of rows) {
-      if (row.origin === 'standard') {
-        visible.add(row.id);
-        continue;
-      }
-      if (row.origin === 'personal' && row.owner_user_id === actorId) {
-        visible.add(row.id);
-        continue;
-      }
-      if (
-        row.origin === 'world' &&
-        row.world_profile_id &&
-        this.#world.canReadWorldProfile([actorId], row.world_profile_id)
-      ) {
-        visible.add(row.id);
-      }
     }
     return visible;
   }

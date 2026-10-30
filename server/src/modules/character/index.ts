@@ -162,7 +162,7 @@ export type CharacterPorts = {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
-    revalidateUnderLock?: () => CharacterInventoryColumnsResult<true>,
+    revalidateUnderLock: () => CharacterInventoryColumnsResult<true>,
   ) => CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord>;
 };
 

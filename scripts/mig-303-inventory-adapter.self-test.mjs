@@ -98,13 +98,14 @@ try {
     },
     character: {
       getOwned: (actorId, characterId) => character.getOwnedInventoryColumns(actorId, characterId),
-      putOwned: (actorId, characterId, inventoryJson, schemaVersion, updatedAt) =>
+      putOwned: (actorId, characterId, inventoryJson, schemaVersion, updatedAt, revalidateUnderLock) =>
         character.putOwnedInventoryColumns(
           actorId,
           characterId,
           inventoryJson,
           schemaVersion,
           updatedAt,
+          revalidateUnderLock,
         ),
     },
   });
@@ -258,6 +259,39 @@ try {
   assert(
     foreignDef.ok === false && foreignDef.error === 'definition-not-visible',
     'invisible definition DENY',
+  );
+
+  // Archive personal mid-flight visibility: after archive, put must DENY.
+  assert(personal.ok, 'personal exists for archive test');
+  boot.db
+    .prepare(`UPDATE inventory_item_definitions SET status = 'archived' WHERE id = ?`)
+    .run(personal.value.id);
+  const afterArchive = inventory.putOwnedInventory(
+    owner,
+    pc.value.id,
+    emptyV2({
+      instances: {
+        a1: { instanceId: 'a1', definitionId: personal.value.id, quantity: 1 },
+      },
+    }),
+  );
+  assert(
+    afterArchive.ok === false && afterArchive.error === 'definition-not-visible',
+    'archived definition DENY under visibility recheck',
+  );
+
+  // Under-lock revalidate must be required and honored (direct character port).
+  const lockDeny = character.putOwnedInventoryColumns(
+    owner,
+    pc.value.id,
+    JSON.stringify(emptyV2()),
+    2,
+    new Date().toISOString(),
+    () => ({ ok: false, error: 'definition-not-visible' }),
+  );
+  assert(
+    lockDeny.ok === false && lockDeny.error === 'definition-not-visible',
+    'required revalidateUnderLock DENY path',
   );
 
   const bound = createHostInventoryAdapter({

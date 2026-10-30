@@ -72,7 +72,7 @@ export class CharacterInventoryColumnsStore {
     inventoryJson: string,
     schemaVersion: number,
     updatedAt: string,
-    revalidateUnderLock?: () => CharacterInventoryColumnsResult<true>,
+    revalidateUnderLock: () => CharacterInventoryColumnsResult<true>,
   ): CharacterInventoryColumnsResult<CharacterInventoryColumnsRecord> {
     let inTx = false;
     try {
@@ -100,13 +100,11 @@ export class CharacterInventoryColumnsStore {
         }
         return { ok: false, error: 'not-found' };
       }
-      if (revalidateUnderLock) {
-        const recheck = revalidateUnderLock();
-        if (!recheck.ok) {
-          this.#db.exec('ROLLBACK');
-          inTx = false;
-          return recheck;
-        }
+      const recheck = revalidateUnderLock();
+      if (!recheck.ok) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return recheck;
       }
       const changed = this.#db
         .prepare(

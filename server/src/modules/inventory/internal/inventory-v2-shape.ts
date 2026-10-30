@@ -7,8 +7,6 @@
 export const HOST_INVENTORY_V2_SCHEMA_VERSION = 1 as const;
 export const HOST_BASE_SLOT_COUNT = 20 as const;
 export const HOST_QUICK_SLOT_COUNT = 4 as const;
-/** Cap instances so definition visibility queries stay under SQLite variable limits. */
-export const HOST_INVENTORY_MAX_INSTANCES = 200 as const;
 
 /**
  * Detect whether a payload is a usable Inventory v2 state before durable write.
@@ -51,7 +49,6 @@ export function isHostInventoryV2State(value: unknown): value is Readonly<Record
   if (!Array.isArray(candidate.legacyOverflow)) return false;
 
   const instanceEntries = Object.entries(candidate.instances as Record<string, unknown>);
-  if (instanceEntries.length > HOST_INVENTORY_MAX_INSTANCES) return false;
   for (const [instanceId, instance] of instanceEntries) {
     if (!instance || typeof instance !== 'object' || Array.isArray(instance)) return false;
     const row = instance as Record<string, unknown>;
