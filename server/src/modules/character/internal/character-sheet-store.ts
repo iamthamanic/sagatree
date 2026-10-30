@@ -255,28 +255,27 @@ export class CharacterSheetStore {
     characterId: string,
     draft: CharacterSheetDraft,
   ): CharacterSheetResult<CharacterSheetRecord> {
+    // Pre-lock existence / auth probe only — field fallbacks revalidated under IMMEDIATE.
     const existing = this.getOwned(actorId, characterId);
     if (!existing.ok) return existing;
     if (!existing.value) return { ok: false, error: 'not-found' };
-    // existing.value implies actor owns the row (getOwned DENY otherwise)
 
-    const name =
-      typeof draft.name === 'string' ? draft.name.trim() : existing.value.name;
-    if (!name) return { ok: false, error: 'name-required' };
-    const description =
-      typeof draft.description === 'string' ? draft.description : existing.value.description;
+    if (
+      draft.portraitStoragePath !== undefined &&
+      draft.portraitStoragePath !== null &&
+      typeof draft.portraitStoragePath !== 'string'
+    ) {
+      return { ok: false, error: 'invalid-portrait-path' };
+    }
+    if (typeof draft.portraitStoragePath === 'string') {
+      const pathCheck = assertCharacterOwnerStoragePath(actorId, draft.portraitStoragePath);
+      if (!pathCheck.ok) return pathCheck;
+    }
+
     const levelHint =
       typeof draft.level === 'number' && Number.isFinite(draft.level) && draft.level >= 1
         ? Math.floor(draft.level)
         : null;
-    let portrait = existing.value.portraitStoragePath;
-    if (draft.portraitStoragePath === null) {
-      portrait = null;
-    } else if (typeof draft.portraitStoragePath === 'string') {
-      const pathCheck = assertCharacterOwnerStoragePath(actorId, draft.portraitStoragePath);
-      if (!pathCheck.ok) return pathCheck;
-      portrait = draft.portraitStoragePath.trim().replace(/^\/+/, '');
-    }
 
     const updatedAt = nowIso();
     let inTx = false;
@@ -295,6 +294,21 @@ export class CharacterSheetStore {
         return { ok: false, error: 'not-found' };
       }
       const current = mapRow(locked);
+      const name =
+        typeof draft.name === 'string' ? draft.name.trim() : current.name;
+      if (!name) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'name-required' };
+      }
+      const description =
+        typeof draft.description === 'string' ? draft.description : current.description;
+      let portrait = current.portraitStoragePath;
+      if (draft.portraitStoragePath === null) {
+        portrait = null;
+      } else if (typeof draft.portraitStoragePath === 'string') {
+        portrait = draft.portraitStoragePath.trim().replace(/^\/+/, '');
+      }
       const level = levelHint ?? current.level;
       const sheetStatus = parseSheetStatus(draft.sheetStatus, current.sheetStatus);
       const sheet = draft.sheet !== undefined ? asObject(draft.sheet) : { ...current.sheet };
@@ -311,7 +325,7 @@ export class CharacterSheetStore {
           `UPDATE characters SET
              name = ?, description = ?, level = ?, sheet_status = ?, sheet_json = ?,
              portrait_storage_path = ?, updated_at = ?
-           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
         )
         .run(
           name,
@@ -442,6 +456,7 @@ export class CharacterSheetStore {
          INNER JOIN characters c
            ON c.id = a.character_id
           AND c.deleted_at IS NULL
+          AND c.character_type = 'pc'
          WHERE a.owner_user_id = ? AND a.storage_path = ?
          LIMIT 1`,
       )
@@ -466,7 +481,8 @@ export class CharacterSheetStore {
       const owned = this.#db
         .prepare(
           `SELECT 1 AS o FROM characters
-           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL
+             AND character_type = 'pc'`,
         )
         .get(input.characterId, input.ownerUserId);
       if (!owned) {
