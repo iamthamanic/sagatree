@@ -329,8 +329,8 @@ try {
       viaSnap.value.snapshot === undefined,
     `adapter snapshot flat RPC shape got keys=${viaSnap.ok ? Object.keys(viaSnap.value).join(',') : ''}`,
   );
-  // Fresh invite so the adapter success path is exercised (token above is revoked).
-  const adapterInvite = session.access.createSessionInvite(GM, sessionId);
+  // Fresh invite via adapter so createSessionInvite + resolve share the dual-path.
+  const adapterInvite = await bound.createSessionInvite(GM.actorId, sessionId);
   assert(adapterInvite.ok, `adapter invite create: ${adapterInvite.ok ? '' : adapterInvite.error}`);
   const adapterToken =
     adapterInvite.value.token ?? adapterInvite.value.inviteToken ?? adapterInvite.value.code;
