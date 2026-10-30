@@ -121,6 +121,9 @@ export function extractImportPaths(content) {
     /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
     // Static template literals only (no ${...} interpolation).
     /\bimport\s*\(\s*`([^`${]*)`\s*\)/g,
+    // CommonJS / createRequire bypasses for package specs.
+    /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
+    /\bcreateRequire\s*\([^)]*\)\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
   ];
 
   for (const pattern of patterns) {
@@ -130,6 +133,112 @@ export function extractImportPaths(content) {
   }
 
   return [...paths];
+}
+
+/**
+ * Strip // and /* *\/ comments without mutating string / template / regex literals.
+ * Used so proof tokens cannot hide in comments, while literals like '//' or '/**' stay intact.
+ */
+export function stripJsComments(source) {
+  let out = '';
+  let i = 0;
+  let state = 'code';
+  let quote = '';
+  while (i < source.length) {
+    const ch = source[i];
+    const next = source[i + 1];
+
+    if (state === 'line-comment') {
+      if (ch === '\n') {
+        state = 'code';
+        out += ch;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (state === 'block-comment') {
+      if (ch === '*' && next === '/') {
+        state = 'code';
+        i += 2;
+        continue;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (state === 'string') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === quote) state = 'code';
+      i += 1;
+      continue;
+    }
+
+    if (state === 'template') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === '`') state = 'code';
+      i += 1;
+      continue;
+    }
+
+    if (state === 'regex') {
+      out += ch;
+      if (ch === '\\' && next !== undefined) {
+        out += next;
+        i += 2;
+        continue;
+      }
+      if (ch === '/') state = 'code';
+      i += 1;
+      continue;
+    }
+
+    // state === 'code'
+    if (ch === '/' && next === '/') {
+      state = 'line-comment';
+      i += 2;
+      continue;
+    }
+    if (ch === '/' && next === '*') {
+      state = 'block-comment';
+      i += 2;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      state = 'string';
+      quote = ch;
+      out += ch;
+      i += 1;
+      continue;
+    }
+    if (ch === '`') {
+      state = 'template';
+      out += ch;
+      i += 1;
+      continue;
+    }
+    // Heuristic: treat `/` as regex start after code punctuation that cannot end an expression.
+    if (ch === '/' && (out === '' || /[=(:,;!?&|[~+\-*%^<>[{]\s*$/.test(out) || /\b(?:return|case|throw|=>)\s*$/.test(out))) {
+      state = 'regex';
+      out += ch;
+      i += 1;
+      continue;
+    }
+
+    out += ch;
+    i += 1;
+  }
+  return out;
 }
 
 export function resolveRelativeImport(filePath, importPath) {
@@ -457,10 +566,203 @@ export function findDirectedCycles(adjacency) {
   return cycles;
 }
 
+const DEFAULT_HOST_DRIZZLE_EXCEPTIONS = join(
+  root,
+  '.qa/architecture/host-drizzle-exceptions.json',
+);
+
+/** Glob-ish match: `*` = one path segment, `**` = any depth (including empty). */
+export function matchPathPattern(path, pattern) {
+  const norm = path.replace(/\\/g, '/');
+  const escaped = pattern
+    .replace(/\\/g, '/')
+    .split('/')
+    .map((seg) => {
+      if (seg === '**') return '§DS§';
+      if (seg === '*') return '§SS§';
+      return seg.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+    })
+    .join('/')
+    .replace(/\/?§DS§/g, '(?:/.*)?')
+    .replace(/§SS§/g, '[^/]+');
+  // Leading ** without slash: allow prefix-less match
+  const body = escaped.startsWith('(?:/.*)?') ? escaped.replace(/^\(\?:\/\.\*\)\?/, '(?:.*)?') : escaped;
+  return new RegExp(`^${body}$`).test(norm);
+}
+
+export function loadHostDrizzleExceptions(path = DEFAULT_HOST_DRIZZLE_EXCEPTIONS) {
+  if (!existsSync(path)) {
+    return { missing: true, config: null, path };
+  }
+  const config = JSON.parse(readFileSync(path, 'utf8'));
+  return { missing: false, config, path };
+}
+
+function isNodeSqliteImport(spec) {
+  return spec === 'node:sqlite' || spec.startsWith('node:sqlite/');
+}
+
+function isDrizzleOrmImport(spec) {
+  return spec === 'drizzle-orm' || spec.startsWith('drizzle-orm/');
+}
+
+/**
+ * GATE-01 CI guard (#1044): ban raw node:sqlite / drizzle-orm imports outside
+ * documented allowlists; require real HostDatabase Drizzle wiring.
+ */
+export function checkHostDrizzlePersistenceBoundaries(rootDir = root, options = {}) {
+  const violations = [];
+  const exceptionsPath =
+    options.exceptionsPath ?? join(rootDir, '.qa/architecture/host-drizzle-exceptions.json');
+  const loaded = loadHostDrizzleExceptions(exceptionsPath);
+  if (loaded.missing || !loaded.config) {
+    violations.push({
+      file: relative(rootDir, exceptionsPath).replace(/\\/g, '/') || exceptionsPath,
+      rule: 'missing host drizzle exceptions policy (.qa/architecture/host-drizzle-exceptions.json)',
+      scope: 'host-drizzle-boundary',
+    });
+    return violations;
+  }
+  const config = loaded.config;
+  const allowNode = config.nodeSqliteImportAllow ?? [];
+  const allowDrizzle = config.drizzleOrmImportAllow ?? [];
+  const forbiddenZones = config.forbiddenImportZones ?? [];
+  const proof = config.requiredRuntimeProof;
+  if (!proof || typeof proof !== 'object') {
+    violations.push({
+      file: relative(rootDir, exceptionsPath).replace(/\\/g, '/') || exceptionsPath,
+      rule: 'requiredRuntimeProof missing from host drizzle exceptions policy (fail-closed)',
+      scope: 'host-drizzle-boundary',
+    });
+    return violations;
+  }
+  if (
+    typeof proof.serverPackageDependency !== 'string' ||
+    typeof proof.hostDrizzleModule !== 'string' ||
+    !Array.isArray(proof.mustContainImports) ||
+    !Array.isArray(proof.mustContainExports)
+  ) {
+    violations.push({
+      file: relative(rootDir, exceptionsPath).replace(/\\/g, '/') || exceptionsPath,
+      rule: 'requiredRuntimeProof incomplete (need serverPackageDependency, hostDrizzleModule, mustContainImports, mustContainExports)',
+      scope: 'host-drizzle-boundary',
+    });
+    return violations;
+  }
+
+  const serverPkgPath = join(rootDir, 'server', 'package.json');
+  if (!existsSync(serverPkgPath)) {
+    violations.push({
+      file: 'server/package.json',
+      rule: 'server package.json missing — cannot prove drizzle-orm runtime dependency',
+      scope: 'host-drizzle-boundary',
+    });
+  } else {
+    const pkg = JSON.parse(readFileSync(serverPkgPath, 'utf8'));
+    const depName = proof.serverPackageDependency;
+    // Production runtime only — omit=dev installs must still have the ORM.
+    if (!pkg.dependencies?.[depName]) {
+      violations.push({
+        file: 'server/package.json',
+        rule: `missing runtime dependency ${depName} in dependencies (not only devDependencies)`,
+        scope: 'host-drizzle-boundary',
+      });
+    }
+  }
+
+  const hostDrizzleRel = proof.hostDrizzleModule;
+  const hostDrizzleAbs = join(rootDir, hostDrizzleRel);
+  if (!existsSync(hostDrizzleAbs)) {
+    violations.push({
+      file: hostDrizzleRel,
+      rule: 'missing HostDatabase Drizzle module — product adapters lack real ORM wiring',
+      scope: 'host-drizzle-boundary',
+    });
+  } else {
+    const code = stripJsComments(readFileSync(hostDrizzleAbs, 'utf8'));
+    const importSpecs = extractImportPaths(code);
+    for (const needle of proof.mustContainImports) {
+      if (!importSpecs.some((spec) => spec === needle || spec.startsWith(`${needle}/`))) {
+        violations.push({
+          file: hostDrizzleRel,
+          rule: `HostDatabase module missing required import: ${needle}`,
+          scope: 'host-drizzle-boundary',
+        });
+      }
+    }
+    for (const needle of proof.mustContainExports) {
+      const exportRe = new RegExp(
+        String.raw`\b(?:export\s+(?:async\s+)?function\s+${needle}\b|export\s*\{[^}]*\b${needle}\b)`,
+      );
+      if (!exportRe.test(code)) {
+        violations.push({
+          file: hostDrizzleRel,
+          rule: `HostDatabase module missing required export: ${needle}`,
+          scope: 'host-drizzle-boundary',
+        });
+      }
+    }
+  }
+
+  const scanRoots = [];
+  const serverSrcAbs = join(rootDir, 'server', 'src');
+  if (existsSync(serverSrcAbs)) scanRoots.push(serverSrcAbs);
+  for (const name of ALLOWED_SRC_CODE_ROOTS) {
+    const abs = join(rootDir, 'src', name);
+    if (existsSync(abs)) scanRoots.push(abs);
+  }
+
+  for (const scanRoot of scanRoots) {
+    for (const file of walkFiles(scanRoot).filter((f) => SOURCE_EXT.test(f))) {
+      const rel = relative(rootDir, file).replace(/\\/g, '/');
+      const content = stripJsComments(readFileSync(file, 'utf8'));
+      for (const importPath of extractImportPaths(content)) {
+        const isSqlite = isNodeSqliteImport(importPath);
+        const isDrizzle = isDrizzleOrmImport(importPath);
+        if (!isSqlite && !isDrizzle) continue;
+
+        const inForbidden = forbiddenZones.some((pat) => matchPathPattern(rel, pat));
+        if (inForbidden) {
+          violations.push({
+            file: rel,
+            rule: `forbidden ${isSqlite ? 'node:sqlite' : 'drizzle-orm'} import in zone (${importPath})`,
+            scope: 'host-drizzle-boundary',
+          });
+          continue;
+        }
+
+        if (isSqlite) {
+          const allowed = allowNode.some((pat) => matchPathPattern(rel, pat));
+          if (!allowed) {
+            violations.push({
+              file: rel,
+              rule: `node:sqlite / DatabaseSync import outside documented exceptions (${importPath})`,
+              scope: 'host-drizzle-boundary',
+            });
+          }
+        }
+
+        if (isDrizzle) {
+          const allowed = allowDrizzle.some((pat) => matchPathPattern(rel, pat));
+          if (!allowed) {
+            violations.push({
+              file: rel,
+              rule: `drizzle-orm import outside owning persistence/repository allowlist (${importPath})`,
+              scope: 'host-drizzle-boundary',
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return violations;
+}
+
 /**
  * Ensure registered host package roots exist and enforce modular-monolith
  * import rules once server/src TypeScript is present.
- * Module-boundary checks are ADDITIONAL to future ORM/client import bans.
+ * Module-boundary checks are ADDITIONAL to ORM/client import bans (#1044).
  */
 export function checkRegisteredHostPackages(rootDir = root) {
   const violations = [];
@@ -727,6 +1029,7 @@ export function runArchitectureBoundaryCheck(options = {}) {
   let legacyRemoved = 0;
 
   violations.push(...checkRegisteredHostPackages(rootDir));
+  violations.push(...checkHostDrizzlePersistenceBoundaries(rootDir));
 
   if (!skipLegacyFreeze) {
     violations.push(...checkEradicatedLegacyRoots(rootDir));

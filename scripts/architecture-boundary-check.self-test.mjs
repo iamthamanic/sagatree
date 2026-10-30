@@ -14,15 +14,19 @@ import {
   checkEradicatedLegacyRoots,
   checkLegacyFreeze,
   checkRegisteredHostPackages,
+  checkHostDrizzlePersistenceBoundaries,
+  matchPathPattern,
   extractImportPaths,
   findDirectedCycles,
   resolveRelativeImport,
   resolveServerImport,
   runArchitectureBoundaryCheck,
+  stripJsComments,
 } from './architecture-boundary-check.mjs';
-import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function assert(condition, message) {
   if (!condition) {
@@ -409,5 +413,264 @@ assert(
   `public + same-module + composition wiring must pass, got ${JSON.stringify(hostOkViolations)}`,
 );
 rmSync(hostOk, { recursive: true, force: true });
+
+// --- GATE-01 drizzle / node:sqlite import boundary (#1044) ---
+assert(
+  matchPathPattern('server/src/persistence/host-drizzle.ts', 'server/src/persistence/**'),
+  'persistence/** must match nested file',
+);
+assert(
+  matchPathPattern(
+    'server/src/modules/world/internal/world-write-store.ts',
+    'server/src/modules/world/internal/world-write-store.ts',
+  ),
+  'grandfathered world-write-store path must match exactly',
+);
+assert(
+  !matchPathPattern(
+    'server/src/modules/session/internal/session-runtime-store.ts',
+    'server/src/modules/world/internal/world-write-store.ts',
+  ),
+  'other internal stores must not inherit world-write allow',
+);
+
+const repoRoot = join(fileURLToPath(new URL('.', import.meta.url)), '..');
+const liveDrizzle = checkHostDrizzlePersistenceBoundaries(repoRoot);
+assert(
+  liveDrizzle.length === 0,
+  `live repo host drizzle boundary must PASS, got ${JSON.stringify(liveDrizzle)}`,
+);
+
+const missingPolicyFx = mkdtempSync(join(tmpdir(), 'drizzle-missing-policy-'));
+const missingPolicy = checkHostDrizzlePersistenceBoundaries(missingPolicyFx);
+assert(
+  missingPolicy.some((v) => /missing host drizzle exceptions policy/.test(v.rule)),
+  `missing policy must FAIL, got ${JSON.stringify(missingPolicy)}`,
+);
+rmSync(missingPolicyFx, { recursive: true, force: true });
+
+const drizzleFx = mkdtempSync(join(tmpdir(), 'drizzle-boundary-'));
+function writeFx(rel, body) {
+  const abs = join(drizzleFx, rel);
+  mkdirSync(join(abs, '..'), { recursive: true });
+  writeFileSync(abs, body);
+}
+// Inline fixture policy mirrors live allowlist shapes (exact node:sqlite paths +
+// modules/*/persistence/**) without reading the checked-in file (offline-first).
+const policy = JSON.stringify(
+  {
+    version: 2,
+    note: 'self-test fixture mirroring enforced allowlist shapes',
+    nodeSqliteImportAllow: [
+      'server/src/persistence/open-database.ts',
+      'server/src/persistence/host-drizzle.ts',
+      'server/src/auth/cookie-profile.ts',
+    ],
+    drizzleOrmImportAllow: [
+      'server/src/persistence/**',
+      'server/src/repositories/**',
+      'server/src/modules/*/persistence/**',
+      'server/src/modules/world/internal/world-write-store.ts',
+    ],
+    forbiddenImportZones: [
+      'server/src/application/**',
+      'server/src/api/**',
+      'server/src/http/**',
+      'server/src/bootstrap/**',
+      'src/domains/**',
+      'src/app/**',
+      'src/infrastructure/**',
+      'src/shared/**',
+      'src/lib/**',
+      'src/utils/**',
+    ],
+    requiredRuntimeProof: {
+      serverPackageDependency: 'drizzle-orm',
+      hostDrizzleModule: 'server/src/persistence/host-drizzle.ts',
+      mustContainImports: ['drizzle-orm/node-sqlite'],
+      mustContainExports: ['createHostDatabase'],
+    },
+  },
+  null,
+  2,
+);
+writeFx('.qa/architecture/host-drizzle-exceptions.json', policy);
+writeFx(
+  'server/package.json',
+  JSON.stringify({ name: '@sagatree/host-fixture', dependencies: { 'drizzle-orm': '1.0.0-rc.5' } }, null, 2),
+);
+writeFx(
+  'server/src/persistence/host-drizzle.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return drizzle; }\nexport const sync = DatabaseSync;\n",
+);
+writeFx('server/src/persistence/open-database.ts', "import { DatabaseSync } from 'node:sqlite';\nexport const open = DatabaseSync;\n");
+writeFx(
+  'server/src/auth/cookie-profile.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nexport const profileDb = DatabaseSync;\n",
+);
+writeFx(
+  'server/src/repositories/world/read.ts',
+  "import { eq } from 'drizzle-orm';\nexport const q = eq;\n",
+);
+writeFx(
+  'server/src/modules/world/internal/world-write-store.ts',
+  "import { eq } from 'drizzle-orm';\nexport const w = eq;\n",
+);
+writeFx(
+  'server/src/modules/session/persistence/session-store.ts',
+  "import { eq } from 'drizzle-orm';\nexport const s = eq;\n",
+);
+
+const okFx = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(okFx.length === 0, `valid drizzle fixture must PASS, got ${JSON.stringify(okFx)}`);
+
+// Exact node:sqlite allowlist: sibling under persistence/ must FAIL.
+writeFx(
+  'server/src/persistence/leak-sqlite.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nexport const leak = DatabaseSync;\n",
+);
+const exactSqlite = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  exactSqlite.some((v) => /node:sqlite \/ DatabaseSync import outside documented exceptions/.test(v.rule)),
+  `non-allowlisted persistence sibling node:sqlite must FAIL, got ${JSON.stringify(exactSqlite)}`,
+);
+rmSync(join(drizzleFx, 'server/src/persistence/leak-sqlite.ts'), { force: true });
+
+writeFx(
+  'server/src/application/health/index.ts',
+  "import { drizzle } from 'drizzle-orm/node-sqlite';\nexport const leak = drizzle;\n",
+);
+const httpBypass = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  httpBypass.some((v) => /forbidden drizzle-orm import in zone/.test(v.rule)),
+  `application drizzle import must FAIL, got ${JSON.stringify(httpBypass)}`,
+);
+rmSync(join(drizzleFx, 'server/src/application'), { recursive: true, force: true });
+
+writeFx(
+  'server/src/api/routes.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nexport const db = DatabaseSync;\n",
+);
+const rawBypass = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  rawBypass.some((v) => /forbidden node:sqlite import in zone/.test(v.rule)),
+  `api node:sqlite import must FAIL, got ${JSON.stringify(rawBypass)}`,
+);
+rmSync(join(drizzleFx, 'server/src/api'), { recursive: true, force: true });
+
+writeFx(
+  'server/src/modules/session/internal/session-runtime-store.ts',
+  "import { eq } from 'drizzle-orm';\nexport const bad = eq;\n",
+);
+const foreignModule = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  foreignModule.some((v) => /drizzle-orm import outside owning persistence/.test(v.rule)),
+  `non-grandfathered internal store drizzle import must FAIL, got ${JSON.stringify(foreignModule)}`,
+);
+rmSync(join(drizzleFx, 'server/src/modules/session'), { recursive: true, force: true });
+
+writeFx(
+  'src/domains/character/x.ts',
+  "export { drizzle } from 'drizzle-orm/node-sqlite';\n",
+);
+writeFx(
+  'src/shared/ui/leak.ts',
+  "const x = require('drizzle-orm');\nexport const y = x;\n",
+);
+const reexport = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  reexport.some((v) => /forbidden drizzle-orm import in zone/.test(v.rule)),
+  `domain/shared drizzle import must FAIL, got ${JSON.stringify(reexport)}`,
+);
+rmSync(join(drizzleFx, 'src'), { recursive: true, force: true });
+
+writeFx(
+  'server/package.json',
+  JSON.stringify(
+    { name: '@sagatree/host-fixture', dependencies: {}, devDependencies: { 'drizzle-orm': '1.0.0-rc.5' } },
+    null,
+    2,
+  ),
+);
+const missingDep = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  missingDep.some((v) => /missing runtime dependency drizzle-orm in dependencies/.test(v.rule)),
+  `devDependency-only drizzle must FAIL, got ${JSON.stringify(missingDep)}`,
+);
+
+writeFx(
+  'server/package.json',
+  JSON.stringify({ name: '@sagatree/host-fixture', dependencies: { 'drizzle-orm': '1.0.0-rc.5' } }, null, 2),
+);
+writeFx(
+  'server/src/persistence/host-drizzle.ts',
+  "// import { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return null; }\n",
+);
+const commentOnly = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  commentOnly.some((v) => /missing required import: drizzle-orm\/node-sqlite/.test(v.rule)),
+  `comment-only proof token must FAIL, got ${JSON.stringify(commentOnly)}`,
+);
+
+// Literal-preserving strip: '//' / '/**' must not truncate proof imports.
+assert(
+  stripJsComments("const sep = '//';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\n").includes(
+    "from 'drizzle-orm/node-sqlite'",
+  ),
+  'stripJsComments must preserve imports after // inside a string',
+);
+assert(
+  stripJsComments("const glob = 'src/**/*.ts';\nexport function createHostDatabase() {}\n").includes(
+    'export function createHostDatabase',
+  ),
+  'stripJsComments must preserve exports after /* inside a string',
+);
+
+writeFx(
+  'server/src/persistence/host-drizzle.ts',
+  "const sep = '//';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return drizzle; }\n",
+);
+const stringLiteralOk = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  stringLiteralOk.length === 0,
+  `host-drizzle with // inside string must PASS proof, got ${JSON.stringify(stringLiteralOk)}`,
+);
+
+// Commented-out drizzle import in forbidden zone must not count as a real import.
+writeFx(
+  'server/src/application/docs.ts',
+  "// import { drizzle } from 'drizzle-orm/node-sqlite';\nexport const note = 'docs';\n",
+);
+const commentImportOk = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  commentImportOk.length === 0,
+  `commented-out drizzle import must PASS (not phantom), got ${JSON.stringify(commentImportOk)}`,
+);
+rmSync(join(drizzleFx, 'server/src/application'), { recursive: true, force: true });
+
+// Missing server/src: fresh temp tree + inline policy; must return violations (not throw).
+const noSrcFx = mkdtempSync(join(tmpdir(), 'drizzle-no-src-'));
+mkdirSync(join(noSrcFx, '.qa/architecture'), { recursive: true });
+writeFileSync(join(noSrcFx, '.qa/architecture/host-drizzle-exceptions.json'), policy);
+mkdirSync(join(noSrcFx, 'server'), { recursive: true });
+writeFileSync(
+  join(noSrcFx, 'server/package.json'),
+  JSON.stringify({ name: '@sagatree/host-fixture', dependencies: { 'drizzle-orm': '1.0.0-rc.5' } }, null, 2),
+);
+let noSrcResult;
+let noSrcThrew = null;
+try {
+  noSrcResult = checkHostDrizzlePersistenceBoundaries(noSrcFx);
+} catch (err) {
+  noSrcThrew = err;
+}
+assert(noSrcThrew === null, `missing server/src must not throw, got ${noSrcThrew}`);
+assert(
+  Array.isArray(noSrcResult) && noSrcResult.some((v) => /missing HostDatabase Drizzle module/.test(v.rule)),
+  `missing server/src must report HostDatabase violation, got ${JSON.stringify(noSrcResult)}`,
+);
+rmSync(noSrcFx, { recursive: true, force: true });
+
+rmSync(drizzleFx, { recursive: true, force: true });
 
 console.log('Architecture boundary self-test passed.');

@@ -26,6 +26,11 @@ Typed query-builder adapters (no `prepare` bridge):
 - `server/src/repositories/world/sqlite-world-read-store.ts`
 - `server/src/modules/world/internal/world-write-store.ts`
 
+## CI enforcement (#1044)
+
+Machine-readable allowlist: [`.qa/architecture/host-drizzle-exceptions.json`](../../.qa/architecture/host-drizzle-exceptions.json).  
+Enforced by `checkHostDrizzlePersistenceBoundaries` inside `scripts/architecture-boundary-check.mjs` (`npm run test-gate`).
+
 ## Non-goals
 
 - Production cutover / Supabase shutdown
