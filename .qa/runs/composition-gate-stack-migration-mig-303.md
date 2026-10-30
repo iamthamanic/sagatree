@@ -1,35 +1,35 @@
 # Composition Gate — stack-migration-mig-303 (#802)
 
-- HEAD_SHA: 2f42990108cb0741afb88f77f603df15f9af4c3c
+- HEAD_SHA: PLACEHOLDER
 - BASE_SHA: fa06e3fcaacb7af0d2df1ab57e28c0fcd26d0f0f
 - Date: 2026-10-30
 - Verdict: CLEAR
 
 ## Event
 
-Authenticated owner reads/writes Inventory v2 JSON on owned PC rows and lists catalog definitions via host `inventory` ports. Foreign actors receive DENY on inventory mutate/read. Catalog origins are server-assigned (no client `standard` promotion). Thumbnail/model3d Edge shapes remain module-local (unmounted).
+Authenticated owner lists/creates/updates/soft-deletes own inventory item rows via host `inventory` ports. Foreign actors receive DENY. Catalog/thumbnail helpers stay behind existing FE seams (Supabase default remains). No public HTTP inventory mount in this slice.
 
 ## Hop chain
 
-1. Producer: Character inventory / item catalog successor (or host dual-path adapter)
-2. Authorize: verified actor id; inventory writes only for owned PC; catalog visibility by origin
-3. Persist: SQLite `characters.inventory_json` + `inventory_item_definitions` under IMMEDIATE where required
-4. Project: InventoryStateRecord / InventoryDefinitionRecord with public ids
-5. Consumer: `createHost.inventory`; FE `createHostInventoryAdapter` (Supabase default remains)
+1. Producer: Inventory UI / infrastructure inventory-service successor (or host dual-path adapter)
+2. Authorize: verified actor id; `owner_user_id` from actor only
+3. Persist: SQLite inventory tables under host single-writer (`BEGIN IMMEDIATE` on mutating writes)
+4. Project: inventory records with owner scope; soft-delete via `deleted_at`
+5. Consumer: `createHost` exposes `inventory` ports; FE `createHostInventoryAdapter` dual-path seam
 
 ## Simulations
 
 ### N-actors
-Owner O put/get inventory; stranger DENY. Personal catalog hidden from stranger; standard visible; world gated by worldProfileId.
+Owner O CRUD own items; stranger X gets empty list / not-authorized. Cross-owner FK DENY.
 
 ### Invalid/missing
-Invalid inventory body → invalid-inventory. Client origin=standard → origin-not-allowed. World without profile → world-profile-required.
+Missing required fields → typed errors. Soft-deleted rows hidden from list/get.
 
 ### Two consumers / crash
-Inventory write committed under IMMEDIATE; reload returns schemaVersion 2 payload.
+Row committed under IMMEDIATE lock; reload returns same identity.
 
 ## Flags
 
 - Acceptance tier: isolated-contract
 - Deferred integration: HTTP cutover + feature E2E → MIG-602/#847
-- No inventory HTTP mount (`INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false`)
+- SLICE DONE does not imply FEATURE VERIFIED or RELEASE APPROVED
