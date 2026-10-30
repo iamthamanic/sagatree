@@ -36,7 +36,7 @@ Deferred integration: successors of MIG-502/#843, MIG-503/#844, MIG-601/#846 (al
 | ID | How |
 | --- | --- |
 | Integrity | `PRAGMA integrity_check` + per-file SHA-256 before publish/restore |
-| Consistency | VACUUM INTO under IMMEDIATE lock; no uncoordinated live copies |
+| Consistency | VACUUM INTO after wal_checkpoint; no uncoordinated live copies |
 | Fail-closed | Staging deleted on abort; previous published snapshot untouched |
 | Path | Manifest relative paths reject `..` |
 
