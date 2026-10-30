@@ -101,6 +101,15 @@ try {
 
   db.close();
 
+  // Auth DB in WAL with an open writer so committed frames live in -wal only.
+  // Forces createHostSnapshot through vacuumSqliteInto(auth) — not a raw copyFileSync.
+  const { DatabaseSync } = await import('node:sqlite');
+  const authLive = new DatabaseSync(join(dataDir, 'auth.sqlite'));
+  authLive.exec('PRAGMA journal_mode=WAL');
+  authLive.exec('CREATE TABLE session (id TEXT PRIMARY KEY)');
+  authLive.prepare('INSERT INTO session (id) VALUES (?)').run('auth-seed');
+  assert(existsSync(join(dataDir, 'auth.sqlite-wal')), 'auth live has WAL sidecar before snapshot');
+
   // Reject path-traversal snapshot ids before any staging I/O.
   const unsafeId = await createHostSnapshot({
     dataDir,
@@ -119,6 +128,18 @@ try {
   assert(snap1.ok === true, `create good snapshot: ${snap1.error ?? ''}`);
   assert(existsSync(join(backupRoot, 'good-v1', 'manifest.json')), 'published manifest exists');
   assert(!existsSync(join(backupRoot, '.staging', 'good-v1')), 'staging cleaned after publish');
+  assert(existsSync(join(backupRoot, 'good-v1', 'auth.sqlite')), 'auth.sqlite snapshotted');
+  assert(
+    !existsSync(join(backupRoot, 'good-v1', 'auth.sqlite-wal')),
+    'auth snapshot is a single VACUUM INTO file (no -wal sidecar)',
+  );
+  const snapAuth = new DatabaseSync(join(backupRoot, 'good-v1', 'auth.sqlite'), { readOnly: true });
+  assert(
+    snapAuth.prepare('SELECT id FROM session').get()?.id === 'auth-seed',
+    'auth WAL frames preserved in VACUUM INTO snapshot',
+  );
+  snapAuth.close();
+  authLive.close();
 
   const verified = await verifySnapshot(join(backupRoot, 'good-v1'));
   assert(verified.ok === true, `verify snapshot: ${verified.error ?? ''}`);
