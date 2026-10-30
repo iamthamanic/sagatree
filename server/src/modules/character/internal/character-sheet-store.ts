@@ -89,7 +89,10 @@ export function isCompleteSheetPayload(
   if (!Number.isFinite(level) || level < 1 || level > 20) return false;
   if (!stringField(sheet, ['class', 'archetype', 'className'])) return false;
   if (!stringField(sheet, ['race', 'species'])) return false;
-  const hasProfile = sheet.sagadrive_profile != null || sheet.profile != null;
+  const hasProfile =
+    sheet.sagatree_profile != null ||
+    sheet.sagadrive_profile != null ||
+    sheet.profile != null;
   const hasAttributes = sheet.attributes != null && typeof sheet.attributes === 'object';
   const hasSkills = sheet.skills != null && typeof sheet.skills === 'object';
   return Boolean(hasProfile && hasAttributes && hasSkills);
@@ -269,7 +272,10 @@ export class CharacterSheetStore {
     const sheetStatus = parseSheetStatus(draft.sheetStatus, existing.value.sheetStatus);
     const sheet =
       draft.sheet !== undefined ? asObject(draft.sheet) : { ...existing.value.sheet };
-    if (sheetStatus === 'complete' && !isCompleteSheetPayload(name, level, sheet)) {
+    // Enforce completeness only when promoting into `complete` (legacy complete+{} rows stay patchable).
+    const promotingToComplete =
+      sheetStatus === 'complete' && existing.value.sheetStatus !== 'complete';
+    if (promotingToComplete && !isCompleteSheetPayload(name, level, sheet)) {
       return { ok: false, error: 'incomplete-sheet' };
     }
 
@@ -415,29 +421,34 @@ export class CharacterSheetStore {
   }): CharacterSheetResult<{ readonly id: string }> {
     const pathCheck = assertCharacterOwnerStoragePath(input.ownerUserId, input.storagePath);
     if (!pathCheck.ok) return pathCheck;
-    const owned = this.#db
-      .prepare(
-        `SELECT 1 AS o FROM characters
-         WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
-      )
-      .get(input.characterId, input.ownerUserId);
-    if (!owned) return { ok: false, error: 'foreign-character-owner' };
+    const normalized = input.storagePath.trim().replace(/^\/+/, '');
     const id = randomUUID();
     try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const owned = this.#db
+        .prepare(
+          `SELECT 1 AS o FROM characters
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
+        )
+        .get(input.characterId, input.ownerUserId);
+      if (!owned) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: 'foreign-character-owner' };
+      }
       this.#db
         .prepare(
           `INSERT INTO character_avatar_artifacts
              (id, character_id, owner_user_id, storage_path, kind, created_at)
            VALUES (?, ?, ?, ?, 'artifact', ?)`,
         )
-        .run(
-          id,
-          input.characterId,
-          input.ownerUserId,
-          input.storagePath.trim().replace(/^\/+/, ''),
-          nowIso(),
-        );
+        .run(id, input.characterId, input.ownerUserId, normalized, nowIso());
+      this.#db.exec('COMMIT');
     } catch {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
       return { ok: false, error: 'create-failed' };
     }
     return { ok: true, value: { id } };
