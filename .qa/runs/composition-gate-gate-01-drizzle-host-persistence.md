@@ -1,6 +1,6 @@
 # Composition Gate — gate-01-drizzle-host-persistence (#1043)
 
-- HEAD_SHA: ff41c92d1f4a0304e5f5a4d1fb10a737dc456a20
+- HEAD_SHA: 4a14b09c17f7e1bd6764ff194d9bca85e2f146a0
 - BASE_SHA: 7dab6658845e6d8e9517291207aec30ee2ecec63
 - Date: 2026-10-30
 - Verdict: CLEAR
