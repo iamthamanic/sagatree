@@ -174,7 +174,8 @@ export class CharacterSheetStore {
   getOwned(actorId: string, characterId: string): CharacterSheetResult<CharacterSheetRecord | null> {
     const any = this.#db
       .prepare(
-        `SELECT * FROM characters WHERE id = ? AND deleted_at IS NULL`,
+        `SELECT * FROM characters
+         WHERE id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
       )
       .get(characterId) as CharacterRow | undefined;
     if (!any) return { ok: true, value: null };

@@ -53,7 +53,9 @@ export class CharacterMembershipStore {
     const id = typeof characterId === 'string' ? characterId.trim() : '';
     if (!id) return null;
     const row = this.#db
-      .prepare(`SELECT name FROM characters WHERE id = ?`)
+      .prepare(
+        `SELECT name FROM characters WHERE id = ? AND deleted_at IS NULL`,
+      )
       .get(id) as { name: string } | undefined;
     return row?.name ?? null;
   }
