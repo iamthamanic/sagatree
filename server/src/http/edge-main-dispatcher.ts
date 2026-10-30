@@ -206,6 +206,14 @@ export async function gateEdgeMainJwt(
       body: { error: 'JWT_SECRET not configured' },
     };
   }
+  // jose HS256 requires ≥256-bit key material; shorter secrets must not mask as 401.
+  if (Buffer.byteLength(secret, 'utf8') < 32) {
+    return {
+      ok: false,
+      status: 500,
+      body: { error: 'JWT_SECRET too short for HS256' },
+    };
+  }
 
   const token = extractBearerToken(authorization);
   if (!token) {

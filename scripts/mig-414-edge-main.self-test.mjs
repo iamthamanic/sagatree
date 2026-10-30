@@ -96,7 +96,8 @@ const UNMOUNTED = [
 ];
 assert(UNMOUNTED.length === 15, '15 unmounted workers');
 
-const SECRET = 'mig-414-test-secret';
+// jose HS256 requires ≥32-byte secrets (gate returns 500 for shorter keys).
+const SECRET = 'mig-414-test-secret-32bytes-min!!';
 const env = {
   get(key) {
     if (key === 'JWT_SECRET') return SECRET;
