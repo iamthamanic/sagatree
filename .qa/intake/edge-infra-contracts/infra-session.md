@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `b121210b6ee18f02a289c9b8c8b135602a8e5ee171d7c16d37f8e3a7cce41231`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `b50e83b67e10a09c245c91be17f1075f58648bb8ee82f94874de43e27c15d72d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -751,6 +751,202 @@ supabase.rpc('revoke_session_invite', {
 Enclosing operation: `src/infrastructure/session/session-service.ts:361`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
+
+### src/infrastructure/session/host-session-adapter.ts:15
+
+```ts
+export type HostSessionAdapter = HostSessionPorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_SESSION_OPS;
+  readonly rpcNames: typeof HOST_SESSION_RPC_NAMES;
+  readonly edgeNames: typeof HOST_SESSION_EDGE_NAMES;
+};
+```
+
+### src/infrastructure/session/host-session-adapter.ts:26
+
+```ts
+export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_SESSION_OPS,
+    rpcNames: HOST_SESSION_RPC_NAMES,
+    edgeNames: HOST_SESSION_EDGE_NAMES,
+    applySessionRuntimeCommand: (actorId, command) =>
+      ports.applySessionRuntimeCommand(actorId, command),
+    createPlaySession: (actorId, projectId, name) =>
+      ports.createPlaySession(actorId, projectId, name),
+    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),
+    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),
+    getSessionRuntimeSnapshot: (actorId, sessionId) =>
+      ports.getSessionRuntimeSnapshot(actorId, sessionId),
+    joinSessionByCode: (actorId, code, characterId) =>
+      ports.joinSessionByCode(actorId, code, characterId),
+    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),
+    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),
+    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),
+    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>
+      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),
+    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>
+      ports.setSessionPlayerPresence(
+        actorId,
+        sessionId,
+        expectedRevision,
+        idempotencyKey,
+        presence,
+      ),
+    setSessionStatus: (actorId, sessionId, status) =>
+      ports.setSessionStatus(actorId, sessionId, status),
+  };
+}
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:11
+
+```ts
+export type HostSessionResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:16
+
+```ts
+export type HostPlaySessionVm = Readonly<Record<string, unknown>> & {
+  readonly sessionId: string;
+};
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:20
+
+```ts
+export type HostSessionInviteVm = Readonly<Record<string, unknown>>;
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:21
+
+```ts
+export type HostSessionRecapVm = Readonly<Record<string, unknown>>;
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:22
+
+```ts
+export type HostSessionRuntimeSnapshotVm = Readonly<Record<string, unknown>>;
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:28
+
+```ts
+export type HostSessionPorts = {
+  readonly applySessionRuntimeCommand: (
+    actorId: string,
+    command: Readonly<Record<string, unknown>>,
+  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;
+  readonly createPlaySession: (
+    actorId: string,
+    projectId: string,
+    name?: string | null,
+  ) => Promise<HostSessionResult<HostPlaySessionVm>>;
+  readonly createSessionInvite: (
+    actorId: string,
+    sessionId: string,
+  ) => Promise<HostSessionResult<HostSessionInviteVm>>;
+  readonly getSessionRecap: (
+    actorId: string,
+    sessionId: string,
+  ) => Promise<HostSessionResult<HostSessionRecapVm>>;
+  readonly getSessionRuntimeSnapshot: (
+    actorId: string,
+    sessionId: string,
+  ) => Promise<HostSessionResult<HostSessionRuntimeSnapshotVm>>;
+  readonly joinSessionByCode: (
+    actorId: string,
+    code: string,
+    characterId?: string | null,
+  ) => Promise<HostSessionResult<HostPlaySessionVm>>;
+  readonly leavePlaySession: (
+    actorId: string,
+    sessionId: string,
+  ) => Promise<HostSessionResult<{ readonly sessionId: string }>>;
+  readonly resolveSessionInvite: (
+    actorId: string,
+    token: string,
+  ) => Promise<HostSessionResult<HostSessionInviteVm>>;
+  readonly revokeSessionInvite: (
+    actorId: string,
+    token: string,
+  ) => Promise<HostSessionResult<{ readonly token: string }>>;
+  readonly saveSessionRecapSummary: (
+    actorId: string,
+    sessionId: string,
+    summaryText: string,
+    status?: string | null,
+  ) => Promise<HostSessionResult<HostSessionRecapVm>>;
+  readonly setSessionPlayerPresence: (
+    actorId: string,
+    sessionId: string,
+    expectedRevision: number,
+    idempotencyKey: string,
+    presence: Readonly<Record<string, unknown>>,
+  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;
+  readonly setSessionStatus: (
+    actorId: string,
+    sessionId: string,
+    status: string,
+  ) => Promise<HostSessionResult<HostPlaySessionVm>>;
+};
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:88
+
+```ts
+export const HOST_SESSION_RPC_NAMES = [
+  'apply_session_runtime_command',
+  'create_play_session',
+  'create_session_invite',
+  'get_session_recap',
+  'get_session_runtime_snapshot',
+  'join_session_by_code',
+  'leave_play_session',
+  'resolve_session_invite',
+  'revoke_session_invite',
+  'save_session_recap_summary',
+  'set_session_player_presence',
+  'set_session_status',
+] as const;
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:103
+
+```ts
+export type HostSessionRpcName = (typeof HOST_SESSION_RPC_NAMES)[number];
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:106
+
+```ts
+export const HOST_SESSION_EDGE_NAMES = ['session-media-token', 'session-recap'] as const;
+```
+
+### src/infrastructure/session/host-session-ports.contract.ts:108
+
+```ts
+export const HOST_SESSION_OPS = [
+  'applySessionRuntimeCommand',
+  'createPlaySession',
+  'createSessionInvite',
+  'getSessionRecap',
+  'getSessionRuntimeSnapshot',
+  'joinSessionByCode',
+  'leavePlaySession',
+  'resolveSessionInvite',
+  'revokeSessionInvite',
+  'saveSessionRecapSummary',
+  'setSessionPlayerPresence',
+  'setSessionStatus',
+] as const;
+```
 
 ### src/infrastructure/session/live-session-access.resolver.ts:18
 
@@ -2216,6 +2412,8 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
+| `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
+| `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
 | `src/infrastructure/session/live-session-access.resolver.ts` | `88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a` |
 | `src/infrastructure/session/media/index.ts` | `ba6906bf57e04303b283786671d0ae7e0024949e512d59b3b783289e6ba19155` |
 | `src/infrastructure/session/media/livekit-media-plane-adapter.ts` | `ba41c95f3816b79818a9c312c056ec896ac75fd4633dba27954cdcdb797b381d` |

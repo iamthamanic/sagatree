@@ -41650,6 +41650,8 @@
       "area": "session",
       "implementationIssue": 810,
       "files": [
+        "src/infrastructure/session/host-session-adapter.ts",
+        "src/infrastructure/session/host-session-ports.contract.ts",
         "src/infrastructure/session/live-session-access.resolver.ts",
         "src/infrastructure/session/media/index.ts",
         "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -41700,6 +41702,14 @@
           {
             "path": "src/domains/session/media/media-plane-contract.ts",
             "sha256": "7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b"
+          },
+          {
+            "path": "src/infrastructure/session/host-session-adapter.ts",
+            "sha256": "57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb"
+          },
+          {
+            "path": "src/infrastructure/session/host-session-ports.contract.ts",
+            "sha256": "b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f"
           },
           {
             "path": "src/infrastructure/session/live-session-access.resolver.ts",
@@ -41779,7 +41789,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "b121210b6ee18f02a289c9b8c8b135602a8e5ee171d7c16d37f8e3a7cce41231",
+      "sourceContractSha256": "b50e83b67e10a09c245c91be17f1075f58648bb8ee82f94874de43e27c15d72d",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -43232,6 +43242,12 @@
         "LiveKit adapter requires injected roomFactory, reports only local participant presence and optional SDK methods can be absent; token issuance alone is not live media verification."
       ],
       "publicOperationSources": [
+        {
+          "path": "src/infrastructure/session/host-session-adapter.ts",
+          "line": 26,
+          "endLine": 58,
+          "name": "createHostSessionAdapter"
+        },
         {
           "path": "src/infrastructure/session/live-session-access.resolver.ts",
           "line": 31,

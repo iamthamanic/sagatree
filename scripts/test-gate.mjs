@@ -1198,6 +1198,20 @@ function checkMig310SagaAdapter() {
       stdio: 'inherit',
     },
   );
+  console.log('OK: mig-310-saga-adapter.self-test');
+}
+
+function checkMig311SessionAdapter() {
+  console.log('MIG-311 session adapter (#810): host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-311-session-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: mig-311-session-adapter.self-test');
 }
 
 function checkMig312UserProfileAdapter() {
@@ -3367,6 +3381,7 @@ checkMig304LookAdapter();
 checkMig307NpcAdapter();
 checkMig308ProjectAdapter();
 checkMig310SagaAdapter();
+checkMig311SessionAdapter();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

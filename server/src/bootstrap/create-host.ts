@@ -70,6 +70,10 @@ import {
 } from '../modules/saga/index.ts';
 import { createCharacterPorts, type CharacterPorts } from '../modules/character/index.ts';
 import { createInventoryPorts, type InventoryPorts } from '../modules/inventory/index.ts';
+import {
+  createSessionInfraPorts,
+  type SessionInfraPorts,
+} from '../modules/session/session-infra-ports.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -113,6 +117,8 @@ export type HostInstance = {
   readonly character: CharacterPorts;
   /** MIG-303 inventory + catalog ports (HTTP cutover → MIG-602). */
   readonly inventory: InventoryPorts;
+  /** MIG-311 flat session infra ports for dual-path FE adapter (HTTP cutover → MIG-602). */
+  readonly sessionInfra: SessionInfraPorts | null;
   /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
   readonly npcCreature: NpcCreaturePorts;
   /** MIG-312 user_profiles + user-avatars ports (HTTP cutover → MIG-600). */
@@ -432,6 +438,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       character,
       inventory,
+      sessionInfra: sessionPorts ? createSessionInfraPorts(sessionPorts) : null,
       npcCreature,
       userProfile,
       projectInfra,

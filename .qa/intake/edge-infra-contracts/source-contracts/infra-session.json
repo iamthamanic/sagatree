@@ -4,6 +4,14 @@
   "evidenceKind": "exact-typescript-ast-source",
   "sourceFiles": [
     {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "sha256": "57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "sha256": "b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f"
+    },
+    {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
       "sha256": "88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a"
     },
@@ -1322,6 +1330,22 @@
   ],
   "imports": [
     {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 8,
+      "endLine": 8,
+      "module": "./host-session-ports.contract",
+      "resolvedPath": "src/infrastructure/session/host-session-ports.contract.ts",
+      "expression": "import type { HostSessionPorts } from './host-session-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 9,
+      "endLine": 13,
+      "module": "./host-session-ports.contract",
+      "resolvedPath": "src/infrastructure/session/host-session-ports.contract.ts",
+      "expression": "import {\n  HOST_SESSION_EDGE_NAMES,\n  HOST_SESSION_OPS,\n  HOST_SESSION_RPC_NAMES,\n} from './host-session-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
       "line": 8,
       "endLine": 12,
@@ -1612,6 +1636,78 @@
   ],
   "publicDeclarations": [
     {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 15,
+      "endLine": 20,
+      "text": "export type HostSessionAdapter = HostSessionPorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_SESSION_OPS;\n  readonly rpcNames: typeof HOST_SESSION_RPC_NAMES;\n  readonly edgeNames: typeof HOST_SESSION_EDGE_NAMES;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 26,
+      "endLine": 58,
+      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      ),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 11,
+      "endLine": 13,
+      "text": "export type HostSessionResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 16,
+      "endLine": 18,
+      "text": "export type HostPlaySessionVm = Readonly<Record<string, unknown>> & {\n  readonly sessionId: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 20,
+      "endLine": 20,
+      "text": "export type HostSessionInviteVm = Readonly<Record<string, unknown>>;"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 21,
+      "endLine": 21,
+      "text": "export type HostSessionRecapVm = Readonly<Record<string, unknown>>;"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 22,
+      "endLine": 22,
+      "text": "export type HostSessionRuntimeSnapshotVm = Readonly<Record<string, unknown>>;"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 28,
+      "endLine": 85,
+      "text": "export type HostSessionPorts = {\n  readonly applySessionRuntimeCommand: (\n    actorId: string,\n    command: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly createPlaySession: (\n    actorId: string,\n    projectId: string,\n    name?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly createSessionInvite: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly getSessionRecap: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly getSessionRuntimeSnapshot: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRuntimeSnapshotVm>>;\n  readonly joinSessionByCode: (\n    actorId: string,\n    code: string,\n    characterId?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly leavePlaySession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<{ readonly sessionId: string }>>;\n  readonly resolveSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly revokeSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<{ readonly token: string }>>;\n  readonly saveSessionRecapSummary: (\n    actorId: string,\n    sessionId: string,\n    summaryText: string,\n    status?: string | null,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly setSessionPlayerPresence: (\n    actorId: string,\n    sessionId: string,\n    expectedRevision: number,\n    idempotencyKey: string,\n    presence: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly setSessionStatus: (\n    actorId: string,\n    sessionId: string,\n    status: string,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 88,
+      "endLine": 101,
+      "text": "export const HOST_SESSION_RPC_NAMES = [\n  'apply_session_runtime_command',\n  'create_play_session',\n  'create_session_invite',\n  'get_session_recap',\n  'get_session_runtime_snapshot',\n  'join_session_by_code',\n  'leave_play_session',\n  'resolve_session_invite',\n  'revoke_session_invite',\n  'save_session_recap_summary',\n  'set_session_player_presence',\n  'set_session_status',\n] as const;"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 103,
+      "endLine": 103,
+      "text": "export type HostSessionRpcName = (typeof HOST_SESSION_RPC_NAMES)[number];"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 106,
+      "endLine": 106,
+      "text": "export const HOST_SESSION_EDGE_NAMES = ['session-media-token', 'session-recap'] as const;"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-ports.contract.ts",
+      "line": 108,
+      "endLine": 121,
+      "text": "export const HOST_SESSION_OPS = [\n  'applySessionRuntimeCommand',\n  'createPlaySession',\n  'createSessionInvite',\n  'getSessionRecap',\n  'getSessionRuntimeSnapshot',\n  'joinSessionByCode',\n  'leavePlaySession',\n  'resolveSessionInvite',\n  'revokeSessionInvite',\n  'saveSessionRecapSummary',\n  'setSessionPlayerPresence',\n  'setSessionStatus',\n] as const;"
+    },
+    {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
       "line": 18,
       "endLine": 25,
@@ -1817,6 +1913,97 @@
     }
   ],
   "operationDeclarations": [
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 26,
+      "endLine": 58,
+      "name": "createHostSessionAdapter",
+      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      ),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 32,
+      "endLine": 33,
+      "name": "callback",
+      "text": "(actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 34,
+      "endLine": 35,
+      "name": "callback",
+      "text": "(actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 36,
+      "endLine": 36,
+      "name": "callback",
+      "text": "(actorId, sessionId) => ports.createSessionInvite(actorId, sessionId)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 37,
+      "endLine": 37,
+      "name": "callback",
+      "text": "(actorId, sessionId) => ports.getSessionRecap(actorId, sessionId)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 38,
+      "endLine": 39,
+      "name": "callback",
+      "text": "(actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 40,
+      "endLine": 41,
+      "name": "callback",
+      "text": "(actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 42,
+      "endLine": 42,
+      "name": "callback",
+      "text": "(actorId, sessionId) => ports.leavePlaySession(actorId, sessionId)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 43,
+      "endLine": 43,
+      "name": "callback",
+      "text": "(actorId, token) => ports.resolveSessionInvite(actorId, token)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 44,
+      "endLine": 44,
+      "name": "callback",
+      "text": "(actorId, token) => ports.revokeSessionInvite(actorId, token)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 45,
+      "endLine": 46,
+      "name": "callback",
+      "text": "(actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status)"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 47,
+      "endLine": 54,
+      "name": "callback",
+      "text": "(actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      )"
+    },
+    {
+      "path": "src/infrastructure/session/host-session-adapter.ts",
+      "line": 55,
+      "endLine": 56,
+      "name": "callback",
+      "text": "(actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status)"
+    },
     {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
       "line": 31,
