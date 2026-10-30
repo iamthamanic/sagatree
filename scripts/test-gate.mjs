@@ -1294,6 +1294,18 @@ function checkMig601HostCompose() {
   );
 }
 
+function checkMig603HostBackup() {
+  console.log('MIG-603 host backup/restore drills (#848): VACUUM INTO + rollback report...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-603-host-backup.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkNegativeAuthzSuite() {
   console.log('Negative authz suite (#607): JWT gate + deny evidence contract...');
   execFileSync(process.execPath, ['scripts/negative-authz-suite-check.mjs'], {
@@ -3458,6 +3470,7 @@ checkSagatreeCoreWorkflowsContract();
 checkRealtimeComposeBootContract();
 checkComposeHardenDefaults();
 checkMig601HostCompose();
+checkMig603HostBackup();
 checkNegativeAuthzSuite();
 checkEdgeDispatcherAllowlist();
 checkRlsOpenTables();
