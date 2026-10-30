@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `4f399c7ce2d27e792a2a05039fcd1a75798d3a26cc59d972b053743e2b05ab98`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-marketplace.json](source-contracts/infra-marketplace.json) (SHA-256 `497961fb0385bfd70a3f95efe8c07a9f83b6c45119416f12b2cc0377d6edf540`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -76,46 +76,31 @@ supabase
 Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:73`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:99` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:100` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase
       .from('marketplace_items')
       .select('*')
-      .gte('rating', 3.5) // Only well-rated items
       .order('downloads', { ascending: false })
       .limit(6)
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:96`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### table: marketplace_items
-
-`src/infrastructure/marketplace/marketplace-service.ts:113` — literal-or-constant.
-
-Exact call/query chain:
-```ts
-supabase
-        .from('marketplace_items')
-        .select('*')
-        .order('downloads', { ascending: false })
-        .limit(6)
-```
-
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:96`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:98`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:141` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:125` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:137`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:121`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:144` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:128` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -137,20 +122,20 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:137`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:121`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:181` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:165` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:160`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:187` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:171` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -166,20 +151,20 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:176`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:160`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/marketplace/marketplace-service.ts:221` — dynamic-expression.
+`src/infrastructure/marketplace/marketplace-service.ts:205` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:219`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:203`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:223` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:207` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -191,10 +176,10 @@ supabase
       .select('id')
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:219`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:203`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: increment_marketplace_downloads
 
-`src/infrastructure/marketplace/marketplace-service.ts:254` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:238` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -203,10 +188,10 @@ supabase.rpc('increment_marketplace_downloads', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:252`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:236`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: marketplace_items
 
-`src/infrastructure/marketplace/marketplace-service.ts:274` — literal-or-constant.
+`src/infrastructure/marketplace/marketplace-service.ts:258` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -217,7 +202,7 @@ supabase
       .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:272`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/marketplace/marketplace-service.ts:256`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -295,38 +280,20 @@ export async function getMarketplaceItemById(id: string): Promise<MarketplaceIte
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:96
+### src/infrastructure/marketplace/marketplace-service.ts:98
 
 ```ts
 export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
   try {
-    // Get top items based on a combination of downloads and rating
     const { data, error } = await supabase
       .from('marketplace_items')
       .select('*')
-      .gte('rating', 3.5) // Only well-rated items
       .order('downloads', { ascending: false })
       .limit(6);
 
     if (error) {
       console.error('Error fetching featured items:', error);
       throw new Error(`Failed to fetch featured items: ${error.message}`);
-    }
-
-    // If we don't have enough high-rated items, get top downloads instead
-    if (!data || data.length < 6) {
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from('marketplace_items')
-        .select('*')
-        .order('downloads', { ascending: false })
-        .limit(6);
-
-      if (fallbackError) {
-        console.error('Error fetching fallback items:', fallbackError);
-        return data || [];
-      }
-
-      return fallbackData || [];
     }
 
     return data || [];
@@ -337,7 +304,7 @@ export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:137
+### src/infrastructure/marketplace/marketplace-service.ts:121
 
 ```ts
 export async function createMarketplaceItem(
@@ -377,7 +344,7 @@ export async function createMarketplaceItem(
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:176
+### src/infrastructure/marketplace/marketplace-service.ts:160
 
 ```ts
 export async function updateMarketplaceItem(
@@ -421,7 +388,7 @@ export async function updateMarketplaceItem(
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:219
+### src/infrastructure/marketplace/marketplace-service.ts:203
 
 ```ts
 export async function deleteMarketplaceItem(id: string): Promise<boolean> {
@@ -454,7 +421,7 @@ export async function deleteMarketplaceItem(id: string): Promise<boolean> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:252
+### src/infrastructure/marketplace/marketplace-service.ts:236
 
 ```ts
 export async function incrementDownloads(id: string): Promise<void> {
@@ -475,7 +442,7 @@ export async function incrementDownloads(id: string): Promise<void> {
 }
 ```
 
-### src/infrastructure/marketplace/marketplace-service.ts:272
+### src/infrastructure/marketplace/marketplace-service.ts:256
 
 ```ts
 export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {
@@ -510,7 +477,7 @@ All backend operations are included in the public declarations above.
 |---|---|
 | `src/domains/marketplace/client-trust.ts` | `35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34` |
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
-| `src/infrastructure/marketplace/marketplace-service.ts` | `e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594` |
+| `src/infrastructure/marketplace/marketplace-service.ts` | `9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |

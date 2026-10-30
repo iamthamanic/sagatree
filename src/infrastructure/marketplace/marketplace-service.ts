@@ -91,37 +91,21 @@ export async function getMarketplaceItemById(id: string): Promise<MarketplaceIte
 }
 
 /**
- * Get featured marketplace items (top 4-6 items by downloads and rating)
+ * Get featured marketplace items (top downloads).
+ * Rating stays server-authority only (#675); until a rating RPC exists, featured
+ * listings must not filter on client-impossible rating thresholds.
  */
 export async function getFeaturedItems(): Promise<MarketplaceItem[]> {
   try {
-    // Get top items based on a combination of downloads and rating
     const { data, error } = await supabase
       .from('marketplace_items')
       .select('*')
-      .gte('rating', 3.5) // Only well-rated items
       .order('downloads', { ascending: false })
       .limit(6);
 
     if (error) {
       console.error('Error fetching featured items:', error);
       throw new Error(`Failed to fetch featured items: ${error.message}`);
-    }
-
-    // If we don't have enough high-rated items, get top downloads instead
-    if (!data || data.length < 6) {
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from('marketplace_items')
-        .select('*')
-        .order('downloads', { ascending: false })
-        .limit(6);
-
-      if (fallbackError) {
-        console.error('Error fetching fallback items:', fallbackError);
-        return data || [];
-      }
-
-      return fallbackData || [];
     }
 
     return data || [];
