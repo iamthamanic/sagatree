@@ -5,11 +5,11 @@
   "sourceFiles": [
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
-      "sha256": "37cb84c8fa5c9e570a6c89acc9826b47ed2ec7c07121c0be8699a0a8b399c494"
+      "sha256": "57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "sha256": "e93ca761669eb2387af101b52c3572858623836d819d0b5ee49c2de378d1d918"
+      "sha256": "b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f"
     },
     {
       "path": "src/infrastructure/session/live-session-access.resolver.ts",
@@ -1644,8 +1644,8 @@
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
       "line": 26,
-      "endLine": 52,
-      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, presence) =>\n      ports.setSessionPlayerPresence(actorId, sessionId, presence),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
+      "endLine": 58,
+      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      ),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
@@ -1680,31 +1680,31 @@
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
       "line": 28,
-      "endLine": 83,
-      "text": "export type HostSessionPorts = {\n  readonly applySessionRuntimeCommand: (\n    actorId: string,\n    command: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly createPlaySession: (\n    actorId: string,\n    projectId: string,\n    name?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly createSessionInvite: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly getSessionRecap: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly getSessionRuntimeSnapshot: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRuntimeSnapshotVm>>;\n  readonly joinSessionByCode: (\n    actorId: string,\n    code: string,\n    characterId?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly leavePlaySession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<{ readonly sessionId: string }>>;\n  readonly resolveSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly revokeSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<{ readonly token: string }>>;\n  readonly saveSessionRecapSummary: (\n    actorId: string,\n    sessionId: string,\n    summaryText: string,\n    status?: string | null,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly setSessionPlayerPresence: (\n    actorId: string,\n    sessionId: string,\n    presence: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly setSessionStatus: (\n    actorId: string,\n    sessionId: string,\n    status: string,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n};"
+      "endLine": 85,
+      "text": "export type HostSessionPorts = {\n  readonly applySessionRuntimeCommand: (\n    actorId: string,\n    command: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly createPlaySession: (\n    actorId: string,\n    projectId: string,\n    name?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly createSessionInvite: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly getSessionRecap: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly getSessionRuntimeSnapshot: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<HostSessionRuntimeSnapshotVm>>;\n  readonly joinSessionByCode: (\n    actorId: string,\n    code: string,\n    characterId?: string | null,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n  readonly leavePlaySession: (\n    actorId: string,\n    sessionId: string,\n  ) => Promise<HostSessionResult<{ readonly sessionId: string }>>;\n  readonly resolveSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<HostSessionInviteVm>>;\n  readonly revokeSessionInvite: (\n    actorId: string,\n    token: string,\n  ) => Promise<HostSessionResult<{ readonly token: string }>>;\n  readonly saveSessionRecapSummary: (\n    actorId: string,\n    sessionId: string,\n    summaryText: string,\n    status?: string | null,\n  ) => Promise<HostSessionResult<HostSessionRecapVm>>;\n  readonly setSessionPlayerPresence: (\n    actorId: string,\n    sessionId: string,\n    expectedRevision: number,\n    idempotencyKey: string,\n    presence: Readonly<Record<string, unknown>>,\n  ) => Promise<HostSessionResult<Readonly<Record<string, unknown>>>>;\n  readonly setSessionStatus: (\n    actorId: string,\n    sessionId: string,\n    status: string,\n  ) => Promise<HostSessionResult<HostPlaySessionVm>>;\n};"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "line": 86,
-      "endLine": 99,
+      "line": 88,
+      "endLine": 101,
       "text": "export const HOST_SESSION_RPC_NAMES = [\n  'apply_session_runtime_command',\n  'create_play_session',\n  'create_session_invite',\n  'get_session_recap',\n  'get_session_runtime_snapshot',\n  'join_session_by_code',\n  'leave_play_session',\n  'resolve_session_invite',\n  'revoke_session_invite',\n  'save_session_recap_summary',\n  'set_session_player_presence',\n  'set_session_status',\n] as const;"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "line": 101,
-      "endLine": 101,
+      "line": 103,
+      "endLine": 103,
       "text": "export type HostSessionRpcName = (typeof HOST_SESSION_RPC_NAMES)[number];"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "line": 104,
-      "endLine": 104,
+      "line": 106,
+      "endLine": 106,
       "text": "export const HOST_SESSION_EDGE_NAMES = ['session-media-token', 'session-recap'] as const;"
     },
     {
       "path": "src/infrastructure/session/host-session-ports.contract.ts",
-      "line": 106,
-      "endLine": 119,
+      "line": 108,
+      "endLine": 121,
       "text": "export const HOST_SESSION_OPS = [\n  'applySessionRuntimeCommand',\n  'createPlaySession',\n  'createSessionInvite',\n  'getSessionRecap',\n  'getSessionRuntimeSnapshot',\n  'joinSessionByCode',\n  'leavePlaySession',\n  'resolveSessionInvite',\n  'revokeSessionInvite',\n  'saveSessionRecapSummary',\n  'setSessionPlayerPresence',\n  'setSessionStatus',\n] as const;"
     },
     {
@@ -1916,9 +1916,9 @@
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
       "line": 26,
-      "endLine": 52,
+      "endLine": 58,
       "name": "createHostSessionAdapter",
-      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, presence) =>\n      ports.setSessionPlayerPresence(actorId, sessionId, presence),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
+      "text": "export function createHostSessionAdapter(ports: HostSessionPorts): HostSessionAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_SESSION_OPS,\n    rpcNames: HOST_SESSION_RPC_NAMES,\n    edgeNames: HOST_SESSION_EDGE_NAMES,\n    applySessionRuntimeCommand: (actorId, command) =>\n      ports.applySessionRuntimeCommand(actorId, command),\n    createPlaySession: (actorId, projectId, name) =>\n      ports.createPlaySession(actorId, projectId, name),\n    createSessionInvite: (actorId, sessionId) => ports.createSessionInvite(actorId, sessionId),\n    getSessionRecap: (actorId, sessionId) => ports.getSessionRecap(actorId, sessionId),\n    getSessionRuntimeSnapshot: (actorId, sessionId) =>\n      ports.getSessionRuntimeSnapshot(actorId, sessionId),\n    joinSessionByCode: (actorId, code, characterId) =>\n      ports.joinSessionByCode(actorId, code, characterId),\n    leavePlaySession: (actorId, sessionId) => ports.leavePlaySession(actorId, sessionId),\n    resolveSessionInvite: (actorId, token) => ports.resolveSessionInvite(actorId, token),\n    revokeSessionInvite: (actorId, token) => ports.revokeSessionInvite(actorId, token),\n    saveSessionRecapSummary: (actorId, sessionId, summaryText, status) =>\n      ports.saveSessionRecapSummary(actorId, sessionId, summaryText, status),\n    setSessionPlayerPresence: (actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      ),\n    setSessionStatus: (actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status),\n  };\n}"
     },
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
@@ -1993,14 +1993,14 @@
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
       "line": 47,
-      "endLine": 48,
+      "endLine": 54,
       "name": "callback",
-      "text": "(actorId, sessionId, presence) =>\n      ports.setSessionPlayerPresence(actorId, sessionId, presence)"
+      "text": "(actorId, sessionId, expectedRevision, idempotencyKey, presence) =>\n      ports.setSessionPlayerPresence(\n        actorId,\n        sessionId,\n        expectedRevision,\n        idempotencyKey,\n        presence,\n      )"
     },
     {
       "path": "src/infrastructure/session/host-session-adapter.ts",
-      "line": 49,
-      "endLine": 50,
+      "line": 55,
+      "endLine": 56,
       "name": "callback",
       "text": "(actorId, sessionId, status) =>\n      ports.setSessionStatus(actorId, sessionId, status)"
     },
