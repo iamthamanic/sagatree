@@ -1,7 +1,11 @@
 /**
- * session module public API — SessionRuntimeState + lifecycle (#867/#868).
+ * session module public API — SessionRuntimeState + lifecycle (#867/#868)
+ * + MIG-311 infra dual-path seam (no HTTP activation).
  * Location: server/src/modules/session/index.ts
  */
+
+/** MIG-311: session infra ports stay isolated-contract until HTTP cutover. */
+export const SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
 import type { Actor } from '../identity/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import type { ProjectPorts } from '../project/index.ts';

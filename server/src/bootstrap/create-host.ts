@@ -432,6 +432,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       character,
       inventory,
+      session: sessionPorts,
       npcCreature,
       userProfile,
       projectInfra,
