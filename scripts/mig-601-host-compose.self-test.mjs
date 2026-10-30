@@ -53,6 +53,21 @@ assert(
   /127\.0\.0\.1:8787|SAGATREE_HOST_PUBLISH:-127\.0\.0\.1:8787/.test(compose),
   'compose publishes host HTTP on loopback by default',
 );
+assert(
+  /SAGATREE_AUTH_BASE_URL: \$\{SAGATREE_AUTH_BASE_URL:-http:\/\/127\.0\.0\.1:\$\{SAGATREE_HOST_PORT:-8787\}\}/.test(
+    compose,
+  ),
+  'compose auth default is loopback + HOST_PORT (not derived from publish bind)',
+);
+assert(
+  !/http:\/\/\$\{SAGATREE_HOST_PUBLISH/.test(compose),
+  'compose must not derive AUTH_BASE_URL from SAGATREE_HOST_PUBLISH',
+);
+assert(envEx.includes('SAGATREE_HOST_PORT'), '.env.example documents HOST_PORT');
+assert(
+  /^#\s*SAGATREE_AUTH_BASE_URL=/m.test(envEx),
+  '.env.example leaves AUTH_BASE_URL commented so Compose loopback default applies',
+);
 assert(!/CHARACTER_AI_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked AI API key in compose');
 assert(!/MESHY_API_KEY:\s*['\"][^'\"]+['\"]/.test(compose), 'no baked Meshy key in compose');
 assert(/ollama\/ollama:\d+\.\d+\.\d+@sha256:[a-f0-9]+/.test(compose), 'ollama image pinned by tag+digest');

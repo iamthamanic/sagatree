@@ -24,9 +24,11 @@ services:
       # Container bind requires remote mode + allow-remote (solo forbids 0.0.0.0).
       SAGATREE_HOST_MODE: remote
       SAGATREE_ALLOW_REMOTE_BIND: "1"
-      # Default tracks SAGATREE_HOST_PUBLISH so Host checks match the published port.
-      # Explicit SAGATREE_AUTH_BASE_URL still wins; keep it aligned if you override either.
-      SAGATREE_AUTH_BASE_URL: ${SAGATREE_AUTH_BASE_URL:-http://${SAGATREE_HOST_PUBLISH:-127.0.0.1:8787}}
+      # Auth origin stays loopback by default — never derive from SAGATREE_HOST_PUBLISH
+      # (a 0.0.0.0 publish bind must not become a trusted origin / bypass wildcard checks).
+      # Keep SAGATREE_HOST_PORT aligned with the host port in SAGATREE_HOST_PUBLISH.
+      # Explicit SAGATREE_AUTH_BASE_URL still wins (required for intentional LAN origins).
+      SAGATREE_AUTH_BASE_URL: ${SAGATREE_AUTH_BASE_URL:-http://127.0.0.1:${SAGATREE_HOST_PORT:-8787}}
       SAGATREE_BETTER_AUTH_SECRET: ${SAGATREE_BETTER_AUTH_SECRET:?set SAGATREE_BETTER_AUTH_SECRET (>=32 chars)}
       SAGATREE_AUTH_TRUSTED_ORIGINS: ${SAGATREE_AUTH_TRUSTED_ORIGINS:-}
       # Profile markers (ops / diagnostics only — not authorization).
