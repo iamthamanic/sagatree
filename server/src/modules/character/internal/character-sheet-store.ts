@@ -5,6 +5,7 @@
  *
  * Supabase remains live FE default; this is the host isolated-contract store.
  * Creator/VRM rendering utilities stay client-side (not moved here).
+ * Artifact resolve/seed: PC-only + deleted_at IS NULL (parity with owner-guard triggers).
  */
 import { randomUUID } from 'node:crypto';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
