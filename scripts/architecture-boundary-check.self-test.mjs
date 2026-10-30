@@ -455,15 +455,21 @@ function writeFx(rel, body) {
   mkdirSync(join(abs, '..'), { recursive: true });
   writeFileSync(abs, body);
 }
-// Inline fixture policy — do not read live repo policy (deterministic / offline-first).
+// Inline fixture policy mirrors live allowlist shapes (exact node:sqlite paths +
+// modules/*/persistence/**) without reading the checked-in file (offline-first).
 const policy = JSON.stringify(
   {
     version: 2,
-    note: 'self-test fixture (inline; not live repo policy)',
-    nodeSqliteImportAllow: ['server/src/persistence/**'],
+    note: 'self-test fixture mirroring enforced allowlist shapes',
+    nodeSqliteImportAllow: [
+      'server/src/persistence/open-database.ts',
+      'server/src/persistence/host-drizzle.ts',
+      'server/src/auth/cookie-profile.ts',
+    ],
     drizzleOrmImportAllow: [
       'server/src/persistence/**',
       'server/src/repositories/**',
+      'server/src/modules/*/persistence/**',
       'server/src/modules/world/internal/world-write-store.ts',
     ],
     forbiddenImportZones: [
@@ -495,9 +501,13 @@ writeFx(
 );
 writeFx(
   'server/src/persistence/host-drizzle.ts',
-  "import { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return drizzle; }\n",
+  "import { DatabaseSync } from 'node:sqlite';\nimport { drizzle } from 'drizzle-orm/node-sqlite';\nexport function createHostDatabase() { return drizzle; }\nexport const sync = DatabaseSync;\n",
 );
 writeFx('server/src/persistence/open-database.ts', "import { DatabaseSync } from 'node:sqlite';\nexport const open = DatabaseSync;\n");
+writeFx(
+  'server/src/auth/cookie-profile.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nexport const profileDb = DatabaseSync;\n",
+);
 writeFx(
   'server/src/repositories/world/read.ts',
   "import { eq } from 'drizzle-orm';\nexport const q = eq;\n",
@@ -506,9 +516,25 @@ writeFx(
   'server/src/modules/world/internal/world-write-store.ts',
   "import { eq } from 'drizzle-orm';\nexport const w = eq;\n",
 );
+writeFx(
+  'server/src/modules/session/persistence/session-store.ts',
+  "import { eq } from 'drizzle-orm';\nexport const s = eq;\n",
+);
 
 const okFx = checkHostDrizzlePersistenceBoundaries(drizzleFx);
 assert(okFx.length === 0, `valid drizzle fixture must PASS, got ${JSON.stringify(okFx)}`);
+
+// Exact node:sqlite allowlist: sibling under persistence/ must FAIL.
+writeFx(
+  'server/src/persistence/leak-sqlite.ts',
+  "import { DatabaseSync } from 'node:sqlite';\nexport const leak = DatabaseSync;\n",
+);
+const exactSqlite = checkHostDrizzlePersistenceBoundaries(drizzleFx);
+assert(
+  exactSqlite.some((v) => /node:sqlite \/ DatabaseSync import outside documented exceptions/.test(v.rule)),
+  `non-allowlisted persistence sibling node:sqlite must FAIL, got ${JSON.stringify(exactSqlite)}`,
+);
+rmSync(join(drizzleFx, 'server/src/persistence/leak-sqlite.ts'), { force: true });
 
 writeFx(
   'server/src/application/health/index.ts',
