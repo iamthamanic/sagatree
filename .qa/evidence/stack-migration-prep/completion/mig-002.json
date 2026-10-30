@@ -6,7 +6,7 @@
   "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. Edge/infra inventory sha256 refreshed after MIG-311 (#810) contract regen.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -24,7 +24,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "944cbf289ea8844e4d44e1286401ef9fecdc110f5b612853b8bb2d5f3b9d9669"
+      "sha256": "d0acb5d475dc07c830bc5f5a3921f03dca6458fc5bfae17289f50458717a7413"
     }
   ]
 }
