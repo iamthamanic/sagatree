@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-410",
+  "result": "PASS",
+  "testedCommit": "cff2ad02ba33e91533c9a1b10d938e077c5cf6ac",
+  "githubClosed": true,
+  "mergeRef": "PR #1021 \u2192 main (#826)",
+  "note": "item-thumbnail isolated host port; Edge remains live mount.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-410-item-thumbnail.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-410.md",
+      "sha256": "a939444599baa660be380a9786c47ef79ed60f5a12c2220aac066525da2b887d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-410.md",
+      "sha256": "1c245ac7f769a4f4b116ba3eae95caa5b378854e5c9667c30152707ff9d35f67"
+    }
+  ]
+}

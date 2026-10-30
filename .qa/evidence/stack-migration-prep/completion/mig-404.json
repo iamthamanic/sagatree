@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-404",
+  "result": "PASS",
+  "testedCommit": "4532c9d08a3288ec5d7d9f38c7b8ad4b4ec037e1",
+  "githubClosed": true,
+  "mergeRef": "PR #1015 \u2192 main (#820)",
+  "note": "character-avatar-meshy isolated host port; Edge remains live mount.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-404-character-avatar-meshy.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-404.md",
+      "sha256": "9fc971167a2a0ad39b81fdb29b0e5ba8f1923c0077310cf7eb3b6178bc85532e"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-404.md",
+      "sha256": "24c6f9b6afe795d1890045af50da3018638c00f763361a982c3929fa5739f75b"
+    }
+  ]
+}
