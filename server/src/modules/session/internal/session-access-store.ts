@@ -283,7 +283,7 @@ export class SessionAccessStore {
             .prepare(
               `SELECT id, owner_user_id AS ownerUserId, character_type AS characterType,
                       sheet_status AS sheetStatus
-               FROM characters WHERE id = ?`,
+               FROM characters WHERE id = ? AND deleted_at IS NULL`,
             )
             .get(characterId) as
             | {

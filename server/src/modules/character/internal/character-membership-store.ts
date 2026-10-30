@@ -37,7 +37,8 @@ export class CharacterMembershipStore {
       .prepare(
         `SELECT sheet_status AS sheetStatus, character_type AS characterType
          FROM characters
-         WHERE id = ? AND owner_user_id = ? AND character_type = 'pc'`,
+         WHERE id = ? AND owner_user_id = ? AND character_type = 'pc'
+           AND deleted_at IS NULL`,
       )
       .get(characterId, ownerUserId) as
       | { sheetStatus: string; characterType: string }
@@ -52,7 +53,9 @@ export class CharacterMembershipStore {
     const id = typeof characterId === 'string' ? characterId.trim() : '';
     if (!id) return null;
     const row = this.#db
-      .prepare(`SELECT name FROM characters WHERE id = ?`)
+      .prepare(
+        `SELECT name FROM characters WHERE id = ? AND deleted_at IS NULL`,
+      )
       .get(id) as { name: string } | undefined;
     return row?.name ?? null;
   }

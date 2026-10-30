@@ -1,0 +1,526 @@
+/**
+ * Owner-scoped character sheet CRUD for MIG-302 / #801.
+ * Private — import only from character public API.
+ * Location: server/src/modules/character/internal/character-sheet-store.ts
+ *
+ * Supabase remains live FE default; this is the host isolated-contract store.
+ * Creator/VRM rendering utilities stay client-side (not moved here).
+ * Artifact resolve/seed: PC-only + deleted_at IS NULL (parity with owner-guard triggers).
+ */
+import { randomUUID } from 'node:crypto';
+import type { HostDatabase } from '../../../persistence/open-database.ts';
+import { generateCharacterPublicId } from './public-character-id.ts';
+
+export const CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+
+export type CharacterSheetResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+
+export type CharacterSheetRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly ownerUserId: string;
+  readonly characterType: 'pc' | 'npc' | 'gm_presence';
+  readonly sheetStatus: 'complete' | 'incomplete' | 'draft';
+  readonly name: string;
+  readonly description: string;
+  readonly level: number;
+  readonly sheet: Readonly<Record<string, unknown>>;
+  readonly portraitStoragePath: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+export type CharacterPresetRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly slug: string;
+  readonly displayName: string;
+  readonly visibility: 'public' | 'owner';
+  readonly ownerUserId: string | null;
+  readonly sheet: Readonly<Record<string, unknown>>;
+};
+
+export type CharacterSheetDraft = {
+  readonly name?: unknown;
+  readonly description?: unknown;
+  readonly level?: unknown;
+  readonly sheetStatus?: unknown;
+  readonly sheet?: unknown;
+  readonly portraitStoragePath?: unknown;
+  readonly characterType?: unknown;
+};
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function asObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return { ...(value as Record<string, unknown>) };
+}
+
+function parseSheetStatus(value: unknown, fallback: 'complete' | 'incomplete' | 'draft') {
+  return value === 'incomplete' || value === 'draft' || value === 'complete' ? value : fallback;
+}
+
+function parseCharacterType(value: unknown): 'pc' | 'npc' | 'gm_presence' {
+  return value === 'npc' || value === 'gm_presence' ? value : 'pc';
+}
+
+function stringField(
+  sheet: Readonly<Record<string, unknown>>,
+  keys: readonly string[],
+): string | null {
+  for (const key of keys) {
+    const value = sheet[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+/** Host parity with supabase/migrations/035_guard_sheet_status_complete.sql (sheet_json). */
+export function isCompleteSheetPayload(
+  name: string,
+  level: number,
+  sheet: Readonly<Record<string, unknown>>,
+): boolean {
+  if (!name.trim()) return false;
+  if (!Number.isFinite(level) || level < 1 || level > 20) return false;
+  if (!stringField(sheet, ['class', 'archetype', 'className'])) return false;
+  if (!stringField(sheet, ['race', 'species'])) return false;
+  const hasProfile =
+    sheet.sagatree_profile != null ||
+    sheet.sagadrive_profile != null ||
+    sheet.profile != null;
+  const hasAttributes = sheet.attributes != null && typeof sheet.attributes === 'object';
+  const hasSkills = sheet.skills != null && typeof sheet.skills === 'object';
+  return Boolean(hasProfile && hasAttributes && hasSkills);
+}
+
+function parseSheetJson(raw: string | null | undefined): Record<string, unknown> {
+  try {
+    return asObject(JSON.parse(raw || '{}'));
+  } catch {
+    return {};
+  }
+}
+
+type CharacterRow = {
+  id: string;
+  public_id: string | null;
+  owner_user_id: string;
+  character_type: string;
+  sheet_status: string;
+  name: string;
+  description: string;
+  level: number;
+  sheet_json: string;
+  portrait_storage_path: string | null;
+  created_at: string;
+  updated_at: string | null;
+  deleted_at: string | null;
+};
+
+function mapRow(row: CharacterRow): CharacterSheetRecord {
+  const sheet = parseSheetJson(row.sheet_json);
+  return {
+    id: row.id,
+    publicId: typeof row.public_id === 'string' && row.public_id ? row.public_id : row.id,
+    ownerUserId: row.owner_user_id,
+    characterType: parseCharacterType(row.character_type),
+    sheetStatus: parseSheetStatus(row.sheet_status, 'complete'),
+    name: row.name,
+    description: row.description ?? '',
+    level: Number.isFinite(row.level) ? row.level : 1,
+    sheet,
+    portraitStoragePath: row.portrait_storage_path,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at ?? row.created_at,
+  };
+}
+
+/** Owner-scoped storage path: `{ownerUserId}/…` only. */
+export function assertCharacterOwnerStoragePath(
+  ownerUserId: string,
+  storagePath: string,
+): CharacterSheetResult<true> {
+  const owner = ownerUserId.trim();
+  const path = storagePath.trim().replace(/^\/+/, '');
+  if (!owner || !path || path.includes('..')) {
+    return { ok: false, error: 'invalid-storage-path' };
+  }
+  if (!path.startsWith(`${owner}/`)) {
+    return { ok: false, error: 'foreign-storage-path' };
+  }
+  return { ok: true, value: true };
+}
+
+export class CharacterSheetStore {
+  readonly #db: HostDatabase;
+
+  constructor(db: HostDatabase) {
+    this.#db = db;
+  }
+
+  listOwned(actorId: string): CharacterSheetResult<readonly CharacterSheetRecord[]> {
+    const rows = this.#db
+      .prepare(
+        `SELECT * FROM characters
+         WHERE owner_user_id = ? AND deleted_at IS NULL AND character_type = 'pc'
+         ORDER BY created_at DESC`,
+      )
+      .all(actorId) as CharacterRow[];
+    return { ok: true, value: rows.map(mapRow) };
+  }
+
+  getOwned(actorId: string, characterId: string): CharacterSheetResult<CharacterSheetRecord | null> {
+    const any = this.#db
+      .prepare(
+        `SELECT * FROM characters
+         WHERE id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
+      )
+      .get(characterId) as CharacterRow | undefined;
+    if (!any) return { ok: true, value: null };
+    if (any.owner_user_id !== actorId) return { ok: false, error: 'not-authorized' };
+    return { ok: true, value: mapRow(any) };
+  }
+
+  createOwned(actorId: string, draft: CharacterSheetDraft): CharacterSheetResult<CharacterSheetRecord> {
+    const name = typeof draft.name === 'string' ? draft.name.trim() : '';
+    if (!name) return { ok: false, error: 'name-required' };
+    const level =
+      typeof draft.level === 'number' && Number.isFinite(draft.level) && draft.level >= 1
+        ? Math.floor(draft.level)
+        : 1;
+    const sheetStatus = parseSheetStatus(draft.sheetStatus, 'draft');
+    const characterType = parseCharacterType(draft.characterType);
+    if (characterType !== 'pc') return { ok: false, error: 'pc-only' };
+    const description = typeof draft.description === 'string' ? draft.description : '';
+    const sheet = asObject(draft.sheet);
+    if (sheetStatus === 'complete' && !isCompleteSheetPayload(name, level, sheet)) {
+      return { ok: false, error: 'incomplete-sheet' };
+    }
+    let portrait: string | null = null;
+    if (draft.portraitStoragePath !== undefined && draft.portraitStoragePath !== null) {
+      if (typeof draft.portraitStoragePath !== 'string') {
+        return { ok: false, error: 'invalid-portrait-path' };
+      }
+      const pathCheck = assertCharacterOwnerStoragePath(actorId, draft.portraitStoragePath);
+      if (!pathCheck.ok) return pathCheck;
+      portrait = draft.portraitStoragePath.trim().replace(/^\/+/, '');
+    }
+
+    const id = randomUUID();
+    const createdAt = nowIso();
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      const publicId = this.#uniquePublicId();
+      this.#db
+        .prepare(
+          `INSERT INTO characters (
+             id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
+             updated_at, description, level, sheet_json, portrait_storage_path, deleted_at
+           ) VALUES (?, ?, 'pc', ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
+        )
+        .run(
+          id,
+          actorId,
+          sheetStatus,
+          name,
+          createdAt,
+          publicId,
+          createdAt,
+          description,
+          level,
+          JSON.stringify(sheet),
+          portrait,
+        );
+      this.#db.exec('COMMIT');
+    } catch {
+      try {
+        this.#db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      return { ok: false, error: 'create-failed' };
+    }
+    const created = this.getOwned(actorId, id);
+    if (!created.ok || !created.value) return { ok: false, error: 'create-failed' };
+    return { ok: true, value: created.value };
+  }
+
+  updateOwned(
+    actorId: string,
+    characterId: string,
+    draft: CharacterSheetDraft,
+  ): CharacterSheetResult<CharacterSheetRecord> {
+    // Pre-lock existence / auth probe only — field fallbacks revalidated under IMMEDIATE.
+    const existing = this.getOwned(actorId, characterId);
+    if (!existing.ok) return existing;
+    if (!existing.value) return { ok: false, error: 'not-found' };
+
+    if (
+      draft.portraitStoragePath !== undefined &&
+      draft.portraitStoragePath !== null &&
+      typeof draft.portraitStoragePath !== 'string'
+    ) {
+      return { ok: false, error: 'invalid-portrait-path' };
+    }
+    if (typeof draft.portraitStoragePath === 'string') {
+      const pathCheck = assertCharacterOwnerStoragePath(actorId, draft.portraitStoragePath);
+      if (!pathCheck.ok) return pathCheck;
+    }
+
+    const levelHint =
+      typeof draft.level === 'number' && Number.isFinite(draft.level) && draft.level >= 1
+        ? Math.floor(draft.level)
+        : null;
+
+    const updatedAt = nowIso();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const locked = this.#db
+        .prepare(
+          `SELECT * FROM characters
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
+        )
+        .get(characterId, actorId) as CharacterRow | undefined;
+      if (!locked) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'not-found' };
+      }
+      const current = mapRow(locked);
+      const name =
+        typeof draft.name === 'string' ? draft.name.trim() : current.name;
+      if (!name) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'name-required' };
+      }
+      const description =
+        typeof draft.description === 'string' ? draft.description : current.description;
+      let portrait = current.portraitStoragePath;
+      if (draft.portraitStoragePath === null) {
+        portrait = null;
+      } else if (typeof draft.portraitStoragePath === 'string') {
+        portrait = draft.portraitStoragePath.trim().replace(/^\/+/, '');
+      }
+      const level = levelHint ?? current.level;
+      const sheetStatus = parseSheetStatus(draft.sheetStatus, current.sheetStatus);
+      const sheet = draft.sheet !== undefined ? asObject(draft.sheet) : { ...current.sheet };
+      // Enforce completeness only when promoting into `complete` (revalidated under lock).
+      const promotingToComplete =
+        sheetStatus === 'complete' && current.sheetStatus !== 'complete';
+      if (promotingToComplete && !isCompleteSheetPayload(name, level, sheet)) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'incomplete-sheet' };
+      }
+      const changed = this.#db
+        .prepare(
+          `UPDATE characters SET
+             name = ?, description = ?, level = ?, sheet_status = ?, sheet_json = ?,
+             portrait_storage_path = ?, updated_at = ?
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL AND character_type = 'pc'`,
+        )
+        .run(
+          name,
+          description,
+          level,
+          sheetStatus,
+          JSON.stringify(sheet),
+          portrait,
+          updatedAt,
+          characterId,
+          actorId,
+        );
+      if (changed.changes !== 1) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'not-found' };
+      }
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'update-failed' };
+    }
+    const next = this.getOwned(actorId, characterId);
+    if (!next.ok || !next.value) return { ok: false, error: 'not-found' };
+    return { ok: true, value: next.value };
+  }
+
+  deleteOwned(actorId: string, characterId: string): CharacterSheetResult<{ readonly id: string }> {
+    const owned = this.getOwned(actorId, characterId);
+    if (!owned.ok) return owned;
+    if (!owned.value) return { ok: false, error: 'not-found' };
+    const updatedAt = nowIso();
+    const changed = this.#db
+      .prepare(
+        `UPDATE characters SET deleted_at = ?, updated_at = ?
+         WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL`,
+      )
+      .run(updatedAt, updatedAt, characterId, actorId);
+    if (changed.changes !== 1) return { ok: false, error: 'not-found' };
+    return { ok: true, value: { id: characterId } };
+  }
+
+  listReadablePresets(actorId: string): CharacterSheetResult<readonly CharacterPresetRecord[]> {
+    const rows = this.#db
+      .prepare(
+        `SELECT id, public_id, slug, display_name, visibility, owner_user_id, sheet_json
+         FROM character_presets
+         WHERE visibility = 'public'
+            OR (visibility = 'owner' AND owner_user_id = ?)
+         ORDER BY display_name ASC`,
+      )
+      .all(actorId) as Array<{
+      id: string;
+      public_id: string;
+      slug: string;
+      display_name: string;
+      visibility: string;
+      owner_user_id: string | null;
+      sheet_json: string;
+    }>;
+    return {
+      ok: true,
+      value: rows.map((row) => ({
+        id: row.id,
+        publicId: row.public_id,
+        slug: row.slug,
+        displayName: row.display_name,
+        // Restrictive default: only explicit 'public' is public; unknown → owner.
+        visibility: row.visibility === 'public' ? 'public' : 'owner',
+        ownerUserId: row.owner_user_id,
+        sheet: parseSheetJson(row.sheet_json),
+      })),
+    };
+  }
+
+  seedPublicPreset(input: {
+    readonly slug: string;
+    readonly displayName: string;
+    readonly sheet?: Readonly<Record<string, unknown>>;
+  }): CharacterPresetRecord {
+    const id = randomUUID();
+    const publicId = `CP-${id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+    const createdAt = nowIso();
+    this.#db
+      .prepare(
+        `INSERT INTO character_presets
+           (id, public_id, slug, display_name, visibility, owner_user_id, sheet_json, created_at, updated_at)
+         VALUES (?, ?, ?, ?, 'public', NULL, ?, ?, ?)`,
+      )
+      .run(
+        id,
+        publicId,
+        input.slug,
+        input.displayName,
+        JSON.stringify(input.sheet ?? {}),
+        createdAt,
+        createdAt,
+      );
+    return {
+      id,
+      publicId,
+      slug: input.slug,
+      displayName: input.displayName,
+      visibility: 'public',
+      ownerUserId: null,
+      sheet: input.sheet ?? {},
+    };
+  }
+
+  resolveArtifact(
+    actorId: string,
+    storagePath: string,
+  ): CharacterSheetResult<{ readonly storagePath: string; readonly characterId: string }> {
+    const pathCheck = assertCharacterOwnerStoragePath(actorId, storagePath);
+    if (!pathCheck.ok) return pathCheck;
+    const normalized = storagePath.trim().replace(/^\/+/, '');
+    const row = this.#db
+      .prepare(
+        `SELECT a.character_id AS characterId, a.storage_path AS storagePath
+         FROM character_avatar_artifacts a
+         INNER JOIN characters c
+           ON c.id = a.character_id
+          AND c.deleted_at IS NULL
+          AND c.character_type = 'pc'
+         WHERE a.owner_user_id = ? AND a.storage_path = ?
+         LIMIT 1`,
+      )
+      .get(actorId, normalized) as { characterId: string; storagePath: string } | undefined;
+    if (!row) return { ok: false, error: 'not-found' };
+    return { ok: true, value: row };
+  }
+
+  seedArtifact(input: {
+    readonly ownerUserId: string;
+    readonly characterId: string;
+    readonly storagePath: string;
+  }): CharacterSheetResult<{ readonly id: string }> {
+    const pathCheck = assertCharacterOwnerStoragePath(input.ownerUserId, input.storagePath);
+    if (!pathCheck.ok) return pathCheck;
+    const normalized = input.storagePath.trim().replace(/^\/+/, '');
+    const id = randomUUID();
+    let inTx = false;
+    try {
+      this.#db.exec('BEGIN IMMEDIATE');
+      inTx = true;
+      const owned = this.#db
+        .prepare(
+          `SELECT 1 AS o FROM characters
+           WHERE id = ? AND owner_user_id = ? AND deleted_at IS NULL
+             AND character_type = 'pc'`,
+        )
+        .get(input.characterId, input.ownerUserId);
+      if (!owned) {
+        this.#db.exec('ROLLBACK');
+        inTx = false;
+        return { ok: false, error: 'foreign-character-owner' };
+      }
+      this.#db
+        .prepare(
+          `INSERT INTO character_avatar_artifacts
+             (id, character_id, owner_user_id, storage_path, kind, created_at)
+           VALUES (?, ?, ?, ?, 'artifact', ?)`,
+        )
+        .run(id, input.characterId, input.ownerUserId, normalized, nowIso());
+      this.#db.exec('COMMIT');
+      inTx = false;
+    } catch {
+      if (inTx) {
+        try {
+          this.#db.exec('ROLLBACK');
+        } catch {
+          /* ignore */
+        }
+      }
+      return { ok: false, error: 'create-failed' };
+    }
+    return { ok: true, value: { id } };
+  }
+
+  #uniquePublicId(): string {
+    for (let i = 0; i < 16; i += 1) {
+      const publicId = generateCharacterPublicId();
+      const hit = this.#db
+        .prepare(`SELECT 1 AS o FROM characters WHERE public_id = ? LIMIT 1`)
+        .get(publicId);
+      if (!hit) return publicId;
+    }
+    return generateCharacterPublicId();
+  }
+}

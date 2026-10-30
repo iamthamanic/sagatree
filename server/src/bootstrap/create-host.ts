@@ -68,7 +68,7 @@ import {
   createSagaPortsStub,
   type SagaPorts,
 } from '../modules/saga/index.ts';
-import { createCharacterPorts } from '../modules/character/index.ts';
+import { createCharacterPorts, type CharacterPorts } from '../modules/character/index.ts';
 import { createSqliteWorldReadStore } from '../repositories/world/sqlite-world-read-store.ts';
 import { createHealthUseCase } from '../application/health/index.ts';
 import { createTransportUseCase } from '../application/transport/index.ts';
@@ -108,6 +108,8 @@ export type HostInstance = {
   readonly rulesets: RulesetPorts;
   /** MIG-304 LookProfile repository ports (HTTP cutover → MIG-600). */
   readonly look: LookProfilePorts;
+  /** MIG-302 character sheet / membership ports (HTTP cutover → MIG-602). */
+  readonly character: CharacterPorts;
   /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
   readonly npcCreature: NpcCreaturePorts;
   /** MIG-312 user_profiles + user-avatars ports (HTTP cutover → MIG-600). */
@@ -392,6 +394,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       ai,
       rulesets,
       look,
+      character,
       npcCreature,
       userProfile,
       projectInfra,

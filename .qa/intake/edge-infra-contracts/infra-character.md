@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `7febfe95c274f60a5b29436c449660ca34881606b77072f6176fb1c3c3b95d46`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `1e671aec2c9d29023efec97df07e765913160a95edf4451173de1d7e29a01c2f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -7304,6 +7304,141 @@ export interface CharacterDto {
 }
 ```
 
+### src/infrastructure/character/host-character-adapter.ts:12
+
+```ts
+export type HostCharacterAdapter = HostCharacterPorts & {
+  readonly transport: 'host';
+  readonly ops: typeof HOST_CHARACTER_OPS;
+};
+```
+
+### src/infrastructure/character/host-character-adapter.ts:21
+
+```ts
+export function createHostCharacterAdapter(ports: HostCharacterPorts): HostCharacterAdapter {
+  return {
+    transport: 'host',
+    ops: HOST_CHARACTER_OPS,
+    listOwnedCharacters: (actorId) => ports.listOwnedCharacters(actorId),
+    getOwnedCharacter: (actorId, characterId) => ports.getOwnedCharacter(actorId, characterId),
+    createOwnedCharacter: (actorId, draft) => ports.createOwnedCharacter(actorId, draft),
+    updateOwnedCharacter: (actorId, characterId, draft) =>
+      ports.updateOwnedCharacter(actorId, characterId, draft),
+    deleteOwnedCharacter: (actorId, characterId) =>
+      ports.deleteOwnedCharacter(actorId, characterId),
+    listReadablePresets: (actorId) => ports.listReadablePresets(actorId),
+    resolveOwnedArtifact: (actorId, storagePath) =>
+      ports.resolveOwnedArtifact(actorId, storagePath),
+  };
+}
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:10
+
+```ts
+export type HostCharacterResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: string };
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:14
+
+```ts
+export type HostCharacterSheetRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly ownerUserId: string;
+  readonly characterType: 'pc' | 'npc' | 'gm_presence';
+  readonly sheetStatus: 'complete' | 'incomplete' | 'draft';
+  readonly name: string;
+  readonly description: string;
+  readonly level: number;
+  readonly sheet: Readonly<Record<string, unknown>>;
+  readonly portraitStoragePath: string | null;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:29
+
+```ts
+export type HostCharacterPresetRecord = {
+  readonly id: string;
+  readonly publicId: string;
+  readonly slug: string;
+  readonly displayName: string;
+  readonly visibility: 'public' | 'owner';
+  readonly ownerUserId: string | null;
+  readonly sheet: Readonly<Record<string, unknown>>;
+};
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:39
+
+```ts
+export type HostCharacterDraft = {
+  readonly name?: unknown;
+  readonly description?: unknown;
+  readonly level?: unknown;
+  readonly sheetStatus?: unknown;
+  readonly sheet?: unknown;
+  readonly portraitStoragePath?: unknown;
+  readonly characterType?: unknown;
+};
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:53
+
+```ts
+export type HostCharacterPorts = {
+  readonly listOwnedCharacters: (
+    actorId: string,
+  ) => Promise<HostCharacterResult<readonly HostCharacterSheetRecord[]>>;
+  readonly getOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+  ) => Promise<HostCharacterResult<HostCharacterSheetRecord | null>>;
+  readonly createOwnedCharacter: (
+    actorId: string,
+    draft: HostCharacterDraft,
+  ) => Promise<HostCharacterResult<HostCharacterSheetRecord>>;
+  readonly updateOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+    draft: HostCharacterDraft,
+  ) => Promise<HostCharacterResult<HostCharacterSheetRecord>>;
+  readonly deleteOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+  ) => Promise<HostCharacterResult<{ readonly id: string }>>;
+  readonly listReadablePresets: (
+    actorId: string,
+  ) => Promise<HostCharacterResult<readonly HostCharacterPresetRecord[]>>;
+  readonly resolveOwnedArtifact: (
+    actorId: string,
+    storagePath: string,
+  ) => Promise<
+    HostCharacterResult<{ readonly storagePath: string; readonly characterId: string }>
+  >;
+};
+```
+
+### src/infrastructure/character/host-character-ports.contract.ts:85
+
+```ts
+export const HOST_CHARACTER_OPS = [
+  'listOwnedCharacters',
+  'getOwnedCharacter',
+  'createOwnedCharacter',
+  'updateOwnedCharacter',
+  'deleteOwnedCharacter',
+  'listReadablePresets',
+  'resolveOwnedArtifact',
+] as const;
+```
+
 ### src/infrastructure/character/liveact/face-anchors-manifest-url.ts:24
 
 ```ts
@@ -11892,6 +12027,8 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/character-preset-service.ts` | `6acece04669bde738d04e6295f41d7d7d7a81afedc9f350d6b531c01cd4e9789` |
 | `src/infrastructure/character/character-service.ts` | `e591323439fd26f117035934bda58178488bf1095b722fb99f138abc0755d195` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
+| `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
+| `src/infrastructure/character/host-character-ports.contract.ts` | `a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc` |
 | `src/infrastructure/character/liveact/face-anchors-manifest-url.ts` | `e7d40a0bffeb9b24fd3cd472acc3ef6927d25635f1dbfa9b585a3a28413619ff` |
 | `src/infrastructure/character/liveact/gltf-liveact-avatar-output.ts` | `2d97b650a5c7002ed43f72b853e861ba511a47bb8c2c737fc9462e02d1273577` |
 | `src/infrastructure/character/liveact/index.ts` | `3e3ce524563528a2a6ab6b6940cbae21f2d3de43960af335bc7134cc32fa6046` |

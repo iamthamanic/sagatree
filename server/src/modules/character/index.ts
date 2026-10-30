@@ -1,9 +1,10 @@
 /**
- * character module public API — quarantine (MIG-406) + membership PC port (#874).
+ * character module public API — quarantine (MIG-406) + membership (#874) + sheet infra (#801).
  * Location: server/src/modules/character/index.ts
  *
- * Characters Edge worker remains unmounted. Durable `characters` rows are owned here
- * for project-membership ownership checks only — not a full character CRUD surface.
+ * Characters Edge worker remains unmounted. MIG-302 adds owner-scoped sheet CRUD /
+ * presets / artifact path checks as isolated-contract ports (no HTTP activation).
+ * Creator/VRM rendering utilities stay client-side under src/infrastructure/character.
  */
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import {
@@ -11,6 +12,15 @@ import {
   type CharacterMembershipCheck,
   type SeededPc,
 } from './internal/character-membership-store.ts';
+import {
+  CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
+  CharacterSheetStore,
+  assertCharacterOwnerStoragePath,
+  type CharacterPresetRecord,
+  type CharacterSheetDraft,
+  type CharacterSheetRecord,
+  type CharacterSheetResult,
+} from './internal/character-sheet-store.ts';
 
 export {
   CHARACTERS_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -70,6 +80,16 @@ export {
 } from './internal/character-lore.ts';
 
 export type { CharacterMembershipCheck, SeededPc };
+export type {
+  CharacterPresetRecord,
+  CharacterSheetDraft,
+  CharacterSheetRecord,
+  CharacterSheetResult,
+};
+export {
+  CHARACTER_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
+  assertCharacterOwnerStoragePath,
+};
 
 export type CharacterPorts = {
   readonly moduleId: 'character';
@@ -86,7 +106,49 @@ export type CharacterPorts = {
     readonly sheetStatus?: 'complete' | 'incomplete' | 'draft';
     readonly id?: string;
   }) => SeededPc;
+  /** MIG-302 owner-scoped sheet CRUD (isolated-contract; no HTTP). */
+  readonly listOwnedCharacters: (
+    actorId: string,
+  ) => CharacterSheetResult<readonly CharacterSheetRecord[]>;
+  readonly getOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+  ) => CharacterSheetResult<CharacterSheetRecord | null>;
+  readonly createOwnedCharacter: (
+    actorId: string,
+    draft: CharacterSheetDraft,
+  ) => CharacterSheetResult<CharacterSheetRecord>;
+  readonly updateOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+    draft: CharacterSheetDraft,
+  ) => CharacterSheetResult<CharacterSheetRecord>;
+  readonly deleteOwnedCharacter: (
+    actorId: string,
+    characterId: string,
+  ) => CharacterSheetResult<{ readonly id: string }>;
+  readonly listReadablePresets: (
+    actorId: string,
+  ) => CharacterSheetResult<readonly CharacterPresetRecord[]>;
+  readonly resolveOwnedArtifact: (
+    actorId: string,
+    storagePath: string,
+  ) => CharacterSheetResult<{ readonly storagePath: string; readonly characterId: string }>;
+  readonly seedPublicPresetForTests: (input: {
+    readonly slug: string;
+    readonly displayName: string;
+    readonly sheet?: Readonly<Record<string, unknown>>;
+  }) => CharacterPresetRecord;
+  readonly seedArtifactForTests: (input: {
+    readonly ownerUserId: string;
+    readonly characterId: string;
+    readonly storagePath: string;
+  }) => CharacterSheetResult<{ readonly id: string }>;
 };
+
+function unavailableSheet<T>(): CharacterSheetResult<T> {
+  return { ok: false, error: 'store-unavailable' };
+}
 
 export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
   if (!db) {
@@ -97,15 +159,37 @@ export function createCharacterPorts(db?: HostDatabase): CharacterPorts {
       seedPcForTests: () => {
         throw new Error('store-unavailable');
       },
+      listOwnedCharacters: () => unavailableSheet(),
+      getOwnedCharacter: () => unavailableSheet(),
+      createOwnedCharacter: () => unavailableSheet(),
+      updateOwnedCharacter: () => unavailableSheet(),
+      deleteOwnedCharacter: () => unavailableSheet(),
+      listReadablePresets: () => unavailableSheet(),
+      resolveOwnedArtifact: () => unavailableSheet(),
+      seedPublicPresetForTests: () => {
+        throw new Error('store-unavailable');
+      },
+      seedArtifactForTests: () => unavailableSheet(),
     };
   }
-  const store = new CharacterMembershipStore(db);
+  const membership = new CharacterMembershipStore(db);
+  const sheets = new CharacterSheetStore(db);
   return {
     moduleId: 'character',
     assertOwnedCompletePc: (ownerUserId, characterId) =>
-      store.assertOwnedCompletePc(ownerUserId, characterId),
-    getDisplayName: (characterId) => store.getDisplayName(characterId),
-    seedPcForTests: (input) => store.seedPcForTests(input),
+      membership.assertOwnedCompletePc(ownerUserId, characterId),
+    getDisplayName: (characterId) => membership.getDisplayName(characterId),
+    seedPcForTests: (input) => membership.seedPcForTests(input),
+    listOwnedCharacters: (actorId) => sheets.listOwned(actorId),
+    getOwnedCharacter: (actorId, characterId) => sheets.getOwned(actorId, characterId),
+    createOwnedCharacter: (actorId, draft) => sheets.createOwned(actorId, draft),
+    updateOwnedCharacter: (actorId, characterId, draft) =>
+      sheets.updateOwned(actorId, characterId, draft),
+    deleteOwnedCharacter: (actorId, characterId) => sheets.deleteOwned(actorId, characterId),
+    listReadablePresets: (actorId) => sheets.listReadablePresets(actorId),
+    resolveOwnedArtifact: (actorId, storagePath) => sheets.resolveArtifact(actorId, storagePath),
+    seedPublicPresetForTests: (input) => sheets.seedPublicPreset(input),
+    seedArtifactForTests: (input) => sheets.seedArtifact(input),
   };
 }
 

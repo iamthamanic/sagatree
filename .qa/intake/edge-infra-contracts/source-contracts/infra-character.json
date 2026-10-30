@@ -124,6 +124,14 @@
       "sha256": "5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5"
     },
     {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "sha256": "13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "sha256": "a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc"
+    },
+    {
       "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
       "sha256": "e7d40a0bffeb9b24fd3cd472acc3ef6927d25635f1dbfa9b585a3a28413619ff"
     },
@@ -10498,6 +10506,22 @@
       "expression": "import type { SagaTreeProfileDto } from '../../domains/character/domain/sagatree-profile.entity';"
     },
     {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 9,
+      "endLine": 9,
+      "module": "./host-character-ports.contract",
+      "resolvedPath": "src/infrastructure/character/host-character-ports.contract.ts",
+      "expression": "import type { HostCharacterPorts } from './host-character-ports.contract';"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 10,
+      "endLine": 10,
+      "module": "./host-character-ports.contract",
+      "resolvedPath": "src/infrastructure/character/host-character-ports.contract.ts",
+      "expression": "import { HOST_CHARACTER_OPS } from './host-character-ports.contract';"
+    },
+    {
       "path": "src/infrastructure/character/liveact/gltf-liveact-avatar-output.ts",
       "line": 6,
       "endLine": 6,
@@ -11840,6 +11864,54 @@
       "line": 16,
       "endLine": 69,
       "text": "export interface CharacterDto {\n  id: string;\n  /** Immutable public character id (CH-XXXXX). */\n  public_id?: string;\n  owner_user_id: string;\n  world_id?: string;\n  project_id?: string;\n  parent_character_id?: string;\n  character_type: 'pc' | 'npc' | 'companion' | 'monster' | 'gm_presence';\n  ruleset_id?: string;\n  ruleset_key?: CharacterRulesetKey;\n  name: string;\n  description: string;\n  class: string;\n  race: string;\n  level: number;\n  background_story?: string;\n  dnd_background?: string | null;\n  notes?: string | null;\n  appearance: CharacterAppearanceDto;\n  portrait_url?: string;\n  token_url?: string;\n  attributes: CharacterAttributeStorageDto;\n  derived_stats?: Record<string, unknown>;\n  skills?: Partial<Record<SagaTreeSkillKey, number>>;\n  proficiencies?: string[];\n  languages?: string[];\n  hp_current?: number;\n  hp_max?: number;\n  armor_class?: number;\n  initiative_bonus?: number;\n  speed?: number;\n  resources?: Record<string, unknown>;\n  conditions?: string[];\n  /** Canonical SagaTree Core profile column (073+). */\n  sagatree_profile?: Partial<SagaTreeProfileDto> | null;\n  personality_traits?: string[];\n  ideals?: string[];\n  bonds?: string[];\n  flaws?: string[];\n  abilities: AbilityDto[];\n  inventory: ItemDto[];\n  /** Present when inventory_schema_version === 2; authoritative Inventory v2 state. */\n  inventory_v2?: unknown | null;\n  inventory_schema_version?: 1 | 2;\n  emotion_profiles: EmotionProfileDto[];\n  /** complete | incomplete — drafts may skip full SagaTree build asserts. */\n  sheet_status?: 'complete' | 'incomplete';\n  is_marketplace_item?: boolean;\n  downloads_count?: number;\n  rating?: number;\n  created_at: string;\n  updated_at: string;\n}"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "export type HostCharacterAdapter = HostCharacterPorts & {\n  readonly transport: 'host';\n  readonly ops: typeof HOST_CHARACTER_OPS;\n};"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 21,
+      "endLine": 36,
+      "text": "export function createHostCharacterAdapter(ports: HostCharacterPorts): HostCharacterAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_CHARACTER_OPS,\n    listOwnedCharacters: (actorId) => ports.listOwnedCharacters(actorId),\n    getOwnedCharacter: (actorId, characterId) => ports.getOwnedCharacter(actorId, characterId),\n    createOwnedCharacter: (actorId, draft) => ports.createOwnedCharacter(actorId, draft),\n    updateOwnedCharacter: (actorId, characterId, draft) =>\n      ports.updateOwnedCharacter(actorId, characterId, draft),\n    deleteOwnedCharacter: (actorId, characterId) =>\n      ports.deleteOwnedCharacter(actorId, characterId),\n    listReadablePresets: (actorId) => ports.listReadablePresets(actorId),\n    resolveOwnedArtifact: (actorId, storagePath) =>\n      ports.resolveOwnedArtifact(actorId, storagePath),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 10,
+      "endLine": 12,
+      "text": "export type HostCharacterResult<T> =\n  | { readonly ok: true; readonly value: T }\n  | { readonly ok: false; readonly error: string };"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 14,
+      "endLine": 27,
+      "text": "export type HostCharacterSheetRecord = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly ownerUserId: string;\n  readonly characterType: 'pc' | 'npc' | 'gm_presence';\n  readonly sheetStatus: 'complete' | 'incomplete' | 'draft';\n  readonly name: string;\n  readonly description: string;\n  readonly level: number;\n  readonly sheet: Readonly<Record<string, unknown>>;\n  readonly portraitStoragePath: string | null;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 29,
+      "endLine": 37,
+      "text": "export type HostCharacterPresetRecord = {\n  readonly id: string;\n  readonly publicId: string;\n  readonly slug: string;\n  readonly displayName: string;\n  readonly visibility: 'public' | 'owner';\n  readonly ownerUserId: string | null;\n  readonly sheet: Readonly<Record<string, unknown>>;\n};"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 39,
+      "endLine": 47,
+      "text": "export type HostCharacterDraft = {\n  readonly name?: unknown;\n  readonly description?: unknown;\n  readonly level?: unknown;\n  readonly sheetStatus?: unknown;\n  readonly sheet?: unknown;\n  readonly portraitStoragePath?: unknown;\n  readonly characterType?: unknown;\n};"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 53,
+      "endLine": 83,
+      "text": "export type HostCharacterPorts = {\n  readonly listOwnedCharacters: (\n    actorId: string,\n  ) => Promise<HostCharacterResult<readonly HostCharacterSheetRecord[]>>;\n  readonly getOwnedCharacter: (\n    actorId: string,\n    characterId: string,\n  ) => Promise<HostCharacterResult<HostCharacterSheetRecord | null>>;\n  readonly createOwnedCharacter: (\n    actorId: string,\n    draft: HostCharacterDraft,\n  ) => Promise<HostCharacterResult<HostCharacterSheetRecord>>;\n  readonly updateOwnedCharacter: (\n    actorId: string,\n    characterId: string,\n    draft: HostCharacterDraft,\n  ) => Promise<HostCharacterResult<HostCharacterSheetRecord>>;\n  readonly deleteOwnedCharacter: (\n    actorId: string,\n    characterId: string,\n  ) => Promise<HostCharacterResult<{ readonly id: string }>>;\n  readonly listReadablePresets: (\n    actorId: string,\n  ) => Promise<HostCharacterResult<readonly HostCharacterPresetRecord[]>>;\n  readonly resolveOwnedArtifact: (\n    actorId: string,\n    storagePath: string,\n  ) => Promise<\n    HostCharacterResult<{ readonly storagePath: string; readonly characterId: string }>\n  >;\n};"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-ports.contract.ts",
+      "line": 85,
+      "endLine": 93,
+      "text": "export const HOST_CHARACTER_OPS = [\n  'listOwnedCharacters',\n  'getOwnedCharacter',\n  'createOwnedCharacter',\n  'updateOwnedCharacter',\n  'deleteOwnedCharacter',\n  'listReadablePresets',\n  'resolveOwnedArtifact',\n] as const;"
     },
     {
       "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
@@ -14908,6 +14980,62 @@
       "endLine": 265,
       "name": "preparePortraitFile",
       "text": "preparePortraitFile(file: File, signal?: AbortSignal): Promise<File> {\n    return prepareCharacterPortraitFile(file, signal);\n  }"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 21,
+      "endLine": 36,
+      "name": "createHostCharacterAdapter",
+      "text": "export function createHostCharacterAdapter(ports: HostCharacterPorts): HostCharacterAdapter {\n  return {\n    transport: 'host',\n    ops: HOST_CHARACTER_OPS,\n    listOwnedCharacters: (actorId) => ports.listOwnedCharacters(actorId),\n    getOwnedCharacter: (actorId, characterId) => ports.getOwnedCharacter(actorId, characterId),\n    createOwnedCharacter: (actorId, draft) => ports.createOwnedCharacter(actorId, draft),\n    updateOwnedCharacter: (actorId, characterId, draft) =>\n      ports.updateOwnedCharacter(actorId, characterId, draft),\n    deleteOwnedCharacter: (actorId, characterId) =>\n      ports.deleteOwnedCharacter(actorId, characterId),\n    listReadablePresets: (actorId) => ports.listReadablePresets(actorId),\n    resolveOwnedArtifact: (actorId, storagePath) =>\n      ports.resolveOwnedArtifact(actorId, storagePath),\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 25,
+      "endLine": 25,
+      "name": "callback",
+      "text": "(actorId) => ports.listOwnedCharacters(actorId)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 26,
+      "endLine": 26,
+      "name": "callback",
+      "text": "(actorId, characterId) => ports.getOwnedCharacter(actorId, characterId)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 27,
+      "endLine": 27,
+      "name": "callback",
+      "text": "(actorId, draft) => ports.createOwnedCharacter(actorId, draft)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 28,
+      "endLine": 29,
+      "name": "callback",
+      "text": "(actorId, characterId, draft) =>\n      ports.updateOwnedCharacter(actorId, characterId, draft)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 30,
+      "endLine": 31,
+      "name": "callback",
+      "text": "(actorId, characterId) =>\n      ports.deleteOwnedCharacter(actorId, characterId)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 32,
+      "endLine": 32,
+      "name": "callback",
+      "text": "(actorId) => ports.listReadablePresets(actorId)"
+    },
+    {
+      "path": "src/infrastructure/character/host-character-adapter.ts",
+      "line": 33,
+      "endLine": 34,
+      "name": "callback",
+      "text": "(actorId, storagePath) =>\n      ports.resolveOwnedArtifact(actorId, storagePath)"
     },
     {
       "path": "src/infrastructure/character/liveact/face-anchors-manifest-url.ts",
