@@ -11,7 +11,7 @@ data (permissions, encryption at rest, access control).
 | Path under data dir | Method |
 | --- | --- |
 | `host.sqlite` (+ WAL) | `wal_checkpoint(PASSIVE)` → `VACUUM INTO` (never inside a transaction) — **not** a raw multi-file copy |
-| `auth.sqlite` (if present) | file copy after DB snapshot |
+| `auth.sqlite` (if present) | `wal_checkpoint(PASSIVE)` → `VACUUM INTO` (same as host.sqlite — never a raw file copy) |
 | `assets/` | recursive copy; verified against `assets.checksum_sha256` |
 
 Uncoordinated `cp host.sqlite*` while writers run is **forbidden** — it can publish

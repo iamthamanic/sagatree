@@ -225,6 +225,14 @@ try {
   const backupDoc = readFileSync(join(root, 'docs/ops/host/backup-restore.md'), 'utf8');
   const updateDoc = readFileSync(join(root, 'docs/ops/host/update-rollback.md'), 'utf8');
   assert(backupDoc.includes('VACUUM INTO'), 'backup runbook documents VACUUM INTO');
+  assert(
+    /auth\.sqlite[^\n]*VACUUM INTO/i.test(backupDoc),
+    'backup runbook documents auth.sqlite via VACUUM INTO (not raw file copy)',
+  );
+  assert(
+    !/auth\.sqlite[^\n]*file copy after/i.test(backupDoc),
+    'backup runbook must not prescribe raw auth.sqlite file copy',
+  );
   assert(backupDoc.includes('/backups'), 'backup runbook references backup mount');
   assert(updateDoc.includes('writeLockHeldMs'), 'rollback runbook documents write lock');
   assert(updateDoc.includes('rollback-drill'), 'rollback runbook references drill CLI');
