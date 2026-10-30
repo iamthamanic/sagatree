@@ -6,6 +6,10 @@
  * importing the Vite package. No HTTP activation.
  */
 import type { Actor } from '../identity/index.ts';
+import type {
+  InviteResolveFail,
+  InviteResolveOk,
+} from './internal/session-access-store.ts';
 import type { ApplyCommandInput, ApplyCommandResult } from './internal/session-runtime-store.ts';
 
 export const SESSION_INFRA_PORTS_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
@@ -15,6 +19,11 @@ export type SessionInfraResult<T> =
   | { readonly ok: false; readonly error: string };
 
 type NestedOk<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: string };
+
+type InviteResolveResult =
+  | InviteResolveOk
+  | InviteResolveFail
+  | { readonly ok: false; readonly error: string };
 
 /** Minimal nested surface required by the flat bridge. */
 export type SessionPortsForInfra = {
@@ -49,7 +58,7 @@ export type SessionPortsForInfra = {
       characterId?: string | null,
     ) => NestedOk<Record<string, unknown>>;
     readonly leavePlaySession: (actor: Actor, sessionId: string) => NestedOk<unknown>;
-    readonly resolveSessionInvite: (actor: Actor, token: string) => NestedOk<Record<string, unknown>>;
+    readonly resolveSessionInvite: (actor: Actor, token: string) => InviteResolveResult;
     readonly revokeSessionInvite: (actor: Actor, token: string) => NestedOk<unknown>;
   };
   readonly recap: {
@@ -64,7 +73,13 @@ export type SessionPortsForInfra = {
 };
 
 function asActor(actorId: string): Actor {
-  return { kind: 'remote-account', actorId, sessionId: `auth-${actorId}`, email: null };
+  return {
+    kind: 'remote-account',
+    actorId,
+    sessionId: `auth-${actorId}`,
+    email: null,
+    linkedSoloActorIds: [],
+  };
 }
 
 /**
@@ -110,9 +125,13 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       sessionId: string,
     ): SessionInfraResult<Record<string, unknown>> {
       const r = session.queries.getSnapshot(asActor(actorId), sessionId);
-      return r.ok
-        ? { ok: true, value: { snapshot: r.snapshot, projectId: r.projectId } }
-        : { ok: false, error: r.error };
+      if (!r.ok) return { ok: false, error: r.error };
+      // Flat RPC-shaped payload (revision/status/roster on value.*), plus projectId.
+      const snap =
+        r.snapshot && typeof r.snapshot === 'object'
+          ? (r.snapshot as Record<string, unknown>)
+          : {};
+      return { ok: true, value: { ...snap, projectId: r.projectId } };
     },
     joinSessionByCode(
       actorId: string,
@@ -136,7 +155,14 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       token: string,
     ): SessionInfraResult<Record<string, unknown>> {
       const r = session.access.resolveSessionInvite(asActor(actorId), token);
-      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
+      if (r.ok) {
+        const { ok: _ok, ...invite } = r;
+        return { ok: true, value: invite };
+      }
+      if ('error' in r && typeof r.error === 'string') {
+        return { ok: false, error: r.error };
+      }
+      return { ok: false, error: r.error_code };
     },
     revokeSessionInvite(
       actorId: string,

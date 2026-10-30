@@ -21,7 +21,13 @@ function assert(cond, msg) {
 }
 
 function actor(id) {
-  return { kind: 'remote-account', actorId: id, sessionId: `auth-${id}`, email: null };
+  return {
+    kind: 'remote-account',
+    actorId: id,
+    sessionId: `auth-${id}`,
+    email: null,
+    linkedSoloActorIds: [],
+  };
 }
 
 const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts')).href;
@@ -172,7 +178,21 @@ try {
   assert(typeof token === 'string' && token.length > 0, 'invite token');
 
   const resolved = session.access.resolveSessionInvite(Player, token);
-  assert(resolved.ok, `resolve_session_invite: ${resolved.ok ? '' : resolved.error}`);
+  assert(resolved.ok, `resolve_session_invite: ${resolved.ok ? '' : JSON.stringify(resolved)}`);
+  assert(
+    resolved.ok &&
+      typeof resolved.session_id === 'string' &&
+      resolved.session_id === sessionId &&
+      typeof resolved.project_id === 'string',
+    'resolve_session_invite returns session/project ids',
+  );
+  const missingInvite = session.access.resolveSessionInvite(Player, 'no-such-token');
+  assert(
+    missingInvite.ok === false &&
+      (('error_code' in missingInvite && missingInvite.error_code === 'not_found') ||
+        ('error' in missingInvite && typeof missingInvite.error === 'string')),
+    `resolve missing invite DENY got ${JSON.stringify(missingInvite)}`,
+  );
 
   // Join by code path (session join code when present)
   const joinCode =
@@ -182,7 +202,10 @@ try {
     null;
   if (typeof joinCode === 'string' && joinCode.trim()) {
     const byCode = session.access.joinSessionByCode(Player, joinCode, null);
-    assert(byCode.ok || byCode.error, 'join_session_by_code returns typed result');
+    assert(
+      byCode.ok === true || (byCode.ok === false && typeof byCode.error === 'string'),
+      `join_session_by_code typed got ${JSON.stringify(byCode)}`,
+    );
   }
 
   const strangerInvite = session.access.createSessionInvite(Stranger, sessionId);
@@ -239,10 +262,16 @@ try {
 
   // Leave (player may leave own membership)
   const leave = session.access.leavePlaySession(Player, sessionId);
-  assert(leave.ok === true || typeof leave.error === 'string', 'leave_play_session typed');
+  assert(
+    leave.ok === true || (leave.ok === false && typeof leave.error === 'string'),
+    `leave_play_session typed got ${JSON.stringify(leave)}`,
+  );
 
   const revoked = session.access.revokeSessionInvite(GM, token);
-  assert(revoked.ok === true || typeof revoked.error === 'string', 'revoke_session_invite typed');
+  assert(
+    revoked.ok === true || (revoked.ok === false && typeof revoked.error === 'string'),
+    `revoke_session_invite typed got ${JSON.stringify(revoked)}`,
+  );
 
   // --- Lobby ready is non-authoritative (legacy defect preserved) ---
   const lobbySrc = readFileSync(
@@ -293,6 +322,27 @@ try {
   assert(bound.rpcNames.length === 12, 'adapter rpcNames');
   const viaSnap = await bound.getSessionRuntimeSnapshot(GM.actorId, sessionId);
   assert(viaSnap.ok, `adapter snapshot: ${viaSnap.ok ? '' : viaSnap.error}`);
+  assert(
+    viaSnap.ok &&
+      typeof viaSnap.value.revision === 'number' &&
+      typeof viaSnap.value.projectId === 'string' &&
+      viaSnap.value.snapshot === undefined,
+    `adapter snapshot flat RPC shape got keys=${viaSnap.ok ? Object.keys(viaSnap.value).join(',') : ''}`,
+  );
+  const viaInvite = await bound.resolveSessionInvite(Player.actorId, token);
+  // Token may already be revoked above — either ok with ids or typed error string.
+  assert(
+    (viaInvite.ok === true &&
+      typeof viaInvite.value.session_id === 'string' &&
+      typeof viaInvite.value.project_id === 'string') ||
+      (viaInvite.ok === false && typeof viaInvite.error === 'string' && viaInvite.error.length > 0),
+    `adapter resolveSessionInvite mapped got ${JSON.stringify(viaInvite)}`,
+  );
+  const viaMissing = await bound.resolveSessionInvite(Player.actorId, 'no-such-token');
+  assert(
+    viaMissing.ok === false && viaMissing.error === 'not_found',
+    `adapter resolve missing maps error_code got ${JSON.stringify(viaMissing)}`,
+  );
 
   const hostWork = mkdtempSync(join(tmpdir(), 'mig311-host-'));
   try {

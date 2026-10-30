@@ -438,9 +438,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       character,
       inventory,
-      sessionInfra: sessionPorts
-        ? createSessionInfraPorts(sessionPorts as Parameters<typeof createSessionInfraPorts>[0])
-        : null,
+      sessionInfra: sessionPorts ? createSessionInfraPorts(sessionPorts) : null,
       npcCreature,
       userProfile,
       projectInfra,
