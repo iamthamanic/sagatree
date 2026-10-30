@@ -41897,8 +41897,8 @@
           "rpc": "increment_marketplace_downloads",
           "resolution": "string-literal",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 254,
-          "sourceSha256": "e5249e8ef57c4d28fab9a31e1e5835180aac6546d780376db607a8a1b82d9594",
+          "line": 238,
+          "sourceSha256": "9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05",
           "requestExpression": "{\n      item_id: id,\n    }",
           "requestKeys": [
             "item_id"
