@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-302 (#801)
 
-- HEAD_SHA: f85078b9e379c03ea6450b501006d89bc1a0e0d6
+- HEAD_SHA: e98917f05b5255ecce295bb7841d5d7585c14efd
 - BASE_SHA: 7422b400d133e26fe78262d876f557a22dc2abf4
 - Date: 2026-10-30
 - Verdict: CLEAR
@@ -13,7 +13,7 @@ Authenticated owner creates/reads/updates/soft-deletes own PC sheets via host `c
 
 1. Producer: Character Editor / infrastructure character-service successor (or host dual-path adapter)
 2. Authorize: verified actor id; `owner_user_id` from actor only (no client-claimed owner); PC-only sheet ports
-3. Persist: SQLite `characters` (+ sheet columns) / `character_presets` / `character_avatar_artifacts` under host single-writer (`BEGIN IMMEDIATE` on create)
+3. Persist: SQLite `characters` (+ sheet columns) / `character_presets` / `character_avatar_artifacts` under host single-writer (`BEGIN IMMEDIATE` on create + seedArtifact)
 4. Project: CharacterSheetRecord with immutable `CH-XXXXX` publicId + sheet JSON payload; complete status gated
 5. Consumer: `createHost` exposes `character` ports; FE `createHostCharacterAdapter` dual-path seam (Supabase default remains)
 
