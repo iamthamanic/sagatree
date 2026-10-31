@@ -37740,6 +37740,9 @@
       "area": "marketplace",
       "implementationIssue": 804,
       "files": [
+        "src/infrastructure/marketplace/host-marketplace-adapter.ts",
+        "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
+        "src/infrastructure/marketplace/index.ts",
         "src/infrastructure/marketplace/marketplace-service.ts"
       ],
       "verification": {
@@ -37755,8 +37758,20 @@
             "sha256": "000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467"
           },
           {
+            "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
+            "sha256": "26df96d9df6c7ae0cebd69e90e85a77075fbbc1138c86b505f8dee97e7e072e0"
+          },
+          {
+            "path": "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
+            "sha256": "f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b"
+          },
+          {
+            "path": "src/infrastructure/marketplace/index.ts",
+            "sha256": "15e40b95148db8d15546f5c1815b51f7846c343e5fc334406548c64858162542"
+          },
+          {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "sha256": "68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0"
+            "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
           },
           {
             "path": "src/lib/authenticatedUser.ts",
@@ -37780,7 +37795,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json",
-      "sourceContractSha256": "497961fb0385bfd70a3f95efe8c07a9f83b6c45119416f12b2cc0377d6edf540",
+      "sourceContractSha256": "8bec42f29c08d87fa9677ded8d48b725c37be2ca276894bef22302ce42d7ce0e",
       "rpcUsed": [
         "increment_marketplace_downloads"
       ],
@@ -37795,16 +37810,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 125,
-          "endLine": 125,
+          "line": 129,
+          "endLine": 129,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 121,
-            "endLine": 155,
+            "line": 125,
+            "endLine": 159,
             "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37812,16 +37827,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 165,
-          "endLine": 165,
+          "line": 169,
+          "endLine": 169,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 160,
-            "endLine": 198,
+            "line": 164,
+            "endLine": 202,
             "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37829,16 +37844,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 205,
-          "endLine": 205,
+          "line": 209,
+          "endLine": 209,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 203,
-            "endLine": 230,
+            "line": 207,
+            "endLine": 234,
             "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         }
@@ -37851,8 +37866,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 28,
-          "endLine": 29,
+          "line": 32,
+          "endLine": 33,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')",
@@ -37861,8 +37876,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 24,
-            "endLine": 68,
+            "line": 28,
+            "endLine": 72,
             "text": "export async function getMarketplaceItems(\n  filters?: MarketplaceFilters\n): Promise<MarketplaceItem[]> {\n  try {\n    let query = supabase\n      .from('marketplace_items')\n      .select('*');\n\n    // Apply filters\n    if (filters?.type && filters.type !== 'all') {\n      query = query.eq('type', filters.type);\n    }\n\n    if (filters?.searchQuery) {\n      query = query.or(\n        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`\n      );\n    }\n\n    if (filters?.minRating !== undefined) {\n      query = query.gte('rating', filters.minRating);\n    }\n\n    if (filters?.maxPrice !== undefined) {\n      query = query.lte('price', filters.maxPrice);\n    }\n\n    // Sorting\n    const sortBy = filters?.sortBy || 'downloads';\n    const sortOrder = filters?.sortOrder || 'desc';\n    query = query.order(sortBy, { ascending: sortOrder === 'asc' });\n\n    const { data, error } = await query;\n\n    if (error) {\n      console.error('Error fetching marketplace items:', error);\n      throw new Error(`Failed to fetch marketplace items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getMarketplaceItems:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37870,8 +37885,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 75,
-          "endLine": 76,
+          "line": 79,
+          "endLine": 80,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single()",
@@ -37880,8 +37895,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 73,
-            "endLine": 91,
+            "line": 77,
+            "endLine": 95,
             "text": "export async function getMarketplaceItemById(id: string): Promise<MarketplaceItem | null> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('id', id)\n      .single();\n\n    if (error) {\n      console.error('Error fetching marketplace item:', error);\n      throw new Error(`Failed to fetch marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in getMarketplaceItemById:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37889,8 +37904,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 100,
-          "endLine": 101,
+          "line": 104,
+          "endLine": 105,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .order('downloads', { ascending: false })\n      .limit(6)",
@@ -37899,8 +37914,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 98,
-            "endLine": 116,
+            "line": 102,
+            "endLine": 120,
             "text": "export async function getFeaturedItems(): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .order('downloads', { ascending: false })\n      .limit(6);\n\n    if (error) {\n      console.error('Error fetching featured items:', error);\n      throw new Error(`Failed to fetch featured items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getFeaturedItems:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37908,16 +37923,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 125,
-          "endLine": 125,
+          "line": 129,
+          "endLine": 129,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 121,
-            "endLine": 155,
+            "line": 125,
+            "endLine": 159,
             "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37925,8 +37940,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 128,
-          "endLine": 129,
+          "line": 132,
+          "endLine": 133,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single()",
@@ -37935,8 +37950,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 121,
-            "endLine": 155,
+            "line": 125,
+            "endLine": 159,
             "text": "export async function createMarketplaceItem(\n  dto: CreateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const safe = whitelistMarketplaceCreateDto(dto);\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .insert({\n        type: safe.type,\n        title: safe.title,\n        description: safe.description || null,\n        author_id: userId,\n        data: safe.data,\n        price: safe.price || 0,\n        image_url: safe.image_url || null,\n        tags: safe.tags || [],\n        rating: 0,\n        downloads: 0,\n      })\n      .select()\n      .single();\n\n    if (error) {\n      console.error('Error creating marketplace item:', error);\n      throw new Error(`Failed to create marketplace item: ${error.message}`);\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in createMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37944,16 +37959,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 165,
-          "endLine": 165,
+          "line": 169,
+          "endLine": 169,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 160,
-            "endLine": 198,
+            "line": 164,
+            "endLine": 202,
             "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37961,8 +37976,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 171,
-          "endLine": 172,
+          "line": 175,
+          "endLine": 176,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle()",
@@ -37971,8 +37986,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 160,
-            "endLine": 198,
+            "line": 164,
+            "endLine": 202,
             "text": "export async function updateMarketplaceItem(\n  id: string,\n  dto: UpdateMarketplaceItemDTO\n): Promise<MarketplaceItem> {\n  try {\n    const userId = await getAuthenticatedUserId();\n    const patch = whitelistMarketplaceUpdatePatch(dto);\n    if (Object.keys(patch).length === 0) {\n      throw new Error('Keine erlaubten Update-Felder');\n    }\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .update({\n        ...patch,\n        updated_at: new Date().toISOString(),\n      })\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select()\n      .maybeSingle();\n\n    if (error) {\n      console.error('Error updating marketplace item:', error);\n      throw new Error(`Failed to update marketplace item: ${error.message}`);\n    }\n\n    if (!data) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Update verweigert',\n      );\n    }\n\n    return data;\n  } catch (error) {\n    console.error('Error in updateMarketplaceItem:', error);\n    throw error;\n  }\n}"
           }
         },
@@ -37980,16 +37995,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 205,
-          "endLine": 205,
+          "line": 209,
+          "endLine": 209,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 203,
-            "endLine": 230,
+            "line": 207,
+            "endLine": 234,
             "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         },
@@ -37997,8 +38012,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 207,
-          "endLine": 208,
+          "line": 211,
+          "endLine": 212,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id')",
@@ -38007,8 +38022,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 203,
-            "endLine": 230,
+            "line": 207,
+            "endLine": 234,
             "text": "export async function deleteMarketplaceItem(id: string): Promise<boolean> {\n  try {\n    const userId = await getAuthenticatedUserId();\n\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .delete()\n      .eq('id', id)\n      .eq('author_id', userId)\n      .select('id');\n\n    if (error) {\n      console.error('Error deleting marketplace item:', error);\n      throw new Error(`Failed to delete marketplace item: ${error.message}`);\n    }\n\n    if (!data || data.length === 0) {\n      throw new Error(\n        'Marketplace-Eintrag nicht gefunden oder fremder Autor — Delete verweigert',\n      );\n    }\n\n    return true;\n  } catch (error) {\n    console.error('Error in deleteMarketplaceItem:', error);\n    return false;\n  }\n}"
           }
         },
@@ -38016,8 +38031,8 @@
           "kind": "rpc",
           "name": "increment_marketplace_downloads",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 238,
-          "endLine": 240,
+          "line": 242,
+          "endLine": 244,
           "resolution": "literal-or-constant",
           "expression": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
           "chain": "supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    })",
@@ -38027,8 +38042,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 236,
-            "endLine": 251,
+            "line": 240,
+            "endLine": 255,
             "text": "export async function incrementDownloads(id: string): Promise<void> {\n  try {\n    const { error } = await supabase.rpc('increment_marketplace_downloads', {\n      item_id: id,\n    });\n\n    if (error) {\n      console.error(\n        'increment_marketplace_downloads RPC failed (no client counter write):',\n        error.message,\n      );\n    }\n  } catch (error) {\n    console.error('Error incrementing downloads:', error);\n  }\n}"
           }
         },
@@ -38036,8 +38051,8 @@
           "kind": "table",
           "name": "marketplace_items",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 258,
-          "endLine": 259,
+          "line": 262,
+          "endLine": 263,
           "resolution": "literal-or-constant",
           "expression": "supabase\n      .from('marketplace_items')",
           "chain": "supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false })",
@@ -38046,8 +38061,8 @@
           ],
           "enclosingOperation": {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "line": 256,
-            "endLine": 274,
+            "line": 260,
+            "endLine": 278,
             "text": "export async function getItemsByAuthor(authorId: string): Promise<MarketplaceItem[]> {\n  try {\n    const { data, error } = await supabase\n      .from('marketplace_items')\n      .select('*')\n      .eq('author_id', authorId)\n      .order('created_at', { ascending: false });\n\n    if (error) {\n      console.error('Error fetching author items:', error);\n      throw new Error(`Failed to fetch author items: ${error.message}`);\n    }\n\n    return data || [];\n  } catch (error) {\n    console.error('Error in getItemsByAuthor:', error);\n    throw error;\n  }\n}"
           }
         }
@@ -38080,51 +38095,57 @@
       ],
       "publicOperationSources": [
         {
+          "path": "src/infrastructure/marketplace/host-marketplace-adapter.ts",
+          "line": 13,
+          "endLine": 26,
+          "name": "createHostMarketplaceAdapter"
+        },
+        {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 24,
-          "endLine": 68,
+          "line": 28,
+          "endLine": 72,
           "name": "getMarketplaceItems"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 73,
-          "endLine": 91,
+          "line": 77,
+          "endLine": 95,
           "name": "getMarketplaceItemById"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 98,
-          "endLine": 116,
+          "line": 102,
+          "endLine": 120,
           "name": "getFeaturedItems"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 121,
-          "endLine": 155,
+          "line": 125,
+          "endLine": 159,
           "name": "createMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 160,
-          "endLine": 198,
+          "line": 164,
+          "endLine": 202,
           "name": "updateMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 203,
-          "endLine": 230,
+          "line": 207,
+          "endLine": 234,
           "name": "deleteMarketplaceItem"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 236,
-          "endLine": 251,
+          "line": 240,
+          "endLine": 255,
           "name": "incrementDownloads"
         },
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 256,
-          "endLine": 274,
+          "line": 260,
+          "endLine": 278,
           "name": "getItemsByAuthor"
         }
       ],

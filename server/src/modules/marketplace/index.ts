@@ -72,20 +72,11 @@ export type MarketplaceCountPorts = {
 export type MarketplacePorts = {
   readonly moduleId: 'marketplace';
   readonly listItems: (
-    actor: Actor | null | undefined,
     filters?: MarketplaceListFilters,
   ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
-  readonly getItem: (
-    actor: Actor | null | undefined,
-    itemId: string,
-  ) => MarketplaceResult<MarketplaceItemRecord | null>;
-  readonly listFeatured: (
-    actor: Actor | null | undefined,
-  ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
-  readonly listByAuthor: (
-    actor: Actor | null | undefined,
-    authorId: string,
-  ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
+  readonly getItemById: (itemId: string) => MarketplaceResult<MarketplaceItemRecord | null>;
+  readonly listFeatured: () => MarketplaceResult<readonly MarketplaceItemRecord[]>;
+  readonly listByAuthor: (authorId: string) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
   readonly createItem: (
     actor: Actor,
     draft: MarketplaceCreateDraft,
@@ -95,7 +86,7 @@ export type MarketplacePorts = {
     itemId: string,
     patch: MarketplaceUpdatePatch,
   ) => MarketplaceResult<MarketplaceItemRecord>;
-  readonly deleteItem: (actor: Actor, itemId: string) => boolean;
+  readonly deleteItem: (actor: Actor, itemId: string) => MarketplaceResult<boolean>;
   readonly incrementDownloads: (
     actor: Actor,
     itemId: string | null | undefined,
@@ -139,18 +130,18 @@ export function createMarketplacePorts(
   const counts = createMarketplaceCountPorts(db);
   return {
     moduleId: 'marketplace',
-    listItems(_actor, filters) {
+    listItems(filters) {
       return { ok: true, value: catalog.list(filters) };
     },
-    getItem(_actor, itemId) {
+    getItemById(itemId) {
       const id = typeof itemId === 'string' ? itemId.trim() : '';
       if (!id) return { ok: false, error: '22023' };
       return { ok: true, value: catalog.getById(id) };
     },
-    listFeatured(_actor) {
+    listFeatured() {
       return { ok: true, value: catalog.listFeatured() };
     },
-    listByAuthor(_actor, authorId) {
+    listByAuthor(authorId) {
       const id = typeof authorId === 'string' ? authorId.trim() : '';
       if (!id) return { ok: false, error: '22023' };
       return { ok: true, value: catalog.listByAuthor(id) };
@@ -167,8 +158,12 @@ export function createMarketplacePorts(
     },
     deleteItem(actor, itemId) {
       const authorId = actorIdOrDeny(actor);
-      if (!authorId) return false;
-      return catalog.delete(authorId, itemId);
+      if (!authorId) return { ok: false, error: '42501' };
+      const id = typeof itemId === 'string' ? itemId.trim() : '';
+      if (!id) return { ok: false, error: '22023' };
+      return catalog.delete(authorId, id)
+        ? { ok: true, value: true }
+        : { ok: false, error: 'not-authorized' };
     },
     incrementDownloads(actor, itemId) {
       return counts.incrementDownloads(actor, itemId);
@@ -183,12 +178,12 @@ export function createMarketplacePortsStub(): MarketplacePorts {
   return {
     moduleId: 'marketplace',
     listItems: () => deny(),
-    getItem: () => deny(),
+    getItemById: () => deny(),
     listFeatured: () => deny(),
     listByAuthor: () => deny(),
     createItem: () => deny(),
     updateItem: () => deny(),
-    deleteItem: () => false,
+    deleteItem: () => deny(),
     incrementDownloads: () => ({ ok: false, error: 'P0001' }),
   };
 }

@@ -20,6 +20,7 @@ export type HostMarketplaceItemRecord = {
   readonly price: number;
   readonly imageUrl: string | null;
   readonly tags: readonly string[];
+  readonly isFeatured: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
 };
@@ -63,18 +64,13 @@ export type HostMarketplaceIncrementResult =
 
 export type HostMarketplacePorts = {
   readonly listItems: (
-    actorId: string | null,
     filters?: HostMarketplaceListFilters,
   ) => Promise<HostMarketplaceResult<readonly HostMarketplaceItemRecord[]>>;
-  readonly getItem: (
-    actorId: string | null,
+  readonly getItemById: (
     itemId: string,
   ) => Promise<HostMarketplaceResult<HostMarketplaceItemRecord | null>>;
-  readonly listFeatured: (
-    actorId: string | null,
-  ) => Promise<HostMarketplaceResult<readonly HostMarketplaceItemRecord[]>>;
+  readonly listFeatured: () => Promise<HostMarketplaceResult<readonly HostMarketplaceItemRecord[]>>;
   readonly listByAuthor: (
-    actorId: string | null,
     authorId: string,
   ) => Promise<HostMarketplaceResult<readonly HostMarketplaceItemRecord[]>>;
   readonly createItem: (
@@ -86,7 +82,10 @@ export type HostMarketplacePorts = {
     itemId: string,
     patch: HostMarketplaceUpdatePatch,
   ) => Promise<HostMarketplaceResult<HostMarketplaceItemRecord>>;
-  readonly deleteItem: (actorId: string, itemId: string) => Promise<boolean>;
+  readonly deleteItem: (
+    actorId: string,
+    itemId: string,
+  ) => Promise<HostMarketplaceResult<boolean>>;
   readonly incrementDownloads: (
     actorId: string,
     itemId: string | null | undefined,
@@ -95,7 +94,7 @@ export type HostMarketplacePorts = {
 
 export const HOST_MARKETPLACE_OPS = [
   'listItems',
-  'getItem',
+  'getItemById',
   'listFeatured',
   'listByAuthor',
   'createItem',

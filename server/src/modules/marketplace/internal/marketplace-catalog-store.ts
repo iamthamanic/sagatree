@@ -161,7 +161,12 @@ export class MarketplaceCatalogStore {
       params.push(filters.maxPrice);
     }
     if (typeof filters?.searchQuery === 'string' && filters.searchQuery.trim()) {
-      const pattern = `%${escapeMarketplaceLikePattern(filters.searchQuery.trim())}%`;
+      const query = filters.searchQuery.trim();
+      // Lone LIKE metacharacters are escaped literals but must not match catalog rows (#804).
+      if (query === '%' || query === '_') {
+        return [];
+      }
+      const pattern = `%${escapeMarketplaceLikePattern(query)}%`;
       where.push(`(title LIKE ? ESCAPE '\\' OR IFNULL(description, '') LIKE ? ESCAPE '\\')`);
       params.push(pattern, pattern);
     }
@@ -198,7 +203,7 @@ export class MarketplaceCatalogStore {
     if (!actorId.trim()) return { ok: false, error: 'missing-actor' };
     if (draft && typeof draft === 'object') {
       for (const key of Object.keys(draft as Record<string, unknown>)) {
-        if (PRIVILEGED.has(key)) return { ok: false, error: 'invalid-draft' };
+        if (PRIVILEGED.has(key)) return { ok: false, error: 'privileged-client-field' };
       }
     }
     if (!isItemType(draft.type)) return { ok: false, error: 'invalid-type' };
@@ -236,7 +241,7 @@ export class MarketplaceCatalogStore {
     if (!trimmed) return { ok: false, error: 'missing-id' };
     if (patch && typeof patch === 'object') {
       for (const key of Object.keys(patch as Record<string, unknown>)) {
-        if (PRIVILEGED.has(key)) return { ok: false, error: 'invalid-draft' };
+        if (PRIVILEGED.has(key)) return { ok: false, error: 'privileged-client-field' };
       }
     }
     const existing = this.getById(trimmed);

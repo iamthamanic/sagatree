@@ -9,7 +9,7 @@
     },
     {
       "path": "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
-      "sha256": "80037a0946d72cd539f720fd5b71913eac01ff502d834cb1bc17ddaa8c57e8f1"
+      "sha256": "f77e7aee8352e2155253cddead1f51d9de10170ca250db27405f7f1f336fcf1b"
     },
     {
       "path": "src/infrastructure/marketplace/index.ts",
@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/marketplace/marketplace-service.ts",
-      "sha256": "68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0"
+      "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
     }
   ],
   "supportingSourceFiles": [
@@ -389,7 +389,7 @@
       "path": "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
       "line": 11,
       "endLine": 26,
-      "text": "export type HostMarketplaceItemRecord = {\n  readonly id: string;\n  readonly type: HostMarketplaceItemType;\n  readonly title: string;\n  readonly description: string | null;\n  readonly author_id: string;\n  readonly data: Readonly<Record<string, unknown>>;\n  readonly rating: number;\n  readonly downloads: number;\n  readonly price: number;\n  readonly imageUrl: string | null;\n  readonly tags: readonly string[];\n  readonly isFeatured: boolean;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
+      "text": "export type HostMarketplaceItemRecord = {\n  readonly id: string;\n  readonly type: HostMarketplaceItemType;\n  readonly title: string;\n  readonly description: string | null;\n  readonly authorId: string;\n  readonly data: Readonly<Record<string, unknown>>;\n  readonly rating: number;\n  readonly downloads: number;\n  readonly price: number;\n  readonly imageUrl: string | null;\n  readonly tags: readonly string[];\n  readonly isFeatured: boolean;\n  readonly createdAt: string;\n  readonly updatedAt: string;\n};"
     },
     {
       "path": "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
