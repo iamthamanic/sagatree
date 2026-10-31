@@ -7,13 +7,13 @@
   "testedCommit": "468ed55c7c15e57e193fad558209235c99a323ea",
   "githubClosed": true,
   "mergeRef": "PR #1061 → main (#845)",
-  "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
+  "note": "Host authz matrix + secret canary + hermetic Browser E2E + world-touch smoke; per-successor HTTP FEATURE VERIFIED deferred MIG-602.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-600-host-authz-parity.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-600.md",
-      "sha256": "b4c742362da3944b8989d0bba196b38da1df529c6b5a2b4ae43539767379446d"
+      "sha256": "74b2f3d0fca0e476cc8c37f5b58d5deda103f4725b77590920fa7e88aa324385"
     },
     {
       "command": "composition-gate CLEAR",

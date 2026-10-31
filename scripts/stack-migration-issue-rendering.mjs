@@ -469,10 +469,16 @@ function acceptanceTierBlock(issue, byId) {
       tier: 'adapter-integration',
     },
     'MIG-600': {
-      slice: 'Cross-cutting permission/security parity suite across migrated host surfaces.',
-      deferred: 'none for security parity scope; release still MIG-700 human gate.',
-      feature: 'self (FEATURE VERIFIED for security parity when suite PASS).',
+      slice: 'Host PolicyService role matrix + secret-marker projections + membership/filter canary + hermetic Browser E2E (temp evidence) + HTTP /api/world-touch allow/deny smoke.',
+      deferred: `Per-successor HTTP/RPC/realtime path FEATURE VERIFIED is ${link('MIG-602')} (coverage inventory may list those rows as open-blocker). Release ${link('MIG-700')}.`,
+      feature: `${link('MIG-602')} for publicActivation/HTTP cutover; this slice is SLICE DONE/feature-security for host policy+projection parity when suite PASS.`,
       tier: 'feature-security',
+    },
+    'MIG-601': {
+      slice: 'Reproducible host Compose profiles + runbook + native host readiness/restart + explicit AI/media capability errors (static Compose contract).',
+      deferred: `Live Docker-in-CI compose up/restart and native↔container HTTP/realtime/persistence parity is ${link('MIG-602')}.`,
+      feature: `${link('MIG-602')} / ${link('MIG-700')}.`,
+      tier: 'isolated-contract',
     },
     'MIG-602': {
       slice: 'Host/DB/transport/browser integration tests for migrated stacks (incl. GATE-01 Drizzle host persistence + import-boundary CI from #1043/#1044 evidence).',

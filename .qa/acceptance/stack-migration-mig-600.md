@@ -9,8 +9,9 @@ parity.
 
 ## Acceptance tier
 
-`feature-security` — SLICE DONE / FEATURE VERIFIED for host policy+projection security parity.
-HTTP `publicActivation` cutover remains MIG-602/#847. RELEASE APPROVED → human (MIG-700).
+`feature-security` — SLICE DONE for host policy+projection security parity (+ hermetic Browser E2E
+and `/api/world-touch` smoke). Per-successor HTTP/RPC/realtime FEATURE VERIFIED → MIG-602/#847.
+RELEASE APPROVED → human (MIG-700).
 
 ## Preconditions
 
@@ -37,6 +38,7 @@ HTTP `publicActivation` cutover remains MIG-602/#847. RELEASE APPROVED → human
 - [x] Coverage inventory lists Depends-on rows as executed or open-blocker (no silent parity).
 - [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 - [x] `scripts/mig-600-host-authz-parity.self-test.mjs` → PASS (stdout only; does not rewrite this file).
+- [x] `e2e/host-negative-authz-parity.spec.ts` → PASS (hermetic Browser E2E, temp `MIG600_OUT_DIR`).
 
 ## Security Coverage
 
@@ -45,7 +47,7 @@ HTTP `publicActivation` cutover remains MIG-602/#847. RELEASE APPROVED → human
 | Deny-by-default | PolicyService authorize matrix |
 | Secret redaction | projectSessionSnapshot + projectionContainsSecretMarker |
 | Canary fail-closed | disabled filter + always-allow stub vs healthy deny |
-| Coverage honesty | open-blocker for HTTP cutover; no untested parity claim |
+| Coverage honesty | open-blocker for per-successor HTTP → MIG-602; no untested parity claim |
 
 ### Launch Checklist (SC)
 

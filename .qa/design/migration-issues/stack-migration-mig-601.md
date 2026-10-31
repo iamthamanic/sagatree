@@ -95,10 +95,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `deployment`, `docs/ops` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Reproducible host Compose profiles + runbook + native host readiness/restart + explicit AI/media capability errors (static Compose contract). |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | TBD by dependency successors: MIG-010/#789, MIG-014/#793, MIG-015/#794, MIG-500/#841, MIG-414/#830 |
-| **FEATURE VERIFIED** | self / MIG-700/#849 human release |
+| **Deferred integration** | Live Docker-in-CI compose up/restart and native↔container HTTP/realtime/persistence parity is MIG-602/#847. |
+| **FEATURE VERIFIED** | MIG-602/#847 / MIG-700/#849. |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

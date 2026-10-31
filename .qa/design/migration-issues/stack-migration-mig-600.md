@@ -96,10 +96,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Cross-cutting permission/security parity suite across migrated host surfaces. |
+| **SLICE DONE** | Host PolicyService role matrix + secret-marker projections + membership/filter canary + hermetic Browser E2E (temp evidence) + HTTP /api/world-touch allow/deny smoke. |
 | **Acceptance tier** | `feature-security` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none for security parity scope; release still MIG-700 human gate. |
-| **FEATURE VERIFIED** | self (FEATURE VERIFIED for security parity when suite PASS). |
+| **Deferred integration** | Per-successor HTTP/RPC/realtime path FEATURE VERIFIED is MIG-602/#847 (coverage inventory may list those rows as open-blocker). Release MIG-700/#849. |
+| **FEATURE VERIFIED** | MIG-602/#847 for publicActivation/HTTP cutover; this slice is SLICE DONE/feature-security for host policy+projection parity when suite PASS. |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers

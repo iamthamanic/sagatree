@@ -7,13 +7,13 @@
   "testedCommit": "de267052cb78558fc76ee33c7f3abc0f82cabfe2",
   "githubClosed": true,
   "mergeRef": "PR #1055 → main (#846)",
-  "note": "Host Compose profiles + runbook + self-test; live Docker-in-CI deferred MIG-602.",
+  "note": "Static Compose/runbook + native host restart/capability self-test; live Docker-in-CI parity deferred MIG-602.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-601-host-compose.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-601.md",
-      "sha256": "063c0d5d2d4ee91c3e8d1653996e1af5846749d8b78f35ba0325a35bcf9da20b"
+      "sha256": "01d3d960dc84554a75da7b2ff47a9f7c3e444ece09960d8cc3c2fef876ef98d2"
     },
     {
       "command": "composition-gate CLEAR",
