@@ -298,8 +298,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-marketplace-count.md",
-      "sha256": "077637869df67156633b59c2987c63ccf8c0fe2e219777cd9334c59d1a6de5c5",
-      "payloadSha256": "e9d78a70410bab98cd40126e9c70bd71245d6b1c4a6a299c443120d058955255"
+      "sha256": "9f92f7767ca3561685d94a00157ad536fbd6cde0bc08c4f41ba8a30c3291d888",
+      "payloadSha256": "d7046b591a1b6656a78307895c22cb2fa002ebce805315b173c9c68708e1bd39"
     },
     {
       "localId": "RPC-SAGA-AUTHORING",

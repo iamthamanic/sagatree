@@ -114,6 +114,49 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.equal(gate05.status, 'blocked');
 });
 
+test('inventory resolved-corrective replaces stale blocked marketplace regressions by id', () => {
+  const previous = structuredClone(original.intake);
+  const marketplace = previous.issues.find((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT');
+  assert.ok(marketplace, 'RPC-MARKETPLACE-COUNT present in previous intake');
+  const staleBlocked = {
+    id: 'RPC-DEPLOY-OPTIONAL-MARKETPLACE',
+    severity: 'Medium',
+    status: 'blocked-successor-acceptance',
+    summary: 'stale prior copy',
+    sourceEvidence: 'stale',
+    requiredSuccessorAcceptance: 'stale',
+    deployedExploitVerified: false,
+  };
+  marketplace.verification.requiredRegressions = [
+    ...(marketplace.verification.requiredRegressions ?? []),
+    JSON.stringify(staleBlocked),
+    staleBlocked,
+  ];
+  const { intake } = buildMigrationPlan({
+    previous,
+    registry: original.registry,
+    rpcInventory: original.rpcInventory,
+    edgeInventory: original.edgeInventory,
+    splits: read('.qa/intake/rpc-contracts/split-groups.json'),
+  });
+  const next = intake.issues.find((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT');
+  const parsed = (next.verification.requiredRegressions ?? []).map((entry) => {
+    try {
+      return typeof entry === 'string' ? JSON.parse(entry) : entry;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean);
+  const deploy = parsed.filter((entry) => entry.id === 'RPC-DEPLOY-OPTIONAL-MARKETPLACE');
+  const acl = parsed.filter((entry) => entry.id === 'RPC-ACL-MARKETPLACE-DEFINER');
+  assert.equal(deploy.length, 1, 'exactly one DEPLOY marketplace regression');
+  assert.equal(acl.length, 1, 'exactly one ACL marketplace regression');
+  assert.equal(deploy[0].status, 'resolved-corrective');
+  assert.equal(acl[0].status, 'resolved-corrective');
+  assert.ok(!parsed.some((entry) => entry.status === 'blocked-successor-acceptance'), 'no blocked marketplace duplicates');
+  assert.equal(next.verification.sourceStatus, 'source-verified');
+});
+
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {
   const input = clone();
   // Strip a hard predecessor so READY cannot ride on stale labels alone.
