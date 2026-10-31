@@ -1005,7 +1005,7 @@
       "githubIssue": 817,
       "order": 44,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1018,7 +1018,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-044",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1287,7 +1287,7 @@
       "githubIssue": 833,
       "order": 58,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1298,7 +1298,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-058",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1306,7 +1306,7 @@
       "githubIssue": 834,
       "order": 59,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1317,7 +1317,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-059",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1325,7 +1325,7 @@
       "githubIssue": 835,
       "order": 60,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1336,7 +1336,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-060",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1387,7 +1387,7 @@
       "githubIssue": 830,
       "order": 63,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1406,7 +1406,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-063",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1414,7 +1414,7 @@
       "githubIssue": 838,
       "order": 64,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1425,7 +1425,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-064",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1433,7 +1433,7 @@
       "githubIssue": 839,
       "order": 65,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1444,7 +1444,7 @@
         "P2",
         "migration-wave-3-edge-services",
         "migration-order-065",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1452,7 +1452,7 @@
       "githubIssue": 840,
       "order": 66,
       "wave": 3,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         795,
         792,
@@ -1463,7 +1463,7 @@
         "P1",
         "migration-wave-3-edge-services",
         "migration-order-066",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1471,7 +1471,7 @@
       "githubIssue": 800,
       "order": 67,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1484,7 +1484,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-067",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1492,7 +1492,7 @@
       "githubIssue": 801,
       "order": 68,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1507,7 +1507,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-068",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1515,7 +1515,7 @@
       "githubIssue": 802,
       "order": 69,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1529,7 +1529,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-069",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1537,7 +1537,7 @@
       "githubIssue": 803,
       "order": 70,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1550,7 +1550,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-070",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1558,7 +1558,7 @@
       "githubIssue": 804,
       "order": 71,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1571,7 +1571,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-071",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1598,7 +1598,7 @@
       "githubIssue": 806,
       "order": 73,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1611,7 +1611,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-073",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1619,7 +1619,7 @@
       "githubIssue": 807,
       "order": 74,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1636,7 +1636,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-074",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1664,7 +1664,7 @@
       "githubIssue": 809,
       "order": 76,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1680,7 +1680,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-076",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1688,7 +1688,7 @@
       "githubIssue": 810,
       "order": 77,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1707,7 +1707,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-077",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1715,7 +1715,7 @@
       "githubIssue": 811,
       "order": 78,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1728,7 +1728,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-078",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1736,7 +1736,7 @@
       "githubIssue": 812,
       "order": 79,
       "wave": 4,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         791,
         792,
@@ -1755,7 +1755,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-079",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1800,7 +1800,7 @@
       "githubIssue": 845,
       "order": 82,
       "wave": 6,
-      "status": "waiting",
+      "status": "ready",
       "dependsOnGithub": [
         796,
         798,
@@ -1866,13 +1866,12 @@
         877,
         878
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-082",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
@@ -1880,7 +1879,7 @@
       "githubIssue": 846,
       "order": 83,
       "wave": 6,
-      "status": "waiting",
+      "status": "ready",
       "dependsOnGithub": [
         789,
         793,
@@ -1888,13 +1887,12 @@
         841,
         830
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-083",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

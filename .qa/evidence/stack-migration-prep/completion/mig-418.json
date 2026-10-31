@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-418",
+  "githubIssue": 834,
+  "result": "PASS",
+  "testedCommit": "64a9d70f6457ce337e71cdd78b1d938698bf5822",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #834; re-verified 64a9d70f6457.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-418-quests-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-418.md",
+      "sha256": "c26b063bb33b8d927907ea97e2ae17f70c3c2e2aef3c1e4888ee667fbb8cd906"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-418.md",
+      "sha256": "6ec7e8e0ac4dff431ceb0625d52a8d30b920504f831b03c737b032cc9936ca46"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-423",
+  "githubIssue": 839,
+  "result": "PASS",
+  "testedCommit": "64a9d70f6457ce337e71cdd78b1d938698bf5822",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #839; re-verified 64a9d70f6457.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-423-spellbook-quarantine.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-423.md",
+      "sha256": "e8a354a1bd00ddfaa8d7a64303b20f3607d679bb4ebae1596960b74bfdd14536"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-423.md",
+      "sha256": "3927b1b385ed514878ab33734bb8b36578c711479f5f5eb84918f4c5948cbe68"
+    }
+  ]
+}
