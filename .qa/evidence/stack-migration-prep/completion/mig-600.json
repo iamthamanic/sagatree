@@ -4,7 +4,7 @@
   "localId": "MIG-600",
   "githubIssue": 845,
   "result": "PASS",
-  "testedCommit": "3d188b6772b8783524e63ded451346dbe4ae64e4",
+  "testedCommit": "3ea1324c8575dd8aca1b71eb1a15bc7e2ed32139",
   "githubClosed": false,
   "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
   "checks": [
@@ -18,7 +18,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-600.md",
-      "sha256": "5a853bd569628dbb68f186558ca9cce48f5b784aae1835f7a0f7085d9a6e0af4"
+      "sha256": "51b4d983b6461372c71b4591aeeca8a97a5f6d79d5d48b6f45c6d707411a2ed3"
     }
   ]
 }
