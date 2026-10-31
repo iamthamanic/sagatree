@@ -71,6 +71,11 @@ import {
 import { createCharacterPorts, type CharacterPorts } from '../modules/character/index.ts';
 import { createInventoryPorts, type InventoryPorts } from '../modules/inventory/index.ts';
 import {
+  createMarketplacePorts,
+  createMarketplacePortsStub,
+  type MarketplacePorts,
+} from '../modules/marketplace/index.ts';
+import {
   createSessionInfraPorts,
   type SessionInfraPorts,
 } from '../modules/session/session-infra-ports.ts';
@@ -117,6 +122,8 @@ export type HostInstance = {
   readonly character: CharacterPorts;
   /** MIG-303 inventory + catalog ports (HTTP cutover → MIG-602). */
   readonly inventory: InventoryPorts;
+  /** MIG-305 marketplace catalog + download counter ports (HTTP cutover → MIG-600). */
+  readonly marketplace: MarketplacePorts;
   /** MIG-311 flat session infra ports for dual-path FE adapter (HTTP cutover → MIG-602). */
   readonly sessionInfra: SessionInfraPorts | null;
   /** MIG-307 NPC/creature definition + instance ports (HTTP cutover → MIG-600). */
@@ -264,6 +271,9 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
           },
         })
       : createInventoryPorts();
+    const marketplace: MarketplacePorts = db
+      ? createMarketplacePorts({ db })
+      : createMarketplacePortsStub();
     const saga: SagaPorts = db
       ? createSagaPorts({
           db,
@@ -438,6 +448,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       character,
       inventory,
+      marketplace,
       sessionInfra: sessionPorts ? createSessionInfraPorts(sessionPorts) : null,
       npcCreature,
       userProfile,

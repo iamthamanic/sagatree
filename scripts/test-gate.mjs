@@ -1176,6 +1176,19 @@ function checkMig304LookAdapter() {
   );
 }
 
+function checkMig305MarketplaceAdapter() {
+  console.log('MIG-305 marketplace adapter (#804): catalog host ports + dual-path seam...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-305-marketplace-adapter.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: mig-305-marketplace-adapter.self-test');
+}
+
 function checkMig307NpcAdapter() {
   console.log('MIG-307 npc-creature adapter (#806): host ports + dual-path seam...');
   execFileSync(
@@ -3414,6 +3427,7 @@ checkMig301AiAdapter();
 checkMig302CharacterAdapter();
 checkMig303InventoryAdapter();
 checkMig304LookAdapter();
+checkMig305MarketplaceAdapter();
 checkMig307NpcAdapter();
 checkMig308ProjectAdapter();
 checkMig310SagaAdapter();

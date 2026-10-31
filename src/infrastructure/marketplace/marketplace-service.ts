@@ -4,6 +4,10 @@
  *
  * Client-trust (#675): mutations scope to authenticated author_id; update/create
  * DTOs are allowlisted — never spread rating/downloads/author_id from the client.
+ *
+ * Dual-path (MIG-305): production remains Supabase; no client counter write.
+ * Host ports bind via `createHostMarketplaceAdapter` for tests / future cutover
+ * (no VITE cutover flag — env alone does not redirect this facade).
  */
 import { supabase } from '../../lib/supabase';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';

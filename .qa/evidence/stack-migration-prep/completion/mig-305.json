@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-305",
+  "githubIssue": 804,
+  "result": "PASS",
+  "testedCommit": "6515414f66d4e03515c50cbfc94f64b97c70d817",
+  "githubClosed": false,
+  "mergeRef": null,
+  "note": "Marketplace catalog host ports + dual-path FE adapter; Supabase remains live default; no HTTP mount.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-305-marketplace-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-305.md",
+      "sha256": ""
+    },
+    {
+      "command": "composition-gate SKIPPED",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-305.md",
+      "sha256": "f96bf9236e132c3a0f09bb08d134607f23fdc2506542d2cc9af5d0fa6390c598"
+    }
+  ]
+}
