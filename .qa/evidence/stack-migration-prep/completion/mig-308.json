@@ -12,7 +12,7 @@
       "command": "node --experimental-strip-types scripts/mig-308-project-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-308.md",
-      "sha256": "4e28ee283bf4f4ea3f3db4c880dfb4eaa7b0412b01009a6c9b653a6ad4404112"
+      "sha256": "85c16d552b96783ec5b71ad0fd15efcf86b6a88020ba4eb35b88ff56666aa80a"
     },
     {
       "command": "composition-gate CLEAR",

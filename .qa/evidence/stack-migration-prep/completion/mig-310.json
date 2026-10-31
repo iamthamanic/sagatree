@@ -12,7 +12,7 @@
       "command": "node --experimental-strip-types scripts/mig-310-saga-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-310.md",
-      "sha256": "66a3e273a2746b08ed80eb87ccfc924619268a853cb6a104a9cbe5564c7a3919"
+      "sha256": "80b2b193f527d37853c06a67e16afc6446b94d2df9269081d4f08df53bfa0acf"
     },
     {
       "command": "composition-gate CLEAR",

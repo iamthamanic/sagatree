@@ -62,6 +62,12 @@ Port `src/infrastructure/world` callers onto the approved host world repositorie
 - Self-test: `node --experimental-strip-types scripts/mig-313-world-adapter.self-test.mjs` → PASS.
 - Unit tests: host-bound tree CRUD, player DENY, map-pin via assets, 17 RPC command wrappers.
 
+## Required Tests
+- [x] `scripts/mig-313-world-adapter.self-test.mjs` → PASS
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout)
+- [x] Isolated-contract acceptance criteria for this slice exercised via self-test / composition CLEAR
+- [x] Supabase production facade remains default; no accidental host cutover / public HTTP activation
+
 ## Composition Gate
 
 Proof: `.qa/runs/composition-gate-stack-migration-mig-313.md`

@@ -12,7 +12,7 @@
       "command": "node --experimental-strip-types scripts/mig-312-user-profile-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-312.md",
-      "sha256": "7cb7762110323868680c4f54f22575def4b4745d08d7651194c03968910810c7"
+      "sha256": "1c0611a9a531a8948844ebf2000fa70acf5e306dce2e84fcf389e86c4cb96795"
     },
     {
       "command": "composition-gate CLEAR",

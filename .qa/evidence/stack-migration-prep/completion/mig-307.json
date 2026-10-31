@@ -12,7 +12,7 @@
       "command": "node --experimental-strip-types scripts/mig-307-npc-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-307.md",
-      "sha256": "55b59e4372ca63768d748a00aca7d7ca4b9b07d9589f6c7fb2659d9b03023229"
+      "sha256": "e5f3d340a35906558f9bb3b8b60d847adaf47f72fcc75ae3a2e54f7060eb89b9"
     },
     {
       "command": "composition-gate CLEAR",
