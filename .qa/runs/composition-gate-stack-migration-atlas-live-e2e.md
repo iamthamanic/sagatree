@@ -1,12 +1,11 @@
 # Composition Gate — stack-migration-atlas-live-e2e (#770 / ATLAS-LIVE-E2E)
 
-- HEAD_SHA: 63e93917d89cc4ab85d14f1c2f2abfb90771bbd5
+- HEAD_SHA: 17145e40bdaa290a5cfa55220d8c24ba8e2b1f45
 - BASE_SHA: 63e93917d89cc4ab85d14f1c2f2abfb90771bbd5
 - Date: 2026-11-01
 - Verdict: CLEAR
 - Note: Isolated product journey already 3/3 PASS on main CI
-  (`atlas-isolated-product`, run 41201202311). This proof pins DONE-evidence
-  sync; no fake cutover / no hosted Supabase secrets.
+  (`atlas-isolated-product`, run 41201202311). DONE-evidence sync commit on branch; no fake cutover / no hosted Supabase secrets.
 
 ## Event
 
