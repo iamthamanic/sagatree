@@ -19,7 +19,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-atlas-live-e2e.md",
-      "sha256": "70a1e6ae6a8cd0d7b5578172f782da495ec3cfd6535af3a0dc1c21e256909b59"
+      "sha256": "7b770d46c097cbcde1d2c55136c1c3ffdd540506a502c367dc17144c8a1dd0f7"
     }
   ]
 }
