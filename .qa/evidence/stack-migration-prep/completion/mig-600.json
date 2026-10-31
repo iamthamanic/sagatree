@@ -4,9 +4,9 @@
   "localId": "MIG-600",
   "githubIssue": 845,
   "result": "PASS",
-  "testedCommit": "68b7ac4babce69485026a2936aa392fc3860653c",
+  "testedCommit": "66b25867bc00ccec020b34fff3d0c36cbf5555da",
   "githubClosed": false,
-  "note": "Host negative authz parity self-test + composition CLEAR; HTTP cutover deferred to MIG-602.",
+  "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-600-host-authz-parity.self-test.mjs",
@@ -18,7 +18,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-600.md",
-      "sha256": "143a8fec6342fd11e80d0b1e5f92b9d18a57c9a5c699bc45af71521ea18b63e8"
+      "sha256": "a7cbf404a3e40ef82a275af8eff45d54121ca29939fe32765447b630717bbd11"
     }
   ]
 }
