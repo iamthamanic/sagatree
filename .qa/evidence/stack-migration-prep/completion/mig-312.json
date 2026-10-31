@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-312",
+  "githubIssue": 811,
+  "result": "PASS",
+  "testedCommit": "572ed4b3e18f5571367ac2881cdbe316a7b9025f",
+  "githubClosed": true,
+  "note": "Backfill after GitHub CLOSED #811; self-test re-verified on 572ed4b3e18f.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-312-user-profile-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-312.md",
+      "sha256": "7cb7762110323868680c4f54f22575def4b4745d08d7651194c03968910810c7"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-312.md",
+      "sha256": "079eb4bf2ca98225289c4bfd4fa5bcdc4e05ef734dcd81624502c44c611981dc"
+    }
+  ]
+}

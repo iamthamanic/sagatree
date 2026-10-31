@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-310",
+  "githubIssue": 809,
+  "result": "PASS",
+  "testedCommit": "572ed4b3e18f5571367ac2881cdbe316a7b9025f",
+  "githubClosed": true,
+  "note": "Backfill after GitHub CLOSED #809; self-test re-verified on 572ed4b3e18f.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-310-saga-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-310.md",
+      "sha256": "66a3e273a2746b08ed80eb87ccfc924619268a853cb6a104a9cbe5564c7a3919"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-310.md",
+      "sha256": "24ad5f2784a494850ad1af10fe686ef8c1b5792daa619a6a507a1dd6374262a6"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-307",
+  "githubIssue": 806,
+  "result": "PASS",
+  "testedCommit": "572ed4b3e18f5571367ac2881cdbe316a7b9025f",
+  "githubClosed": true,
+  "note": "Backfill after GitHub CLOSED #806; self-test re-verified on 572ed4b3e18f.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-307-npc-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-307.md",
+      "sha256": "55b59e4372ca63768d748a00aca7d7ca4b9b07d9589f6c7fb2659d9b03023229"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-307.md",
+      "sha256": "137f9273f42ea34bba8090573193610ec57854c6ca7a13dd80e0377d9fbdd027"
+    }
+  ]
+}

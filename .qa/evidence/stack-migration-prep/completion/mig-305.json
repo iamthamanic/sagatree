@@ -4,9 +4,9 @@
   "localId": "MIG-305",
   "githubIssue": 804,
   "result": "PASS",
-  "testedCommit": "6745a7a353b193fee31af2e17ff0a7ad608b225e",
-  "githubClosed": false,
-  "note": "Marketplace catalog host ports + dual-path FE adapter; review-finding hardenings applied.",
+  "testedCommit": "572ed4b3e18f5571367ac2881cdbe316a7b9025f",
+  "githubClosed": true,
+  "note": "Backfill after GitHub CLOSED #804; self-test re-verified on 572ed4b3e18f.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-305-marketplace-adapter.self-test.mjs",
