@@ -114,6 +114,49 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.equal(gate05.status, 'blocked');
 });
 
+test('inventory resolved-corrective replaces stale blocked marketplace regressions by id', () => {
+  const previous = structuredClone(original.intake);
+  const marketplace = previous.issues.find((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT');
+  assert.ok(marketplace, 'RPC-MARKETPLACE-COUNT present in previous intake');
+  const staleBlocked = {
+    id: 'RPC-DEPLOY-OPTIONAL-MARKETPLACE',
+    severity: 'Medium',
+    status: 'blocked-successor-acceptance',
+    summary: 'stale prior copy',
+    sourceEvidence: 'stale',
+    requiredSuccessorAcceptance: 'stale',
+    deployedExploitVerified: false,
+  };
+  marketplace.verification.requiredRegressions = [
+    ...(marketplace.verification.requiredRegressions ?? []),
+    JSON.stringify(staleBlocked),
+    staleBlocked,
+  ];
+  const { intake } = buildMigrationPlan({
+    previous,
+    registry: original.registry,
+    rpcInventory: original.rpcInventory,
+    edgeInventory: original.edgeInventory,
+    splits: read('.qa/intake/rpc-contracts/split-groups.json'),
+  });
+  const next = intake.issues.find((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT');
+  const parsed = (next.verification.requiredRegressions ?? []).map((entry) => {
+    try {
+      return typeof entry === 'string' ? JSON.parse(entry) : entry;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean);
+  const deploy = parsed.filter((entry) => entry.id === 'RPC-DEPLOY-OPTIONAL-MARKETPLACE');
+  const acl = parsed.filter((entry) => entry.id === 'RPC-ACL-MARKETPLACE-DEFINER');
+  assert.equal(deploy.length, 1, 'exactly one DEPLOY marketplace regression');
+  assert.equal(acl.length, 1, 'exactly one ACL marketplace regression');
+  assert.equal(deploy[0].status, 'resolved-corrective');
+  assert.equal(acl[0].status, 'resolved-corrective');
+  assert.ok(!parsed.some((entry) => entry.status === 'blocked-successor-acceptance'), 'no blocked marketplace duplicates');
+  assert.equal(next.verification.sourceStatus, 'source-verified');
+});
+
 test('rejects ready through blocked transitive predecessors even if labels and counts agree', () => {
   const input = clone();
   // Strip a hard predecessor so READY cannot ride on stale labels alone.
@@ -566,6 +609,26 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
   assert.ok(
     ready.some((entry) => entry.localId === 'MIG-313'),
     'MIG-313 remains READY after world/atlas cluster DONE',
+  );
+  const rpcMarketplaceCount = original.intake.issues.find((issue) => issue.localId === 'RPC-MARKETPLACE-COUNT');
+  assert.equal(rpcMarketplaceCount?.status, 'done', 'RPC-MARKETPLACE-COUNT must be DONE after #878 evidence');
+  assert.ok(rpcMarketplaceCount?.completionEvidence, 'RPC-MARKETPLACE-COUNT completionEvidence path');
+  assert.ok(rpcMarketplaceCount?.labels?.includes('agent-done'), 'RPC-MARKETPLACE-COUNT agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT'),
+    'RPC-MARKETPLACE-COUNT must leave READY after DONE evidence',
+  );
+  const mig353 = original.intake.issues.find((issue) => issue.localId === 'MIG-353');
+  assert.equal(mig353?.status, 'done', 'MIG-353 coordinator must be DONE after #816 evidence');
+  assert.ok(mig353?.completionEvidence, 'MIG-353 completionEvidence path');
+  assert.ok(mig353?.labels?.includes('agent-done'), 'MIG-353 agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'MIG-353'),
+    'MIG-353 must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'MIG-305'),
+    'MIG-305 becomes READY after RPC-MARKETPLACE-COUNT/#878 DONE evidence',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

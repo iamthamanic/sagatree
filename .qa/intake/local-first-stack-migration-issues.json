@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 18,
-    "issuesBlockedOrNeedsDesign": 13,
+    "issuesReady": 19,
+    "issuesBlockedOrNeedsDesign": 10,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -2648,7 +2648,7 @@
       "title": "Marketplace-Downloadzähler und Fallback",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-marketplace-count",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-marketplace-count.md",
       "dependsOn": [
@@ -2713,9 +2713,8 @@
         "Vorhandenes Item erhöht downloads atomar um eins, unbekanntes Item bleibt No-op; NULL-Verhalten ist belegt.",
         "Öffentliche Ausführbarkeit, fehlender search_path und fehlende Akteurprüfung sind explizite Legacy-Entscheidungen und werden nicht still als sicher übernommen.",
         "Client-RPC-Fehler und fehlende Funktion aktivieren den dokumentierten direkten Tabellenfallback; dessen Race-/RLS-Verhalten ist geprüft.",
-        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false}",
-        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
-        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
+        "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
         "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
       ],
       "assertions": [
@@ -2766,7 +2765,7 @@
         {
           "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
           "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
-          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false}",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
           "sourceRefs": [
             ".qa/intake/rpc-contracts/increment_marketplace_downloads.md"
           ]
@@ -2774,28 +2773,20 @@
         {
           "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
           "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
-          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
-          "sourceRefs": [
-            ".qa/intake/rpc-contracts/increment_marketplace_downloads.md"
-          ]
-        },
-        {
-          "given": "Der eingefrorene Legacy-Defekt aus dem Quellinventar",
-          "when": "Der Host-Nachfolger die entsprechende negative / korrigierende Regression ausführt",
-          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+          "then": "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
           "sourceRefs": [
             ".qa/intake/rpc-contracts/increment_marketplace_downloads.md"
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-marketplace-count.json",
       "verification": {
-        "sourceStatus": "source-blocked",
-        "implementationStatus": "not-accepted",
+        "sourceStatus": "source-verified",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
-          "{\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false}",
-          "{\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
-          "{\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}"
+          "{\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
+          "{\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}"
         ],
         "approvalRequired": null
       },
@@ -2809,9 +2800,8 @@
           "Vorhandenes Item erhöht downloads atomar um eins, unbekanntes Item bleibt No-op; NULL-Verhalten ist belegt.",
           "Öffentliche Ausführbarkeit, fehlender search_path und fehlende Akteurprüfung sind explizite Legacy-Entscheidungen und werden nicht still als sicher übernommen.",
           "Client-RPC-Fehler und fehlende Funktion aktivieren den dokumentierten direkten Tabellenfallback; dessen Race-/RLS-Verhalten ist geprüft.",
-          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false}",
-          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false}",
-          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung und Client-Fallback-Test vor Umsetzung.\",\"deployedExploitVerified\":false}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
+          "Verpflichtende Legacy-Regression: {\"id\":\"RPC-ACL-MARKETPLACE-DEFINER\",\"severity\":\"Medium\",\"status\":\"resolved-corrective\",\"summary\":\"Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.\",\"sourceEvidence\":\"Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.\",\"requiredSuccessorAcceptance\":\"Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.\",\"deployedExploitVerified\":false,\"resolution\":\"Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675).\"}",
           "Touched files: zero type escape hatches (typed-strict / Boy Scout)."
         ],
         "abhaengigkeiten": [
@@ -2832,7 +2822,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-021",
-        "agent-blocked"
+        "agent-done"
       ]
     },
     {
@@ -5190,7 +5180,7 @@
       "title": "Replace Postgres RPC cluster: remaining RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "blocked",
+      "status": "done",
       "featureSlug": "stack-migration-mig-353",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-353.md",
       "dependsOn": [
@@ -5342,9 +5332,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-353.json",
       "verification": {
-        "sourceStatus": "source-blocked",
-        "implementationStatus": "not-accepted",
+        "sourceStatus": "source-verified",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -5373,7 +5364,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-030",
-        "agent-blocked"
+        "agent-done"
       ]
     },
     {
@@ -13514,7 +13505,7 @@
       "title": "Port infrastructure/marketplace adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-305",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-305.md",
       "dependsOn": [
@@ -13667,8 +13658,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-071",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

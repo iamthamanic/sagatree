@@ -1,8 +1,8 @@
 # RPC-Vertrag: `increment_marketplace_downloads`
 
-Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.
+Host-Nachfolger (#878): atomarer Downloadzähler über SQLite marketplace_items + MarketplaceCountStore; optionale src/supabase SQL-Skripte bleiben Legacy-Installationsquellen ohne Migrationsketten-Autorität.
 
-**Status:** `source-blocked`. Quellcode-Baseline `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Umsetzungsfreigabe: nein.**
+**Status:** `source-verified`. Quellcode-Baseline `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Umsetzungsfreigabe: nein.**
 
 **Teilaufgabe:** [#878](https://github.com/iamthamanic/sagatree/issues/878) — RPC-MARKETPLACE-COUNT; Koordinator [#816](https://github.com/iamthamanic/sagatree/issues/816).
 

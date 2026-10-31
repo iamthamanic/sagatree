@@ -41833,15 +41833,13 @@
     {
       "rpc": "increment_marketplace_downloads",
       "verification": {
-        "status": "source-blocked",
+        "status": "source-verified",
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
         "liveDatabaseVerified": false,
-        "implementationReady": false,
+        "implementationReady": true,
         "isolatedPostgresCatalogueVerified": false,
         "sourceDefinitionVerified": true,
-        "blockers": [
-          "Optional SQL definition verified, but absent from the complete repository migration chain; active deployed installation and ACL are unresolved."
-        ],
+        "blockers": [],
         "sourceFiles": [
           {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
@@ -42066,12 +42064,13 @@
       "dependencyEdges": [],
       "proposedSuccessor": {
         "commandModule": "server/src/application/marketplace-count/increment_marketplace_downloads/index.ts",
-        "status": "BLOCKED — confirm whether function is deployed via migrations or only legacy sql; may need migration backfill issue",
+        "status": "ACCEPTED — host SQLite marketplace_items + MarketplaceCountStore (#878)",
         "owningModule": "server/src/modules/marketplace/index.ts",
         "transitionalAdapter": "server/src/application/commands/increment_marketplace_downloads.ts",
-        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home."
+        "adapterRole": "Optional transitional re-export of the use-case entry; not the implementation home.",
+        "hostMigration": "server/migrations/0029_marketplace_items.sql"
       },
-      "summary": "Erhöht den Marketplace-Downloadzähler über eine außerhalb der Migrationskette definierte optionale SQL-Funktion.",
+      "summary": "Host-Nachfolger (#878): atomarer Downloadzähler über SQLite marketplace_items + MarketplaceCountStore; optionale src/supabase SQL-Skripte bleiben Legacy-Installationsquellen ohne Migrationsketten-Autorität.",
       "authorization": [
         "SECURITY DEFINER mit search_path=public,pg_temp; EXECUTE nur für authenticated (kein anon/PUBLIC) nach #675.",
         "Keine auth.uid-/Owner-Prüfung im Funktionsbody; Zählerinkrement bleibt absichtlich für authentifizierte Aufrufer ohne Autorenbindung."
@@ -42092,20 +42091,22 @@
         {
           "id": "RPC-DEPLOY-OPTIONAL-MARKETPLACE",
           "severity": "Medium",
-          "status": "blocked-successor-acceptance",
+          "status": "resolved-corrective",
           "summary": "Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.",
           "sourceEvidence": "src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.",
           "requiredSuccessorAcceptance": "Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.",
-          "deployedExploitVerified": false
+          "deployedExploitVerified": false,
+          "resolution": "Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675)."
         },
         {
           "id": "RPC-ACL-MARKETPLACE-DEFINER",
           "severity": "Medium",
-          "status": "blocked-successor-acceptance",
+          "status": "resolved-corrective",
           "summary": "Optionale Downloadfunktion ist SECURITY DEFINER ohne search_path-Pin und ohne Akteurprüfung bei bestehenbleibendem PUBLIC-EXECUTE.",
           "sourceEvidence": "Beide optionalen SQL-Skripte: keine REVOKE PUBLIC, keine SET search_path, kein auth.uid-Guard.",
           "requiredSuccessorAcceptance": "Gewünschte öffentliche Zählberechtigung explizit festlegen; Tabellenqualifizierung/Ausführungskontext und Abuse-/Retry-Semantik prüfen.",
-          "deployedExploitVerified": false
+          "deployedExploitVerified": false,
+          "resolution": "Host migration 0029 + MarketplaceCountStore (#878); FE RPC-only (#675)."
         }
       ],
       "operations": [],

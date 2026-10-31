@@ -54,6 +54,36 @@ export function isLegacyDefectPayload(value) {
   return false;
 }
 
+/** Stable legacy-defect id when payload is structured JSON; otherwise null. */
+export function legacyDefectId(value) {
+  try {
+    const parsed = JSON.parse(text(value));
+    if (parsed && typeof parsed === 'object' && typeof parsed.id === 'string' && parsed.id.length > 0) return parsed.id;
+  } catch {
+    /* plain text */
+  }
+  return null;
+}
+
+/**
+ * Inventory legacyDefects win over stale prior regressions with the same id
+ * (e.g. resolved-corrective must replace blocked-successor-acceptance copies).
+ */
+export function mergeRequiredRegressions(inventoryLegacyDefects, priorRegressions, priorLegacyBlockers = []) {
+  const inventoryIds = new Set(
+    inventoryLegacyDefects.map(legacyDefectId).filter(Boolean),
+  );
+  const keepPrior = (entry) => {
+    const id = legacyDefectId(entry);
+    return !(id && inventoryIds.has(id));
+  };
+  return unique([
+    ...inventoryLegacyDefects,
+    ...priorRegressions.filter(keepPrior),
+    ...priorLegacyBlockers.filter(keepPrior),
+  ]);
+}
+
 /** Every inventoried requiredTest becomes a binding assertion — no bullet-count truncation. */
 function checksForTests(name, tests, sources) {
   return (tests ?? []).map((test) => ({ given: `Der eingefrorene Quellvertrag für ${name} und isolierte positive/negative Fixtures`, when: `Der Nachfolger den dokumentierten Fall für ${name} ausführt`, then: test, sourceRefs: sources }));
@@ -228,11 +258,11 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       ? old.verification.requiredRegressions.map(text)
       : [];
     const inventoryLegacySet = new Set(inventoryLegacyDefects.map(text));
-    const requiredRegressions = unique([
-      ...inventoryLegacyDefects,
-      ...priorRegressions,
-      ...priorBlockers.filter((entry) => isLegacyDefectPayload(entry)),
-    ]);
+    const requiredRegressions = mergeRequiredRegressions(
+      inventoryLegacyDefects,
+      priorRegressions,
+      priorBlockers.filter((entry) => isLegacyDefectPayload(entry)),
+    );
     const blockers = unique([
       ...priorBlockers.filter((entry) => {
         const s = text(entry);

@@ -573,9 +573,17 @@ def main():
             all_sources.update(t["source"]["path"] for t in fn["grantHistory"])
         row["sourceFiles"] = [{"path": p, "sha256": digest((ROOT / p).read_text())} for p in sorted(all_sources)]
         if name == "increment_marketplace_downloads":
-            row["verification"]["status"] = "source-blocked"
+            # Host successor accepted (#878 / PR #1054): SQLite marketplace_items is canonical.
+            # Optional src/supabase SQL remains documented alternative install only (legacyDefects).
+            row["verification"]["status"] = "source-verified"
             row["verification"]["sourceDefinitionVerified"] = True
-            row["verification"]["blockers"] = ["Optional SQL definition verified, but absent from the complete repository migration chain; active deployed installation and ACL are unresolved."]
+            row["verification"]["implementationReady"] = True
+            row["verification"]["blockers"] = []
+            row["proposedSuccessor"] = {
+                **row.get("proposedSuccessor", {}),
+                "status": "ACCEPTED — host SQLite marketplace_items + MarketplaceCountStore (#878)",
+                "hostMigration": "server/migrations/0029_marketplace_items.sql",
+            }
             row["alternativeInstallations"] = [{"source": fn["source"], "grantHistory": fn["grantHistory"], "executeGrants": sorted(fn["executeGrants"]), "supportingSchema": fn["supportingSchema"], "supportingFunctions": fn["supportingFunctions"]} for fn in optional]
         reviewed = semantics.get(name, {}).get("reviewedSources")
         if reviewed is not None and reviewed != row["sourceFiles"]:

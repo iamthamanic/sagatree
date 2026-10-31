@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "RPC-MARKETPLACE-COUNT",
+  "result": "PASS",
+  "testedCommit": "ecc509e45da2a49193fdf162a51b128bcf2fac02",
+  "githubClosed": true,
+  "mergeRef": "PR #1054 \u2192 main (#878)",
+  "note": "increment_marketplace_downloads host port; durable marketplace_items.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/rpc-marketplace-count.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-rpc-marketplace-count.md",
+      "sha256": "d9654ea84dba114f4ff586338bdd6ad40f8deb04dad2e6527d7ebc7b88f3ead0"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-rpc-marketplace-count.md",
+      "sha256": "24089b98a1ab34b7d037e489da7757890caec2a819858907e382dc898fb6a6bd"
+    }
+  ]
+}
