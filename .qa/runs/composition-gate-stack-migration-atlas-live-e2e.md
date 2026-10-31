@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-atlas-live-e2e (#770 / ATLAS-LIVE-E2E)
 
-- HEAD_SHA: 67ec4ca52800f9b22c1796c0e7c8cf92964a01b5
+- HEAD_SHA: 143a5e9baf23b8efc903001d1a4d5a541209a490
 - BASE_SHA: 63e93917d89cc4ab85d14f1c2f2abfb90771bbd5
 - Date: 2026-11-01
 - Verdict: CLEAR
