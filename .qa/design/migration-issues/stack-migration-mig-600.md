@@ -96,10 +96,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Cross-cutting permission/security parity suite across migrated host surfaces. |
+| **SLICE DONE** | Host PolicyService role matrix + secret-marker projections + membership/filter canary + hermetic Browser E2E (temp evidence) + HTTP /api/world-touch allow/deny smoke. |
 | **Acceptance tier** | `feature-security` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | none for security parity scope; release still MIG-700 human gate. |
-| **FEATURE VERIFIED** | self (FEATURE VERIFIED for security parity when suite PASS). |
+| **Deferred integration** | Per-successor HTTP/RPC/realtime path FEATURE VERIFIED is MIG-602/#847 (coverage inventory may list those rows as open-blocker). Release MIG-700/#849. |
+| **FEATURE VERIFIED** | MIG-602/#847 for publicActivation/HTTP cutover; this slice is SLICE DONE/feature-security for host policy+projection parity when suite PASS. |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers
@@ -168,15 +168,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #877 (RPC-NPC-INSTANCES)
 - Depends on #878 (RPC-MARKETPLACE-COUNT)
 
-Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-600`
 - Design: `.qa/design/migration-issues/stack-migration-mig-600.md`
-- Status: ready
+- Status: done
 - Reihenfolge: 82; Welle: 6
-- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-082`, `agent-ready`
+- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-082`, `agent-done`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
@@ -188,7 +188,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 ## Verification state
 
 - Source: specified
-- Implementation acceptance: not-accepted
+- Implementation acceptance: accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 

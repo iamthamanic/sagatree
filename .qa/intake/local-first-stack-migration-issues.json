@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 2,
-    "issuesBlockedOrNeedsDesign": 8,
+    "issuesReady": 0,
+    "issuesBlockedOrNeedsDesign": 7,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -15806,7 +15806,7 @@
       "title": "Negative authz suite parity on host",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-600",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-600.md",
       "dependsOn": [
@@ -15947,9 +15947,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-600.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -16039,7 +16040,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-082",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -16048,7 +16049,7 @@
       "title": "Docker Compose simplification for host+optional AI/media",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-601",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-601.md",
       "dependsOn": [
@@ -16129,9 +16130,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-601.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -16163,7 +16165,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-083",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -16454,7 +16456,7 @@
       "title": "Ops: backup/restore/update/rollback runbooks",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "done",
       "featureSlug": "stack-migration-mig-603",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-603.md",
       "dependsOn": [
@@ -16537,9 +16539,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-603.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -16569,8 +16572,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-085",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {

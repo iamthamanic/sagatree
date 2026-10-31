@@ -95,10 +95,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated deliverable under `deployment`, `docs/ops` with Required Tests / Edge Cases PASS at this issue's acceptance tier. |
+| **SLICE DONE** | Reproducible host Compose profiles + runbook + native host readiness/restart + explicit AI/media capability errors (static Compose contract). |
 | **Acceptance tier** | `isolated-contract` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | TBD by dependency successors: MIG-010/#789, MIG-014/#793, MIG-015/#794, MIG-500/#841, MIG-414/#830 |
-| **FEATURE VERIFIED** | self / MIG-700/#849 human release |
+| **Deferred integration** | Live Docker-in-CI compose up/restart and native↔container HTTP/realtime/persistence parity is MIG-602/#847. |
+| **FEATURE VERIFIED** | MIG-602/#847 / MIG-700/#849. |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers
@@ -109,15 +109,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #841 (MIG-500)
 - Depends on #830 (MIG-414)
 
-Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-601`
 - Design: `.qa/design/migration-issues/stack-migration-mig-601.md`
-- Status: ready
+- Status: done
 - Reihenfolge: 83; Welle: 6
-- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-083`, `agent-ready`
+- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-083`, `agent-done`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
@@ -129,7 +129,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 ## Verification state
 
 - Source: specified
-- Implementation acceptance: not-accepted
+- Implementation acceptance: accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 

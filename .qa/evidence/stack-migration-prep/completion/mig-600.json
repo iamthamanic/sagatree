@@ -4,21 +4,22 @@
   "localId": "MIG-600",
   "githubIssue": 845,
   "result": "PASS",
-  "testedCommit": "74c73cb68756f228f999fb939ead32e1add03011",
-  "githubClosed": false,
-  "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
+  "testedCommit": "468ed55c7c15e57e193fad558209235c99a323ea",
+  "githubClosed": true,
+  "mergeRef": "PR #1061 → main (#845)",
+  "note": "Host authz matrix + secret canary + hermetic Browser E2E + world-touch smoke; per-successor HTTP FEATURE VERIFIED deferred MIG-602.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-600-host-authz-parity.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-600.md",
-      "sha256": "8090fdb36f830e3be563899f6a49c2c270f7f4a16443ab842dd561d2886daaa4"
+      "sha256": "74b2f3d0fca0e476cc8c37f5b58d5deda103f4725b77590920fa7e88aa324385"
     },
     {
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-600.md",
-      "sha256": "51a36b08c50962f7d35e1c3b035c9ccaea359d42ba49802dc0a25c0038774ea7"
+      "sha256": "6ba6d40d757748684a499315679c9a912db1e1889fcd04611622ae0d5a48e6e1"
     }
   ]
 }

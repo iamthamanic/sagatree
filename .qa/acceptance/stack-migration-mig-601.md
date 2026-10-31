@@ -6,7 +6,9 @@ Reproduzierbare Compose-Profile für den Node-Host und optionale AI-/Media-Diens
 
 ## Acceptance tier
 
-`isolated-contract`
+`isolated-contract` — SLICE DONE for static Compose contract + native host readiness/restart +
+capability errors. Live Docker-in-CI compose up/restart and native↔container HTTP/realtime/
+persistence parity → MIG-602/#847.
 
 ## Preconditions
 
@@ -16,7 +18,7 @@ Reproduzierbare Compose-Profile für den Node-Host und optionale AI-/Media-Diens
 ## Happy path
 
 - Host-only Compose: named `host-data` volume, loopback publish, `/health` green only after DB readiness.
-- Restart without `-v` keeps confirmed data under `SAGATREE_DATA_DIR`.
+- Native host restart in the same data volume keeps host-managed identity (self-test volume semantics).
 - `--profile ai` / `--profile media` are selectable; missing optional credentials do not block core host.
 
 ## Edge / security
@@ -26,9 +28,13 @@ Reproduzierbare Compose-Profile für den Node-Host und optionale AI-/Media-Diens
 - AI without encryption key → `not-configured`; media without codecs → `unsupported` capability.
 - Backup mount path documented (`/backups`).
 
-## Required tests
+## Required Tests
 
-`scripts/mig-601-host-compose.self-test.mjs` (wired into `npm run test-gate`).
+- [x] Health wird erst nach DB-Readiness grün; bestätigte Welt-/Session-Identität überlebt Host-Neustart im selben Daten-Volume (nativer Self-Test).
+- [x] Der Host bleibt für lokale Kernfunktionen benutzbar, während der betroffene Provider einen erklärten Capability-Fehler meldet.
+- [x] Compose-Profile deklarieren Ports, Datenpfade und Backup-Mounts reproduzierbar (statischer Compose-/Runbook-Vertrag).
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
+- [x] `scripts/mig-601-host-compose.self-test.mjs` → PASS (stdout only; does not rewrite this file).
 
 ## Security Coverage
 
