@@ -3,7 +3,7 @@
   "kind": "migration-acceptance",
   "localId": "MIG-305",
   "result": "PASS",
-  "testedCommit": "8032a8dd579d2bcd88916099196be77c79449b6d",
+  "testedCommit": "a5f4363d868951875086f36e485f0621be2b799a",
   "githubClosed": false,
   "mergeRef": "PR pending (#804)",
   "note": "Marketplace host catalog ports + dual-path FE seam; Supabase default unchanged.",
