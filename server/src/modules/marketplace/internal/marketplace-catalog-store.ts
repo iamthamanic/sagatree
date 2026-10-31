@@ -21,6 +21,7 @@ export type MarketplaceItemRecord = {
   readonly price: number;
   readonly imageUrl: string | null;
   readonly tags: readonly string[];
+  readonly isFeatured: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
 };
@@ -126,6 +127,7 @@ function mapRow(row: Row): MarketplaceItemRecord {
     price: Number(row.price),
     imageUrl: row.image_url,
     tags: parseTags(row.tags_json),
+    isFeatured: Number(row.is_featured) === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -134,6 +136,8 @@ function mapRow(row: Row): MarketplaceItemRecord {
 export function escapeMarketplaceLikePattern(raw: string): string {
   return raw.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
 }
+
+export const escapeMarketplaceSearchLiteral = escapeMarketplaceLikePattern;
 
 export class MarketplaceCatalogStore {
   readonly #db: HostDatabase;

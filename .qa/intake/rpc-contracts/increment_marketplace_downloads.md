@@ -115,7 +115,7 @@ $$ LANGUAGE plpgsql;
 
 ### src/infrastructure/marketplace/marketplace-service.ts:238
 
-AST-Auflösung: `string-literal`; SHA-256 `9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05`.
+AST-Auflösung: `string-literal`; SHA-256 `68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -182,7 +182,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05` |
+| [src/infrastructure/marketplace/marketplace-service.ts](../../../src/infrastructure/marketplace/marketplace-service.ts) | `68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [src/supabase/add_marketplace_rpc.sql](../../../src/supabase/add_marketplace_rpc.sql) | `450d3ba94e44b796ce64bf8c5e2a7a82f53f37b23574f5b1a8dfd1ef1550c670` |
 | [src/supabase/deploy_marketplace.sql](../../../src/supabase/deploy_marketplace.sql) | `fcd99e2ea5dc98bd3b5284e8c2a69f532071be45ccdb66abf58ebfc31c57c38b` |

@@ -477,7 +477,7 @@ All backend operations are included in the public declarations above.
 |---|---|
 | `src/domains/marketplace/client-trust.ts` | `35e6c76ef6fb9f0db4d4bb013e6fa14b9a4db37f1bf05af722e0368d969d3a34` |
 | `src/domains/marketplace/contracts/marketplace.types.ts` | `000aecc695577333ad6fce27422ad02bc15f26ffca88507ebfee1fafb04b9467` |
-| `src/infrastructure/marketplace/marketplace-service.ts` | `9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05` |
+| `src/infrastructure/marketplace/marketplace-service.ts` | `68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
