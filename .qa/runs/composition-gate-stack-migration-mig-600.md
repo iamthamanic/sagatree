@@ -1,39 +1,40 @@
 # Composition Gate — stack-migration-mig-600 (#845)
 
-- HEAD_SHA: b8356a9e72945e24ef8ee2f3fc97651987fb0134
+- HEAD_SHA: 3fe816847d3dcb8e504dc6f82d577994b90667f5
 - BASE_SHA: 8f866c0ad393fbfba127ab28f26dae6e0879f984
-- HOP_DIGEST: 6dd0b7d138071a02d4a94835674311ee976f243d71850d649ae1e174ad5d75b0
 - Date: 2026-10-31
 - Verdict: CLEAR
 
 ## Event
 
-Host negative authz parity suite: PolicyService role matrix + secret-marker projections +
-membership/filter canary against real SQLite. Coverage inventory lists every Depends-on row
-as executed-with-open-blocker (HTTP publicActivation → MIG-602) or Compose #607 executed.
-Does not claim production cutover.
+Host negative authz parity: PolicyService role matrix + secret-marker projections +
+membership/filter canary + HTTP `/api/world-touch` allow/deny smoke against real SQLite.
+Coverage inventory lists Depends-on successor rows as `open-blocker` (MIG-602 HTTP cutover)
+and only marks #845 / #607 as `executed`. Does not claim production cutover.
 
 ## Hop chain
 
 1. Producer: `bootstrapHostPersistence` + `seedAuthzFixture` (parity-harness actors)
 2. Authorize: `createPermissionsPorts(db).authorize(op, actor, resource)`
 3. Project: `projectSessionSnapshot` filters GM secrets for player roles
-4. Canary: disabled filter / always-allow stub must be detectable as fail
-5. Consumer: self-test + Browser E2E spec assert report.ok + coverage honesty
+4. HTTP: `createHostApi` → `POST /api/world-touch` owner allow / outsider deny
+5. Canary: disabled filter / always-allow stub must be detectable as fail
+6. Consumer: self-test (zod-validated report) + hermetic Browser E2E (temp `MIG600_OUT_DIR`)
 
 ## Simulations
 
 ### N-actors
-owner / gm / player1 / player2 / outsider / otherGm matrix (26 cases).
+owner / gm / player1 / player2 / outsider / otherGm matrix (26 cases) + HTTP world-touch.
 
 ### Invalid/missing
-Outsider/otherGm denied; owner cannot session.gm; missing membership → deny.
+Outsider/otherGm denied; owner cannot session.gm; missing membership → deny; forged
+client role/owner claims ignored on world-touch.
 
 ### Two consumers / crash
-N/A for isolated-contract policy suite; projection canary proves leak detection without HTTP.
+Projection canary proves leak detection; coverage forbids silent `parity` status.
 
 ## Flags
 
 - Acceptance tier: feature-security
-- Deferred integration: HTTP publicActivation → MIG-602/#847; RELEASE → MIG-700 human
-- SLICE DONE / FEATURE VERIFIED for host policy+projection parity only
+- Deferred integration: per-successor HTTP/RPC cutover → MIG-602/#847; RELEASE → MIG-700 human
+- SLICE DONE for host policy + projection + world-touch smoke only
