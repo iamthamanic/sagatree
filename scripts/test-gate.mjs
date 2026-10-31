@@ -384,6 +384,14 @@ function checkAtlasFollowupRealProductE2e() {
   });
 }
 
+function checkAtlasProductFailClosed() {
+  console.log('ATLAS-LIVE-E2E (#770): product-run fail-closed / rot-phase self-test...');
+  execFileSync(process.execPath, ['scripts/atlas-product-fail-closed.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkStackMigrationPrep() {
   console.log('Stack migration prep drafts: inventory/issue graph integrity...');
   execFileSync(process.execPath, ['scripts/stack-migration-prep-check.mjs'], {
@@ -3419,6 +3427,7 @@ checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
+checkAtlasProductFailClosed();
 checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();

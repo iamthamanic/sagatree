@@ -112,6 +112,28 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.equal((atlas.verification.blockers ?? []).length, 0);
   assert.ok(atlas.completionEvidence, 'ATLAS-LIVE-E2E completionEvidence path');
   assert.equal(original.intake.meta?.atlasLiveE2e?.ciAcceptance, 'passing');
+  // Unlock-logic canary: prior blocked + ATLAS execution blocker must clear when CI acceptance is passing.
+  const previous = structuredClone(original.intake);
+  const priorAtlas = previous.issues.find((entry) => entry.localId === 'ATLAS-LIVE-E2E');
+  assert.ok(priorAtlas, 'ATLAS-LIVE-E2E present for unlock mutation');
+  priorAtlas.status = 'blocked';
+  priorAtlas.verification = {
+    ...(priorAtlas.verification ?? {}),
+    blockers: [
+      'Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).',
+    ],
+  };
+  delete priorAtlas.completionEvidence;
+  const rebuilt = buildMigrationPlan({
+    previous,
+    registry: original.registry,
+    rpcInventory: original.rpcInventory,
+    edgeInventory: original.edgeInventory,
+    splits: read('.qa/intake/rpc-contracts/split-groups.json'),
+  }).intake;
+  const unlocked = rebuilt.issues.find((entry) => entry.localId === 'ATLAS-LIVE-E2E');
+  assert.equal((unlocked.verification.blockers ?? []).length, 0, 'ATLAS blocker is cleared by the unlock condition');
+  assert.notEqual(unlocked.status, 'blocked', 'ATLAS must leave blocked once unlock clears the execution lock');
   const gate05 = intake.issues.find((entry) => entry.localId === 'GATE-05');
   assert.equal(gate05.status, 'blocked');
 });
