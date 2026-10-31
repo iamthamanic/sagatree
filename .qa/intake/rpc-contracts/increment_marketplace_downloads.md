@@ -113,9 +113,9 @@ $$ LANGUAGE plpgsql;
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/marketplace/marketplace-service.ts:238
+### src/infrastructure/marketplace/marketplace-service.ts:242
 
-AST-Auflösung: `string-literal`; SHA-256 `68dae0c315de64135a9c3db2a608b92770e905b66079e5f9deaee7e303e757d0`.
+AST-Auflösung: `string-literal`; SHA-256 `01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 

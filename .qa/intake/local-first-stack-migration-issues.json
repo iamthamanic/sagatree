@@ -13525,6 +13525,9 @@
         "paths": [
           "src/domains/marketplace/client-trust.ts",
           "src/domains/marketplace/contracts/marketplace.types.ts",
+          "src/infrastructure/marketplace/host-marketplace-adapter.ts",
+          "src/infrastructure/marketplace/host-marketplace-ports.contract.ts",
+          "src/infrastructure/marketplace/index.ts",
           "src/infrastructure/marketplace/marketplace-service.ts",
           "src/lib/authenticatedUser.ts",
           "src/lib/localAdmin.ts",
@@ -13629,7 +13632,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/marketplace/client-trust.ts, src/domains/marketplace/contracts/marketplace.types.ts, src/infrastructure/marketplace/marketplace-service.ts, src/lib/authenticatedUser.ts, src/lib/localAdmin.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-marketplace.md, .qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/marketplace/client-trust.ts, src/domains/marketplace/contracts/marketplace.types.ts, src/infrastructure/marketplace/host-marketplace-adapter.ts, src/infrastructure/marketplace/host-marketplace-ports.contract.ts, src/infrastructure/marketplace/index.ts, src/infrastructure/marketplace/marketplace-service.ts, src/lib/authenticatedUser.ts, src/lib/localAdmin.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-marketplace.md, .qa/intake/edge-infra-contracts/source-contracts/infra-marketplace.json.",
         "nachher": "src/infrastructure/marketplace: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .",
         "verhalten": "src/infrastructure/marketplace: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.",
         "sicherheit": "Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.",

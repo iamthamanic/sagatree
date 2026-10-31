@@ -12,7 +12,7 @@
       "command": "node --experimental-strip-types scripts/mig-305-marketplace-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-305.md",
-      "sha256": "87e1fca4db9e6e4e5f17f7ae8c76e5e1c86a1db1b911551e44841843f5c6b36e"
+      "sha256": "5fdc5b7db45ba1eb5a100914fa696974d16a2714f8b41261a058a03f5f375c0c"
     },
     {
       "command": "composition-gate CLEAR",
