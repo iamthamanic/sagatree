@@ -4,10 +4,10 @@
   "localId": "ATLAS-LIVE-E2E",
   "githubIssue": 770,
   "result": "PASS",
-  "testedCommit": "63e93917d89cc4ab85d14f1c2f2abfb90771bbd5",
+  "testedCommit": "cda4939fadf1e32c9dc18fefe2b8155ebbf7583c",
   "githubClosed": false,
-  "mergeRef": "main CI atlas-isolated-product run 41201202311 (head cda4939f) + DONE evidence sync PR for #770",
-  "note": "Isolated PG/GoTrue/PostgREST product journey 3/3 PASS; no hosted E2E_ATLAS_SUPABASE_* secrets; cutover remains MIG-700 human.",
+  "mergeRef": "main CI atlas-isolated-product run 41201202311 (testedCommit=headSha cda4939f; main tip at sync 63e93917d) + DONE evidence sync PR for #770",
+  "note": "Isolated PG/GoTrue/PostgREST product journey 3/3 PASS on Actions head cda4939f; no hosted E2E_ATLAS_SUPABASE_* secrets; cutover remains MIG-700 human.",
   "checks": [
     {
       "command": "npm run product --prefix scripts/stack-migration-db (CI job atlas-isolated-product)",
