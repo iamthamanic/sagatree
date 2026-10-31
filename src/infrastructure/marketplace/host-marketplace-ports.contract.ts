@@ -111,7 +111,7 @@ export type HostMarketplacePorts = {
 
 export const HOST_MARKETPLACE_OPS = [
   'listItems',
-  'getItemById',
+  'getItem',
   'listFeatured',
   'listByAuthor',
   'createItem',
