@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-353",
+  "result": "PASS",
+  "testedCommit": "f455a0f624561fc5a7929cc5782b8040089134c3",
+  "githubClosed": false,
+  "mergeRef": "children #877/#878 \u2192 main; coordinator #816",
+  "note": "Remaining RPC cluster coordinator; implementation exclusively in RPC-NPC-INSTANCES + RPC-MARKETPLACE-COUNT with hashed DONE evidence.",
+  "checks": [
+    {
+      "command": "child RPC-NPC-INSTANCES completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-npc-instances.json",
+      "sha256": "b84f28a3f6d3857444ad344923f3390bcc9391a110ae03c3738916d154946040"
+    },
+    {
+      "command": "child RPC-MARKETPLACE-COUNT completion",
+      "result": "PASS",
+      "evidenceFile": ".qa/evidence/stack-migration-prep/completion/rpc-marketplace-count.json",
+      "sha256": "8f93f57d4a8dfea9899dcc2151bf3332c55aec4c6a7f39a772ec7df4802e8d78"
+    },
+    {
+      "command": "coordinator acceptance",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-353.md",
+      "sha256": "0570245d6c855d0dbe3305a478494230876fa3c2557b737dfab10d5129fa3823"
+    }
+  ]
+}

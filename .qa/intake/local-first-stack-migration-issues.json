@@ -26,8 +26,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 18,
-    "issuesBlockedOrNeedsDesign": 13,
+    "issuesReady": 19,
+    "issuesBlockedOrNeedsDesign": 10,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -2648,7 +2648,7 @@
       "title": "Marketplace-Downloadzähler und Fallback",
       "priority": "P1",
       "kind": "implementation",
-      "status": "blocked",
+      "status": "done",
       "featureSlug": "stack-migration-rpc-marketplace-count",
       "designFile": ".qa/design/migration-issues/stack-migration-rpc-marketplace-count.md",
       "dependsOn": [
@@ -2788,9 +2788,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/rpc-marketplace-count.json",
       "verification": {
         "sourceStatus": "source-blocked",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [
           "{\"id\":\"RPC-DEPLOY-OPTIONAL-MARKETPLACE\",\"severity\":\"Medium\",\"status\":\"blocked-successor-acceptance\",\"summary\":\"Die Funktion existiert nur in optionalen src/supabase-Installationsskripten und fehlt in der vollständig eingespielten Repository-Migrationskette.\",\"sourceEvidence\":\"src/supabase/add_marketplace_rpc.sql und src/supabase/deploy_marketplace.sql; isolierter pg_proc-Katalog enthält keine increment_marketplace_downloads.\",\"requiredSuccessorAcceptance\":\"Eindeutige Installations-/Nachfolgerentscheidung; Counter nur über installierte RPC oder Host-Nachfolger — kein Client-Write-Fallback.\",\"deployedExploitVerified\":false}",
@@ -2832,7 +2833,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-021",
-        "agent-blocked"
+        "agent-done"
       ]
     },
     {
@@ -5190,7 +5191,7 @@
       "title": "Replace Postgres RPC cluster: remaining RPCs",
       "priority": "P1",
       "kind": "coordination",
-      "status": "blocked",
+      "status": "done",
       "featureSlug": "stack-migration-mig-353",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-353.md",
       "dependsOn": [
@@ -5342,9 +5343,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-353.json",
       "verification": {
         "sourceStatus": "source-blocked",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -5373,7 +5375,7 @@
         "P1",
         "migration-wave-2-api-realtime",
         "migration-order-030",
-        "agent-blocked"
+        "agent-done"
       ]
     },
     {
@@ -13514,7 +13516,7 @@
       "title": "Port infrastructure/marketplace adapters from Supabase to host repositories",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-305",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-305.md",
       "dependsOn": [
@@ -13667,8 +13669,7 @@
         "P1",
         "migration-wave-4-adapter-ports",
         "migration-order-071",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
