@@ -1,8 +1,6 @@
 /**
- * host-marketplace-adapter — Binds infra HostMarketplacePorts to an injected host impl (MIG-305).
+ * host-marketplace-adapter — Dual-path host seam (MIG-305 / #804).
  * Location: src/infrastructure/marketplace/host-marketplace-adapter.ts
- *
- * Production UI still calls Supabase marketplace-service. Dual-path seam only.
  */
 import type { HostMarketplacePorts } from './host-marketplace-ports.contract';
 import { HOST_MARKETPLACE_OPS } from './host-marketplace-ports.contract';
@@ -12,9 +10,7 @@ export type HostMarketplaceAdapter = HostMarketplacePorts & {
   readonly ops: typeof HOST_MARKETPLACE_OPS;
 };
 
-export function createHostMarketplaceAdapter(
-  ports: HostMarketplacePorts,
-): HostMarketplaceAdapter {
+export function createHostMarketplaceAdapter(ports: HostMarketplacePorts): HostMarketplaceAdapter {
   return {
     transport: 'host',
     ops: HOST_MARKETPLACE_OPS,

@@ -272,7 +272,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
         })
       : createInventoryPorts();
     const marketplace: MarketplacePorts = db
-      ? createMarketplacePorts({ db })
+      ? createMarketplacePorts(db)
       : createMarketplacePortsStub();
     const saga: SagaPorts = db
       ? createSagaPorts({

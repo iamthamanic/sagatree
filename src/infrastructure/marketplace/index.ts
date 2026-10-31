@@ -1,11 +1,7 @@
 /**
  * marketplace infrastructure barrel (MIG-305 dual-path seam).
  * Location: src/infrastructure/marketplace/index.ts
- *
- * Supabase marketplace-service remains the live default; host adapter is the
- * typed dual-path seam for isolated-contract tests and future cutover.
  */
-
 export {
   createMarketplaceItem,
   deleteMarketplaceItem,

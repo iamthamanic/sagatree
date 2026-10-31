@@ -3,10 +3,7 @@
  * (#831/#878/#804).
  * Location: server/src/modules/marketplace/index.ts
  *
- * Quarantine Map catalog remains unmounted and is distinct from durable
- * marketplace_items. Catalog ports (MIG-305) + download counter (#878) share
- * the same SQLite table. Atomic host path only — no client counter fallback.
- * No public HTTP activation in this slice.
+ * Atomic host path only — no client counter fallback. No public HTTP mount.
  */
 import type { Actor } from '../identity/index.ts';
 import type { HostDatabase } from '../../persistence/open-database.ts';
@@ -50,26 +47,11 @@ export type {
   MarketplaceResult,
   MarketplaceUpdatePatch,
 } from './internal/marketplace-catalog-store.ts';
-export {
-  MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED,
-  escapeMarketplaceLikePattern,
-};
+export { MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED, escapeMarketplaceLikePattern };
 
-/** Explicit: durable counter path is authorized for isolated host use-cases only. */
 export const MARKETPLACE_COUNT_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
-
-/**
- * Deployment decision (#878 Required Test 1): host SQLite marketplace_items +
- * MarketplaceCountStore replaces optional src/supabase marketplace RPC scripts.
- * FE keeps server-authority counters (no client write fallback, #675).
- * Atomic host path only.
- */
 export const MARKETPLACE_COUNT_HOST_SUCCEEDS_OPTIONAL_SQL = true as const;
-
-/** Host path supersedes legacy non-atomic client counter fallback (#675 / MIG-305). */
 export const MARKETPLACE_LEGACY_CLIENT_COUNTER_FALLBACK_SUPERSEDED = true as const;
-
-/** Search uses parameterized LIKE + escaped wildcards (not PostgREST interpolation). */
 export const MARKETPLACE_SEARCH_USES_PARAMETERIZED_LIKE = true as const;
 
 export type MarketplaceCountPorts = {
@@ -77,7 +59,6 @@ export type MarketplaceCountPorts = {
     actor: Actor,
     itemId: string | null | undefined,
   ) => CountOk | CountError;
-  /** Test-only seed / read — not a publish API. */
   readonly insertItemForTests: (input: {
     readonly id: string;
     readonly authorId: string;
@@ -91,18 +72,18 @@ export type MarketplaceCountPorts = {
 export type MarketplacePorts = {
   readonly moduleId: 'marketplace';
   readonly listItems: (
-    actor: Actor,
+    actor: Actor | null | undefined,
     filters?: MarketplaceListFilters,
   ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
   readonly getItem: (
-    actor: Actor,
+    actor: Actor | null | undefined,
     itemId: string,
   ) => MarketplaceResult<MarketplaceItemRecord | null>;
   readonly listFeatured: (
-    actor: Actor,
+    actor: Actor | null | undefined,
   ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
   readonly listByAuthor: (
-    actor: Actor,
+    actor: Actor | null | undefined,
     authorId: string,
   ) => MarketplaceResult<readonly MarketplaceItemRecord[]>;
   readonly createItem: (
@@ -114,18 +95,12 @@ export type MarketplacePorts = {
     itemId: string,
     patch: MarketplaceUpdatePatch,
   ) => MarketplaceResult<MarketplaceItemRecord>;
-  readonly deleteItem: (
-    actor: Actor,
-    itemId: string,
-  ) => MarketplaceResult<boolean>;
+  readonly deleteItem: (actor: Actor, itemId: string) => boolean;
   readonly incrementDownloads: (
     actor: Actor,
     itemId: string | null | undefined,
   ) => CountOk | CountError;
 };
-
-/** Alias used by dual-path / create-host naming. */
-export type MarketplaceInfraPorts = MarketplacePorts;
 
 function actorIdOrDeny(actor: Actor | null | undefined): string | null {
   if (!actor || typeof actor.actorId !== 'string') return null;
@@ -133,11 +108,9 @@ function actorIdOrDeny(actor: Actor | null | undefined): string | null {
   return id ? id : null;
 }
 
-function resolveDb(dbOrDeps: HostDatabase | { readonly db: HostDatabase }): HostDatabase {
-  if (dbOrDeps && typeof dbOrDeps === 'object' && 'db' in dbOrDeps && dbOrDeps.db) {
-    return dbOrDeps.db;
-  }
-  return dbOrDeps as HostDatabase;
+function resolveDb(input: HostDatabase | { readonly db: HostDatabase }): HostDatabase {
+  if (input && typeof input === 'object' && 'db' in input && input.db) return input.db;
+  return input as HostDatabase;
 }
 
 export function createMarketplaceCountPorts(db: HostDatabase): MarketplaceCountPorts {
@@ -157,18 +130,13 @@ export function createMarketplaceCountPorts(db: HostDatabase): MarketplaceCountP
   };
 }
 
-/**
- * Catalog + atomic increment ports for MIG-305 dual-path adapters.
- * Catalog reads are public; mutations require verified actor.
- * Atomic host path only — no non-atomic client counter fallback.
- */
+/** Atomic host path only — catalog + increment ports (MIG-305). */
 export function createMarketplacePorts(
-  dbOrDeps: HostDatabase | { readonly db: HostDatabase },
+  input: HostDatabase | { readonly db: HostDatabase },
 ): MarketplacePorts {
-  const db = resolveDb(dbOrDeps);
+  const db = resolveDb(input);
   const catalog = new MarketplaceCatalogStore(db);
   const counts = createMarketplaceCountPorts(db);
-
   return {
     moduleId: 'marketplace',
     listItems(_actor, filters) {
@@ -176,7 +144,7 @@ export function createMarketplacePorts(
     },
     getItem(_actor, itemId) {
       const id = typeof itemId === 'string' ? itemId.trim() : '';
-      if (!id) return { ok: false, error: 'invalid-item-id' };
+      if (!id) return { ok: false, error: '22023' };
       return { ok: true, value: catalog.getById(id) };
     },
     listFeatured(_actor) {
@@ -184,7 +152,7 @@ export function createMarketplacePorts(
     },
     listByAuthor(_actor, authorId) {
       const id = typeof authorId === 'string' ? authorId.trim() : '';
-      if (!id) return { ok: false, error: 'invalid-author-id' };
+      if (!id) return { ok: false, error: '22023' };
       return { ok: true, value: catalog.listByAuthor(id) };
     },
     createItem(actor, draft) {
@@ -199,7 +167,7 @@ export function createMarketplacePorts(
     },
     deleteItem(actor, itemId) {
       const authorId = actorIdOrDeny(actor);
-      if (!authorId) return { ok: false, error: '42501' };
+      if (!authorId) return false;
       return catalog.delete(authorId, itemId);
     },
     incrementDownloads(actor, itemId) {
@@ -220,7 +188,7 @@ export function createMarketplacePortsStub(): MarketplacePorts {
     listByAuthor: () => deny(),
     createItem: () => deny(),
     updateItem: () => deny(),
-    deleteItem: () => deny(),
+    deleteItem: () => false,
     incrementDownloads: () => ({ ok: false, error: 'P0001' }),
   };
 }

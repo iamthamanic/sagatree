@@ -34,7 +34,7 @@ const {
   MARKETPLACE_COUNT_PUBLIC_ACTIVATION_AUTHORIZED,
   MARKETPLACE_LEGACY_CLIENT_COUNTER_FALLBACK_SUPERSEDED,
   MARKETPLACE_SEARCH_USES_PARAMETERIZED_LIKE,
-  escapeMarketplaceSearchLiteral,
+  escapeMarketplaceLikePattern,
 } = await import(marketplaceUrl);
 const { createHost } = await import(hostUrl);
 
@@ -63,6 +63,7 @@ const work = mkdtempSync(join(tmpdir(), 'mig305-'));
 const dataDir = join(work, 'data');
 mkdirSync(dataDir, { recursive: true });
 
+let boot;
 try {
   assert(MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no marketplace HTTP mount');
   assert(MARKETPLACE_COUNT_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no count HTTP mount');
@@ -70,11 +71,11 @@ try {
   assert(MARKETPLACE_SEARCH_USES_PARAMETERIZED_LIKE === true, 'parameterized LIKE decision');
   assert(TABLE_OWNERSHIP.marketplace_items === 'marketplace', 'marketplace_items ownership');
   assert(
-    escapeMarketplaceSearchLiteral('a%b_c') === 'a\\%b\\_c',
-    'escape wildcards',
+    escapeMarketplaceLikePattern('a%b_c') === 'a\\%b\\_c',
+    'escapeMarketplaceLikePattern wildcards',
   );
 
-  const boot = bootstrapHostPersistence({
+  boot = bootstrapHostPersistence({
     dataDir,
     migrationsDir: join(root, 'server/migrations'),
   });
@@ -85,8 +86,8 @@ try {
 
   const owner = actor('owner-o');
   const stranger = actor('stranger-x');
+  const reader = actor('reader-r');
 
-  // --- Fall 1: list filters, sort defaults, single-read, featured ---
   const createdA = marketplace.createItem(owner, {
     type: 'world',
     title: 'Alpha World',
@@ -98,6 +99,7 @@ try {
   assert(createdA.ok, `create A: ${createdA.ok ? '' : createdA.error}`);
   assert(createdA.value.authorId === owner.actorId, 'author from actor');
   assert(createdA.value.rating === 0 && createdA.value.downloads === 0, 'counters zero');
+  assert(createdA.value.isFeatured === false, 'isFeatured default');
 
   const createdB = marketplace.createItem(owner, {
     type: 'item',
@@ -112,24 +114,23 @@ try {
   marketplace.incrementDownloads(owner, createdA.value.id);
   marketplace.incrementDownloads(owner, createdB.value.id);
 
-  const listedDefault = marketplace.listItems();
+  const listedDefault = marketplace.listItems(reader);
   assert(listedDefault.ok && listedDefault.value.length === 2, 'list all');
   assert(listedDefault.value[0].id === createdA.value.id, 'default sort downloads desc');
 
-  const typed = marketplace.listItems({ type: 'world' });
+  const typed = marketplace.listItems(reader, { type: 'world' });
   assert(typed.ok && typed.value.length === 1 && typed.value[0].id === createdA.value.id, 'type filter');
 
-  const searched = marketplace.listItems({ searchQuery: 'Alpha' });
+  const searched = marketplace.listItems(reader, { searchQuery: 'Alpha' });
   assert(searched.ok && searched.value.some((row) => row.id === createdA.value.id), 'search title');
 
-  const priced = marketplace.listItems({ maxPrice: 1 });
+  const priced = marketplace.listItems(reader, { maxPrice: 1 });
   assert(priced.ok && priced.value.every((row) => row.price <= 1), 'maxPrice filter');
 
-  // Featured: seed rating for A, then expect rating≥3.5 path; clear → fallback top downloads
   boot.db
     .prepare(`UPDATE marketplace_items SET rating = 4.5 WHERE id = ?`)
     .run(createdA.value.id);
-  const featuredRated = marketplace.listFeatured();
+  const featuredRated = marketplace.listFeatured(reader);
   assert(
     featuredRated.ok &&
       featuredRated.value.length >= 1 &&
@@ -137,16 +138,18 @@ try {
     'featured prefers rating>=3.5',
   );
   boot.db.prepare(`UPDATE marketplace_items SET rating = 0 WHERE id = ?`).run(createdA.value.id);
-  const featuredFallback = marketplace.listFeatured();
+  const featuredFallback = marketplace.listFeatured(reader);
   assert(featuredFallback.ok && featuredFallback.value.length === 2, 'featured fallback top downloads');
 
-  const missing = marketplace.getItemById('does-not-exist');
-  assert(missing.ok && missing.value === null, 'single-read missing → null');
-  const badId = marketplace.getItemById('  ');
-  assert(!badId.ok, 'empty id error');
+  const byAuthor = marketplace.listByAuthor(reader, owner.actorId);
+  assert(byAuthor.ok && byAuthor.value.length === 2, 'listByAuthor');
 
-  // --- Fall 2 / 4: increment atomic + unauthorized ---
-  const before = marketplace.getItemById(createdA.value.id);
+  const missing = marketplace.getItem(reader, 'does-not-exist');
+  assert(missing.ok && missing.value === null, 'single-read missing → null');
+  const badId = marketplace.getItem(reader, '  ');
+  assert(!badId.ok && badId.error === 'invalid-item-id', 'empty id error');
+
+  const before = marketplace.getItem(reader, createdA.value.id);
   assert(before.ok && before.value.downloads === 2, 'downloads before reload check');
   const bumped = marketplace.incrementDownloads(owner, createdA.value.id);
   assert(bumped.ok && bumped.mutated === true && bumped.downloads === 3, 'atomic increment');
@@ -157,10 +160,9 @@ try {
   assert(!noActorInc.ok && noActorInc.error === '42501', 'increment DENY missing actor');
   const unknownInc = marketplace.incrementDownloads(owner, 'missing-item-id');
   assert(unknownInc.ok && unknownInc.mutated === false, 'unknown item no-op');
-  const afterReload = marketplace.getItemById(createdA.value.id);
+  const afterReload = marketplace.getItem(reader, createdA.value.id);
   assert(afterReload.ok && afterReload.value.downloads === 3, 'reload durable increment');
 
-  // --- Fall 3: create privileged deny; update/delete foreign DENY ---
   const privileged = marketplace.createItem(owner, {
     type: 'item',
     title: 'Evil',
@@ -168,11 +170,7 @@ try {
     author_id: 'attacker',
     downloads: 99,
   });
-  assert(
-    !privileged.ok &&
-      (privileged.error === 'privileged-client-field' || privileged.error === 'invalid-draft'),
-    'no client author_id',
-  );
+  assert(!privileged.ok && privileged.error === 'invalid-draft', 'no client author_id');
 
   const foreignUpdate = marketplace.updateItem(stranger, createdA.value.id, {
     title: 'Hijacked',
@@ -180,28 +178,19 @@ try {
   assert(!foreignUpdate.ok && foreignUpdate.error === 'not-authorized', 'foreign update DENY');
 
   const foreignDelete = marketplace.deleteItem(stranger, createdA.value.id);
-  assert(
-    (!foreignDelete.ok && foreignDelete.error === 'not-authorized') ||
-      (foreignDelete.ok && foreignDelete.value === false),
-    'foreign delete DENY/false',
-  );
+  assert(!foreignDelete.ok && foreignDelete.error === 'not-authorized', 'foreign delete DENY');
 
   const ownerUpdate = marketplace.updateItem(owner, createdA.value.id, { title: 'Alpha Renamed' });
   assert(ownerUpdate.ok && ownerUpdate.value.title === 'Alpha Renamed', 'owner update');
 
   const ownerDelete = marketplace.deleteItem(owner, createdB.value.id);
   assert(ownerDelete.ok && ownerDelete.value === true, 'owner delete true');
-  const gone = marketplace.getItemById(createdB.value.id);
+  const gone = marketplace.getItem(reader, createdB.value.id);
   assert(gone.ok && gone.value === null, 'deleted gone');
 
   const deleteMissing = marketplace.deleteItem(owner, createdB.value.id);
-  assert(
-    (!deleteMissing.ok && deleteMissing.error === 'not-found') ||
-      (deleteMissing.ok && deleteMissing.value === false),
-    'delete missing fails',
-  );
+  assert(deleteMissing.ok && deleteMissing.value === false, 'delete missing → false');
 
-  // --- Fall 5: no non-atomic client counter fallback ---
   const portsSrc = readFileSync(join(root, 'server/src/modules/marketplace/index.ts'), 'utf8');
   assert(/Atomic host path only/.test(portsSrc), 'ports document no client fallback');
   const serviceSrc = readFileSync(
@@ -209,8 +198,9 @@ try {
     'utf8',
   );
   assert(/no client counter write/.test(serviceSrc), 'FE no client counter write (#675)');
+  assert(/increment_marketplace_downloads/.test(serviceSrc), 'FE still calls RPC');
+  assert(!/\.update\(\s*\{[^}]*downloads/.test(serviceSrc), 'FE has no downloads table write fallback');
 
-  // --- Fall 6: search escaping ---
   const litCreate = marketplace.createItem(owner, {
     type: 'character',
     title: 'Percent % underscore _',
@@ -218,13 +208,13 @@ try {
     data: {},
   });
   assert(litCreate.ok, 'literal create');
-  const exactWild = marketplace.listItems({ searchQuery: '%_literal' });
+  const exactWild = marketplace.listItems(reader, { searchQuery: '%_literal' });
   assert(
     exactWild.ok && exactWild.value.some((row) => row.id === litCreate.value.id),
     'escaped search finds literal %_',
   );
-  const allRows = marketplace.listItems();
-  const wildcardAll = marketplace.listItems({ searchQuery: '%' });
+  const allRows = marketplace.listItems(reader);
+  const wildcardAll = marketplace.listItems(reader, { searchQuery: '%' });
   assert(
     allRows.ok &&
       wildcardAll.ok &&
@@ -239,12 +229,12 @@ try {
   assert(/ESCAPE '\\\\'/.test(catalogSrc), 'LIKE ESCAPE');
   assert(!/\.or\(\s*`title\.ilike/.test(catalogSrc), 'no PostgREST or-interpolation');
 
-  // Dual-path adapter seam (matches HostMarketplacePorts)
   const bound = createHostMarketplaceAdapter({
-    listItems: async (filters) => marketplace.listItems(filters),
-    getItemById: async (itemId) => marketplace.getItemById(itemId),
-    listFeatured: async () => marketplace.listFeatured(),
-    listByAuthor: async (authorId) => marketplace.listByAuthor(authorId),
+    listItems: async (actorId, filters) => marketplace.listItems(actor(actorId), filters),
+    getItem: async (actorId, itemId) => marketplace.getItem(actor(actorId), itemId),
+    listFeatured: async (actorId) => marketplace.listFeatured(actor(actorId)),
+    listByAuthor: async (actorId, authorId) =>
+      marketplace.listByAuthor(actor(actorId), authorId),
     createItem: async (actorId, draft) => marketplace.createItem(actor(actorId), draft),
     updateItem: async (actorId, itemId, patch) =>
       marketplace.updateItem(actor(actorId), itemId, patch),
@@ -305,7 +295,7 @@ try {
     );
   }
 
-  console.log('PASS: mig-305-marketplace-adapter.self-test');
+  console.log('PASS mig-305-marketplace-adapter.self-test');
 } finally {
   try {
     boot?.db?.close?.();
