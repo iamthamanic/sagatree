@@ -55,6 +55,8 @@ assert(HOST_MARKETPLACE_OPS.length === 8, "ops count");
 const work = mkdtempSync(join(tmpdir(), "mig305-"));
 mkdirSync(join(work, "data"), { recursive: true });
 const notes = [];
+/** @type {{ ok: true, db: { close?: () => void } } | { ok: false } | null} */
+let boot = null;
 try {
   assert(MARKETPLACE_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === false, "no HTTP");
   assert(MARKETPLACE_COUNT_PUBLIC_ACTIVATION_AUTHORIZED === false, "no count HTTP");
@@ -63,7 +65,7 @@ try {
   assert(TABLE_OWNERSHIP.marketplace_items === "marketplace", "ownership");
   assert(escapeMarketplaceLikePattern("a%b_c") === "a\\\\%b\\\\_c".replace(/\\\\/g, "\\"), "escape");
 
-  const boot = bootstrapHostPersistence({
+  boot = bootstrapHostPersistence({
     dataDir: join(work, "data"),
     migrationsDir: join(root, "server/migrations"),
   });
@@ -83,8 +85,12 @@ try {
   });
   assert(createdB.ok, "create B");
 
-  marketplace.incrementDownloads(owner, createdA.value.id);
-  marketplace.incrementDownloads(owner, createdA.value.id);
+  const before = marketplace.getItemById(createdA.value.id);
+  assert(before.ok && before.value.downloads === 0, "downloads before");
+  const bumped = marketplace.incrementDownloads(owner, createdA.value.id);
+  assert(bumped.ok && bumped.mutated === true && bumped.downloads === 1, "atomic increment 1");
+  const bumped2 = marketplace.incrementDownloads(owner, createdA.value.id);
+  assert(bumped2.ok && bumped2.mutated === true && bumped2.downloads === 2, "atomic increment 2");
   marketplace.incrementDownloads(owner, createdB.value.id);
 
   const listedDefault = marketplace.listItems();
@@ -104,6 +110,8 @@ try {
   assert(!marketplace.incrementDownloads(actor(""), createdA.value.id).ok, "inc DENY");
   const noop = marketplace.incrementDownloads(owner, "missing");
   assert(noop.ok && noop.mutated === false, "noop");
+  const after = marketplace.getItemById(createdA.value.id);
+  assert(after.ok && after.value.downloads === 2, "downloads stable after DENY/noop");
   notes.push("Increment atomic + DENY PASS");
 
   const privileged = marketplace.createItem(owner, {
@@ -118,7 +126,10 @@ try {
     const gone = marketplace.getItemById(createdB.value.id);
     assert(!gone.ok && gone.error === "not-found", "gone");
   }
-  assert(!marketplace.deleteItem(owner, createdB.value.id).ok, "delete missing");
+  {
+    const missingDelete = marketplace.deleteItem(owner, createdB.value.id);
+    assert(!missingDelete.ok && missingDelete.error === "not-found", "delete missing → not-found");
+  }
   notes.push("Ownership DENY PASS");
 
   assert(/Atomic host path only/.test(readFileSync(join(root, "server/src/modules/marketplace/index.ts"), "utf8")), "atomic doc");
@@ -171,13 +182,14 @@ try {
   }
   notes.push("typed-strict + createHost PASS");
 
-  writeFileSync(join(root, ".qa/acceptance/stack-migration-mig-305.md"), [
-    "# Acceptance — MIG-305 Marketplace Host Adapters (#804)", "",
-    "## Required Tests", ...notes.map((n) => `- [x] ${n}`), "",
-    "## Evidence", `- Self-test PASS at ${new Date().toISOString()}`, "",
-  ].join("\n"));
   console.log("PASS mig-305-marketplace-adapter.self-test");
+  for (const note of notes) console.log(`  ok: ${note}`);
 } finally {
+  try {
+    boot?.db?.close?.();
+  } catch {
+    /* ignore close errors so temp cleanup still runs */
+  }
   rmSync(work, { recursive: true, force: true });
   rmSync(adapterLoadDir, { recursive: true, force: true });
 }

@@ -163,6 +163,7 @@ export function createMarketplacePorts(
       if (!authorId) return { ok: false, error: '42501' };
       const id = typeof itemId === 'string' ? itemId.trim() : '';
       if (!id) return { ok: false, error: 'invalid-item-id' };
+      if (!catalog.getById(id)) return { ok: false, error: 'not-found' };
       return catalog.delete(authorId, id)
         ? { ok: true, value: true }
         : { ok: false, error: 'not-authorized' };
