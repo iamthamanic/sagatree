@@ -81,7 +81,7 @@ test('the complete published plan validates without an implementation or archite
   assert.ok(!ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
   assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'));
   assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
-  assert.ok(blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
+  assert.ok(done.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-014'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-015'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-020'));
@@ -108,8 +108,10 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   // After verified completionEvidence, DONE is preserved; legacy defects still must not re-block.
   assert.ok(['ready', 'done'].includes(runtime.status), 'deps-done + source-verified + only legacy defects → READY/DONE');
   const atlas = intake.issues.find((entry) => entry.localId === 'ATLAS-LIVE-E2E');
-  assert.equal(atlas.status, 'blocked');
-  assert.ok((atlas.verification.blockers ?? []).some((entry) => /Atlas live product E2E/i.test(entry)));
+  assert.equal(atlas.status, 'done');
+  assert.equal((atlas.verification.blockers ?? []).length, 0);
+  assert.ok(atlas.completionEvidence, 'ATLAS-LIVE-E2E completionEvidence path');
+  assert.equal(original.intake.meta?.atlasLiveE2e?.ciAcceptance, 'passing');
   const gate05 = intake.issues.find((entry) => entry.localId === 'GATE-05');
   assert.equal(gate05.status, 'blocked');
 });
@@ -531,7 +533,7 @@ test('unknown internal RPC dependencies are not silently filtered from the graph
 test('publication binds labels, title, repository, issue number and content together', () => {
   const byId = new Map(original.intake.issues.map((entry) => [entry.localId, entry]));
   // Use a still-blocked ticket so runner-label tamper remains observable.
-  const current = byId.get('ATLAS-LIVE-E2E');
+  const current = byId.get('GATE-05');
   const base = { repository: original.registry.repository, entry: publishEntry(current, byId), issue: current, byId, body: renderIssue(current, byId) };
   assert.doesNotThrow(() => validatePublicationEntry(base));
   const mutations = [
@@ -662,11 +664,23 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'MIG-603'),
     'MIG-603 must leave READY after DONE evidence',
   );
+  const atlasLive = original.intake.issues.find((issue) => issue.localId === 'ATLAS-LIVE-E2E');
+  assert.equal(atlasLive?.status, 'done', 'ATLAS-LIVE-E2E must be DONE after isolated product 3/3 CI');
+  assert.ok(atlasLive?.completionEvidence, 'ATLAS-LIVE-E2E completionEvidence path');
+  assert.ok(atlasLive?.labels?.includes('agent-done'), 'ATLAS-LIVE-E2E agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'),
+    'ATLAS-LIVE-E2E must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'MIG-602'),
+    'MIG-602 must become READY once ATLAS-LIVE-E2E is DONE',
+  );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
   assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
-  assert.ok(blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
+  assert.ok(!blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
 });
 
 test('MIG-402/#818 preserves every requiredTest from both co-owned Edge contracts (no bullet-count truncation)', () => {

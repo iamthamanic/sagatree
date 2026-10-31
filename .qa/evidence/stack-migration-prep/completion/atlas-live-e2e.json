@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "ATLAS-LIVE-E2E",
+  "githubIssue": 770,
+  "result": "PASS",
+  "testedCommit": "63e93917d89cc4ab85d14f1c2f2abfb90771bbd5",
+  "githubClosed": false,
+  "mergeRef": "main CI atlas-isolated-product run 41201202311 (head cda4939f) + DONE evidence sync PR for #770",
+  "note": "Isolated PG/GoTrue/PostgREST product journey 3/3 PASS; no hosted E2E_ATLAS_SUPABASE_* secrets; cutover remains MIG-700 human.",
+  "checks": [
+    {
+      "command": "npm run product --prefix scripts/stack-migration-db (CI job atlas-isolated-product)",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-atlas-live-e2e.md",
+      "sha256": "83d7e44006a4d4c95bbe4324fdcbb467f710187f5e7ce07f3a7d6968e7f737e7"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-atlas-live-e2e.md",
+      "sha256": "2291c649d40382ea9b6e45b3bde91c93814140afd5738596151a2bcc5aa58a89"
+    }
+  ]
+}

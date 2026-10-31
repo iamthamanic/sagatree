@@ -5,13 +5,13 @@
   "canonicalBodies": 90,
   "mapped": 90,
   "statusCounts": {
-    "ready": 0,
-    "waiting": 5,
-    "blocked": 2,
+    "ready": 1,
+    "waiting": 4,
+    "blocked": 1,
     "needs-design": 0,
-    "done": 83
+    "done": 84
   },
-  "implementationAccepted": 83,
+  "implementationAccepted": 84,
   "architectureApproved": 4,
   "sourceInventory": {
     "rpc": 57,
@@ -19,7 +19,6 @@
     "infrastructure": 13
   },
   "issuesWithExplicitSourceDefects": [
-    "ATLAS-LIVE-E2E",
     "RPC-MARKETPLACE-COUNT",
     "RPC-SAGA-PROVISION",
     "RPC-SESSION-RUNTIME",
@@ -58,9 +57,7 @@
     "MIG-311",
     "MIG-312"
   ],
-  "issuesWithExecutionBlockers": [
-    "ATLAS-LIVE-E2E"
-  ],
+  "issuesWithExecutionBlockers": [],
   "issuesWithRequiredRegressions": [
     "RPC-MARKETPLACE-COUNT",
     "RPC-SAGA-PROVISION",

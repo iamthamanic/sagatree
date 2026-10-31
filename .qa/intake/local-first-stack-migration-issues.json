@@ -12,8 +12,10 @@
       "design": ".qa/design/atlas-live-e2e-cutover-gate.md",
       "ciEnabled": true,
       "workflow": ".github/workflows/stack-migration-baseline.yml",
-      "ciAcceptance": "not-passing",
-      "implementationIssueRemainsOpen": true
+      "job": "atlas-isolated-product",
+      "harness": "scripts/stack-migration-db (product-run.mjs + atlas-product.spec.ts)",
+      "ciAcceptance": "passing",
+      "implementationIssueRemainsOpen": false
     }
   },
   "coverage": {
@@ -26,8 +28,8 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 0,
-    "issuesBlockedOrNeedsDesign": 7,
+    "issuesReady": 1,
+    "issuesBlockedOrNeedsDesign": 5,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -261,7 +263,7 @@
       "title": "Mandatory Atlas live E2E on isolated test DB (GitHub #770)",
       "priority": "P0",
       "kind": "evidence",
-      "status": "blocked",
+      "status": "done",
       "featureSlug": "stack-migration-atlas-live-e2e",
       "designFile": ".qa/design/migration-issues/stack-migration-atlas-live-e2e.md",
       "dependsOn": [
@@ -344,12 +346,11 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/atlas-live-e2e.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
-        "blockers": [
-          "Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash)."
-        ],
+        "implementationStatus": "accepted",
+        "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
       },
@@ -376,7 +377,7 @@
         "P0",
         "migration-wave-0-evidence",
         "migration-order-002",
-        "agent-blocked"
+        "agent-done"
       ]
     },
     {
@@ -16174,7 +16175,7 @@
       "title": "CI Quality Gates for host unit/integration/e2e",
       "priority": "P1",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-602",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-602.md",
       "dependsOn": [
@@ -16446,8 +16447,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-084",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

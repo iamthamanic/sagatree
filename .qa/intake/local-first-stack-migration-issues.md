@@ -7,7 +7,7 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | Reihenfolge | Welle | Issue | Ausführung | Vorgänger |
 | --- | --- | --- | --- | --- |
 | 1 | 0 | MIG-001 [#782](https://github.com/iamthamanic/sagatree/issues/782) | done | — |
-| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | blocked | #782 |
+| 2 | 0 | ATLAS-LIVE-E2E [#770](https://github.com/iamthamanic/sagatree/issues/770) | done | #782 |
 | 3 | 0 | MIG-002 [#783](https://github.com/iamthamanic/sagatree/issues/783) | done | #782 |
 | 4 | 0 | GATE-01 [#784](https://github.com/iamthamanic/sagatree/issues/784) | done | #782, #783 |
 | 5 | 0 | GATE-02 [#785](https://github.com/iamthamanic/sagatree/issues/785) | done | #782, #783 |
@@ -89,7 +89,7 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 81 | 5 | MIG-502 [#843](https://github.com/iamthamanic/sagatree/issues/843) | done | #841, #844, #795 |
 | 82 | 6 | MIG-600 [#845](https://github.com/iamthamanic/sagatree/issues/845) | done | #796, #798, #799, #841, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
 | 83 | 6 | MIG-601 [#846](https://github.com/iamthamanic/sagatree/issues/846) | done | #789, #793, #794, #841, #830 |
-| 84 | 6 | MIG-602 [#847](https://github.com/iamthamanic/sagatree/issues/847) | waiting | #845, #846, #770, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
+| 84 | 6 | MIG-602 [#847](https://github.com/iamthamanic/sagatree/issues/847) | ready | #845, #846, #770, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
 | 85 | 6 | MIG-603 [#848](https://github.com/iamthamanic/sagatree/issues/848) | done | #843, #844, #846 |
 | 86 | 7 | GATE-05 [#788](https://github.com/iamthamanic/sagatree/issues/788) | blocked | #847, #848 |
 | 87 | 7 | MIG-700 [#849](https://github.com/iamthamanic/sagatree/issues/849) | waiting | #782, #770, #783, #784, #785, #786, #787, #789, #790, #792, #791, #793, #794, #841, #795, #797, #798, #799, #796, #844, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #843, #845, #846, #847, #848, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
