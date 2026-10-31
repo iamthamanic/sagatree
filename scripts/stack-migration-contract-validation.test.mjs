@@ -567,6 +567,26 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     ready.some((entry) => entry.localId === 'MIG-313'),
     'MIG-313 remains READY after world/atlas cluster DONE',
   );
+  const rpcMarketplaceCount = original.intake.issues.find((issue) => issue.localId === 'RPC-MARKETPLACE-COUNT');
+  assert.equal(rpcMarketplaceCount?.status, 'done', 'RPC-MARKETPLACE-COUNT must be DONE after #878 evidence');
+  assert.ok(rpcMarketplaceCount?.completionEvidence, 'RPC-MARKETPLACE-COUNT completionEvidence path');
+  assert.ok(rpcMarketplaceCount?.labels?.includes('agent-done'), 'RPC-MARKETPLACE-COUNT agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'RPC-MARKETPLACE-COUNT'),
+    'RPC-MARKETPLACE-COUNT must leave READY after DONE evidence',
+  );
+  const mig353 = original.intake.issues.find((issue) => issue.localId === 'MIG-353');
+  assert.equal(mig353?.status, 'done', 'MIG-353 coordinator must be DONE after #816 evidence');
+  assert.ok(mig353?.completionEvidence, 'MIG-353 completionEvidence path');
+  assert.ok(mig353?.labels?.includes('agent-done'), 'MIG-353 agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'MIG-353'),
+    'MIG-353 must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'MIG-305'),
+    'MIG-305 becomes READY after RPC-MARKETPLACE-COUNT/#878 DONE evidence',
+  );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');

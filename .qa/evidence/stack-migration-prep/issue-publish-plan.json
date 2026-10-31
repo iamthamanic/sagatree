@@ -298,8 +298,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-rpc-marketplace-count.md",
-      "sha256": "1d3d9b8610ff34d1b665738e9bbe1f0ffe8ade08d6ef6f033b28f519b56c9a40",
-      "payloadSha256": "541a4bbb19749be1441eb3421be9a1d1b356503892fbddae2a3f2312699c0c94"
+      "sha256": "077637869df67156633b59c2987c63ccf8c0fe2e219777cd9334c59d1a6de5c5",
+      "payloadSha256": "e9d78a70410bab98cd40126e9c70bd71245d6b1c4a6a299c443120d058955255"
     },
     {
       "localId": "RPC-SAGA-AUTHORING",
@@ -424,8 +424,8 @@
         "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-353.md",
-      "sha256": "eaafd9268cbccd238a53cd0e76bb032f832ddb308cf94769a68c93b1a6506ebb",
-      "payloadSha256": "068c061fe003651e1da4fb75dc45f3a45198648de39d27759d2573ae7d772a59"
+      "sha256": "86283abcbfc9072dee74fd135c8df0cf921e42ef51756eb0b9e3dfc27c4227b5",
+      "payloadSha256": "a1e1a77d5ab6c9c36987d7f45ffae25af7fde5e69b332296c6e4f2d7480c5586"
     },
     {
       "localId": "RPC-SESSION-ACCESS",

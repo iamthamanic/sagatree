@@ -6,7 +6,7 @@
   "testedCommit": "ecc509e45da2a49193fdf162a51b128bcf2fac02",
   "githubClosed": true,
   "mergeRef": "PR #1054 \u2192 main (#878)",
-  "note": "increment_marketplace_downloads host port; durable marketplace_items; atomic +1; unknown no-op; empty actor 42501; FE RPC-only.",
+  "note": "increment_marketplace_downloads host port; durable marketplace_items.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/rpc-marketplace-count.self-test.mjs",

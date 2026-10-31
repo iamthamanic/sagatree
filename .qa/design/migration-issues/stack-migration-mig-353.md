@@ -148,7 +148,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 
 ## Verification state
 
-- Source: source-blocked
+- Source: source-verified
 - Implementation acceptance: accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).

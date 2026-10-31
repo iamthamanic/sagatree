@@ -12,13 +12,13 @@
       "command": "legacy inventory matrix",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/legacy-target-matrix.md",
-      "sha256": "22f39f87e7407c14aaa4d349d2318a77caeeffce5d5f5f715190bce2a72881ef"
+      "sha256": "50013c40da09bf535968d0ac852252e3627ce851deaa3c6f374934cd16d1f0ce"
     },
     {
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "16d575274b2ee8576dcc96b09c2bca8e4ac3349d87c02085be76911b9e8969dc"
+      "sha256": "098a804720f90e56ff56564cd6b918348d3d039f574767a3660e2ac9c7134597"
     },
     {
       "command": "edge/infra inventory 25+13",

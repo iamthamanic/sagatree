@@ -75,7 +75,7 @@ Sicherheitsfehler werden nicht als verpflichtende unsichere Parität fortgeschri
 | [get_session_runtime_snapshot](get_session_runtime_snapshot.md) | 1 | source-verified | [#867](https://github.com/iamthamanic/sagatree/issues/867) |
 | [get_world_atlas_map](get_world_atlas_map.md) | 1 | source-verified | [#862](https://github.com/iamthamanic/sagatree/issues/862) |
 | [get_world_map](get_world_map.md) | 1 | source-verified | [#861](https://github.com/iamthamanic/sagatree/issues/861) |
-| [increment_marketplace_downloads](increment_marketplace_downloads.md) | 1 | source-blocked | [#878](https://github.com/iamthamanic/sagatree/issues/878) |
+| [increment_marketplace_downloads](increment_marketplace_downloads.md) | 1 | source-verified | [#878](https://github.com/iamthamanic/sagatree/issues/878) |
 | [join_project_by_code](join_project_by_code.md) | 1 | source-verified | [#874](https://github.com/iamthamanic/sagatree/issues/874) |
 | [join_session_by_code](join_session_by_code.md) | 1 | source-verified | [#869](https://github.com/iamthamanic/sagatree/issues/869) |
 | [leave_play_session](leave_play_session.md) | 1 | source-verified | [#869](https://github.com/iamthamanic/sagatree/issues/869) |
