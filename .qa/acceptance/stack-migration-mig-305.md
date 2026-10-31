@@ -9,4 +9,4 @@
 - [x] typed-strict + createHost PASS
 
 ## Evidence
-- Self-test PASS at 2026-10-31T09:04:23.547Z
+- Self-test PASS at 2026-10-31T09:07:28.319Z

@@ -94,8 +94,11 @@ try {
   assert(marketplace.listItems({ maxPrice: 0 }).value.length === 1, "maxPrice");
   assert(marketplace.listItems({ searchQuery: "Beta" }).value.length === 1, "search");
   assert(marketplace.listFeatured().value.length === 2, "featured");
-  assert(marketplace.getItemById("does-not-exist").value === null, "missing null");
-  assert(!marketplace.getItemById("  ").ok, "empty id");
+  assert(!marketplace.getItemById("does-not-exist").ok && marketplace.getItemById("does-not-exist").error === "not-found", "missing not-found");
+  {
+    const badId = marketplace.getItemById("  ");
+    assert(!badId.ok && badId.error === "invalid-item-id", "empty id");
+  }
   notes.push("List filters/sort/featured/single-read PASS");
 
   assert(!marketplace.incrementDownloads(actor(""), createdA.value.id).ok, "inc DENY");
@@ -111,7 +114,10 @@ try {
   assert(!marketplace.deleteItem(stranger, createdA.value.id).ok, "foreign delete");
   assert(marketplace.updateItem(owner, createdA.value.id, { title: "Alpha Renamed" }).ok, "owner update");
   assert(marketplace.deleteItem(owner, createdB.value.id).ok, "owner delete");
-  assert(marketplace.getItemById(createdB.value.id).value === null, "gone");
+  {
+    const gone = marketplace.getItemById(createdB.value.id);
+    assert(!gone.ok && gone.error === "not-found", "gone");
+  }
   assert(!marketplace.deleteItem(owner, createdB.value.id).ok, "delete missing");
   notes.push("Ownership DENY PASS");
 

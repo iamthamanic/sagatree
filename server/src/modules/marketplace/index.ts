@@ -135,15 +135,17 @@ export function createMarketplacePorts(
     },
     getItemById(itemId) {
       const id = typeof itemId === 'string' ? itemId.trim() : '';
-      if (!id) return { ok: false, error: '22023' };
-      return { ok: true, value: catalog.getById(id) };
+      if (!id) return { ok: false, error: 'invalid-item-id' };
+      const row = catalog.getById(id);
+      if (!row) return { ok: false, error: 'not-found' };
+      return { ok: true, value: row };
     },
     listFeatured() {
       return { ok: true, value: catalog.listFeatured() };
     },
     listByAuthor(authorId) {
       const id = typeof authorId === 'string' ? authorId.trim() : '';
-      if (!id) return { ok: false, error: '22023' };
+      if (!id) return { ok: false, error: 'invalid-author-id' };
       return { ok: true, value: catalog.listByAuthor(id) };
     },
     createItem(actor, draft) {
@@ -160,7 +162,7 @@ export function createMarketplacePorts(
       const authorId = actorIdOrDeny(actor);
       if (!authorId) return { ok: false, error: '42501' };
       const id = typeof itemId === 'string' ? itemId.trim() : '';
-      if (!id) return { ok: false, error: '22023' };
+      if (!id) return { ok: false, error: 'invalid-item-id' };
       return catalog.delete(authorId, id)
         ? { ok: true, value: true }
         : { ok: false, error: 'not-authorized' };

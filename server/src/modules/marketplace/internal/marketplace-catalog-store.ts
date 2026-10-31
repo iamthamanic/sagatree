@@ -170,7 +170,14 @@ export class MarketplaceCatalogStore {
       where.push(`(title LIKE ? ESCAPE '\\' OR IFNULL(description, '') LIKE ? ESCAPE '\\')`);
       params.push(pattern, pattern);
     }
-    const sortBy = filters?.sortBy && SORT_COLUMNS[filters.sortBy] ? filters.sortBy : 'downloads';
+    const sortKey = filters?.sortBy;
+    const sortBy =
+      sortKey === 'downloads' ||
+      sortKey === 'rating' ||
+      sortKey === 'created_at' ||
+      sortKey === 'price'
+        ? sortKey
+        : 'downloads';
     const order = filters?.sortOrder === 'asc' ? 'ASC' : 'DESC';
     const sql = `SELECT * FROM marketplace_items${where.length ? ` WHERE ${where.join(' AND ')}` : ''} ORDER BY ${SORT_COLUMNS[sortBy]} ${order}`;
     return (this.#db.prepare(sql).all(...params) as Row[]).map(mapRow);
