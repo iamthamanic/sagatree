@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-303",
+  "githubIssue": 802,
+  "result": "PASS",
+  "testedCommit": "140a75c06f7e24504101263623f0f47587af1035",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #802; re-verified 140a75c06f7e.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-303-inventory-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-303.md",
+      "sha256": "f7e9c23a299537f584a52883d93832e1c6e0068ff7a3900b6907a2b79d2d28ef"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-303.md",
+      "sha256": "97a1d1d0f6caf33b8459ac8107086cc0b0d62110b9323ecd22e5a50c44c991ba"
+    }
+  ]
+}

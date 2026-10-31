@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-414",
+  "githubIssue": 830,
+  "result": "PASS",
+  "testedCommit": "140a75c06f7e24504101263623f0f47587af1035",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #830; re-verified 140a75c06f7e.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-414-edge-main.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-414.md",
+      "sha256": "273b4bd70f39e6a4143adf6cd1b10369d39c06ec447fd22c1a2ab3fad3c08524"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-414.md",
+      "sha256": "75e0a071bb31d2a2308e12a3e5929197a825893957e1248e4de1e8778b6c4a9b"
+    }
+  ]
+}

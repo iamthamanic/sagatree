@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-308",
+  "githubIssue": 807,
+  "result": "PASS",
+  "testedCommit": "140a75c06f7e24504101263623f0f47587af1035",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #807; re-verified 140a75c06f7e.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-308-project-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-308.md",
+      "sha256": "4e28ee283bf4f4ea3f3db4c880dfb4eaa7b0412b01009a6c9b653a6ad4404112"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-308.md",
+      "sha256": "cb7904b3e67b1f49f2b0da246fc6e74cf12fdf0f7fac1062d80b974b82ab272c"
+    }
+  ]
+}
