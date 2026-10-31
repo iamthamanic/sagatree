@@ -5,7 +5,7 @@
   "result": "PASS",
   "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. RPC inventory sha256 refreshed after MIG-353/#816 marketplace host-successor source-verified.",
   "checks": [
     {
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "098a804720f90e56ff56564cd6b918348d3d039f574767a3660e2ac9c7134597"
+      "sha256": "b52d2db49ffdb023328b5cc3184f66eec7529531278cb925b05045415b4ccef1"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "d0acb5d475dc07c830bc5f5a3921f03dca6458fc5bfae17289f50458717a7413"
+      "sha256": "88215f7aeb4cab7acf1cbb0a1c8e437ae9f0da99c2771267e78fa83e903a6e82"
     }
   ]
 }

@@ -41843,7 +41843,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/marketplace/marketplace-service.ts",
-            "sha256": "9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05"
+            "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -41895,8 +41895,8 @@
           "rpc": "increment_marketplace_downloads",
           "resolution": "string-literal",
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "line": 238,
-          "sourceSha256": "9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05",
+          "line": 242,
+          "sourceSha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f",
           "requestExpression": "{\n      item_id: id,\n    }",
           "requestKeys": [
             "item_id"
@@ -42118,7 +42118,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/marketplace/marketplace-service.ts",
-          "sha256": "9a5cc9dc862c16931e9208639a083d4ed0a97a7b2ac7299710f1d37f20e08d05"
+          "sha256": "01b4f9b1474046827459e2930c90fc80b0cde69a70fda0e6cc043be46454c18f"
         },
         {
           "path": "src/lib/supabase.ts",

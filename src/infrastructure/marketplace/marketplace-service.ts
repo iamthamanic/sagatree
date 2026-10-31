@@ -2,6 +2,10 @@
  * marketplace-service — Supabase adapter for marketplace catalog/downloads.
  * Location: src/infrastructure/marketplace/marketplace-service.ts
  *
+ * MIG-305 dual-path note: live browser traffic stays on this Supabase adapter;
+ * host catalog/download ports are wired via createHostMarketplaceAdapter when the
+ * stack selects the host transport (see src/infrastructure/marketplace/index.ts).
+ *
  * Client-trust (#675): mutations scope to authenticated author_id; update/create
  * DTOs are allowlisted — never spread rating/downloads/author_id from the client.
  */
