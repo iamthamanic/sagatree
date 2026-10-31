@@ -120,17 +120,16 @@ function projectionFixture(marker: string): SessionProjectionInput {
  * Run the host negative authz suite against an already-bootstrapped HostDatabase.
  * Pass `{ skipSeed: true }` when the caller already invoked `seedAuthzFixture`.
  */
-export function runHostNegativeAuthzSuite(
-  db: HostDatabase,
-  options: { readonly skipSeed?: boolean } = {},
-): HostNegativeAuthzReport {
-  if (!options.skipSeed) {
-    seedAuthzFixture(db);
-  }
-  const permissions = createPermissionsPorts(db);
+type AuthorizeFn = (
+  op: string,
+  actor: { readonly kind: 'solo-local'; readonly actorId: string },
+  resource: Record<string, string>,
+) => { readonly allow: boolean; readonly reason: string };
+
+/** Shared ops matrix — injectable authorize for healthy path + always-allow canary. */
+function runAuthzMatrix(authorize: AuthorizeFn): AuthzCaseResult[] {
   const A = FIXTURE.actors;
   const cases: AuthzCaseResult[] = [];
-
   const push = (
     id: string,
     op: string,
@@ -138,10 +137,9 @@ export function runHostNegativeAuthzSuite(
     resource: Record<string, string>,
     expectedAllow: boolean,
   ) => {
-    cases.push(expectCase(id, permissions.authorize(op, actor, resource), expectedAllow));
+    cases.push(expectCase(id, authorize(op, actor, resource), expectedAllow));
   };
 
-  // Fall 1 — operations matrix (owner / GM / players / outsider / otherGm)
   push('world.read.owner', 'world.read', A.owner, { worldId: FIXTURE.worldId }, true);
   push('world.read.gm', 'world.read', A.gm, { worldId: FIXTURE.worldId }, false);
   push('world.read.player1', 'world.read', A.player1, { worldId: FIXTURE.worldId }, false);
@@ -174,6 +172,22 @@ export function runHostNegativeAuthzSuite(
   push('saga.write.owner', 'saga.write', A.owner, { sagaId: FIXTURE.sagaUserId }, true);
   push('saga.write.outsider', 'saga.write', A.outsider, { sagaId: FIXTURE.sagaUserId }, false);
 
+  return cases;
+}
+
+export function runHostNegativeAuthzSuite(
+  db: HostDatabase,
+  options: { readonly skipSeed?: boolean } = {},
+): HostNegativeAuthzReport {
+  if (!options.skipSeed) {
+    seedAuthzFixture(db);
+  }
+  const permissions = createPermissionsPorts(db);
+  const A = FIXTURE.actors;
+
+  // Fall 1 — operations matrix (owner / GM / players / outsider / otherGm)
+  const cases = runAuthzMatrix((op, actor, resource) => permissions.authorize(op, actor, resource));
+
   // Secret marker projections (players / spectator must not see GM secrets)
   const marker = secretMarker();
   const base = projectionFixture(marker);
@@ -198,13 +212,17 @@ export function runHostNegativeAuthzSuite(
   );
   const canaryDetectsDisabledFilter = projectionContainsSecretMarker(leak);
 
-  // Fall 2b — canary: always-allow authorize would grant outsider world.edit
-  const brokenAllow = { allow: true as const, reason: 'canary-always-allow' };
+  // Fall 2b — canary: always-allow authorize stub must fail the matrix; healthy port still denies outsider
+  const alwaysAllowAuthorize: AuthorizeFn = () => ({
+    allow: true,
+    reason: 'canary-always-allow',
+  });
+  const alwaysAllowMatrixOk = runAuthzMatrix(alwaysAllowAuthorize).every((c) => c.ok);
   const healthyDeny = permissions.authorize('world.edit', A.outsider, {
     worldId: FIXTURE.worldId,
   });
   const canaryDetectsAlwaysAllowMembership =
-    brokenAllow.allow === true && healthyDeny.allow === false;
+    alwaysAllowMatrixOk === false && healthyDeny.allow === false;
 
   const ok =
     cases.every((c) => c.ok) &&
