@@ -4,7 +4,7 @@
   "localId": "MIG-600",
   "githubIssue": 845,
   "result": "PASS",
-  "testedCommit": "66b25867bc00ccec020b34fff3d0c36cbf5555da",
+  "testedCommit": "9a400ddf99be5040c4b43707e2678aede90ffdd1",
   "githubClosed": false,
   "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
   "checks": [
