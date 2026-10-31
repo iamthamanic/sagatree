@@ -35,7 +35,7 @@ Supabase shutdown) bleibt menschlich (MIG-700+). Dual-path intentional.
 
 - [x] Berechtigte Weltänderungen sind nach Browser-Reload und DB-Neustart persistent; Spieler sehen genau die für ihr Projekt/ihren Reveal-Stand erlaubten Karten.
 - [x] Geheime Marker fehlen in Spielerantworten und ein Cross-owner-Write verändert nachweislich keine DB-Zeile.
-- [x] Die reale Produktprobe wird rot und nach Rücknahme grün; fehlende isolierte Testinfrastruktur schlägt fehl und führt nicht zu test.skip. (Rot-Phase: `scripts/atlas-product-fail-closed.self-test.mjs` + `product-fail-closed.mjs`; Grün: Actions run `41201202311` 3/3)
+- [x] Die reale Produktprobe wird rot und nach Rücknahme grün; fehlende isolierte Testinfrastruktur schlägt fehl und führt nicht zu test.skip. (Rot-Phase: `scripts/atlas-product-fail-closed.test.mjs` + `product-fail-closed.mjs`; Grün: Actions run `41201202311` 3/3)
 - [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 - [x] `npm run product --prefix scripts/stack-migration-db` (CI `atlas-isolated-product`) → 3/3 PASS, exit 0, no skip/flaky.
 - [x] Evidence: Actions run `41201202311` on main (head `cda4939f`); local artifact `report.json` status=passed, browser expected=3.
