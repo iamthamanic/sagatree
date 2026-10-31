@@ -1,0 +1,582 @@
+{
+  "suite": "mig-600-host-authz-parity",
+  "ok": true,
+  "caseCount": 26,
+  "cases": [
+    {
+      "id": "world.read.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "world-owner-read",
+      "ok": true
+    },
+    {
+      "id": "world.read.gm",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-world-owner",
+      "ok": true
+    },
+    {
+      "id": "world.read.player1",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-world-owner",
+      "ok": true
+    },
+    {
+      "id": "world.read.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-world-owner",
+      "ok": true
+    },
+    {
+      "id": "world.edit.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "world-owner",
+      "ok": true
+    },
+    {
+      "id": "world.edit.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-world-owner",
+      "ok": true
+    },
+    {
+      "id": "session.gm.gm",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "project-gm",
+      "ok": true
+    },
+    {
+      "id": "session.gm.owner",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "inactive-or-missing-membership",
+      "ok": true
+    },
+    {
+      "id": "session.gm.player1",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-project-gm",
+      "ok": true
+    },
+    {
+      "id": "session.gm.otherGm",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "inactive-or-missing-membership",
+      "ok": true
+    },
+    {
+      "id": "player.read.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "world-owner-read",
+      "ok": true
+    },
+    {
+      "id": "player.read.gm",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "active-member-read",
+      "ok": true
+    },
+    {
+      "id": "player.read.p1",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "active-member-read",
+      "ok": true
+    },
+    {
+      "id": "player.read.p2",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "active-member-read",
+      "ok": true
+    },
+    {
+      "id": "player.read.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "inactive-or-missing-membership",
+      "ok": true
+    },
+    {
+      "id": "player.read.otherGm",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "inactive-or-missing-membership",
+      "ok": true
+    },
+    {
+      "id": "asset.read.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "asset-owner-read",
+      "ok": true
+    },
+    {
+      "id": "asset.read.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-asset-owner",
+      "ok": true
+    },
+    {
+      "id": "ruleset.read.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "ruleset-owner-read",
+      "ok": true
+    },
+    {
+      "id": "ruleset.read.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-ruleset-owner",
+      "ok": true
+    },
+    {
+      "id": "ruleset.write.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "ruleset-owner-write",
+      "ok": true
+    },
+    {
+      "id": "ruleset.write.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-ruleset-owner",
+      "ok": true
+    },
+    {
+      "id": "saga.read.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "saga-owner-read",
+      "ok": true
+    },
+    {
+      "id": "saga.read.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-authorized",
+      "ok": true
+    },
+    {
+      "id": "saga.write.owner",
+      "allow": true,
+      "expectedAllow": true,
+      "reason": "saga-owner-write",
+      "ok": true
+    },
+    {
+      "id": "saga.write.outsider",
+      "allow": false,
+      "expectedAllow": false,
+      "reason": "not-authorized",
+      "ok": true
+    }
+  ],
+  "secretMarkerAbsentForPlayers": true,
+  "canaryDetectsDisabledFilter": true,
+  "canaryDetectsAlwaysAllowMembership": true,
+  "coverage": [
+    {
+      "issue": 796,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 798,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 799,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 841,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 816,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 814,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 815,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 813,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 818,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 817,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 819,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 820,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 821,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 822,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 823,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 824,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 825,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 826,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 827,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 828,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 829,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 831,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 832,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 833,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 834,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 835,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 836,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 837,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 830,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 838,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 839,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 840,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 800,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 801,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 802,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 803,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 804,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 805,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 806,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 807,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 808,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 809,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 810,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 811,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 812,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 861,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 862,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 863,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 864,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 865,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 866,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 867,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 868,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 869,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 870,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 871,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 872,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 873,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 874,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 875,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 876,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 877,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 878,
+      "status": "executed-with-open-blocker",
+      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
+      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+    },
+    {
+      "issue": 607,
+      "status": "executed",
+      "executed": "scripts/negative-authz-suite-check.mjs + live negative-authz-suite.mjs (Compose Edge)",
+      "openBlocker": null
+    }
+  ],
+  "notes": [
+    "SLICE DONE = feature-security host policy/projection parity + canary + coverage inventory.",
+    "FEATURE VERIFIED / HTTP cutover remains MIG-602; RELEASE APPROVED remains human (MIG-700)."
+  ]
+}

@@ -24,4 +24,15 @@ Custom `supabase/functions/main` routes via `userWorkers`, so stock `VERIFY_JWT`
 - **Static + evidence contract:** `node scripts/negative-authz-suite-check.mjs` (wired into `npm run test-gate`)
 - **Live refresh:** `node scripts/negative-authz-suite.mjs` → `.qa/runs/negative-authz-suite/`
 
+## Host parity (MIG-600 / #845)
+
+Cross-cutting deny matrix + secret-marker projections + membership canary against
+host SQLite (parity-harness roles). Does **not** claim HTTP publicActivation cutover
+(FEATURE VERIFIED → MIG-602).
+
+- **Suite:** `server/tests/authz/host-negative-authz-suite.ts`
+- **Gate:** `node --experimental-strip-types scripts/mig-600-host-authz-parity.self-test.mjs`
+- **Evidence:** `.qa/runs/mig-600-host-authz/report.json` + `coverage.md`
+- **E2E contract:** `e2e/host-negative-authz-parity.spec.ts` (Browser E2E job)
+
 Related: `scripts/sagatree-core-workflows-check.mjs` (happy path + edge neg), `docs/ops/compose-harden-defaults.md`.
