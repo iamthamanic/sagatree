@@ -4,7 +4,7 @@
   "localId": "MIG-305",
   "githubIssue": 804,
   "result": "PASS",
-  "testedCommit": "cb554c9edc0bda1aeaf5df97f2ac6b0bb53e65d4",
+  "testedCommit": "099c0bebf8e4da6ca9ac0ec91de0e67b9b175a74",
   "githubClosed": false,
   "note": "Marketplace catalog host ports + dual-path FE adapter; review-finding hardenings applied.",
   "checks": [
@@ -18,7 +18,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-305.md",
-      "sha256": "0ed2b1c3f44d2290b5edc0ac609a2e1ccbdfae774991dc6786fe3cfa188673b9"
+      "sha256": "8a585469452e76d88964b7043aba7f22b16a9b451a34a49e6d382a7d09de6d9e"
     }
   ]
 }
