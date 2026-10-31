@@ -27,9 +27,14 @@ Deferred integration: successors of MIG-502/#843, MIG-503/#844, MIG-601/#846 (al
 - Manifest path traversal rejected; checksum mismatch aborts before publish.
 - Backup dirs treated as confidential (same as live DB/assets); not HTTP-exposed.
 
-## Required tests
+## Required Tests
 
-`scripts/mig-603-host-backup.self-test.mjs` (wired into `npm run test-gate`).
+- [x] Snapshot via wal_checkpoint + VACUUM INTO + asset copy; atomic publish under backup root.
+- [x] Restore on a new dataDir preserves SQLite integrity, session event/revision links, and asset SHA-256.
+- [x] Rollback drill reports measured duration, write-lock hold, schema version, host version, checksums.
+- [x] Aborted / mid-stage backup never publishes; path traversal / checksum mismatch fail closed.
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
+- [x] `scripts/mig-603-host-backup.self-test.mjs` → PASS (stdout only; does not rewrite this file).
 
 ## Security Coverage
 

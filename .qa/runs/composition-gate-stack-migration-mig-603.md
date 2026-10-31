@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-mig-603 (#848)
 
-- HEAD_SHA: 32ea2b9ee3917a426be131f0137ea8a1ea479ddf
+- HEAD_SHA: f455a0f624561fc5a7929cc5782b8040089134c3
 - BASE_SHA: de267052cb78558fc76ee33c7f3abc0f82cabfe2
 - Date: 2026-10-30
 - Verdict: CLEAR
+- Note: DONE-evidence sync pins HEAD to squash-merge #1056 on main; CLEAR hop chain unchanged.
 
 ## Event
 

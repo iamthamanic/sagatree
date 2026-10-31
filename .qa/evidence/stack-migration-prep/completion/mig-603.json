@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-603",
+  "githubIssue": 848,
+  "result": "PASS",
+  "testedCommit": "f455a0f624561fc5a7929cc5782b8040089134c3",
+  "githubClosed": true,
+  "mergeRef": "PR #1056 → main (#848)",
+  "note": "Host backup/restore/rollback drills + runbooks; cutover remains MIG-700 human.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-603-host-backup.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-603.md",
+      "sha256": "981df89f3bcb12c99b04addf65ee730eca3b41d7e9231b024d3f008ea3b38f87"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-603.md",
+      "sha256": "2a3d5781dcf0aa0ddf7dd2edc86ca6c8c10f91eacdb3017f46234b50d09bbe65"
+    }
+  ]
+}

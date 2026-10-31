@@ -638,9 +638,29 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'MIG-305'),
     'MIG-305 must leave READY after DONE evidence',
   );
+  const mig600 = original.intake.issues.find((issue) => issue.localId === 'MIG-600');
+  assert.equal(mig600?.status, 'done', 'MIG-600 must be DONE after #845/#1061 host authz evidence');
+  assert.ok(mig600?.completionEvidence, 'MIG-600 completionEvidence path');
+  assert.ok(mig600?.labels?.includes('agent-done'), 'MIG-600 agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'MIG-600'),
-    'MIG-600 becomes READY after wave-3/4 port completionEvidence sync',
+    !ready.some((entry) => entry.localId === 'MIG-600'),
+    'MIG-600 must leave READY after DONE evidence',
+  );
+  const mig601 = original.intake.issues.find((issue) => issue.localId === 'MIG-601');
+  assert.equal(mig601?.status, 'done', 'MIG-601 must be DONE after #846/#1055 compose evidence');
+  assert.ok(mig601?.completionEvidence, 'MIG-601 completionEvidence path');
+  assert.ok(mig601?.labels?.includes('agent-done'), 'MIG-601 agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'MIG-601'),
+    'MIG-601 must leave READY after DONE evidence',
+  );
+  const mig603 = original.intake.issues.find((issue) => issue.localId === 'MIG-603');
+  assert.equal(mig603?.status, 'done', 'MIG-603 must be DONE after #848/#1056 backup evidence');
+  assert.ok(mig603?.completionEvidence, 'MIG-603 completionEvidence path');
+  assert.ok(mig603?.labels?.includes('agent-done'), 'MIG-603 agent-done');
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'MIG-603'),
+    'MIG-603 must leave READY after DONE evidence',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

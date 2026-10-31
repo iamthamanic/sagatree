@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-601",
+  "githubIssue": 846,
+  "result": "PASS",
+  "testedCommit": "de267052cb78558fc76ee33c7f3abc0f82cabfe2",
+  "githubClosed": true,
+  "mergeRef": "PR #1055 → main (#846)",
+  "note": "Host Compose profiles + runbook + self-test; live Docker-in-CI deferred MIG-602.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-601-host-compose.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-601.md",
+      "sha256": "063c0d5d2d4ee91c3e8d1653996e1af5846749d8b78f35ba0325a35bcf9da20b"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-601.md",
+      "sha256": "92fe62098661c52057e6446d2adf3da48d26e88e9ef7762a035870ca42b92190"
+    }
+  ]
+}

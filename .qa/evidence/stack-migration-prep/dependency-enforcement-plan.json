@@ -1800,7 +1800,7 @@
       "githubIssue": 845,
       "order": 82,
       "wave": 6,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         796,
         798,
@@ -1871,7 +1871,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-082",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1879,7 +1879,7 @@
       "githubIssue": 846,
       "order": 83,
       "wave": 6,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         789,
         793,
@@ -1892,7 +1892,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-083",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -1979,19 +1979,18 @@
       "githubIssue": 848,
       "order": 85,
       "wave": 6,
-      "status": "waiting",
+      "status": "done",
       "dependsOnGithub": [
         843,
         844,
         846
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-085",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-done"
       ]
     },
     {

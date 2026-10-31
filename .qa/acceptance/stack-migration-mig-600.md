@@ -29,11 +29,14 @@ HTTP `publicActivation` cutover remains MIG-602/#847. RELEASE APPROVED → human
 - Owner ≠ GM for session.gm; world.edit stays owner-scoped.
 - Compose-era Edge JWT suite (#607) remains wired via `negative-authz-suite-check.mjs` (not claimed as host HTTP).
 
-## Required tests
+## Required Tests
 
-1. `scripts/mig-600-host-authz-parity.self-test.mjs` (test-gate)
-2. `e2e/host-negative-authz-parity.spec.ts` (Browser E2E)
-3. Touched files: zero type escape hatches
+- [x] Host SQLite PolicyService role matrix matches allow/deny for owner/GM/players/outsider/otherGm.
+- [x] Player projections omit secret markers; GM-only objects/events stay filtered.
+- [x] Canary fails closed when filters are disabled; healthy outsider world.edit remains deny.
+- [x] Coverage inventory lists Depends-on rows as executed or open-blocker (no silent parity).
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
+- [x] `scripts/mig-600-host-authz-parity.self-test.mjs` → PASS (stdout only; does not rewrite this file).
 
 ## Security Coverage
 

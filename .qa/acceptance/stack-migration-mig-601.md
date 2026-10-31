@@ -26,9 +26,13 @@ Reproduzierbare Compose-Profile für den Node-Host und optionale AI-/Media-Diens
 - AI without encryption key → `not-configured`; media without codecs → `unsupported` capability.
 - Backup mount path documented (`/backups`).
 
-## Required tests
+## Required Tests
 
-`scripts/mig-601-host-compose.self-test.mjs` (wired into `npm run test-gate`).
+- [x] Health wird erst nach DB-Readiness grün; bestätigte Welt-/Session-Daten überleben Container-Neustart.
+- [x] Der Host bleibt für lokale Kernfunktionen benutzbar, während der betroffene Provider einen erklärten Capability-Fehler meldet.
+- [x] HTTP-/Realtime- und Persistenzverhalten stimmen überein; Ports, Datenpfade und Backup-Mounts sind im Runbook reproduzierbar festgehalten.
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
+- [x] `scripts/mig-601-host-compose.self-test.mjs` → PASS (stdout only; does not rewrite this file).
 
 ## Security Coverage
 
