@@ -30,6 +30,18 @@ const coverageRowSchema = z.object({
   openBlocker: z.string().nullable(),
 });
 
+const worldTouchResponseSchema = z.union([
+  z.object({
+    ok: z.literal(true),
+    mutated: z.boolean(),
+  }),
+  z.object({
+    error: z.string().min(1),
+    mutated: z.literal(false),
+    ignoredClaims: z.unknown().optional(),
+  }),
+]);
+
 const reportSchema = z.object({
   suite: z.literal('mig-600-host-authz-parity'),
   ok: z.literal(true),
@@ -122,17 +134,20 @@ try {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ worldId: 'world-primary' }),
   });
-  const ownerBody = await ownerRes.json();
-  const httpWorldTouchOwnerAllow = ownerRes.status === 200 && ownerBody?.ok === true;
+  const ownerBody = worldTouchResponseSchema.parse(await ownerRes.json());
+  const httpWorldTouchOwnerAllow =
+    ownerRes.status === 200 && 'ok' in ownerBody && ownerBody.ok === true;
 
   const outsiderRes = await buildApp('outsider-x').request('http://host/api/world-touch', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ worldId: 'world-primary', role: 'gm', ownerUserId: 'owner-o' }),
   });
-  const outsiderBody = await outsiderRes.json();
+  const outsiderBody = worldTouchResponseSchema.parse(await outsiderRes.json());
   const httpWorldTouchOutsiderDeny =
-    outsiderRes.status === 403 && outsiderBody?.mutated === false;
+    outsiderRes.status === 403 &&
+    'error' in outsiderBody &&
+    outsiderBody.mutated === false;
 
   assert(httpWorldTouchOwnerAllow, `owner world-touch must allow, got ${ownerRes.status}`);
   assert(
