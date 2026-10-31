@@ -606,9 +606,13 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'MIG-350'),
     'MIG-350 must leave READY after DONE evidence',
   );
+  const mig313 = original.intake.issues.find((issue) => issue.localId === 'MIG-313');
+  assert.equal(mig313?.status, 'done', 'MIG-313 must be DONE after #812 host world adapter evidence');
+  assert.ok(mig313?.completionEvidence, 'MIG-313 completionEvidence path');
+  assert.ok(mig313?.labels?.includes('agent-done'), 'MIG-313 agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'MIG-313'),
-    'MIG-313 remains READY after world/atlas cluster DONE',
+    !ready.some((entry) => entry.localId === 'MIG-313'),
+    'MIG-313 must leave READY after DONE evidence',
   );
   const rpcMarketplaceCount = original.intake.issues.find((issue) => issue.localId === 'RPC-MARKETPLACE-COUNT');
   assert.equal(rpcMarketplaceCount?.status, 'done', 'RPC-MARKETPLACE-COUNT must be DONE after #878 evidence');
@@ -626,9 +630,17 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'MIG-353'),
     'MIG-353 must leave READY after DONE evidence',
   );
+  const mig305 = original.intake.issues.find((issue) => issue.localId === 'MIG-305');
+  assert.equal(mig305?.status, 'done', 'MIG-305 must be DONE after #804/#1060 marketplace host evidence');
+  assert.ok(mig305?.completionEvidence, 'MIG-305 completionEvidence path');
+  assert.ok(mig305?.labels?.includes('agent-done'), 'MIG-305 agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'MIG-305'),
-    'MIG-305 becomes READY after RPC-MARKETPLACE-COUNT/#878 DONE evidence',
+    !ready.some((entry) => entry.localId === 'MIG-305'),
+    'MIG-305 must leave READY after DONE evidence',
+  );
+  assert.ok(
+    ready.some((entry) => entry.localId === 'MIG-600'),
+    'MIG-600 becomes READY after wave-3/4 port completionEvidence sync',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

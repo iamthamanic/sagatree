@@ -1319,6 +1319,18 @@ function checkMig603HostBackup() {
   );
 }
 
+function checkMig600HostAuthzParity() {
+  console.log('MIG-600 host negative authz parity (#845): role matrix + canary + coverage...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-600-host-authz-parity.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkNegativeAuthzSuite() {
   console.log('Negative authz suite (#607): JWT gate + deny evidence contract...');
   execFileSync(process.execPath, ['scripts/negative-authz-suite-check.mjs'], {
@@ -3485,6 +3497,7 @@ checkRealtimeComposeBootContract();
 checkComposeHardenDefaults();
 checkMig601HostCompose();
 checkMig603HostBackup();
+checkMig600HostAuthzParity();
 checkNegativeAuthzSuite();
 checkEdgeDispatcherAllowlist();
 checkRlsOpenTables();

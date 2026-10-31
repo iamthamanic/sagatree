@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-313",
+  "githubIssue": 812,
+  "result": "PASS",
+  "testedCommit": "140a75c06f7e24504101263623f0f47587af1035",
+  "githubClosed": true,
+  "note": "Backfill CLOSED #812; re-verified 140a75c06f7e.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-313-world-adapter.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-313.md",
+      "sha256": "0db5e6426ce9c6e06519549783f7c1cbe912292c2115ad4032007a543ad73e0e"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-313.md",
+      "sha256": "e26e4afdbd8bbc4806c9b528635b10dd38fe1bce721751db8d80d1315b739085"
+    }
+  ]
+}

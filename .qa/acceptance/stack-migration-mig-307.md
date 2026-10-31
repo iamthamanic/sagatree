@@ -53,6 +53,12 @@ Roadmap: Epic #773 Wave 4 — adapter ports (MIG-307 / order 073). Acceptance ti
 | 1 | n/a — isolated-contract / no UI change |
 | 2 | n/a |
 
+## Required Tests
+- [x] `scripts/mig-307-npc-adapter.self-test.mjs` → PASS
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout)
+- [x] Isolated-contract acceptance criteria for this slice exercised via self-test / composition CLEAR
+- [x] Supabase production facade remains default; no accidental host cutover / public HTTP activation
+
 ## Evidence
 `node --experimental-strip-types scripts/mig-307-npc-adapter.self-test.mjs` → PASS.
 `node --experimental-strip-types scripts/rpc-npc-instances.self-test.mjs` → PASS (regression).

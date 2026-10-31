@@ -90,6 +90,7 @@ jobs:
     needs: test-gate
     runs-on: ubuntu-latest
     # Suite often ~20m under Actions load; 25m was cancelling mid-run (#671).
+    # MIG-600/#845: e2e/host-negative-authz-parity.spec.ts regenerates host authz evidence in-job.
     timeout-minutes: 40
 
     steps:
