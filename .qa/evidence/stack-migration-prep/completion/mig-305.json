@@ -3,7 +3,7 @@
   "kind": "migration-acceptance",
   "localId": "MIG-305",
   "result": "PASS",
-  "testedCommit": "7d9eae24bc24611ae10b5a10968b460c7d76f066",
+  "testedCommit": "8032a8dd579d2bcd88916099196be77c79449b6d",
   "githubClosed": false,
   "mergeRef": "PR pending (#804)",
   "note": "Marketplace host catalog ports + dual-path FE seam; Supabase default unchanged.",
@@ -18,7 +18,7 @@
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-305.md",
-      "sha256": "18bacf7376ddbd586b6fb4c64a371e46515d2e53efd5a23a46d0e5fb4d58b09f"
+      "sha256": "a78bb8bcff67b536337a99b35ebc8e40ae9e2babcc07145ad4733f3db032f9e6"
     }
   ]
 }
