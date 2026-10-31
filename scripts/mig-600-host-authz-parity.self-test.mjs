@@ -3,14 +3,18 @@
  * mig-600-host-authz-parity.self-test — host negative authz suite + coverage inventory.
  * Location: scripts/mig-600-host-authz-parity.self-test.mjs
  *
- * Writes evidence under `.qa/runs/mig-600-host-authz/` (stdout PASS is the gate signal).
+ * Evidence dir: MIG600_OUT_DIR (temp-friendly) or `.qa/runs/mig-600-host-authz/`.
+ * Stdout PASS is the gate signal. Report JSON is zod-validated before write.
  */
+import { createRequire } from 'node:module';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
+const require = createRequire(join(root, 'server/package.json'));
+const { z } = require('zod');
 
 function assert(cond, msg) {
   if (!cond) {
@@ -19,17 +23,54 @@ function assert(cond, msg) {
   }
 }
 
+const coverageRowSchema = z.object({
+  issue: z.number().int().positive(),
+  status: z.enum(['executed', 'open-blocker']),
+  executed: z.string().nullable(),
+  openBlocker: z.string().nullable(),
+});
+
+const reportSchema = z.object({
+  suite: z.literal('mig-600-host-authz-parity'),
+  ok: z.literal(true),
+  caseCount: z.number().int().positive(),
+  cases: z.array(
+    z.object({
+      id: z.string().min(1),
+      allow: z.boolean(),
+      expectedAllow: z.boolean(),
+      reason: z.string(),
+      ok: z.boolean(),
+    }),
+  ),
+  secretMarkerAbsentForPlayers: z.literal(true),
+  canaryDetectsDisabledFilter: z.literal(true),
+  canaryDetectsAlwaysAllowMembership: z.literal(true),
+  httpWorldTouchOwnerAllow: z.literal(true),
+  httpWorldTouchOutsiderDeny: z.literal(true),
+  coverage: z.array(coverageRowSchema).min(1),
+  notes: z.array(z.string()),
+});
+
 const persistenceUrl = pathToFileURL(join(root, 'server/src/persistence/index.ts')).href;
 const suiteUrl = pathToFileURL(join(root, 'server/tests/authz/host-negative-authz-suite.ts')).href;
+const apiUrl = pathToFileURL(join(root, 'server/src/api/index.ts')).href;
 
 const { bootstrapHostPersistence } = await import(persistenceUrl);
 const { runHostNegativeAuthzSuite } = await import(suiteUrl);
+const { createHostApi } = await import(apiUrl);
+const { createPermissionsPorts } = await import(
+  pathToFileURL(join(root, 'server/src/modules/permissions/index.ts')).href
+);
 
 const work = mkdtempSync(join(tmpdir(), 'mig600-'));
 const dataDir = join(work, 'data');
 mkdirSync(dataDir);
 
-const outDir = join(root, '.qa/runs/mig-600-host-authz');
+const outDir =
+  typeof process.env.MIG600_OUT_DIR === 'string' && process.env.MIG600_OUT_DIR.trim().length > 0
+    ? process.env.MIG600_OUT_DIR.trim()
+    : join(root, '.qa/runs/mig-600-host-authz');
 mkdirSync(outDir, { recursive: true });
 
 try {
@@ -39,8 +80,8 @@ try {
   });
   assert(boot.ok, `bootstrap: ${boot.ok ? '' : boot.error}`);
 
+  // Policy/projection matrix (keeps DB open for HTTP smoke on same fixture).
   const report = runHostNegativeAuthzSuite(boot.db);
-  boot.db.close();
 
   assert(report.secretMarkerAbsentForPlayers, 'player projections must omit secret marker');
   assert(report.canaryDetectsDisabledFilter, 'canary must detect disabled projection filter');
@@ -52,7 +93,57 @@ try {
   assert(failed.length === 0, `authz cases failed: ${JSON.stringify(failed)}`);
   assert(report.ok, 'suite report.ok');
 
-  // Coverage inventory: every design Depends-on row → executed | open-blocker (never silent parity).
+  // Public HTTP surface smoke: authorize → world-touch allow/deny (not just PolicyService direct).
+  const permissions = createPermissionsPorts(boot.db);
+  const makeIdentity = (actorId) => ({
+    resolveSoloActor: () => ({ kind: 'solo-local', actorId }),
+    resolveRemoteSession: async () => ({
+      ok: true,
+      actor: { kind: 'solo-local', actorId },
+    }),
+  });
+  const stubHealth = { execute: () => ({ ready: true, status: 'ok' }) };
+  const stubOps = {};
+  const stubTransport = {};
+  const buildApp = (actorId) =>
+    createHostApi({
+      health: stubHealth,
+      ops: stubOps,
+      permissions,
+      identity: makeIdentity(actorId),
+      transport: stubTransport,
+      recordPing: () => ({ ok: true }),
+      tryAuthorizedWorldTouch: () => ({ ok: true, mutated: true }),
+      tryAuthorizedProjectTouch: () => ({ ok: true, mutated: true }),
+    });
+
+  const ownerRes = await buildApp('owner-o').request('http://host/api/world-touch', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ worldId: 'world-primary' }),
+  });
+  const ownerBody = await ownerRes.json();
+  const httpWorldTouchOwnerAllow = ownerRes.status === 200 && ownerBody?.ok === true;
+
+  const outsiderRes = await buildApp('outsider-x').request('http://host/api/world-touch', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ worldId: 'world-primary', role: 'gm', ownerUserId: 'owner-o' }),
+  });
+  const outsiderBody = await outsiderRes.json();
+  const httpWorldTouchOutsiderDeny =
+    outsiderRes.status === 403 && outsiderBody?.mutated === false;
+
+  assert(httpWorldTouchOwnerAllow, `owner world-touch must allow, got ${ownerRes.status}`);
+  assert(
+    httpWorldTouchOutsiderDeny,
+    `outsider world-touch must deny, got ${outsiderRes.status} ${JSON.stringify(outsiderBody)}`,
+  );
+
+  boot.db.close();
+
+  // Coverage: Depends-on successors stay open-blocker until MIG-602 HTTP cutover.
+  // Only surfaces this suite actually executes are status=executed.
   const design = readFileSync(
     join(root, '.qa/design/migration-issues/stack-migration-mig-600.md'),
     'utf8',
@@ -60,33 +151,39 @@ try {
   const depNums = [...design.matchAll(/Depends on #(\d+)/g)].map((m) => Number(m[1]));
   assert(depNums.length >= 60, `expected ≥60 Depends-on rows, got ${depNums.length}`);
 
-  /** Host HTTP publicActivation still false for most ports — document as open-blocker, not parity. */
   const httpCutoverBlocker =
-    'host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)';
+    'per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602';
 
-  const coverageRows = depNums.map((issue) => {
-    // Cross-cutting policy/projection suite executes the shared authz hop for all predecessors.
-    // Per-port HTTP mount remains an explicit open blocker until MIG-602 activates routes.
-    return {
+  const coverageRows = [
+    {
+      issue: 845,
+      status: 'executed',
+      executed:
+        'server/tests/authz policy matrix + secret-marker canary + HTTP /api/world-touch allow/deny',
+      openBlocker: null,
+    },
+    {
+      issue: 607,
+      status: 'executed',
+      executed: 'scripts/negative-authz-suite-check.mjs (+ live negative-authz-suite.mjs Compose Edge)',
+      openBlocker: null,
+    },
+    ...depNums.map((issue) => ({
       issue,
-      status: 'executed-with-open-blocker',
-      executed: 'server/tests/authz host matrix + secret-marker + membership canary',
+      status: 'open-blocker',
+      executed: null,
       openBlocker: httpCutoverBlocker,
-    };
-  });
+    })),
+  ];
 
-  // Compose-era #607 suite remains the Edge/JWT live deny path (not claimed as host HTTP parity).
-  coverageRows.push({
-    issue: 607,
-    status: 'executed',
-    executed: 'scripts/negative-authz-suite-check.mjs + live negative-authz-suite.mjs (Compose Edge)',
-    openBlocker: null,
-  });
+  const claimedParityWithoutEvidence = coverageRows.filter(
+    (r) => r.status === 'executed' && (!r.executed || r.executed.length === 0),
+  );
+  assert(claimedParityWithoutEvidence.length === 0, 'executed rows need evidence string');
+  const silentParity = coverageRows.filter((r) => r.status === 'parity');
+  assert(silentParity.length === 0, 'status=parity forbidden');
 
-  const untestedAsParity = coverageRows.filter((r) => r.status === 'parity' && !r.executed);
-  assert(untestedAsParity.length === 0, 'no untested row claimed as parity');
-
-  const evidence = {
+  const evidence = reportSchema.parse({
     suite: 'mig-600-host-authz-parity',
     ok: true,
     caseCount: report.cases.length,
@@ -94,12 +191,15 @@ try {
     secretMarkerAbsentForPlayers: report.secretMarkerAbsentForPlayers,
     canaryDetectsDisabledFilter: report.canaryDetectsDisabledFilter,
     canaryDetectsAlwaysAllowMembership: report.canaryDetectsAlwaysAllowMembership,
+    httpWorldTouchOwnerAllow,
+    httpWorldTouchOutsiderDeny,
     coverage: coverageRows,
     notes: [
-      'SLICE DONE = feature-security host policy/projection parity + canary + coverage inventory.',
-      'FEATURE VERIFIED / HTTP cutover remains MIG-602; RELEASE APPROVED remains human (MIG-700).',
+      'SLICE DONE = feature-security host policy/projection + HTTP world-touch smoke + canary + honest coverage.',
+      'Depends-on successor rows are open-blocker (not claimed executed). MIG-602 owns HTTP cutover FEATURE VERIFIED.',
+      'RELEASE APPROVED remains human (MIG-700).',
     ],
-  };
+  });
 
   writeFileSync(join(outDir, 'report.json'), `${JSON.stringify(evidence, null, 2)}\n`);
   writeFileSync(
@@ -114,13 +214,13 @@ try {
           `| #${r.issue} | ${r.status} | ${r.executed ?? '—'} | ${r.openBlocker ?? '—'} |`,
       ),
       '',
-      'Untested rows are never reported as parity.',
+      'Untested rows are never reported as parity. Successor Depends-on rows are open-blocker until MIG-602.',
       '',
     ].join('\n'),
   );
 
   console.log(
-    `PASS: mig-600 host authz parity (${report.cases.length} cases; coverage=${coverageRows.length})`,
+    `PASS: mig-600 host authz parity (${report.cases.length} cases; coverage=${coverageRows.length}; out=${outDir})`,
   );
 } finally {
   rmSync(work, { recursive: true, force: true });

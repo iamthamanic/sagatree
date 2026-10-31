@@ -189,394 +189,403 @@
   "secretMarkerAbsentForPlayers": true,
   "canaryDetectsDisabledFilter": true,
   "canaryDetectsAlwaysAllowMembership": true,
+  "httpWorldTouchOwnerAllow": true,
+  "httpWorldTouchOutsiderDeny": true,
   "coverage": [
     {
-      "issue": 796,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 798,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 799,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 841,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 816,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 814,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 815,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 813,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 818,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 817,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 819,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 820,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 821,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 822,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 823,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 824,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 825,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 826,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 827,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 828,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 829,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 831,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 832,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 833,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 834,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 835,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 836,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 837,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 830,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 838,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 839,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 840,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 800,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 801,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 802,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 803,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 804,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 805,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 806,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 807,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 808,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 809,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 810,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 811,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 812,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 861,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 862,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 863,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 864,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 865,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 866,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 867,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 868,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 869,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 870,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 871,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 872,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 873,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 874,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 875,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 876,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 877,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
-    },
-    {
-      "issue": 878,
-      "status": "executed-with-open-blocker",
-      "executed": "server/tests/authz host matrix + secret-marker + membership canary",
-      "openBlocker": "host HTTP publicActivation deferred (ports isolated-contract; FEATURE VERIFIED via MIG-602)"
+      "issue": 845,
+      "status": "executed",
+      "executed": "server/tests/authz policy matrix + secret-marker canary + HTTP /api/world-touch allow/deny",
+      "openBlocker": null
     },
     {
       "issue": 607,
       "status": "executed",
-      "executed": "scripts/negative-authz-suite-check.mjs + live negative-authz-suite.mjs (Compose Edge)",
+      "executed": "scripts/negative-authz-suite-check.mjs (+ live negative-authz-suite.mjs Compose Edge)",
       "openBlocker": null
+    },
+    {
+      "issue": 796,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 798,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 799,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 841,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 816,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 814,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 815,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 813,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 818,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 817,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 819,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 820,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 821,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 822,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 823,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 824,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 825,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 826,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 827,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 828,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 829,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 831,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 832,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 833,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 834,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 835,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 836,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 837,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 830,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 838,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 839,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 840,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 800,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 801,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 802,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 803,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 804,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 805,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 806,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 807,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 808,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 809,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 810,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 811,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 812,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 861,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 862,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 863,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 864,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 865,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 866,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 867,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 868,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 869,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 870,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 871,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 872,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 873,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 874,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 875,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 876,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 877,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
+    },
+    {
+      "issue": 878,
+      "status": "open-blocker",
+      "executed": null,
+      "openBlocker": "per-successor HTTP/RPC/realtime path not exercised here; FEATURE VERIFIED via MIG-602"
     }
   ],
   "notes": [
-    "SLICE DONE = feature-security host policy/projection parity + canary + coverage inventory.",
-    "FEATURE VERIFIED / HTTP cutover remains MIG-602; RELEASE APPROVED remains human (MIG-700)."
+    "SLICE DONE = feature-security host policy/projection + HTTP world-touch smoke + canary + honest coverage.",
+    "Depends-on successor rows are open-blocker (not claimed executed). MIG-602 owns HTTP cutover FEATURE VERIFIED.",
+    "RELEASE APPROVED remains human (MIG-700)."
   ]
 }

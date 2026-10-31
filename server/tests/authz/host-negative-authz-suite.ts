@@ -118,9 +118,15 @@ function projectionFixture(marker: string): SessionProjectionInput {
 
 /**
  * Run the host negative authz suite against an already-bootstrapped HostDatabase.
+ * Pass `{ skipSeed: true }` when the caller already invoked `seedAuthzFixture`.
  */
-export function runHostNegativeAuthzSuite(db: HostDatabase): HostNegativeAuthzReport {
-  seedAuthzFixture(db);
+export function runHostNegativeAuthzSuite(
+  db: HostDatabase,
+  options: { readonly skipSeed?: boolean } = {},
+): HostNegativeAuthzReport {
+  if (!options.skipSeed) {
+    seedAuthzFixture(db);
+  }
   const permissions = createPermissionsPorts(db);
   const A = FIXTURE.actors;
   const cases: AuthzCaseResult[] = [];
