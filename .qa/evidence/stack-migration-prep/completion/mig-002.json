@@ -5,8 +5,8 @@
   "result": "PASS",
   "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. Edge/infra inventory sha256 refreshed after MIG-311 (#810) contract regen.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. RPC inventory sha256 refreshed after MIG-353/#816 marketplace host-successor source-verified.",
   "checks": [
     {
       "command": "legacy inventory matrix",
