@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-600",
+  "githubIssue": 845,
+  "result": "PASS",
+  "testedCommit": "e6f7e10f7709327e9c316f96ac7c68c3a2c5d37d",
+  "githubClosed": false,
+  "note": "Host negative authz role matrix + secret-marker canary + coverage inventory; HTTP cutover deferred MIG-602.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-600-host-authz-parity.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-600.md",
+      "sha256": "8090fdb36f830e3be563899f6a49c2c270f7f4a16443ab842dd561d2886daaa4"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-600.md",
+      "sha256": "3a7d51346bee2943f0d7506a63623967dce708fc48cb55f6312c286fe8921a0b"
+    }
+  ]
+}
