@@ -4,7 +4,7 @@
   "localId": "MIG-305",
   "githubIssue": 804,
   "result": "PASS",
-  "testedCommit": "099c0bebf8e4da6ca9ac0ec91de0e67b9b175a74",
+  "testedCommit": "6745a7a353b193fee31af2e17ff0a7ad608b225e",
   "githubClosed": false,
   "note": "Marketplace catalog host ports + dual-path FE adapter; review-finding hardenings applied.",
   "checks": [
@@ -12,13 +12,13 @@
       "command": "node --experimental-strip-types scripts/mig-305-marketplace-adapter.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-305.md",
-      "sha256": "5fdc5b7db45ba1eb5a100914fa696974d16a2714f8b41261a058a03f5f375c0c"
+      "sha256": "408619fe20a808678e449a1e94298c14971c75042aef64db18b46fed418e1739"
     },
     {
       "command": "composition-gate CLEAR",
       "result": "PASS",
       "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-305.md",
-      "sha256": "8a585469452e76d88964b7043aba7f22b16a9b451a34a49e6d382a7d09de6d9e"
+      "sha256": "a95617fdf5d8bcce02054dcd2857e4bf8cf1d6c4ba3c7a4f32d3f3dae6335889"
     }
   ]
 }
