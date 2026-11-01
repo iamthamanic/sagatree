@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-701 (#850 / MIG-701)
 
-- HEAD_SHA: a8f02bf99f942a929e83c00f01ff02a55270db05
+- HEAD_SHA: 210222a019665579bf389a1c5e238a24c8cb56eb
 - BASE_SHA: 5b5de3f20e82057b1073aa36b2c3eb63584f86b5
 - Date: 2026-11-01
 - Verdict: CLEAR
