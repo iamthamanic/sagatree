@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-703 intake DONE sync (#852)
 
-- HEAD_SHA: 01d3e4dce81e641158fdf7b7b05cacac903b2cfe
+- HEAD_SHA: 305ce2bed51ba93a05cf3b08113018394c08e1a8
 - BASE_SHA: d6835fd2414dd36f22a50cfedddde1c4b61a181a
 - Date: 2026-11-01
 - Verdict: SKIPPED
