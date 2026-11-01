@@ -10,11 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../shared/ui/tab
 import { Alert, AlertDescription } from '../../../shared/ui/alert';
 import {
   CircleNotch,
+  DownloadSimple,
   WarningCircle,
   Moon,
   Sun
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { pathForDownload } from '../../../domains/desktop-release';
 import { SagaTreeLogo } from '../SagaTreeLogo';
 
 /** Map Kong/GoTrue rate-limit responses (#670) to a clear DE message. */
@@ -243,6 +245,21 @@ export function LoginScreen() {
             </Tabs>
           </CardContent>
         </Card>
+
+        <div className="flex justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            onClick={() => {
+              window.history.pushState(null, '', pathForDownload());
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            <DownloadSimple className="h-4 w-4" aria-hidden />
+            Desktop herunterladen
+          </Button>
+        </div>
 
         {/* Info */}
         <div className="text-center text-sm text-muted-foreground">

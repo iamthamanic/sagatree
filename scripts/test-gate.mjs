@@ -200,6 +200,18 @@ function checkLocalAdminAuthPolicy() {
   });
 }
 
+function checkDesktopReleaseAssets() {
+  console.log('Desktop release assets / download landing self-test...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/desktop-release-assets.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkDonaluP0AuthGate() {
   console.log('Donalu P0 auth gate: world/atlas JWT assert (no anon RLS)...');
   execFileSync(process.execPath, ['scripts/donalu-p0-auth-gate-check.mjs'], {
@@ -3435,6 +3447,7 @@ checkPlayerTestInstrumentationRunbook();
 checkProjectMembershipSecurity();
 checkLocalAuthEmailSagatree();
 checkLocalAdminAuthPolicy();
+checkDesktopReleaseAssets();
 checkDonaluP0AuthGate();
 checkDonaluWorldPlaces();
 checkAtlasWorldbuilderEvidence();
