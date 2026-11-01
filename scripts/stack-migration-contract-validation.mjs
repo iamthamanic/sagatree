@@ -78,17 +78,21 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   }
 
   // Scoped RELEASE records (not GATE decisions) — only known scopes; human provenance required.
-  const ALLOWED_RELEASES = {
-    'CUTOVER-DORHAIN': {
-      statuses: new Set(['APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF']),
-      issuePaths: new Set([
-        `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-700']}`,
-      ]),
-    },
-  };
+  // Map lookup (not object index) so keys like `constructor` cannot prototype-chain through.
+  const ALLOWED_RELEASES = new Map([
+    [
+      'CUTOVER-DORHAIN',
+      {
+        statuses: new Set(['APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF']),
+        issuePaths: new Set([
+          `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-700']}`,
+        ]),
+      },
+    ],
+  ]);
   if (plain(approvals?.releases)) {
     for (const [releaseId, release] of Object.entries(approvals.releases)) {
-      const allowed = ALLOWED_RELEASES[releaseId];
+      const allowed = ALLOWED_RELEASES.get(releaseId);
       if (!allowed) {
         error(`releases.${releaseId}: unknown RELEASE scope (not in allowlist)`);
         continue;

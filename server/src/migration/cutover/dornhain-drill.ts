@@ -225,70 +225,114 @@ function parseNpcDefinitionPayload(
   return result.success ? result.data : null;
 }
 
+function safeRows<T>(
+  schema: z.ZodType<T>,
+  rows: unknown,
+  table: string,
+): { ok: true; value: T } | { ok: false; missing: string[] } {
+  const parsed = schema.safeParse(rows);
+  if (!parsed.success) {
+    return { ok: false, missing: [`${table}-row-invalid`] };
+  }
+  return { ok: true, value: parsed.data };
+}
+
 function presenceFromHostTables(
   db: HostDatabase,
   ownerUserId: string,
   worldId: string,
   catalog: DornhainCatalog,
 ): ReturnType<typeof assertDornhainCatalogPresent> {
-  const worlds = z
-    .array(titleRowSchema)
-    .parse(
-      db
-        .prepare(`SELECT title FROM worlds WHERE owner_user_id = ? AND id = ?`)
-        .all(ownerUserId, worldId),
-    );
-  const sagas = z
-    .array(slugRowSchema)
-    .parse(
-      db
-        .prepare(`SELECT slug FROM saga_definitions WHERE owner_user_id = ? OR origin = 'native'`)
-        .all(ownerUserId),
-    );
-  const characters = z
-    .array(idRowSchema)
-    .parse(db.prepare(`SELECT id FROM characters WHERE owner_user_id = ?`).all(ownerUserId));
-  const items = z
-    .array(idRowSchema)
-    .parse(
-      db
-        .prepare(
-          `SELECT id FROM inventory_item_definitions
-           WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
-        )
-        .all(ownerUserId, worldId),
-    );
-  const defs = z
-    .array(defRowSchema)
-    .parse(
-      db
-        .prepare(
-          `SELECT id, payload FROM npc_creature_definitions
-           WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
-        )
-        .all(ownerUserId, worldId),
-    );
+  const worldsParsed = safeRows(
+    z.array(titleRowSchema),
+    db.prepare(`SELECT title FROM worlds WHERE owner_user_id = ? AND id = ?`).all(ownerUserId, worldId),
+    'worlds',
+  );
+  if (!worldsParsed.ok) return worldsParsed;
 
+  const sagasParsed = safeRows(
+    z.array(slugRowSchema),
+    db
+      .prepare(`SELECT slug FROM saga_definitions WHERE owner_user_id = ? OR origin = 'native'`)
+      .all(ownerUserId),
+    'saga_definitions',
+  );
+  if (!sagasParsed.ok) return sagasParsed;
+
+  const charactersParsed = safeRows(
+    z.array(idRowSchema),
+    db.prepare(`SELECT id FROM characters WHERE owner_user_id = ?`).all(ownerUserId),
+    'characters',
+  );
+  if (!charactersParsed.ok) return charactersParsed;
+
+  const itemsParsed = safeRows(
+    z.array(idRowSchema),
+    db
+      .prepare(
+        `SELECT id FROM inventory_item_definitions
+         WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+      )
+      .all(ownerUserId, worldId),
+    'inventory_item_definitions',
+  );
+  if (!itemsParsed.ok) return itemsParsed;
+
+  const defsParsed = safeRows(
+    z.array(defRowSchema),
+    db
+      .prepare(
+        `SELECT id, payload FROM npc_creature_definitions
+         WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+      )
+      .all(ownerUserId, worldId),
+    'npc_creature_definitions',
+  );
+  if (!defsParsed.ok) return defsParsed;
+
+  const defsById = new Map(defsParsed.value.map((row) => [row.id, row]));
   const monsterIds: string[] = [];
   const npcPublicIds: string[] = [];
-  for (const row of defs) {
-    const payload = parseNpcDefinitionPayload(row.payload);
-    if (!payload) {
-      return {
-        ok: false,
-        missing: [`npc-def-payload-invalid:${row.id}`],
-      };
+  const missing: string[] = [];
+
+  // Only schema-check catalog fixture rows; foreign defs on the same host are ignored.
+  for (const mon of catalog.monsters) {
+    const row = defsById.get(mon.id);
+    if (!row) {
+      missing.push(`monster:${mon.id}`);
+      continue;
     }
-    if (payload.kind === 'monster') monsterIds.push(row.id);
-    if (payload.kind === 'npc') npcPublicIds.push(payload.publicId);
+    const payload = parseNpcDefinitionPayload(row.payload);
+    if (!payload || payload.kind !== 'monster' || payload.publicId !== mon.publicId) {
+      missing.push(`npc-def-payload-invalid:${mon.id}`);
+      continue;
+    }
+    monsterIds.push(mon.id);
   }
 
+  for (const [index, publicId] of catalog.npcPublicIds.entries()) {
+    const id = `dh-npc-def-${index + 1}`;
+    const row = defsById.get(id);
+    if (!row) {
+      missing.push(`npc:${publicId}`);
+      continue;
+    }
+    const payload = parseNpcDefinitionPayload(row.payload);
+    if (!payload || payload.kind !== 'npc' || payload.publicId !== publicId) {
+      missing.push(`npc-def-payload-invalid:${id}`);
+      continue;
+    }
+    npcPublicIds.push(publicId);
+  }
+
+  if (missing.length > 0) return { ok: false, missing };
+
   return assertDornhainCatalogPresent({
-    worldTitles: worlds.map((w) => w.title),
-    sagaSlugs: sagas.map((s) => s.slug),
-    characterIds: characters.map((c) => c.id),
+    worldTitles: worldsParsed.value.map((w) => w.title),
+    sagaSlugs: sagasParsed.value.map((s) => s.slug),
+    characterIds: charactersParsed.value.map((c) => c.id),
     monsterIds,
-    itemDefinitionIds: items.map((i) => i.id),
+    itemDefinitionIds: itemsParsed.value.map((i) => i.id),
     npcPublicIds,
     catalog,
   });
