@@ -16,6 +16,9 @@ const contractRoot = '.qa/design/migration-issues';
 const ATLAS_E2E_EXECUTION_BLOCKER =
   'Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).';
 
+/** Isolated atlas-isolated-product journey acceptance on stack-migration-baseline.yml. */
+const ATLAS_LIVE_E2E_CI_ACCEPTANCE = 'passing';
+
 /**
  * True execution locks (keep ticket blocked) vs inventory legacyDefects
  * (mandatory in-ticket acceptance / negative regressions — must NOT block READY).
@@ -31,6 +34,11 @@ export function isExecutionBlockerText(value) {
     /* plain text */
   }
   return false;
+}
+
+function isAtlasLiveE2eExecutionBlocker(value) {
+  const s = text(value);
+  return s === ATLAS_E2E_EXECUTION_BLOCKER || s.startsWith('Atlas live product E2E CI remains not-passing');
 }
 
 /**
@@ -266,13 +274,17 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     const blockers = unique([
       ...priorBlockers.filter((entry) => {
         const s = text(entry);
+        // Cleared when isolated atlas-isolated-product CI acceptance is passing (#770).
+        if (id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'passing' && isAtlasLiveE2eExecutionBlocker(s)) {
+          return false;
+        }
         if (isExecutionBlockerText(s)) return true;
         if (isLegacyDefectPayload(s)) return false;
         if (inventoryLegacySet.has(s)) return false;
         // Unknown prior blocker wording → keep as execution lock (fail-closed).
         return true;
       }),
-      ...(id === 'ATLAS-LIVE-E2E' && previous.meta?.atlasLiveE2e?.ciAcceptance === 'not-passing'
+      ...(id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'not-passing'
         ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
     ]);
@@ -363,7 +375,16 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
   const meta = {
     generatedAt: '2026-10-21', baselineSha, sourceDoc: 'docs/architektur-sqlite-based.md', githubIssuesPublished: true, githubIssueMapPartial: false, githubIssueMappedCount: ordered.length,
     note: 'Published contracts; source verification, isolated integration evidence, implementation acceptance and human architecture approval are separate states.',
-    atlasLiveE2e: { githubIssue: 770, design: '.qa/design/atlas-live-e2e-cutover-gate.md', ciEnabled: true, workflow: '.github/workflows/stack-migration-baseline.yml', ciAcceptance: 'not-passing', implementationIssueRemainsOpen: true },
+    atlasLiveE2e: {
+      githubIssue: 770,
+      design: '.qa/design/atlas-live-e2e-cutover-gate.md',
+      ciEnabled: true,
+      workflow: '.github/workflows/stack-migration-baseline.yml',
+      job: 'atlas-isolated-product',
+      harness: 'scripts/stack-migration-db (product-run.mjs + atlas-product.spec.ts)',
+      ciAcceptance: ATLAS_LIVE_E2E_CI_ACCEPTANCE,
+      implementationIssueRemainsOpen: ATLAS_LIVE_E2E_CI_ACCEPTANCE !== 'passing',
+    },
   };
   const nonExecutable = (status) => ['blocked', 'needs-design', 'waiting'].includes(status);
   const intake = { meta, coverage: { legacyMigrations: 106, legacyEdgeFunctions: edgeInventory.edges.length, legacyFrontendRpcs: rpcInventory.rpcs.length, originalLiteralFrontendRpcs: 55, infraAreas: edgeInventory.infrastructure.length, issuesTotal: ordered.length, originalMigrationIssues: 71, existingAtlasIssue: 1, rpcChildIssues: splits.groups.length, issuesReady: ordered.filter((issue) => issue.status === 'ready').length, issuesBlockedOrNeedsDesign: ordered.filter((issue) => nonExecutable(issue.status)).length, gateIssues: 5, openArchitectureDecisions: 1 }, waves: waveNames, topoOrder: topo, issues: ordered };
@@ -493,9 +514,9 @@ function acceptanceTierBlock(issue, byId) {
       tier: 'release-gate',
     },
     'ATLAS-LIVE-E2E': {
-      slice: 'Isolated Atlas product journey CI gate.',
-      deferred: 'Known-red until suite PASS; not greenwashed.',
-      feature: 'self when CI acceptance passes.',
+      slice: 'Isolated Atlas product journey CI gate (`atlas-isolated-product` / scripts/stack-migration-db).',
+      deferred: 'Production cutover + Supabase shutdown remain human RELEASE APPROVED (MIG-700+); dual-path host/Supabase intentional until then.',
+      feature: 'self when isolated product suite PASS (3/3, fail-closed, no skip).',
       tier: 'feature-e2e',
     },
   };

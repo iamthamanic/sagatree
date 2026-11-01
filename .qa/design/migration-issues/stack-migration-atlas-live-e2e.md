@@ -62,10 +62,6 @@ UI-Parität, soweit betroffen: `src/THEME_GUIDE.md`, `docs/ui-styleguide.md`, `d
 - Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
 - Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
-### Bekannte Legacy-Defekte / negative Regressionen
-
-- (Ausführungssperre) Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).
-
 ## Edge Cases
 
 ### Fall 1
@@ -109,25 +105,25 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 | Tier | Owner / meaning |
 | --- | --- |
-| **SLICE DONE** | Isolated Atlas product journey CI gate. |
+| **SLICE DONE** | Isolated Atlas product journey CI gate (`atlas-isolated-product` / scripts/stack-migration-db). |
 | **Acceptance tier** | `feature-e2e` — do not claim a higher tier from lower-tier evidence. |
-| **Deferred integration** | Known-red until suite PASS; not greenwashed. |
-| **FEATURE VERIFIED** | self when CI acceptance passes. |
+| **Deferred integration** | Production cutover + Supabase shutdown remain human RELEASE APPROVED (MIG-700+); dual-path host/Supabase intentional until then. |
+| **FEATURE VERIFIED** | self when isolated product suite PASS (3/3, fail-closed, no skip). |
 | **RELEASE APPROVED** | Explicit human approval only (production cutover / Supabase shutdown). Never implied by slice DONE. |
 
 ## Blockers
 
 - Depends on #782 (MIG-001)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **done**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-atlas-live-e2e`
 - Design: `.qa/design/migration-issues/stack-migration-atlas-live-e2e.md`
-- Status: blocked
+- Status: done
 - Reihenfolge: 2; Welle: 0
-- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-002`, `agent-blocked`
+- Labels: `P0`, `migration-wave-0-evidence`, `migration-order-002`, `agent-done`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
@@ -139,7 +135,7 @@ Source-Verifikation ist keine Implementierungsabnahme; der Owner hat die Produkt
 ## Verification state
 
 - Source: specified
-- Implementation acceptance: not-accepted
+- Implementation acceptance: accepted
 - Human architecture decision: GATE-01/02/03/04 für Implementierung vom Owner gewählt; GATE-05 Tauri-Ziel gewählt, Plattform- und Release-Abnahme offen.
 - Current release approval: **NOT APPROVED** (production cutover and Supabase shutdown independently gated).
 

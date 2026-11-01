@@ -7,6 +7,7 @@ import { bootstrapSupabase, applyRepositoryMigrations, repository } from './boot
 import { seedFixtures } from './fixtures.mjs';
 import { startServices, unusedPort } from './services.mjs';
 import { sourceEvidence } from './evidence.mjs';
+import { atlasProductReportFailsClosed } from './product-fail-closed.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -86,7 +87,7 @@ try {
   report.status = code === 0 ? 'passed' : 'failed';
   const browser = JSON.parse(await readFile(join(output, 'browser/playwright-report.json'), 'utf8'));
   report.browser = { expected: browser.stats.expected, unexpected: browser.stats.unexpected, skipped: browser.stats.skipped, flaky: browser.stats.flaky };
-  if (code !== 0 || browser.stats.expected < 3 || browser.stats.skipped || browser.stats.flaky) {
+  if (atlasProductReportFailsClosed({ playwrightExitCode: code, browser: report.browser })) {
     report.status = 'failed'; process.exitCode = 1;
   }
 } catch (error) {

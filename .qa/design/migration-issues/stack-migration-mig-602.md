@@ -176,15 +176,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #877 (RPC-NPC-INSTANCES)
 - Depends on #878 (RPC-MARKETPLACE-COUNT)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-602`
 - Design: `.qa/design/migration-issues/stack-migration-mig-602.md`
-- Status: waiting
+- Status: ready
 - Reihenfolge: 84; Welle: 6
-- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-084`, `agent-blocked`, `waiting-dependency`
+- Labels: `P1`, `migration-wave-6-security-ops`, `migration-order-084`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

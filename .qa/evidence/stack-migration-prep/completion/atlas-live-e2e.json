@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "ATLAS-LIVE-E2E",
+  "githubIssue": 770,
+  "result": "PASS",
+  "testedCommit": "cda4939fadf1e32c9dc18fefe2b8155ebbf7583c",
+  "githubClosed": false,
+  "mergeRef": "main CI atlas-isolated-product run 41201202311 (testedCommit=headSha cda4939f; main tip at sync 63e93917d) + DONE evidence sync PR for #770",
+  "note": "Isolated PG/GoTrue/PostgREST product journey 3/3 PASS on Actions head cda4939f; rot-phase fail-closed proven by scripts/atlas-product-fail-closed.test.mjs; no hosted E2E_ATLAS_SUPABASE_* secrets; cutover remains MIG-700 human.",
+  "checks": [
+    {
+      "command": "npm run product --prefix scripts/stack-migration-db (CI job atlas-isolated-product)",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-atlas-live-e2e.md",
+      "sha256": "59f165cb88bb55ef21d2d6c4a9da047e3634f0a6c3bca7811dc629f14113003d"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-atlas-live-e2e.md",
+      "sha256": "f12094c1454bb655542662db47dfd5487e6225e62462d584338f94e26f69d93b"
+    }
+  ]
+}

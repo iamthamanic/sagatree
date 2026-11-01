@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "kind": "atlas-isolated-product-ci-summary",
+  "githubIssue": 770,
+  "localId": "ATLAS-LIVE-E2E",
+  "workflow": ".github/workflows/stack-migration-baseline.yml",
+  "job": "atlas-isolated-product",
+  "actionsRunId": 41201202311,
+  "actionsRunUrl": "https://github.com/iamthamanic/sagatree/actions/runs/41201202311",
+  "headSha": "cda4939fadf1e32c9dc18fefe2b8155ebbf7583c",
+  "mainTipAtSync": "63e93917d89cc4ab85d14f1c2f2abfb90771bbd5",
+  "browser": {
+    "expected": 3,
+    "unexpected": 0,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "status": "passed",
+  "note": "No E2E_ATLAS_SUPABASE_* secrets; ephemeral harness only."
+}
