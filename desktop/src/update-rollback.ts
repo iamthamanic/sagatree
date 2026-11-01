@@ -40,12 +40,18 @@ const archiveSchema = z.object({
 
 export type HostState = z.infer<typeof hostStateSchema>;
 
+export type FsModeHooks = {
+  readonly chmod: (path: string, mode: number) => void;
+  readonly modeOf: (path: string) => number;
+  readonly supportsPosixModes: boolean;
+};
+
 export type UpdateRollbackReport = {
   readonly ok: boolean;
   readonly beforeFingerprint: string;
   readonly afterFingerprint: string;
   readonly permissionsIntact: boolean;
-  /** POSIX mode bits; on win32 this is NOT RUN (ACL model differs). */
+  /** POSIX mode bits; when supportsPosixModes is false → NOT RUN. */
   readonly modeCheck: 'PASS' | 'FAIL' | 'NOT RUN';
   readonly archivePath: string;
 };
@@ -54,16 +60,26 @@ function fingerprint(state: HostState): string {
   return createHash('sha256').update(JSON.stringify(state)).digest('hex');
 }
 
-function modeOf(path: string): number {
+function defaultModeOf(path: string): number {
   return statSync(path).mode & 0o777;
+}
+
+/** Default host FS hooks — production path never weakens modes for tests. */
+export function createDefaultFsModeHooks(platform: NodeJS.Platform = process.platform): FsModeHooks {
+  return {
+    chmod: chmodSync,
+    modeOf: defaultModeOf,
+    supportsPosixModes: platform !== 'win32',
+  };
 }
 
 export function runUpdateRollbackDrill(args: {
   readonly workDir: string;
   readonly ownerUserId?: string;
-  /** Test-only: after restore, weaken modes so modeCheck becomes FAIL (POSIX). */
-  readonly simulateModeFailAfterRestore?: boolean;
+  /** Injectable FS mode ops for hermetic FAIL / win32 NOT RUN fixtures. */
+  readonly fsHooks?: FsModeHooks;
 }): UpdateRollbackReport {
+  const hooks = args.fsHooks ?? createDefaultFsModeHooks();
   const root = args.workDir;
   const dataDir = join(root, 'host-data');
   const backupDir = join(root, 'backup');
@@ -87,14 +103,13 @@ export function runUpdateRollbackDrill(args: {
   writeFileSync(statePath, `${JSON.stringify(initial, null, 2)}\n`);
   writeFileSync(permPath, `${JSON.stringify(initialPerms, null, 2)}\n`);
 
-  const posixModes = process.platform !== 'win32';
   let beforeModeState = 0o600;
   let beforeModePerm = 0o600;
-  if (posixModes) {
-    chmodSync(statePath, 0o600);
-    chmodSync(permPath, 0o600);
-    beforeModeState = modeOf(statePath);
-    beforeModePerm = modeOf(permPath);
+  if (hooks.supportsPosixModes) {
+    hooks.chmod(statePath, 0o600);
+    hooks.chmod(permPath, 0o600);
+    beforeModeState = hooks.modeOf(statePath);
+    beforeModePerm = hooks.modeOf(permPath);
   }
 
   const before = fingerprint(hostStateSchema.parse(JSON.parse(readFileSync(statePath, 'utf8'))));
@@ -110,21 +125,17 @@ export function runUpdateRollbackDrill(args: {
     permPath,
     `${JSON.stringify({ ownerUserId: 'stranger', roles: ['anon'], mode: 0o666 }, null, 2)}\n`,
   );
-  if (posixModes) {
-    chmodSync(statePath, 0o666);
-    chmodSync(permPath, 0o666);
+  if (hooks.supportsPosixModes) {
+    hooks.chmod(statePath, 0o666);
+    hooks.chmod(permPath, 0o666);
   }
 
   // Rollback content + modes
   copyFileSync(join(backupDir, 'state.json'), statePath);
   copyFileSync(join(backupDir, 'permissions.json'), permPath);
-  if (posixModes) {
-    chmodSync(statePath, beforeModeState);
-    chmodSync(permPath, beforeModePerm);
-    if (args.simulateModeFailAfterRestore) {
-      chmodSync(statePath, 0o666);
-      chmodSync(permPath, 0o666);
-    }
+  if (hooks.supportsPosixModes) {
+    hooks.chmod(statePath, beforeModeState);
+    hooks.chmod(permPath, beforeModePerm);
   }
 
   const restored = hostStateSchema.parse(JSON.parse(readFileSync(statePath, 'utf8')));
@@ -132,9 +143,9 @@ export function runUpdateRollbackDrill(args: {
   const after = fingerprint(restored);
   const permissionsIntact =
     perms.ownerUserId === initial.ownerUserId && perms.roles.includes('gm') && perms.mode === 0o600;
-  const modeCheck: 'PASS' | 'FAIL' | 'NOT RUN' = !posixModes
+  const modeCheck: 'PASS' | 'FAIL' | 'NOT RUN' = !hooks.supportsPosixModes
     ? 'NOT RUN'
-    : modeOf(statePath) === beforeModeState && modeOf(permPath) === beforeModePerm
+    : hooks.modeOf(statePath) === beforeModeState && hooks.modeOf(permPath) === beforeModePerm
       ? 'PASS'
       : 'FAIL';
 

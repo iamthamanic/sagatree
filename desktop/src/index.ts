@@ -20,8 +20,10 @@ export {
 export {
   runUpdateRollbackDrill,
   cleanupWorkDir,
+  createDefaultFsModeHooks,
   permissionsSchema,
   archiveSchema,
   type HostState,
+  type FsModeHooks,
   type UpdateRollbackReport,
 } from './update-rollback.ts';

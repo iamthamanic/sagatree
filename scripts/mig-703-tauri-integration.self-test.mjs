@@ -28,6 +28,7 @@ const {
   runPlatformLifecycleMatrix,
   runUpdateRollbackDrill,
   cleanupWorkDir,
+  createDefaultFsModeHooks,
   archiveSchema,
 } = await import(desktopUrl);
 
@@ -160,20 +161,42 @@ const {
   }
 }
 
-// Update-rollback FAIL path (POSIX mode sabotage after restore)
-if (process.platform !== 'win32') {
+// Update-rollback FAIL / NOT RUN via injectable FS hooks (no production sabotage switch)
+{
   const failWork = mkdtempSync(join(tmpdir(), 'mig703-fail-'));
   try {
-    const failed = runUpdateRollbackDrill({
-      workDir: failWork,
-      simulateModeFailAfterRestore: true,
-    });
-    assert(!failed.ok, 'mode sabotage must yield ok=false');
-    assert(failed.modeCheck === 'FAIL', 'modeCheck FAIL when modes weakened after restore');
+    const modes = new Map();
+    const failingHooks = {
+      supportsPosixModes: true,
+      chmod: (path, mode) => {
+        modes.set(path, mode);
+      },
+      modeOf: (path) => {
+        // After restore chmod(0o600), report a mismatched mode → FAIL
+        const set = modes.get(path);
+        if (set === 0o600) return 0o666;
+        return set ?? 0o666;
+      },
+    };
+    const failed = runUpdateRollbackDrill({ workDir: failWork, fsHooks: failingHooks });
+    assert(!failed.ok, 'injected mode mismatch must yield ok=false');
+    assert(failed.modeCheck === 'FAIL', 'modeCheck FAIL via injected hooks');
     const archived = archiveSchema.parse(JSON.parse(readFileSync(failed.archivePath, 'utf8')));
     assert(archived.result === 'fail', 'archive records fail');
   } finally {
     cleanupWorkDir(failWork);
+  }
+}
+
+{
+  const winWork = mkdtempSync(join(tmpdir(), 'mig703-win-'));
+  try {
+    const winish = createDefaultFsModeHooks('win32');
+    const report = runUpdateRollbackDrill({ workDir: winWork, fsHooks: winish });
+    assert(report.ok, 'win32-hooks drill still restores JSON permissions');
+    assert(report.modeCheck === 'NOT RUN', 'win32-hooks modeCheck is honest NOT RUN');
+  } finally {
+    cleanupWorkDir(winWork);
   }
 }
 
@@ -197,7 +220,7 @@ try {
   assert(rollback.ok, 'update/rollback preserves host data + permissions');
   assert(rollback.beforeFingerprint === rollback.afterFingerprint, 'fingerprint restored');
   assert(rollback.modeCheck !== 'FAIL', 'filesystem modes PASS or honest NOT RUN on win32');
-  if (process.platform !== 'win32') {
+  if (createDefaultFsModeHooks().supportsPosixModes) {
     assert(rollback.modeCheck === 'PASS', 'POSIX filesystem modes restored');
   } else {
     assert(rollback.modeCheck === 'NOT RUN', 'win32 mode check stays NOT RUN');
