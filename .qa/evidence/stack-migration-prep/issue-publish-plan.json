@@ -1262,11 +1262,11 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-090",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-703.md",
-      "sha256": "a69a255e1b5cefa259a24a53da66bfccf3b48e12ac992eb4a8e9e52279a4a7b2",
-      "payloadSha256": "8a92ba9581478e7ff2d2cba97ba1dea3b848eca766a205f05b731d7ae4b14867"
+      "sha256": "0ad4c5a33b7e849faa46843cffa40adc0097dcbf98fd758e7acee5ff26ae45e8",
+      "payloadSha256": "213f099818d8147bb436da07374f56314d02f62e18468c654105996070e99163"
     }
   ]
 }

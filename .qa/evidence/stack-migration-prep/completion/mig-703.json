@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-703",
+  "githubIssue": 852,
+  "result": "PASS",
+  "testedCommit": "e261e9e5c38eea8c26875a55b7c9b253c9af50dd",
+  "githubClosed": true,
+  "mergeRef": "PR #1082 → main (#852) @ d6835fd2414dd36f22a50cfedddde1c4b61a181a",
+  "note": "Tauri+sidecar isolated-contract under desktop/ + docs/ops/desktop. Product/store RELEASE remains a separate human decision.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-703-tauri-integration.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-703.md",
+      "sha256": "586423f27c6e189f1b5d2554ba44b22b5ab0363fc9707c4cd52574b17807c684"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-703.md",
+      "sha256": "46058946823aba48026bfb325dd318ee1ff6ec028e2e3b3356449382f32332dd"
+    }
+  ]
+}
