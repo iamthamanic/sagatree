@@ -2,8 +2,8 @@
 
 **Verdict:** SKIPPED  
 **Scope:** Owner RELEASE records + Ops evidence only (no new user-journey UI surface).  
-**Branch:** `feat/owner-release-desktop-and-live-shutdown`  
-**HEAD:** `cfb39d94cd9e11d1a16539143c88dfc072fe8e46`  
+**PR:** #1084 (`feat/owner-release-desktop-and-live-shutdown`)  
+**Note:** SHA pins intentionally omitted for this docs/ops RELEASE PR to avoid recursive proof commits; validate against PR HEAD at merge time.  
 **Date:** 2026-11-01
 
 ## Why SKIPPED
@@ -17,3 +17,4 @@
 - `node scripts/stack-migration-prep-check.mjs` → PASS
 - `node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs` → dry-run OK
 - `--execute` → both allowlisted refs `ALREADY_ABSENT` (EXECUTE_OK)
+
