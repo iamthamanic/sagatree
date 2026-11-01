@@ -1144,6 +1144,18 @@ function checkMig702ShutdownReadiness() {
   );
 }
 
+function checkMig703TauriIntegration() {
+  console.log('MIG-703 Tauri integration (#852): unlock + lifecycle + bridge + rollback...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-703-tauri-integration.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -3547,6 +3559,7 @@ checkMig700DornhainCutoverDrill();
 checkGate05TauriSidecarPoc();
 checkMig701ParityWindow();
 checkMig702ShutdownReadiness();
+checkMig703TauriIntegration();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

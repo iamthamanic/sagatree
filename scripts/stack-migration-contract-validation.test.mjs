@@ -811,8 +811,14 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     assert.equal(gate05Issue.status, 'done', 'GATE-05 must be DONE after full APPROVED sync');
     assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'), 'GATE-05 leaves READY after DONE');
     const mig703 = original.intake.issues.find((i) => i.localId === 'MIG-703');
-    assert.equal(mig703?.status, 'ready', 'MIG-703 unlocks when GATE-05 is DONE');
-    assert.ok(mig703?.labels?.includes('agent-ready'), 'MIG-703 agent-ready');
+    if (mig703?.completionEvidence) {
+      assert.equal(mig703.status, 'done', 'MIG-703 DONE after completionEvidence sync');
+      assert.ok(mig703.labels?.includes('agent-done'), 'MIG-703 agent-done');
+      assert.ok(!ready.some((entry) => entry.localId === 'MIG-703'), 'MIG-703 leaves READY after DONE');
+    } else {
+      assert.equal(mig703?.status, 'ready', 'MIG-703 unlocks when GATE-05 is DONE');
+      assert.ok(mig703?.labels?.includes('agent-ready'), 'MIG-703 agent-ready');
+    }
   } else if (gate05Approval !== 'APPROVED_TO_EXECUTE' && gate05Approval !== 'APPROVED') {
     assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
   }
