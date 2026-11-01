@@ -812,7 +812,7 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'), 'GATE-05 leaves READY after DONE');
     const mig703 = original.intake.issues.find((i) => i.localId === 'MIG-703');
     if (mig703?.completionEvidence) {
-      assert.equal(mig703.status, 'done', 'MIG-703 DONE after completionEvidence sync (intake #852)');
+      assert.equal(mig703.status, 'done', 'MIG-703 DONE after completionEvidence sync (intake DONE #852)');
       assert.equal(
         mig703.completionEvidence,
         '.qa/evidence/stack-migration-prep/completion/mig-703.json',
@@ -865,3 +865,4 @@ test('MIG-402/#818 preserves every requiredTest from both co-owned Edge contract
   target.contractSections.tests = [...target.acceptance];
   rejects(input, /MIG-402: missing binding Edge requiredTest/);
 });
+
