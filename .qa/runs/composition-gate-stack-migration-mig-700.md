@@ -1,12 +1,13 @@
 # Composition Gate — stack-migration-mig-700 (#849 / MIG-700)
 
-- HEAD_SHA: WORKTREE
-- BASE_SHA: (main at PR open)
+- HEAD_SHA: e1c8ae6d2ff67073f66478dc616e87d026c5d37c
+- BASE_SHA: ee328db4484620ae550002d6ebfbb90d9c7bac77
 - Date: 2026-11-01
 - Verdict: CLEAR
 - Note: Owner Freigabe A unlocks GATE-05 execute + Dornhain cutover drill.
   Hard catalog (world/saga/characters/items/monsters/NPCs) must survive
   Freeze→import→Rollback. No production Supabase shutdown in this hop.
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
