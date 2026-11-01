@@ -28,6 +28,9 @@ on:
       - Quality Gates
       - Stack migration baseline
       - Stack migration source contracts
+      # MIG-602/#847 — GATE-01/02/03 live here; without this, a late candidate
+      # failure (or a sticky 8‑min poll fail) never re-triggers ECC evaluate.
+      - Stack migration isolated candidates
     types: [completed]
 
 permissions: {}
@@ -40,8 +43,10 @@ jobs:
   evaluate:
     name: ECC Merge Gate
     runs-on: ubuntu-latest
-    # Kodus poll (≤5m) + required-check poll (≤8m) must fit under this ceiling.
-    timeout-minutes: 16
+    # Kodus poll (≤5m) + required-check poll must cover Atlas/GATE jobs
+    # (timeout-minutes 15–20). ECC_MERGE_GATE_CHECK_WAIT_MS defaults to 480s
+    # in scripts/ecc-merge-gate-check.mjs — override below.
+    timeout-minutes: 28
     permissions:
       contents: read
       checks: read
@@ -115,6 +120,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           ECC_MERGE_GATE_PR: ${{ steps.pr.outputs.number }}
+          # Cover longest MIG-602 required job (Atlas isolated, timeout 20m).
+          ECC_MERGE_GATE_CHECK_WAIT_MS: '1200000'
           ECC_MERGE_GATE_SKIP_CHECKS: ${{ (github.event_name == 'pull_request' || github.event_name == 'pull_request_review' || github.event_name == 'pull_request_review_comment' || github.event_name == 'issue_comment' || github.event_name == 'check_run') && '1' || '0' }}
         run: |
           set +e

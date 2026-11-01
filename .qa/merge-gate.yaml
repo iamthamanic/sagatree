@@ -19,7 +19,10 @@ requiredChecks:
   - Actual RLS regression canary
   - RPC source regeneration and migration contracts
   - Browser E2E
-  # MIG-602/#847 — host/DB/transport/browser quality gates (isolated harnesses)
+  # MIG-602/#847 — host/DB/transport/browser quality gates (isolated harnesses).
+  # These jobs timeout at 15–20m; ECC_MERGE_GATE_CHECK_WAIT_MS in
+  # .github/workflows/ecc-merge-gate.yml must cover that window, and
+  # workflow_run must include "Stack migration isolated candidates".
   - Atlas isolated real product journey
   - PostgreSQL baseline security and persistence
   - GATE-01 real SQLite policy candidates

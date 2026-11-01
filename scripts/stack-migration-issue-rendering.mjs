@@ -292,7 +292,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       ...(id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'not-passing'
         ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
-      ...(HUMAN_CUTOVER_IDS.has(id) ? [CUTOVER_HUMAN_EXECUTION_BLOCKER] : []),
+      ...(HUMAN_CUTOVER_IDS.has(id) && old.status !== 'done' ? [CUTOVER_HUMAN_EXECUTION_BLOCKER] : []),
     ]);
     const regressionAssertions = requiredRegressions.map((defect) => ({
       given: 'Der eingefrorene Legacy-Defekt aus dem Quellinventar',

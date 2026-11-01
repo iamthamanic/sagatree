@@ -62,6 +62,13 @@ test('migration CI workflows never use continue-on-error', () => {
   }
 });
 
+/** Split GHA workflow YAML into top-level job blocks (indent = 2 spaces). */
+function artifactJobs(workflowText) {
+  return workflowText
+    .split(/\n(?=  [a-z0-9-]+:\n)/)
+    .filter((block) => /upload-artifact/.test(block));
+}
+
 test('baseline workflow owns distinct Atlas / RLS / Postgres jobs with fail-closed artifacts', () => {
   const text = read('.github/workflows/stack-migration-baseline.yml');
   assert.match(text, /name:\s*Atlas isolated real product journey/);
@@ -69,7 +76,11 @@ test('baseline workflow owns distinct Atlas / RLS / Postgres jobs with fail-clos
   assert.match(text, /name:\s*PostgreSQL baseline security and persistence/);
   assert.match(text, /npm run product --prefix scripts\/stack-migration-db/);
   assert.match(text, /npm run canary --prefix scripts\/stack-migration-db/);
-  assert.match(text, /if-no-files-found:\s*error/);
+  const jobs = artifactJobs(text);
+  assert.equal(jobs.length, 3, 'baseline workflow must keep three artifact-backed jobs');
+  for (const block of jobs) {
+    assert.match(block, /if-no-files-found:\s*error/, 'each artifact upload must be fail-closed');
+  }
   assert.doesNotMatch(text, /test\.skip/);
 });
 
@@ -77,7 +88,18 @@ test('GATE-01/02/03 candidate workflows stay distinct and artifact-backed', () =
   const text = read('.github/workflows/stack-migration-pocs.yml');
   assert.match(text, /name:\s*GATE-01 real SQLite policy candidates/);
   assert.match(text, /name:\s*GATE-02 and GATE-03 real browser, auth and transport candidates/);
-  assert.match(text, /if-no-files-found:\s*error/);
+  const jobs = artifactJobs(text);
+  assert.equal(jobs.length, 2, 'pocs workflow must keep two artifact-backed jobs');
+  for (const block of jobs) {
+    assert.match(block, /if-no-files-found:\s*error/, 'each artifact upload must be fail-closed');
+  }
+});
+
+test('ECC Merge Gate re-runs on isolated candidates and waits for long MIG-602 jobs', () => {
+  const text = read('.github/workflows/ecc-merge-gate.yml');
+  assert.match(text, /Stack migration isolated candidates/);
+  assert.match(text, /ECC_MERGE_GATE_CHECK_WAIT_MS:\s*'1200000'/);
+  assert.match(text, /timeout-minutes:\s*28/);
 });
 
 test('Test Gate still runs Drizzle host persistence + architecture boundary proofs', () => {
