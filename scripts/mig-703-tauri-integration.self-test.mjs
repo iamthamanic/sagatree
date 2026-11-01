@@ -165,17 +165,18 @@ const {
 {
   const failWork = mkdtempSync(join(tmpdir(), 'mig703-fail-'));
   try {
-    const modes = new Map();
+    const stored = new Map();
+    let chmodCount = 0;
     const failingHooks = {
       supportsPosixModes: true,
       chmod: (path, mode) => {
-        modes.set(path, mode);
+        stored.set(path, mode);
+        chmodCount += 1;
       },
       modeOf: (path) => {
-        // After restore chmod(0o600), report a mismatched mode → FAIL
-        const set = modes.get(path);
-        if (set === 0o600) return 0o666;
-        return set ?? 0o666;
+        // Sequence: 2 initial + 2 corrupt + 2 restore = 6. Lie only after restore.
+        if (chmodCount >= 6) return 0o666;
+        return stored.get(path) ?? 0o600;
       },
     };
     const failed = runUpdateRollbackDrill({ workDir: failWork, fsHooks: failingHooks });
