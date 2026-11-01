@@ -1,0 +1,10 @@
+{
+  "name": "@sagatree/desktop",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "MIG-703 Tauri+sidecar isolated-contract (not a product store ship)",
+  "dependencies": {
+    "zod": "4.6.7"
+  }
+}
