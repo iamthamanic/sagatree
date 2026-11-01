@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-700",
+  "githubIssue": 849,
+  "result": "PASS",
+  "testedCommit": "47b02e8c28e96b51c0cbe0e1d5d57f9367731d31",
+  "githubClosed": true,
+  "mergeRef": "PR #1070 → main (#849) @ 86fbf8435 (testedCommit remains PR gate HEAD 47b02e8c2)",
+  "note": "Owner Freigabe A unlock + Dornhain freeze/import/rollback drill with hard catalog on host tables. Supabase shutdown remains MIG-702 after proof. GATE-05 PoC remains #788.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-700-dornhain-cutover-drill.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-700.md",
+      "sha256": "83f02e05ff91ad12a4d6657ed0875bf952cdad57d58ca30153735f172aeffa26"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-700.md",
+      "sha256": "6e3030d6e22cb291213a40332d357df099b147e0fe5894c45f1bf07ee39f44e9"
+    }
+  ]
+}

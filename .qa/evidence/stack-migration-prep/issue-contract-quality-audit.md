@@ -2,9 +2,9 @@
 
 Stand: 2026-10-23. 90 kanonische Bodies mit Runner, Design, konkreten Given/When/Then-Fällen; Intake-`acceptance` enthält alle inventorisierten requiredTests (öffentliche Acceptance darf ≤5 zusammenfassen; Required Tests / Edge Cases bleiben vollständig).
 
-- 2 ready, 3 waiting, 0 blocked, 0 needs-design, 85 done.
+- 2 ready, 2 waiting, 0 blocked, 0 needs-design, 86 done.
 - 57 RPC-, 25 Edge- und 13 Infrastruktur-Verträge.
-- 85 als implementiert abgenommene Migrationstickets; 4 menschlich freigegebene Architekturentscheidungen.
+- 86 als implementiert abgenommene Migrationstickets; 4 menschlich freigegebene Architekturentscheidungen.
 - Explizite Source-Defekte in 37 Tickets; die konkreten Befunde stehen im jeweiligen Vertrag.
 - Host-Modulvertrag: docs/architecture/host-modular-monolith.md (verankert in MIG-010/#789).
 

@@ -105,15 +105,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 - Depends on #849 (MIG-700)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-701`
 - Design: `.qa/design/migration-issues/stack-migration-mig-701.md`
-- Status: waiting
+- Status: ready
 - Reihenfolge: 88; Welle: 7
-- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-088`, `agent-blocked`, `waiting-dependency`
+- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-088`, `agent-ready`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design
