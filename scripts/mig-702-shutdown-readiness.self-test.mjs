@@ -125,10 +125,21 @@ try {
   assert(existsSync(archiveDir), 'archive dir');
   const files = readdirSync(archiveDir).filter((f) => f.startsWith('shutdown-decision-'));
   assert(files.length >= 1, 'shutdown decision archived');
-  const archived = JSON.parse(readFileSync(join(archiveDir, files[0]), 'utf8'));
-  assert(archived.approval?.actor === 'iamthamanic', 'archive actor');
+  const { z } = await import('zod');
+  const archiveSchema = z.object({
+    approval: z.object({
+      actor: z.string().min(1),
+      evidenceFile: z.string().min(1),
+      releaseId: z.literal('CUTOVER-DORHAIN'),
+      status: z.literal('APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF'),
+    }),
+  });
+  const archived = archiveSchema.parse(
+    JSON.parse(readFileSync(join(archiveDir, files[0]), 'utf8')),
+  );
+  assert(archived.approval.actor === 'iamthamanic', 'archive actor');
   assert(
-    archived.approval?.evidenceFile ===
+    archived.approval.evidenceFile ===
       'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
     'archive Freigabe path',
   );
