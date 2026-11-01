@@ -2,20 +2,22 @@
 
 ## Intent
 
-Execute Variant A (Tauri + Node sidecar) packaging **PoC** under
-`APPROVED_TO_EXECUTE` (2026-11-01 Freigabe A). Prove sidecar start/stop, port
-conflict, persistent data dir, failed boot, secrets-not-in-renderer contract,
-and intake graph: only MIG-703 depends on GATE-05. No product Tauri activation.
+Execute Variant A (Tauri + Node sidecar) packaging **PoC**, then record owner
+**`APPROVED`** (2026-11-01): PoC accepted, MIG-703 unlocked, no product ship
+without a further RELEASE. Prove sidecar start/stop, port conflict, persistent
+data dir, failed boot, secrets-not-in-renderer contract, and intake graph: only
+MIG-703 depends on GATE-05. No product Tauri activation in this gate.
 
 ## Acceptance tier
 
-`isolated-contract` (PoC evidence). Fixture PASS does **not** imply technology
-`APPROVED` or MIG-703 unlock — intake must stay `ready` until full APPROVED.
+`isolated-contract` (PoC + architecture APPROVED). Product ship / store release
+remain a separate human RELEASE — not implied by this APPROVED.
 
 ## Preconditions
 
 - MIG-602/#847 + MIG-603/#848 DONE.
-- Owner `GATE-05` status `APPROVED_TO_EXECUTE` in `architecture-approvals.json`.
+- Owner `GATE-05` status `APPROVED` in `architecture-approvals.json`
+  (after PoC under prior `APPROVED_TO_EXECUTE`).
 - Dornhain Freigabe A recorded (`releases.CUTOVER-DORHAIN`).
 
 ## Happy path
@@ -56,8 +58,8 @@ and intake graph: only MIG-703 depends on GATE-05. No product Tauri activation.
 
 ### Launch Checklist (SC)
 
-N/A — PoC fixture only. MIG-703 / desktop ship needs full GATE-05 APPROVED +
-three-OS packaging evidence.
+GATE-05 `APPROVED` unlocks MIG-703 integration. Desktop product ship still needs
+an explicit further RELEASE plus three-OS packaging/signing evidence.
 
 ## Composition Gate
 
@@ -65,7 +67,7 @@ See `.qa/runs/composition-gate-stack-migration-gate-05.md`.
 
 ## Non-claims
 
-- No Tauri product dependency added.
-- No Windows/Linux packaging executed on this host.
+- No Tauri product dependency added by this gate alone.
+- No Windows/Linux packaging executed on the PoC host (remain NOT RUN).
 - No production cutover / Supabase shutdown (Dornhain path remains MIG-700..702).
-- Intake GATE-05 remains `ready` (cannot mark `done` without full APPROVED).
+- No store / end-user desktop ship without a further RELEASE.

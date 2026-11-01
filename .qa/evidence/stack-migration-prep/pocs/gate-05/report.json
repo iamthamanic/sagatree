@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "gate": "GATE-05",
   "status": "PASS",
-  "approval": "NOT APPROVED",
+  "approval": "APPROVED",
   "executeUnlock": "APPROVED_TO_EXECUTE",
   "variant": "A-tauri-node-sidecar",
-  "scope": "Sidecar contract PoC on current OS; three-OS Tauri packaging + signing remain NOT RUN. Desktop ship / MIG-703 still human APPROVED.",
+  "scope": "Sidecar contract PoC on current OS; technology APPROVED unlocks MIG-703. Three-OS Tauri packaging + signing + product ship remain deferred RELEASE.",
   "criteria": [
     {
       "row": "1",
@@ -75,7 +75,7 @@
     {
       "id": "start-stop-health",
       "status": "PASS",
-      "port": 52998
+      "port": 59927
     },
     {
       "id": "secrets-not-in-renderer",
@@ -84,7 +84,7 @@
     {
       "id": "persistent-datadir-restart",
       "status": "PASS",
-      "port": 53001
+      "port": 59930
     },
     {
       "id": "port-conflict",
@@ -126,6 +126,6 @@
     "No claim that sidecar.mjs is the product server/ binary",
     "No production cutover",
     "No claim that Windows/Linux packaging was executed unless platforms.*.RUN",
-    "MIG-703 still blocked until GATE-05 full APPROVED"
+    "Product ship / store release still requires a further human RELEASE"
   ]
 }

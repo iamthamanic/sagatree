@@ -29,7 +29,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 1,
-    "issuesBlockedOrNeedsDesign": 1,
+    "issuesBlockedOrNeedsDesign": 0,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -16582,7 +16582,7 @@
       "title": "Desktop packaging PoC (Tauri+sidecar vs Electron) — deferred until browser host parity",
       "priority": "P2",
       "kind": "architecture-evidence",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-gate-05",
       "designFile": ".qa/design/migration-issues/stack-migration-gate-05.md",
       "dependsOn": [
@@ -16660,9 +16660,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/gate-05.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -16691,7 +16692,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-086",
-        "agent-ready",
+        "agent-done",
         "gate-issue"
       ]
     },
@@ -17248,7 +17249,7 @@
       "title": "Tauri integration before external desktop test phase",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-703",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-703.md",
       "dependsOn": [
@@ -17359,8 +17360,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-090",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     }
   ]

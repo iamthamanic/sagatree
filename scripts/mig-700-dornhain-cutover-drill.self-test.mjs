@@ -114,7 +114,10 @@ try {
     approvals.releases?.['CUTOVER-DORHAIN']?.status === 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF',
     'CUTOVER-DORHAIN approval registered',
   );
-  assert(approvals.decisions['GATE-05']?.status === 'APPROVED_TO_EXECUTE', 'GATE-05 execute approval');
+  assert(
+    ['APPROVED_TO_EXECUTE', 'APPROVED'].includes(approvals.decisions['GATE-05']?.status),
+    'GATE-05 execute or full APPROVED',
+  );
 
   console.log('PASS: mig-700 dornhain cutover drill (freeze/import/rollback + hard catalog)');
 } finally {

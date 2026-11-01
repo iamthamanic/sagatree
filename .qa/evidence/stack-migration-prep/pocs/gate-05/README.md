@@ -1,6 +1,7 @@
 # GATE-05 executed evidence
 
-**Fixture: PASS. Technology ship: NOT APPROVED** (execute unlock only).
+**Fixture: PASS. Technology: APPROVED (2026-11-01).**  
+Product ship / store release: **not** approved by this gate — further RELEASE required.
 
 Entry point: `node scripts/stack-migration-pocs/gate-05/check.mjs --check`
 
@@ -12,4 +13,5 @@ Entry point: `node scripts/stack-migration-pocs/gate-05/check.mjs --check`
 | Cases PASS | 7 |
 | Cases NOT RUN | 2 |
 
-Variant A Tauri+Node sidecar remains the owner target. Real three-OS packaging/signing is still required before MIG-703 / desktop ship.
+Variant A Tauri+Node sidecar is owner-APPROVED for MIG-703. Real three-OS
+packaging/signing remains deferred integration before any product ship.

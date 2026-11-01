@@ -3,10 +3,10 @@
   "kind": "migration-poc-evidence",
   "localId": "GATE-05",
   "result": "PASS",
-  "approval": "NOT APPROVED",
+  "approval": "APPROVED",
   "executeUnlock": "APPROVED_TO_EXECUTE",
-  "intakeStatusMustRemain": "ready",
-  "note": "PoC fixture PASS only. Do not mark intake GATE-05 done without full APPROVED. MIG-703 still blocked.",
+  "supersededBy": ".qa/evidence/stack-migration-prep/completion/gate-05.json",
+  "note": "Historical PoC fixture record. Full APPROVED + intake DONE live in gate-05.json.",
   "evidenceDir": ".qa/evidence/stack-migration-prep/pocs/gate-05",
   "entryPoint": "node scripts/stack-migration-pocs/gate-05/check.mjs --check",
   "platforms": {

@@ -257,11 +257,11 @@ try {
     schemaVersion: 1,
     gate: 'GATE-05',
     status: 'PASS',
-    approval: 'NOT APPROVED',
+    approval: 'APPROVED',
     executeUnlock: 'APPROVED_TO_EXECUTE',
     variant: 'A-tauri-node-sidecar',
     scope:
-      'Sidecar contract PoC on current OS; three-OS Tauri packaging + signing remain NOT RUN. Desktop ship / MIG-703 still human APPROVED.',
+      'Sidecar contract PoC on current OS; technology APPROVED unlocks MIG-703. Three-OS Tauri packaging + signing + product ship remain deferred RELEASE.',
     criteria: [
       {
         row: '1',
@@ -283,7 +283,7 @@ try {
       'No claim that sidecar.mjs is the product server/ binary',
       'No production cutover',
       'No claim that Windows/Linux packaging was executed unless platforms.*.RUN',
-      'MIG-703 still blocked until GATE-05 full APPROVED',
+      'Product ship / store release still requires a further human RELEASE',
     ],
   };
 
@@ -307,7 +307,8 @@ try {
     writeFileSync(join(evidence, 'observations.json'), `${JSON.stringify(observations, null, 2)}\n`);
     writeFileSync(
       join(evidence, 'README.md'),
-      `# GATE-05 executed evidence\n\n**Fixture: PASS. Technology ship: NOT APPROVED** (execute unlock only).\n\n` +
+      `# GATE-05 executed evidence\n\n**Fixture: PASS. Technology: APPROVED (2026-11-01).**  \n` +
+        `Product ship / store release: **not** approved by this gate — further RELEASE required.\n\n` +
         `Entry point: \`node scripts/stack-migration-pocs/gate-05/check.mjs --check\`\n\n` +
         `| Observed | Value |\n| --- | --- |\n` +
         `| Runtime | Node ${process.version}, ${osPlatform()} ${arch()} |\n` +
@@ -315,7 +316,8 @@ try {
         `| Platforms NOT RUN | ${Object.entries(platforms).filter(([, v]) => v === 'NOT RUN').map(([k]) => k).join(', ') || 'none'} |\n` +
         `| Cases PASS | ${cases.filter((c) => c.status === 'PASS').length} |\n` +
         `| Cases NOT RUN | ${cases.filter((c) => c.status === 'NOT RUN').length} |\n\n` +
-        `Variant A Tauri+Node sidecar remains the owner target. Real three-OS packaging/signing is still required before MIG-703 / desktop ship.\n`,
+        `Variant A Tauri+Node sidecar is owner-APPROVED for MIG-703. Real three-OS\n` +
+        `packaging/signing remains deferred integration before any product ship.\n`,
     );
   } else {
     assert.ok(existsSync(join(evidence, 'report.json')), 'report.json missing — run --write first');
@@ -324,7 +326,7 @@ try {
     const priorObs = JSON.parse(readFileSync(join(evidence, 'observations.json'), 'utf8'));
     assert.equal(prior.gate, 'GATE-05');
     assert.equal(prior.status, 'PASS');
-    assert.equal(prior.approval, 'NOT APPROVED');
+    assert.equal(prior.approval, 'APPROVED');
     assert.equal(priorObs.reportSha256, sha256File(join(evidence, 'report.json')), 'committed report digest must match observations.reportSha256');
     // Platforms in report.json are observations from the --write host. Do not require
     // deepEqual with the current CI host (linux CI would fail a darwin-written matrix).
