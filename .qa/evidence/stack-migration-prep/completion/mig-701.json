@@ -2,8 +2,24 @@
   "schemaVersion": 1,
   "kind": "migration-acceptance",
   "localId": "MIG-701",
+  "githubIssue": 850,
   "result": "PASS",
-  "note": "Isolated-contract parity window fixture. Production observation / MIG-702 remain separate.",
-  "entryPoint": "node --experimental-strip-types scripts/mig-701-parity-window.self-test.mjs",
-  "opsDoc": "docs/ops/cutover/parity-window/README.md"
+  "testedCommit": "11b2c14c0c565ba22cda2041e64ecf99a0d46843",
+  "githubClosed": true,
+  "mergeRef": "PR #1073 → main (#850) @ cf42eea51466e6a5954dd60b027fee41de2964dc",
+  "note": "Dornhain dual-run read parity window + rollback archive. Supabase shutdown remains MIG-702 after proof.",
+  "checks": [
+    {
+      "command": "node --experimental-strip-types scripts/mig-701-parity-window.self-test.mjs",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-mig-701.md",
+      "sha256": "51a7f5593b324ae4d4b35f8fd5079f15cd10ccbb461dc310b071ca00af8425af"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-mig-701.md",
+      "sha256": "13b40f71d166da926b4ef5dd35f9748daecfdb29020e7f17118022a0d7f2493f"
+    }
+  ]
 }

@@ -604,16 +604,21 @@ test('unknown internal RPC dependencies are not silently filtered from the graph
 
 test('publication binds labels, title, repository, issue number and content together', () => {
   const byId = new Map(original.intake.issues.map((entry) => [entry.localId, entry]));
-  // Prefer a still-locked ticket (agent-blocked) so runner-label tamper remains observable.
-  // After Dornhain RELEASE, GATE-05/MIG-700 are agent-ready; MIG-701 waits on the drill.
+  // Prefer a still-locked / ready ticket so runner-label tamper remains observable.
+  // After Dornhain RELEASE + MIG-700/701 DONE, MIG-702 is agent-ready; MIG-703 waits.
   const current =
-    byId.get('MIG-701') ??
+    byId.get('MIG-702') ??
     [...byId.values()].find((entry) => (entry.labels ?? []).includes('agent-blocked')) ??
+    [...byId.values()].find((entry) => (entry.labels ?? []).includes('agent-ready')) ??
     byId.get('GATE-05');
   assert.ok(current, 'need a published ticket for publication binding');
   const base = { repository: original.registry.repository, entry: publishEntry(current, byId), issue: current, byId, body: renderIssue(current, byId) };
   assert.doesNotThrow(() => validatePublicationEntry(base));
-  const lockedLabel = (current.labels ?? []).includes('agent-blocked') ? 'agent-blocked' : 'agent-ready';
+  const lockedLabel = (current.labels ?? []).includes('agent-blocked')
+    ? 'agent-blocked'
+    : (current.labels ?? []).includes('agent-ready')
+      ? 'agent-ready'
+      : 'agent-done';
   const tamperedLabel = lockedLabel === 'agent-blocked' ? 'agent-ready' : 'agent-blocked';
   const mutations = [
     (value) => { value.entry.labels = value.entry.labels.map((label) => label === lockedLabel ? tamperedLabel : label); },
@@ -769,8 +774,17 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     assert.ok(mig700.labels?.includes('agent-done'), 'MIG-700 agent-done');
     assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'), 'MIG-700 must leave READY after DONE');
     const mig701 = original.intake.issues.find((i) => i.localId === 'MIG-701');
-    assert.equal(mig701?.status, 'ready', 'MIG-701 unlocks to ready when MIG-700 is DONE');
-    assert.ok(mig701?.labels?.includes('agent-ready'), 'MIG-701 agent-ready after MIG-700 DONE');
+    if (mig701?.completionEvidence) {
+      assert.equal(mig701.status, 'done', 'MIG-701 must be DONE after completionEvidence sync');
+      assert.ok(mig701.labels?.includes('agent-done'), 'MIG-701 agent-done');
+      assert.ok(!ready.some((entry) => entry.localId === 'MIG-701'), 'MIG-701 must leave READY after DONE');
+      const mig702 = original.intake.issues.find((i) => i.localId === 'MIG-702');
+      assert.equal(mig702?.status, 'ready', 'MIG-702 unlocks to ready when MIG-701 is DONE');
+      assert.ok(mig702?.labels?.includes('agent-ready'), 'MIG-702 agent-ready after MIG-701 DONE');
+    } else {
+      assert.equal(mig701?.status, 'ready', 'MIG-701 unlocks to ready when MIG-700 is DONE');
+      assert.ok(mig701?.labels?.includes('agent-ready'), 'MIG-701 agent-ready after MIG-700 DONE');
+    }
   } else if (cutoverApproved) {
     assert.ok(
       ready.some((entry) => entry.localId === 'MIG-700') || mig700?.status === 'waiting',
