@@ -1132,6 +1132,18 @@ function checkMig701ParityWindow() {
   );
 }
 
+function checkMig702ShutdownReadiness() {
+  console.log('MIG-702 shutdown readiness (#851): preds + matrix + restore + Freigabe...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-702-shutdown-readiness.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -3534,6 +3546,7 @@ checkMig502ExportImportBundles();
 checkMig700DornhainCutoverDrill();
 checkGate05TauriSidecarPoc();
 checkMig701ParityWindow();
+checkMig702ShutdownReadiness();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
