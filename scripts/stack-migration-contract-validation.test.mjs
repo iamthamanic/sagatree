@@ -764,10 +764,12 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
       original.approvals?.decisions?.['CUTOVER-DORHAIN']?.status) ===
     'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF';
   if (cutoverApproved) {
+    const mig700 = original.intake.issues.find((i) => i.localId === 'MIG-700');
     assert.ok(
       ready.some((entry) => entry.localId === 'MIG-700') ||
-        original.intake.issues.find((i) => i.localId === 'MIG-700')?.status === 'waiting',
-      'MIG-700 unlocks to ready/waiting after Dornhain RELEASE (not permanently human-blocked)',
+        mig700?.status === 'waiting' ||
+        mig700?.status === 'done',
+      'MIG-700 unlocks to ready/waiting/done after Dornhain RELEASE (not permanently human-blocked)',
     );
   } else {
     assert.ok(

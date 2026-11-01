@@ -1220,11 +1220,11 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-700.md",
-      "sha256": "e27146714263303d8637fd93111e58fe8ac98d0f69930a0fecc84beb3d788e49",
-      "payloadSha256": "1c32bdf2f4d88055cf5984267626fd7f7b63b823341543e7728f6826083ddf28"
+      "sha256": "4789092c2891a0e5b7584bdd5ccd5b3c55e88f07a47c62c5f1a913b786fba3db",
+      "payloadSha256": "0500c5bc30e9ed749f6a3fb186dbf90b83ac7e81a33a7fda2519e20ca46294a5"
     },
     {
       "localId": "MIG-701",
@@ -1234,12 +1234,11 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-701.md",
-      "sha256": "197af535cba9efc660a56a9e6f4dfe077ec576b8167d79c7d977ba10a54ef199",
-      "payloadSha256": "5d639f9a8bad3b48df5669338e3f7e0beb5426ce5dd4e1121ce03bbe9a750b65"
+      "sha256": "951ed438e6b8a22ce53cbb5d77ddbefad1043ecb11478fb5f4b827ecbb1d9bd8",
+      "payloadSha256": "4664019ff184e538dffe3041ede48e43dfd998280e4e276d9d85dac94419bc93"
     },
     {
       "localId": "MIG-702",

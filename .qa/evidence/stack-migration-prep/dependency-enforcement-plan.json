@@ -2016,7 +2016,7 @@
       "githubIssue": 849,
       "order": 87,
       "wave": 7,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         782,
         770,
@@ -2108,7 +2108,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -2116,17 +2116,16 @@
       "githubIssue": 850,
       "order": 88,
       "wave": 7,
-      "status": "waiting",
+      "status": "ready",
       "dependsOnGithub": [
         849
       ],
-      "runnerBlock": true,
+      "runnerBlock": false,
       "labels": [
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {

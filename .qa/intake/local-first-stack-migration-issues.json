@@ -29,7 +29,7 @@
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
     "issuesReady": 2,
-    "issuesBlockedOrNeedsDesign": 3,
+    "issuesBlockedOrNeedsDesign": 2,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
   },
@@ -16701,7 +16701,7 @@
       "title": "Controlled cutover per world/saga with freeze+delta",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-700",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-700.md",
       "dependsOn": [
@@ -16886,9 +16886,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-700.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -17000,7 +17001,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -17009,7 +17010,7 @@
       "title": "Supabase dual-run parity window",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "ready",
       "featureSlug": "stack-migration-mig-701",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-701.md",
       "dependsOn": [
@@ -17116,8 +17117,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-ready"
       ]
     },
     {
