@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "MIG-701",
+  "result": "PASS",
+  "note": "Isolated-contract parity window fixture. Production observation / MIG-702 remain separate.",
+  "entryPoint": "node --experimental-strip-types scripts/mig-701-parity-window.self-test.mjs",
+  "opsDoc": "docs/ops/cutover/parity-window/README.md"
+}
