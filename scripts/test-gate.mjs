@@ -384,6 +384,14 @@ function checkAtlasFollowupRealProductE2e() {
   });
 }
 
+function checkMig602CiQualityGates() {
+  console.log('MIG-602 (#847): CI quality-gate wiring self-test...');
+  execFileSync(process.execPath, ['--test', 'scripts/mig-602-ci-quality-gates.self-test.mjs'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkStackMigrationPrep() {
   console.log('Stack migration prep drafts: inventory/issue graph integrity...');
   execFileSync(process.execPath, ['scripts/stack-migration-prep-check.mjs'], {
@@ -3419,6 +3427,7 @@ checkAtlasWorldbuilderWebglToolRegistry();
 checkAtlasWorldbuilderGroundedDrilldown();
 checkAtlasFollowupRealProductE2e();
 checkStackMigrationPrep();
+checkMig602CiQualityGates();
 checkMig010HostSkeleton();
 checkMig011SqliteSchema();
 checkMig013PolicyService();

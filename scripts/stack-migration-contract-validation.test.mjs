@@ -694,9 +694,17 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'),
     'ATLAS-LIVE-E2E must leave READY after DONE evidence',
   );
+  const mig602 = original.intake.issues.find((issue) => issue.localId === 'MIG-602');
+  assert.equal(mig602?.status, 'done', 'MIG-602 must be DONE after CI quality-gate evidence');
+  assert.ok(mig602?.completionEvidence, 'MIG-602 completionEvidence path');
+  assert.ok(mig602?.labels?.includes('agent-done'), 'MIG-602 agent-done');
   assert.ok(
-    ready.some((entry) => entry.localId === 'MIG-602'),
-    'MIG-602 must become READY once ATLAS-LIVE-E2E is DONE',
+    !ready.some((entry) => entry.localId === 'MIG-602'),
+    'MIG-602 must leave READY after DONE evidence',
+  );
+  assert.ok(
+    !ready.some((entry) => entry.localId === 'MIG-700'),
+    'MIG-700 cutover must stay human-blocked (not agent-ready)',
   );
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);

@@ -16,8 +16,13 @@ const contractRoot = '.qa/design/migration-issues';
 const ATLAS_E2E_EXECUTION_BLOCKER =
   'Atlas live product E2E CI remains not-passing on the isolated baseline workflow; known red must be fixed with real evidence before READY/DONE (do not skip or greenwash).';
 
+const CUTOVER_HUMAN_EXECUTION_BLOCKER =
+  'Production cutover / Supabase shutdown freigabe remains human RELEASE APPROVED only (MIG-700+); agents must not claim agent-ready or auto-merge cutover.';
+
 /** Isolated atlas-isolated-product journey acceptance on stack-migration-baseline.yml. */
 const ATLAS_LIVE_E2E_CI_ACCEPTANCE = 'passing';
+
+const HUMAN_CUTOVER_IDS = new Set(['MIG-700', 'MIG-701', 'MIG-702']);
 
 /**
  * True execution locks (keep ticket blocked) vs inventory legacyDefects
@@ -287,6 +292,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       ...(id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'not-passing'
         ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
+      ...(HUMAN_CUTOVER_IDS.has(id) && old.status !== 'done' ? [CUTOVER_HUMAN_EXECUTION_BLOCKER] : []),
     ]);
     const regressionAssertions = requiredRegressions.map((defect) => ({
       given: 'Der eingefrorene Legacy-Defekt aus dem Quellinventar',
@@ -304,7 +310,7 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     let status;
     if (old.status === 'done') {
       status = 'done';
-    } else if (id === 'GATE-05' || blockers.length > 0 || sourceStatus === 'source-blocked') {
+    } else if (id === 'GATE-05' || HUMAN_CUTOVER_IDS.has(id) || blockers.length > 0 || sourceStatus === 'source-blocked') {
       status = 'blocked';
     } else if (predecessorsDone) {
       status = 'ready';

@@ -52,6 +52,10 @@ Out:
 - Der Host erzwingt Policies vor Projektionen, HTTP-/WS-Responses, Jobs, Assets oder KI-Kontext; keine Client-Rollen hochstufen.
 - Alle Security Findings einschließlich Low/Info dokumentieren; keine NOT RUN-Prüfung als PASS verbuchen.
 
+### Bekannte Legacy-Defekte / negative Regressionen
+
+- (Ausführungssperre) Production cutover / Supabase shutdown freigabe remains human RELEASE APPROVED only (MIG-700+); agents must not claim agent-ready or auto-merge cutover.
+
 ## Edge Cases
 
 ### Fall 1
@@ -197,15 +201,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #877 (RPC-NPC-INSTANCES)
 - Depends on #878 (RPC-MARKETPLACE-COUNT)
 
-Status: **waiting**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-mig-700`
 - Design: `.qa/design/migration-issues/stack-migration-mig-700.md`
-- Status: waiting
+- Status: blocked
 - Reihenfolge: 87; Welle: 7
-- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-087`, `agent-blocked`, `waiting-dependency`
+- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-087`, `agent-blocked`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

@@ -167,7 +167,10 @@ assert(
 );
 
 assert(src.includes('waitForKodusReview'), 'Kodus poll helper present');
-assert(workflow.includes('timeout-minutes: 16'), 'evaluate job timeout fits Kodus+check polls');
+// MIG-602/#847: Atlas/GATE jobs need ≤20m; evaluate ceiling must cover Kodus + wait.
+assert(workflow.includes('timeout-minutes: 28'), 'evaluate job timeout fits Kodus+check polls');
+assert(workflow.includes("ECC_MERGE_GATE_CHECK_WAIT_MS: '1200000'"), 'check wait covers longest MIG-602 job');
+assert(workflow.includes('Stack migration isolated candidates'), 'workflow_run retriggers on GATE-01/02/03');
 
 {
   let ticks = 0;

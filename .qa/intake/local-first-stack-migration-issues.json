@@ -28,7 +28,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 1,
+    "issuesReady": 0,
     "issuesBlockedOrNeedsDesign": 5,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -16175,7 +16175,7 @@
       "title": "CI Quality Gates for host unit/integration/e2e",
       "priority": "P1",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-602",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-602.md",
       "dependsOn": [
@@ -16355,9 +16355,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-602.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -16447,7 +16448,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-084",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -16700,7 +16701,7 @@
       "title": "Controlled cutover per world/saga with freeze+delta",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "blocked",
       "featureSlug": "stack-migration-mig-700",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-700.md",
       "dependsOn": [
@@ -16888,7 +16889,9 @@
       "verification": {
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
-        "blockers": [],
+        "blockers": [
+          "Production cutover / Supabase shutdown freigabe remains human RELEASE APPROVED only (MIG-700+); agents must not claim agent-ready or auto-merge cutover."
+        ],
         "requiredRegressions": [],
         "approvalRequired": null
       },
@@ -16999,8 +17002,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
@@ -17009,7 +17011,7 @@
       "title": "Supabase dual-run parity window",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "blocked",
       "featureSlug": "stack-migration-mig-701",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-701.md",
       "dependsOn": [
@@ -17089,7 +17091,9 @@
       "verification": {
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
-        "blockers": [],
+        "blockers": [
+          "Production cutover / Supabase shutdown freigabe remains human RELEASE APPROVED only (MIG-700+); agents must not claim agent-ready or auto-merge cutover."
+        ],
         "requiredRegressions": [],
         "approvalRequired": null
       },
@@ -17116,8 +17120,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
@@ -17126,7 +17129,7 @@
       "title": "Supabase shutdown only after parity+restore proof",
       "priority": "P2",
       "kind": "implementation",
-      "status": "waiting",
+      "status": "blocked",
       "featureSlug": "stack-migration-mig-702",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-702.md",
       "dependsOn": [
@@ -17207,7 +17210,9 @@
       "verification": {
         "sourceStatus": "specified",
         "implementationStatus": "not-accepted",
-        "blockers": [],
+        "blockers": [
+          "Production cutover / Supabase shutdown freigabe remains human RELEASE APPROVED only (MIG-700+); agents must not claim agent-ready or auto-merge cutover."
+        ],
         "requiredRegressions": [],
         "approvalRequired": null
       },
@@ -17237,8 +17242,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
