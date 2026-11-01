@@ -1,12 +1,13 @@
 # Composition Gate — stack-migration-mig-602 (#847 / MIG-602)
 
-- HEAD_SHA: 4507dd80d2bf6f5fe1190e78737339ae361a0c2a
+- HEAD_SHA: 24527377e46513611550cedc7b7cad9be8ddd67a
 - BASE_SHA: ca059d1682266c91d16fa66beb08051a4c78d783
 - Date: 2026-11-01
 - Verdict: CLEAR
 - Note: Elevates Atlas / Postgres baseline / GATE-01/02/03 into ECC
   `requiredChecks` (`.qa/merge-gate.yaml`); fail-closed wiring proven by
-  `scripts/mig-602-ci-quality-gates.self-test.mjs`. No production cutover.
+  `scripts/mig-602-ci-quality-gates.self-test.mjs`. ECC re-runs on
+  isolated candidates and waits 20m for long jobs. No production cutover.
 
 ## Event
 
@@ -20,7 +21,8 @@ ECC Merge Gate requiredChecks → merge decision. Distinct artifacts per job
 2. Bootstrap: ephemeral PG/GoTrue/PostgREST or GATE-01 SQLite candidates (no hosted secrets)
 3. Transport/Auth: GATE-02/03 + atlas outsider DENY / player reveal
 4. Browser: Atlas isolated product + verify Browser E2E
-5. Consumer: ECC Merge Gate classifies requiredChecks by name; missing/red blocks merge
+5. Consumer: ECC Merge Gate classifies requiredChecks by name; missing/red blocks merge;
+   workflow_run includes Stack migration isolated candidates
 
 ## Simulations
 
@@ -28,8 +30,8 @@ ECC Merge Gate requiredChecks → merge decision. Distinct artifacts per job
 Owner/GM/player/outsider remain separate fixture identities inside atlas + canary jobs.
 
 ### Invalid/missing
-Missing Chromium/tools/DB → nonzero exit; artifact upload `if-no-files-found: error`;
-no `continue-on-error` on migration workflows.
+Missing Chromium/tools/DB → nonzero exit; artifact upload `if-no-files-found: error`
+per job; no `continue-on-error` on migration workflows.
 
 ### Two consumers / crash
 Browser E2E vs Atlas isolated product remain separate check names/artifacts; ECC
