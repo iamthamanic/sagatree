@@ -77,27 +77,39 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
     }
   }
 
-  // Scoped RELEASE records (not GATE decisions) — human provenance required when present.
+  // Scoped RELEASE records (not GATE decisions) — only known scopes; human provenance required.
+  const ALLOWED_RELEASES = {
+    'CUTOVER-DORHAIN': {
+      statuses: new Set(['APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF']),
+      issuePaths: new Set([
+        `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-700']}`,
+      ]),
+    },
+  };
   if (plain(approvals?.releases)) {
     for (const [releaseId, release] of Object.entries(approvals.releases)) {
+      const allowed = ALLOWED_RELEASES[releaseId];
+      if (!allowed) {
+        error(`releases.${releaseId}: unknown RELEASE scope (not in allowlist)`);
+        continue;
+      }
       if (!plain(release) || !text(release.status)) {
         error(`releases.${releaseId}: invalid release record`);
         continue;
       }
-      if (!/^APPROVED/.test(String(release.status))) continue;
+      if (!allowed.statuses.has(String(release.status))) {
+        error(`releases.${releaseId}: status ${release.status} is not valid for this scope`);
+        continue;
+      }
       let releaseSourceValid = false;
       try {
         const url = new URL(release.sourceUrl);
-        const allowed = new Set([
-          `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-700']}`,
-          `/${migrationRepository}/issues/${migrationIssueIdentities['GATE-05']}`,
-        ]);
         releaseSourceValid =
           url.protocol === 'https:' &&
           url.hostname === 'github.com' &&
           url.username === '' &&
           url.password === '' &&
-          allowed.has(url.pathname) &&
+          allowed.issuePaths.has(url.pathname) &&
           /^#issuecomment-[1-9][0-9]*$/.test(url.hash);
       } catch { /* rejected below */ }
       if (

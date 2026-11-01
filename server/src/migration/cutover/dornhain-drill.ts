@@ -9,6 +9,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
+import { z } from 'zod';
 import type { HostDatabase } from '../../persistence/open-database.ts';
 import { createProjectPorts } from '../../modules/project/index.ts';
 import { exportHostBundle } from '../bundles/export-bundle.ts';
@@ -19,6 +20,17 @@ import {
   dornhainFixtureCatalog,
   type DornhainCatalog,
 } from './dornhain-catalog.ts';
+
+const npcDefinitionPayloadSchema = z.object({
+  kind: z.enum(['npc', 'monster']),
+  publicId: z.string().min(1),
+  displayName: z.string().min(1).optional(),
+});
+
+const idRowSchema = z.object({ id: z.string().min(1) });
+const titleRowSchema = z.object({ title: z.string().min(1) });
+const slugRowSchema = z.object({ slug: z.string().min(1) });
+const defRowSchema = z.object({ id: z.string().min(1), payload: z.string() });
 
 export type DornhainDrillInput = {
   readonly sourceDb: HostDatabase;
@@ -200,32 +212,62 @@ export function applyDornhainCatalogToHost(
   }
 }
 
-function parseNpcDefinitionPayload(raw: string): { kind?: string; publicId?: string } | null {
+function parseNpcDefinitionPayload(
+  raw: string,
+): z.infer<typeof npcDefinitionPayloadSchema> | null {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
     return null;
   }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
-  const record = parsed as Record<string, unknown>;
-  const kind = typeof record.kind === 'string' ? record.kind : undefined;
-  const publicId = typeof record.publicId === 'string' ? record.publicId : undefined;
-  return { kind, publicId };
+  const result = npcDefinitionPayloadSchema.safeParse(parsed);
+  return result.success ? result.data : null;
 }
 
 function presenceFromHostTables(
   db: HostDatabase,
+  ownerUserId: string,
+  worldId: string,
   catalog: DornhainCatalog,
 ): ReturnType<typeof assertDornhainCatalogPresent> {
-  const worlds = db.prepare(`SELECT title FROM worlds`).all() as { title: string }[];
-  const sagas = db.prepare(`SELECT slug FROM saga_definitions`).all() as { slug: string }[];
-  const characters = db.prepare(`SELECT id FROM characters`).all() as { id: string }[];
-  const items = db.prepare(`SELECT id FROM inventory_item_definitions`).all() as { id: string }[];
-  const defs = db.prepare(`SELECT id, payload FROM npc_creature_definitions`).all() as {
-    id: string;
-    payload: string;
-  }[];
+  const worlds = z
+    .array(titleRowSchema)
+    .parse(
+      db
+        .prepare(`SELECT title FROM worlds WHERE owner_user_id = ? AND id = ?`)
+        .all(ownerUserId, worldId),
+    );
+  const sagas = z
+    .array(slugRowSchema)
+    .parse(
+      db
+        .prepare(`SELECT slug FROM saga_definitions WHERE owner_user_id = ? OR origin = 'native'`)
+        .all(ownerUserId),
+    );
+  const characters = z
+    .array(idRowSchema)
+    .parse(db.prepare(`SELECT id FROM characters WHERE owner_user_id = ?`).all(ownerUserId));
+  const items = z
+    .array(idRowSchema)
+    .parse(
+      db
+        .prepare(
+          `SELECT id FROM inventory_item_definitions
+           WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+        )
+        .all(ownerUserId, worldId),
+    );
+  const defs = z
+    .array(defRowSchema)
+    .parse(
+      db
+        .prepare(
+          `SELECT id, payload FROM npc_creature_definitions
+           WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+        )
+        .all(ownerUserId, worldId),
+    );
 
   const monsterIds: string[] = [];
   const npcPublicIds: string[] = [];
@@ -238,7 +280,7 @@ function presenceFromHostTables(
       };
     }
     if (payload.kind === 'monster') monsterIds.push(row.id);
-    if (payload.kind === 'npc' && payload.publicId) npcPublicIds.push(payload.publicId);
+    if (payload.kind === 'npc') npcPublicIds.push(payload.publicId);
   }
 
   return assertDornhainCatalogPresent({
@@ -259,19 +301,43 @@ function writeCatalogSidecar(dir: string, checksum: string, catalog: DornhainCat
   return path;
 }
 
-/** Remove Dornhain-owned rows so a freeze can be re-applied onto a poisoned host. */
-function wipeHostContent(db: HostDatabase): void {
-  db.exec(`
-    DELETE FROM project_members;
-    DELETE FROM projects;
-    DELETE FROM saga_definition_versions;
-    DELETE FROM saga_definitions;
-    DELETE FROM worlds;
-    DELETE FROM assets;
-    DELETE FROM characters;
-    DELETE FROM inventory_item_definitions;
-    DELETE FROM npc_creature_definitions;
-  `);
+/**
+ * Remove only the restore-owner's Dornhain rows so a freeze can be re-applied.
+ * Scoped deletes — never wipe unrelated tenants on a shared host.
+ */
+function wipeOwnerDornhainContent(db: HostDatabase, ownerUserId: string, worldId: string): void {
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    db.prepare(
+      `DELETE FROM project_members WHERE project_id IN (
+         SELECT id FROM projects WHERE gm_user_id = ? OR world_id = ?
+       )`,
+    ).run(ownerUserId, worldId);
+    db.prepare(`DELETE FROM projects WHERE gm_user_id = ? OR world_id = ?`).run(ownerUserId, worldId);
+    db.prepare(
+      `DELETE FROM saga_definition_versions WHERE saga_id IN (
+         SELECT id FROM saga_definitions WHERE owner_user_id = ?
+       )`,
+    ).run(ownerUserId);
+    db.prepare(`DELETE FROM saga_definitions WHERE owner_user_id = ?`).run(ownerUserId);
+    db.prepare(`DELETE FROM worlds WHERE id = ? AND owner_user_id = ?`).run(worldId, ownerUserId);
+    db.prepare(`DELETE FROM assets WHERE owner_user_id = ?`).run(ownerUserId);
+    db.prepare(`DELETE FROM characters WHERE owner_user_id = ?`).run(ownerUserId);
+    db.prepare(
+      `DELETE FROM inventory_item_definitions WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+    ).run(ownerUserId, worldId);
+    db.prepare(
+      `DELETE FROM npc_creature_definitions WHERE owner_user_id = ? AND (world_profile_id IS NULL OR world_profile_id = ?)`,
+    ).run(ownerUserId, worldId);
+    db.exec('COMMIT');
+  } catch (err) {
+    try {
+      db.exec('ROLLBACK');
+    } catch {
+      /* ignore */
+    }
+    throw err;
+  }
 }
 
 function importFreezeOntoHost(input: {
@@ -290,17 +356,19 @@ function importFreezeOntoHost(input: {
   });
   if (!imported.ok) return imported;
 
-  const worldRow = input.db.prepare(`SELECT id FROM worlds WHERE title = ?`).get(input.catalog.worldTitle) as
-    | { id: string }
-    | undefined;
-  if (!worldRow) return { ok: false, error: 'dornhain-world-missing-after-import' };
+  const worldId = imported.value.worldIds[0];
+  if (!worldId) return { ok: false, error: 'dornhain-world-missing-after-import' };
+  const owned = input.db
+    .prepare(`SELECT id FROM worlds WHERE id = ? AND owner_user_id = ? AND title = ?`)
+    .get(worldId, input.ownerUserId, input.catalog.worldTitle);
+  if (!owned) return { ok: false, error: 'dornhain-world-owner-mismatch' };
 
-  applyDornhainCatalogToHost(input.db, input.ownerUserId, worldRow.id, input.catalog);
+  applyDornhainCatalogToHost(input.db, input.ownerUserId, worldId, input.catalog);
 
   return {
     ok: true,
     value: {
-      worldId: worldRow.id,
+      worldId,
       npcs: imported.value.npcs,
       inventory: imported.value.inventory,
     },
@@ -358,7 +426,12 @@ export function runDornhainCutoverDrill(input: DornhainDrillInput): BundleResult
     `${JSON.stringify({ catalog, bundleChecksum: exported.value.checksumSha256 }, null, 2)}\n`,
   );
 
-  const afterImport = presenceFromHostTables(input.targetDb, catalog);
+  const afterImport = presenceFromHostTables(
+    input.targetDb,
+    input.restoreOwnerUserId,
+    imported.value.worldId,
+    catalog,
+  );
   if (!afterImport.ok) {
     return {
       ok: false,
@@ -388,11 +461,14 @@ export function runDornhainCutoverDrill(input: DornhainDrillInput): BundleResult
       .get(input.strangerUserId) as { c: number }
   ).c;
 
-  // Poison the live target, then wipe + re-import the freeze onto the same host (true rollback).
+  // Poison the live target, then scoped-wipe + re-import the freeze onto the same host.
+  const poisonedWorldId = imported.value.worldId;
   input.targetDb
-    .prepare(`UPDATE worlds SET title = ? WHERE title = ?`)
-    .run('CORRUPTED', catalog.worldTitle);
-  input.targetDb.prepare(`DELETE FROM characters WHERE id = ?`).run(catalog.characters[0].id);
+    .prepare(`UPDATE worlds SET title = ? WHERE id = ? AND owner_user_id = ?`)
+    .run('CORRUPTED', poisonedWorldId, input.restoreOwnerUserId);
+  input.targetDb
+    .prepare(`DELETE FROM characters WHERE id = ? AND owner_user_id = ?`)
+    .run(catalog.characters[0].id, input.restoreOwnerUserId);
 
   // Drop staged asset files so re-import can republish bytes under the same keys.
   try {
@@ -400,7 +476,7 @@ export function runDornhainCutoverDrill(input: DornhainDrillInput): BundleResult
   } catch {
     /* best-effort */
   }
-  wipeHostContent(input.targetDb);
+  wipeOwnerDornhainContent(input.targetDb, input.restoreOwnerUserId, poisonedWorldId);
 
   const rolled = importFreezeOntoHost({
     db: input.targetDb,
@@ -424,7 +500,12 @@ export function runDornhainCutoverDrill(input: DornhainDrillInput): BundleResult
     return { ok: false, error: 'poison-title-survived-rollback' };
   }
 
-  const afterRollback = presenceFromHostTables(input.targetDb, catalog);
+  const afterRollback = presenceFromHostTables(
+    input.targetDb,
+    input.restoreOwnerUserId,
+    rolled.value.worldId,
+    catalog,
+  );
   if (!afterRollback.ok) {
     return {
       ok: false,
