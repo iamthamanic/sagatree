@@ -38,3 +38,9 @@ AU-CONTENT-WIDTH.
 
 - Installer binaries come from GitHub Releases (`VITE_DESKTOP_RELEASES_REPO`, default `iamthamanic/sagatree`).
 - First real assets appear after Desktop Release pipeline + MIG-703 product Tauri.
+
+## GitHub Pages hub
+
+- [x] Static site under `site/download/` with Mac/Windows/Linux rows.
+- [x] Workflow `.github/workflows/github-pages.yml` deploys `site/` via Actions.
+- [ ] Repo Settings → Pages → Source GitHub Actions (human, once).

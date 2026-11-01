@@ -1,21 +1,27 @@
-# Public download page (`/download`)
+# Public download pages
 
-Artcraft-style installer landing inside the web app (no login required).
+SagaTree has two download surfaces; **GitHub Pages is the primary marketing hub**.
 
-| URL | Behavior |
+## 1. GitHub Pages (canonical for Non-Tech Users)
+
+| URL | Notes |
 | --- | --- |
-| `/download` | Canonical marketing page |
-| `/get` | Alias → same page |
+| `https://iamthamanic.github.io/sagatree/download/` | After Pages + Actions deploy |
+| Source | `site/download/` |
+| Deploy | `.github/workflows/github-pages.yml` |
 
-## Behavior
+Enable once: repo **Settings → Pages → Source: GitHub Actions**.
 
-1. Page fetches GitHub `releases/latest` for `VITE_DESKTOP_RELEASES_REPO` (default `iamthamanic/sagatree`).
-2. Assets are classified into macOS / Windows / Linux (`.dmg` / `.msi` / `.AppImage`, …).
-3. If no release or no installers yet → buttons show **Bald verfügbar**; GitHub Releases link still works.
-4. Login screen offers **Desktop herunterladen**.
+## 2. In-app route (optional)
 
-## Parallel work
+| URL | Notes |
+| --- | --- |
+| `/download` (+ `/get`) | Same discovery UX inside the Vite app, no login |
+| Login CTA | „Desktop herunterladen“ |
 
-This page can ship **before** MIG-703 / signed auto-update. Real Download buttons light up when the Desktop Release workflow publishes the first tagged installers.
+## Behavior (both)
 
-See also: Desktop Release pipeline (`docs/ops/desktop-release.md` when that PR is merged).
+1. Fetch GitHub `releases/latest` for `iamthamanic/sagatree`.
+2. Classify `.dmg` / `.msi` / `.AppImage` (etc.).
+3. No assets yet → **Bald verfügbar** + link to Releases.
+4. Real buttons light up after Desktop Release + MIG-703 publish installers.
