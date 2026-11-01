@@ -13,7 +13,7 @@
       "command": "node --test scripts/mig-602-ci-quality-gates.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-602.md",
-      "sha256": "fb2ae149f00165d6e6bf98059b91e77fdba0f8ae85d5e6a1d9edd2553a181267"
+      "sha256": "140d72446bc74872307bc973bca6d392657fc1bc5618e803c62b4d1b40a1e45e"
     },
     {
       "command": "composition-gate CLEAR",

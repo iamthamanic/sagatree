@@ -70,3 +70,4 @@ Proof: `.qa/runs/composition-gate-stack-migration-mig-602.md`
 ## Post-merge
 
 - Merged CLEAN via PR #1066 → `14a3585c8` (2026-11-01). CompletionEvidence `githubClosed: true`; `testedCommit` remains gate PR HEAD `24527377e` matching composition-gate proof.
+- Evidence sync PR records `githubClosed` without rewriting gate-head `testedCommit`.
