@@ -68,15 +68,12 @@ function boot(label) {
 
 const source = boot('src');
 const target = boot('dst');
-const poison = boot('poison');
 
 try {
   const report = runDornhainCutoverDrill({
     sourceDb: source.db,
     targetDb: target.db,
     targetDataDir: target.dataDir,
-    poisonDb: poison.db,
-    poisonDataDir: poison.dataDir,
     sourceOwnerUserId: 'owner-dornhain',
     restoreOwnerUserId: 'restore-dornhain',
     strangerUserId: 'stranger-x',
@@ -85,10 +82,23 @@ try {
   assert(report.value.phase === 'rollback-ok', 'phase rollback-ok');
   assert(report.value.strangerWorldCount === 0, 'stranger must own zero worlds');
   assert(report.value.writerDuringFreeze === 'owner-dornhain', 'single writer during freeze');
+  assert(report.value.competingWriteExcluded === true, 'stranger competing write excluded from freeze');
+  assert(report.value.restoreOwnerCanAccessWorld === true, 'restore owner policy allow');
+  assert(report.value.strangerCanAccessWorld === false, 'stranger policy deny');
   assert(report.value.missingAfterImport.length === 0, 'no missing after import');
   assert(report.value.missingAfterRollback.length === 0, 'no missing after rollback');
   assert(existsSync(report.value.catalogPath), 'catalog sidecar written');
   assert(report.value.payloadChecksum.length >= 32, 'payload checksum');
+
+  // Authoritative host tables after rollback (not bundle echo).
+  const chars = target.db.prepare('SELECT id FROM characters').all();
+  assert(chars.length >= 4, 'characters table restored');
+  const items = target.db.prepare('SELECT id FROM inventory_item_definitions').all();
+  assert(items.length >= 3, 'item definitions restored');
+  const defs = target.db.prepare('SELECT id FROM npc_creature_definitions').all();
+  assert(defs.length >= 4, 'npc/monster defs restored');
+  const corrupted = target.db.prepare(`SELECT COUNT(*) AS c FROM worlds WHERE title = 'CORRUPTED'`).get();
+  assert(corrupted.c === 0, 'poisoned title gone after rollback onto target');
 
   // Ops docs present
   assert(existsSync(join(root, 'docs/ops/cutover/README.md')), 'cutover README');
@@ -110,8 +120,6 @@ try {
 } finally {
   source.db.close?.();
   target.db.close?.();
-  poison.db.close?.();
   rmSync(source.work, { recursive: true, force: true });
   rmSync(target.work, { recursive: true, force: true });
-  rmSync(poison.work, { recursive: true, force: true });
 }

@@ -413,6 +413,19 @@ test('GATE-05 may be ready when owner APPROVED_TO_EXECUTE is registered', () => 
   );
 });
 
+test('GATE-05 APPROVED_TO_EXECUTE cannot mark done without full APPROVED', () => {
+  const input = clone();
+  input.approvals.decisions['GATE-05'] = {
+    status: 'APPROVED_TO_EXECUTE',
+    actorType: 'human',
+    actor: 'iamthamanic',
+    sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337',
+    evidenceFile: 'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
+  };
+  setStatus(input, 'GATE-05', 'done');
+  rejects(input, /GATE-05: must not be marked done without full APPROVED/);
+});
+
 test('human GATE-01 APPROVED with verifiable comment URL and ADR evidence is accepted', () => {
   const input = clone();
   input.approvals.decisions['GATE-01'] = {
