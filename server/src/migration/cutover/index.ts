@@ -34,3 +34,19 @@ export {
   type ParityRollbackArchive,
   type ParityWindowReport,
 } from './parity-window.ts';
+
+export {
+  evaluateShutdownReadiness,
+  runDornhainShutdownReadinessDrill,
+  archiveShutdownDecision,
+  loadPredecessorEvidenceFromDisk,
+  type ShutdownReadinessInput,
+  type ShutdownReadinessReport,
+  type ShutdownBlocker,
+  type PredecessorEvidence,
+  type CallMatrixEntry,
+  type RestoreProof,
+  type PermissionNegative,
+  type HumanApproval,
+  type ShutdownDecisionArchive,
+} from './shutdown-readiness.ts';

@@ -7,7 +7,7 @@ Owner RELEASE (2026-11-01): Dornhain pilot — see
 
 1. **MIG-700 drill** — Freeze → single writer → import → Rollback (`server/src/migration/cutover`)
 2. **MIG-701** — reading parity window (fixture/staging) — [`parity-window/`](./parity-window/)
-3. **MIG-702** — Supabase shutdown only after Dornhain host proof
+3. **MIG-702** — Supabase shutdown readiness after Dornhain host proof — [`shutdown/`](./shutdown/)
 
 ## Hard requirement
 
@@ -19,4 +19,5 @@ present after import. Other user data may be omitted.
 ```bash
 node --experimental-strip-types scripts/mig-700-dornhain-cutover-drill.self-test.mjs
 node --experimental-strip-types scripts/mig-701-parity-window.self-test.mjs
+node --experimental-strip-types scripts/mig-702-shutdown-readiness.self-test.mjs
 ```

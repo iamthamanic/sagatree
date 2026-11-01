@@ -85,10 +85,10 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 
 ## Acceptance
 
-- [ ] MIG-702 bleibt agent-blocked; ein umetikettiertes oder aus der Intake-Liste entferntes Vorgängerticket umgeht die Sperre nicht.
-- [ ] Jede Operation besitzt einen geprüften Nachfolger oder eine menschlich genehmigte Stilllegung; verbliebene Supabase-Netzaufrufe sind explizite Blocker.
-- [ ] Restore und Berechtigungs-Negativsuite sind nachgewiesen; erst eine verlinkte menschliche Freigabe erlaubt die konkret beschriebene produktive Abschaltung.
-- [ ] Touched files: zero type escape hatches (typed-strict / Boy Scout).
+- [x] Ohne Vorgänger-`completionEvidence` bleibt die Abschaltung gesperrt; umetikettierte `agent-done`-Labels umgehen die Sperre nicht.
+- [x] Jede Operation besitzt einen geprüften Nachfolger oder eine menschlich genehmigte Stilllegung; verbliebene Supabase-Netzaufrufe sind explizite Blocker.
+- [x] Restore und Berechtigungs-Negativsuite sind nachgewiesen; erst eine verlinkte menschliche Freigabe erlaubt die konkret beschriebene produktive Abschaltung.
+- [x] Touched files: zero type escape hatches (typed-strict / Boy Scout).
 
 ## Acceptance tiers
 
