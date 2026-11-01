@@ -93,6 +93,6 @@ Die vollständigen Issue-Bodies werden aus Quellinventaren und scripts/stack-mig
 | 85 | 6 | MIG-603 [#848](https://github.com/iamthamanic/sagatree/issues/848) | done | #843, #844, #846 |
 | 86 | 7 | GATE-05 [#788](https://github.com/iamthamanic/sagatree/issues/788) | ready | #847, #848 |
 | 87 | 7 | MIG-700 [#849](https://github.com/iamthamanic/sagatree/issues/849) | done | #782, #770, #783, #784, #785, #786, #787, #789, #790, #792, #791, #793, #794, #841, #795, #797, #798, #799, #796, #844, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #843, #845, #846, #847, #848, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
-| 88 | 7 | MIG-701 [#850](https://github.com/iamthamanic/sagatree/issues/850) | ready | #849 |
-| 89 | 7 | MIG-702 [#851](https://github.com/iamthamanic/sagatree/issues/851) | waiting | #849, #850, #770, #848 |
+| 88 | 7 | MIG-701 [#850](https://github.com/iamthamanic/sagatree/issues/850) | done | #849 |
+| 89 | 7 | MIG-702 [#851](https://github.com/iamthamanic/sagatree/issues/851) | ready | #849, #850, #770, #848 |
 | 90 | 7 | MIG-703 [#852](https://github.com/iamthamanic/sagatree/issues/852) | waiting | #788, #847, #848 |
