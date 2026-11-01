@@ -28,9 +28,19 @@ node --experimental-strip-types scripts/mig-702-shutdown-readiness.self-test.mjs
 
 Code: `server/src/migration/cutover/shutdown-readiness.ts`
 
+## Productive live execute (separate Freigabe-Handlung)
+
+MIG-702 readiness ≠ already abgeschaltet. Live pause of allowlisted hosted
+projects requires `releases.SUPABASE-DORHAIN-LIVE-SHUTDOWN` + ops entry:
+
+→ [`live-execute.md`](./live-execute.md)
+
+```bash
+node --experimental-strip-types scripts/supabase-dornhain-live-shutdown.execute.mjs
+```
+
 ## Non-claims
 
-- This slice does **not** wipe a live production Supabase project by itself.
-- Desktop ship still needs GATE-05 PoC / MIG-703.
-- RELEASE APPROVED for a named production deploy remains an explicit human act
-  with the Freigabe link recorded in the shutdown decision archive.
+- This slice (MIG-702) does **not** wipe a live production Supabase project by itself.
+- CUTOVER-DORHAIN `APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF` is drill Freigabe, not “already wiped.”
+- Desktop Product/Store ship is a separate RELEASE (`DESKTOP-PRODUCT-STORE`).

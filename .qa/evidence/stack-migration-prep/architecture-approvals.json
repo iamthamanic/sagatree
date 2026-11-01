@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "note": "Human decisions originate in explicit owner confirmations. GATE decisions live under decisions.*; scoped RELEASE records under releases.*. GATE-05 APPROVED_TO_EXECUTE unlocks PoC work; CUTOVER-DORHAIN unlocks MIG-700+ drills.",
+  "note": "Human decisions originate in explicit owner confirmations. GATE decisions live under decisions.*; scoped RELEASE records under releases.*. GATE-05 APPROVED unlocks MIG-703; CUTOVER-DORHAIN unlocks MIG-700+ drills; DESKTOP-PRODUCT-STORE + SUPABASE-DORHAIN-LIVE-SHUTDOWN are separate 2026-11-01 evening RELEASE acts.",
   "decisions": {
     "GATE-01": {
       "status": "APPROVED",
@@ -155,6 +155,48 @@
       "doesNotApprove": [
         "abandoning-dornhain-content",
         "shutdown-without-restore-proof"
+      ]
+    },
+    "DESKTOP-PRODUCT-STORE": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED \u2014 Product/Store RELEASE for Desktop (Tauri+sidecar path); packaging/signing/upload remain ops under this RELEASE",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/852#issuecomment-6565086038",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-desktop-product-store.md",
+      "approvedAt": "2026-11-01T22:50:00Z",
+      "provenance": "Owner chat 2026-11-01 evening: Product/Store RELEASE (Desktop) explicitly authorized; not implied by MIG-703/GATE-05.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-release-2026-11-01-desktop-product-store.md",
+        "docs/architecture/ADR-ST-09-gate-05-tauri-sidecar.md",
+        "docs/ops/desktop/README.md",
+        "GATE-05 APPROVED + MIG-703 DONE"
+      ],
+      "doesNotApprove": [
+        "Electron-default",
+        "claiming-NOT-RUN-platforms-as-shipped",
+        "inventing-store-binaries-without-packaging"
+      ]
+    },
+    "SUPABASE-DORHAIN-LIVE-SHUTDOWN": {
+      "status": "APPROVED",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED \u2014 Productive Dornhain-scoped Supabase live shutdown execute after MIG-702 readiness; Dornhain host content must survive",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/851#issuecomment-6565086247",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-supabase-live-shutdown.md",
+      "approvedAt": "2026-11-01T22:50:00Z",
+      "provenance": "Owner chat 2026-11-01 evening: live Supabase Abschaltung authorized as Freigabe-Handlung; CUTOVER-DORHAIN remains APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF (drill Freigabe), this RELEASE authorizes the productive act.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-release-2026-11-01-supabase-live-shutdown.md",
+        "docs/ops/cutover/shutdown/live-execute.md",
+        "releases.CUTOVER-DORHAIN APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF",
+        "MIG-702 readiness + Dornhain catalog intact on host"
+      ],
+      "doesNotApprove": [
+        "abandoning-dornhain-content",
+        "shutdown-without-credentials-or-dry-run-proof",
+        "wiping-self-host-without-explicit-target"
       ]
     }
   }
