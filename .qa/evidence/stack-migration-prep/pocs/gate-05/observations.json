@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-05",
+  "runtime": {
+    "node": "v22.22.3",
+    "platform": "darwin",
+    "arch": "arm64",
+    "release": "25.3.0"
+  },
+  "executedAt": "2026-11-01T09:39:33.465Z",
+  "mode": "--write",
+  "reportSha256": "41b0abc339ea34eea0088a4b9edcefd9a31e050f4732b9f13910b9401e9f2644"
+}

@@ -1112,6 +1112,14 @@ function checkMig700DornhainCutoverDrill() {
   );
 }
 
+function checkGate05TauriSidecarPoc() {
+  console.log('GATE-05 Tauri+sidecar PoC (#788): start/stop/port/data-dir + MIG-703-only deps...');
+  execFileSync(process.execPath, ['scripts/stack-migration-pocs/gate-05/check.mjs', '--check'], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -3512,6 +3520,7 @@ checkMig410ItemThumbnail();
 checkMig414EdgeMain();
 checkMig502ExportImportBundles();
 checkMig700DornhainCutoverDrill();
+checkGate05TauriSidecarPoc();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();
