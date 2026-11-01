@@ -24,7 +24,7 @@
       "command": "architecture-approvals GATE-01",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
-      "sha256": "e6b769540a2ed8ccff91a65b05cbec8ed66a2b7e0a9d03888878c4ba1b742948"
+      "sha256": "105ddced1230738e10d3ce614c30dc0f3d3a607301021d9782a53203ae747b85"
     }
   ]
 }

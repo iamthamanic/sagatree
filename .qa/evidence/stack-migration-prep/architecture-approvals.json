@@ -118,10 +118,11 @@
       "actor": "iamthamanic",
       "decision": "APPROVED \u2014 PoC accepted, Variant A Tauri+Node sidecar; MIG-703 unlocked; no product ship without further RELEASE",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/788#issuecomment-6560366900",
-      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-gate-05-approved.md",
+      "evidenceFile": "docs/architecture/ADR-ST-09-gate-05-tauri-sidecar.md",
       "approvedAt": "2026-11-01T16:02:00Z",
       "provenance": "Owner chat 2026-11-01 afternoon: GATE-05 APPROVED after PoC. Morning Freigabe A remains the APPROVED_TO_EXECUTE unlock that authorized the PoC.",
       "bindingConstraints": [
+        "docs/architecture/ADR-ST-09-gate-05-tauri-sidecar.md",
         "docs/architecture/migration-owner-release-2026-11-01-gate-05-approved.md",
         "docs/architecture/migration-owner-decisions-2026-10-23.md",
         ".qa/design/gates/GATE-05-tauri-packaging.md",

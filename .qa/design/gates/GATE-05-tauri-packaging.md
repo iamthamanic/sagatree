@@ -40,7 +40,8 @@ Owner selected Variant A Tauri+Node sidecar on 2026-10-23. After wave-6 host+CI 
 
 ## On APPROVED
 
-ADR-ST-09; unblock MIG-703.
+[ADR-ST-09](../../../docs/architecture/ADR-ST-09-gate-05-tauri-sidecar.md); unblock MIG-703.
+(Recorded 2026-11-01 — see owner release + architecture-approvals `GATE-05: APPROVED`.)
 
 ## Owner source / timing
 
