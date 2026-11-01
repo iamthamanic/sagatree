@@ -132,14 +132,22 @@ function ensureParityMeta(db: HostDatabase): void {
   ).run();
 }
 
+const sqliteMasterProbeSchema = z.object({
+  ok: z.union([z.number(), z.bigint()]).transform((v) => Number(v)),
+});
+
 export function readConfirmedRevision(db: HostDatabase): number {
   // Read-only: never CREATE TABLE on the compare path.
-  const table = db
-    .prepare(
-      `SELECT 1 AS ok FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1`,
-    )
-    .get(PARITY_META_TABLE) as { ok: number } | undefined;
-  if (!table) throw new Error('parity-window: confirmed revision table missing on host');
+  const tableProbe = sqliteMasterProbeSchema.safeParse(
+    db
+      .prepare(
+        `SELECT 1 AS ok FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1`,
+      )
+      .get(PARITY_META_TABLE),
+  );
+  if (!tableProbe.success || tableProbe.data.ok !== 1) {
+    throw new Error('parity-window: confirmed revision table missing on host');
+  }
   const row = db.prepare(`SELECT confirmed_revision FROM ${PARITY_META_TABLE} WHERE id = 1`).get();
   const parsed = metaRowSchema.safeParse(row);
   if (!parsed.success) throw new Error('parity-window: confirmed revision missing on host');
