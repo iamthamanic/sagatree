@@ -12,9 +12,11 @@
 - Unlocks **MIG-703** desktop integration work
 - Prior `APPROVED_TO_EXECUTE` (Freigabe A / Dornhain cutover morning) remains the execute unlock that authorized the PoC
 
-## Explicitly not approved
+## Explicitly not approved **by GATE-05**
 
 - Desktop **product ship** / store release / end-user binary distribution
+  (authorized later via separate `releases.DESKTOP-PRODUCT-STORE`, 2026-11-01 evening —
+  not implied by this GATE decision)
 - Treating unexecuted platforms (linux/win32 NOT RUN on the PoC host) as shipped
 - Electron as default packaging path
 

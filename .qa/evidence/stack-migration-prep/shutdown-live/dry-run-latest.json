@@ -1,0 +1,16 @@
+{
+  "mode": "dry-run",
+  "at": "2026-11-01T22:52:49.787Z",
+  "freigabe": {
+    "CUTOVER_DORHAIN": "APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF",
+    "SUPABASE_DORHAIN_LIVE_SHUTDOWN": "APPROVED",
+    "liveSourceUrl": "https://github.com/iamthamanic/sagatree/issues/851#issuecomment-6565086247"
+  },
+  "allowlistedProjectRefs": [
+    "dnhotyjazjnhneqbqocq",
+    "vjpfbedynctazvwywlqj"
+  ],
+  "hardRequirement": "Dornhain world/saga/characters/items/monsters/NPCs must survive on host",
+  "result": "DRY_RUN_OK",
+  "note": "No Management API mutation. Pass --execute with token + CONFIRM env to pause."
+}

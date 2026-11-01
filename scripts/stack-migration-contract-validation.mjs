@@ -89,6 +89,24 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
         ]),
       },
     ],
+    [
+      'DESKTOP-PRODUCT-STORE',
+      {
+        statuses: new Set(['APPROVED']),
+        issuePaths: new Set([
+          `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-703']}`,
+        ]),
+      },
+    ],
+    [
+      'SUPABASE-DORHAIN-LIVE-SHUTDOWN',
+      {
+        statuses: new Set(['APPROVED']),
+        issuePaths: new Set([
+          `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-702']}`,
+        ]),
+      },
+    ],
   ]);
   if (plain(approvals?.releases)) {
     for (const [releaseId, release] of Object.entries(approvals.releases)) {
