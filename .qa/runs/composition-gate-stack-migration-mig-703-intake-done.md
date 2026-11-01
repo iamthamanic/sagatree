@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-703 intake DONE sync (#852)
 
-- HEAD_SHA: 8735d88dd9f32813ad0cf0d295ee107a8b11d32d
+- HEAD_SHA: b7f622e990ec5b2cb9377adcffe7129d87420275
 - BASE_SHA: d6835fd2414dd36f22a50cfedddde1c4b61a181a
 - Date: 2026-11-01
 - Verdict: SKIPPED
@@ -25,6 +25,7 @@ N/A — SKIPPED.
 
 ## Flags
 
-- Acceptance tier: isolated-contract
+- Acceptance tier: evidence-sync
 - Deferred integration: none for this hop
 - Product/store RELEASE: still NOT APPROVED
+- Implementation acceptance (slice): isolated-contract — see `.qa/acceptance/stack-migration-mig-703.md` / `completion/mig-703.json`
