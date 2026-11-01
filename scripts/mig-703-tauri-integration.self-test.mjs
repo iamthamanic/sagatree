@@ -9,7 +9,7 @@
  */
 import { mkdtempSync, writeFileSync, mkdirSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -62,32 +62,51 @@ const {
   rmSync(fakeRoot, { recursive: true, force: true });
 }
 
-// Path traversal / directory evidence must not unlock
+// Directory / traversal / absolute evidence must not unlock
 {
   const fakeRoot = mkdtempSync(join(tmpdir(), 'mig703-evil-evidence-'));
+  const outsideDir = mkdtempSync(join(tmpdir(), 'mig703-outside-'));
+  const outsideFile = join(outsideDir, 'outside.md');
+  writeFileSync(outsideFile, '# outside\n');
   const approvalsDir = join(fakeRoot, '.qa/evidence/stack-migration-prep');
   mkdirSync(approvalsDir, { recursive: true });
   mkdirSync(join(fakeRoot, 'docs'), { recursive: true });
-  writeFileSync(
-    join(approvalsDir, 'architecture-approvals.json'),
-    `${JSON.stringify(
-      {
-        decisions: {
-          'GATE-05': {
-            status: 'APPROVED',
-            actorType: 'human',
-            actor: 'iamthamanic',
-            evidenceFile: 'docs',
+
+  const writeApprovals = (evidenceFile) => {
+    writeFileSync(
+      join(approvalsDir, 'architecture-approvals.json'),
+      `${JSON.stringify(
+        {
+          decisions: {
+            'GATE-05': {
+              status: 'APPROVED',
+              actorType: 'human',
+              actor: 'iamthamanic',
+              evidenceFile,
+            },
           },
         },
-      },
-      null,
-      2,
-    )}\n`,
-  );
-  const blocked = evaluateDesktopUnlock({ repoRoot: fakeRoot });
-  assert(!blocked.unlocked, 'directory evidenceFile must not unlock');
+        null,
+        2,
+      )}\n`,
+    );
+  };
+
+  writeApprovals('docs');
+  assert(!evaluateDesktopUnlock({ repoRoot: fakeRoot }).unlocked, 'directory evidenceFile must not unlock');
+
+  // Sibling escape: file next to fakeRoot referenced via ../
+  const sibling = join(fakeRoot, '..', `mig703-sibling-${process.pid}.md`);
+  writeFileSync(sibling, '# sibling\n');
+  writeApprovals(`../${basename(sibling)}`);
+  assert(!evaluateDesktopUnlock({ repoRoot: fakeRoot }).unlocked, 'relative traversal evidence must not unlock');
+
+  writeApprovals(outsideFile);
+  assert(!evaluateDesktopUnlock({ repoRoot: fakeRoot }).unlocked, 'absolute evidence path must not unlock');
+
+  rmSync(sibling, { force: true });
   rmSync(fakeRoot, { recursive: true, force: true });
+  rmSync(outsideDir, { recursive: true, force: true });
 }
 
 {
@@ -149,7 +168,12 @@ try {
   const rollback = runUpdateRollbackDrill({ workDir: work });
   assert(rollback.ok, 'update/rollback preserves host data + permissions');
   assert(rollback.beforeFingerprint === rollback.afterFingerprint, 'fingerprint restored');
-  assert(rollback.modeIntact, 'filesystem modes restored');
+  assert(rollback.modeCheck !== 'FAIL', 'filesystem modes PASS or honest NOT RUN on win32');
+  if (process.platform !== 'win32') {
+    assert(rollback.modeCheck === 'PASS', 'POSIX filesystem modes restored');
+  } else {
+    assert(rollback.modeCheck === 'NOT RUN', 'win32 mode check stays NOT RUN');
+  }
   const archived = archiveSchema.parse(JSON.parse(readFileSync(rollback.archivePath, 'utf8')));
   assert(archived.result === 'rollback-ok', 'archive records rollback-ok');
 } finally {

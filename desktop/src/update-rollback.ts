@@ -34,7 +34,7 @@ const archiveSchema = z.object({
   before: z.string().min(1),
   after: z.string().min(1),
   permissionsIntact: z.boolean(),
-  modeIntact: z.boolean(),
+  modeCheck: z.enum(['PASS', 'FAIL', 'NOT RUN']),
   result: z.enum(['rollback-ok', 'fail']),
 });
 
@@ -45,7 +45,8 @@ export type UpdateRollbackReport = {
   readonly beforeFingerprint: string;
   readonly afterFingerprint: string;
   readonly permissionsIntact: boolean;
-  readonly modeIntact: boolean;
+  /** POSIX mode bits; on win32 this is NOT RUN (ACL model differs). */
+  readonly modeCheck: 'PASS' | 'FAIL' | 'NOT RUN';
   readonly archivePath: string;
 };
 
@@ -83,16 +84,22 @@ export function runUpdateRollbackDrill(args: {
   };
   writeFileSync(statePath, `${JSON.stringify(initial, null, 2)}\n`);
   writeFileSync(permPath, `${JSON.stringify(initialPerms, null, 2)}\n`);
-  chmodSync(statePath, 0o600);
-  chmodSync(permPath, 0o600);
-  const beforeModeState = modeOf(statePath);
-  const beforeModePerm = modeOf(permPath);
+
+  const posixModes = process.platform !== 'win32';
+  let beforeModeState = 0o600;
+  let beforeModePerm = 0o600;
+  if (posixModes) {
+    chmodSync(statePath, 0o600);
+    chmodSync(permPath, 0o600);
+    beforeModeState = modeOf(statePath);
+    beforeModePerm = modeOf(permPath);
+  }
 
   const before = fingerprint(hostStateSchema.parse(JSON.parse(readFileSync(statePath, 'utf8'))));
   copyFileSync(statePath, join(backupDir, 'state.json'));
   copyFileSync(permPath, join(backupDir, 'permissions.json'));
 
-  // Simulated broken update: corrupt JSON + weaken filesystem modes
+  // Simulated broken update: corrupt JSON (+ weaken filesystem modes on POSIX)
   writeFileSync(
     statePath,
     `${JSON.stringify({ revision: 8, catalogFingerprint: 'corrupt', ownerUserId: 'stranger' }, null, 2)}\n`,
@@ -101,29 +108,38 @@ export function runUpdateRollbackDrill(args: {
     permPath,
     `${JSON.stringify({ ownerUserId: 'stranger', roles: ['anon'], mode: 0o666 }, null, 2)}\n`,
   );
-  chmodSync(statePath, 0o666);
-  chmodSync(permPath, 0o666);
+  if (posixModes) {
+    chmodSync(statePath, 0o666);
+    chmodSync(permPath, 0o666);
+  }
 
   // Rollback content + modes
   copyFileSync(join(backupDir, 'state.json'), statePath);
   copyFileSync(join(backupDir, 'permissions.json'), permPath);
-  chmodSync(statePath, beforeModeState);
-  chmodSync(permPath, beforeModePerm);
+  if (posixModes) {
+    chmodSync(statePath, beforeModeState);
+    chmodSync(permPath, beforeModePerm);
+  }
 
   const restored = hostStateSchema.parse(JSON.parse(readFileSync(statePath, 'utf8')));
   const perms = permissionsSchema.parse(JSON.parse(readFileSync(permPath, 'utf8')));
   const after = fingerprint(restored);
   const permissionsIntact =
     perms.ownerUserId === initial.ownerUserId && perms.roles.includes('gm') && perms.mode === 0o600;
-  const modeIntact = modeOf(statePath) === beforeModeState && modeOf(permPath) === beforeModePerm;
+  const modeCheck: 'PASS' | 'FAIL' | 'NOT RUN' = !posixModes
+    ? 'NOT RUN'
+    : modeOf(statePath) === beforeModeState && modeOf(permPath) === beforeModePerm
+      ? 'PASS'
+      : 'FAIL';
 
   const archivePath = join(archiveDir, `update-rollback-${randomUUID()}.json`);
   const archive = archiveSchema.parse({
     before,
     after,
     permissionsIntact,
-    modeIntact,
-    result: before === after && permissionsIntact && modeIntact ? 'rollback-ok' : 'fail',
+    modeCheck,
+    result:
+      before === after && permissionsIntact && modeCheck !== 'FAIL' ? 'rollback-ok' : 'fail',
   });
   writeFileSync(archivePath, `${JSON.stringify(archive, null, 2)}\n`);
 
@@ -132,7 +148,7 @@ export function runUpdateRollbackDrill(args: {
     beforeFingerprint: before,
     afterFingerprint: after,
     permissionsIntact,
-    modeIntact,
+    modeCheck,
     archivePath,
   };
 }

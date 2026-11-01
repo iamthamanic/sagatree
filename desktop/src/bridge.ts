@@ -48,7 +48,7 @@ function originAllowed(origin: string): boolean {
   }
   const host = parsed.hostname.toLowerCase();
   if (parsed.protocol === 'tauri:') {
-    return host === 'localhost' || host === '';
+    return host === 'localhost';
   }
   if (parsed.protocol === 'https:' && host === 'tauri.localhost') {
     return true;

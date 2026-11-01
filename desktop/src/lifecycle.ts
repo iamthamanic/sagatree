@@ -13,6 +13,11 @@ import { z } from 'zod';
 const platformIdSchema = z.enum(['darwin', 'linux', 'win32']);
 export type PlatformId = z.infer<typeof platformIdSchema>;
 
+const sidecarListeningEventSchema = z.object({
+  event: z.literal('listening'),
+  port: z.number().int().nonnegative(),
+});
+
 const platformResultSchema = z.object({
   platform: platformIdSchema,
   status: z.enum(['RUN', 'NOT RUN']),
@@ -73,15 +78,17 @@ async function runSidecarOnce(args: {
       for (const line of text.split('\n')) {
         const trimmed = line.trim();
         if (!trimmed.startsWith('{')) continue;
+        let raw: unknown;
         try {
-          const evt = JSON.parse(trimmed) as { event?: string; port?: number };
-          if (evt.event === 'listening') {
-            listening = true;
-            boundPort = typeof evt.port === 'number' ? evt.port : null;
-            child.kill('SIGTERM');
-          }
+          raw = JSON.parse(trimmed);
         } catch {
-          /* ignore non-JSON stdout */
+          continue;
+        }
+        const evt = sidecarListeningEventSchema.safeParse(raw);
+        if (evt.success) {
+          listening = true;
+          boundPort = evt.data.port;
+          child.kill('SIGTERM');
         }
       }
     });
