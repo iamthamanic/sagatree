@@ -2,9 +2,10 @@
  * MIG-702 Dornhain-scoped Supabase shutdown readiness (isolated-contract).
  * Location: server/src/migration/cutover/shutdown-readiness.ts
  *
- * Predecessors + call-path matrix + restore/permission negatives must pass.
- * Productive shutdown additionally requires a linked human Freigabe — never
- * implied by agent labels alone.
+ * Predecessors + non-empty call-path matrix + restore/permission negatives must
+ * pass. Live Supabase network calls always block. Productive shutdown binds to
+ * the canonical CUTOVER-DORHAIN release record on disk — never fabricated
+ * approval objects alone.
  */
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -13,6 +14,7 @@ import { z } from 'zod';
 import {
   assertDornhainCatalogPresent,
   dornhainFixtureCatalog,
+  type DornhainCatalog,
 } from './dornhain-catalog.ts';
 
 function assertOk(cond: unknown, msg: string): asserts cond {
@@ -28,23 +30,28 @@ const REQUIRED_PREDECESSORS = [
 
 export type ShutdownPredecessorId = (typeof REQUIRED_PREDECESSORS)[number];
 
+const CANONICAL_RELEASE_ID = 'CUTOVER-DORHAIN';
+const CANONICAL_APPROVALS_REL =
+  '.qa/evidence/stack-migration-prep/architecture-approvals.json';
+const CANONICAL_RELEASE_STATUS = 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF';
+
 const predecessorEvidenceSchema = z.object({
   localId: z.enum(REQUIRED_PREDECESSORS),
-  /** Hashed completionEvidence path — labels alone never unlock. */
   completionEvidencePath: z.string().min(1),
-  result: z.literal('PASS'),
-  /** Optional on-disk existence check (fixture / CI workspace). */
+  result: z.enum(['PASS', 'FAIL']),
   evidenceExists: z.boolean(),
+  /** Digest of on-disk completion JSON when validated; null if missing/invalid. */
+  evidenceSha256: z.string().length(64).nullable(),
 });
 
 export type PredecessorEvidence = z.infer<typeof predecessorEvidenceSchema>;
 
 const callMatrixEntrySchema = z.object({
   operationId: z.string().min(1),
-  /** Remaining live Supabase network call (blocker unless retired). */
+  /** Remaining live Supabase network call — always a blocker while true. */
   supabaseNetworkCall: z.boolean(),
   successorVerified: z.boolean(),
-  humanApprovedRetirement: z.boolean().default(false),
+  humanApprovedRetirement: z.boolean(),
 });
 
 export type CallMatrixEntry = z.infer<typeof callMatrixEntrySchema>;
@@ -66,51 +73,173 @@ const permissionNegativeSchema = z.object({
 
 export type PermissionNegative = z.infer<typeof permissionNegativeSchema>;
 
-const humanApprovalSchema = z.object({
+const humanApprovalClaimSchema = z.object({
+  /** Must match releases.CUTOVER-DORHAIN.evidenceFile in architecture-approvals. */
   linkedPath: z.string().min(1),
-  status: z.literal('APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF'),
+  status: z.literal(CANONICAL_RELEASE_STATUS),
   actor: z.string().min(1),
 });
 
-export type HumanApproval = z.infer<typeof humanApprovalSchema>;
+export type HumanApproval = z.infer<typeof humanApprovalClaimSchema>;
+
+const completionCheckSchema = z.object({
+  command: z.string().min(1),
+  result: z.literal('PASS'),
+  evidenceFile: z.string().min(1),
+  sha256: z.string().length(64),
+});
+
+const completionEvidenceSchema = z.object({
+  schemaVersion: z.literal(1),
+  kind: z.literal('migration-acceptance'),
+  localId: z.string().min(1),
+  result: z.literal('PASS'),
+  checks: z.array(completionCheckSchema).min(1),
+});
+
+const releaseRecordSchema = z.object({
+  status: z.literal(CANONICAL_RELEASE_STATUS),
+  actorType: z.literal('human'),
+  actor: z.string().min(1),
+  evidenceFile: z.string().min(1),
+});
+
+const approvalsFileSchema = z.object({
+  schemaVersion: z.number().int().positive(),
+  releases: z.object({
+    [CANONICAL_RELEASE_ID]: releaseRecordSchema,
+  }),
+});
 
 export type ShutdownBlocker = {
   readonly code:
     | 'missing-predecessor-evidence'
     | 'predecessor-evidence-missing-on-disk'
     | 'predecessor-not-pass'
+    | 'predecessor-evidence-invalid'
+    | 'duplicate-predecessor'
+    | 'empty-call-matrix'
     | 'supabase-network-blocker'
     | 'operation-without-successor'
     | 'restore-not-proven'
     | 'catalog-not-intact'
     | 'permission-negative-failed'
-    | 'human-approval-missing';
+    | 'human-approval-unbound';
   readonly detail: string;
 };
 
 export type ShutdownReadinessReport = {
   readonly shutdownReady: boolean;
-  /** True only with linked Freigabe + shutdownReady; never from agent labels. */
   readonly productiveShutdownAuthorized: boolean;
   readonly blockers: readonly ShutdownBlocker[];
   readonly predecessorIdsChecked: readonly ShutdownPredecessorId[];
   readonly supabaseBlockerCount: number;
   readonly catalogIntact: boolean;
+  readonly boundRelease: {
+    readonly releaseId: typeof CANONICAL_RELEASE_ID;
+    readonly evidenceFile: string;
+    readonly actor: string;
+    readonly status: typeof CANONICAL_RELEASE_STATUS;
+  } | null;
 };
 
 export type ShutdownReadinessInput = {
+  readonly repoRoot: string;
   readonly predecessors: readonly PredecessorEvidence[];
   readonly callMatrix: readonly CallMatrixEntry[];
   readonly restore: RestoreProof;
   readonly permission: PermissionNegative;
+  /** Claimed Freigabe; productive auth requires bind to architecture-approvals. */
   readonly humanApproval: HumanApproval | null;
-  /** Agent/intake labels must not bypass missing evidence. */
   readonly claimedAgentDoneLabels?: Readonly<Partial<Record<ShutdownPredecessorId, boolean>>>;
+  readonly approvalsRelativePath?: string;
 };
 
+function sha256Hex(body: Buffer | string): string {
+  return createHash('sha256').update(body).digest('hex');
+}
+
+function bindCanonicalRelease(
+  repoRoot: string,
+  claim: HumanApproval | null,
+  approvalsRelativePath: string,
+): { bound: ShutdownReadinessReport['boundRelease']; blocker: ShutdownBlocker | null } {
+  if (!claim) {
+    return { bound: null, blocker: null };
+  }
+  const abs = join(repoRoot, approvalsRelativePath);
+  if (!existsSync(abs)) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `missing approvals file ${approvalsRelativePath}`,
+      },
+    };
+  }
+  let parsed: z.infer<typeof approvalsFileSchema>;
+  try {
+    parsed = approvalsFileSchema.parse(JSON.parse(readFileSync(abs, 'utf8')));
+  } catch (err) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `approvals schema invalid: ${err instanceof Error ? err.message : String(err)}`,
+      },
+    };
+  }
+  const release = parsed.releases[CANONICAL_RELEASE_ID];
+  if (claim.linkedPath !== release.evidenceFile) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `linkedPath ${claim.linkedPath} != canonical ${release.evidenceFile}`,
+      },
+    };
+  }
+  if (claim.actor !== release.actor) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `actor ${claim.actor} != canonical ${release.actor}`,
+      },
+    };
+  }
+  if (claim.status !== release.status) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `status ${claim.status} != canonical ${release.status}`,
+      },
+    };
+  }
+  const evidenceAbs = join(repoRoot, release.evidenceFile);
+  if (!existsSync(evidenceAbs)) {
+    return {
+      bound: null,
+      blocker: {
+        code: 'human-approval-unbound',
+        detail: `canonical evidenceFile missing on disk: ${release.evidenceFile}`,
+      },
+    };
+  }
+  return {
+    bound: {
+      releaseId: CANONICAL_RELEASE_ID,
+      evidenceFile: release.evidenceFile,
+      actor: release.actor,
+      status: release.status,
+    },
+    blocker: null,
+  };
+}
+
 /**
- * Fail-closed readiness evaluation. Relabeled agent-done without evidence paths
- * still blocks (acceptance: umetikettiertes Vorgängerticket umgeht Sperre nicht).
+ * Fail-closed readiness evaluation.
  */
 export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): ShutdownReadinessReport {
   const predecessors = raw.predecessors.map((p) => predecessorEvidenceSchema.parse(p));
@@ -118,11 +247,25 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
   const restore = restoreProofSchema.parse(raw.restore);
   const permission = permissionNegativeSchema.parse(raw.permission);
   const humanApproval = raw.humanApproval
-    ? humanApprovalSchema.parse(raw.humanApproval)
+    ? humanApprovalClaimSchema.parse(raw.humanApproval)
     : null;
+  const approvalsRelativePath = raw.approvalsRelativePath ?? CANONICAL_APPROVALS_REL;
 
   const blockers: ShutdownBlocker[] = [];
-  const byId = new Map(predecessors.map((p) => [p.localId, p]));
+  const seen = new Set<string>();
+  const byId = new Map<ShutdownPredecessorId, PredecessorEvidence>();
+
+  for (const evidence of predecessors) {
+    if (seen.has(evidence.localId)) {
+      blockers.push({
+        code: 'duplicate-predecessor',
+        detail: `${evidence.localId}: duplicate completionEvidence entries`,
+      });
+      continue;
+    }
+    seen.add(evidence.localId);
+    byId.set(evidence.localId, evidence);
+  }
 
   for (const id of REQUIRED_PREDECESSORS) {
     const claimed = raw.claimedAgentDoneLabels?.[id] === true;
@@ -148,18 +291,29 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
         detail: `${id}: missing file ${evidence.completionEvidencePath}`,
       });
     }
+    if (evidence.evidenceExists && !evidence.evidenceSha256) {
+      blockers.push({
+        code: 'predecessor-evidence-invalid',
+        detail: `${id}: completionEvidence failed schema/hash validation`,
+      });
+    }
+  }
+
+  if (callMatrix.length === 0) {
+    blockers.push({
+      code: 'empty-call-matrix',
+      detail: 'callMatrix must list at least one operation (fail-closed)',
+    });
   }
 
   let supabaseBlockerCount = 0;
   for (const entry of callMatrix) {
     if (entry.supabaseNetworkCall) {
-      if (!entry.humanApprovedRetirement) {
-        supabaseBlockerCount += 1;
-        blockers.push({
-          code: 'supabase-network-blocker',
-          detail: `${entry.operationId}: remaining Supabase network call`,
-        });
-      }
+      supabaseBlockerCount += 1;
+      blockers.push({
+        code: 'supabase-network-blocker',
+        detail: `${entry.operationId}: remaining Supabase network call (retirement flag does not clear live calls)`,
+      });
       continue;
     }
     if (!entry.successorVerified && !entry.humanApprovedRetirement) {
@@ -196,13 +350,17 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
     });
   }
 
-  const shutdownReady = blockers.length === 0;
+  const { bound, blocker: approvalBlocker } = bindCanonicalRelease(
+    raw.repoRoot,
+    humanApproval,
+    approvalsRelativePath,
+  );
+  if (humanApproval && approvalBlocker) {
+    blockers.push(approvalBlocker);
+  }
 
-  const productiveShutdownAuthorized =
-    shutdownReady &&
-    humanApproval !== null &&
-    humanApproval.status === 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF' &&
-    humanApproval.linkedPath.length > 0;
+  const shutdownReady = blockers.length === 0;
+  const productiveShutdownAuthorized = shutdownReady && bound !== null;
 
   return {
     shutdownReady,
@@ -211,6 +369,7 @@ export function evaluateShutdownReadiness(raw: ShutdownReadinessInput): Shutdown
     predecessorIdsChecked: [...REQUIRED_PREDECESSORS],
     supabaseBlockerCount,
     catalogIntact: restore.catalogIntact,
+    boundRelease: bound,
   };
 }
 
@@ -221,6 +380,7 @@ export type ShutdownDecisionArchive = {
   readonly productiveShutdownAuthorized: boolean;
   readonly blockerCount: number;
   readonly responsibleDecision: string;
+  readonly approval: ShutdownReadinessReport['boundRelease'];
   readonly sha256: string;
 };
 
@@ -240,9 +400,10 @@ export function archiveShutdownDecision(args: {
     blockerCount: args.report.blockers.length,
     blockers: args.report.blockers,
     responsibleDecision: args.responsibleDecision,
+    approval: args.report.boundRelease,
   };
   const body = `${JSON.stringify(payload, null, 2)}\n`;
-  const sha256 = createHash('sha256').update(body).digest('hex');
+  const digest = sha256Hex(body);
   const file = join(args.archiveDir, `shutdown-decision-${decisionId}.json`);
   writeFileSync(file, body);
   return {
@@ -252,38 +413,109 @@ export function archiveShutdownDecision(args: {
     productiveShutdownAuthorized: args.report.productiveShutdownAuthorized,
     blockerCount: args.report.blockers.length,
     responsibleDecision: args.responsibleDecision,
-    sha256,
+    approval: args.report.boundRelease,
+    sha256: digest,
   };
 }
 
-/** Load predecessor evidence from repo completion JSON (fixture helper). */
+function validateCompletionFile(
+  absPath: string,
+  expectedLocalId: ShutdownPredecessorId,
+): { ok: true; sha256: string } | { ok: false; reason: string } {
+  if (!existsSync(absPath)) {
+    return { ok: false, reason: 'missing' };
+  }
+  const raw = readFileSync(absPath);
+  let json: unknown;
+  try {
+    json = JSON.parse(raw.toString('utf8'));
+  } catch {
+    return { ok: false, reason: 'json-parse' };
+  }
+  const parsed = completionEvidenceSchema.safeParse(json);
+  if (!parsed.success) {
+    return { ok: false, reason: parsed.error.message };
+  }
+  if (parsed.data.localId !== expectedLocalId) {
+    return { ok: false, reason: `localId mismatch ${parsed.data.localId}` };
+  }
+  for (const check of parsed.data.checks) {
+    const evidenceAbs = join(absPath, '..', '..', '..', '..', check.evidenceFile);
+    // evidenceFile paths are repo-relative from cwd root — resolve via walking:
+    // completion lives at .qa/evidence/stack-migration-prep/completion/*.json
+    // Prefer join(repoRoot) — callers pass repoRoot separately below.
+    void evidenceAbs;
+  }
+  return { ok: true, sha256: sha256Hex(raw) };
+}
+
+/** Load predecessor evidence from repo completion JSON (hashed + schema-checked). */
 export function loadPredecessorEvidenceFromDisk(
   rootDir: string,
   localId: ShutdownPredecessorId,
   relativePath: string,
 ): PredecessorEvidence {
   const abs = join(rootDir, relativePath);
-  const evidenceExists = existsSync(abs);
-  let result: 'PASS' | 'FAIL' = 'FAIL';
-  if (evidenceExists) {
-    try {
-      const parsed = JSON.parse(readFileSync(abs, 'utf8')) as { result?: string; localId?: string };
-      if (parsed.localId === localId && parsed.result === 'PASS') result = 'PASS';
-    } catch {
-      result = 'FAIL';
+  const validated = validateCompletionFile(abs, localId);
+  if (!validated.ok) {
+    return {
+      localId,
+      completionEvidencePath: relativePath,
+      result: 'FAIL',
+      evidenceExists: existsSync(abs),
+      evidenceSha256: null,
+    };
+  }
+
+  // Verify nested check artifact hashes against repo root.
+  const raw = JSON.parse(readFileSync(abs, 'utf8'));
+  const parsed = completionEvidenceSchema.parse(raw);
+  for (const check of parsed.checks) {
+    const evidenceAbs = join(rootDir, check.evidenceFile);
+    if (!existsSync(evidenceAbs)) {
+      return {
+        localId,
+        completionEvidencePath: relativePath,
+        result: 'FAIL',
+        evidenceExists: true,
+        evidenceSha256: null,
+      };
+    }
+    const actual = sha256Hex(readFileSync(evidenceAbs));
+    if (actual !== check.sha256) {
+      return {
+        localId,
+        completionEvidencePath: relativePath,
+        result: 'FAIL',
+        evidenceExists: true,
+        evidenceSha256: null,
+      };
     }
   }
+
   return {
     localId,
     completionEvidencePath: relativePath,
-    result,
-    evidenceExists,
+    result: 'PASS',
+    evidenceExists: true,
+    evidenceSha256: validated.sha256,
   };
 }
 
+function catalogPresenceFromObserved(observed: {
+  worldTitles: string[];
+  sagaSlugs: string[];
+  characterIds: string[];
+  monsterIds: string[];
+  itemDefinitionIds: string[];
+  npcPublicIds: string[];
+  catalog?: DornhainCatalog;
+}): boolean {
+  return assertDornhainCatalogPresent(observed).ok;
+}
+
 /**
- * Full MIG-702 fixture drill: blocked without evidence → blocked with supabase
- * leftover → ready with matrix+restore+Freigabe → productive only with approval.
+ * Full MIG-702 fixture drill.
  */
 export function runDornhainShutdownReadinessDrill(args: {
   readonly repoRoot: string;
@@ -293,25 +525,23 @@ export function runDornhainShutdownReadinessDrill(args: {
 }): {
   readonly blockedWithoutEvidence: ShutdownReadinessReport;
   readonly blockedWithSupabaseLeftover: ShutdownReadinessReport;
+  readonly blockedEmptyMatrix: ShutdownReadinessReport;
+  readonly blockedBrokenCatalog: ShutdownReadinessReport;
   readonly readyWithFreigabe: ShutdownReadinessReport;
   readonly archive: ShutdownDecisionArchive;
 } {
   const catalog = dornhainFixtureCatalog();
-  const presence = assertDornhainCatalogPresent({
-    worldTitles: [catalog.worldTitle],
-    sagaSlugs: [catalog.sagaSlug],
-    characterIds: catalog.characters.map((c) => c.id),
-    monsterIds: catalog.monsters.map((m) => m.id),
-    itemDefinitionIds: catalog.itemDefinitionIds,
-    npcPublicIds: catalog.npcPublicIds,
-    catalog,
-  });
-  assertOk(presence.ok, 'fixture catalog must be self-complete');
-
   const ownerUserId = args.ownerUserId ?? 'owner-dornhain';
   const strangerUserId = args.strangerUserId ?? 'stranger-tenant';
 
+  const freigabe: HumanApproval = {
+    linkedPath: 'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
+    status: CANONICAL_RELEASE_STATUS,
+    actor: 'iamthamanic',
+  };
+
   const blockedWithoutEvidence = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
     predecessors: [],
     claimedAgentDoneLabels: {
       'MIG-700': true,
@@ -345,10 +575,6 @@ export function runDornhainShutdownReadinessDrill(args: {
     blockedWithoutEvidence.blockers.some((b) => b.code === 'missing-predecessor-evidence'),
     'missing-predecessor-evidence expected',
   );
-  assertOk(
-    !blockedWithoutEvidence.productiveShutdownAuthorized,
-    'productive must stay false without Freigabe',
-  );
 
   const preds = (['MIG-700', 'MIG-701', 'ATLAS-LIVE-E2E', 'MIG-603'] as const).map((id) => {
     const pathById: Record<ShutdownPredecessorId, string> = {
@@ -359,15 +585,42 @@ export function runDornhainShutdownReadinessDrill(args: {
     };
     return loadPredecessorEvidenceFromDisk(args.repoRoot, id, pathById[id]);
   });
+  for (const p of preds) {
+    assertOk(p.result === 'PASS' && p.evidenceSha256, `${p.localId} evidence must validate`);
+  }
+
+  const blockedEmptyMatrix = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
+    predecessors: preds,
+    callMatrix: [],
+    restore: {
+      catalogIntact: true,
+      restoreDrillPass: true,
+      archivePath: 'fixture://empty-matrix',
+    },
+    permission: {
+      strangerUserId,
+      strangerCanAuthorizeShutdown: false,
+      ownerUserId,
+      ownerCanAuthorizeShutdown: true,
+    },
+    humanApproval: freigabe,
+  });
+  assertOk(!blockedEmptyMatrix.shutdownReady, 'empty call matrix must block');
+  assertOk(
+    blockedEmptyMatrix.blockers.some((b) => b.code === 'empty-call-matrix'),
+    'empty-call-matrix expected',
+  );
 
   const blockedWithSupabaseLeftover = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
     predecessors: preds,
     callMatrix: [
       {
         operationId: 'edge.characters.list',
         supabaseNetworkCall: true,
         successorVerified: false,
-        humanApprovedRetirement: false,
+        humanApprovedRetirement: true,
       },
       {
         operationId: 'host.character.read',
@@ -387,28 +640,67 @@ export function runDornhainShutdownReadinessDrill(args: {
       ownerUserId,
       ownerCanAuthorizeShutdown: true,
     },
-    humanApproval: {
-      linkedPath: 'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
-      status: 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF',
-      actor: 'iamthamanic',
-    },
+    humanApproval: freigabe,
   });
   assertOk(!blockedWithSupabaseLeftover.shutdownReady, 'leftover supabase call must block');
   assertOk(blockedWithSupabaseLeftover.supabaseBlockerCount >= 1, 'supabase blocker counted');
-  assertOk(
-    !blockedWithSupabaseLeftover.productiveShutdownAuthorized,
-    'productive blocked while supabase leftover',
-  );
 
-  const readyWithFreigabe = evaluateShutdownReadiness({
+  const brokenCatalogIntact = catalogPresenceFromObserved({
+    worldTitles: ['Wrong World'],
+    sagaSlugs: [],
+    characterIds: [],
+    monsterIds: [],
+    itemDefinitionIds: [],
+    npcPublicIds: [],
+    catalog,
+  });
+  assertOk(!brokenCatalogIntact, 'broken observation must fail catalog presence');
+
+  const blockedBrokenCatalog = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
     predecessors: preds,
     callMatrix: [
       {
-        operationId: 'edge.characters.list',
-        supabaseNetworkCall: true,
-        successorVerified: false,
-        humanApprovedRetirement: true,
+        operationId: 'host.world.read',
+        supabaseNetworkCall: false,
+        successorVerified: true,
+        humanApprovedRetirement: false,
       },
+    ],
+    restore: {
+      catalogIntact: brokenCatalogIntact,
+      restoreDrillPass: true,
+      archivePath: 'fixture://broken-catalog',
+    },
+    permission: {
+      strangerUserId,
+      strangerCanAuthorizeShutdown: false,
+      ownerUserId,
+      ownerCanAuthorizeShutdown: true,
+    },
+    humanApproval: freigabe,
+  });
+  assertOk(!blockedBrokenCatalog.shutdownReady, 'broken catalog must block');
+  assertOk(
+    blockedBrokenCatalog.blockers.some((b) => b.code === 'catalog-not-intact'),
+    'catalog-not-intact expected',
+  );
+
+  const intact = catalogPresenceFromObserved({
+    worldTitles: [catalog.worldTitle],
+    sagaSlugs: [catalog.sagaSlug],
+    characterIds: catalog.characters.map((c) => c.id),
+    monsterIds: catalog.monsters.map((m) => m.id),
+    itemDefinitionIds: [...catalog.itemDefinitionIds],
+    npcPublicIds: [...catalog.npcPublicIds],
+    catalog,
+  });
+  assertOk(intact, 'fixture observation must be intact');
+
+  const readyWithFreigabe = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
+    predecessors: preds,
+    callMatrix: [
       {
         operationId: 'host.character.read',
         supabaseNetworkCall: false,
@@ -427,9 +719,15 @@ export function runDornhainShutdownReadinessDrill(args: {
         successorVerified: true,
         humanApprovedRetirement: false,
       },
+      {
+        operationId: 'legacy.edge.unused',
+        supabaseNetworkCall: false,
+        successorVerified: false,
+        humanApprovedRetirement: true,
+      },
     ],
     restore: {
-      catalogIntact: presence.missing.length === 0,
+      catalogIntact: intact,
       restoreDrillPass: true,
       archivePath: 'fixture://mig-700-rollback + mig-701-parity-archive',
     },
@@ -439,21 +737,62 @@ export function runDornhainShutdownReadinessDrill(args: {
       ownerUserId,
       ownerCanAuthorizeShutdown: true,
     },
-    humanApproval: {
-      linkedPath: 'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
-      status: 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF',
-      actor: 'iamthamanic',
-    },
+    humanApproval: freigabe,
   });
   assertOk(readyWithFreigabe.shutdownReady, 'full proof must set shutdownReady');
   assertOk(
     readyWithFreigabe.productiveShutdownAuthorized,
-    'linked Freigabe authorizes productive Dornhain-scoped shutdown',
+    'bound Freigabe authorizes productive Dornhain-scoped shutdown',
   );
+  assertOk(readyWithFreigabe.boundRelease?.releaseId === CANONICAL_RELEASE_ID, 'bound release');
   assertOk(readyWithFreigabe.catalogIntact, 'Dornhain catalog intact');
   assertOk(readyWithFreigabe.supabaseBlockerCount === 0, 'no open supabase blockers');
 
+  const forgedApproval = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
+    predecessors: preds,
+    callMatrix: readyWithFreigabe.shutdownReady
+      ? [
+          {
+            operationId: 'host.character.read',
+            supabaseNetworkCall: false,
+            successorVerified: true,
+            humanApprovedRetirement: false,
+          },
+        ]
+      : [
+          {
+            operationId: 'host.character.read',
+            supabaseNetworkCall: false,
+            successorVerified: true,
+            humanApprovedRetirement: false,
+          },
+        ],
+    restore: {
+      catalogIntact: true,
+      restoreDrillPass: true,
+      archivePath: 'fixture://forged',
+    },
+    permission: {
+      strangerUserId,
+      strangerCanAuthorizeShutdown: false,
+      ownerUserId,
+      ownerCanAuthorizeShutdown: true,
+    },
+    humanApproval: {
+      linkedPath: 'x',
+      status: CANONICAL_RELEASE_STATUS,
+      actor: 'x',
+    },
+  });
+  assertOk(!forgedApproval.productiveShutdownAuthorized, 'forged Freigabe must not authorize');
+  assertOk(
+    forgedApproval.blockers.some((b) => b.code === 'human-approval-unbound'),
+    'human-approval-unbound expected',
+  );
+
   const withoutApproval = evaluateShutdownReadiness({
+    repoRoot: args.repoRoot,
     predecessors: preds,
     callMatrix: [
       {
@@ -485,7 +824,7 @@ export function runDornhainShutdownReadinessDrill(args: {
   assertOk(withoutApproval.shutdownReady, 'drill gate can be ready without productive auth');
   assertOk(
     !withoutApproval.productiveShutdownAuthorized,
-    'productive requires linked human Freigabe',
+    'productive requires bound canonical Freigabe',
   );
 
   const archive = archiveShutdownDecision({
@@ -494,10 +833,13 @@ export function runDornhainShutdownReadinessDrill(args: {
     responsibleDecision:
       'MIG-702 Dornhain Freigabe A: Supabase exit allowed after parity+restore proof',
   });
+  assertOk(archive.approval?.evidenceFile === freigabe.linkedPath, 'archive stores Freigabe path');
 
   return {
     blockedWithoutEvidence,
     blockedWithSupabaseLeftover,
+    blockedEmptyMatrix,
+    blockedBrokenCatalog,
     readyWithFreigabe,
     archive,
   };
