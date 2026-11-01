@@ -326,7 +326,15 @@ try {
     assert.equal(prior.status, 'PASS');
     assert.equal(prior.approval, 'NOT APPROVED');
     assert.equal(priorObs.reportSha256, sha256File(join(evidence, 'report.json')), 'committed report digest must match observations.reportSha256');
-    assert.deepEqual(prior.platforms, platforms, 'committed platform matrix must match this host RUN/NOT RUN');
+    // Platforms in report.json are observations from the --write host. Do not require
+    // deepEqual with the current CI host (linux CI would fail a darwin-written matrix).
+    for (const key of ['darwin', 'linux', 'win32']) {
+      assert.ok(['RUN', 'NOT RUN'].includes(prior.platforms?.[key]), `platforms.${key} must be RUN|NOT RUN`);
+    }
+    assert.ok(
+      Object.values(prior.platforms).includes('RUN'),
+      'committed report must record at least one RUN platform',
+    );
     assert.equal(prior.criteria.length, report.criteria.length, 'criteria row count drift');
     for (const row of prior.criteria) {
       const live = report.criteria.find((entry) => entry.row === row.row);
