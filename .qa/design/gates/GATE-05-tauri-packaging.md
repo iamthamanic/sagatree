@@ -1,9 +1,9 @@
 # GATE-05 — Tauri + sidecar vs Electron (deferred)
 
-> **Status:** Tauri+Node sidecar selected; `APPROVED_TO_EXECUTE` PoC fixture PASS (2026-11-01); platform qualification / ship still NOT APPROVED  
+> **Status:** Tauri+Node sidecar **APPROVED** (2026-11-01 owner); PoC fixture PASS; MIG-703 unlocked — desktop **product ship** still requires a further RELEASE  
 > **GitHub:** #852 / GATE issue #788 · Prep criteria: #776  
-> **Blocks:** MIG-703 only — **not** wave-1..6  
-> **Evidence:** `.qa/evidence/stack-migration-prep/pocs/gate-05` · entry `scripts/stack-migration-pocs/gate-05/check.mjs`
+> **Unlocks:** MIG-703 integration — **not** wave-1..6; **not** store ship by silence  
+> **Evidence:** `.qa/evidence/stack-migration-prep/pocs/gate-05` · entry `scripts/stack-migration-pocs/gate-05/check.mjs` · release `docs/architecture/migration-owner-release-2026-11-01-gate-05-approved.md`
 
 ## Variants
 

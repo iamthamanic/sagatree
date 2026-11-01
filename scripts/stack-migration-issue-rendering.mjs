@@ -36,7 +36,8 @@ function readOwnerApprovals() {
 }
 
 function gate05ExecutionApproved(approvals) {
-  return approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE';
+  const status = approvals?.decisions?.['GATE-05']?.status;
+  return status === 'APPROVED_TO_EXECUTE' || status === 'APPROVED';
 }
 
 function cutoverDornhainApproved(approvals) {

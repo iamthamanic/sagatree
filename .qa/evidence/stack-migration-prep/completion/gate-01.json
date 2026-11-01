@@ -5,7 +5,7 @@
   "result": "PASS",
   "testedCommit": "cb6a7f7a2c241f8f951649447f17e7476e1a931e",
   "githubClosed": true,
-  "mergeRef": "PR #882 \u2192 main; human APPROVED on #784",
+  "mergeRef": "PR #882 → main; human APPROVED on #784",
   "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient.",
   "checks": [
     {
@@ -24,7 +24,7 @@
       "command": "architecture-approvals GATE-01",
       "result": "PASS",
       "evidenceFile": ".qa/evidence/stack-migration-prep/architecture-approvals.json",
-      "sha256": "cc9fc7a84719611fd666d772ea3da00c35471a5c92bb3a85d2a02b14b5598a4e"
+      "sha256": "e6b769540a2ed8ccff91a65b05cbec8ed66a2b7e0a9d03888878c4ba1b742948"
     }
   ]
 }

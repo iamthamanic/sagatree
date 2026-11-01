@@ -113,22 +113,25 @@
       ]
     },
     "GATE-05": {
-      "status": "APPROVED_TO_EXECUTE",
+      "status": "APPROVED",
       "actorType": "human",
       "actor": "iamthamanic",
-      "decision": "APPROVED_TO_EXECUTE \u2014 Tauri+Node sidecar PoC may run; desktop ship still requires PoC evidence",
-      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337",
-      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
-      "approvedAt": "2026-11-01T07:10:00Z",
-      "provenance": "Owner chat 2026-11-01: Freigabe A (GATE-05 PoC + MIG-700 drill). Target selection remains 2026-10-23 Tauri+sidecar.",
+      "decision": "APPROVED \u2014 PoC accepted, Variant A Tauri+Node sidecar; MIG-703 unlocked; no product ship without further RELEASE",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/788#issuecomment-6560366900",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-gate-05-approved.md",
+      "approvedAt": "2026-11-01T16:02:00Z",
+      "provenance": "Owner chat 2026-11-01 afternoon: GATE-05 APPROVED after PoC. Morning Freigabe A remains the APPROVED_TO_EXECUTE unlock that authorized the PoC.",
       "bindingConstraints": [
-        "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
+        "docs/architecture/migration-owner-release-2026-11-01-gate-05-approved.md",
         "docs/architecture/migration-owner-decisions-2026-10-23.md",
-        ".qa/design/gates/GATE-05-tauri-packaging.md"
+        ".qa/design/gates/GATE-05-tauri-packaging.md",
+        ".qa/evidence/stack-migration-prep/pocs/gate-05"
       ],
       "doesNotApprove": [
-        "desktop-product-ship-without-poc-evidence",
-        "Electron-default"
+        "desktop-product-ship",
+        "store-release",
+        "Electron-default",
+        "claiming-NOT-RUN-platforms-as-shipped"
       ]
     }
   },

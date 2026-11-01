@@ -79,13 +79,18 @@ test('the complete published plan validates without an implementation or archite
   assert.ok(ready.length < 50, `expected READY < 50 (no mass unlock of full queue), got ${ready.length}`);
   assert.ok(!ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
   // 2026-11-01 owner RELEASE unlocks GATE-05 execute + MIG-700 drill when preds DONE.
+  // Afternoon APPROVED + completionEvidence pins GATE-05 DONE and unlocks MIG-703.
   const cutoverApproved =
     (original.approvals?.releases?.['CUTOVER-DORHAIN']?.status ??
       original.approvals?.decisions?.['CUTOVER-DORHAIN']?.status) ===
     'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF';
-  const gate05Execute =
-    original.approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE';
-  if (gate05Execute) {
+  const gate05Status = original.approvals?.decisions?.['GATE-05']?.status;
+  const gate05Issue = original.intake.issues.find((entry) => entry.localId === 'GATE-05');
+  if (gate05Status === 'APPROVED' && gate05Issue?.completionEvidence) {
+    assert.equal(gate05Issue.status, 'done');
+    assert.ok(done.some((entry) => entry.localId === 'GATE-05'));
+    assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'));
+  } else if (gate05Status === 'APPROVED_TO_EXECUTE' || gate05Status === 'APPROVED') {
     assert.ok(ready.some((entry) => entry.localId === 'GATE-05') || blocked.some((entry) => entry.localId === 'GATE-05'));
   } else {
     assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'));
@@ -148,8 +153,11 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.equal((unlocked.verification.blockers ?? []).length, 0, 'ATLAS blocker is cleared by the unlock condition');
   assert.notEqual(unlocked.status, 'blocked', 'ATLAS must leave blocked once unlock clears the execution lock');
   const gate05 = intake.issues.find((entry) => entry.localId === 'GATE-05');
-  // Owner APPROVED_TO_EXECUTE (2026-11-01) unlocks GATE-05 to ready when preds DONE.
-  if (original.approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE') {
+  // Owner APPROVED_TO_EXECUTE unlocks ready; full APPROVED + completionEvidence → done.
+  const gate05Approval = original.approvals?.decisions?.['GATE-05']?.status;
+  if (gate05Approval === 'APPROVED' && gate05.completionEvidence) {
+    assert.equal(gate05.status, 'done', 'GATE-05 DONE after full APPROVED + completionEvidence');
+  } else if (gate05Approval === 'APPROVED_TO_EXECUTE' || gate05Approval === 'APPROVED') {
     assert.equal(gate05.status, 'ready');
   } else {
     assert.equal(gate05.status, 'blocked');
@@ -797,7 +805,15 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
-  if (original.approvals?.decisions?.['GATE-05']?.status !== 'APPROVED_TO_EXECUTE') {
+  const gate05Approval = original.approvals?.decisions?.['GATE-05']?.status;
+  const gate05Issue = original.intake.issues.find((i) => i.localId === 'GATE-05');
+  if (gate05Approval === 'APPROVED' && gate05Issue?.completionEvidence) {
+    assert.equal(gate05Issue.status, 'done', 'GATE-05 must be DONE after full APPROVED sync');
+    assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'), 'GATE-05 leaves READY after DONE');
+    const mig703 = original.intake.issues.find((i) => i.localId === 'MIG-703');
+    assert.equal(mig703?.status, 'ready', 'MIG-703 unlocks when GATE-05 is DONE');
+    assert.ok(mig703?.labels?.includes('agent-ready'), 'MIG-703 agent-ready');
+  } else if (gate05Approval !== 'APPROVED_TO_EXECUTE' && gate05Approval !== 'APPROVED') {
     assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
   }
   assert.ok(!blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));

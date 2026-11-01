@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-acceptance",
+  "localId": "GATE-05",
+  "githubIssue": 788,
+  "result": "PASS",
+  "testedCommit": "0144548362935ccd19f9d158f69587430239ece4",
+  "githubClosed": false,
+  "mergeRef": "owner APPROVED 2026-11-01 → #788 comment 6560366900; PoC via PR #1072",
+  "note": "GATE-05 APPROVED: PoC accepted, Variant A Tauri+sidecar, MIG-703 unlocked. No product ship without further RELEASE.",
+  "checks": [
+    {
+      "command": "node scripts/stack-migration-pocs/gate-05/check.mjs --check",
+      "result": "PASS",
+      "evidenceFile": ".qa/acceptance/stack-migration-gate-05.md",
+      "sha256": "15f6bd7c02f03417f4c57bfb1a967c5de848c3e64e8f25fdd774898a22628db7"
+    },
+    {
+      "command": "composition-gate CLEAR",
+      "result": "PASS",
+      "evidenceFile": ".qa/runs/composition-gate-stack-migration-gate-05.md",
+      "sha256": "361a97e299214bbbc9b666262d20c2112b31c421d6b0d8daf92adfbca3a94bf4"
+    }
+  ]
+}
