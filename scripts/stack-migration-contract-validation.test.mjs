@@ -605,12 +605,12 @@ test('unknown internal RPC dependencies are not silently filtered from the graph
 test('publication binds labels, title, repository, issue number and content together', () => {
   const byId = new Map(original.intake.issues.map((entry) => [entry.localId, entry]));
   // Prefer a still-locked / ready ticket so runner-label tamper remains observable.
-  // After Dornhain RELEASE + MIG-700/701 DONE, MIG-702 is agent-ready; MIG-703 waits.
+  // After Dornhain cutover DONE, GATE-05 remains agent-ready (PoC); MIG-703 waits.
   const current =
-    byId.get('MIG-702') ??
+    byId.get('GATE-05') ??
     [...byId.values()].find((entry) => (entry.labels ?? []).includes('agent-blocked')) ??
     [...byId.values()].find((entry) => (entry.labels ?? []).includes('agent-ready')) ??
-    byId.get('GATE-05');
+    byId.get('MIG-703');
   assert.ok(current, 'need a published ticket for publication binding');
   const base = { repository: original.registry.repository, entry: publishEntry(current, byId), issue: current, byId, body: renderIssue(current, byId) };
   assert.doesNotThrow(() => validatePublicationEntry(base));
@@ -779,8 +779,10 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     assert.ok(mig701.labels?.includes('agent-done'), 'MIG-701 agent-done');
     assert.ok(!ready.some((entry) => entry.localId === 'MIG-701'), 'MIG-701 must leave READY after DONE');
     const mig702 = original.intake.issues.find((i) => i.localId === 'MIG-702');
-    assert.equal(mig702?.status, 'ready', 'MIG-702 unlocks to ready when MIG-701 is DONE');
-    assert.ok(mig702?.labels?.includes('agent-ready'), 'MIG-702 agent-ready after MIG-701 DONE');
+    assert.ok(mig702?.completionEvidence, 'MIG-702 completionEvidence path');
+    assert.equal(mig702.status, 'done', 'MIG-702 must be DONE after completionEvidence sync');
+    assert.ok(mig702.labels?.includes('agent-done'), 'MIG-702 agent-done');
+    assert.ok(!ready.some((entry) => entry.localId === 'MIG-702'), 'MIG-702 must leave READY after DONE');
   } else if (cutoverApproved) {
     assert.ok(
       ready.some((entry) => entry.localId === 'MIG-700') || mig700?.status === 'waiting',

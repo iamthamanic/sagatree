@@ -1248,11 +1248,11 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-ready"
+        "agent-done"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-702.md",
-      "sha256": "b8fd027b9520194982aabe991e094bb0a60e80118016c7ef08758784a3d458a2",
-      "payloadSha256": "5c3f490be82d2db0dfcf44e2bd9b6ac3a37ebfe56136afc6f0fefe3095f10062"
+      "sha256": "4c0a3a1a0665b8bab794c5d13034d48ba2bf7a477232cb18e47aa52e8b04a655",
+      "payloadSha256": "27baf6bc076206457eee84bdf1e505f664289300e6db905bce9672f268404623"
     },
     {
       "localId": "MIG-703",
