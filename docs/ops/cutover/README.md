@@ -1,0 +1,21 @@
+# Cutover ops (MIG-700+)
+
+Owner RELEASE (2026-11-01): Dornhain pilot — see
+`docs/architecture/migration-owner-release-2026-11-01-dornhain.md`.
+
+## Order
+
+1. **MIG-700 drill** — Freeze → single writer → import → Rollback (`server/src/migration/cutover`)
+2. **MIG-701** — reading parity window (fixture/staging)
+3. **MIG-702** — Supabase shutdown only after Dornhain host proof
+
+## Hard requirement
+
+Dornhain world, adventure/saga, characters, default items, monsters, and NPCs must be
+present after import. Other user data may be omitted.
+
+## Local proof
+
+```bash
+node --experimental-strip-types scripts/mig-700-dornhain-cutover-drill.self-test.mjs
+```

@@ -105,15 +105,15 @@ Individuell referenzierbare Binding-Tests (1:1 mit Intake `acceptance` / `assert
 - Depends on #847 (MIG-602)
 - Depends on #848 (MIG-603)
 
-Status: **blocked**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
+Status: **ready**. Ein CLOSED-Issue oder Source-Fingerprint ersetzt keine geprüfte Implementation-Acceptance.
 
 ## Runner
 
 - Feature slug: `stack-migration-gate-05`
 - Design: `.qa/design/migration-issues/stack-migration-gate-05.md`
-- Status: blocked
+- Status: ready
 - Reihenfolge: 86; Welle: 7
-- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-086`, `agent-blocked`, `gate-issue`
+- Labels: `P2`, `migration-wave-7-cutover-tauri`, `migration-order-086`, `agent-ready`, `gate-issue`
 - Checks: `npm run test-gate`; dokumentierte Integration, Security, negative Canary-Tests und ECC vollständig.
 
 ## Design

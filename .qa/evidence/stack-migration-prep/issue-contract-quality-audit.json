@@ -5,9 +5,9 @@
   "canonicalBodies": 90,
   "mapped": 90,
   "statusCounts": {
-    "ready": 0,
-    "waiting": 1,
-    "blocked": 4,
+    "ready": 2,
+    "waiting": 3,
+    "blocked": 0,
     "needs-design": 0,
     "done": 85
   },
@@ -55,16 +55,9 @@
     "MIG-424",
     "MIG-305",
     "MIG-311",
-    "MIG-312",
-    "MIG-700",
-    "MIG-701",
-    "MIG-702"
+    "MIG-312"
   ],
-  "issuesWithExecutionBlockers": [
-    "MIG-700",
-    "MIG-701",
-    "MIG-702"
-  ],
+  "issuesWithExecutionBlockers": [],
   "issuesWithRequiredRegressions": [
     "RPC-MARKETPLACE-COUNT",
     "RPC-SAGA-PROVISION",

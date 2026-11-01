@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "note": "Human decisions originate in explicit owner confirmations on 2026-10-23, delegated transcription in linked GitHub issue comments. GATE-05 target selection is not platform qualification; GATE-04 implementation only; production cutover requires separate approval.",
+  "note": "Human decisions originate in explicit owner confirmations. GATE decisions live under decisions.*; scoped RELEASE records under releases.*. GATE-05 APPROVED_TO_EXECUTE unlocks PoC work; CUTOVER-DORHAIN unlocks MIG-700+ drills.",
   "decisions": {
     "GATE-01": {
       "status": "APPROVED",
       "actorType": "human",
       "actor": "iamthamanic",
-      "decision": "APPROVED — Drizzle + SagaTree Policy Service",
+      "decision": "APPROVED \u2014 Drizzle + SagaTree Policy Service",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/784#issuecomment-6317688552",
       "evidenceFile": "docs/architecture/ADR-ST-05-gate-01-drizzle-policy.md",
       "approvedAt": "2026-10-21T13:48:00Z",
@@ -28,7 +28,7 @@
       "status": "APPROVED",
       "actorType": "human",
       "actor": "iamthamanic",
-      "decision": "APPROVED — Variant A (session cookies), product implementation only",
+      "decision": "APPROVED \u2014 Variant A (session cookies), product implementation only",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/785#issuecomment-6364772323",
       "evidenceFile": "docs/architecture/ADR-ST-06-gate-02-auth-handshake.md",
       "approvedAt": "2026-10-23T12:21:00Z",
@@ -52,7 +52,7 @@
       "status": "APPROVED",
       "actorType": "human",
       "actor": "iamthamanic",
-      "decision": "APPROVED — Variant B (Hono HTTP + Colyseus realtime, one Node host)",
+      "decision": "APPROVED \u2014 Variant B (Hono HTTP + Colyseus realtime, one Node host)",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/786#issuecomment-6364773133",
       "evidenceFile": "docs/architecture/ADR-ST-07-gate-03-hono-colyseus.md",
       "approvedAt": "2026-10-23T12:21:00Z",
@@ -75,7 +75,7 @@
       "status": "APPROVED",
       "actorType": "human",
       "actor": "iamthamanic",
-      "decision": "APPROVED — SQLite Single Writer mit atomaren State-/Revision-/Event-/Idempotenz-Transaktionen, begrenzt auf die Implementierungsfreigabe",
+      "decision": "APPROVED \u2014 SQLite Single Writer mit atomaren State-/Revision-/Event-/Idempotenz-Transaktionen, begrenzt auf die Implementierungsfreigabe",
       "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/787#issuecomment-6321569847",
       "evidenceFile": "docs/architecture/ADR-ST-08-gate-04-sqlite-single-writer.md",
       "approvedAt": "2026-10-21T16:53:00Z",
@@ -113,8 +113,45 @@
       ]
     },
     "GATE-05": {
-      "status": "DEFERRED_UNTIL_BROWSER_HOST_COMPLETE",
-      "provenance": "Owner chose target Tauri+Node sidecar across macOS/Windows/Linux on 2026-10-23; deferred technical qualification and desktop ship gate remain unsatisfied. See https://github.com/iamthamanic/sagatree/issues/788#issuecomment-6364773974"
+      "status": "APPROVED_TO_EXECUTE",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED_TO_EXECUTE \u2014 Tauri+Node sidecar PoC may run; desktop ship still requires PoC evidence",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
+      "approvedAt": "2026-11-01T07:10:00Z",
+      "provenance": "Owner chat 2026-11-01: Freigabe A (GATE-05 PoC + MIG-700 drill). Target selection remains 2026-10-23 Tauri+sidecar.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
+        "docs/architecture/migration-owner-decisions-2026-10-23.md",
+        ".qa/design/gates/GATE-05-tauri-packaging.md"
+      ],
+      "doesNotApprove": [
+        "desktop-product-ship-without-poc-evidence",
+        "Electron-default"
+      ]
+    }
+  },
+  "releases": {
+    "CUTOVER-DORHAIN": {
+      "status": "APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF",
+      "actorType": "human",
+      "actor": "iamthamanic",
+      "decision": "APPROVED \u2014 MIG-700/701 drill + MIG-702 Supabase shutdown after Dornhain host proof; non-Dornhain user data disposable",
+      "sourceUrl": "https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337",
+      "evidenceFile": "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
+      "approvedAt": "2026-11-01T07:10:00Z",
+      "provenance": "Owner chat 2026-11-01. Hard requirement: Dornhain world, adventure, characters, default items/monsters/NPCs must survive on host.",
+      "bindingConstraints": [
+        "docs/architecture/migration-owner-release-2026-11-01-dornhain.md",
+        "Dornhain world + saga + characters + items + monsters + NPCs must be present after drill/import",
+        "Single writer during freeze/delta",
+        "No Supabase shutdown before Dornhain restore evidence"
+      ],
+      "doesNotApprove": [
+        "abandoning-dornhain-content",
+        "shutdown-without-restore-proof"
+      ]
     }
   }
 }
