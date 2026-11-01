@@ -768,6 +768,9 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     assert.equal(mig700.status, 'done', 'MIG-700 must be DONE after completionEvidence sync');
     assert.ok(mig700.labels?.includes('agent-done'), 'MIG-700 agent-done');
     assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'), 'MIG-700 must leave READY after DONE');
+    const mig701 = original.intake.issues.find((i) => i.localId === 'MIG-701');
+    assert.equal(mig701?.status, 'ready', 'MIG-701 unlocks to ready when MIG-700 is DONE');
+    assert.ok(mig701?.labels?.includes('agent-ready'), 'MIG-701 agent-ready after MIG-700 DONE');
   } else if (cutoverApproved) {
     assert.ok(
       ready.some((entry) => entry.localId === 'MIG-700') || mig700?.status === 'waiting',
