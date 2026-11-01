@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "migration-poc-evidence",
+  "localId": "GATE-05",
+  "result": "PASS",
+  "approval": "NOT APPROVED",
+  "executeUnlock": "APPROVED_TO_EXECUTE",
+  "intakeStatusMustRemain": "ready",
+  "note": "PoC fixture PASS only. Do not mark intake GATE-05 done without full APPROVED. MIG-703 still blocked.",
+  "evidenceDir": ".qa/evidence/stack-migration-prep/pocs/gate-05",
+  "entryPoint": "node scripts/stack-migration-pocs/gate-05/check.mjs --check",
+  "platforms": {
+    "darwin": "RUN",
+    "linux": "NOT RUN",
+    "win32": "NOT RUN"
+  }
+}

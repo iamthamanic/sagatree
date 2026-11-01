@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "gate": "GATE-05",
+  "status": "PASS",
+  "approval": "NOT APPROVED",
+  "executeUnlock": "APPROVED_TO_EXECUTE",
+  "variant": "A-tauri-node-sidecar",
+  "scope": "Sidecar contract PoC on current OS; three-OS Tauri packaging + signing remain NOT RUN. Desktop ship / MIG-703 still human APPROVED.",
+  "criteria": [
+    {
+      "row": "1",
+      "title": "Product host binary packaged with Tauri (same as Docker/VPS)",
+      "status": "NOT RUN",
+      "cases": [
+        "product-host-binary-packaging"
+      ]
+    },
+    {
+      "row": "2",
+      "title": "Solo mode / local sidecar contract",
+      "status": "PASS",
+      "cases": [
+        "start-stop-health",
+        "persistent-datadir-restart"
+      ]
+    },
+    {
+      "row": "3",
+      "title": "Secrets not in renderer",
+      "status": "PASS",
+      "cases": [
+        "secrets-not-in-renderer"
+      ]
+    },
+    {
+      "row": "4",
+      "title": "Auto-update threat model",
+      "status": "NOT RUN",
+      "cases": [
+        "signed-updates"
+      ]
+    },
+    {
+      "row": "5",
+      "title": "No browser-dev regression / no product Tauri",
+      "status": "PASS",
+      "cases": [
+        "no-desktop-product-activation"
+      ]
+    },
+    {
+      "row": "6",
+      "title": "Port conflict + failed start",
+      "status": "PASS",
+      "cases": [
+        "port-conflict",
+        "failed-sidecar-start"
+      ]
+    },
+    {
+      "row": "7",
+      "title": "Only MIG-703 depends on GATE-05",
+      "status": "PASS",
+      "cases": [
+        "intake-only-mig-703"
+      ]
+    }
+  ],
+  "platforms": {
+    "darwin": "RUN",
+    "linux": "NOT RUN",
+    "win32": "NOT RUN"
+  },
+  "cases": [
+    {
+      "id": "start-stop-health",
+      "status": "PASS",
+      "port": 52998
+    },
+    {
+      "id": "secrets-not-in-renderer",
+      "status": "PASS"
+    },
+    {
+      "id": "persistent-datadir-restart",
+      "status": "PASS",
+      "port": 53001
+    },
+    {
+      "id": "port-conflict",
+      "status": "PASS",
+      "detail": {
+        "code": 4,
+        "signal": null
+      }
+    },
+    {
+      "id": "failed-sidecar-start",
+      "status": "PASS",
+      "exitCode": 3
+    },
+    {
+      "id": "intake-only-mig-703",
+      "status": "PASS",
+      "dependents": [
+        "MIG-703"
+      ]
+    },
+    {
+      "id": "no-desktop-product-activation",
+      "status": "PASS"
+    },
+    {
+      "id": "signed-updates",
+      "status": "NOT RUN",
+      "detail": "Live updater / code-signing channel mismatch remains platform packaging work"
+    },
+    {
+      "id": "product-host-binary-packaging",
+      "status": "NOT RUN",
+      "detail": "Fixture uses sidecar.mjs stand-in; packaging the product server/ binary into Tauri is deferred to three-OS qualification"
+    }
+  ],
+  "nonClaims": [
+    "No desktop product code under src/ or src-tauri/",
+    "No claim that sidecar.mjs is the product server/ binary",
+    "No production cutover",
+    "No claim that Windows/Linux packaging was executed unless platforms.*.RUN",
+    "MIG-703 still blocked until GATE-05 full APPROVED"
+  ]
+}
