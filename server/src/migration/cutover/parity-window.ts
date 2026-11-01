@@ -41,7 +41,8 @@ const characterRowSchema = z.object({
 });
 const defRowSchema = z.object({ id: z.string().min(1), payload: z.string().min(1) });
 const npcPayloadSchema = z.object({
-  kind: z.enum(['npc', 'monster']),
+  // Product writers may omit kind; fixture monsters/npcs set it explicitly.
+  kind: z.enum(['npc', 'monster']).optional(),
   publicId: z.string().min(1).optional(),
   displayName: z.string().optional(),
 });
@@ -132,7 +133,13 @@ function ensureParityMeta(db: HostDatabase): void {
 }
 
 export function readConfirmedRevision(db: HostDatabase): number {
-  ensureParityMeta(db);
+  // Read-only: never CREATE TABLE on the compare path.
+  const table = db
+    .prepare(
+      `SELECT 1 AS ok FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1`,
+    )
+    .get(PARITY_META_TABLE) as { ok: number } | undefined;
+  if (!table) throw new Error('parity-window: confirmed revision table missing on host');
   const row = db.prepare(`SELECT confirmed_revision FROM ${PARITY_META_TABLE} WHERE id = 1`).get();
   const parsed = metaRowSchema.safeParse(row);
   if (!parsed.success) throw new Error('parity-window: confirmed revision missing on host');
@@ -263,7 +270,7 @@ export function captureParitySnapshot(db: HostDatabase, ownerUserId: string): Pr
     if (!payload.success) {
       throw new Error(`parity-window: npc payload invalid for ${def.id}`);
     }
-    const kind = payload.data.kind === 'monster' ? 'monster' : 'npc';
+    const kind = payload.data.kind === 'monster' ? 'monster' : 'npc'; // default npc when omitted
     rows.push({
       recordKey: recordKey(kind, def.id),
       recordId: def.id,
@@ -420,24 +427,32 @@ function injectShadowDigestMismatch(db: HostDatabase, ownerUserId: string): stri
   return row.id;
 }
 
-/** Fixture clone: disable FK temporarily so dependent product tables cannot block the drill. */
-function cloneAuthorityIntoShadow(authority: HostDatabase, shadow: HostDatabase): void {
-  const tables = (
-    authority
-      .prepare(
-        `SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
-      )
-      .all() as { name: string }[]
-  ).map((r) => r.name);
+/** Dornhain parity allowlist — never clone credential/secret tables. */
+const PARITY_CLONE_TABLES = [
+  PARITY_META_TABLE,
+  'worlds',
+  'projects',
+  'project_members',
+  'saga_definitions',
+  'saga_definition_versions',
+  'characters',
+  'npc_creature_definitions',
+  'inventory_item_definitions',
+  'assets',
+] as const;
 
+/** Fixture clone: allowlisted tables only; FK off inside an owned transaction. */
+function cloneAuthorityIntoShadow(authority: HostDatabase, shadow: HostDatabase): void {
+  ensureParityMeta(shadow);
   shadow.prepare(`PRAGMA foreign_keys = OFF`).run();
-  authority.prepare(`PRAGMA foreign_keys = OFF`).run();
+  let txnOpen = false;
   try {
-    shadow.prepare(`BEGIN`).run();
-    for (const table of tables) {
+    shadow.prepare(`BEGIN IMMEDIATE`).run();
+    txnOpen = true;
+    for (const table of [...PARITY_CLONE_TABLES].reverse()) {
       shadow.prepare(`DELETE FROM ${table}`).run();
     }
-    for (const table of tables) {
+    for (const table of PARITY_CLONE_TABLES) {
       const rows = authority.prepare(`SELECT * FROM ${table}`).all() as Record<string, unknown>[];
       for (const row of rows) {
         const keys = Object.keys(row);
@@ -449,16 +464,15 @@ function cloneAuthorityIntoShadow(authority: HostDatabase, shadow: HostDatabase)
       }
     }
     shadow.prepare(`COMMIT`).run();
+    txnOpen = false;
   } catch (error) {
-    try {
+    if (txnOpen) {
       shadow.prepare(`ROLLBACK`).run();
-    } catch {
-      /* ignore */
+      txnOpen = false;
     }
     throw error;
   } finally {
     shadow.prepare(`PRAGMA foreign_keys = ON`).run();
-    authority.prepare(`PRAGMA foreign_keys = ON`).run();
   }
 }
 
@@ -522,9 +536,17 @@ function catalogPresenceFromDb(db: HostDatabase, ownerUserId: string, catalog: D
   const monsterIds: string[] = [];
   const npcPublicIds: string[] = [];
   for (const def of defRows) {
-    const payload = npcPayloadSchema.parse(JSON.parse(def.payload));
+    let raw: unknown;
+    try {
+      raw = JSON.parse(def.payload);
+    } catch {
+      continue;
+    }
+    const payload = npcPayloadSchema.parse(raw);
     if (payload.kind === 'monster') monsterIds.push(def.id);
-    if (payload.kind === 'npc' && payload.publicId) npcPublicIds.push(payload.publicId);
+    if ((payload.kind === 'npc' || payload.kind == null) && payload.publicId) {
+      npcPublicIds.push(payload.publicId);
+    }
   }
   const itemDefinitionIds = parseRows(
     itemRowSchema,
