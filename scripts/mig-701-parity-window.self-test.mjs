@@ -46,15 +46,27 @@ const archiveDir = join(authority.work, 'parity-archive');
 mkdirSync(archiveDir);
 
 try {
-  seedDornhainParityAuthority(authority.db, 'owner-dornhain');
+  seedDornhainParityAuthority(authority.db, 'owner-dornhain', 42);
 
-  // Unit: empty vs seeded must disagree
+  // Unit: empty snapshots must never set shutdownPredecessorMet
   {
-    const empty = captureParitySnapshot(shadow.db, 'owner-dornhain', 7);
-    const full = captureParitySnapshot(authority.db, 'owner-dornhain', 7);
-    const report = compareParitySnapshots(full, empty, 7);
-    assert(report.discrepancies.length > 0, 'empty shadow must discrepancy');
-    assert(report.shutdownPredecessorMet === false, 'empty shadow blocks shutdown');
+    const emptyReport = compareParitySnapshots([], [], 42);
+    assert(emptyReport.shutdownPredecessorMet === false, 'empty×empty blocks shutdown');
+    assert(
+      emptyReport.discrepancies.some((d) => d.discrepancyKind === 'empty-snapshot'),
+      'empty-snapshot discrepancy',
+    );
+  }
+
+  // Unit: empty shadow vs seeded authority
+  {
+    let threw = false;
+    try {
+      captureParitySnapshot(shadow.db, 'owner-dornhain');
+    } catch {
+      threw = true;
+    }
+    assert(threw, 'shadow without revision meta must fail closed');
   }
 
   const report = runDornhainParityWindowDrill({
@@ -62,7 +74,6 @@ try {
     shadowDb: shadow.db,
     archiveDir,
     ownerUserId: 'owner-dornhain',
-    confirmedRevision: 42,
     responsibleDecision: 'self-test operator',
   });
 
@@ -76,6 +87,7 @@ try {
   );
   for (const d of report.injected.discrepancies) {
     assert(d.recordId && d.kind && d.revision === 42, 'discrepancy identifies record/revision/kind');
+    assert(d.recordKey && d.recordKey.includes(':'), 'composite recordKey kind:id');
   }
   assert(report.catalogIntactOnAuthority === true, 'Dornhain catalog intact on authority');
   assert(existsSync(report.rollback.archivePath), 'rollback archive written');

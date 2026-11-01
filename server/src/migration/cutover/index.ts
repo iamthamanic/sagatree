@@ -26,6 +26,8 @@ export {
   seedDornhainParityAuthority,
   runDornhainParityWindowDrill,
   archiveParityRollbackDecision,
+  readConfirmedRevision,
+  writeConfirmedRevision,
   type ProjectionRow,
   type ParityDiscrepancy,
   type ParityCompareReport,
