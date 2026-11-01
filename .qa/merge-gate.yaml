@@ -19,6 +19,11 @@ requiredChecks:
   - Actual RLS regression canary
   - RPC source regeneration and migration contracts
   - Browser E2E
+  # MIG-602/#847 — host/DB/transport/browser quality gates (isolated harnesses)
+  - Atlas isolated real product journey
+  - PostgreSQL baseline security and persistence
+  - GATE-01 real SQLite policy candidates
+  - GATE-02 and GATE-03 real browser, auth and transport candidates
 
 # Ambient known-red migration baselines are NOT merge-blocking unless listed above.
 # Unresolved Codex/Bugbot P1/P2 review findings always block (see ecc-merge-gate-check).

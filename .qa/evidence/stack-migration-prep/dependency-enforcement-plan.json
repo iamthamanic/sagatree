@@ -1900,7 +1900,7 @@
       "githubIssue": 847,
       "order": 84,
       "wave": 6,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         845,
         846,
@@ -1970,7 +1970,7 @@
         "P1",
         "migration-wave-6-security-ops",
         "migration-order-084",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
@@ -2016,7 +2016,7 @@
       "githubIssue": 849,
       "order": 87,
       "wave": 7,
-      "status": "waiting",
+      "status": "blocked",
       "dependsOnGithub": [
         782,
         770,
@@ -2108,8 +2108,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
@@ -2117,7 +2116,7 @@
       "githubIssue": 850,
       "order": 88,
       "wave": 7,
-      "status": "waiting",
+      "status": "blocked",
       "dependsOnGithub": [
         849
       ],
@@ -2126,8 +2125,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {
@@ -2135,7 +2133,7 @@
       "githubIssue": 851,
       "order": 89,
       "wave": 7,
-      "status": "waiting",
+      "status": "blocked",
       "dependsOnGithub": [
         849,
         850,
@@ -2147,8 +2145,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-blocked",
-        "waiting-dependency"
+        "agent-blocked"
       ]
     },
     {

@@ -5,13 +5,13 @@
   "canonicalBodies": 90,
   "mapped": 90,
   "statusCounts": {
-    "ready": 1,
-    "waiting": 4,
-    "blocked": 1,
+    "ready": 0,
+    "waiting": 1,
+    "blocked": 4,
     "needs-design": 0,
-    "done": 84
+    "done": 85
   },
-  "implementationAccepted": 84,
+  "implementationAccepted": 85,
   "architectureApproved": 4,
   "sourceInventory": {
     "rpc": 57,
@@ -55,9 +55,16 @@
     "MIG-424",
     "MIG-305",
     "MIG-311",
-    "MIG-312"
+    "MIG-312",
+    "MIG-700",
+    "MIG-701",
+    "MIG-702"
   ],
-  "issuesWithExecutionBlockers": [],
+  "issuesWithExecutionBlockers": [
+    "MIG-700",
+    "MIG-701",
+    "MIG-702"
+  ],
   "issuesWithRequiredRegressions": [
     "RPC-MARKETPLACE-COUNT",
     "RPC-SAGA-PROVISION",
