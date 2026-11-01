@@ -5,15 +5,15 @@
   "githubIssue": 847,
   "result": "PASS",
   "testedCommit": "24527377e46513611550cedc7b7cad9be8ddd67a",
-  "githubClosed": false,
-  "mergeRef": "PR #1066 (#847) \u2014 MIG-602 CI quality-gate wiring + ECC wait/retrigger fixes",
-  "note": "Elevated Atlas/Postgres/GATE-01/02/03 into ECC requiredChecks; ECC workflow_run includes isolated candidates; CHECK_WAIT_MS=20m; cutover remains MIG-700 human.",
+  "githubClosed": true,
+  "mergeRef": "PR #1066 \u2192 main (#847) @ 14a3585c8 (testedCommit remains PR gate HEAD 24527377e)",
+  "note": "Elevated Atlas/Postgres/GATE-01/02/03 into ECC requiredChecks; ECC workflow_run includes isolated candidates; CHECK_WAIT_MS=20m; cutover remains MIG-700 human. Merged CLEAN; testedCommit stays the gate PR HEAD matching composition-gate evidence.",
   "checks": [
     {
       "command": "node --test scripts/mig-602-ci-quality-gates.self-test.mjs",
       "result": "PASS",
       "evidenceFile": ".qa/acceptance/stack-migration-mig-602.md",
-      "sha256": "ff50947f8f67e8170933ef6d75532d15b7c1ce0b92fa163f78958cef47db6c2b"
+      "sha256": "140d72446bc74872307bc973bca6d392657fc1bc5618e803c62b4d1b40a1e45e"
     },
     {
       "command": "composition-gate CLEAR",
