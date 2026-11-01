@@ -9,18 +9,19 @@
   "criteria": [
     {
       "row": "1",
-      "title": "Same host binary as Docker/VPS",
-      "status": "PASS",
+      "title": "Product host binary packaged with Tauri (same as Docker/VPS)",
+      "status": "NOT RUN",
       "cases": [
-        "start-stop-health-datadir"
+        "product-host-binary-packaging"
       ]
     },
     {
       "row": "2",
-      "title": "Solo mode / local sidecar",
+      "title": "Solo mode / local sidecar contract",
       "status": "PASS",
       "cases": [
-        "start-stop-health-datadir"
+        "start-stop-health",
+        "persistent-datadir-restart"
       ]
     },
     {
@@ -28,7 +29,7 @@
       "title": "Secrets not in renderer",
       "status": "PASS",
       "cases": [
-        "start-stop-health-datadir"
+        "secrets-not-in-renderer"
       ]
     },
     {
@@ -72,9 +73,18 @@
   },
   "cases": [
     {
-      "id": "start-stop-health-datadir",
+      "id": "start-stop-health",
       "status": "PASS",
-      "port": 51676
+      "port": 52998
+    },
+    {
+      "id": "secrets-not-in-renderer",
+      "status": "PASS"
+    },
+    {
+      "id": "persistent-datadir-restart",
+      "status": "PASS",
+      "port": 53001
     },
     {
       "id": "port-conflict",
@@ -104,10 +114,16 @@
       "id": "signed-updates",
       "status": "NOT RUN",
       "detail": "Live updater / code-signing channel mismatch remains platform packaging work"
+    },
+    {
+      "id": "product-host-binary-packaging",
+      "status": "NOT RUN",
+      "detail": "Fixture uses sidecar.mjs stand-in; packaging the product server/ binary into Tauri is deferred to three-OS qualification"
     }
   ],
   "nonClaims": [
     "No desktop product code under src/ or src-tauri/",
+    "No claim that sidecar.mjs is the product server/ binary",
     "No production cutover",
     "No claim that Windows/Linux packaging was executed unless platforms.*.RUN",
     "MIG-703 still blocked until GATE-05 full APPROVED"

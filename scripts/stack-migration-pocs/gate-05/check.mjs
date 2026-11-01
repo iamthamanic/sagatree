@@ -2,6 +2,9 @@
 /**
  * GATE-05 packaging PoC check — sidecar contract + platform matrix (#788).
  * Location: scripts/stack-migration-pocs/gate-05/check.mjs
+ *
+ * Proves the Node sidecar *contract* (listen/stop/port/data-dir/secrets).
+ * Does not claim the product `server/` binary or three-OS Tauri packaging.
  */
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -31,27 +34,42 @@ function sha256File(path) {
   return createHash('sha256').update(readFileSync(path)).digest('hex');
 }
 
+function stableStringify(value) {
+  if (Array.isArray(value)) return `[${value.map((entry) => stableStringify(entry)).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function waitListening(child, timeoutMs = 5000) {
   return new Promise((resolvePromise, reject) => {
     let buf = '';
-    const timer = setTimeout(() => {
+    let settled = false;
+    const finish = (err, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
       child.stdout.off('data', onData);
       child.off('exit', onExit);
-      reject(new Error('sidecar-listen-timeout'));
+      if (err) reject(err);
+      else resolvePromise(value);
+    };
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      finish(new Error('sidecar-listen-timeout'));
     }, timeoutMs);
     const onData = (chunk) => {
       buf += chunk.toString();
       const line = buf.split('\n').find((row) => row.includes('"listening"'));
       if (!line) return;
-      clearTimeout(timer);
-      child.stdout.off('data', onData);
-      child.off('exit', onExit);
-      resolvePromise(JSON.parse(line));
+      finish(null, JSON.parse(line));
     };
     const onExit = (code, signal) => {
-      clearTimeout(timer);
-      child.stdout.off('data', onData);
-      reject(new Error(`sidecar-exited-early:${code}:${signal}`));
+      finish(new Error(`sidecar-exited-early:${code}:${signal}`));
     };
     child.stdout.on('data', onData);
     child.once('exit', onExit);
@@ -65,12 +83,19 @@ async function fetchJson(url) {
 }
 
 function stopChild(child) {
-  return new Promise((resolvePromise) => {
-    if (child.exitCode != null) {
-      resolvePromise(child.exitCode);
+  return new Promise((resolvePromise, reject) => {
+    if (child.exitCode != null || child.signalCode != null) {
+      resolvePromise({ code: child.exitCode, signal: child.signalCode });
       return;
     }
-    child.once('exit', (code) => resolvePromise(code ?? 0));
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error('sidecar-stop-timeout'));
+    }, 5000);
+    child.once('exit', (code, signal) => {
+      clearTimeout(timer);
+      resolvePromise({ code, signal });
+    });
     child.kill('SIGTERM');
   });
 }
@@ -101,6 +126,19 @@ function spawnSidecar(env) {
   });
 }
 
+function waitExit(child, timeoutMs = 3000) {
+  return new Promise((resolvePromise, reject) => {
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error('sidecar-exit-timeout'));
+    }, timeoutMs);
+    child.once('exit', (code, signal) => {
+      clearTimeout(timer);
+      resolvePromise({ code, signal });
+    });
+  });
+}
+
 const work = mkdtempSync(join(tmpdir(), 'gate05-'));
 const dataDir = join(work, 'data');
 mkdirSync(dataDir, { recursive: true });
@@ -113,7 +151,7 @@ const platforms = {
 };
 
 try {
-  // --- start/stop + health + persistent data dir ---
+  // --- start/stop + health + secrets probe ---
   {
     const child = spawnSidecar({ GATE05_SIDECAR_PORT: '0', GATE05_DATA_DIR: dataDir });
     const listening = await waitListening(child);
@@ -121,35 +159,51 @@ try {
     assert.equal(health.status, 200);
     assert.equal(health.body.ok, true);
     assert.equal(health.body.dataDirExists, true);
-    assert.ok(existsSync(join(dataDir, 'sidecar-alive.json')), 'persistent marker');
+    assert.ok(existsSync(join(dataDir, 'sidecar-alive.json')), 'marker written on boot');
     const leak = await fetchJson(`http://127.0.0.1:${listening.port}/secrets-leak-probe`);
     assert.equal(leak.status, 404, 'renderer must not read secrets via sidecar probe');
-    const code = await stopChild(child);
-    assert.equal(code, 0, 'clean SIGTERM stop');
-    cases.push({ id: 'start-stop-health-datadir', status: 'PASS', port: listening.port });
+    const stop = await stopChild(child);
+    assert.equal(stop.signal, null, 'clean stop must not die on signal');
+    assert.equal(stop.code, 0, 'clean SIGTERM stop exits 0');
+    cases.push({ id: 'start-stop-health', status: 'PASS', port: listening.port });
+    cases.push({ id: 'secrets-not-in-renderer', status: 'PASS' });
   }
 
-  // --- port conflict ---
+  // --- persistent data dir survives restart ---
+  {
+    const markerPath = join(dataDir, 'sidecar-alive.json');
+    assert.ok(existsSync(markerPath), 'marker must survive first shutdown');
+    const first = JSON.parse(readFileSync(markerPath, 'utf8'));
+    assert.ok(first.pid && first.startedAt, 'first marker payload');
+    const child = spawnSidecar({ GATE05_SIDECAR_PORT: '0', GATE05_DATA_DIR: dataDir });
+    const listening = await waitListening(child);
+    assert.ok(existsSync(markerPath), 'marker present after second boot');
+    const second = JSON.parse(readFileSync(markerPath, 'utf8'));
+    assert.notEqual(second.pid, first.pid, 'second boot rewrites marker');
+    assert.ok(existsSync(dataDir), 'data dir path persists across restart');
+    const stop = await stopChild(child);
+    assert.equal(stop.code, 0);
+    assert.equal(stop.signal, null);
+    assert.ok(existsSync(markerPath), 'marker survives second shutdown');
+    cases.push({ id: 'persistent-datadir-restart', status: 'PASS', port: listening.port });
+  }
+
+  // --- port conflict must exit 4 (EADDRINUSE), never timeout PASS ---
   {
     const occupied = await occupyPort();
     const child = spawnSidecar({
       GATE05_SIDECAR_PORT: String(occupied.port),
       GATE05_DATA_DIR: join(work, 'conflict-data'),
     });
-    const exit = await new Promise((resolvePromise) => {
-      child.once('exit', (code, signal) => resolvePromise({ code, signal }));
-      setTimeout(() => {
-        child.kill('SIGKILL');
-        resolvePromise({ code: null, signal: 'timeout' });
-      }, 3000);
-    });
-    await occupied.close();
-    assert.ok(exit.code !== 0 || exit.signal, 'port conflict must not silently succeed');
-    cases.push({
-      id: 'port-conflict',
-      status: 'PASS',
-      detail: exit,
-    });
+    let exit;
+    try {
+      exit = await waitExit(child, 3000);
+    } finally {
+      await occupied.close();
+    }
+    assert.equal(exit.signal, null, 'port conflict must exit, not hang until SIGKILL');
+    assert.equal(exit.code, 4, 'occupied port must exit 4');
+    cases.push({ id: 'port-conflict', status: 'PASS', detail: exit });
   }
 
   // --- failed sidecar boot ---
@@ -159,11 +213,10 @@ try {
       GATE05_DATA_DIR: join(work, 'fail-data'),
       GATE05_FAIL_BOOT: '1',
     });
-    const exit = await new Promise((resolvePromise) => {
-      child.once('exit', (code) => resolvePromise(code));
-    });
-    assert.equal(exit, 3, 'failed boot exits 3');
-    cases.push({ id: 'failed-sidecar-start', status: 'PASS', exitCode: exit });
+    const exit = await waitExit(child, 3000);
+    assert.equal(exit.signal, null);
+    assert.equal(exit.code, 3, 'failed boot exits 3');
+    cases.push({ id: 'failed-sidecar-start', status: 'PASS', exitCode: exit.code });
   }
 
   // --- intake: only MIG-703 blocked by GATE-05 ---
@@ -187,11 +240,17 @@ try {
     cases.push({ id: 'no-desktop-product-activation', status: 'PASS' });
   }
 
-  // --- signed updates: documented NOT RUN (no live updater in fixture) ---
+  // --- signed updates + product host binary packaging: NOT RUN ---
   cases.push({
     id: 'signed-updates',
     status: 'NOT RUN',
     detail: 'Live updater / code-signing channel mismatch remains platform packaging work',
+  });
+  cases.push({
+    id: 'product-host-binary-packaging',
+    status: 'NOT RUN',
+    detail:
+      'Fixture uses sidecar.mjs stand-in; packaging the product server/ binary into Tauri is deferred to three-OS qualification',
   });
 
   const report = {
@@ -204,9 +263,14 @@ try {
     scope:
       'Sidecar contract PoC on current OS; three-OS Tauri packaging + signing remain NOT RUN. Desktop ship / MIG-703 still human APPROVED.',
     criteria: [
-      { row: '1', title: 'Same host binary as Docker/VPS', status: 'PASS', cases: ['start-stop-health-datadir'] },
-      { row: '2', title: 'Solo mode / local sidecar', status: 'PASS', cases: ['start-stop-health-datadir'] },
-      { row: '3', title: 'Secrets not in renderer', status: 'PASS', cases: ['start-stop-health-datadir'] },
+      {
+        row: '1',
+        title: 'Product host binary packaged with Tauri (same as Docker/VPS)',
+        status: 'NOT RUN',
+        cases: ['product-host-binary-packaging'],
+      },
+      { row: '2', title: 'Solo mode / local sidecar contract', status: 'PASS', cases: ['start-stop-health', 'persistent-datadir-restart'] },
+      { row: '3', title: 'Secrets not in renderer', status: 'PASS', cases: ['secrets-not-in-renderer'] },
       { row: '4', title: 'Auto-update threat model', status: 'NOT RUN', cases: ['signed-updates'] },
       { row: '5', title: 'No browser-dev regression / no product Tauri', status: 'PASS', cases: ['no-desktop-product-activation'] },
       { row: '6', title: 'Port conflict + failed start', status: 'PASS', cases: ['port-conflict', 'failed-sidecar-start'] },
@@ -216,6 +280,7 @@ try {
     cases,
     nonClaims: [
       'No desktop product code under src/ or src-tauri/',
+      'No claim that sidecar.mjs is the product server/ binary',
       'No production cutover',
       'No claim that Windows/Linux packaging was executed unless platforms.*.RUN',
       'MIG-703 still blocked until GATE-05 full APPROVED',
@@ -254,16 +319,38 @@ try {
     );
   } else {
     assert.ok(existsSync(join(evidence, 'report.json')), 'report.json missing — run --write first');
+    assert.ok(existsSync(join(evidence, 'observations.json')), 'observations.json missing — run --write first');
     const prior = JSON.parse(readFileSync(join(evidence, 'report.json'), 'utf8'));
+    const priorObs = JSON.parse(readFileSync(join(evidence, 'observations.json'), 'utf8'));
     assert.equal(prior.gate, 'GATE-05');
     assert.equal(prior.status, 'PASS');
     assert.equal(prior.approval, 'NOT APPROVED');
+    assert.equal(priorObs.reportSha256, sha256File(join(evidence, 'report.json')), 'committed report digest must match observations.reportSha256');
+    assert.deepEqual(prior.platforms, platforms, 'committed platform matrix must match this host RUN/NOT RUN');
+    assert.equal(prior.criteria.length, report.criteria.length, 'criteria row count drift');
     for (const row of prior.criteria) {
+      const live = report.criteria.find((entry) => entry.row === row.row);
+      assert.ok(live, `missing live criterion ${row.row}`);
+      assert.equal(live.status, row.status, `criterion ${row.row} status drift`);
+      assert.deepEqual(live.cases, row.cases, `criterion ${row.row} case mapping drift`);
       if (row.status === 'PASS') {
-        assert.ok(cases.some((c) => row.cases.includes(c.id) && c.status === 'PASS'), `missing PASS case for ${row.row}`);
+        for (const caseId of row.cases) {
+          const liveCase = cases.find((entry) => entry.id === caseId);
+          assert.ok(liveCase && liveCase.status === 'PASS', `criterion ${row.row} missing live PASS case ${caseId}`);
+        }
+      }
+      if (row.status === 'NOT RUN') {
+        for (const caseId of row.cases) {
+          const liveCase = cases.find((entry) => entry.id === caseId);
+          assert.ok(liveCase && liveCase.status === 'NOT RUN', `criterion ${row.row} must stay NOT RUN (${caseId})`);
+        }
       }
     }
-    // Re-assert live invariants on every --check.
+    assert.equal(
+      stableStringify(prior.cases.map((entry) => ({ id: entry.id, status: entry.status }))),
+      stableStringify(cases.map((entry) => ({ id: entry.id, status: entry.status }))),
+      'case id/status ledger must match committed report',
+    );
     assert.deepEqual(
       JSON.parse(readFileSync(join(repo, '.qa/intake/local-first-stack-migration-issues.json'), 'utf8'))
         .issues.filter((issue) => (issue.dependsOn ?? []).includes('GATE-05'))
