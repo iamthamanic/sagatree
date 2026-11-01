@@ -1,11 +1,11 @@
 # Composition Gate — stack-migration-mig-703 (#852 / MIG-703)
 
-- HEAD_SHA: WORKTREE
+- HEAD_SHA: 384c93ac85a13468cd358bbb73424e6faa427b5c
 - BASE_SHA: aa0bcaba51de2e6b371239be08a856b862d435aa
 - Date: 2026-11-01
 - Verdict: CLEAR
 - Note: Tauri+sidecar isolated-contract after GATE-05 APPROVED; no product/store ship.
-- note: pin HEAD_SHA to commit after first implementation commit (proofOnlyChangesSince allowed)
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Event
 
