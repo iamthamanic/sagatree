@@ -1205,12 +1205,12 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-086",
-        "agent-blocked",
+        "agent-ready",
         "gate-issue"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-gate-05.md",
-      "sha256": "3b220b1ffe1aa1845e89d642d55511def542ce004705a0691c867bfcdbda294f",
-      "payloadSha256": "736cf79dddb1e16d83fd4df75cbad019115d2cb905989f32efbfaa3d0514acd2"
+      "sha256": "a585b11c9860faa539cb0d94cff2d9681c20ded7d74b2d039946d99501186876",
+      "payloadSha256": "5297e50ed030b8037d030f685d70cd46953133a5731e5a7c3f4da3258ce041bb"
     },
     {
       "localId": "MIG-700",
@@ -1220,11 +1220,11 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-087",
-        "agent-blocked"
+        "agent-ready"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-700.md",
-      "sha256": "8ec3143dfdc23c63378b26780c7805fa4eabac3224fe20aef04a40929bf6d5b5",
-      "payloadSha256": "a4857829ef5a8a744ffec4356930375cf398d3f1ded4ae1af0b3e971ca1d9e76"
+      "sha256": "e27146714263303d8637fd93111e58fe8ac98d0f69930a0fecc84beb3d788e49",
+      "payloadSha256": "1c32bdf2f4d88055cf5984267626fd7f7b63b823341543e7728f6826083ddf28"
     },
     {
       "localId": "MIG-701",
@@ -1234,11 +1234,12 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-088",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-701.md",
-      "sha256": "eba14c234e029dfaed4a5cbd02ccb51bfa1108974a95db0f770a28a83e6fb29c",
-      "payloadSha256": "7d7112e4eb89a799f14e7b84dfff37a85daea0ece3d1fcdf732f3cc2ecef6665"
+      "sha256": "197af535cba9efc660a56a9e6f4dfe077ec576b8167d79c7d977ba10a54ef199",
+      "payloadSha256": "5d639f9a8bad3b48df5669338e3f7e0beb5426ce5dd4e1121ce03bbe9a750b65"
     },
     {
       "localId": "MIG-702",
@@ -1248,11 +1249,12 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-blocked"
+        "agent-blocked",
+        "waiting-dependency"
       ],
       "bodyFile": ".qa/design/migration-issues/stack-migration-mig-702.md",
-      "sha256": "e8db579bb802c47f4a79578d1debe217f39faecf8993a4efb6618c82b4b28b8e",
-      "payloadSha256": "4abfdb38f9f43d490ec1d402a14c323b112e5f9b25d0dec0499725a2afbdea63"
+      "sha256": "9acc93dcd77abe9f6fd460b13d54db82cdf703527f97a7b9a5cf8a7d385c28c2",
+      "payloadSha256": "28c78336fd78888116b0ca3863103cc88c6eb1bf0e16214e681ffcddbeeff8b1"
     },
     {
       "localId": "MIG-703",

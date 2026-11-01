@@ -24,6 +24,28 @@ const ATLAS_LIVE_E2E_CI_ACCEPTANCE = 'passing';
 
 const HUMAN_CUTOVER_IDS = new Set(['MIG-700', 'MIG-701', 'MIG-702']);
 
+/** Owner RELEASE register (architecture-approvals.json). */
+function readOwnerApprovals() {
+  const path = `${evidenceRoot}/architecture-approvals.json`;
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function gate05ExecutionApproved(approvals) {
+  return approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE';
+}
+
+function cutoverDornhainApproved(approvals) {
+  const status =
+    approvals?.releases?.['CUTOVER-DORHAIN']?.status ??
+    approvals?.decisions?.['CUTOVER-DORHAIN']?.status;
+  return status === 'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF' || status === 'APPROVED';
+}
+
 /**
  * True execution locks (keep ticket blocked) vs inventory legacyDefects
  * (mandatory in-ticket acceptance / negative regressions — must NOT block READY).
@@ -276,11 +298,18 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       priorRegressions,
       priorBlockers.filter((entry) => isLegacyDefectPayload(entry)),
     );
+    const ownerApprovals = readOwnerApprovals();
+    const cutoverUnlocked = cutoverDornhainApproved(ownerApprovals);
+    const gate05Unlocked = gate05ExecutionApproved(ownerApprovals);
     const blockers = unique([
       ...priorBlockers.filter((entry) => {
         const s = text(entry);
         // Cleared when isolated atlas-isolated-product CI acceptance is passing (#770).
         if (id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'passing' && isAtlasLiveE2eExecutionBlocker(s)) {
+          return false;
+        }
+        // Cleared when owner recorded CUTOVER-DORHAIN RELEASE (2026-11-01).
+        if (HUMAN_CUTOVER_IDS.has(id) && cutoverUnlocked && s === CUTOVER_HUMAN_EXECUTION_BLOCKER) {
           return false;
         }
         if (isExecutionBlockerText(s)) return true;
@@ -292,7 +321,9 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
       ...(id === 'ATLAS-LIVE-E2E' && ATLAS_LIVE_E2E_CI_ACCEPTANCE === 'not-passing'
         ? [ATLAS_E2E_EXECUTION_BLOCKER]
         : []),
-      ...(HUMAN_CUTOVER_IDS.has(id) && old.status !== 'done' ? [CUTOVER_HUMAN_EXECUTION_BLOCKER] : []),
+      ...(HUMAN_CUTOVER_IDS.has(id) && old.status !== 'done' && !cutoverUnlocked
+        ? [CUTOVER_HUMAN_EXECUTION_BLOCKER]
+        : []),
     ]);
     const regressionAssertions = requiredRegressions.map((defect) => ({
       given: 'Der eingefrorene Legacy-Defekt aus dem Quellinventar',
@@ -310,7 +341,12 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
     let status;
     if (old.status === 'done') {
       status = 'done';
-    } else if (id === 'GATE-05' || HUMAN_CUTOVER_IDS.has(id) || blockers.length > 0 || sourceStatus === 'source-blocked') {
+    } else if (
+      (id === 'GATE-05' && !gate05Unlocked) ||
+      (HUMAN_CUTOVER_IDS.has(id) && !cutoverUnlocked) ||
+      blockers.length > 0 ||
+      sourceStatus === 'source-blocked'
+    ) {
       status = 'blocked';
     } else if (predecessorsDone) {
       status = 'ready';
@@ -335,7 +371,12 @@ export function buildMigrationPlan({ previous, registry, rpcInventory, edgeInven
         implementationStatus: old.status === 'done' || old.verification?.implementationStatus === 'accepted' ? 'accepted' : 'not-accepted',
         blockers: unique(blockers),
         requiredRegressions: unique(requiredRegressions),
-        approvalRequired: id === 'GATE-05' ? 'platform-qualification-pending' : null,
+        approvalRequired:
+          id === 'GATE-05'
+            ? (gate05Unlocked ? null : 'platform-qualification-pending')
+            : HUMAN_CUTOVER_IDS.has(id)
+              ? (cutoverUnlocked ? null : 'human-cutover-release-pending')
+              : null,
       },
       contractSections: {
         vorher: `Baseline ${baselineSha}; Quellpfade: ${definition.sources.join(', ')}. Detaillierte Aufruf-/SQL-Nachweise: ${sourceContracts.length ? sourceContracts.join(', ') : 'die unten referenzierten Anforderungen'}.`,

@@ -1100,6 +1100,18 @@ function checkMig502ExportImportBundles() {
   );
 }
 
+function checkMig700DornhainCutoverDrill() {
+  console.log('MIG-700 Dornhain cutover drill (#849): freeze/import/rollback + hard catalog...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-700-dornhain-cutover-drill.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -3499,6 +3511,7 @@ checkMig409ItemModel3d();
 checkMig410ItemThumbnail();
 checkMig414EdgeMain();
 checkMig502ExportImportBundles();
+checkMig700DornhainCutoverDrill();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

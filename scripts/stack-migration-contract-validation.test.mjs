@@ -77,10 +77,23 @@ test('the complete published plan validates without an implementation or archite
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
   assert.equal(ready.length, original.intake.coverage.issuesReady);
   assert.ok(ready.length < 50, `expected READY < 50 (no mass unlock of full queue), got ${ready.length}`);
-  assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'));
   assert.ok(!ready.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
-  assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'));
-  assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  // 2026-11-01 owner RELEASE unlocks GATE-05 execute + MIG-700 drill when preds DONE.
+  const cutoverApproved =
+    (original.approvals?.releases?.['CUTOVER-DORHAIN']?.status ??
+      original.approvals?.decisions?.['CUTOVER-DORHAIN']?.status) ===
+    'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF';
+  const gate05Execute =
+    original.approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE';
+  if (gate05Execute) {
+    assert.ok(ready.some((entry) => entry.localId === 'GATE-05') || blocked.some((entry) => entry.localId === 'GATE-05'));
+  } else {
+    assert.ok(!ready.some((entry) => entry.localId === 'GATE-05'));
+    assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  }
+  if (!cutoverApproved) {
+    assert.ok(!ready.some((entry) => entry.localId === 'MIG-700'));
+  }
   assert.ok(done.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-014'));
   assert.ok(done.some((entry) => entry.localId === 'MIG-015'));
@@ -135,7 +148,12 @@ test('legacyDefects become requiredRegressions and do not alone force blocked', 
   assert.equal((unlocked.verification.blockers ?? []).length, 0, 'ATLAS blocker is cleared by the unlock condition');
   assert.notEqual(unlocked.status, 'blocked', 'ATLAS must leave blocked once unlock clears the execution lock');
   const gate05 = intake.issues.find((entry) => entry.localId === 'GATE-05');
-  assert.equal(gate05.status, 'blocked');
+  // Owner APPROVED_TO_EXECUTE (2026-11-01) unlocks GATE-05 to ready when preds DONE.
+  if (original.approvals?.decisions?.['GATE-05']?.status === 'APPROVED_TO_EXECUTE') {
+    assert.equal(gate05.status, 'ready');
+  } else {
+    assert.equal(gate05.status, 'blocked');
+  }
 });
 
 test('inventory resolved-corrective replaces stale blocked marketplace regressions by id', () => {
@@ -372,8 +390,27 @@ test('architecture-approved gates must not remain needs-design after owner decis
 
 test('GATE-05 cannot be marked ready or done before platform qualification', () => {
   const input = clone();
+  input.approvals.decisions['GATE-05'] = {
+    status: 'DEFERRED_UNTIL_BROWSER_HOST_COMPLETE',
+  };
   setStatus(input, 'GATE-05', 'ready');
   rejects(input, /GATE-05: must not be marked technically done before browser-host/);
+});
+
+test('GATE-05 may be ready when owner APPROVED_TO_EXECUTE is registered', () => {
+  const input = clone();
+  input.approvals.decisions['GATE-05'] = {
+    status: 'APPROVED_TO_EXECUTE',
+    actorType: 'human',
+    actor: 'iamthamanic',
+    sourceUrl: 'https://github.com/iamthamanic/sagatree/issues/849#issuecomment-6554822337',
+    evidenceFile: 'docs/architecture/migration-owner-release-2026-11-01-dornhain.md',
+  };
+  setStatus(input, 'GATE-05', 'ready');
+  assert.deepEqual(
+    errors(input).filter((e) => /GATE-05: must not be marked/.test(e)),
+    [],
+  );
 });
 
 test('human GATE-01 APPROVED with verifiable comment URL and ADR evidence is accepted', () => {
@@ -554,12 +591,19 @@ test('unknown internal RPC dependencies are not silently filtered from the graph
 
 test('publication binds labels, title, repository, issue number and content together', () => {
   const byId = new Map(original.intake.issues.map((entry) => [entry.localId, entry]));
-  // Use a still-blocked ticket so runner-label tamper remains observable.
-  const current = byId.get('GATE-05');
+  // Prefer a still-locked ticket (agent-blocked) so runner-label tamper remains observable.
+  // After Dornhain RELEASE, GATE-05/MIG-700 are agent-ready; MIG-701 waits on the drill.
+  const current =
+    byId.get('MIG-701') ??
+    [...byId.values()].find((entry) => (entry.labels ?? []).includes('agent-blocked')) ??
+    byId.get('GATE-05');
+  assert.ok(current, 'need a published ticket for publication binding');
   const base = { repository: original.registry.repository, entry: publishEntry(current, byId), issue: current, byId, body: renderIssue(current, byId) };
   assert.doesNotThrow(() => validatePublicationEntry(base));
+  const lockedLabel = (current.labels ?? []).includes('agent-blocked') ? 'agent-blocked' : 'agent-ready';
+  const tamperedLabel = lockedLabel === 'agent-blocked' ? 'agent-ready' : 'agent-blocked';
   const mutations = [
-    (value) => { value.entry.labels = value.entry.labels.map((label) => label === 'agent-blocked' ? 'agent-ready' : label); },
+    (value) => { value.entry.labels = value.entry.labels.map((label) => label === lockedLabel ? tamperedLabel : label); },
     (value) => { value.entry.title = 'Changed title'; },
     (value) => { value.repository = 'other/repository'; },
     (value) => { value.entry.issueNumber = 783; },
@@ -702,14 +746,28 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     !ready.some((entry) => entry.localId === 'MIG-602'),
     'MIG-602 must leave READY after DONE evidence',
   );
-  assert.ok(
-    !ready.some((entry) => entry.localId === 'MIG-700'),
-    'MIG-700 cutover must stay human-blocked (not agent-ready)',
-  );
+  const cutoverApproved =
+    (original.approvals?.releases?.['CUTOVER-DORHAIN']?.status ??
+      original.approvals?.decisions?.['CUTOVER-DORHAIN']?.status) ===
+    'APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF';
+  if (cutoverApproved) {
+    assert.ok(
+      ready.some((entry) => entry.localId === 'MIG-700') ||
+        original.intake.issues.find((i) => i.localId === 'MIG-700')?.status === 'waiting',
+      'MIG-700 unlocks to ready/waiting after Dornhain RELEASE (not permanently human-blocked)',
+    );
+  } else {
+    assert.ok(
+      !ready.some((entry) => entry.localId === 'MIG-700'),
+      'MIG-700 cutover must stay human-blocked (not agent-ready)',
+    );
+  }
   assert.ok(!ready.some((entry) => doneIds.includes(entry.localId)), 'DONE tickets must leave READY queue');
   assert.equal(original.intake.coverage.issuesReady, ready.length);
   const blocked = original.intake.issues.filter((entry) => entry.status === 'blocked');
-  assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  if (original.approvals?.decisions?.['GATE-05']?.status !== 'APPROVED_TO_EXECUTE') {
+    assert.ok(blocked.some((entry) => entry.localId === 'GATE-05'));
+  }
   assert.ok(!blocked.some((entry) => entry.localId === 'ATLAS-LIVE-E2E'));
 });
 

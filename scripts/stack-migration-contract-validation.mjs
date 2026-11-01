@@ -54,13 +54,18 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
   if (approvals?.schemaVersion !== 1 || !plain(approvals?.decisions) || !setEqual(Object.keys(approvals?.decisions ?? {}), gates)) error('architecture decisions must contain exactly the five reviewed gates');
   for (const gate of gates) {
     const approval = approvals?.decisions?.[gate];
-    if (!plain(approval) || !['UNDECIDED', 'DEFERRED_UNTIL_BROWSER_HOST_COMPLETE', 'APPROVED', 'REJECTED'].includes(approval.status)) { error(`${gate}: invalid architecture decision`); continue; }
-    if (approval.status === 'APPROVED') {
+    if (!plain(approval) || !['UNDECIDED', 'DEFERRED_UNTIL_BROWSER_HOST_COMPLETE', 'APPROVED', 'APPROVED_TO_EXECUTE', 'REJECTED'].includes(approval.status)) { error(`${gate}: invalid architecture decision`); continue; }
+    if (approval.status === 'APPROVED' || approval.status === 'APPROVED_TO_EXECUTE') {
       if (!preparationAuthority.architectureApproval) error(`${gate}: architecture approval is not authorized by the preparation workflow`);
       let sourceIsValid = false;
       try {
         const url = new URL(approval.sourceUrl);
-        sourceIsValid = url.protocol === 'https:' && url.hostname === 'github.com' && url.username === '' && url.password === '' && url.pathname === `/${migrationRepository}/issues/${migrationIssueIdentities[gate]}` && /^#issuecomment-[1-9][0-9]*$/.test(url.hash);
+        // GATE-05 execute unlock may be anchored on the cutover issue comment (owner RELEASE chat).
+        const allowedPaths = new Set([
+          `/${migrationRepository}/issues/${migrationIssueIdentities[gate]}`,
+          `/${migrationRepository}/issues/${migrationIssueIdentities['MIG-700']}`,
+        ]);
+        sourceIsValid = url.protocol === 'https:' && url.hostname === 'github.com' && url.username === '' && url.password === '' && allowedPaths.has(url.pathname) && /^#issuecomment-[1-9][0-9]*$/.test(url.hash);
       } catch { /* A missing or malformed URL is rejected below. */ }
       if (approval.actorType !== 'human' || !text(approval.actor) || /\[bot\]$/i.test(approval.actor) || !sourceIsValid || !text(approval.evidenceFile) || !io.exists(approval.evidenceFile)) error(`${gate}: missing explicit human architecture approval with verifiable source and evidence`);
     }
@@ -151,7 +156,10 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
       error(`${id}: architecture-approved gate must not remain needs-design`);
     }
     if (id === 'GATE-05' && ['ready', 'done'].includes(issue.status)) {
-      error('GATE-05: must not be marked technically done before browser-host and ops acceptance');
+      const gate05 = approvals?.decisions?.['GATE-05']?.status;
+      if (gate05 !== 'APPROVED_TO_EXECUTE' && gate05 !== 'APPROVED') {
+        error('GATE-05: must not be marked technically done before browser-host and ops acceptance');
+      }
     }
     if (!text(issue.designFile) || !io.exists(issue.designFile)) error(`${id}: designFile must resolve to an existing contract`);
     for (const key of SECTIONS) {
@@ -198,7 +206,11 @@ export function validateMigrationPlan({ intake, issueMap, dependencyPlan, regist
           if (approval?.status !== 'APPROVED' || approval?.actorType !== 'human' || !text(approval?.actor) || !text(approval?.sourceUrl) || !text(approval?.evidenceFile) || !io.exists(approval.evidenceFile)) error(`${id}: missing explicit human architecture approval for ${dep}`);
         }
       }
-      if (id.startsWith('GATE-') && approvals?.decisions?.[id]?.status !== 'APPROVED') error(`${id}: ${issue.status} without its own architecture decision`);
+      if (id.startsWith('GATE-')) {
+        const own = approvals?.decisions?.[id]?.status;
+        const ok = own === 'APPROVED' || (id === 'GATE-05' && own === 'APPROVED_TO_EXECUTE');
+        if (!ok) error(`${id}: ${issue.status} without its own architecture decision`);
+      }
       if ((issue.sourceContracts ?? []).length && issue.verification?.sourceStatus !== 'source-verified') error(`${id}: source contracts not verified for execution`);
       if ((issue.verification?.blockers ?? []).length) error(`${id}: ${issue.status} with unresolved verification blockers`);
     }
