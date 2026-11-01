@@ -1,9 +1,10 @@
 # Composition Gate — stack-migration-mig-703 intake DONE sync (#852)
 
-- HEAD_SHA: 6b6a35c6a311a8ab6ca782117dc669aadb94b7da
+- HEAD_SHA: 8735d88dd9f32813ad0cf0d295ee107a8b11d32d
 - BASE_SHA: d6835fd2414dd36f22a50cfedddde1c4b61a181a
 - Date: 2026-11-01
 - Verdict: SKIPPED
+- note: tip may include composition-pin-only commits after HEAD_SHA (proofOnlyChangesSince this file)
 
 ## Skip reason
 
@@ -24,5 +25,6 @@ N/A — SKIPPED.
 
 ## Flags
 
-- Acceptance tier: evidence-sync
-- Deferred integration: none for this hop (product/store RELEASE remains separate)
+- Acceptance tier: isolated-contract
+- Deferred integration: none for this hop
+- Product/store RELEASE: still NOT APPROVED
