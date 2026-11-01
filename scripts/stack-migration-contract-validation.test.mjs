@@ -813,6 +813,11 @@ test('verified Oct-25 completions stay DONE with agent-done labels and unlock de
     const mig703 = original.intake.issues.find((i) => i.localId === 'MIG-703');
     if (mig703?.completionEvidence) {
       assert.equal(mig703.status, 'done', 'MIG-703 DONE after completionEvidence sync');
+      assert.equal(
+        mig703.completionEvidence,
+        '.qa/evidence/stack-migration-prep/completion/mig-703.json',
+        'MIG-703 completionEvidence path',
+      );
       assert.ok(mig703.labels?.includes('agent-done'), 'MIG-703 agent-done');
       assert.ok(!ready.some((entry) => entry.localId === 'MIG-703'), 'MIG-703 leaves READY after DONE');
     } else {
