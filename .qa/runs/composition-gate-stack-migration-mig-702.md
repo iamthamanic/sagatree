@@ -1,6 +1,6 @@
 # Composition Gate — stack-migration-mig-702 (#851)
 
-- HEAD_SHA: af182298bb25cddc1f40edb35d51cec0782f42e4
+- HEAD_SHA: 5189b2cee194b18c0f2b07d884f9dfcd60f0e543
 - BASE_SHA: af6a2f2e7e2b9bea3307dd87f4d628ebef0121b8
 - Date: 2026-11-01
 - Verdict: CLEAR
@@ -17,9 +17,11 @@ No UI / Edge / RLS hop in this slice.
 ## Simulations
 
 - Relabeled preds without evidence → blocked
-- Supabase leftover call → blocked
-- Full Freigabe path → shutdownReady + productiveShutdownAuthorized
-- Permission negative: stranger cannot authorize
+- Empty call matrix → blocked
+- Supabase leftover call (even with retirement flag) → blocked
+- Broken Dornhain catalog observation → blocked
+- Forged Freigabe object → unbound
+- Canonical CUTOVER-DORHAIN Freigabe → shutdownReady + productiveShutdownAuthorized
 
 ## Flags
 
