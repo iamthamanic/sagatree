@@ -28,7 +28,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 2,
+    "issuesReady": 1,
     "issuesBlockedOrNeedsDesign": 1,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -17127,7 +17127,7 @@
       "title": "Supabase shutdown only after parity+restore proof",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-702",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-702.md",
       "dependsOn": [
@@ -17205,9 +17205,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-702.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -17238,7 +17239,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {

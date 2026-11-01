@@ -2133,7 +2133,7 @@
       "githubIssue": 851,
       "order": 89,
       "wave": 7,
-      "status": "ready",
+      "status": "done",
       "dependsOnGithub": [
         849,
         850,
@@ -2145,7 +2145,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-089",
-        "agent-ready"
+        "agent-done"
       ]
     },
     {
