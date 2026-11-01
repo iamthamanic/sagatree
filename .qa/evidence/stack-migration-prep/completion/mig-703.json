@@ -7,7 +7,7 @@
   "testedCommit": "e261e9e5c38eea8c26875a55b7c9b253c9af50dd",
   "githubClosed": true,
   "mergeRef": "PR #1082 → main (#852) @ d6835fd2414dd36f22a50cfedddde1c4b61a181a",
-  "note": "Tauri+sidecar isolated-contract under desktop/ + docs/ops/desktop. Product/store RELEASE remains a separate human decision.",
+  "note": "Tauri+sidecar isolated-contract under desktop/ + docs/ops/desktop after GATE-05 APPROVED. Product/store RELEASE remains a separate human decision. Intake DONE sync after PR #1082.",
   "checks": [
     {
       "command": "node --experimental-strip-types scripts/mig-703-tauri-integration.self-test.mjs",
