@@ -4,14 +4,16 @@
  *
  * Dry-run (default): verify Freigabe + allowlisted project refs; no mutation.
  * --execute: pause allowlisted hosted projects via Supabase Management API.
- * Missing allowlisted refs (404 / absent from GET /projects) count as
+ * Missing allowlisted refs (absent from a successful GET /projects) count as
  * ALREADY_ABSENT success — not a failed wipe.
  *
  * Fail-closed without SUPABASE_ACCESS_TOKEN + typed confirmation env.
+ * Fail-closed when project inventory HTTP/parse fails (never invent ALREADY_ABSENT).
  */
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { z } from 'zod';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const APPROVALS_PATH = join(
@@ -31,6 +33,26 @@ const ALLOWLISTED_PROJECT_REFS = Object.freeze([
 
 const CONFIRM_PHRASE = 'I_UNDERSTAND_DORHAIN_HOST_SURVIVES';
 const MGMT = 'https://api.supabase.com/v1';
+
+const projectRowSchema = z
+  .object({
+    id: z.string().min(1),
+    status: z.string().min(1),
+    name: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const projectListSchema = z.array(projectRowSchema);
+
+/** Statuses that already mean “not serving” — do not re-POST /pause. */
+const ALREADY_PAUSED_STATUSES = new Set([
+  'INACTIVE',
+  'INACTIVE_ACTIVE_HEALTHY',
+  'PAUSED',
+  'PAUSING',
+  'REMOVED',
+  'GOING_DOWN',
+]);
 
 function loadApprovals() {
   if (!existsSync(APPROVALS_PATH)) {
@@ -56,26 +78,52 @@ function requireFreigabe(approvals) {
 }
 
 async function listProjects(token) {
-  const res = await fetch(`${MGMT}/projects`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  let res;
+  try {
+    res = await fetch(`${MGMT}/projects`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      httpStatus: 0,
+      projects: [],
+      reason: `transport: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
   const text = await res.text();
   if (!res.ok) {
-    return { ok: false, httpStatus: res.status, projects: [] };
+    return {
+      ok: false,
+      httpStatus: res.status,
+      projects: [],
+      reason: `HTTP ${res.status}`,
+    };
   }
-  let projects;
+  let raw;
   try {
-    projects = JSON.parse(text);
+    raw = JSON.parse(text);
   } catch {
-    return { ok: false, httpStatus: res.status, projects: [] };
+    return {
+      ok: false,
+      httpStatus: res.status,
+      projects: [],
+      reason: 'non-json body',
+    };
   }
-  if (!Array.isArray(projects)) {
-    return { ok: false, httpStatus: res.status, projects: [] };
+  const parsed = projectListSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      httpStatus: res.status,
+      projects: [],
+      reason: `zod: ${parsed.error.issues.map((i) => i.message).join('; ')}`,
+    };
   }
   return {
     ok: true,
     httpStatus: res.status,
-    projects: projects.map((p) => ({
+    projects: parsed.data.map((p) => ({
       id: p.id,
       status: p.status,
       name: typeof p.name === 'string' ? p.name : null,
@@ -84,13 +132,23 @@ async function listProjects(token) {
 }
 
 async function pauseProject(ref, token) {
-  const res = await fetch(`${MGMT}/projects/${ref}/pause`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  let res;
+  try {
+    res = await fetch(`${MGMT}/projects/${ref}/pause`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (err) {
+    return {
+      ref,
+      httpStatus: 0,
+      ok: false,
+      reason: `transport: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
   return { ref, httpStatus: res.status, ok: res.ok };
 }
 
@@ -153,64 +211,115 @@ async function main() {
   }
 
   const trimmed = token.trim();
-  const inventory = await listProjects(trimmed);
-  const presentIds = new Set(inventory.projects.map((p) => p.id));
   const results = [];
+  let inventory = null;
+  let receiptPath = null;
+  let fatalReason = null;
 
-  for (const ref of ALLOWLISTED_PROJECT_REFS) {
-    if (!presentIds.has(ref)) {
+  try {
+    inventory = await listProjects(trimmed);
+    if (!inventory.ok) {
+      fatalReason = `project inventory failed (${inventory.reason ?? 'unknown'})`;
+      process.exitCode = 2;
+      return;
+    }
+
+    const byId = new Map(inventory.projects.map((p) => [p.id, p]));
+
+    for (const ref of ALLOWLISTED_PROJECT_REFS) {
+      const row = byId.get(ref);
+      if (!row) {
+        results.push({
+          ref,
+          outcome: 'ALREADY_ABSENT',
+          httpStatus: 404,
+          ok: true,
+        });
+        continue;
+      }
+      if (ALREADY_PAUSED_STATUSES.has(String(row.status).toUpperCase())) {
+        results.push({
+          ref,
+          outcome: 'ALREADY_PAUSED',
+          status: row.status,
+          httpStatus: 200,
+          ok: true,
+        });
+        continue;
+      }
+      const paused = await pauseProject(ref, trimmed);
       results.push({
         ref,
-        outcome: 'ALREADY_ABSENT',
-        httpStatus: 404,
-        ok: true,
+        outcome: paused.ok ? 'PAUSED' : 'PAUSE_FAILED',
+        httpStatus: paused.httpStatus,
+        ok: paused.ok,
+        ...(paused.reason ? { reason: paused.reason } : {}),
       });
-      continue;
     }
-    const paused = await pauseProject(ref, trimmed);
-    results.push({
-      ref,
-      outcome: paused.ok ? 'PAUSED' : 'PAUSE_FAILED',
-      httpStatus: paused.httpStatus,
-      ok: paused.ok,
-    });
+  } catch (err) {
+    fatalReason = err instanceof Error ? err.message : String(err);
+    process.exitCode = 2;
+  } finally {
+    const allOk =
+      !fatalReason && results.length > 0 && results.every((r) => r.ok);
+    const resultLabel = fatalReason
+      ? 'REFUSED'
+      : allOk
+        ? 'EXECUTE_OK'
+        : 'EXECUTE_PARTIAL_OR_FAIL';
+    receiptPath = writeReceipt(
+      `${resultLabel === 'EXECUTE_OK' ? 'execute-ok' : resultLabel === 'REFUSED' ? 'execute-refused-inventory' : 'execute-partial'}-${Date.now()}.json`,
+      {
+        ...dryPayload,
+        result: resultLabel,
+        ...(fatalReason ? { reason: fatalReason } : {}),
+        inventorySummary: inventory
+          ? {
+              listHttpStatus: inventory.httpStatus,
+              listOk: inventory.ok,
+              reason: inventory.reason,
+              projectCount: inventory.projects.length,
+              statusCounts: inventory.projects.reduce((acc, p) => {
+                const key = p.status ?? 'UNKNOWN';
+                acc[key] = (acc[key] ?? 0) + 1;
+                return acc;
+              }, {}),
+              allowlistPresent: ALLOWLISTED_PROJECT_REFS.filter((ref) =>
+                inventory.projects.some((p) => p.id === ref),
+              ),
+              allowlistAbsent: ALLOWLISTED_PROJECT_REFS.filter(
+                (ref) => !inventory.projects.some((p) => p.id === ref),
+              ),
+              sagaTreeNamed: inventory.projects
+                .filter((p) =>
+                  /saga|dornhain|devtrack|figma/i.test(`${p.name ?? ''}${p.id ?? ''}`),
+                )
+                .map((p) => ({ id: p.id, status: p.status, name: p.name })),
+            }
+          : null,
+        results,
+      },
+    );
+    if (resultLabel === 'EXECUTE_OK') {
+      writeReceipt('execute-latest.json', JSON.parse(readFileSync(receiptPath, 'utf8')));
+    }
   }
 
-  const allOk = results.every((r) => r.ok);
-  const path = writeReceipt(`execute-${allOk ? 'ok' : 'partial'}-${Date.now()}.json`, {
-    ...dryPayload,
-    result: allOk ? 'EXECUTE_OK' : 'EXECUTE_PARTIAL_OR_FAIL',
-    inventorySummary: {
-      listHttpStatus: inventory.httpStatus,
-      listOk: inventory.ok,
-      projectCount: inventory.projects.length,
-      statusCounts: inventory.projects.reduce((acc, p) => {
-        const key = p.status ?? 'UNKNOWN';
-        acc[key] = (acc[key] ?? 0) + 1;
-        return acc;
-      }, {}),
-      allowlistPresent: ALLOWLISTED_PROJECT_REFS.filter((ref) => presentIds.has(ref)),
-      allowlistAbsent: ALLOWLISTED_PROJECT_REFS.filter((ref) => !presentIds.has(ref)),
-      sagaTreeNamed: inventory.projects
-        .filter((p) => /saga|dornhain|devtrack|figma/i.test(`${p.name ?? ''}${p.id ?? ''}`))
-        .map((p) => ({ id: p.id, status: p.status, name: p.name })),
-    },
-    results,
-  });
-
+  const allOk = !fatalReason && results.length > 0 && results.every((r) => r.ok);
   console.log(
     JSON.stringify(
       {
         ok: allOk,
         mode: 'execute',
-        receipt: path,
+        receipt: receiptPath,
+        ...(fatalReason ? { reason: fatalReason } : {}),
         results,
       },
       null,
       2,
     ),
   );
-  if (!allOk) process.exitCode = 1;
+  if (!allOk && process.exitCode !== 2) process.exitCode = 1;
 }
 
 main().catch((err) => {

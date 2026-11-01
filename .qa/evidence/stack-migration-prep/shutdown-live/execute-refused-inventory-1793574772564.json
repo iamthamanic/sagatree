@@ -1,6 +1,6 @@
 {
   "mode": "execute",
-  "at": "2026-11-01T22:58:12.838Z",
+  "at": "2026-11-01T23:12:52.456Z",
   "freigabe": {
     "CUTOVER_DORHAIN": "APPROVED_DRILL_AND_SHUTDOWN_AFTER_PROOF",
     "SUPABASE_DORHAIN_LIVE_SHUTDOWN": "APPROVED",
@@ -11,14 +11,14 @@
     "vjpfbedynctazvwywlqj"
   ],
   "hardRequirement": "Dornhain world/saga/characters/items/monsters/NPCs must survive on host",
-  "result": "EXECUTE_OK",
+  "result": "REFUSED",
+  "reason": "project inventory failed (HTTP 401)",
   "inventorySummary": {
-    "listHttpStatus": 200,
-    "listOk": true,
-    "projectCount": 11,
-    "statusCounts": {
-      "INACTIVE": 11
-    },
+    "listHttpStatus": 401,
+    "listOk": false,
+    "reason": "HTTP 401",
+    "projectCount": 0,
+    "statusCounts": {},
     "allowlistPresent": [],
     "allowlistAbsent": [
       "dnhotyjazjnhneqbqocq",
@@ -26,18 +26,5 @@
     ],
     "sagaTreeNamed": []
   },
-  "results": [
-    {
-      "ref": "dnhotyjazjnhneqbqocq",
-      "outcome": "ALREADY_ABSENT",
-      "httpStatus": 404,
-      "ok": true
-    },
-    {
-      "ref": "vjpfbedynctazvwywlqj",
-      "outcome": "ALREADY_ABSENT",
-      "httpStatus": 404,
-      "ok": true
-    }
-  ]
+  "results": []
 }
