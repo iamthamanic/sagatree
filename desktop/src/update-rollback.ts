@@ -61,6 +61,8 @@ function modeOf(path: string): number {
 export function runUpdateRollbackDrill(args: {
   readonly workDir: string;
   readonly ownerUserId?: string;
+  /** Test-only: after restore, weaken modes so modeCheck becomes FAIL (POSIX). */
+  readonly simulateModeFailAfterRestore?: boolean;
 }): UpdateRollbackReport {
   const root = args.workDir;
   const dataDir = join(root, 'host-data');
@@ -119,6 +121,10 @@ export function runUpdateRollbackDrill(args: {
   if (posixModes) {
     chmodSync(statePath, beforeModeState);
     chmodSync(permPath, beforeModePerm);
+    if (args.simulateModeFailAfterRestore) {
+      chmodSync(statePath, 0o666);
+      chmodSync(permPath, 0o666);
+    }
   }
 
   const restored = hostStateSchema.parse(JSON.parse(readFileSync(statePath, 'utf8')));

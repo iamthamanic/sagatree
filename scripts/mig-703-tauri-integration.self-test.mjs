@@ -147,6 +147,34 @@ const {
     { origin: 'http://localhost:1420', expectedNonce: 'abcdefgh' },
   );
   assert(ok.ok && ok.op === 'host.health', 'allowlisted op on localhost:port ok');
+
+  for (const badOrigin of ['tauri:', 'tauri:opaque']) {
+    const denied = handleBridgeMessage(
+      { op: 'host.health', nonce: 'abcdefgh' },
+      { origin: badOrigin, expectedNonce: 'abcdefgh' },
+    );
+    assert(
+      !denied.ok && denied.code === 'foreign-origin',
+      `host-less ${badOrigin} must be foreign-origin`,
+    );
+  }
+}
+
+// Update-rollback FAIL path (POSIX mode sabotage after restore)
+if (process.platform !== 'win32') {
+  const failWork = mkdtempSync(join(tmpdir(), 'mig703-fail-'));
+  try {
+    const failed = runUpdateRollbackDrill({
+      workDir: failWork,
+      simulateModeFailAfterRestore: true,
+    });
+    assert(!failed.ok, 'mode sabotage must yield ok=false');
+    assert(failed.modeCheck === 'FAIL', 'modeCheck FAIL when modes weakened after restore');
+    const archived = archiveSchema.parse(JSON.parse(readFileSync(failed.archivePath, 'utf8')));
+    assert(archived.result === 'fail', 'archive records fail');
+  } finally {
+    cleanupWorkDir(failWork);
+  }
 }
 
 // 3) Lifecycle matrix + update/rollback
