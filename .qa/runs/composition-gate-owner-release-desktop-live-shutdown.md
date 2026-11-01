@@ -3,7 +3,7 @@
 **Verdict:** SKIPPED  
 **Scope:** Owner RELEASE records + Ops evidence only (no new user-journey UI surface).  
 **Branch:** `feat/owner-release-desktop-and-live-shutdown`  
-**HEAD:** `80425eda45d6473a3307948b026ab4405ce9d673`  
+**HEAD:** `cfb39d94cd9e11d1a16539143c88dfc072fe8e46`  
 **Date:** 2026-11-01
 
 ## Why SKIPPED
