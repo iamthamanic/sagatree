@@ -101,4 +101,4 @@ GATE-05 Tauri+Sidecar-Ziel ist gewählt; Plattformabnahme wartet auf MIG-602 und
 | 87 | 7 | MIG-700 [#849](https://github.com/iamthamanic/sagatree/issues/849) | done | #782, #770, #783, #784, #785, #786, #787, #789, #790, #792, #791, #793, #794, #841, #795, #797, #798, #799, #796, #844, #816, #814, #815, #813, #818, #817, #819, #820, #821, #822, #823, #824, #825, #826, #827, #828, #829, #831, #832, #833, #834, #835, #836, #837, #830, #838, #839, #840, #800, #801, #802, #803, #804, #805, #806, #807, #808, #809, #810, #811, #812, #843, #845, #846, #847, #848, #861, #862, #863, #864, #865, #866, #867, #868, #869, #870, #871, #872, #873, #874, #875, #876, #877, #878 |
 | 88 | 7 | MIG-701 [#850](https://github.com/iamthamanic/sagatree/issues/850) | done | #849 |
 | 89 | 7 | MIG-702 [#851](https://github.com/iamthamanic/sagatree/issues/851) | done | #849, #850, #770, #848 |
-| 90 | 7 | MIG-703 [#852](https://github.com/iamthamanic/sagatree/issues/852) | ready | #788, #847, #848 |
+| 90 | 7 | MIG-703 [#852](https://github.com/iamthamanic/sagatree/issues/852) | done | #788, #847, #848 |

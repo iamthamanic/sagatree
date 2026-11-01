@@ -28,7 +28,7 @@
     "originalMigrationIssues": 71,
     "existingAtlasIssue": 1,
     "rpcChildIssues": 18,
-    "issuesReady": 1,
+    "issuesReady": 0,
     "issuesBlockedOrNeedsDesign": 0,
     "gateIssues": 5,
     "openArchitectureDecisions": 1
@@ -17249,7 +17249,7 @@
       "title": "Tauri integration before external desktop test phase",
       "priority": "P2",
       "kind": "implementation",
-      "status": "ready",
+      "status": "done",
       "featureSlug": "stack-migration-mig-703",
       "designFile": ".qa/design/migration-issues/stack-migration-mig-703.md",
       "dependsOn": [
@@ -17328,9 +17328,10 @@
           ]
         }
       ],
+      "completionEvidence": ".qa/evidence/stack-migration-prep/completion/mig-703.json",
       "verification": {
         "sourceStatus": "specified",
-        "implementationStatus": "not-accepted",
+        "implementationStatus": "accepted",
         "blockers": [],
         "requiredRegressions": [],
         "approvalRequired": null
@@ -17360,7 +17361,7 @@
         "P2",
         "migration-wave-7-cutover-tauri",
         "migration-order-090",
-        "agent-ready"
+        "agent-done"
       ]
     }
   ]
