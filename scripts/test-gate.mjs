@@ -1120,6 +1120,18 @@ function checkGate05TauriSidecarPoc() {
   });
 }
 
+function checkMig701ParityWindow() {
+  console.log('MIG-701 parity window (#850): dual-run read compare + rollback archive...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/mig-701-parity-window.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+}
+
 function checkMig306MediaAdapter() {
   console.log('MIG-306 media adapter (#805): host policy ports + client optimizer stubs...');
   execFileSync(
@@ -3521,6 +3533,7 @@ checkMig414EdgeMain();
 checkMig502ExportImportBundles();
 checkMig700DornhainCutoverDrill();
 checkGate05TauriSidecarPoc();
+checkMig701ParityWindow();
 checkMig503PgSqliteDryRun();
 checkSagaStateColumnPrivileges();
 checkSagatreeCoreWorkflowsContract();

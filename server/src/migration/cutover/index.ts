@@ -15,6 +15,22 @@ export {
 
 export {
   runDornhainCutoverDrill,
+  applyDornhainCatalogToHost,
   type DornhainDrillInput,
   type DornhainDrillReport,
 } from './dornhain-drill.ts';
+
+export {
+  captureParitySnapshot,
+  compareParitySnapshots,
+  seedDornhainParityAuthority,
+  runDornhainParityWindowDrill,
+  archiveParityRollbackDecision,
+  readConfirmedRevision,
+  writeConfirmedRevision,
+  type ProjectionRow,
+  type ParityDiscrepancy,
+  type ParityCompareReport,
+  type ParityRollbackArchive,
+  type ParityWindowReport,
+} from './parity-window.ts';
