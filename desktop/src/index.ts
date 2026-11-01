@@ -1,8 +1,16 @@
 /**
  * MIG-703 desktop integration public surface. Location: desktop/src/index.ts
  */
-export { evaluateDesktopUnlock, type DesktopUnlockReport } from './gate.ts';
-export { handleBridgeMessage, type BridgeRequest, type BridgeResult } from './bridge.ts';
+export {
+  evaluateDesktopUnlock,
+  type DesktopUnlockReport,
+} from './gate.ts';
+export {
+  handleBridgeMessage,
+  type BridgePayload,
+  type BridgeTrustedContext,
+  type BridgeResult,
+} from './bridge.ts';
 export {
   runPlatformLifecycleMatrix,
   desktopPackageRoot,
@@ -12,6 +20,8 @@ export {
 export {
   runUpdateRollbackDrill,
   cleanupWorkDir,
+  permissionsSchema,
+  archiveSchema,
   type HostState,
   type UpdateRollbackReport,
 } from './update-rollback.ts';

@@ -4,12 +4,18 @@
  * Without architecture APPROVED, desktop integration must stay blocked
  * (no Tauri/Electron product deps as a side effect of earlier waves).
  */
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { isAbsolute, join, relative, resolve } from 'node:path';
 import { z } from 'zod';
 
 const gate05DecisionSchema = z.object({
-  status: z.enum(['APPROVED', 'APPROVED_TO_EXECUTE', 'UNDECIDED', 'REJECTED', 'DEFERRED_UNTIL_BROWSER_HOST_COMPLETE']),
+  status: z.enum([
+    'APPROVED',
+    'APPROVED_TO_EXECUTE',
+    'UNDECIDED',
+    'REJECTED',
+    'DEFERRED_UNTIL_BROWSER_HOST_COMPLETE',
+  ]),
   actorType: z.literal('human'),
   actor: z.string().min(1),
   evidenceFile: z.string().min(1),
@@ -26,6 +32,21 @@ export type DesktopUnlockReport = {
   readonly gate05Status: string;
   readonly blocker: string | null;
 };
+
+function evidenceFileInsideRepo(repoRoot: string, evidenceRel: string): string | null {
+  if (isAbsolute(evidenceRel)) return null;
+  const rootAbs = resolve(repoRoot);
+  const evidenceAbs = resolve(rootAbs, evidenceRel);
+  const rel = relative(rootAbs, evidenceAbs);
+  if (rel.startsWith('..') || isAbsolute(rel)) return null;
+  if (!existsSync(evidenceAbs)) return null;
+  try {
+    if (!statSync(evidenceAbs).isFile()) return null;
+  } catch {
+    return null;
+  }
+  return evidenceAbs;
+}
 
 export function evaluateDesktopUnlock(args: {
   readonly repoRoot: string;
@@ -58,12 +79,11 @@ export function evaluateDesktopUnlock(args: {
       blocker: `GATE-05 status=${gate.status} (need APPROVED); Tauri/Electron must not land as a side effect`,
     };
   }
-  const evidenceAbs = join(args.repoRoot, gate.evidenceFile);
-  if (!existsSync(evidenceAbs)) {
+  if (!evidenceFileInsideRepo(args.repoRoot, gate.evidenceFile)) {
     return {
       unlocked: false,
       gate05Status: gate.status,
-      blocker: `GATE-05 evidenceFile missing on disk: ${gate.evidenceFile}`,
+      blocker: `GATE-05 evidenceFile missing, not a file, or escapes repoRoot: ${gate.evidenceFile}`,
     };
   }
   return { unlocked: true, gate05Status: gate.status, blocker: null };

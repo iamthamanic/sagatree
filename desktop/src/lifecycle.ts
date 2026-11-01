@@ -4,7 +4,6 @@
  * Platforms not executed stay NOT RUN (open acceptance points).
  */
 import { spawn } from 'node:child_process';
-import { createServer } from 'node:http';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -29,18 +28,6 @@ function assertOk(cond: unknown, msg: string): asserts cond {
   if (!cond) throw new Error(msg);
 }
 
-async function freePort(): Promise<number> {
-  return await new Promise((resolve, reject) => {
-    const s = createServer();
-    s.listen(0, '127.0.0.1', () => {
-      const addr = s.address();
-      const port = typeof addr === 'object' && addr ? addr.port : 0;
-      s.close((err) => (err ? reject(err) : resolve(port)));
-    });
-    s.on('error', reject);
-  });
-}
-
 function sidecarPath(repoRoot: string): string {
   return join(repoRoot, 'scripts/stack-migration-pocs/gate-05/sidecar.mjs');
 }
@@ -48,36 +35,63 @@ function sidecarPath(repoRoot: string): string {
 async function runSidecarOnce(args: {
   readonly repoRoot: string;
   readonly dataDir: string;
-  readonly port: number;
   readonly failBoot?: boolean;
-}): Promise<{ code: number | null; listening: boolean }> {
+}): Promise<{ code: number | null; listening: boolean; port: number | null; spawnError: string | null }> {
   const bin = process.execPath;
   const script = sidecarPath(args.repoRoot);
   assertOk(existsSync(script), `sidecar missing: ${script}`);
   return await new Promise((resolve) => {
+    let settled = false;
+    const finish = (result: {
+      code: number | null;
+      listening: boolean;
+      port: number | null;
+      spawnError: string | null;
+    }) => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+
     const child = spawn(bin, [script], {
       env: {
         ...process.env,
-        GATE05_SIDECAR_PORT: String(args.port),
+        // Port 0: OS assigns; avoids freePort TOCTOU races with parallel CI jobs.
+        GATE05_SIDECAR_PORT: '0',
         GATE05_DATA_DIR: args.dataDir,
         ...(args.failBoot ? { GATE05_FAIL_BOOT: '1' } : {}),
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let listening = false;
+    let boundPort: number | null = null;
     const timer = setTimeout(() => {
       child.kill('SIGTERM');
     }, 4000);
     child.stdout?.on('data', (buf: Buffer) => {
       const text = buf.toString('utf8');
-      if (text.includes('"event":"listening"') || text.includes('"listening"')) {
-        listening = true;
-        child.kill('SIGTERM');
+      for (const line of text.split('\n')) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('{')) continue;
+        try {
+          const evt = JSON.parse(trimmed) as { event?: string; port?: number };
+          if (evt.event === 'listening') {
+            listening = true;
+            boundPort = typeof evt.port === 'number' ? evt.port : null;
+            child.kill('SIGTERM');
+          }
+        } catch {
+          /* ignore non-JSON stdout */
+        }
       }
+    });
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      finish({ code: null, listening: false, port: null, spawnError: err.message });
     });
     child.on('close', (code) => {
       clearTimeout(timer);
-      resolve({ code, listening });
+      finish({ code, listening, port: boundPort, spawnError: null });
     });
   });
 }
@@ -113,27 +127,41 @@ export async function runPlatformLifecycleMatrix(args: {
     mkdirSync(dataDir, { recursive: true });
 
     try {
-      const port1 = await freePort();
-      const first = await runSidecarOnce({ repoRoot: args.repoRoot, dataDir, port: port1 });
-      assertOk(first.listening && first.code === 0, 'start/stop must listen then exit 0');
+      const first = await runSidecarOnce({ repoRoot: args.repoRoot, dataDir });
+      assertOk(
+        first.listening && first.code === 0 && first.spawnError === null,
+        `start/stop must listen then exit 0 (code=${first.code} spawn=${first.spawnError})`,
+      );
       const marker = join(dataDir, 'sidecar-alive.json');
       assertOk(existsSync(marker), 'data dir marker after first boot');
-      const firstBody = readFileSync(marker, 'utf8');
 
-      const port2 = await freePort();
-      const second = await runSidecarOnce({ repoRoot: args.repoRoot, dataDir, port: port2 });
-      assertOk(second.listening && second.code === 0, 'restart must listen then exit 0');
-      assertOk(existsSync(marker), 'marker persists across restart');
-      writeFileSync(join(dataDir, 'host-state.json'), `${JSON.stringify({ v: 1, body: firstBody.slice(0, 80) })}\n`);
+      // Seed host state BEFORE second start so persistence is real (sidecar overwrites its own marker).
+      const persistPath = join(dataDir, 'host-state.json');
+      const persistBody = JSON.stringify({ v: 1, seededBeforeRestart: true, firstPort: first.port });
+      writeFileSync(persistPath, `${persistBody}\n`);
+
+      const second = await runSidecarOnce({ repoRoot: args.repoRoot, dataDir });
+      assertOk(
+        second.listening && second.code === 0 && second.spawnError === null,
+        `restart must listen then exit 0 (code=${second.code} spawn=${second.spawnError})`,
+      );
+      assertOk(existsSync(persistPath), 'host-state persists across restart');
+      assertOk(
+        readFileSync(persistPath, 'utf8').trim() === persistBody,
+        'host-state contents unchanged across restart',
+      );
 
       const fail = await runSidecarOnce({
         repoRoot: args.repoRoot,
         dataDir,
-        port: await freePort(),
         failBoot: true,
       });
       assertOk(fail.code === 3, `sidecar failure must exit 3, got ${fail.code}`);
-      assertOk(existsSync(join(dataDir, 'host-state.json')), 'host state survives sidecar failure');
+      assertOk(existsSync(persistPath), 'host state survives sidecar failure');
+      assertOk(
+        readFileSync(persistPath, 'utf8').trim() === persistBody,
+        'host-state intact after sidecar failure',
+      );
 
       results.push(
         platformResultSchema.parse({
@@ -142,7 +170,7 @@ export async function runPlatformLifecycleMatrix(args: {
           startStop: 'PASS',
           restartPersistence: 'PASS',
           sidecarFailure: 'PASS',
-          detail: 'lifecycle fixture against gate-05 sidecar stand-in',
+          detail: 'lifecycle fixture against gate-05 sidecar stand-in (port 0)',
         }),
       );
     } finally {
