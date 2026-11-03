@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `b50e83b67e10a09c245c91be17f1075f58648bb8ee82f94874de43e27c15d72d`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `3d1e2903d279c44de7165d70651596f5d7f57aff2ba891c73dbb77adb83adfaf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -194,7 +194,7 @@ supabase.functions.invoke('session-media-token', {
 Enclosing operation: `src/infrastructure/session/media/media-token-client.ts:25`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscription: broadcast
 
-`src/infrastructure/session/session-lobby-channel.ts:30` — literal-or-constant.
+`src/infrastructure/session/session-lobby-channel.ts:49` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -208,10 +208,10 @@ supabase
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:22`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:27`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### channel: topic
 
-`src/infrastructure/session/session-lobby-channel.ts:30` — dynamic-expression.
+`src/infrastructure/session/session-lobby-channel.ts:49` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -225,7 +225,7 @@ supabase
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:22`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:27`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscribe: (status) => {
       if (status === 'SUBSCRIBED') resolve();
       if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -233,7 +233,7 @@ Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:22`; c
       }
     }
 
-`src/infrastructure/session/session-lobby-channel.ts:44` — dynamic-expression.
+`src/infrastructure/session/session-lobby-channel.ts:63` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -245,14 +245,14 @@ channel.subscribe((status) => {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:39`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:58`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-send: {
         type: 'broadcast',
         event: 'ready',
         payload: { userId: payload.userId, ready: payload.ready === true },
       }
 
-`src/infrastructure/session/session-lobby-channel.ts:55` — dynamic-expression.
+`src/infrastructure/session/session-lobby-channel.ts:74` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -263,17 +263,17 @@ channel.send({
       })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:53`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:72`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-cleanup: channel
 
-`src/infrastructure/session/session-lobby-channel.ts:64` — dynamic-expression.
+`src/infrastructure/session/session-lobby-channel.ts:83` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.removeChannel(channel)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:61`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-lobby-channel.ts:80`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### edge: session-recap
 
 `src/infrastructure/session/session-recap-ai-service.ts:76` — literal-or-constant.
@@ -302,17 +302,17 @@ supabase.rpc('save_session_recap_summary', {
 Enclosing operation: `src/infrastructure/session/session-recap-ai-service.ts:98`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_session_recap
 
-`src/infrastructure/session/session-recap-service.ts:29` — literal-or-constant.
+`src/infrastructure/session/session-recap-service.ts:48` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.rpc('get_session_recap', { p_session_id: sessionId })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-recap-service.ts:27`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-recap-service.ts:28`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscription: postgres_changes
 
-`src/infrastructure/session/session-runtime-channel.ts:44` — literal-or-constant.
+`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -351,10 +351,10 @@ supabase
     )
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:26`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscription: postgres_changes
 
-`src/infrastructure/session/session-runtime-channel.ts:44` — literal-or-constant.
+`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -393,10 +393,10 @@ supabase
     )
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:26`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscription: postgres_changes
 
-`src/infrastructure/session/session-runtime-channel.ts:44` — literal-or-constant.
+`src/infrastructure/session/session-runtime-channel.ts:75` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -435,10 +435,10 @@ supabase
     )
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:26`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### channel: topic
 
-`src/infrastructure/session/session-runtime-channel.ts:44` — dynamic-expression.
+`src/infrastructure/session/session-runtime-channel.ts:75` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -477,7 +477,7 @@ supabase
     )
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:26`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-subscribe: (status) => {
       if (status === 'SUBSCRIBED') resolve();
       if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
@@ -485,7 +485,7 @@ Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:26`;
       }
     }
 
-`src/infrastructure/session/session-runtime-channel.ts:83` — dynamic-expression.
+`src/infrastructure/session/session-runtime-channel.ts:114` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
@@ -497,20 +497,20 @@ channel.subscribe((status) => {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:78`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:109`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### realtime-cleanup: channel
 
-`src/infrastructure/session/session-runtime-channel.ts:97` — dynamic-expression.
+`src/infrastructure/session/session-runtime-channel.ts:128` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.removeChannel(channel)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:94`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-channel.ts:125`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_session_runtime_snapshot
 
-`src/infrastructure/session/session-runtime-service.ts:90` — literal-or-constant.
+`src/infrastructure/session/session-runtime-service.ts:100` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -519,10 +519,10 @@ supabase.rpc('get_session_runtime_snapshot', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:95`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: apply_session_runtime_command
 
-`src/infrastructure/session/session-runtime-service.ts:107` — literal-or-constant.
+`src/infrastructure/session/session-runtime-service.ts:136` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -535,10 +535,10 @@ supabase.rpc('apply_session_runtime_command', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:99`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:109`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: set_session_player_presence
 
-`src/infrastructure/session/session-runtime-service.ts:133` — literal-or-constant.
+`src/infrastructure/session/session-runtime-service.ts:175` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -549,30 +549,30 @@ supabase.rpc('set_session_player_presence', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:128`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-runtime-service.ts:157`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth: session identity
 
-`src/infrastructure/session/session-service.ts:67` — dynamic-expression.
+`src/infrastructure/session/session-service.ts:107` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.auth.getSession()
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:64`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:104`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth: session identity
 
-`src/infrastructure/session/session-service.ts:72` — dynamic-expression.
+`src/infrastructure/session/session-service.ts:112` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.auth.getUser()
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:64`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:104`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/session/session-service.ts:84` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:124` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -583,10 +583,10 @@ supabase
       .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:82`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:122`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: session_players
 
-`src/infrastructure/session/session-service.ts:142` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:182` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -596,10 +596,10 @@ supabase
       .eq('session_id', sessionId)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:141`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:181`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_play_session
 
-`src/infrastructure/session/session-service.ts:162` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:209` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -609,10 +609,10 @@ supabase.rpc('create_play_session', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:154`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: join_session_by_code
 
-`src/infrastructure/session/session-service.ts:180` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:232` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -622,10 +622,10 @@ supabase.rpc('join_session_by_code', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:175`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:195` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:252` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -636,10 +636,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:246`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/session/session-service.ts:213` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:275` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -649,10 +649,10 @@ supabase
       .eq('gm_user_id', user.id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:210`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:226` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:288` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -664,10 +664,10 @@ supabase
         .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:210`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: session_players
 
-`src/infrastructure/session/session-service.ts:238` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:300` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -677,10 +677,10 @@ supabase
       .eq('user_id', user.id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:210`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: set_session_status
 
-`src/infrastructure/session/session-service.ts:278` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:345` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -690,10 +690,10 @@ supabase.rpc('set_session_status', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:271`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:333`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: leave_play_session
 
-`src/infrastructure/session/session-service.ts:295` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:367` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -702,20 +702,20 @@ supabase.rpc('leave_play_session', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:292`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:359`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:314` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:389` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from(this.tableName).delete().eq('id', id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:307`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:379`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_session_invite
 
-`src/infrastructure/session/session-service.ts:330` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:413` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -724,10 +724,10 @@ supabase.rpc('create_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:328`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:403`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: resolve_session_invite
 
-`src/infrastructure/session/session-service.ts:352` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:456` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -736,10 +736,10 @@ supabase.rpc('resolve_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:346`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:429`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: revoke_session_invite
 
-`src/infrastructure/session/session-service.ts:367` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:475` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -748,7 +748,7 @@ supabase.rpc('revoke_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:361`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:465`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1669,7 +1669,7 @@ export class SessionMediaPlane {
 }
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:10
+### src/infrastructure/session/session-lobby-channel.ts:11
 
 ```ts
 export type LobbyReadyPayload = {
@@ -1678,13 +1678,13 @@ export type LobbyReadyPayload = {
 };
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:15
+### src/infrastructure/session/session-lobby-channel.ts:16
 
 ```ts
 export type LobbyReadyListener = (payload: LobbyReadyPayload) => void;
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:17
+### src/infrastructure/session/session-lobby-channel.ts:18
 
 ```ts
 export type SessionLobbySubscription = {
@@ -1693,13 +1693,27 @@ export type SessionLobbySubscription = {
 };
 ```
 
-### src/infrastructure/session/session-lobby-channel.ts:22
+### src/infrastructure/session/session-lobby-channel.ts:27
 
 ```ts
 export async function subscribeSessionLobbyReady(
   sessionId: string,
   onReady: LobbyReadyListener,
 ): Promise<SessionLobbySubscription> {
+  if (isHostLibraryEnabled()) {
+    void sessionId;
+    let disposed = false;
+    return {
+      sendReady: async (payload) => {
+        if (disposed) return;
+        onReady({ userId: payload.userId, ready: payload.ready === true });
+      },
+      unsubscribe: async () => {
+        disposed = true;
+      },
+    };
+  }
+
   let channel: RealtimeChannel | null = null;
   let disposed = false;
 
@@ -1769,7 +1783,7 @@ export type SessionRecapAiGenerateResult = {
 export const sessionRecapAiService = new SessionRecapAiService();
 ```
 
-### src/infrastructure/session/session-recap-service.ts:12
+### src/infrastructure/session/session-recap-service.ts:13
 
 ```ts
 export type SessionRecapDto = {
@@ -1783,19 +1797,19 @@ export type SessionRecapDto = {
 };
 ```
 
-### src/infrastructure/session/session-recap-service.ts:54
+### src/infrastructure/session/session-recap-service.ts:73
 
 ```ts
 export const sessionRecapService = new SessionRecapService();
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:11
+### src/infrastructure/session/session-runtime-channel.ts:12
 
 ```ts
 export type SessionRuntimeListener = (state: SessionRuntimeState) => void;
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:13
+### src/infrastructure/session/session-runtime-channel.ts:14
 
 ```ts
 export interface SessionRuntimeSubscription {
@@ -1807,7 +1821,7 @@ export interface SessionRuntimeSubscription {
 }
 ```
 
-### src/infrastructure/session/session-runtime-channel.ts:26
+### src/infrastructure/session/session-runtime-channel.ts:31
 
 ```ts
 export async function subscribeSessionRuntime(
@@ -1819,6 +1833,32 @@ export async function subscribeSessionRuntime(
 
   let channel: RealtimeChannel | null = null;
   let disposed = false;
+  let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+  if (isHostLibraryEnabled()) {
+    const refresh = async (): Promise<SessionRuntimeState> => {
+      const next = await sessionRuntimeService.getSnapshot(sessionId);
+      current = next;
+      if (!disposed) onChange(next);
+      return next;
+    };
+    pollTimer = setInterval(() => {
+      void refresh().catch(() => {
+        /* keep last good snapshot */
+      });
+    }, HOST_RUNTIME_POLL_MS);
+    return {
+      getState: () => current,
+      resync: refresh,
+      unsubscribe: async () => {
+        disposed = true;
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+      },
+    };
+  }
 
   const refresh = async (): Promise<SessionRuntimeState> => {
     const next = await sessionRuntimeService.getSnapshot(sessionId);
@@ -1889,7 +1929,7 @@ export async function subscribeSessionRuntime(
 }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:64
+### src/infrastructure/session/session-runtime-service.ts:70
 
 ```ts
 export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
@@ -1912,13 +1952,13 @@ export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
 }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:152
+### src/infrastructure/session/session-runtime-service.ts:194
 
 ```ts
 export const sessionRuntimeService = new SessionRuntimeService();
 ```
 
-### src/infrastructure/session/session-service.ts:376
+### src/infrastructure/session/session-service.ts:484
 
 ```ts
 export const sessionService = new SessionService();
@@ -1989,10 +2029,28 @@ async saveSummary(
   }
 ```
 
-### src/infrastructure/session/session-recap-service.ts:27
+### src/infrastructure/session/session-recap-service.ts:28
 
 ```ts
 async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSessionRecap(sessionId);
+      if (data == null) return null;
+      if (!isRecord(data)) {
+        throw new Error('Ungültige Recap-Antwort');
+      }
+      const statusRaw = typeof data.summaryStatus === 'string' ? data.summaryStatus : 'none';
+      const summaryStatus =
+        statusRaw === 'approved' || statusRaw === 'draft' ? statusRaw : 'none';
+      return {
+        sessionId: typeof data.sessionId === 'string' ? data.sessionId : sessionId,
+        summaryText: typeof data.summaryText === 'string' ? data.summaryText : null,
+        summaryStatus,
+        highlights: parsePersistedRecapHighlightLines(data.highlightLines),
+        createdAt: typeof data.createdAt === 'string' ? data.createdAt : null,
+        updatedAt: typeof data.updatedAt === 'string' ? data.updatedAt : null,
+      };
+    }
     const { data, error } = await raceWithTimeoutReject(
       supabase.rpc('get_session_recap', { p_session_id: sessionId }),
       SUPABASE_QUERY_TIMEOUT_MS,
@@ -2019,10 +2077,14 @@ async getBySessionId(sessionId: string): Promise<SessionRecapDto | null> {
   }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:89
+### src/infrastructure/session/session-runtime-service.ts:95
 
 ```ts
 async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSessionRuntime(sessionId);
+      return mapSnapshotJson(data as SnapshotJson);
+    }
     const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {
       p_session_id: sessionId,
     });
@@ -2033,7 +2095,7 @@ async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
   }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:99
+### src/infrastructure/session/session-runtime-service.ts:109
 
 ```ts
 async applyCommand(input: {
@@ -2044,6 +2106,25 @@ async applyCommand(input: {
     idempotencyKey?: string | null;
   }): Promise<SessionRuntimeState> {
     const kind = assertSessionEventKind(input.kind);
+    if (isHostLibraryEnabled()) {
+      try {
+        const data = await applyHostSessionRuntimeCommand({
+          sessionId: input.sessionId,
+          expectedRevision: input.expectedRevision,
+          kind,
+          payload: input.payload ?? {},
+          idempotencyKey: input.idempotencyKey ?? null,
+        });
+        return mapSnapshotJson(data as SnapshotJson);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
+          const snap = await this.getSnapshot(input.sessionId);
+          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
+        }
+        throw err instanceof Error ? err : new Error(message);
+      }
+    }
     const { data, error } = await supabase.rpc('apply_session_runtime_command', {
       p_session_id: input.sessionId,
       p_expected_revision: input.expectedRevision,
@@ -2066,7 +2147,7 @@ async applyCommand(input: {
   }
 ```
 
-### src/infrastructure/session/session-runtime-service.ts:128
+### src/infrastructure/session/session-runtime-service.ts:157
 
 ```ts
 async setPresence(
@@ -2074,6 +2155,19 @@ async setPresence(
     isOnline: boolean,
     expectedRevision?: number | null,
   ): Promise<SessionRuntimeState> {
+    if (isHostLibraryEnabled()) {
+      try {
+        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);
+        return mapSnapshotJson(data as SnapshotJson);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
+          const snap = await this.getSnapshot(sessionId);
+          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
+        }
+        throw err instanceof Error ? err : new Error(message);
+      }
+    }
     const { data, error } = await supabase.rpc('set_session_player_presence', {
       p_session_id: sessionId,
       p_is_online: isOnline,
@@ -2093,7 +2187,7 @@ async setPresence(
   }
 ```
 
-### src/infrastructure/session/session-service.ts:64
+### src/infrastructure/session/session-service.ts:104
 
 ```ts
 private async requireAuthUser(): Promise<{ id: string }> {
@@ -2115,7 +2209,7 @@ private async requireAuthUser(): Promise<{ id: string }> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:82
+### src/infrastructure/session/session-service.ts:122
 
 ```ts
 private async resolveGmUserId(projectId: string | null): Promise<string> {
@@ -2130,7 +2224,7 @@ private async resolveGmUserId(projectId: string | null): Promise<string> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:141
+### src/infrastructure/session/session-service.ts:181
 
 ```ts
 private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {
@@ -2147,16 +2241,23 @@ private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:154
+### src/infrastructure/session/session-service.ts:194
 
 ```ts
 async createSession(payload: CreateSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const projectId = payload.project_id || payload.adventure_id;
     if (!projectId) {
       throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
     }
+
+    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not
+    // require a Supabase JWT first (Better Auth cookie-only deployments).
+    if (isHostLibraryEnabled()) {
+      const row = await createHostPlaySession(projectId, payload.name ?? null);
+      return mapHostPlaySessionToVm(row);
+    }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('create_play_session', {
       p_project_id: projectId,
@@ -2172,13 +2273,18 @@ async createSession(payload: CreateSessionDto): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:175
+### src/infrastructure/session/session-service.ts:222
 
 ```ts
 async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const code = normalizeSessionJoinCode(payload.code);
+
+    if (isHostLibraryEnabled()) {
+      const row = await joinHostSessionByCode(code, payload.character_id ?? null);
+      return mapHostPlaySessionToVm(row);
+    }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('join_session_by_code', {
       p_code: code,
@@ -2195,10 +2301,15 @@ async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:194
+### src/infrastructure/session/session-service.ts:246
 
 ```ts
 async getSessionById(id: string): Promise<SessionVm> {
+    if (isHostLibraryEnabled()) {
+      const row = await fetchHostSession(id);
+      return mapHostPlaySessionToVm(row);
+    }
+
     const { data: session, error: sessionError } = await supabase
       .from(this.tableName)
       .select(SESSION_SAFE_COLUMNS)
@@ -2215,10 +2326,15 @@ async getSessionById(id: string): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:210
+### src/infrastructure/session/session-service.ts:267
 
 ```ts
 async getUserSessions(): Promise<SessionVm[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostSessions();
+      return rows.map(mapHostPlaySessionToVm);
+    }
+
     const user = await this.requireAuthUser();
 
     const { data: gmProjects, error: gmProjectsError } = await supabase
@@ -2280,7 +2396,7 @@ async getUserSessions(): Promise<SessionVm[]> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:271
+### src/infrastructure/session/session-service.ts:333
 
 ```ts
 async updateSessionStatus(
@@ -2289,6 +2405,11 @@ async updateSessionStatus(
   ): Promise<SessionVm> {
     const current = await this.getSessionById(id);
     assertPlaySessionStatusTransition(current.status, status);
+
+    if (isHostLibraryEnabled()) {
+      const row = await setHostSessionStatus(id, status);
+      return mapHostPlaySessionToVm(row);
+    }
 
     const { data, error } = await supabase.rpc('set_session_status', {
       p_session_id: id,
@@ -2305,10 +2426,15 @@ async updateSessionStatus(
   }
 ```
 
-### src/infrastructure/session/session-service.ts:292
+### src/infrastructure/session/session-service.ts:359
 
 ```ts
 async leaveSession(sessionId: string): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      await leaveHostPlaySession(sessionId);
+      return;
+    }
+
     await this.requireAuthUser();
 
     const { error } = await supabase.rpc('leave_play_session', {
@@ -2321,7 +2447,7 @@ async leaveSession(sessionId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:307
+### src/infrastructure/session/session-service.ts:379
 
 ```ts
 async deleteSession(sessionId: string): Promise<void> {
@@ -2329,6 +2455,9 @@ async deleteSession(sessionId: string): Promise<void> {
     const id = sessionId.trim();
     if (!id) {
       throw new Error('Session-ID fehlt');
+    }
+    if (isHostLibraryEnabled()) {
+      throw new Error('Session-Löschen ist im Host-Modus noch nicht verfügbar');
     }
 
     const { error } = await supabase.from(this.tableName).delete().eq('id', id);
@@ -2343,10 +2472,18 @@ async deleteSession(sessionId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:328
+### src/infrastructure/session/session-service.ts:403
 
 ```ts
 async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
+    if (isHostLibraryEnabled()) {
+      const invite = await createHostSessionInvite(sessionId);
+      const mapped = mapInviteCreatePayload(invite);
+      if (!mapped) {
+        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');
+      }
+      return mapped;
+    }
     await this.requireAuthUser();
     const { data, error } = await supabase.rpc('create_session_invite', {
       p_session_id: sessionId,
@@ -2362,15 +2499,36 @@ async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult>
   }
 ```
 
-### src/infrastructure/session/session-service.ts:346
+### src/infrastructure/session/session-service.ts:429
 
 ```ts
 async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
     }
+    if (isHostLibraryEnabled()) {
+      try {
+        const invite = await resolveHostSessionInvite(normalized);
+        return mapInviteResolvePayload(invite);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const mapped = mapInviteResolvePayload({
+          ok: false,
+          error_code: message.includes('expired')
+            ? 'expired'
+            : message.includes('revoked')
+              ? 'revoked'
+              : message.includes('completed')
+                ? 'session_completed'
+                : message.includes('missing') || message.includes('P0002')
+                  ? 'not_found'
+                  : 'not_found',
+        });
+        return mapped;
+      }
+    }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
     });
@@ -2381,15 +2539,19 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:361
+### src/infrastructure/session/session-service.ts:465
 
 ```ts
 async revokeSessionInvite(token: string): Promise<void> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       throw new Error('Token fehlt');
     }
+    if (isHostLibraryEnabled()) {
+      await revokeHostSessionInvite(normalized);
+      return;
+    }
+    await this.requireAuthUser();
     const { error } = await supabase.rpc('revoke_session_invite', {
       p_token: normalized,
     });
@@ -2412,6 +2574,8 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/domains/session/contracts/session-runtime.ts` | `c928a253185cf9aa6fac10b380807033d86c0df4120fdc80b223800c626b84e2` |
 | `src/domains/session/contracts/session.types.ts` | `3f2056b6b4cb4ef86dbffd4271482131a3bf4714c3329b8827a067acfde29a04` |
 | `src/domains/session/media/media-plane-contract.ts` | `7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b` |
+| `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
+| `src/infrastructure/host/host-session-http.ts` | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
 | `src/infrastructure/session/host-session-adapter.ts` | `57c52ff948f0e5169f302c2de0a58e4eabffa35668fb121605533bcddbb3d4fb` |
 | `src/infrastructure/session/host-session-ports.contract.ts` | `b7d49eee90da55c7a0acadd765ddb202527fc003789f855ae910425e073f928f` |
 | `src/infrastructure/session/live-session-access.resolver.ts` | `88276a0afb9522e2dbb75f98959562ace873f33662ec2dea668428f91a762b9a` |
@@ -2422,13 +2586,14 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/media/memory-media-plane-adapter.ts` | `31fc7cee75c49c1e3af09b784e4a8dad3446bbe5ae5ddd6f7b2c9aee142dc5be` |
 | `src/infrastructure/session/media/memory-media-plane-bus.ts` | `1616d229067f513a12c67319aec28649e3a0afdf77779f9071b595dc024ff193` |
 | `src/infrastructure/session/media/session-media-plane.ts` | `ce8d3ec690f83745646400443d7870cd96383e341628a2d8f017e2d391fbb225` |
-| `src/infrastructure/session/session-lobby-channel.ts` | `16cca2d213514c81493ffa0d9e5def922b0708c38cda7e8eb374b20e1f28b8c9` |
+| `src/infrastructure/session/session-lobby-channel.ts` | `ee5e6dd9c12b03ec7a1868c435b46b1226d4bc9415ef2be652eaa1498a2d7252` |
 | `src/infrastructure/session/session-recap-ai-service.ts` | `dffb89748b308636c99dee90d2af597de0a0fdbb995359bad085d6f799f5987d` |
-| `src/infrastructure/session/session-recap-service.ts` | `30c4a639e8e6daf815eb1cb137744c0513fcb3ed20cbb58f2c0781b928bcb7f9` |
-| `src/infrastructure/session/session-runtime-channel.ts` | `fec3f16b9ff82cead9d8433b0b1b4a4038d13c2dd6e7458c4a0c55413c77483c` |
-| `src/infrastructure/session/session-runtime-service.ts` | `8169475c50d9fabdba387b0d9f8039f3fc0416c5280df537237efa2dc8deb711` |
-| `src/infrastructure/session/session-service.ts` | `d2f1e89fca1ef75c6b6c633ce8e9169801d3394e52912661c07457511ec4fdac` |
+| `src/infrastructure/session/session-recap-service.ts` | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
+| `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
+| `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
+| `src/infrastructure/session/session-service.ts` | `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

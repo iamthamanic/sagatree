@@ -368,6 +368,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     realtimeRooms = sessionPorts
       ? createRealtimeSessionRooms({ session: sessionPorts, onFanout })
       : undefined;
+    const sessionInfraPorts = sessionPorts ? createSessionInfraPorts(sessionPorts) : null;
 
     const projectInfra: ProjectInfraPorts =
       db && sessionPorts
@@ -453,6 +454,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       look,
       inventory,
       project,
+      sessionInfra: sessionInfraPorts,
     });
 
     return {
@@ -469,7 +471,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       character,
       inventory,
       marketplace,
-      sessionInfra: sessionPorts ? createSessionInfraPorts(sessionPorts) : null,
+      sessionInfra: sessionInfraPorts,
       npcCreature,
       userProfile,
       projectInfra,

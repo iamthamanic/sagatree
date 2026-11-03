@@ -19,11 +19,13 @@ import type { NpcCreaturePorts } from '../modules/npc-creature/index.ts';
 import type { LookProfilePorts } from '../modules/look/index.ts';
 import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
+import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
+import { mountSessionHttpRoutes } from './session-routes.ts';
 
 export type HostApiDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
@@ -56,6 +58,8 @@ export type HostApiDeps = {
   readonly look?: LookProfilePorts | null;
   readonly inventory?: InventoryPorts | null;
   readonly project?: ProjectPorts | null;
+  /** FE-HOST-02 session product HTTP (lifecycle/runtime/invites). */
+  readonly sessionInfra?: SessionInfraPorts | null;
 };
 
 async function readJsonSafe(c: {
@@ -412,6 +416,12 @@ export function createHostApi(deps: HostApiDeps): Hono {
     look: deps.look,
     inventory: deps.inventory,
     project: deps.project,
+  });
+
+  mountSessionHttpRoutes(app, {
+    identity: deps.identity,
+    hostMode: deps.hostMode,
+    sessionInfra: deps.sessionInfra,
   });
 
   app.notFound((c) => c.json({ error: 'not-found' }, 404));

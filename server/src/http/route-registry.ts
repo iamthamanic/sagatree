@@ -37,6 +37,7 @@ import type { NpcCreaturePorts } from '../modules/npc-creature/index.ts';
 import type { LookProfilePorts } from '../modules/look/index.ts';
 import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
+import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
@@ -89,6 +90,7 @@ export type RouteRegistryDeps = {
   readonly look?: LookProfilePorts | null;
   readonly inventory?: InventoryPorts | null;
   readonly project?: ProjectPorts | null;
+  readonly sessionInfra?: SessionInfraPorts | null;
 };
 
 export function sendJson(
@@ -141,6 +143,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     look: deps.look,
     inventory: deps.inventory,
     project: deps.project,
+    sessionInfra: deps.sessionInfra,
   });
   const honoListener = getRequestListener(app.fetch, { overrideGlobalObjects: false });
 

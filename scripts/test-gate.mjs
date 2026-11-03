@@ -1303,6 +1303,19 @@ function checkMig311SessionAdapter() {
   console.log('OK: mig-311-session-adapter.self-test');
 }
 
+function checkFeHost02SessionHttp() {
+  console.log('FE-HOST-02 session product HTTP (#1094)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-02-session-http.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-02-session-http.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3509,6 +3522,7 @@ checkMig307NpcAdapter();
 checkMig308ProjectAdapter();
 checkMig310SagaAdapter();
 checkMig311SessionAdapter();
+checkFeHost02SessionHttp();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

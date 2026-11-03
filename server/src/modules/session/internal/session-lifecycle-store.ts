@@ -26,6 +26,8 @@ export type PlaySessionRow = {
   readonly createdAt: string;
   readonly startedAt: string | null;
   readonly endedAt: string | null;
+  /** Project GM — populated on read for FE lobby membership checks. */
+  readonly gmUserId?: string;
 };
 
 function nowIso(): string {
@@ -66,11 +68,15 @@ export class SessionLifecycleStore {
   #read(sessionId: string): PlaySessionRow | null {
     const row = this.#db
       .prepare(
-        `SELECT session_id AS sessionId, project_id AS projectId, public_id AS publicId,
-                join_code AS joinCode, status, session_number AS sessionNumber, name, notes,
-                runtime_revision AS runtimeRevision, world_state AS worldState,
-                created_at AS createdAt, started_at AS startedAt, ended_at AS endedAt
-         FROM play_sessions WHERE session_id = ?`,
+        `SELECT ps.session_id AS sessionId, ps.project_id AS projectId, ps.public_id AS publicId,
+                ps.join_code AS joinCode, ps.status AS status,
+                ps.session_number AS sessionNumber, ps.name AS name, ps.notes AS notes,
+                ps.runtime_revision AS runtimeRevision, ps.world_state AS worldState,
+                ps.created_at AS createdAt, ps.started_at AS startedAt, ps.ended_at AS endedAt,
+                p.gm_user_id AS gmUserId
+         FROM play_sessions ps
+         LEFT JOIN projects p ON p.id = ps.project_id
+         WHERE ps.session_id = ?`,
       )
       .get(sessionId) as PlaySessionRow | undefined;
     return row ?? null;
@@ -137,7 +143,12 @@ export class SessionLifecycleStore {
          VALUES (?, ?, 0, ?, ?)
          ON CONFLICT(session_id) DO NOTHING`,
       )
-      .run(sessionId, projectId, JSON.stringify({ status: 'waiting', roster: {}, gameplay: {} }), now);
+      .run(
+        sessionId,
+        projectId,
+        JSON.stringify({ status: 'waiting', roster: [], gameplay: { sceneId: null, combatActive: false, shared: {} } }),
+        now,
+      );
     this.#db
       .prepare(
         `INSERT OR IGNORE INTO session_members (session_id, actor_user_id, can_write)
@@ -349,6 +360,74 @@ export class SessionLifecycleStore {
     } catch {
       return { ok: false, error: 'P0001' };
     }
+  }
+
+  /**
+   * Membership-checked read for FE getSessionById (GM or active project player).
+   */
+  getPlaySession(
+    actorIds: readonly string[],
+    sessionId: string,
+  ): Ok<PlaySessionRow> | LifecycleError {
+    if (!actorIds[0]) return { ok: false, error: '42501' };
+    if (!sessionId) return { ok: false, error: '22023' };
+    const row = this.#read(sessionId);
+    if (!row) return { ok: false, error: 'P0002' };
+    if (!this.#isActiveGmOrPlayer(row.projectId, actorIds)) {
+      return { ok: false, error: '42501' };
+    }
+    return { ok: true, value: row };
+  }
+
+  /**
+   * Non-completed play sessions for projects where the actor is GM or active player,
+   * plus sessions where the actor is still on session_players.
+   */
+  listAccessiblePlaySessions(actorIds: readonly string[]): Ok<readonly PlaySessionRow[]> | LifecycleError {
+    if (!actorIds[0]) return { ok: false, error: '42501' };
+    const ids = actorIds.filter((id) => typeof id === 'string' && id.length > 0);
+    if (ids.length === 0) return { ok: false, error: '42501' };
+    const placeholders = ids.map(() => '?').join(',');
+    // Safe projection only — never list join_code / notes / world_state across sessions.
+    const rows = this.#db
+      .prepare(
+        `SELECT DISTINCT ps.session_id AS sessionId, ps.project_id AS projectId,
+                ps.public_id AS publicId, NULL AS joinCode, ps.status AS status,
+                ps.session_number AS sessionNumber, ps.name AS name, NULL AS notes,
+                ps.runtime_revision AS runtimeRevision, '{}' AS worldState,
+                ps.created_at AS createdAt, ps.started_at AS startedAt, ps.ended_at AS endedAt,
+                p.gm_user_id AS gmUserId
+         FROM play_sessions ps
+         JOIN projects p ON p.id = ps.project_id
+         WHERE ps.status != 'completed'
+           AND (
+             p.gm_user_id IN (${placeholders})
+             OR EXISTS (
+               SELECT 1 FROM project_members m
+               WHERE m.project_id = ps.project_id
+                 AND m.user_id IN (${placeholders})
+                 AND m.active = 1
+                 AND m.role IN ('gm', 'player')
+             )
+             OR EXISTS (
+               SELECT 1 FROM session_players sp
+               WHERE sp.session_id = ps.session_id
+                 AND sp.user_id IN (${placeholders})
+                 AND sp.left_at IS NULL
+             )
+           )
+         ORDER BY ps.created_at DESC`,
+      )
+      .all(...ids, ...ids, ...ids) as Array<PlaySessionRow & { gmUserId?: string }>;
+    return {
+      ok: true,
+      value: rows.map((row) => ({
+        ...row,
+        joinCode: null,
+        notes: null,
+        worldState: '{}',
+      })),
+    };
   }
 
   setSessionStatus(
