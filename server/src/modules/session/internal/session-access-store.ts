@@ -77,11 +77,15 @@ export class SessionAccessStore {
   #readSession(sessionId: string): PlaySessionRow | null {
     const row = this.#db
       .prepare(
-        `SELECT session_id AS sessionId, project_id AS projectId, public_id AS publicId,
-                join_code AS joinCode, status, session_number AS sessionNumber, name, notes,
-                runtime_revision AS runtimeRevision, world_state AS worldState,
-                created_at AS createdAt, started_at AS startedAt, ended_at AS endedAt
-         FROM play_sessions WHERE session_id = ?`,
+        `SELECT ps.session_id AS sessionId, ps.project_id AS projectId, ps.public_id AS publicId,
+                ps.join_code AS joinCode, ps.status AS status,
+                ps.session_number AS sessionNumber, ps.name AS name, ps.notes AS notes,
+                ps.runtime_revision AS runtimeRevision, ps.world_state AS worldState,
+                ps.created_at AS createdAt, ps.started_at AS startedAt, ps.ended_at AS endedAt,
+                p.gm_user_id AS gmUserId
+         FROM play_sessions ps
+         LEFT JOIN projects p ON p.id = ps.project_id
+         WHERE ps.session_id = ?`,
       )
       .get(sessionId) as PlaySessionRow | undefined;
     return row ?? null;

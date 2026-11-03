@@ -4038,7 +4038,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4115,7 +4115,7 @@
         "sha256": "d9cfe0173cc4ad2fb500d411750e46972e195b1fb3e6ec66504d61f703171717"
       }
     ],
-    "reviewedBaselineSha": "916744ca58a5d124a226b24a272e741dc9fcb27b09a6169e44f4a7dc43d8a06c"
+    "reviewedBaselineSha": "a9c1040a3e1528b9ca09490ff72ec8c76a40224584b8211316adee6e1b516b2b"
   },
   "create_project_session": {
     "summary": "Legt eine geplante Projekt-Session mit Adventure- und Wissensübergabe an.",
@@ -4270,7 +4270,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4403,7 +4403,7 @@
         "sha256": "ecebdd88c046db43f02ab0f30053adc51e5d98d4319c25094034d8477cdc82e9"
       }
     ],
-    "reviewedBaselineSha": "71640cffcf1e7732cdf75f5a005603ec4a305438b7e3a1bb55ad6aae218a4855"
+    "reviewedBaselineSha": "59b63880b29dfa579ad5db280430ddcf376f81c9f5469822bec1bc9b8ba1ed2f"
   },
   "leave_play_session": {
     "summary": "Entfernt die eigene Roster-Zeile; die bestehende Implementierung hat einen Fremdnutzer-Autorisierungsfehler.",
@@ -4462,7 +4462,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4543,7 +4543,7 @@
         "sha256": "63a612d00dcb4c9772501293f253ef00459717ab542e4e4f4317434ea61af239"
       }
     ],
-    "reviewedBaselineSha": "98fc46caafe5fb46667498e880ba96bfbcda9be8936ffae0265c565d5629c789"
+    "reviewedBaselineSha": "1bcb33dbe41b9c784d038f8802abbfcb78537530aa3fbd2da7034ff70eb05389"
   },
   "set_session_status": {
     "summary": "Führt den GM-Statusübergang einer Session einschließlich Abschluss-Recap und Handover aus.",
@@ -4597,7 +4597,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4690,7 +4690,7 @@
         "sha256": "1c6f30f85e9cabff01631c424723fc681f6b1e80edb5f96a6ad01a5234b484ef"
       }
     ],
-    "reviewedBaselineSha": "dd60fb00d6203a28106382dddbaf45566d51a75cfe4d330b88f11b7fe7ec80d1"
+    "reviewedBaselineSha": "e9745a1752ab779ee077b5fd644e2a9d0433839e34a59cfe6bca2d4a2d477d21"
   },
   "create_session_invite": {
     "summary": "Rotiert als Session-GM das Einladungs-Token mit sieben Tagen Gültigkeit.",
@@ -4722,7 +4722,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4791,7 +4791,7 @@
         "sha256": "4ec6008871addc8a98e487d8fac6b70f59fe4a7f56571e50fab09c330d8a29c1"
       }
     ],
-    "reviewedBaselineSha": "dc9ee68fb7a7ab4d01befc1bf4aa81b54e9f0fa989eff96911767e14ed07b8e5"
+    "reviewedBaselineSha": "9af2aa4bb59513d42447f8ad29152cba1bf5155fa90f16826a2891e7b0ab5ec7"
   },
   "resolve_session_invite": {
     "summary": "Löst ein Invite-Token auf und liefert die für die Beitrittsoberfläche benötigten IDs und Zustände.",
@@ -4824,7 +4824,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -4941,7 +4941,7 @@
         "sha256": "2f8149c3ae5216fa20055d4fb2127e3bb4cf1e1d15f490f262e8b1558318e4d1"
       }
     ],
-    "reviewedBaselineSha": "4b5f75598398adc68bf4f3fa190aca0ed80f4097df3a193769fc29da8a9c79c3"
+    "reviewedBaselineSha": "c5544240f7e6d7bc7a893b82b018e10e52bf692d23d549ab516990e318ad561b"
   },
   "revoke_session_invite": {
     "summary": "Widerruft ein konkretes Session-Einladungs-Token.",
@@ -4973,7 +4973,7 @@
       },
       {
         "path": "src/infrastructure/session/session-service.ts",
-        "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+        "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -5042,7 +5042,7 @@
         "sha256": "b1fb5a736cab509595e074a3ef638a1c30b82c863e94ba8d9effde24e20c8e1e"
       }
     ],
-    "reviewedBaselineSha": "b8507bb218c3498519d15a113b7b4549f6a41b0a8e913695580f1681fe595b82"
+    "reviewedBaselineSha": "39a4d81cc644782ed20285c7e2a7149291878a8b1c50cf7d704aeb07b6714cca"
   },
   "get_session_recap": {
     "summary": "Liest den Recap und projiziert Zusammenfassung und Highlights nach Session-Rolle.",

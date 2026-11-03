@@ -115,6 +115,26 @@ function asRecord(body: unknown): Record<string, unknown> {
   return {};
 }
 
+/** Strip GM-only fields from list/detail unless includeJoinCode (create/join). */
+function publicSessionDto(
+  raw: Record<string, unknown>,
+  opts: { readonly includeJoinCode?: boolean } = {},
+): Record<string, unknown> {
+  return {
+    sessionId: raw.sessionId,
+    projectId: raw.projectId,
+    publicId: raw.publicId,
+    joinCode: opts.includeJoinCode === true ? (raw.joinCode ?? raw.code ?? null) : null,
+    status: raw.status,
+    sessionNumber: raw.sessionNumber,
+    name: raw.name,
+    createdAt: raw.createdAt,
+    startedAt: raw.startedAt,
+    endedAt: raw.endedAt,
+    gmUserId: typeof raw.gmUserId === 'string' ? raw.gmUserId : '',
+  };
+}
+
 /**
  * Mount product session lifecycle / runtime / invite routes for browser cutover.
  */
@@ -131,7 +151,14 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!listed.ok) {
       return c.json({ error: listed.error }, infraStatus(listed.error));
     }
-    return c.json({ sessions: listed.value }, 200);
+    return c.json(
+      {
+        sessions: listed.value.map((row) =>
+          publicSessionDto(row as Record<string, unknown>, { includeJoinCode: false }),
+        ),
+      },
+      200,
+    );
   });
 
   app.post('/api/v1/sessions', async (c) => {
@@ -149,7 +176,15 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!created.ok) {
       return c.json({ error: created.error }, infraStatus(created.error));
     }
-    return c.json({ session: created.value }, 201);
+    return c.json(
+      {
+        session: publicSessionDto(
+          { ...created.value, gmUserId: actorResult.actor.actorId },
+          { includeJoinCode: true },
+        ),
+      },
+      201,
+    );
   });
 
   app.get('/api/v1/sessions/:sessionId', async (c) => {
@@ -162,7 +197,14 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!got.ok) {
       return c.json({ error: got.error }, infraStatus(got.error));
     }
-    return c.json({ session: got.value }, 200);
+    return c.json(
+      {
+        session: publicSessionDto(got.value as Record<string, unknown>, {
+          includeJoinCode: false,
+        }),
+      },
+      200,
+    );
   });
 
   app.post('/api/v1/sessions/join', async (c) => {
@@ -180,7 +222,14 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!joined.ok) {
       return c.json({ error: joined.error }, infraStatus(joined.error));
     }
-    return c.json({ session: joined.value }, 200);
+    return c.json(
+      {
+        session: publicSessionDto(joined.value as Record<string, unknown>, {
+          includeJoinCode: true,
+        }),
+      },
+      200,
+    );
   });
 
   app.post('/api/v1/sessions/:sessionId/status', async (c) => {
@@ -198,7 +247,14 @@ export function mountSessionHttpRoutes(app: Hono, deps: SessionHttpDeps): void {
     if (!updated.ok) {
       return c.json({ error: updated.error }, infraStatus(updated.error));
     }
-    return c.json({ session: updated.value }, 200);
+    return c.json(
+      {
+        session: publicSessionDto(updated.value as Record<string, unknown>, {
+          includeJoinCode: false,
+        }),
+      },
+      200,
+    );
   });
 
   app.post('/api/v1/sessions/:sessionId/leave', async (c) => {

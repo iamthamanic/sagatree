@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `f6f4d72e28bb12aa5c41fd92fb34c80a333f04693c8ea4bd28bf86bcb1b512b4`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `3d1e2903d279c44de7165d70651596f5d7f57aff2ba891c73dbb77adb83adfaf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -599,7 +599,7 @@ supabase
 Enclosing operation: `src/infrastructure/session/session-service.ts:181`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_play_session
 
-`src/infrastructure/session/session-service.ts:208` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:209` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -612,7 +612,7 @@ supabase.rpc('create_play_session', {
 Enclosing operation: `src/infrastructure/session/session-service.ts:194`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: join_session_by_code
 
-`src/infrastructure/session/session-service.ts:231` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:232` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -622,10 +622,10 @@ supabase.rpc('join_session_by_code', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:221`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:222`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:251` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:252` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -636,10 +636,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:245`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:246`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/session/session-service.ts:274` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:275` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -649,10 +649,10 @@ supabase
       .eq('gm_user_id', user.id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:266`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:287` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:288` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -664,10 +664,10 @@ supabase
         .order('created_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:266`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: session_players
 
-`src/infrastructure/session/session-service.ts:299` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:300` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -677,10 +677,10 @@ supabase
       .eq('user_id', user.id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:266`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:267`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: set_session_status
 
-`src/infrastructure/session/session-service.ts:344` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:345` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -690,10 +690,10 @@ supabase.rpc('set_session_status', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:332`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:333`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: leave_play_session
 
-`src/infrastructure/session/session-service.ts:366` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:367` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -702,20 +702,20 @@ supabase.rpc('leave_play_session', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:358`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:359`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/session/session-service.ts:388` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:389` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
 supabase.from(this.tableName).delete().eq('id', id)
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:378`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:379`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_session_invite
 
-`src/infrastructure/session/session-service.ts:412` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:413` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -724,10 +724,10 @@ supabase.rpc('create_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:402`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:403`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: resolve_session_invite
 
-`src/infrastructure/session/session-service.ts:442` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:456` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -736,10 +736,10 @@ supabase.rpc('resolve_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:428`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:429`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: revoke_session_invite
 
-`src/infrastructure/session/session-service.ts:461` — literal-or-constant.
+`src/infrastructure/session/session-service.ts:475` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -748,7 +748,7 @@ supabase.rpc('revoke_session_invite', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/session/session-service.ts:451`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/session/session-service.ts:465`; complete request/default/result/error logic is in the declarations below and the snapshot.
 
 ## Complete public declarations and facade operation contracts
 
@@ -1958,7 +1958,7 @@ export function mapSnapshotJson(data: SnapshotJson): SessionRuntimeState {
 export const sessionRuntimeService = new SessionRuntimeService();
 ```
 
-### src/infrastructure/session/session-service.ts:470
+### src/infrastructure/session/session-service.ts:484
 
 ```ts
 export const sessionService = new SessionService();
@@ -2245,18 +2245,19 @@ private async loadPlayers(sessionId: string): Promise<SessionPlayerDto[]> {
 
 ```ts
 async createSession(payload: CreateSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const projectId = payload.project_id || payload.adventure_id;
     if (!projectId) {
       throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
     }
 
-    // Dual-path (MIG-311 / FE-HOST-02): host SQLite when library flag is on.
+    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not
+    // require a Supabase JWT first (Better Auth cookie-only deployments).
     if (isHostLibraryEnabled()) {
       const row = await createHostPlaySession(projectId, payload.name ?? null);
       return mapHostPlaySessionToVm(row);
     }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('create_play_session', {
       p_project_id: projectId,
@@ -2272,18 +2273,18 @@ async createSession(payload: CreateSessionDto): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:221
+### src/infrastructure/session/session-service.ts:222
 
 ```ts
 async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const code = normalizeSessionJoinCode(payload.code);
 
     if (isHostLibraryEnabled()) {
       const row = await joinHostSessionByCode(code, payload.character_id ?? null);
       return mapHostPlaySessionToVm(row);
     }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('join_session_by_code', {
       p_code: code,
@@ -2300,7 +2301,7 @@ async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:245
+### src/infrastructure/session/session-service.ts:246
 
 ```ts
 async getSessionById(id: string): Promise<SessionVm> {
@@ -2325,7 +2326,7 @@ async getSessionById(id: string): Promise<SessionVm> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:266
+### src/infrastructure/session/session-service.ts:267
 
 ```ts
 async getUserSessions(): Promise<SessionVm[]> {
@@ -2395,7 +2396,7 @@ async getUserSessions(): Promise<SessionVm[]> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:332
+### src/infrastructure/session/session-service.ts:333
 
 ```ts
 async updateSessionStatus(
@@ -2425,16 +2426,16 @@ async updateSessionStatus(
   }
 ```
 
-### src/infrastructure/session/session-service.ts:358
+### src/infrastructure/session/session-service.ts:359
 
 ```ts
 async leaveSession(sessionId: string): Promise<void> {
-    await this.requireAuthUser();
-
     if (isHostLibraryEnabled()) {
       await leaveHostPlaySession(sessionId);
       return;
     }
+
+    await this.requireAuthUser();
 
     const { error } = await supabase.rpc('leave_play_session', {
       p_session_id: sessionId,
@@ -2446,7 +2447,7 @@ async leaveSession(sessionId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:378
+### src/infrastructure/session/session-service.ts:379
 
 ```ts
 async deleteSession(sessionId: string): Promise<void> {
@@ -2471,11 +2472,10 @@ async deleteSession(sessionId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:402
+### src/infrastructure/session/session-service.ts:403
 
 ```ts
 async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
-    await this.requireAuthUser();
     if (isHostLibraryEnabled()) {
       const invite = await createHostSessionInvite(sessionId);
       const mapped = mapInviteCreatePayload(invite);
@@ -2484,6 +2484,7 @@ async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult>
       }
       return mapped;
     }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('create_session_invite', {
       p_session_id: sessionId,
     });
@@ -2498,11 +2499,10 @@ async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult>
   }
 ```
 
-### src/infrastructure/session/session-service.ts:428
+### src/infrastructure/session/session-service.ts:429
 
 ```ts
 async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
@@ -2511,10 +2511,24 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
       try {
         const invite = await resolveHostSessionInvite(normalized);
         return mapInviteResolvePayload(invite);
-      } catch {
-        return { ok: false, errorCode: 'not_found' };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const mapped = mapInviteResolvePayload({
+          ok: false,
+          error_code: message.includes('expired')
+            ? 'expired'
+            : message.includes('revoked')
+              ? 'revoked'
+              : message.includes('completed')
+                ? 'session_completed'
+                : message.includes('missing') || message.includes('P0002')
+                  ? 'not_found'
+                  : 'not_found',
+        });
+        return mapped;
       }
     }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
     });
@@ -2525,11 +2539,10 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
   }
 ```
 
-### src/infrastructure/session/session-service.ts:451
+### src/infrastructure/session/session-service.ts:465
 
 ```ts
 async revokeSessionInvite(token: string): Promise<void> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       throw new Error('Token fehlt');
@@ -2538,6 +2551,7 @@ async revokeSessionInvite(token: string): Promise<void> {
       await revokeHostSessionInvite(normalized);
       return;
     }
+    await this.requireAuthUser();
     const { error } = await supabase.rpc('revoke_session_invite', {
       p_token: normalized,
     });
@@ -2577,7 +2591,7 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/session-recap-service.ts` | `e98ca57169a56a5ce0943018e33b0d7c863754e4787eace8bf0e2bbc2930fca5` |
 | `src/infrastructure/session/session-runtime-channel.ts` | `248a264d97d01d522e05baa27132799d08bc092e661a72cca6ed501d7f48cdf5` |
 | `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
-| `src/infrastructure/session/session-service.ts` | `3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a` |
+| `src/infrastructure/session/session-service.ts` | `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |

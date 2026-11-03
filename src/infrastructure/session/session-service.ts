@@ -192,18 +192,19 @@ class SessionService {
   }
 
   async createSession(payload: CreateSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const projectId = payload.project_id || payload.adventure_id;
     if (!projectId) {
       throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
     }
 
-    // Dual-path (MIG-311 / FE-HOST-02): host SQLite when library flag is on.
+    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not
+    // require a Supabase JWT first (Better Auth cookie-only deployments).
     if (isHostLibraryEnabled()) {
       const row = await createHostPlaySession(projectId, payload.name ?? null);
       return mapHostPlaySessionToVm(row);
     }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('create_play_session', {
       p_project_id: projectId,
@@ -219,14 +220,14 @@ class SessionService {
   }
 
   async joinSession(payload: JoinSessionDto): Promise<SessionVm> {
-    await this.requireAuthUser();
-
     const code = normalizeSessionJoinCode(payload.code);
 
     if (isHostLibraryEnabled()) {
       const row = await joinHostSessionByCode(code, payload.character_id ?? null);
       return mapHostPlaySessionToVm(row);
     }
+
+    await this.requireAuthUser();
 
     const { data, error } = await supabase.rpc('join_session_by_code', {
       p_code: code,
@@ -356,12 +357,12 @@ class SessionService {
   }
 
   async leaveSession(sessionId: string): Promise<void> {
-    await this.requireAuthUser();
-
     if (isHostLibraryEnabled()) {
       await leaveHostPlaySession(sessionId);
       return;
     }
+
+    await this.requireAuthUser();
 
     const { error } = await supabase.rpc('leave_play_session', {
       p_session_id: sessionId,
@@ -400,7 +401,6 @@ class SessionService {
    * GM creates (and rotates) an opaque invite token for share links (#490).
    */
   async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
-    await this.requireAuthUser();
     if (isHostLibraryEnabled()) {
       const invite = await createHostSessionInvite(sessionId);
       const mapped = mapInviteCreatePayload(invite);
@@ -409,6 +409,7 @@ class SessionService {
       }
       return mapped;
     }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('create_session_invite', {
       p_session_id: sessionId,
     });
@@ -426,7 +427,6 @@ class SessionService {
    * Authenticated resolve of invite token → saga/session facts (no role grant).
    */
   async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
@@ -435,10 +435,24 @@ class SessionService {
       try {
         const invite = await resolveHostSessionInvite(normalized);
         return mapInviteResolvePayload(invite);
-      } catch {
-        return { ok: false, errorCode: 'not_found' };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const mapped = mapInviteResolvePayload({
+          ok: false,
+          error_code: message.includes('expired')
+            ? 'expired'
+            : message.includes('revoked')
+              ? 'revoked'
+              : message.includes('completed')
+                ? 'session_completed'
+                : message.includes('missing') || message.includes('P0002')
+                  ? 'not_found'
+                  : 'not_found',
+        });
+        return mapped;
       }
     }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
     });
@@ -449,7 +463,6 @@ class SessionService {
   }
 
   async revokeSessionInvite(token: string): Promise<void> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       throw new Error('Token fehlt');
@@ -458,6 +471,7 @@ class SessionService {
       await revokeHostSessionInvite(normalized);
       return;
     }
+    await this.requireAuthUser();
     const { error } = await supabase.rpc('revoke_session_invite', {
       p_token: normalized,
     });

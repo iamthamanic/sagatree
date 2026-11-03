@@ -101,15 +101,14 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-service.ts:442
+### src/infrastructure/session/session-service.ts:456
 
-AST-Auflösung: `string-literal`; SHA-256 `3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a`.
+AST-Auflösung: `string-literal`; SHA-256 `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
-    await this.requireAuthUser();
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
@@ -118,10 +117,24 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
       try {
         const invite = await resolveHostSessionInvite(normalized);
         return mapInviteResolvePayload(invite);
-      } catch {
-        return { ok: false, errorCode: 'not_found' };
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const mapped = mapInviteResolvePayload({
+          ok: false,
+          error_code: message.includes('expired')
+            ? 'expired'
+            : message.includes('revoked')
+              ? 'revoked'
+              : message.includes('completed')
+                ? 'session_completed'
+                : message.includes('missing') || message.includes('P0002')
+                  ? 'not_found'
+                  : 'not_found',
+        });
+        return mapped;
       }
     }
+    await this.requireAuthUser();
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
     });
@@ -177,7 +190,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | --- | --- |
 | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
 | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
-| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a` |
+| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |

@@ -11494,7 +11494,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -11567,7 +11567,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "916744ca58a5d124a226b24a272e741dc9fcb27b09a6169e44f4a7dc43d8a06c",
+          "baselineSha": "a9c1040a3e1528b9ca09490ff72ec8c76a40224584b8211316adee6e1b516b2b",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/create_play_session-1.sql",
@@ -11593,8 +11593,8 @@
           "rpc": "create_play_session",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 208,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 209,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_project_id: projectId,\n      p_name: payload.name,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -11602,7 +11602,7 @@
           ],
           "callExpression": "supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    })",
           "enclosingCallable": "createSession",
-          "callerContract": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    // Dual-path (MIG-311 / FE-HOST-02): host SQLite when library flag is on.\n    if (isHostLibraryEnabled()) {\n      const row = await createHostPlaySession(projectId, payload.name ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }",
+          "callerContract": "async createSession(payload: CreateSessionDto): Promise<SessionVm> {\n    const projectId = payload.project_id || payload.adventure_id;\n    if (!projectId) {\n      throw new Error('project_id ist erforderlich, um eine Session zu erstellen');\n    }\n\n    // Dual-path (MIG-311 / FE-HOST-02): host authenticates its own cookie — do not\n    // require a Supabase JWT first (Better Auth cookie-only deployments).\n    if (isHostLibraryEnabled()) {\n      const row = await createHostPlaySession(projectId, payload.name ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('create_play_session', {\n      p_project_id: projectId,\n      p_name: payload.name,\n    });\n\n    if (error || !data) {\n      throw new Error(`Failed to create session: ${error?.message ?? 'unknown'}`);\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    return this.mapToViewModel(dto, []);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -11697,7 +11697,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 54,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
             },
             {
@@ -11705,7 +11705,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 81,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
             },
             {
@@ -12818,7 +12818,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -15918,7 +15918,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -15983,7 +15983,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "dc9ee68fb7a7ab4d01befc1bf4aa81b54e9f0fa989eff96911767e14ed07b8e5",
+          "baselineSha": "9af2aa4bb59513d42447f8ad29152cba1bf5155fa90f16826a2891e7b0ab5ec7",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/create_session_invite-1.sql",
@@ -16009,15 +16009,15 @@
           "rpc": "create_session_invite",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 412,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 413,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_session_id: sessionId,\n    }",
           "requestKeys": [
             "p_session_id"
           ],
           "callExpression": "supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    })",
           "enclosingCallable": "createSessionInvite",
-          "callerContract": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    await this.requireAuthUser();\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }",
+          "callerContract": "async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {\n    if (isHostLibraryEnabled()) {\n      const invite = await createHostSessionInvite(sessionId);\n      const mapped = mapInviteCreatePayload(invite);\n      if (!mapped) {\n        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n      }\n      return mapped;\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('create_session_invite', {\n      p_session_id: sessionId,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht erstellt werden: ${error.message}`);\n    }\n    const mapped = mapInviteCreatePayload(data);\n    if (!mapped) {\n      throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');\n    }\n    return mapped;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -17004,7 +17004,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -44105,7 +44105,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -44234,7 +44234,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "71640cffcf1e7732cdf75f5a005603ec4a305438b7e3a1bb55ad6aae218a4855",
+          "baselineSha": "59b63880b29dfa579ad5db280430ddcf376f81c9f5469822bec1bc9b8ba1ed2f",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/join_session_by_code-1.sql",
@@ -44268,8 +44268,8 @@
           "rpc": "join_session_by_code",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 231,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 232,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    }",
           "requestKeys": [
             "p_code",
@@ -44277,7 +44277,7 @@
           ],
           "callExpression": "supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    })",
           "enclosingCallable": "joinSession",
-          "callerContract": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    await this.requireAuthUser();\n\n    const code = normalizeSessionJoinCode(payload.code);\n\n    if (isHostLibraryEnabled()) {\n      const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }",
+          "callerContract": "async joinSession(payload: JoinSessionDto): Promise<SessionVm> {\n    const code = normalizeSessionJoinCode(payload.code);\n\n    if (isHostLibraryEnabled()) {\n      const row = await joinHostSessionByCode(code, payload.character_id ?? null);\n      return mapHostPlaySessionToVm(row);\n    }\n\n    await this.requireAuthUser();\n\n    const { data, error } = await supabase.rpc('join_session_by_code', {\n      p_code: code,\n      p_character_id: payload.character_id ?? null,\n    });\n\n    if (error || !data) {\n      throw new Error(error?.message || 'Session nicht gefunden');\n    }\n\n    const dto = await this.mapRowToDto(data as SessionRow);\n    const players = await this.loadPlayers(dto.id);\n    return this.mapToViewModel(dto, players);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -44380,7 +44380,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 54,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
             },
             {
@@ -44388,7 +44388,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 81,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
             },
             {
@@ -46190,7 +46190,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -46334,7 +46334,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -46411,7 +46411,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "98fc46caafe5fb46667498e880ba96bfbcda9be8936ffae0265c565d5629c789",
+          "baselineSha": "1bcb33dbe41b9c784d038f8802abbfcb78537530aa3fbd2da7034ff70eb05389",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/leave_play_session-1.sql",
@@ -46452,15 +46452,15 @@
           "rpc": "leave_play_session",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 366,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 367,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_session_id: sessionId,\n    }",
           "requestKeys": [
             "p_session_id"
           ],
           "callExpression": "supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    })",
           "enclosingCallable": "leaveSession",
-          "callerContract": "async leaveSession(sessionId: string): Promise<void> {\n    await this.requireAuthUser();\n\n    if (isHostLibraryEnabled()) {\n      await leaveHostPlaySession(sessionId);\n      return;\n    }\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }",
+          "callerContract": "async leaveSession(sessionId: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await leaveHostPlaySession(sessionId);\n      return;\n    }\n\n    await this.requireAuthUser();\n\n    const { error } = await supabase.rpc('leave_play_session', {\n      p_session_id: sessionId,\n    });\n\n    if (error) {\n      throw new Error(`Failed to leave session: ${error.message}`);\n    }\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -47480,7 +47480,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -63242,7 +63242,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -63355,7 +63355,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "4b5f75598398adc68bf4f3fa190aca0ed80f4097df3a193769fc29da8a9c79c3",
+          "baselineSha": "c5544240f7e6d7bc7a893b82b018e10e52bf692d23d549ab516990e318ad561b",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/resolve_session_invite-1.sql",
@@ -63381,15 +63381,15 @@
           "rpc": "resolve_session_invite",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 442,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 456,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_token: normalized,\n    }",
           "requestKeys": [
             "p_token"
           ],
           "callExpression": "supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    })",
           "enclosingCallable": "resolveSessionInvite",
-          "callerContract": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch {\n        return { ok: false, errorCode: 'not_found' };\n      }\n    }\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }",
+          "callerContract": "async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      return { ok: false, errorCode: 'missing_token' };\n    }\n    if (isHostLibraryEnabled()) {\n      try {\n        const invite = await resolveHostSessionInvite(normalized);\n        return mapInviteResolvePayload(invite);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        const mapped = mapInviteResolvePayload({\n          ok: false,\n          error_code: message.includes('expired')\n            ? 'expired'\n            : message.includes('revoked')\n              ? 'revoked'\n              : message.includes('completed')\n                ? 'session_completed'\n                : message.includes('missing') || message.includes('P0002')\n                  ? 'not_found'\n                  : 'not_found',\n        });\n        return mapped;\n      }\n    }\n    await this.requireAuthUser();\n    const { data, error } = await supabase.rpc('resolve_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht gelesen werden: ${error.message}`);\n    }\n    return mapInviteResolvePayload(data);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -64760,7 +64760,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -64892,7 +64892,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -64957,7 +64957,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "b8507bb218c3498519d15a113b7b4549f6a41b0a8e913695580f1681fe595b82",
+          "baselineSha": "39a4d81cc644782ed20285c7e2a7149291878a8b1c50cf7d704aeb07b6714cca",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/revoke_session_invite-1.sql",
@@ -64983,15 +64983,15 @@
           "rpc": "revoke_session_invite",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 461,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 475,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_token: normalized,\n    }",
           "requestKeys": [
             "p_token"
           ],
           "callExpression": "supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    })",
           "enclosingCallable": "revokeSessionInvite",
-          "callerContract": "async revokeSessionInvite(token: string): Promise<void> {\n    await this.requireAuthUser();\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }",
+          "callerContract": "async revokeSessionInvite(token: string): Promise<void> {\n    const normalized = normalizeInviteToken(token);\n    if (!normalized) {\n      throw new Error('Token fehlt');\n    }\n    if (isHostLibraryEnabled()) {\n      await revokeHostSessionInvite(normalized);\n      return;\n    }\n    await this.requireAuthUser();\n    const { error } = await supabase.rpc('revoke_session_invite', {\n      p_token: normalized,\n    });\n    if (error) {\n      throw new Error(`Einladung konnte nicht widerrufen werden: ${error.message}`);\n    }\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isLocalAdminSession,\n  LOCAL_ADMIN_USER_ID,\n} from '../../lib/localAdmin';",
@@ -65953,7 +65953,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -73926,7 +73926,7 @@
           },
           {
             "path": "src/infrastructure/session/session-service.ts",
-            "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+            "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -74015,7 +74015,7 @@
         ],
         "reviewEvidence": {
           "path": ".qa/intake/rpc-contracts/semantics.json",
-          "baselineSha": "dd60fb00d6203a28106382dddbaf45566d51a75cfe4d330b88f11b7fe7ec80d1",
+          "baselineSha": "e9745a1752ab779ee077b5fd644e2a9d0433839e34a59cfe6bca2d4a2d477d21",
           "effectiveSql": [
             {
               "path": ".qa/intake/rpc-contracts/effective-sql/set_session_status-1.sql",
@@ -74055,8 +74055,8 @@
           "rpc": "set_session_status",
           "resolution": "string-literal",
           "path": "src/infrastructure/session/session-service.ts",
-          "line": 344,
-          "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+          "line": 345,
+          "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
           "requestExpression": "{\n      p_session_id: id,\n      p_status: status,\n    }",
           "requestKeys": [
             "p_session_id",
@@ -74167,7 +74167,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 54,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const code = row.joinCode ?? row.code ?? '';\n  return {\n    id: row.sessionId,\n    code: typeof code === 'string' ? code : '',\n    name: row.name ?? '',\n    adventureId: row.projectId,\n    projectId: row.projectId,\n    publicId: row.publicId ?? null,\n    gmUserId: row.gmUserId ?? '',\n    status: normalizePlaySessionStatus(row.status),\n    createdAt,\n    updatedAt: createdAt,\n    startedAt: row.startedAt ? new Date(row.startedAt) : null,\n    endedAt: row.endedAt ? new Date(row.endedAt) : null,\n    players: (row.players ?? []).map((p, index) => ({\n      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,\n      sessionId: row.sessionId,\n      userId: p.userId ?? '',\n      characterId: p.characterId ?? null,\n      isOnline: p.isOnline === true,\n      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,\n    })),\n  };\n}"
             },
             {
@@ -74175,7 +74175,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/session/session-service.ts",
               "line": 81,
-              "sourceSha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a",
+              "sourceSha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296",
               "source": "type SessionRow = {\n  id: string;\n  /** Join code — optional; not always present on older schemas / safe selects. */\n  code?: string | null;\n  name: string | null;\n  project_id: string | null;\n  public_id?: string | null;\n  status: string;\n  created_at: string;\n  updated_at: string;\n  started_at: string | null;\n  ended_at: string | null;\n};"
             },
             {
@@ -75619,7 +75619,7 @@
         },
         {
           "path": "src/infrastructure/session/session-service.ts",
-          "sha256": "3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a"
+          "sha256": "13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
