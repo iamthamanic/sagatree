@@ -56,6 +56,10 @@ const atlas = readFileSync(join(root, 'src/app/world/atlas/useWorldAtlasEditor.t
 assert(/!isHostLibraryEnabled\(\) && !hasJwtSession/.test(atlas), 'atlas JWT gate skipped under host flag');
 const bridge = readFileSync(join(root, 'src/lib/hostAuthBridge.ts'), 'utf8');
 assert(/signInHostEmail/.test(bridge) && /signUpHostEmail/.test(bridge), 'hostAuthBridge product auth');
+assert(/response\.ok/.test(bridge) && /Host-Abmeldung/.test(bridge), 'signOutHost checks response.ok');
+assert(/AbortController|abort\(/.test(bridge), 'probeHostActor is bounded by abort timeout');
+const cookieProfile = readFileSync(join(root, 'server/src/auth/cookie-profile.ts'), 'utf8');
+assert(/minPasswordLength:\s*6/.test(cookieProfile), 'host minPasswordLength matches LoginScreen');
 
 const { createHost } = await import(createHostUrl);
 const { generateAuthSecret } = await import(authIndexUrl);

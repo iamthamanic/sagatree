@@ -6,6 +6,8 @@
  * This bridge is opt-in via VITE_SAGATREE_HOST_AUTH_URL and never mints JWTs.
  */
 
+import { AUTH_SESSION_TIMEOUT_MS } from './networkTimeout';
+
 /** Session bearer field names that must never be persisted from host auth JSON. */
 export const HOST_AUTH_SESSION_BEARER_KEYS = [
   'token',
@@ -74,15 +76,26 @@ export function scrubHostAuthJson<T>(value: T): T {
 export async function probeHostActor(
   fetchImpl: typeof fetch = fetch,
   env: EnvLike = defaultEnv(),
+  timeoutMs: number = AUTH_SESSION_TIMEOUT_MS,
 ): Promise<HostWhoamiDto | null> {
   const base = getHostAuthBaseUrl(env);
   if (!base) return null;
 
-  const response = await fetchImpl(`${base}/api/whoami`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}/api/whoami`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
   if (!response.ok) return null;
 
   let raw: unknown;
@@ -186,20 +199,24 @@ export async function signUpHostEmail(
   );
 }
 
-/** Clear host Better Auth cookie session. */
+/** Clear host Better Auth cookie session. Throws when the cookie was not cleared. */
 export async function signOutHost(
   fetchImpl: typeof fetch = fetch,
   env: EnvLike = defaultEnv(),
 ): Promise<void> {
   const base = getHostAuthBaseUrl(env);
   if (!base) return;
+  let response: Response;
   try {
-    await fetchImpl(`${base}/api/auth/sign-out`, {
+    response = await fetchImpl(`${base}/api/auth/sign-out`, {
       method: 'POST',
       credentials: 'include',
       headers: { Accept: 'application/json' },
     });
   } catch {
-    /* ignore — local UI clear still proceeds */
+    throw new Error('Host-Abmeldung nicht erreichbar');
+  }
+  if (!response.ok) {
+    throw new Error('Host-Abmeldung fehlgeschlagen');
   }
 }

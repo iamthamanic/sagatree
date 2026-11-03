@@ -28974,7 +28974,11 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
+          },
+          {
+            "path": "src/lib/networkTimeout.ts",
+            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -28986,7 +28990,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-ai.json",
-      "sourceContractSha256": "6db35cff3cc1260641fb1cc8393073ed21b2d828cb030389db962c4ee2d73a66",
+      "sourceContractSha256": "b4a0c6069f82c143437268080e28a293b07135595b8bc07aa5dfade572eb8877",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -30461,7 +30465,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -30481,7 +30485,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "e3fb0b922e0684d704e182ed570101593f7fd9d9061e52da87d621e305ee3ccd",
+      "sourceContractSha256": "b2762d2869ac00f912e1d5a100d138346389592cd5102745e2229dd2e070a56d",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -35681,7 +35685,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -35701,7 +35705,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "40638612b3b9a4c2af3d3569ec44f8b2a36eb60c51ee5a3f3e38dbf55b33087d",
+      "sourceContractSha256": "2740913c21ed185146045bfdf2f06d873ec32e20001a220149232ff97376ef3b",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36961,7 +36965,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -36981,7 +36985,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "9189a8038187262847f8d56510eb0ba00d9c6f217193d6e0963fee18aea4f3bf",
+      "sourceContractSha256": "9a858be51cac3762d9ae6dbcf2a8ac8157b13908a6278225f3222d6c34eb3883",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -38705,7 +38709,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -38725,7 +38729,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "0224d7a4b9504c28b9257bcad5d20eb450f474c7550bd951c7020d3062425951",
+      "sourceContractSha256": "6f39a38c62d0a5e956311d931edf98f3453de267c83395133c469cfd3c9dc7e3",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39846,7 +39850,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -39866,7 +39870,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "ed84cf6ce86280ef054f335835cbb34b127db7946f773c43b87fd161f144888e",
+      "sourceContractSha256": "56773fa264640b3b01cc901df6d58d067faa19c02b97bf296a6e4747b0daf067",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41899,7 +41903,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -41919,7 +41923,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "32db2801ef40f3c7004ce3c7e8bca2a9319742a82e150bde85f5e859162f3c6d",
+      "sourceContractSha256": "ed2b94fb8d24eb60771e8ca0082e0dae677ee2d10cc545476034a2eb9a84efcb",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -44798,7 +44802,7 @@
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
-            "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
+            "sha256": "50a2357c789f03432013724474f783e5363ac6c997740953a458170363abb670"
           },
           {
             "path": "src/lib/localAdmin.ts",
@@ -44818,7 +44822,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "2e1c276e6926bde81700afe3766b842bc0bc8ef9c6e7995ece4937dd75a729b5",
+      "sourceContractSha256": "0dcca56b10cbcd5e2cb001400b4f9766c40b51bf35129701d064a6f7031b0ecf",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

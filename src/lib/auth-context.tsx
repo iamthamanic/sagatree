@@ -655,15 +655,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // FE-HOST-07: clear HttpOnly cookie before dropping UI session — failed
+    // host sign-out must not leave a sticky cookie that re-auths on reload.
+    if (isHostLibraryEnabled()) {
+      await signOutHost();
+      bumpAuthGeneration();
+      setLocalAdminSession(false);
+      userRef.current = null;
+      setUser(null);
+      setHasJwtSession(false);
+      return;
+    }
     bumpAuthGeneration();
     setLocalAdminSession(false);
     userRef.current = null;
     setUser(null);
     setHasJwtSession(false);
-    if (isHostLibraryEnabled()) {
-      await signOutHost();
-      return;
-    }
     try {
       await supabase.auth.signOut();
     } catch (error) {
