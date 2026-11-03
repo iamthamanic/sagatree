@@ -4,6 +4,8 @@
 - BASE_SHA: d37ee8269d6e9b5bffe39f9bb858ccdaf623437e
 - Date: 2026-11-03
 - Verdict: CLEAR
+- Acceptance tier: feature-integration
+- Deferred integration: #1094–#1101 remaining Browser Host Cutover slices (sessions/atlas/auth/write-kill); Supabase path remains default when host library flag is off
 
 ## Event
 
