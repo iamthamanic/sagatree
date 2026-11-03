@@ -27,6 +27,7 @@ import {
 import { normalizeCharacterAppearance } from '../../domains/character/use-cases/avatar-presets';
 import { ENTITY_CACHE_KEYS, entityCache } from '../../lib/entityCache';
 import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
+import { probeHostActor } from '../../lib/hostAuthBridge';
 import { persistMigratedInventory } from '../inventory/inventory-persistence';
 import { getLookProfile } from '../look';
 import { projectService } from '../project/project-service';
@@ -313,6 +314,18 @@ class CharacterService {
     personalLookProfileId: string | null,
   ): Promise<CharacterVm> {
     await this.assertPersonalLookWriteGate(characterId, personalLookProfileId);
+    if (isHostLibraryEnabled()) {
+      const current = await fetchHostLibraryCharacter(characterId);
+      const appearance = {
+        ...((current.sheet?.appearance as Record<string, unknown> | undefined) ?? {}),
+        personal_look_profile_id: personalLookProfileId,
+      };
+      const updated = await updateHostLibraryCharacter(characterId, {
+        sheet: { ...(current.sheet ?? {}), appearance },
+      });
+      invalidateCharacterListCaches();
+      return mapHostCharacterVm(updated);
+    }
     const current = await supabaseCharacterRepository.getCharacterById(characterId);
     const updated = await supabaseCharacterRepository.updateCharacter(characterId, {
       appearance: {
@@ -328,23 +341,34 @@ class CharacterService {
     characterId: string,
     personalLookProfileId: string | null,
   ): Promise<void> {
-    const actorUserId = await getAuthenticatedUserId();
-    // Owner-scoped fetch — proves the actor can access this character.
-    await supabaseCharacterRepository.getCharacterById(characterId);
+    const hostMode = isHostLibraryEnabled();
+    let actorUserId: string;
+    if (hostMode) {
+      // Owner-scoped host fetch — proves the actor can access this character.
+      await fetchHostLibraryCharacter(characterId);
+      const who = await probeHostActor();
+      actorUserId = who?.actorId ?? 'solo';
+    } else {
+      actorUserId = await getAuthenticatedUserId();
+      // Owner-scoped fetch — proves the actor can access this character.
+      await supabaseCharacterRepository.getCharacterById(characterId);
+    }
 
     let sagaAllows = true;
-    try {
-      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
-      const activeArcs = arcs.filter((arc) => arc.status === 'active');
-      for (const arc of activeArcs) {
-        const project = await projectService.getProjectById(arc.projectId);
-        if (!project.allowPlayerCharacterLookOverride) {
-          sagaAllows = false;
-          break;
+    if (!hostMode) {
+      try {
+        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
+        const activeArcs = arcs.filter((arc) => arc.status === 'active');
+        for (const arc of activeArcs) {
+          const project = await projectService.getProjectById(arc.projectId);
+          if (!project.allowPlayerCharacterLookOverride) {
+            sagaAllows = false;
+            break;
+          }
         }
+      } catch {
+        sagaAllows = true;
       }
-    } catch {
-      sagaAllows = true;
     }
 
     let lookOwnerUserId: string | null = null;
@@ -356,7 +380,7 @@ class CharacterService {
     }
 
     const gate = assertPersonalLookOverrideWrite({
-      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.
+      // Successful owner-scoped fetch implies actor owns the character.
       characterOwnerUserId: actorUserId,
       actorUserId,
       personalLookProfileId,

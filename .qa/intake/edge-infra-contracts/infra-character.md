@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `a979f4a10b219df5e0e968b9ea9f22d747cf015a556d30240c08b79dfe37e1cd`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-character.json](source-contracts/infra-character.json) (SHA-256 `a4daed068681e8e98431ae6b897ed671498d2b04a922b7160d2d2c7a956c80f9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -916,14 +916,14 @@ supabase.from(TABLE).delete().eq('id', presetId).eq('owner_user_id', userId)
 Enclosing operation: `src/infrastructure/character/character-preset-service.ts:371`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/character/character-service.ts:331` — dynamic-expression.
+`src/infrastructure/character/character-service.ts:352` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/character/character-service.ts:327`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/character/character-service.ts:340`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/character/supabase-character.repository.ts:112` — dynamic-expression.
@@ -7177,7 +7177,7 @@ export function assertValidSnapshot(snapshot: CharacterPresetSnapshot): void {
 export const characterPresetService = new CharacterPresetService();
 ```
 
-### src/infrastructure/character/character-service.ts:107
+### src/infrastructure/character/character-service.ts:108
 
 ```ts
 export type UploadPortraitOptions = {
@@ -7190,7 +7190,7 @@ export type UploadPortraitOptions = {
 };
 ```
 
-### src/infrastructure/character/character-service.ts:120
+### src/infrastructure/character/character-service.ts:121
 
 ```ts
 export async function prepareCharacterPortraitFile(
@@ -7239,7 +7239,7 @@ export async function prepareCharacterPortraitFile(
 }
 ```
 
-### src/infrastructure/character/character-service.ts:497
+### src/infrastructure/character/character-service.ts:521
 
 ```ts
 export const characterService = new CharacterService();
@@ -11746,30 +11746,41 @@ async deletePreset(presetId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/character/character-service.ts:327
+### src/infrastructure/character/character-service.ts:340
 
 ```ts
 private async assertPersonalLookWriteGate(
     characterId: string,
     personalLookProfileId: string | null,
   ): Promise<void> {
-    const actorUserId = await getAuthenticatedUserId();
-    // Owner-scoped fetch — proves the actor can access this character.
-    await supabaseCharacterRepository.getCharacterById(characterId);
+    const hostMode = isHostLibraryEnabled();
+    let actorUserId: string;
+    if (hostMode) {
+      // Owner-scoped host fetch — proves the actor can access this character.
+      await fetchHostLibraryCharacter(characterId);
+      const who = await probeHostActor();
+      actorUserId = who?.actorId ?? 'solo';
+    } else {
+      actorUserId = await getAuthenticatedUserId();
+      // Owner-scoped fetch — proves the actor can access this character.
+      await supabaseCharacterRepository.getCharacterById(characterId);
+    }
 
     let sagaAllows = true;
-    try {
-      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
-      const activeArcs = arcs.filter((arc) => arc.status === 'active');
-      for (const arc of activeArcs) {
-        const project = await projectService.getProjectById(arc.projectId);
-        if (!project.allowPlayerCharacterLookOverride) {
-          sagaAllows = false;
-          break;
+    if (!hostMode) {
+      try {
+        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);
+        const activeArcs = arcs.filter((arc) => arc.status === 'active');
+        for (const arc of activeArcs) {
+          const project = await projectService.getProjectById(arc.projectId);
+          if (!project.allowPlayerCharacterLookOverride) {
+            sagaAllows = false;
+            break;
+          }
         }
+      } catch {
+        sagaAllows = true;
       }
-    } catch {
-      sagaAllows = true;
     }
 
     let lookOwnerUserId: string | null = null;
@@ -11781,7 +11792,7 @@ private async assertPersonalLookWriteGate(
     }
 
     const gate = assertPersonalLookOverrideWrite({
-      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.
+      // Successful owner-scoped fetch implies actor owns the character.
       characterOwnerUserId: actorUserId,
       actorUserId,
       personalLookProfileId,
@@ -12025,7 +12036,7 @@ private async assertPersonalLookWriteGate(
 | `src/infrastructure/character/character-adventure-arc-service.ts` | `15e8bea5f542c4c445e3b8ef5afeaac3e63e09317919c1cb763a6fcace9af15b` |
 | `src/infrastructure/character/character-lore-service.ts` | `864f22acd15e0605a0a8e5e848b09eaf85e0a95838ab3b5c2e62b2828457cba0` |
 | `src/infrastructure/character/character-preset-service.ts` | `6acece04669bde738d04e6295f41d7d7d7a81afedc9f350d6b531c01cd4e9789` |
-| `src/infrastructure/character/character-service.ts` | `53f08b7c6dfe6e94f97eae3595f67394790dbbdb9dbee7aeccf7e7ea30d4d281` |
+| `src/infrastructure/character/character-service.ts` | `b1d6d33140d1e8ceae4bf3c5d6b5ff3acc63d64fdd71c690e96222308f845fd2` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
 | `src/infrastructure/character/host-character-adapter.ts` | `13f20441555da88736aa75337568f69c2e2d516ca2a1193f0fe3d4da83317fa8` |
 | `src/infrastructure/character/host-character-ports.contract.ts` | `a731a0dd97b4e55beee4c08600f69d50112efec738935d93aafab65c4c223dfc` |

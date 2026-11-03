@@ -79,8 +79,9 @@ function seedCharacterSheets(
       classLabel: labels.classLabel,
       raceLabel: labels.raceLabel,
     };
+    // Never REPLACE — preserve user edits / imported rows that reuse the stable id.
     db.prepare(
-      `INSERT OR REPLACE INTO characters
+      `INSERT OR IGNORE INTO characters
        (id, owner_user_id, character_type, sheet_status, name, created_at, public_id,
         updated_at, description, level, sheet_json, portrait_storage_path, deleted_at)
        VALUES (?, ?, 'pc', 'complete', ?, ?, ?, ?, ?, 1, ?, NULL, NULL)`,

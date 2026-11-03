@@ -29,7 +29,7 @@
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "sha256": "2c7e3985c7e125d3ad41374892add93b440ac18da8a5f7c45791a56e77ef4d44"
+      "sha256": "a45483722706cf4af91e90e41898f5b9c939dde8c92993868f39dc8269bd5ff0"
     }
   ],
   "supportingSourceFiles": [
@@ -2660,8 +2660,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 82,
-      "endLine": 83,
+      "line": 84,
+      "endLine": 85,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false })",
@@ -2670,8 +2670,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 75,
-        "endLine": 90,
+        "line": 77,
+        "endLine": 92,
         "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
       }
     },
@@ -2679,8 +2679,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 101,
-      "endLine": 102,
+      "line": 103,
+      "endLine": 104,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single()",
@@ -2689,8 +2689,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 92,
-        "endLine": 110,
+        "line": 94,
+        "endLine": 112,
         "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
@@ -2698,8 +2698,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 117,
-      "endLine": 118,
+      "line": 119,
+      "endLine": 120,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle()",
@@ -2708,8 +2708,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 113,
-        "endLine": 125,
+        "line": 115,
+        "endLine": 127,
         "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    await assertSupabaseJwtSession();\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
@@ -2717,8 +2717,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 141,
-      "endLine": 142,
+      "line": 151,
+      "endLine": 152,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single()",
@@ -2727,17 +2727,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 127,
-        "endLine": 149,
-        "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });\n      return mapHostWorld(created);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+        "line": 129,
+        "endLine": 159,
+        "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });\n      return mapHostWorld(created);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
     {
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 182,
-      "endLine": 183,
+      "line": 200,
+      "endLine": 201,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single()",
@@ -2746,17 +2746,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 161,
-        "endLine": 192,
-        "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (typeof payload.name !== 'string') {\n        return this.getWorldProfile(ownerUserId, id);\n      }\n      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });\n      return mapHostWorld(updated);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+        "line": 171,
+        "endLine": 210,
+        "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      if (typeof payload.name !== 'string') {\n        return this.getWorldProfile(ownerUserId, id);\n      }\n      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });\n      return mapHostWorld(updated);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
       }
     },
     {
       "kind": "table",
       "name": "inventory_item_definitions",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 205,
-      "endLine": 206,
+      "line": 223,
+      "endLine": 224,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('inventory_item_definitions')",
       "chain": "supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id)",
@@ -2765,8 +2765,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 194,
-        "endLine": 238,
+        "line": 212,
+        "endLine": 256,
         "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
       }
     },
@@ -2774,8 +2774,8 @@
       "kind": "table",
       "name": "npc_creature_definitions",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 218,
-      "endLine": 219,
+      "line": 236,
+      "endLine": 237,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('npc_creature_definitions')",
       "chain": "supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id)",
@@ -2784,8 +2784,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 194,
-        "endLine": 238,
+        "line": 212,
+        "endLine": 256,
         "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
       }
     },
@@ -2793,8 +2793,8 @@
       "kind": "table",
       "name": "world_profiles",
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 231,
-      "endLine": 232,
+      "line": 249,
+      "endLine": 250,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)",
@@ -2803,8 +2803,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-profile-service.ts",
-        "line": 194,
-        "endLine": 238,
+        "line": 212,
+        "endLine": 256,
         "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
       }
     }
@@ -3163,8 +3163,8 @@
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 241,
-      "endLine": 241,
+      "line": 259,
+      "endLine": 259,
       "text": "export const worldProfileService = new WorldProfileService();"
     }
   ],
@@ -3494,91 +3494,91 @@
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
       "line": 28,
-      "endLine": 39,
+      "endLine": 41,
       "name": "mapHostWorld",
-      "text": "function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  return {\n    id: row.id,\n    publicId: '',\n    name: row.title,\n    description: '',\n    modules: normalizeWorldModuleConfigMap(undefined),\n    createdAt,\n    updatedAt: createdAt,\n  };\n}"
+      "text": "function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  // Host world ports are title-only today (WorldReadDto). Description/modules\n  // land in a later FE-HOST world-profile slice — do not invent empty writes.\n  return {\n    id: row.id,\n    publicId: '',\n    name: row.title,\n    description: '',\n    modules: normalizeWorldModuleConfigMap(undefined),\n    createdAt,\n    updatedAt: createdAt,\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 41,
-      "endLine": 46,
+      "line": 43,
+      "endLine": 48,
       "name": "normalizeName",
       "text": "function normalizeName(value: string): string {\n  const name = value.trim();\n  if (!name) throw new Error('Der Name der Welt ist erforderlich.');\n  if (name.length > 255) throw new Error('Der Name der Welt darf höchstens 255 Zeichen lang sein.');\n  return name;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 48,
-      "endLine": 51,
+      "line": 50,
+      "endLine": 53,
       "name": "normalizeDescription",
       "text": "function normalizeDescription(value?: string): string | null {\n  const description = value?.trim() ?? '';\n  return description || null;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 53,
-      "endLine": 58,
+      "line": 55,
+      "endLine": 60,
       "name": "duplicateWorldName",
       "text": "function duplicateWorldName(sourceName: string): string {\n  const suffix = ' (Kopie)';\n  const base = sourceName.trim() || 'Welt';\n  const maxBase = Math.max(1, 255 - suffix.length);\n  return `${base.slice(0, maxBase)}${suffix}`;\n}"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 75,
-      "endLine": 90,
+      "line": 77,
+      "endLine": 92,
       "name": "getUserWorldProfiles",
       "text": "async getUserWorldProfiles(ownerUserId: string): Promise<WorldProfileVm[]> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      return rows.map(mapHostWorld);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('owner_user_id', jwtUserId)\n      .order('created_at', { ascending: false });\n\n    if (error) throw new Error(`Welten konnten nicht geladen werden: ${error.message}`);\n    return (data ?? []).map((entry) => this.mapToViewModel(entry as WorldProfileDto));\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 89,
-      "endLine": 89,
+      "line": 91,
+      "endLine": 91,
       "name": "callback",
       "text": "(entry) => this.mapToViewModel(entry as WorldProfileDto)"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 92,
-      "endLine": 110,
+      "line": 94,
+      "endLine": 112,
       "name": "getWorldProfile",
       "text": "async getWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryWorlds();\n      const match = rows.find((row) => row.id === id);\n      if (!match) throw new Error('Welt konnte nicht geladen werden');\n      return mapHostWorld(match);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 96,
-      "endLine": 96,
+      "line": 98,
+      "endLine": 98,
       "name": "callback",
       "text": "(row) => row.id === id"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 113,
-      "endLine": 125,
+      "line": 115,
+      "endLine": 127,
       "name": "getByPublicId",
       "text": "async getByPublicId(worldPublicId: string): Promise<WorldProfileVm | null> {\n    await assertSupabaseJwtSession();\n    const publicId = worldPublicId.trim().toUpperCase();\n    if (!publicId) return null;\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .select(WORLD_SELECT)\n      .eq('public_id', publicId)\n      .maybeSingle();\n    if (error) throw new Error(`Welt konnte nicht geladen werden: ${error.message}`);\n    if (!data) return null;\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 127,
-      "endLine": 149,
+      "line": 129,
+      "endLine": 159,
       "name": "createWorldProfile",
-      "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });\n      return mapHostWorld(created);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+      "text": "async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });\n      return mapHostWorld(created);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const insertPayload = {\n      owner_user_id: jwtUserId,\n      name: normalizeName(payload.name),\n      description: normalizeDescription(payload.description),\n      modules: normalizeWorldModuleConfigMap(payload.modules),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .insert(insertPayload)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht erstellt werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 151,
-      "endLine": 159,
+      "line": 161,
+      "endLine": 169,
       "name": "duplicateWorldProfile",
       "text": "async duplicateWorldProfile(ownerUserId: string, id: string): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    const source = await this.getWorldProfile(ownerUserId, id);\n    return this.createWorldProfile(ownerUserId, {\n      name: duplicateWorldName(source.name),\n      description: source.description,\n      modules: source.modules,\n    });\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 161,
-      "endLine": 192,
+      "line": 171,
+      "endLine": 210,
       "name": "updateWorldProfile",
-      "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (typeof payload.name !== 'string') {\n        return this.getWorldProfile(ownerUserId, id);\n      }\n      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });\n      return mapHostWorld(updated);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
+      "text": "async updateWorldProfile(\n    ownerUserId: string,\n    id: string,\n    payload: UpdateWorldProfileDto,\n  ): Promise<WorldProfileVm> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      if (\n        (typeof payload.description === 'string' && payload.description.trim()) ||\n        (payload.modules && Object.keys(payload.modules).length > 0)\n      ) {\n        throw new Error(\n          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',\n        );\n      }\n      if (typeof payload.name !== 'string') {\n        return this.getWorldProfile(ownerUserId, id);\n      }\n      const updated = await updateHostLibraryWorld(id, { name: normalizeName(payload.name) });\n      return mapHostWorld(updated);\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n    const updatePayload = {\n      ...(typeof payload.name === 'string' ? { name: normalizeName(payload.name) } : {}),\n      ...(typeof payload.description === 'string' ? { description: normalizeDescription(payload.description) } : {}),\n      ...(payload.modules ? { modules: normalizeWorldModuleConfigMap(payload.modules) } : {}),\n      updated_at: new Date().toISOString(),\n    };\n\n    const { data, error } = await supabase\n      .from(this.tableName)\n      .update(updatePayload)\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId)\n      .select(WORLD_SELECT)\n      .single();\n\n    if (error) throw new Error(`Welt konnte nicht gespeichert werden: ${error.message}`);\n    return this.mapToViewModel(data as WorldProfileDto);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
-      "line": 194,
-      "endLine": 238,
+      "line": 212,
+      "endLine": 256,
       "name": "deleteWorldProfile",
       "text": "async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {\n    if (!ownerUserId) throw new Error('User not authenticated');\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryWorld(id);\n      return;\n    }\n    const jwtUserId = await assertSupabaseJwtSession();\n\n    // World item definitions reference this profile with ON DELETE RESTRICT so\n    // owned instances never become permanently unresolvable. Refuse early with\n    // a German message instead of surfacing the Postgres FK error.\n    const { count, error: catalogError } = await supabase\n      .from('inventory_item_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (catalogError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${catalogError.message}`);\n    }\n    if ((count ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange Gegenstand-Definitionen darauf verweisen. Archivieren Sie die Definitionen zuerst — Löschen würde bestehende Inventare unauflösbar machen.',\n      );\n    }\n\n    const { count: npcCount, error: npcError } = await supabase\n      .from('npc_creature_definitions')\n      .select('id', { count: 'exact', head: true })\n      .eq('world_profile_id', id);\n    if (npcError) {\n      throw new Error(`Welt konnte nicht gelöscht werden: ${npcError.message}`);\n    }\n    if ((npcCount ?? 0) > 0) {\n      throw new Error(\n        'Welt kann nicht gelöscht werden, solange NPC-/Kreatur-Definitionen darauf verweisen.',\n      );\n    }\n\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)\n      .eq('owner_user_id', jwtUserId);\n\n    if (error) throw new Error(`Welt konnte nicht gelöscht werden: ${error.message}`);\n  }"
     }

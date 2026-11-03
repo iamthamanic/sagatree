@@ -27,6 +27,8 @@ const WORLD_SELECT =
 
 function mapHostWorld(row: HostLibraryWorldDto): WorldProfileVm {
   const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
+  // Host world ports are title-only today (WorldReadDto). Description/modules
+  // land in a later FE-HOST world-profile slice — do not invent empty writes.
   return {
     id: row.id,
     publicId: '',
@@ -127,6 +129,14 @@ class WorldProfileService {
   async createWorldProfile(ownerUserId: string, payload: CreateWorldProfileDto): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
     if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
       const created = await createHostLibraryWorld({ name: normalizeName(payload.name) });
       return mapHostWorld(created);
     }
@@ -165,6 +175,14 @@ class WorldProfileService {
   ): Promise<WorldProfileVm> {
     if (!ownerUserId) throw new Error('User not authenticated');
     if (isHostLibraryEnabled()) {
+      if (
+        (typeof payload.description === 'string' && payload.description.trim()) ||
+        (payload.modules && Object.keys(payload.modules).length > 0)
+      ) {
+        throw new Error(
+          'Host-Welten speichern derzeit nur den Namen. Beschreibung und Module folgen im nächsten Cutover-Schritt.',
+        );
+      }
       if (typeof payload.name !== 'string') {
         return this.getWorldProfile(ownerUserId, id);
       }

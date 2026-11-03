@@ -2,9 +2,9 @@
  * Library HTTP adapters — browser cutover for owned list/create (post-MIG dual-path flip).
  * Location: server/src/api/library-routes.ts
  *
- * Solo loopback may fall back to the host solo actor when no cookie session exists
- * (Local Admin / Vite DEV without Better Auth sign-in). CSRF stay fail-closed for
- * ORIGIN_DENIED / HOST_DENIED / forged identity.
+ * Solo loopback may fall back to the host solo actor only when auth is not
+ * configured (Local Admin). Plain UNAUTHENTICATED remote sessions stay 401.
+ * CSRF stay fail-closed for ORIGIN_DENIED / HOST_DENIED / forged identity.
  */
 import type { Hono } from 'hono';
 import type { Actor, IdentityPorts } from '../modules/identity/index.ts';
@@ -68,9 +68,13 @@ async function resolveLibraryActor(
     allowSameOriginRead: true,
   });
   if (remote.ok) return { ok: true, actor: remote.actor };
-  const soft =
-    remote.code === 'AUTH_NOT_CONFIGURED' || remote.code === 'UNAUTHENTICATED';
-  if (deps.hostMode === 'solo' && soft && soloLoopbackAllowed(headers)) {
+  // Match AI routes: solo loopback only when auth is not configured — never
+  // mint a solo actor for plain UNAUTHENTICATED remote sessions.
+  if (
+    deps.hostMode === 'solo' &&
+    remote.code === 'AUTH_NOT_CONFIGURED' &&
+    soloLoopbackAllowed(headers)
+  ) {
     return { ok: true, actor: deps.identity.resolveSoloActor() };
   }
   return { ok: false, status: authDenyStatus(remote.code), error: remote.code };

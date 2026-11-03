@@ -17,6 +17,7 @@ import {
   getNpcCreatureCatalogModuleConfig,
   isCoreNpcCreatureDefinitionId,
   listCoreNpcCreatureDefinitions,
+  parseNpcCreatureDefinition,
   planNpcControllerAssignment,
   planNpcCreatureInstanceRuntimeUpdate,
   planNpcCreatureInstanceSpawn,
@@ -53,6 +54,36 @@ import {
 } from './npc-creature-instance.persistence';
 import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';
 
+function mapHostLibraryNpcRecord(raw: unknown): NpcCreatureCatalogRecord | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const row = raw as Record<string, unknown>;
+  const id = typeof row.id === 'string' ? row.id : null;
+  if (!id) return null;
+  const scopeRaw = row.scope;
+  const scope =
+    scopeRaw === 'personal' || scopeRaw === 'world' || scopeRaw === 'core' || scopeRaw === 'builtin'
+      ? scopeRaw
+      : null;
+  if (!scope || scope === 'core' || scope === 'builtin') return null;
+  const payload =
+    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)
+      ? row.payload
+      : {};
+  const definition = parseNpcCreatureDefinition(id, scope, payload);
+  if (!definition) return null;
+  const publicId =
+    typeof row.publicId === 'string' && row.publicId.trim()
+      ? row.publicId.trim().toUpperCase()
+      : null;
+  return {
+    definition,
+    status: row.status === 'archived' ? 'archived' : 'active',
+    ownerUserId: typeof row.ownerUserId === 'string' ? row.ownerUserId : '',
+    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
+    publicId,
+  };
+}
+
 const CONTROLLER_TABLE = 'npc_creature_controller_assignments';
 const INSTANCES_TABLE = 'npc_creature_instances';
 
@@ -62,10 +93,22 @@ export async function listNpcCreatureDefinitions(options?: {
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
   if (isHostLibraryEnabled()) {
-    await fetchHostLibraryNpcCreatures();
-    // Host DTOs are not yet mapped 1:1 to FE catalog records — Core/builtin
-    // packs still come from the Library hook merge with an empty persisted set.
-    return [];
+    const rows = await fetchHostLibraryNpcCreatures();
+    return rows
+      .map(mapHostLibraryNpcRecord)
+      .filter((record): record is NpcCreatureCatalogRecord => record !== null)
+      .filter((record) => {
+        if (options?.includeArchived) return true;
+        return record.status === 'active';
+      })
+      .filter((record) => {
+        if (!options?.scope) return true;
+        return record.definition.scope === options.scope;
+      })
+      .filter((record) => {
+        if (!options?.worldProfileId) return true;
+        return record.worldProfileId === options.worldProfileId;
+      });
   }
   return supabaseNpcCreatureRepository.listDefinitions(options);
 }

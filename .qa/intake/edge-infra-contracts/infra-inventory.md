@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `fa8126afe70862b89d58c130cd99412195c7a5c217cdac9ef939c1b1c7923692`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `1e4bd088f8586899bd90dc1294ce9c2ba1fc537b6d3cefe6356170b7abc3250f`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -619,7 +619,7 @@ export function migrationDefinitionId(fingerprint: string): string {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:53
+### src/infrastructure/inventory/item-catalog-service.ts:83
 
 ```ts
 export interface CharacterItemCatalog {
@@ -633,7 +633,7 @@ export interface CharacterItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:64
+### src/infrastructure/inventory/item-catalog-service.ts:94
 
 ```ts
 export interface LibraryItemCatalog {
@@ -644,7 +644,7 @@ export interface LibraryItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:79
+### src/infrastructure/inventory/item-catalog-service.ts:109
 
 ```ts
 export async function loadCharacterItemCatalog(
@@ -711,7 +711,7 @@ export async function loadCharacterItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:147
+### src/infrastructure/inventory/item-catalog-service.ts:177
 
 ```ts
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
@@ -719,7 +719,10 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
     ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>
   > = [];
   if (isHostLibraryEnabled()) {
-    await fetchHostLibraryItems();
+    const hostItems = await fetchHostLibraryItems();
+    persistedRecords = hostItems
+      .map(mapHostLibraryItemRecord)
+      .filter((record): record is CatalogDefinitionRecord => record !== null);
   } else {
     persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
   }
@@ -745,7 +748,7 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:181
+### src/infrastructure/inventory/item-catalog-service.ts:214
 
 ```ts
 export async function loadWorldProfileItemCatalog(
@@ -758,7 +761,7 @@ export async function loadWorldProfileItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:194
+### src/infrastructure/inventory/item-catalog-service.ts:227
 
 ```ts
 export async function getItemDefinitionById(definitionId: string): Promise<{
@@ -769,7 +772,7 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:201
+### src/infrastructure/inventory/item-catalog-service.ts:234
 
 ```ts
 export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {
@@ -777,7 +780,7 @@ export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<Ca
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:205
+### src/infrastructure/inventory/item-catalog-service.ts:238
 
 ```ts
 export function createWorldDefinition(
@@ -788,7 +791,7 @@ export function createWorldDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:212
+### src/infrastructure/inventory/item-catalog-service.ts:245
 
 ```ts
 export function updateDefinition(
@@ -799,7 +802,7 @@ export function updateDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:220
+### src/infrastructure/inventory/item-catalog-service.ts:253
 
 ```ts
 export function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
@@ -807,7 +810,7 @@ export function archiveDefinition(definitionId: string): Promise<CatalogDefiniti
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:224
+### src/infrastructure/inventory/item-catalog-service.ts:257
 
 ```ts
 export function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
@@ -815,7 +818,7 @@ export function restoreDefinition(definitionId: string): Promise<CatalogDefiniti
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:232
+### src/infrastructure/inventory/item-catalog-service.ts:265
 
 ```ts
 export function forkDefinition(
@@ -1677,7 +1680,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `39ecbfa1945cd17f6bc413595cd7a3db19c6fb667d656c1120b56f62cc7a75c1` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `740f12847bf2afabdba4d908c331d89679c31cadbfb727462e22664266c7a931` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `907b1f5589d6063b804727b636cd74e53507dbdc4578adde805738fac4be4b78` |
