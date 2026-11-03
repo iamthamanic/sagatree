@@ -35601,7 +35601,7 @@
           },
           {
             "path": "src/infrastructure/inventory/item-catalog-service.ts",
-            "sha256": "740f12847bf2afabdba4d908c331d89679c31cadbfb727462e22664266c7a931"
+            "sha256": "1b38bee27c44686cb827ea4ccfbbab2d26ada8f9bdca8ea51b0d0c2116a9e3d6"
           },
           {
             "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -35697,7 +35697,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "1e4bd088f8586899bd90dc1294ce9c2ba1fc537b6d3cefe6356170b7abc3250f",
+      "sourceContractSha256": "42d53dd94a5e8176adbdb79592053db59aa72b638df740c91b271dba1fa4f568",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36424,85 +36424,85 @@
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
           "line": 44,
-          "endLine": 70,
+          "endLine": 73,
           "name": "mapHostLibraryItemRecord"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 73,
-          "endLine": 80,
+          "line": 76,
+          "endLine": 83,
           "name": "withCatalogPublicId"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 109,
-          "endLine": 170,
+          "line": 112,
+          "endLine": 173,
           "name": "loadCharacterItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 142,
-          "endLine": 149,
+          "line": 145,
+          "endLine": 152,
           "name": "resolveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 161,
-          "endLine": 162,
+          "line": 164,
+          "endLine": 165,
           "name": "lookup"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 177,
-          "endLine": 208,
+          "line": 180,
+          "endLine": 211,
           "name": "loadLibraryItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 214,
-          "endLine": 221,
+          "line": 217,
+          "endLine": 224,
           "name": "loadWorldProfileItemCatalog"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 227,
-          "endLine": 232,
+          "line": 230,
+          "endLine": 235,
           "name": "getItemDefinitionById"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 234,
-          "endLine": 236,
+          "line": 237,
+          "endLine": 239,
           "name": "createPersonalDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 238,
-          "endLine": 243,
+          "line": 241,
+          "endLine": 246,
           "name": "createWorldDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 245,
-          "endLine": 250,
+          "line": 248,
+          "endLine": 253,
           "name": "updateDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 253,
-          "endLine": 255,
+          "line": 256,
+          "endLine": 258,
           "name": "archiveDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 257,
-          "endLine": 259,
+          "line": 260,
+          "endLine": 262,
           "name": "restoreDefinition"
         },
         {
           "path": "src/infrastructure/inventory/item-catalog-service.ts",
-          "line": 265,
-          "endLine": 270,
+          "line": 268,
+          "endLine": 273,
           "name": "forkDefinition"
         },
         {

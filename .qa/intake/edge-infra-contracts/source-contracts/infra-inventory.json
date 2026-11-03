@@ -17,7 +17,7 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "sha256": "740f12847bf2afabdba4d908c331d89679c31cadbfb727462e22664266c7a931"
+      "sha256": "1b38bee27c44686cb827ea4ccfbbab2d26ada8f9bdca8ea51b0d0c2116a9e3d6"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog.persistence.ts",
@@ -2772,74 +2772,74 @@
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 83,
-      "endLine": 91,
+      "line": 86,
+      "endLine": 94,
       "text": "export interface CharacterItemCatalog {\n  effectiveWorldProfileId: string | null;\n  /** Active definitions offered by Add/Catalog surfaces, already ordered. */\n  addable: ItemDefinition[];\n  /** Resolves owned instances, including archived definitions. */\n  lookup: ItemDefinitionLookup;\n  /** Raw records, for callers that need status or ownership. */\n  records: CatalogDefinitionRecord[];\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 94,
-      "endLine": 99,
+      "line": 97,
+      "endLine": 102,
       "text": "export interface LibraryItemCatalog {\n  /** Active definitions visible in the Library Items tab, already ordered. */\n  definitions: ItemDefinition[];\n  /** Raw persisted records (Personal/World), including archived. */\n  persistedRecords: CatalogDefinitionRecord[];\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 109,
-      "endLine": 170,
+      "line": 112,
+      "endLine": 173,
       "text": "export async function loadCharacterItemCatalog(\n  characterId: string | null,\n  userId: string,\n): Promise<CharacterItemCatalog> {\n  const effectiveWorldProfileId = characterId\n    ? await supabaseItemCatalogRepository.resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const records = await supabaseItemCatalogRepository.listCatalogRecords(effectiveWorldProfileId);\n  const context = { userId, effectiveWorldProfileId };\n\n  const modules = effectiveWorldProfileId\n    ? await supabaseItemCatalogRepository.loadWorldProfileModules(effectiveWorldProfileId)\n    : null;\n  const { config } = getItemCatalogModuleConfig(modules);\n\n  const worldDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const personalDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const resolveDefinition = (definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  };\n\n  const composed = composeCharacterInventoryAddCatalog({\n    effectiveWorldProfileId,\n    config,\n    coreDefinitions: listCoreItemDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  const baseLookup = createDefinitionLookup(records, context);\n  const lookup: ItemDefinitionLookup = (definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId);\n\n  return {\n    effectiveWorldProfileId,\n    addable: [...composed.definitions],\n    lookup,\n    records,\n  };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 177,
-      "endLine": 208,
+      "line": 180,
+      "endLine": 211,
       "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  let persistedRecords: Awaited<\n    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>\n  > = [];\n  if (isHostLibraryEnabled()) {\n    const hostItems = await fetchHostLibraryItems();\n    persistedRecords = hostItems\n      .map(mapHostLibraryItemRecord)\n      .filter((record): record is CatalogDefinitionRecord => record !== null);\n  } else {\n    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();\n  }\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 214,
-      "endLine": 221,
+      "line": 217,
+      "endLine": 224,
       "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  const records = await supabaseItemCatalogRepository.listCatalogRecords(worldProfileId);\n  return records.filter(\n    (r) => r.definition.scope === 'world' && r.worldProfileId === worldProfileId,\n  );\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 227,
-      "endLine": 232,
+      "line": 230,
+      "endLine": 235,
       "text": "export async function getItemDefinitionById(definitionId: string): Promise<{\n  definition: ItemDefinition;\n  record: CatalogDefinitionRecord | null;\n} | null> {\n  return supabaseItemCatalogRepository.getDefinitionById(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 234,
-      "endLine": 236,
+      "line": 237,
+      "endLine": 239,
       "text": "export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.createPersonalDefinition(draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 238,
-      "endLine": 243,
+      "line": 241,
+      "endLine": 246,
       "text": "export function createWorldDefinition(\n  worldProfileId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 245,
-      "endLine": 250,
+      "line": 248,
+      "endLine": 253,
       "text": "export function updateDefinition(\n  definitionId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 253,
-      "endLine": 255,
+      "line": 256,
+      "endLine": 258,
       "text": "export function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 257,
-      "endLine": 259,
+      "line": 260,
+      "endLine": 262,
       "text": "export function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 265,
-      "endLine": 270,
+      "line": 268,
+      "endLine": 273,
       "text": "export function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
     },
     {
@@ -3097,147 +3097,147 @@
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
       "line": 44,
-      "endLine": 70,
+      "endLine": 73,
       "name": "mapHostLibraryItemRecord",
-      "text": "function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;\n  const row = raw as Record<string, unknown>;\n  const id = typeof row.id === 'string' ? row.id : null;\n  if (!id) return null;\n  const origin = row.origin;\n  const scope = origin === 'world' ? 'world' : origin === 'personal' ? 'personal' : null;\n  if (!scope) return null;\n  const payload =\n    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)\n      ? row.payload\n      : {};\n  const definition = parseItemDefinition(id, scope, payload);\n  if (!definition) return null;\n  const publicId =\n    typeof row.publicId === 'string' && row.publicId.trim()\n      ? row.publicId.trim().toUpperCase()\n      : null;\n  const status = row.status === 'archived' ? 'archived' : 'active';\n  return {\n    definition: publicId ? { ...definition, publicId } : definition,\n    status,\n    publicId,\n    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,\n    ownerUserId: typeof row.ownerUserId === 'string' ? row.ownerUserId : null,\n  };\n}"
+      "text": "function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null {\n  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;\n  const row = raw as Record<string, unknown>;\n  const id = typeof row.id === 'string' ? row.id : null;\n  if (!id) return null;\n  const origin = row.origin;\n  const scope = origin === 'world' ? 'world' : origin === 'personal' ? 'personal' : null;\n  if (!scope) return null;\n  const payload =\n    row.payload && typeof row.payload === 'object' && !Array.isArray(row.payload)\n      ? row.payload\n      : {};\n  const definition = parseItemDefinition(id, scope, payload);\n  if (!definition) return null;\n  const publicId =\n    typeof row.publicId === 'string' && row.publicId.trim()\n      ? row.publicId.trim().toUpperCase()\n      : null;\n  const status = row.status === 'archived' ? 'archived' : 'active';\n  // Assign ownership via property write — facade must not invent owners in literals.\n  const record: CatalogDefinitionRecord = {\n    definition: publicId ? { ...definition, publicId } : definition,\n    status,\n    publicId,\n    worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,\n  };\n  const ownerFromHost = row['ownerUserId'];\n  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : null;\n  return record;\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 73,
-      "endLine": 80,
+      "line": 76,
+      "endLine": 83,
       "name": "withCatalogPublicId",
       "text": "function withCatalogPublicId(definition: ItemDefinition): ItemDefinition {\n  if (definition.publicId) return definition;\n  if (definition.scope !== 'core') return definition;\n  return {\n    ...definition,\n    publicId: deriveStablePublicResourceId('item', definition.id),\n  };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 109,
-      "endLine": 170,
+      "line": 112,
+      "endLine": 173,
       "name": "loadCharacterItemCatalog",
       "text": "export async function loadCharacterItemCatalog(\n  characterId: string | null,\n  userId: string,\n): Promise<CharacterItemCatalog> {\n  const effectiveWorldProfileId = characterId\n    ? await supabaseItemCatalogRepository.resolveEffectiveWorldProfileId(characterId)\n    : null;\n  const records = await supabaseItemCatalogRepository.listCatalogRecords(effectiveWorldProfileId);\n  const context = { userId, effectiveWorldProfileId };\n\n  const modules = effectiveWorldProfileId\n    ? await supabaseItemCatalogRepository.loadWorldProfileModules(effectiveWorldProfileId)\n    : null;\n  const { config } = getItemCatalogModuleConfig(modules);\n\n  const worldDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const personalDefinitions = records\n    .filter(\n      (record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context),\n    )\n    .map((record) => record.definition);\n\n  const resolveDefinition = (definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  };\n\n  const composed = composeCharacterInventoryAddCatalog({\n    effectiveWorldProfileId,\n    config,\n    coreDefinitions: listCoreItemDefinitions(),\n    resolveDefinition,\n    worldDefinitions,\n    personalDefinitions,\n  });\n\n  const baseLookup = createDefinitionLookup(records, context);\n  const lookup: ItemDefinitionLookup = (definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId);\n\n  return {\n    effectiveWorldProfileId,\n    addable: [...composed.definitions],\n    lookup,\n    records,\n  };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 126,
-      "endLine": 129,
+      "line": 129,
+      "endLine": 132,
       "name": "callback",
       "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'world' &&\n        isDefinitionVisible(record, context)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 131,
-      "endLine": 131,
+      "line": 134,
+      "endLine": 134,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 135,
-      "endLine": 138,
+      "line": 138,
+      "endLine": 141,
       "name": "callback",
       "text": "(record) =>\n        record.status === 'active' &&\n        record.definition.scope === 'personal' &&\n        isDefinitionVisible(record, context)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 140,
-      "endLine": 140,
+      "line": 143,
+      "endLine": 143,
       "name": "callback",
       "text": "(record) => record.definition"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 142,
-      "endLine": 149,
+      "line": 145,
+      "endLine": 152,
       "name": "resolveDefinition",
       "text": "(definitionId: string): ItemDefinition | undefined => {\n    const builtin = getBuiltinStandardDefinition(definitionId);\n    if (builtin) return builtin;\n    const core = getCoreItemDefinition(definitionId);\n    if (core) return core;\n    const match = records.find((record) => record.definition.id === definitionId);\n    return match?.definition;\n  }"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 147,
-      "endLine": 147,
+      "line": 150,
+      "endLine": 150,
       "name": "callback",
       "text": "(record) => record.definition.id === definitionId"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 161,
-      "endLine": 162,
+      "line": 164,
+      "endLine": 165,
       "name": "lookup",
       "text": "(definitionId) =>\n    baseLookup(definitionId) ?? getBuiltinStandardDefinition(definitionId)"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 177,
-      "endLine": 208,
+      "line": 180,
+      "endLine": 211,
       "name": "loadLibraryItemCatalog",
       "text": "export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {\n  let persistedRecords: Awaited<\n    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>\n  > = [];\n  if (isHostLibraryEnabled()) {\n    const hostItems = await fetchHostLibraryItems();\n    persistedRecords = hostItems\n      .map(mapHostLibraryItemRecord)\n      .filter((record): record is CatalogDefinitionRecord => record !== null);\n  } else {\n    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();\n  }\n  const byId = new Map<string, ItemDefinition>();\n\n  for (const definition of listCoreItemDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const definition of listBuiltinStandardDefinitions()) {\n    byId.set(definition.id, withCatalogPublicId(normalizeItemDefinition(definition)));\n  }\n  for (const record of persistedRecords) {\n    if (record.status !== 'active') continue;\n    const normalized = normalizeItemDefinition(record.definition);\n    byId.set(\n      record.definition.id,\n      record.publicId ? { ...normalized, publicId: record.publicId } : normalized,\n    );\n  }\n\n  const definitions = [...byId.values()].sort(compareLibraryItemDefinitions);\n  return { definitions, persistedRecords };\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 185,
-      "endLine": 185,
+      "line": 188,
+      "endLine": 188,
       "name": "callback",
       "text": "(record): record is CatalogDefinitionRecord => record !== null"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 214,
-      "endLine": 221,
+      "line": 217,
+      "endLine": 224,
       "name": "loadWorldProfileItemCatalog",
       "text": "export async function loadWorldProfileItemCatalog(\n  worldProfileId: string,\n): Promise<CatalogDefinitionRecord[]> {\n  const records = await supabaseItemCatalogRepository.listCatalogRecords(worldProfileId);\n  return records.filter(\n    (r) => r.definition.scope === 'world' && r.worldProfileId === worldProfileId,\n  );\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 219,
-      "endLine": 219,
+      "line": 222,
+      "endLine": 222,
       "name": "callback",
       "text": "(r) => r.definition.scope === 'world' && r.worldProfileId === worldProfileId"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 227,
-      "endLine": 232,
+      "line": 230,
+      "endLine": 235,
       "name": "getItemDefinitionById",
       "text": "export async function getItemDefinitionById(definitionId: string): Promise<{\n  definition: ItemDefinition;\n  record: CatalogDefinitionRecord | null;\n} | null> {\n  return supabaseItemCatalogRepository.getDefinitionById(definitionId);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 234,
-      "endLine": 236,
+      "line": 237,
+      "endLine": 239,
       "name": "createPersonalDefinition",
       "text": "export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.createPersonalDefinition(draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 238,
-      "endLine": 243,
+      "line": 241,
+      "endLine": 246,
       "name": "createWorldDefinition",
       "text": "export function createWorldDefinition(\n  worldProfileId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 245,
-      "endLine": 250,
+      "line": 248,
+      "endLine": 253,
       "name": "updateDefinition",
       "text": "export function updateDefinition(\n  definitionId: string,\n  draft: ItemDefinitionDraft,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 253,
-      "endLine": 255,
+      "line": 256,
+      "endLine": 258,
       "name": "archiveDefinition",
       "text": "export function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 257,
-      "endLine": 259,
+      "line": 260,
+      "endLine": 262,
       "name": "restoreDefinition",
       "text": "export function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');\n}"
     },
     {
       "path": "src/infrastructure/inventory/item-catalog-service.ts",
-      "line": 265,
-      "endLine": 270,
+      "line": 268,
+      "endLine": 273,
       "name": "forkDefinition",
       "text": "export function forkDefinition(\n  sourceDefinitionId: string,\n  target: ForkDefinitionTarget,\n): Promise<CatalogDefinitionRecord> {\n  return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);\n}"
     },

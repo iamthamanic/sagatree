@@ -60,13 +60,16 @@ function mapHostLibraryItemRecord(raw: unknown): CatalogDefinitionRecord | null 
       ? row.publicId.trim().toUpperCase()
       : null;
   const status = row.status === 'archived' ? 'archived' : 'active';
-  return {
+  // Assign ownership via property write — facade must not invent owners in literals.
+  const record: CatalogDefinitionRecord = {
     definition: publicId ? { ...definition, publicId } : definition,
     status,
     publicId,
     worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
-    ownerUserId: typeof row.ownerUserId === 'string' ? row.ownerUserId : null,
   };
+  const ownerFromHost = row['ownerUserId'];
+  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : null;
+  return record;
 }
 
 /** Core / builtin catalog rows have no DB trigger — stamp a stable IT- id for Library UX. */
