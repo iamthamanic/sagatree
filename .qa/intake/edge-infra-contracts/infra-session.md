@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `5be011f73c7fb43701305b8b3d8368bf9c3f0047b8cede4641dd6ff060b19726`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-session.json](source-contracts/infra-session.json) (SHA-256 `cf8d92882f2685d7a4e97748957246c038f3bfa0a5b36f7020dd4e47cfe32e79`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -2593,7 +2593,7 @@ async revokeSessionInvite(token: string): Promise<void> {
 | `src/infrastructure/session/session-runtime-service.ts` | `67026e83dc5320ff5f2274d5ee4f65c95f97e3d1d6828dcfeb5d5652feddbe79` |
 | `src/infrastructure/session/session-service.ts` | `13cae162249e329b2e55dccf63ea63c63fecda761a922f21f8aa3dcdca01d296` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

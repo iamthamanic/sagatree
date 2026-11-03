@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `97d5c45ffb70211ac49f3c6dcc9701d906792eaca9cc1238060d64d9c7dbc8d3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `496cdecdb477c73a84c4072446f323917bd43df79e37220b497d22a92f47ecbc`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1570,7 +1570,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/npc-creature/npc-creature.persistence.ts` | `2823d44f52887026e5e5bac5120bb7d2def738e29e1354686d06f670e0d33420` |
 | `src/infrastructure/npc-creature/supabase-npc-creature.repository.ts` | `5a4ffd9548db32d83f852e36c5ec77b878a758d16e080a45a014c9f15256c041` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

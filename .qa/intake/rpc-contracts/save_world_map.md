@@ -142,9 +142,9 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
 | `hostMutateJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 68 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
 | `saveHostWorldMap` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 123 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
-| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
-| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
-| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 31 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 33 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 46 | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -173,7 +173,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | --- | --- |
 | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
 | [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
-| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/008_world_profiles.sql](../../../supabase/migrations/008_world_profiles.sql) | `94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |

@@ -299,7 +299,7 @@
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+      "sha256": "925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702"
     },
     {
       "path": "src/lib/localAdmin.ts",
@@ -1927,16 +1927,16 @@
       "kind": "TypeAliasDeclaration",
       "name": "HostWhoamiDto",
       "path": "src/lib/hostAuthBridge.ts",
-      "line": 18,
-      "endLine": 23,
+      "line": 24,
+      "endLine": 29,
       "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "EnvLike",
       "path": "src/lib/hostAuthBridge.ts",
-      "line": 25,
-      "endLine": 25,
+      "line": 31,
+      "endLine": 31,
       "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
     },
     {

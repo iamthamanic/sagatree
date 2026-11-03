@@ -54,6 +54,7 @@ import {
   type WebglNavCreateRequest,
 } from './WebglNavTreeActionHost';
 import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
+import { isHostLibraryEnabled } from '../../../infrastructure/host/host-library-http';
 import { worldAtlasService } from '../../../infrastructure/world/world-atlas-service';
 import { worldPlaceService } from '../../../infrastructure/world/world-place-service';
 
@@ -638,7 +639,8 @@ export function WorldAtlasWorkbench({
           role="alert"
         >
           <p className="text-sm text-destructive">{editor.error}</p>
-          {editor.error === API_AUTH_REQUIRED_DE || editor.error.includes('API-Anmeldung') ? (
+          {!isHostLibraryEnabled() &&
+          (editor.error === API_AUTH_REQUIRED_DE || editor.error.includes('API-Anmeldung')) ? (
             <Button
               type="button"
               variant="outline"

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `aa48f277059a8525cf396f394cce33169c5ecb7a8dc1e79900fb78f3d0cd92f6`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-look.json](source-contracts/infra-look.json) (SHA-256 `00bb03b0c2bba8e23dff18285b71102b103a84ae378f3ae43a412e9f4b8aaeb8`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1412,7 +1412,7 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/look/look.persistence.ts` | `ed0a97cba6560930610fc032bd7679b5a7e4b49f837e401cd5a872974598f482` |
 | `src/infrastructure/look/supabase-look.repository.ts` | `4dc795897a12bf3319998860b855b0b9b55425e2be7e4c9b0844e7b2ec647121` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
-| `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `src/lib/hostAuthBridge.ts` | `925a7e9e9c7cd24fcce69f39d39f7b1250b354800b5188636be319acbf1fe702` |
 | `src/lib/localAdmin.ts` | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
 | `src/lib/networkTimeout.ts` | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `src/lib/supabase.ts` | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

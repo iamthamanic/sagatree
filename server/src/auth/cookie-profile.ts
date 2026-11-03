@@ -81,7 +81,12 @@ export async function createCookieAuthProfile(
     baseURL: config.baseURL,
     secret: config.secret,
     trustedOrigins: [...config.trustedOrigins],
-    emailAndPassword: { enabled: true, requireEmailVerification: false },
+    // Match LoginScreen minLength=6 (GoTrue default) so host signup UX stays aligned.
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+      minPasswordLength: 6,
+    },
     session: { cookieCache: { enabled: false } },
     advanced: {
       defaultCookieAttributes: {
