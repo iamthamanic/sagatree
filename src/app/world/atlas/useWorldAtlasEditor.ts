@@ -31,6 +31,7 @@ import {
 } from '../../../domains/world/atlas';
 import { useAuth } from '../../../lib/auth-context';
 import { API_AUTH_REQUIRED_DE } from '../../../lib/authenticatedUser';
+import { isHostLibraryEnabled } from '../../../infrastructure/host/host-library-http';
 import { worldAtlasService } from '../../../infrastructure/world/world-atlas-service';
 
 export type UseWorldAtlasEditorOptions = {
@@ -86,7 +87,8 @@ export function useWorldAtlasEditor({
       return;
     }
     if (authLoading) return;
-    if (!hasJwtSession) {
+    // FE-HOST-07: host library uses Better Auth cookies — no GoTrue JWT reconnect.
+    if (!isHostLibraryEnabled() && !hasJwtSession) {
       const ok = await ensureJwtSession();
       if (!ok) {
         setError(API_AUTH_REQUIRED_DE);

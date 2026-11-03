@@ -107,3 +107,99 @@ export async function probeHostActor(
     email,
   };
 }
+
+async function hostAuthJson(
+  path: string,
+  body: Readonly<Record<string, unknown>>,
+  unreachableMessage: string,
+  fetchImpl: typeof fetch = fetch,
+  env: EnvLike = defaultEnv(),
+): Promise<unknown> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error(unreachableMessage);
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}${path}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error(unreachableMessage);
+  }
+  let raw: unknown = null;
+  try {
+    raw = scrubHostAuthJson(await response.json());
+  } catch {
+    raw = null;
+  }
+  if (!response.ok) {
+    let detail = '';
+    if (raw && typeof raw === 'object' && 'message' in raw) {
+      detail = String((raw as { message: unknown }).message);
+    } else if (raw && typeof raw === 'object' && 'error' in raw) {
+      detail = String((raw as { error: unknown }).error);
+    }
+    const err = new Error(detail || unreachableMessage) as Error & { status?: number };
+    err.status = response.status;
+    throw err;
+  }
+  return raw;
+}
+
+/** Better Auth email/password sign-in — sets HttpOnly session cookie. */
+export async function signInHostEmail(
+  email: string,
+  password: string,
+  fetchImpl: typeof fetch = fetch,
+  env: EnvLike = defaultEnv(),
+): Promise<HostWhoamiDto> {
+  await hostAuthJson(
+    '/api/auth/sign-in/email',
+    { email: email.trim(), password, name: email.trim() },
+    'Host-Anmeldung nicht erreichbar',
+    fetchImpl,
+    env,
+  );
+  const actor = await probeHostActor(fetchImpl, env);
+  if (!actor) throw new Error('Host-Anmeldung: Sitzung nicht aktiv');
+  return actor;
+}
+
+/** Better Auth email/password sign-up — sets HttpOnly session cookie when auto-login. */
+export async function signUpHostEmail(
+  email: string,
+  password: string,
+  fetchImpl: typeof fetch = fetch,
+  env: EnvLike = defaultEnv(),
+): Promise<void> {
+  await hostAuthJson(
+    '/api/auth/sign-up/email',
+    { email: email.trim(), password, name: email.trim() },
+    'Host-Registrierung nicht erreichbar',
+    fetchImpl,
+    env,
+  );
+}
+
+/** Clear host Better Auth cookie session. */
+export async function signOutHost(
+  fetchImpl: typeof fetch = fetch,
+  env: EnvLike = defaultEnv(),
+): Promise<void> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) return;
+  try {
+    await fetchImpl(`${base}/api/auth/sign-out`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+  } catch {
+    /* ignore — local UI clear still proceeds */
+  }
+}

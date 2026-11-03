@@ -1368,6 +1368,19 @@ function checkFeHost06AssetsHttp() {
   console.log('OK: fe-host-06-assets-http.self-test');
 }
 
+function checkFeHost07ProductAuth() {
+  console.log('FE-HOST-07 product Better Auth path (#1099)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-07-product-auth.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-07-product-auth.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3579,6 +3592,7 @@ checkFeHost03WorldHttp();
 checkFeHost04ProjectHttp();
 checkFeHost05InventoryNpcHttp();
 checkFeHost06AssetsHttp();
+checkFeHost07ProductAuth();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

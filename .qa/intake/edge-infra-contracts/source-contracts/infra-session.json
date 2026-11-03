@@ -115,7 +115,7 @@
     },
     {
       "path": "src/lib/hostAuthBridge.ts",
-      "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+      "sha256": "e57e9d8636cdf979cd0ab74a66de8b75e1bd489079f73e9f2a1388d03da418bf"
     },
     {
       "path": "src/lib/localAdmin.ts",

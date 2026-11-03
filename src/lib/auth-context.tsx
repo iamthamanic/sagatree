@@ -13,8 +13,9 @@
  * wanted Local Admin JWT (that race left the UI stuck on the login screen).
  *
  * MIG-014 host cookie bridge (GATE-02 Variant A): opt-in via
- * `VITE_SAGATREE_HOST_AUTH_URL` — see `hostAuthBridge.ts`. GoTrue remains the
- * default product path; host Better Auth is credentials/cookie-only (no JWT mint).
+ * `VITE_SAGATREE_HOST_AUTH_URL` — see `hostAuthBridge.ts`.
+ * FE-HOST-07: when `VITE_SAGATREE_HOST_LIBRARY=1`, product sign-in/out uses
+ * host Better Auth cookies; GoTrue JWT is not required for Library/Session/World.
  */
 
 import {
@@ -59,9 +60,13 @@ import {
   scrubHostAuthJson,
   getHostAuthBaseUrl,
   HOST_AUTH_SESSION_BEARER_KEYS,
+  signInHostEmail,
+  signOutHost,
+  signUpHostEmail,
 } from './hostAuthBridge';
+import { isHostLibraryEnabled } from '../infrastructure/host/host-library-http';
 
-/** Re-export host cookie bridge (MIG-014) — no GoTrue cutover. */
+/** Re-export host cookie bridge (MIG-014 / FE-HOST-07). */
 export {
   isHostAuthBridgeEnabled,
   probeHostActor,
@@ -73,11 +78,14 @@ export {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  /** True when supabase.auth holds an access_token (PostgREST RLS-ready). */
+  /**
+   * True when product API auth is ready: GoTrue JWT and/or host Better Auth
+   * cookie session (FE-HOST-07 under host library flag).
+   */
   hasJwtSession: boolean;
   /**
-   * Force GoTrue login for Local Admin (or confirm existing JWT).
-   * Used by Welt/Atlas when offline fallback blocked API calls.
+   * Ensure product API auth: host cookie when library flag, else GoTrue JWT
+   * (Local Admin). Used by Welt/Atlas reconnect when offline fallback blocked API.
    */
   ensureJwtSession: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -116,6 +124,29 @@ function createLocalAdminUser(): User {
 
 function getStoredLocalAdminUser(): User | null {
   return isLocalAdminSession() ? createLocalAdminUser() : null;
+}
+
+/** Minimal User shape for host Better Auth actors (no GoTrue JWT). */
+function createHostSessionUser(actor: {
+  readonly actorId: string;
+  readonly email: string | null;
+}): User {
+  return {
+    id: actor.actorId,
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: actor.email ?? undefined,
+    app_metadata: {
+      provider: 'host-better-auth',
+      providers: ['host-better-auth'],
+    },
+    user_metadata: {
+      display_name: actor.email ?? 'Host',
+    },
+    identities: [],
+    created_at: new Date().toISOString(),
+    is_anonymous: false,
+  } as User;
 }
 
 function isLocalAdminShortcut(identifier: string, password: string): boolean {
@@ -301,6 +332,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     };
 
+    // FE-HOST-07: host library mode prefers Better Auth cookie over GoTrue bootstrap.
+    if (isHostLibraryEnabled()) {
+      void probeHostActor()
+        .then((actor) => {
+          if (cancelled) return;
+          if (actor) {
+            finish(createHostSessionUser(actor), true);
+            return;
+          }
+          finish(null, false);
+        })
+        .catch(() => {
+          if (!cancelled) finish(null, false);
+        });
+      return () => {
+        cancelled = true;
+        bumpAuthGeneration();
+      };
+    }
+
     const storedLocalAdmin = isLocalAdminSession();
     if (storedLocalAdmin) {
       raceWithTimeoutOrSymbol(supabase.auth.getSession(), SESSION_TIMEOUT_MS)
@@ -446,6 +497,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    if (isHostLibraryEnabled()) {
+      const generation = bumpAuthGeneration();
+      setLocalAdminSession(false);
+      const actor = await signInHostEmail(email.trim(), password);
+      if (!isLiveGeneration(generation)) return;
+      applyUser(createHostSessionUser(actor), generation);
+      setHasJwtSession(true);
+      return;
+    }
+
     if (isLocalAdminShortcut(email, password)) {
       const generation = bumpAuthGeneration();
       expectingGoTrueLocalAdminRef.current = generation;
@@ -528,6 +589,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const ensureJwtSession = useCallback(async (): Promise<boolean> => {
+    if (isHostLibraryEnabled()) {
+      const actor = await probeHostActor();
+      if (!actor) {
+        setHasJwtSession(false);
+        return false;
+      }
+      const generation = authGenerationRef.current;
+      if (isLiveGeneration(generation)) {
+        applyUser(createHostSessionUser(actor), generation);
+        setHasJwtSession(true);
+      }
+      return true;
+    }
     const existing = await supabase.auth.getSession();
     if (existing.data.session?.access_token && existing.data.session.user) {
       if (isLiveGeneration(authGenerationRef.current)) {
@@ -558,6 +632,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string) => {
+    if (isHostLibraryEnabled()) {
+      await signUpHostEmail(email.trim(), password);
+      // Auto-login when Better Auth returns a session cookie.
+      const actor = await probeHostActor();
+      if (actor) {
+        const generation = bumpAuthGeneration();
+        applyUser(createHostSessionUser(actor), generation);
+        setHasJwtSession(true);
+      }
+      return;
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -575,6 +660,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userRef.current = null;
     setUser(null);
     setHasJwtSession(false);
+    if (isHostLibraryEnabled()) {
+      await signOutHost();
+      return;
+    }
     try {
       await supabase.auth.signOut();
     } catch (error) {

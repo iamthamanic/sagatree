@@ -6,7 +6,7 @@
   "testedCommit": "2fd0686bd22f0ae69cfb45d020cf41ff8910f1bb",
   "githubClosed": true,
   "mergeRef": "PR #860 → main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after FE-HOST-06/#1098 asset HTTP + portrait dual-path fingerprint renew.",
+  "note": "Completion requires merge SHA + hashed check artifacts. Inventories refreshed after FE-HOST-07/#1099 product Better Auth dual-path.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "8b2e03077cc5934061a2cad92f2143160b7cffc438eda38c1bb0bd177ec2ca00"
+      "sha256": "4f7273668284dc623570be9faabba0c5119ea3dcd88d215852cc340574ccdf22"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "7d26d9921dccb92093a57365b1dda2cbcf72765ec53ba2dbfd5a978830281c53"
+      "sha256": "c706d157f3654af7f69b00145fe4cb05cb7a2d9b91cec9e7114a96fae5017251"
     }
   ]
 }
