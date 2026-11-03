@@ -390,8 +390,13 @@ class ProjectService {
    */
   async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
     if (isHostLibraryEnabled()) {
-      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).
-      void slug;
+      try {
+        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
+        await ensureHostNativeStarterProject(slug);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.warn('[project-service] ensure_native_starter_project (host):', message);
+      }
       return;
     }
     const { error } = await supabase.rpc('ensure_native_starter_project', {

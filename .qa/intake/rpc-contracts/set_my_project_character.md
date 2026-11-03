@@ -84,14 +84,28 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-member-service.ts:65
+### src/infrastructure/project/project-member-service.ts:98
 
-AST-Auflösung: `string-literal`; SHA-256 `ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593`.
+AST-Auflösung: `string-literal`; SHA-256 `ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {
+    if (isHostLibraryEnabled()) {
+      const updated = await setHostMyProjectCharacter(projectId, characterId);
+      const memberId = requireUuid(updated.memberId, 'set_my_project_character');
+      const userId = await getAuthenticatedUserId();
+      return {
+        id: memberId,
+        project_id: projectId,
+        user_id: userId,
+        role: 'player',
+        status: 'active',
+        character_id: characterId,
+        joined_at: new Date().toISOString(),
+      } as ProjectMemberDto;
+    }
     const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {
       p_project_id: projectId,
       p_character_id: characterId,
@@ -116,8 +130,28 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
 | `ProjectMemberDto` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 30 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `UUID_PATTERN` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 13 | `ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593` |
-| `requireUuid` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 15 | `ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593` |
+| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `hostMutateJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 74 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `setHostMyProjectCharacter` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 135 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `UUID_PATTERN` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 18 | `ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9` |
+| `requireUuid` | [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | 20 | `ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9` |
+| `getAuthenticatedUserId` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 28 | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `LOCAL_ADMIN_STORAGE_KEY` | [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | 15 | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `LEGACY_LOCAL_ADMIN_STORAGE_KEY` | [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | 17 | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `LOCAL_ADMIN_USER_ID` | [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | 23 | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `isLocalAdminEnabled` | [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | 31 | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `isLocalAdminSession` | [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | 35 | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| `AUTH_SESSION_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 7 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `SUPABASE_QUERY_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 8 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `TIMED_OUT` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 10 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `TimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 12 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `isTimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 14 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `raceWithTimeoutOrSymbol` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 27 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
+| `raceWithTimeoutReject` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 36 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -145,7 +179,12 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593` |
+| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| [src/infrastructure/project/project-member-service.ts](../../../src/infrastructure/project/project-member-service.ts) | `ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9` |
+| [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| [src/lib/localAdmin.ts](../../../src/lib/localAdmin.ts) | `3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5` |
+| [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |

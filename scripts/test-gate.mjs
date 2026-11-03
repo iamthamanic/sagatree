@@ -1329,6 +1329,19 @@ function checkFeHost03WorldHttp() {
   console.log('OK: fe-host-03-world-http.self-test');
 }
 
+function checkFeHost04ProjectHttp() {
+  console.log('FE-HOST-04 project/saga product HTTP (#1096)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-04-project-http.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-04-project-http.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3537,6 +3550,7 @@ checkMig310SagaAdapter();
 checkMig311SessionAdapter();
 checkFeHost02SessionHttp();
 checkFeHost03WorldHttp();
+checkFeHost04ProjectHttp();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

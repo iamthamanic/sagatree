@@ -4151,7 +4151,7 @@
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+        "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6055,7 +6055,7 @@
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+        "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
       },
       {
         "path": "src/lib/hostAuthBridge.ts",
@@ -6271,8 +6271,28 @@
         "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
       },
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+        "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
+      },
+      {
+        "path": "src/lib/authenticatedUser.ts",
+        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+      },
+      {
+        "path": "src/lib/networkTimeout.ts",
+        "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6396,8 +6416,28 @@
         "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
       },
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+        "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
+      },
+      {
+        "path": "src/lib/authenticatedUser.ts",
+        "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
+      },
+      {
+        "path": "src/lib/localAdmin.ts",
+        "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
+      },
+      {
+        "path": "src/lib/networkTimeout.ts",
+        "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6501,8 +6541,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6582,8 +6630,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6671,8 +6727,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6749,8 +6813,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6826,8 +6898,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6911,8 +6991,16 @@
         "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
       },
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-permission-service.ts",
-        "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+        "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7017,8 +7105,16 @@
         "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
       },
       {
+        "path": "src/infrastructure/host/host-project-http.ts",
+        "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      },
+      {
         "path": "src/infrastructure/project/saga-overview-service.ts",
-        "sha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074"
+        "sha256": "fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",

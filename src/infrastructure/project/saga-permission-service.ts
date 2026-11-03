@@ -4,9 +4,7 @@
  *
  * Clients never write grant/binding tables directly.
  *
- * Dual-path (MIG-308): production remains Supabase RPCs. Host ports are bound via
- * `createHostProjectAdapter` for tests / future cutover (no accidental cutover —
- * VITE host flags alone do not redirect this facade).
+ * Dual-path (FE-HOST-04): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { supabase } from '../../lib/supabase';
 import {
@@ -22,6 +20,15 @@ import {
   parseSagaLoreTimeline,
   type SagaLoreTimelineVm,
 } from '../../domains/saga/permissions/lore-timeline';
+import {
+  fetchHostMySagaPermissions,
+  fetchHostSagaLoreTimeline,
+  isHostLibraryEnabled,
+  listHostSagaBindings,
+  listHostSagaMemberPermissionState,
+  setHostSagaBindingReveal,
+  setHostSagaMemberBundle,
+} from '../host/host-project-http';
 
 export type SagaMyPermissionsVm = {
   readonly projectId: string;
@@ -126,8 +133,13 @@ function parseBindings(raw: unknown): SagaAssetBindingVm[] {
 
 export const sagaPermissionService = {
   async getMyPermissions(sagaPublicId: string): Promise<SagaMyPermissionsVm> {
+    const publicId = sagaPublicId.trim().toUpperCase();
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostMySagaPermissions(publicId);
+      return parseMyPermissions(data);
+    }
     const { data, error } = await supabase.rpc('get_my_saga_permissions', {
-      p_public_id: sagaPublicId.trim().toUpperCase(),
+      p_public_id: publicId,
     });
     if (error) {
       throw new Error(`Berechtigungen: ${error.message}`);
@@ -138,8 +150,19 @@ export const sagaPermissionService = {
   async listMemberPermissionState(
     sagaPublicId: string,
   ): Promise<SagaMemberPermissionStateVm[]> {
+    const publicId = sagaPublicId.trim().toUpperCase();
+    if (isHostLibraryEnabled()) {
+      const data = await listHostSagaMemberPermissionState(publicId);
+      const members =
+        data && typeof data === 'object' && Array.isArray((data as { members?: unknown }).members)
+          ? (data as { members: unknown[] }).members
+          : Array.isArray(data)
+            ? data
+            : [];
+      return parseMemberState(members);
+    }
     const { data, error } = await supabase.rpc('list_saga_member_permission_state', {
-      p_public_id: sagaPublicId.trim().toUpperCase(),
+      p_public_id: publicId,
     });
     if (error) {
       throw new Error(`Mitglieder-Rechte: ${error.message}`);
@@ -152,6 +175,10 @@ export const sagaPermissionService = {
     memberId: string;
     bundleId: SagaBundleId;
   }): Promise<void> {
+    if (isHostLibraryEnabled()) {
+      await setHostSagaMemberBundle(input.projectId, input.memberId, input.bundleId);
+      return;
+    }
     const { error } = await supabase.rpc('set_saga_member_bundle', {
       p_project_id: input.projectId,
       p_member_id: input.memberId,
@@ -166,8 +193,19 @@ export const sagaPermissionService = {
     sagaPublicId: string,
     assetKind?: SagaAssetKind | null,
   ): Promise<SagaAssetBindingVm[]> {
+    const publicId = sagaPublicId.trim().toUpperCase();
+    if (isHostLibraryEnabled()) {
+      const data = await listHostSagaBindings(publicId, assetKind ?? null);
+      const bindings =
+        data && typeof data === 'object' && Array.isArray((data as { bindings?: unknown }).bindings)
+          ? (data as { bindings: unknown[] }).bindings
+          : Array.isArray(data)
+            ? data
+            : [];
+      return parseBindings(bindings);
+    }
     const { data, error } = await supabase.rpc('list_saga_bindings', {
-      p_public_id: sagaPublicId.trim().toUpperCase(),
+      p_public_id: publicId,
       p_asset_kind: assetKind ?? null,
     });
     if (error) {
@@ -181,6 +219,18 @@ export const sagaPermissionService = {
     bindingId: string;
     reveal: SagaRevealStatus;
   }): Promise<SagaAssetBindingVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await setHostSagaBindingReveal(
+        input.projectId,
+        input.bindingId,
+        input.reveal,
+      );
+      const parsed = parseBindings([data]);
+      if (parsed.length === 0) {
+        throw new Error('Sichtbarkeit konnte nicht gelesen werden');
+      }
+      return parsed[0]!;
+    }
     const { data, error } = await supabase.rpc('set_saga_binding_reveal', {
       p_project_id: input.projectId,
       p_binding_id: input.bindingId,
@@ -197,8 +247,13 @@ export const sagaPermissionService = {
   },
 
   async getLoreTimeline(sagaPublicId: string): Promise<SagaLoreTimelineVm> {
+    const publicId = sagaPublicId.trim().toUpperCase();
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSagaLoreTimeline(publicId);
+      return parseSagaLoreTimeline(data);
+    }
     const { data, error } = await supabase.rpc('get_saga_lore_timeline', {
-      p_public_id: sagaPublicId.trim().toUpperCase(),
+      p_public_id: publicId,
     });
     if (error) {
       throw new Error(`Lore/Verlauf: ${error.message}`);

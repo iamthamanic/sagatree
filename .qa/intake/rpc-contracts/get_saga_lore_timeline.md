@@ -95,16 +95,21 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/saga-permission-service.ts:200
+### src/infrastructure/project/saga-permission-service.ts:255
 
-AST-Auflösung: `string-literal`; SHA-256 `697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d`.
+AST-Auflösung: `string-literal`; SHA-256 `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 async getLoreTimeline(sagaPublicId: string): Promise<SagaLoreTimelineVm> {
+    const publicId = sagaPublicId.trim().toUpperCase();
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSagaLoreTimeline(publicId);
+      return parseSagaLoreTimeline(data);
+    }
     const { data, error } = await supabase.rpc('get_saga_lore_timeline', {
-      p_public_id: sagaPublicId.trim().toUpperCase(),
+      p_public_id: publicId,
     });
     if (error) {
       throw new Error(`Lore/Verlauf: ${error.message}`);
@@ -124,6 +129,13 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `asBool` | [src/domains/saga/permissions/lore-timeline.ts](../../../src/domains/saga/permissions/lore-timeline.ts) | 27 | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
 | `KINDS` | [src/domains/saga/permissions/lore-timeline.ts](../../../src/domains/saga/permissions/lore-timeline.ts) | 31 | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
 | `parseSagaLoreTimeline` | [src/domains/saga/permissions/lore-timeline.ts](../../../src/domains/saga/permissions/lore-timeline.ts) | 33 | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
+| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `hostGetJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 35 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `fetchHostSagaLoreTimeline` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 161 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -151,7 +163,9 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/saga/permissions/lore-timeline.ts](../../../src/domains/saga/permissions/lore-timeline.ts) | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
-| [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | `697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d` |
+| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/004_project_membership_security.sql](../../../supabase/migrations/004_project_membership_security.sql) | `c1eccbda2dae95cd177ba6313dfd51ef269e0740a13805a5d07a223c6bf489cd` |
