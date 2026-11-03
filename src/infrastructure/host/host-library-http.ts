@@ -461,3 +461,67 @@ export async function fetchHostLibraryLooks(
   );
   return Array.isArray(body.looks) ? body.looks : [];
 }
+
+export type HostPublishedAssetDto = {
+  readonly assetId: string;
+  readonly contentType: string;
+  readonly byteSize: number;
+  readonly checksumSha256: string;
+  readonly url: string;
+  readonly storagePath: string;
+};
+
+/**
+ * Publish owner-scoped bytes via host AssetPorts (FE-HOST-06).
+ * Returns display `url` suitable for `<img src>` + character portrait_url save.
+ */
+export async function publishHostAsset(
+  file: File,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<HostPublishedAssetDto> {
+  const base = getHostAuthBaseUrl(env);
+  if (!base) throw new Error('Host-Asset-Upload nicht erreichbar');
+
+  const form = new FormData();
+  form.append('file', file, file.name || 'portrait.bin');
+  if (file.type) form.append('contentType', file.type);
+
+  let response: Response;
+  try {
+    response = await fetchImpl(`${base}/api/v1/assets`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+      body: form,
+    });
+  } catch {
+    throw new Error('Host-Asset-Upload nicht erreichbar');
+  }
+
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const body: unknown = await response.json();
+      if (body && typeof body === 'object' && 'error' in body) {
+        detail = String((body as { error: unknown }).error);
+      }
+    } catch {
+      /* ignore */
+    }
+    throw new Error(detail || 'Host-Asset-Upload fehlgeschlagen');
+  }
+
+  const body = (await response.json()) as Partial<HostPublishedAssetDto>;
+  if (typeof body.assetId !== 'string' || typeof body.url !== 'string') {
+    throw new Error('Host-Asset-Upload: leere Antwort');
+  }
+  return {
+    assetId: body.assetId,
+    contentType: typeof body.contentType === 'string' ? body.contentType : file.type || 'application/octet-stream',
+    byteSize: typeof body.byteSize === 'number' ? body.byteSize : file.size,
+    checksumSha256: typeof body.checksumSha256 === 'string' ? body.checksumSha256 : '',
+    url: body.url,
+    storagePath: typeof body.storagePath === 'string' ? body.storagePath : '',
+  };
+}

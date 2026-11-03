@@ -39,6 +39,7 @@ import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { ProjectInfraPorts } from '../application/project-infra/index.ts';
+import type { AssetPorts } from '../assets/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
@@ -93,6 +94,8 @@ export type RouteRegistryDeps = {
   readonly project?: ProjectPorts | null;
   readonly sessionInfra?: SessionInfraPorts | null;
   readonly projectInfra?: ProjectInfraPorts | null;
+  /** FE-HOST-06 local assets publish/get. */
+  readonly assets?: AssetPorts | null;
 };
 
 export function sendJson(
@@ -147,6 +150,7 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     project: deps.project,
     sessionInfra: deps.sessionInfra,
     projectInfra: deps.projectInfra,
+    assets: deps.assets,
   });
   const honoListener = getRequestListener(app.fetch, { overrideGlobalObjects: false });
 

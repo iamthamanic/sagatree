@@ -21,10 +21,12 @@ import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
 import type { SessionInfraPorts } from '../modules/session/index.ts';
 import type { ProjectInfraPorts } from '../application/project-infra/index.ts';
+import type { AssetPorts } from '../assets/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import { actorToWhoamiDto } from '../auth/session.ts';
 import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
+import { mountAssetHttpRoutes } from './asset-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
 import { mountSessionHttpRoutes } from './session-routes.ts';
 import { mountWorldAtlasHttpRoutes } from './world-atlas-routes.ts';
@@ -65,6 +67,8 @@ export type HostApiDeps = {
   readonly sessionInfra?: SessionInfraPorts | null;
   /** FE-HOST-04 project / saga overview product HTTP. */
   readonly projectInfra?: ProjectInfraPorts | null;
+  /** FE-HOST-06 local assets publish/get. */
+  readonly assets?: AssetPorts | null;
 };
 
 async function readJsonSafe(c: {
@@ -421,6 +425,7 @@ export function createHostApi(deps: HostApiDeps): Hono {
     look: deps.look,
     inventory: deps.inventory,
     project: deps.project,
+    assets: deps.assets,
   });
 
   mountSessionHttpRoutes(app, {
@@ -439,6 +444,12 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     projectInfra: deps.projectInfra,
+  });
+
+  mountAssetHttpRoutes(app, {
+    identity: deps.identity,
+    hostMode: deps.hostMode,
+    assets: deps.assets,
   });
 
   app.notFound((c) => c.json({ error: 'not-found' }, 404));

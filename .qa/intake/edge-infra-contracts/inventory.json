@@ -30201,7 +30201,7 @@
           },
           {
             "path": "src/infrastructure/character/character-service.ts",
-            "sha256": "b1d6d33140d1e8ceae4bf3c5d6b5ff3acc63d64fdd71c690e96222308f845fd2"
+            "sha256": "9eb0f8385a4d8d2cec29013dc99df9420bcde14a7ba37461f5e6b7d47cac0172"
           },
           {
             "path": "src/infrastructure/character/character.persistence.ts",
@@ -30301,7 +30301,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -30481,7 +30481,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-character.json",
-      "sourceContractSha256": "63991e9e5df567657d0bd68f2229bd06d250e01f2cfab8ca9402ef4a98730ba7",
+      "sourceContractSha256": "d2dc9540c86f6d48fb87a72b5b92fe4b51cef3a4fbb6d6fcbbe8db107eecdb90",
       "rpcUsed": [],
       "tablesTouched": [
         "character_adventure_arcs",
@@ -30865,16 +30865,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 352,
-          "endLine": 352,
+          "line": 353,
+          "endLine": 353,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-service.ts",
-            "line": 340,
-            "endLine": 394,
+            "line": 341,
+            "endLine": 395,
             "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const hostMode = isHostLibraryEnabled();\n    let actorUserId: string;\n    if (hostMode) {\n      // Owner-scoped host fetch — proves the actor can access this character.\n      await fetchHostLibraryCharacter(characterId);\n      const who = await probeHostActor();\n      actorUserId = who?.actorId ?? 'solo';\n    } else {\n      actorUserId = await getAuthenticatedUserId();\n      // Owner-scoped fetch — proves the actor can access this character.\n      await supabaseCharacterRepository.getCharacterById(characterId);\n    }\n\n    let sagaAllows = true;\n    if (!hostMode) {\n      try {\n        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n        const activeArcs = arcs.filter((arc) => arc.status === 'active');\n        for (const arc of activeArcs) {\n          const project = await projectService.getProjectById(arc.projectId);\n          if (!project.allowPlayerCharacterLookOverride) {\n            sagaAllows = false;\n            break;\n          }\n        }\n      } catch {\n        sagaAllows = true;\n      }\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // Successful owner-scoped fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
           }
         },
@@ -32319,16 +32319,16 @@
           "kind": "auth-helper",
           "name": null,
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 352,
-          "endLine": 352,
+          "line": 353,
+          "endLine": 353,
           "resolution": "dynamic-expression",
           "expression": "getAuthenticatedUserId()",
           "chain": "getAuthenticatedUserId()",
           "arguments": [],
           "enclosingOperation": {
             "path": "src/infrastructure/character/character-service.ts",
-            "line": 340,
-            "endLine": 394,
+            "line": 341,
+            "endLine": 395,
             "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const hostMode = isHostLibraryEnabled();\n    let actorUserId: string;\n    if (hostMode) {\n      // Owner-scoped host fetch — proves the actor can access this character.\n      await fetchHostLibraryCharacter(characterId);\n      const who = await probeHostActor();\n      actorUserId = who?.actorId ?? 'solo';\n    } else {\n      actorUserId = await getAuthenticatedUserId();\n      // Owner-scoped fetch — proves the actor can access this character.\n      await supabaseCharacterRepository.getCharacterById(characterId);\n    }\n\n    let sagaAllows = true;\n    if (!hostMode) {\n      try {\n        const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n        const activeArcs = arcs.filter((arc) => arc.status === 'active');\n        for (const arc of activeArcs) {\n          const project = await projectService.getProjectById(arc.projectId);\n          if (!project.allowPlayerCharacterLookOverride) {\n            sagaAllows = false;\n            break;\n          }\n        }\n      } catch {\n        sagaAllows = true;\n      }\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // Successful owner-scoped fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
           }
         },
@@ -34417,110 +34417,110 @@
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 46,
-          "endLine": 62,
+          "line": 47,
+          "endLine": 63,
           "name": "mapHostCharacterSummary"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 64,
-          "endLine": 102,
+          "line": 65,
+          "endLine": 103,
           "name": "mapHostCharacterVm"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 104,
-          "endLine": 106,
+          "line": 105,
+          "endLine": 107,
           "name": "invalidateCharacterListCaches"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 121,
-          "endLine": 164,
+          "line": 122,
+          "endLine": 165,
           "name": "prepareCharacterPortraitFile"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 167,
-          "endLine": 173,
+          "line": 168,
+          "endLine": 174,
           "name": "getUserCharacterSummaries"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 175,
-          "endLine": 181,
+          "line": 176,
+          "endLine": 182,
           "name": "getUserCharacters"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 183,
-          "endLine": 189,
+          "line": 184,
+          "endLine": 190,
           "name": "getCharacterById"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 192,
-          "endLine": 214,
+          "line": 193,
+          "endLine": 215,
           "name": "getCharacterRosterMetaByIds"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 216,
-          "endLine": 224,
+          "line": 217,
+          "endLine": 225,
           "name": "getCharacterByPublicId"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 226,
-          "endLine": 261,
+          "line": 227,
+          "endLine": 262,
           "name": "createCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 263,
-          "endLine": 306,
+          "line": 264,
+          "endLine": 307,
           "name": "updateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 312,
-          "endLine": 338,
+          "line": 313,
+          "endLine": 339,
           "name": "updateCharacterPersonalLook"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 401,
-          "endLine": 414,
+          "line": 402,
+          "endLine": 415,
           "name": "migrateCharacterInventoryToV2"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 416,
-          "endLine": 424,
+          "line": 417,
+          "endLine": 425,
           "name": "deleteCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 427,
-          "endLine": 491,
+          "line": 428,
+          "endLine": 492,
           "name": "duplicateCharacter"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 493,
-          "endLine": 503,
+          "line": 494,
+          "endLine": 504,
           "name": "searchCharacters"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 509,
-          "endLine": 514,
+          "line": 511,
+          "endLine": 520,
           "name": "uploadPortrait"
         },
         {
           "path": "src/infrastructure/character/character-service.ts",
-          "line": 516,
-          "endLine": 518,
+          "line": 522,
+          "endLine": 524,
           "name": "preparePortraitFile"
         },
         {
@@ -35589,7 +35589,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/inventory/host-inventory-adapter.ts",
@@ -35701,7 +35701,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-inventory.json",
-      "sourceContractSha256": "8957486b7b2d8f0db70cc69e30ccdab29b35be078b082cab0ebf19df2217ebfb",
+      "sourceContractSha256": "49b5840bd8998ff686d43b868cbc8f2fcfd47f5acd885fac82444a159aa66698",
       "rpcUsed": [],
       "tablesTouched": [
         "characters",
@@ -36905,7 +36905,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/look/adapters/host-mtoon-look-adapter.ts",
@@ -36981,7 +36981,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-look.json",
-      "sourceContractSha256": "dafc3ade3118c21165b548642bd798d2480741f7f436ab546f55fb394b3ec9a6",
+      "sourceContractSha256": "aa48f277059a8525cf396f394cce33169c5ecb7a8dc1e79900fb78f3d0cd92f6",
       "rpcUsed": [],
       "tablesTouched": [
         "look_profile_versions",
@@ -38669,7 +38669,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/npc-creature/host-npc-creature-adapter.ts",
@@ -38725,7 +38725,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-npc-creature.json",
-      "sourceContractSha256": "3c766f0faf9b5a962c4332db19a9e3cbd2d619d2f6068e0799fc72270d2062e7",
+      "sourceContractSha256": "97d5c45ffb70211ac49f3c6dcc9701d906792eaca9cc1238060d64d9c7dbc8d3",
       "rpcUsed": [
         "assign_npc_creature_controller",
         "clear_npc_creature_instance_temp_controllers_for_session",
@@ -39810,7 +39810,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
@@ -39866,7 +39866,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-project.json",
-      "sourceContractSha256": "26021a6317674973ff61755c9bf2d9d8d2c5b8377e1445c8167ac37ee502347c",
+      "sourceContractSha256": "9d33ac2231be62ae6e127becf6957ec24fbc66f36bf066bb2195bc0a0b465d67",
       "rpcUsed": [
         "create_project_session",
         "ensure_native_starter_project",
@@ -41823,7 +41823,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/host/host-session-http.ts",
@@ -41919,7 +41919,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-session.json",
-      "sourceContractSha256": "33d55468e96e6aace91334cc37fcdf01dfd40da982661cdb22c247e3356a49ae",
+      "sourceContractSha256": "5be011f73c7fb43701305b8b3d8368bf9c3f0047b8cede4641dd6ff060b19726",
       "rpcUsed": [
         "apply_session_runtime_command",
         "create_play_session",
@@ -44706,7 +44706,7 @@
           },
           {
             "path": "src/infrastructure/host/host-library-http.ts",
-            "sha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132"
+            "sha256": "c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069"
           },
           {
             "path": "src/infrastructure/host/host-world-http.ts",
@@ -44818,7 +44818,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "9be840da471f3cf9f75a8060de1a097ce04753a01e21d1070912f0381b641744",
+      "sourceContractSha256": "bddaecbc22abd6cf7f3031e6bd4be3ec505fb677eca5ada9275626c27014e366",
       "rpcUsed": [
         "archive_world_node_subtree",
         "create_world_node_with_maps",

@@ -54,6 +54,12 @@ export type SessionResolveOptions = {
   readonly headers: IncomingHttpHeaders | Headers;
   /** Safe same-origin GETs may omit Origin; require Host + Sec-Fetch-Site. */
   readonly allowSameOriginRead?: boolean;
+  /**
+   * Credentialed media GETs (e.g. `<img src>` to `/api/v1/assets/:id`) may omit
+   * Origin. Require Host match + Sec-Fetch-Site same-origin|same-site and
+   * Sec-Fetch-Dest image (or absent). Never for mutations.
+   */
+  readonly allowTrustedCookieMediaRead?: boolean;
   /** Optional request body — scanned for forged localIdentity / solo claims. */
   readonly body?: unknown;
   /** Solo actor ids linked to the resolved remote user (from durable link store). */
@@ -93,6 +99,14 @@ export async function resolveCookieSession(
   const originHeader = headers.get('origin');
   if (originHeader) {
     if (!isTrustedOrigin(originHeader, allowlist)) {
+      return { ok: false, code: 'ORIGIN_DENIED' };
+    }
+  } else if (options.allowTrustedCookieMediaRead) {
+    const site = (headers.get('sec-fetch-site') ?? '').toLowerCase();
+    const dest = (headers.get('sec-fetch-dest') ?? '').toLowerCase();
+    const siteOk = site === 'same-origin' || site === 'same-site';
+    const destOk = dest === '' || dest === 'image';
+    if (host !== expectedHost || !siteOk || !destOk) {
       return { ok: false, code: 'ORIGIN_DENIED' };
     }
   } else if (options.allowSameOriginRead) {

@@ -37,7 +37,11 @@ export type IdentityPorts = {
    */
   readonly resolveRemoteSession: (
     headers: IncomingHttpHeaders | Headers,
-    options?: { allowSameOriginRead?: boolean; body?: unknown },
+    options?: {
+      allowSameOriginRead?: boolean;
+      allowTrustedCookieMediaRead?: boolean;
+      body?: unknown;
+    },
   ) => Promise<SessionResolveResult | { ok: false; code: 'AUTH_NOT_CONFIGURED' }>;
   /**
    * Explicit solo→remote account link. Never auto-elevates; requires confirm
@@ -72,6 +76,7 @@ export function createIdentityPorts(
         trustedOrigins: authRuntime.trustedOrigins,
         headers,
         allowSameOriginRead: options.allowSameOriginRead === true,
+        allowTrustedCookieMediaRead: options.allowTrustedCookieMediaRead === true,
         body: options.body,
       });
       if (!resolved.ok) return resolved;
