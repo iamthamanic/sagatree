@@ -142,6 +142,17 @@ try {
   const gotBytes = Buffer.from(await getOwner.arrayBuffer());
   assert(gotBytes.equals(PNG_BYTES), 'bytes round-trip');
 
+  // Cross-origin-style <img>: no Origin, Sec-Fetch-Site same-site + Dest image
+  const getImg = await fetch(`${baseURL}/api/v1/assets/${encodeURIComponent(assetId)}`, {
+    headers: {
+      cookie: ownerCookie,
+      'Sec-Fetch-Site': 'same-site',
+      'Sec-Fetch-Dest': 'image',
+      'Sec-Fetch-Mode': 'no-cors',
+    },
+  });
+  assert(getImg.status === 200, `img-style get ${getImg.status}`);
+
   // Fall 2 — stranger DENY (no payload)
   const getStranger = await fetch(`${baseURL}/api/v1/assets/${encodeURIComponent(assetId)}`, {
     headers: { cookie: strangerCookie, Origin: baseURL },
@@ -200,6 +211,33 @@ try {
     body: { portrait_url: strangerPub.json.url },
   });
   assert(foreignPatch.res.status === 400, `foreign portrait ${foreignPatch.res.status}`);
+
+  // Foreign asset id with owner-prefixed path must also DENY
+  const whoami = await httpJson(baseURL, '/api/whoami', {
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+  });
+  const ownerActorId = whoami.json?.actorId;
+  assert(typeof ownerActorId === 'string', 'owner actorId');
+  const forgedPath = await httpJson(baseURL, `/api/v1/library/characters/${characterId}`, {
+    method: 'PATCH',
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+    body: { portrait_url: `${ownerActorId}/${strangerPub.json.assetId}` },
+  });
+  assert(forgedPath.res.status === 400, `forged owner path ${forgedPath.res.status}`);
+
+  // SVG / active image types rejected
+  const svgReject = await httpJson(baseURL, '/api/v1/assets', {
+    method: 'POST',
+    cookie: ownerCookie,
+    headers: { Origin: baseURL },
+    body: {
+      contentType: 'image/svg+xml',
+      bytesBase64: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>').toString('base64'),
+    },
+  });
+  assert(svgReject.res.status === 400, `svg reject ${svgReject.res.status}`);
 
   console.log('OK: fe-host-06-assets-http.self-test');
   await host.stop();

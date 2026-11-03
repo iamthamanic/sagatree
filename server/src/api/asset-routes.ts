@@ -52,9 +52,11 @@ function soloLoopbackAllowed(headers: Headers): boolean {
 async function resolveAssetActor(
   deps: AssetHttpDeps,
   headers: Headers,
+  options: { mediaRead?: boolean } = {},
 ): Promise<{ ok: true; actor: Actor } | { ok: false; status: number; error: string }> {
   const remote = await deps.identity.resolveRemoteSession(headers, {
     allowSameOriginRead: true,
+    allowTrustedCookieMediaRead: options.mediaRead === true,
   });
   if (remote.ok) return { ok: true, actor: remote.actor };
   if (
@@ -67,13 +69,53 @@ async function resolveAssetActor(
   return { ok: false, status: authDenyStatus(remote.code), error: remote.code };
 }
 
+/** Inert raster only — never SVG / active image/* (XSS via same-origin GET). */
 const ALLOWED_IMAGE_TYPES = new Set([
   'image/png',
   'image/jpeg',
   'image/webp',
   'image/gif',
-  'application/octet-stream',
 ]);
+
+function sniffRasterMime(bytes: Uint8Array): string | null {
+  if (
+    bytes.length >= 8 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47
+  ) {
+    return 'image/png';
+  }
+  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+    return 'image/jpeg';
+  }
+  if (
+    bytes.length >= 6 &&
+    bytes[0] === 0x47 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x38 &&
+    (bytes[4] === 0x37 || bytes[4] === 0x39) &&
+    bytes[5] === 0x61
+  ) {
+    return 'image/gif';
+  }
+  if (
+    bytes.length >= 12 &&
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  ) {
+    return 'image/webp';
+  }
+  return null;
+}
 
 function decodeBase64Bytes(value: string): Uint8Array | null {
   try {
@@ -174,13 +216,21 @@ export function mountAssetHttpRoutes(app: Hono, deps: AssetHttpDeps): void {
       return c.json({ error: parsed.error }, parsed.status);
     }
 
-    if (!ALLOWED_IMAGE_TYPES.has(parsed.contentType) && !parsed.contentType.startsWith('image/')) {
+    const sniffed = sniffRasterMime(parsed.bytes);
+    if (!sniffed || !ALLOWED_IMAGE_TYPES.has(sniffed)) {
       return c.json({ error: 'invalid-content-type' }, 400);
+    }
+    if (
+      parsed.contentType !== 'application/octet-stream' &&
+      ALLOWED_IMAGE_TYPES.has(parsed.contentType) &&
+      parsed.contentType !== sniffed
+    ) {
+      return c.json({ error: 'content-type-mismatch' }, 400);
     }
 
     const published = deps.assets.publish(actorResult.actor, {
       bytes: parsed.bytes,
-      contentType: parsed.contentType,
+      contentType: sniffed,
     });
     if (!published.ok) {
       const status =
@@ -209,7 +259,8 @@ export function mountAssetHttpRoutes(app: Hono, deps: AssetHttpDeps): void {
   });
 
   app.get('/api/v1/assets/:assetId', async (c) => {
-    const actorResult = await resolveAssetActor(deps, c.req.raw.headers);
+    // `<img src>` omits Origin; allow trusted cookie media read (same-site).
+    const actorResult = await resolveAssetActor(deps, c.req.raw.headers, { mediaRead: true });
     if (!actorResult.ok) {
       return c.json({ error: actorResult.error }, actorResult.status);
     }
@@ -260,15 +311,17 @@ export function normalizePortraitStoragePath(
 
   const actorId = actor.actorId;
   const ownerPrefix = `${actorId}/`;
+  let assetId: string | null = null;
   if (trimmed.startsWith(ownerPrefix) && !trimmed.includes('..')) {
     const rest = trimmed.slice(ownerPrefix.length);
     if (rest.length > 0 && !rest.includes('/')) {
-      return { ok: true, value: trimmed.replace(/^\/+/, '') };
+      assetId = rest;
     }
   }
-
-  const pathMatch = trimmed.match(/\/api\/v1\/assets\/([a-zA-Z0-9][a-zA-Z0-9_-]{0,127})\/?$/);
-  const assetId = pathMatch?.[1] ?? null;
+  if (!assetId) {
+    const pathMatch = trimmed.match(/\/api\/v1\/assets\/([a-zA-Z0-9][a-zA-Z0-9_-]{0,127})\/?$/);
+    assetId = pathMatch?.[1] ?? null;
+  }
   if (!assetId) return { ok: false, error: 'invalid-storage-path' };
   if (!assets) return { ok: false, error: 'store-unavailable' };
 
