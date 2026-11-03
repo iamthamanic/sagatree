@@ -102,9 +102,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/world/world-map-service.ts:92
+### src/infrastructure/world/world-map-service.ts:111
 
-AST-Auflösung: `string-literal`; SHA-256 `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e`.
+AST-Auflösung: `string-literal`; SHA-256 `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -116,6 +116,12 @@ async saveMap(
   ): Promise<WorldMapVm> {
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await saveHostWorldMap(id, expectedRevision, mapData);
+      const vm = parseWorldMapVm(data);
+      if (!vm) throw new Error('Ungültige Speicherantwort');
+      return vm;
+    }
     const { data, error } = await supabase.rpc('save_world_map', {
       p_world_profile_id: id,
       p_expected_revision: expectedRevision,
@@ -132,6 +138,13 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
+| `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
+| `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
+| `hostMutateJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 68 | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
+| `saveHostWorldMap` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 123 | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -158,7 +171,9 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |
+| [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
+| [src/infrastructure/world/world-map-service.ts](../../../src/infrastructure/world/world-map-service.ts) | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/008_world_profiles.sql](../../../supabase/migrations/008_world_profiles.sql) | `94d2db4e86205d09d54b63e322af6b69b93a7e07d13f3795bc1d841a46961b1a` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |

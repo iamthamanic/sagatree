@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `4c35db6338aae03b9191b51eafcf4a22f0c6d3f324aef13808ad9192ed4625b7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `40ce1d35397d590c89ae44dee772eced27f297c64c091176cc0d96244d049cbf`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -86,7 +86,7 @@ None in the reviewed source.
 
 ### rpc: list_world_atlas_maps
 
-`src/infrastructure/world/world-atlas-service.ts:46` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:59` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -97,10 +97,10 @@ supabase.rpc('list_world_atlas_maps', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:39`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:48`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: ensure_world_atlas_root
 
-`src/infrastructure/world/world-atlas-service.ts:59` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:76` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -109,10 +109,10 @@ supabase.rpc('ensure_world_atlas_root', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:55`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:68`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_world_atlas_map
 
-`src/infrastructure/world/world-atlas-service.ts:74` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:95` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -123,10 +123,10 @@ supabase.rpc('get_world_atlas_map', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:66`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: upsert_world_atlas_map
 
-`src/infrastructure/world/world-atlas-service.ts:85` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:123` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -146,20 +146,20 @@ supabase.rpc('upsert_world_atlas_map', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:104`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/world/world-atlas-service.ts:113` — dynamic-expression.
+`src/infrastructure/world/world-atlas-service.ts:156` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:111`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### storage: world-atlas
 
-`src/infrastructure/world/world-atlas-service.ts:119` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:162` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -169,10 +169,10 @@ supabase.storage.from(ATLAS_BUCKET).upload(path, file, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:111`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:149`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### storage: world-atlas
 
-`src/infrastructure/world/world-atlas-service.ts:131` — literal-or-constant.
+`src/infrastructure/world/world-atlas-service.ts:179` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -181,10 +181,10 @@ supabase.storage
       .createSignedUrl(path, expiresSec)
 ```
 
-Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:127`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-atlas-service.ts:170`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_world_map
 
-`src/infrastructure/world/world-map-service.ts:75` — literal-or-constant.
+`src/infrastructure/world/world-map-service.ts:88` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -194,10 +194,10 @@ supabase.rpc('get_world_map', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:72`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-map-service.ts:79`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: save_world_map
 
-`src/infrastructure/world/world-map-service.ts:92` — literal-or-constant.
+`src/infrastructure/world/world-map-service.ts:111` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -208,20 +208,20 @@ supabase.rpc('save_world_map', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:85`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-map-service.ts:98`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth: session identity
 
-`src/infrastructure/world/world-map-service.ts:115` — dynamic-expression.
+`src/infrastructure/world/world-map-service.ts:139` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 supabase.auth.getUser()
 ```
 
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:107`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-map-service.ts:126`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### storage: world-map-pins
 
-`src/infrastructure/world/world-map-service.ts:132` — literal-or-constant.
+`src/infrastructure/world/world-map-service.ts:156` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -231,10 +231,10 @@ supabase.storage.from('world-map-pins').upload(path, prepared, {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-map-service.ts:107`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-map-service.ts:126`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: list_world_places
 
-`src/infrastructure/world/world-place-service.ts:41` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:61` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -245,10 +245,10 @@ supabase.rpc('list_world_places', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:34`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:50`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: list_world_place_map_links
 
-`src/infrastructure/world/world-place-service.ts:57` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:81` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -259,10 +259,10 @@ supabase.rpc('list_world_place_map_links', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:50`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:70`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: upsert_world_place
 
-`src/infrastructure/world/world-place-service.ts:68` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:108` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -279,10 +279,10 @@ supabase.rpc('upsert_world_place', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:66`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:90`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_world_node_with_maps
 
-`src/infrastructure/world/world-place-service.ts:99` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:154` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -297,10 +297,10 @@ supabase.rpc('create_world_node_with_maps', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:89`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:129`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: preview_world_node_consequences
 
-`src/infrastructure/world/world-place-service.ts:121` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:184` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -310,10 +310,10 @@ supabase.rpc('preview_world_node_consequences', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:116`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:171`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: rename_world_node
 
-`src/infrastructure/world/world-place-service.ts:136` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:209` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -324,10 +324,10 @@ supabase.rpc('rename_world_node', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:130`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:193`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: reparent_world_node
 
-`src/infrastructure/world/world-place-service.ts:154` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:237` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -339,10 +339,10 @@ supabase.rpc('reparent_world_node', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:147`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:220`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: duplicate_world_node
 
-`src/infrastructure/world/world-place-service.ts:171` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:263` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -353,10 +353,10 @@ supabase.rpc('duplicate_world_node', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:165`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:248`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: archive_world_node_subtree
 
-`src/infrastructure/world/world-place-service.ts:187` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:288` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -367,10 +367,10 @@ supabase.rpc('archive_world_node_subtree', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:181`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:273`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: delete_world_node
 
-`src/infrastructure/world/world-place-service.ts:203` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:313` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -381,10 +381,10 @@ supabase.rpc('delete_world_node', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:197`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:298`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: upsert_world_place_map_link
 
-`src/infrastructure/world/world-place-service.ts:218` — literal-or-constant.
+`src/infrastructure/world/world-place-service.ts:341` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -398,7 +398,7 @@ supabase.rpc('upsert_world_place_map_link', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/world/world-place-service.ts:213`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/world/world-place-service.ts:323`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: world_profiles
 
 `src/infrastructure/world/world-profile-service.ts:84` — literal-or-constant.
@@ -923,7 +923,7 @@ export type HostWorldReadPort = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:23
+### src/infrastructure/world/world-atlas-service.ts:32
 
 ```ts
 export type UpsertWorldAtlasMapInput = {
@@ -942,13 +942,13 @@ export type UpsertWorldAtlasMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:141
+### src/infrastructure/world/world-atlas-service.ts:189
 
 ```ts
 export const worldAtlasService = new WorldAtlasService();
 ```
 
-### src/infrastructure/world/world-map-service.ts:15
+### src/infrastructure/world/world-map-service.ts:22
 
 ```ts
 export type UploadPinImageOptions = {
@@ -957,7 +957,7 @@ export type UploadPinImageOptions = {
 };
 ```
 
-### src/infrastructure/world/world-map-service.ts:21
+### src/infrastructure/world/world-map-service.ts:28
 
 ```ts
 export async function prepareWorldMapPinFile(
@@ -1011,13 +1011,13 @@ export async function prepareWorldMapPinFile(
 }
 ```
 
-### src/infrastructure/world/world-map-service.ts:141
+### src/infrastructure/world/world-map-service.ts:165
 
 ```ts
 export const worldMapService = new WorldMapService();
 ```
 
-### src/infrastructure/world/world-place-service.ts:19
+### src/infrastructure/world/world-place-service.ts:35
 
 ```ts
 export type ListWorldPlacesOptions = {
@@ -1026,7 +1026,7 @@ export type ListWorldPlacesOptions = {
 };
 ```
 
-### src/infrastructure/world/world-place-service.ts:24
+### src/infrastructure/world/world-place-service.ts:40
 
 ```ts
 export type LinkWorldPlaceMapInput = {
@@ -1039,7 +1039,7 @@ export type LinkWorldPlaceMapInput = {
 };
 ```
 
-### src/infrastructure/world/world-place-service.ts:233
+### src/infrastructure/world/world-place-service.ts:356
 
 ```ts
 export const worldPlaceService = new WorldPlaceService();
@@ -1054,16 +1054,20 @@ export const worldProfileService = new WorldProfileService();
 
 ## Remaining backend helper operations
 
-### src/infrastructure/world/world-atlas-service.ts:39
+### src/infrastructure/world/world-atlas-service.ts:48
 
 ```ts
 async listMaps(
     worldProfileId: string,
     options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
   ): Promise<WorldAtlasMapSummary[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldAtlasMaps(id, options);
+      return parseWorldAtlasMapList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_atlas_maps', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -1074,13 +1078,17 @@ async listMaps(
   }
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:55
+### src/infrastructure/world/world-atlas-service.ts:68
 
 ```ts
 async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await ensureHostWorldAtlasRoot(id);
+      return parseWorldAtlasMapList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('ensure_world_atlas_root', {
       p_world_profile_id: id,
     });
@@ -1089,7 +1097,7 @@ async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
   }
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:66
+### src/infrastructure/world/world-atlas-service.ts:83
 
 ```ts
 async getMap(
@@ -1097,9 +1105,13 @@ async getMap(
     playerView = false,
     sagaPublicId?: string | null,
   ): Promise<WorldAtlasMapVm> {
-    await assertSupabaseJwtSession();
     const id = mapId.trim();
     if (!id) throw new Error('Karten-ID fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);
+      return parseWorldAtlasMapVm(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('get_world_atlas_map', {
       p_map_id: id,
       p_player_view: playerView,
@@ -1110,10 +1122,27 @@ async getMap(
   }
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:83
+### src/infrastructure/world/world-atlas-service.ts:104
 
 ```ts
 async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldAtlasMap({
+        worldProfileId: input.worldProfileId.trim(),
+        mapId: input.mapId ?? null,
+        parentMapId: input.parentMapId ?? null,
+        kind: input.kind,
+        title: input.title,
+        sortOrder: input.sortOrder ?? 0,
+        bounds: input.bounds,
+        layers: input.layers,
+        basemapStoragePath: input.basemapStoragePath ?? null,
+        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,
+        generatorMeta: input.generatorMeta ?? {},
+        expectedRevision: input.expectedRevision ?? null,
+      });
+      return parseWorldAtlasMapVm(data);
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_atlas_map', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1141,10 +1170,15 @@ async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
   }
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:111
+### src/infrastructure/world/world-atlas-service.ts:149
 
 ```ts
 async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',
+      );
+    }
     await assertSupabaseJwtSession();
     const userId = await getAuthenticatedUserId();
     if (file.size > AZGAAR_MAX_BYTES) {
@@ -1161,10 +1195,15 @@ async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
   }
 ```
 
-### src/infrastructure/world/world-atlas-service.ts:127
+### src/infrastructure/world/world-atlas-service.ts:170
 
 ```ts
 async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Atlas-Download-URLs über Host-Speicher folgen in einem späteren Cutover.',
+      );
+    }
     await assertSupabaseJwtSession();
     const path = storagePath.trim();
     if (!path) throw new Error('Storage-Pfad fehlt');
@@ -1178,12 +1217,18 @@ async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
   }
 ```
 
-### src/infrastructure/world/world-map-service.ts:72
+### src/infrastructure/world/world-map-service.ts:79
 
 ```ts
 async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostWorldMap(id, playerView);
+      const vm = parseWorldMapVm(data);
+      if (!vm) throw new Error('Ungültige Kartenantwort');
+      return vm;
+    }
     const { data, error } = await supabase.rpc('get_world_map', {
       p_world_profile_id: id,
       p_player_view: playerView,
@@ -1195,7 +1240,7 @@ async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
   }
 ```
 
-### src/infrastructure/world/world-map-service.ts:85
+### src/infrastructure/world/world-map-service.ts:98
 
 ```ts
 async saveMap(
@@ -1205,6 +1250,12 @@ async saveMap(
   ): Promise<WorldMapVm> {
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await saveHostWorldMap(id, expectedRevision, mapData);
+      const vm = parseWorldMapVm(data);
+      if (!vm) throw new Error('Ungültige Speicherantwort');
+      return vm;
+    }
     const { data, error } = await supabase.rpc('save_world_map', {
       p_world_profile_id: id,
       p_expected_revision: expectedRevision,
@@ -1217,7 +1268,7 @@ async saveMap(
   }
 ```
 
-### src/infrastructure/world/world-map-service.ts:107
+### src/infrastructure/world/world-map-service.ts:126
 
 ```ts
 async uploadPinImage(
@@ -1225,6 +1276,11 @@ async uploadPinImage(
     file: File,
     options?: UploadPinImageOptions,
   ): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',
+      );
+    }
     const {
       data: { user },
       error: authError,
@@ -1254,16 +1310,20 @@ async uploadPinImage(
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:34
+### src/infrastructure/world/world-place-service.ts:50
 
 ```ts
 async listPlaces(
     worldProfileId: string,
     options: ListWorldPlacesOptions = {},
   ): Promise<WorldPlaceVm[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldPlaces(id, options);
+      return parseWorldPlaceList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_places', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -1274,16 +1334,20 @@ async listPlaces(
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:50
+### src/infrastructure/world/world-place-service.ts:70
 
 ```ts
 async listMapLinks(
     worldProfileId: string,
     options: ListWorldPlacesOptions = {},
   ): Promise<WorldPlaceMapLinkVm[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldPlaceMapLinks(id, options);
+      return parseWorldPlaceMapLinkList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_place_map_links', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -1294,10 +1358,26 @@ async listMapLinks(
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:66
+### src/infrastructure/world/world-place-service.ts:90
 
 ```ts
 async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldPlace({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId ?? null,
+        parentPlaceId: input.parentPlaceId ?? null,
+        kind: input.kind,
+        name: input.name,
+        description: input.description ?? null,
+        status: input.status ?? 'draft',
+        seedKey: input.seedKey ?? null,
+        sortOrder: input.sortOrder ?? 0,
+      });
+      const parsed = parseWorldPlaceVm(data);
+      if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
+      return parsed;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_place', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1317,7 +1397,7 @@ async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:89
+### src/infrastructure/world/world-place-service.ts:129
 
 ```ts
 async createNodeWithMaps(input: {
@@ -1329,6 +1409,21 @@ async createNodeWithMaps(input: {
     readonly parentPlaceId?: string | null;
     readonly description?: string | null;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await createHostWorldNodeWithMaps({
+        worldProfileId: input.worldProfileId.trim(),
+        kind: input.kind,
+        name: input.name,
+        idempotencyKey: input.idempotencyKey.trim(),
+        subtype: input.subtype ?? null,
+        parentPlaceId: input.parentPlaceId ?? null,
+        description: input.description ?? null,
+      });
+      if (!data || typeof data !== 'object') {
+        throw new Error('Weltknoten anlegen: ungültige Antwort');
+      }
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('create_world_node_with_maps', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1347,13 +1442,21 @@ async createNodeWithMaps(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:116
+### src/infrastructure/world/world-place-service.ts:171
 
 ```ts
 async previewNodeConsequences(input: {
     readonly worldProfileId: string;
     readonly placeId: string;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await previewHostWorldNodeConsequences({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+      });
+      if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('preview_world_node_consequences', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1365,7 +1468,7 @@ async previewNodeConsequences(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:130
+### src/infrastructure/world/world-place-service.ts:193
 
 ```ts
 async renameNode(input: {
@@ -1373,6 +1476,16 @@ async renameNode(input: {
     readonly placeId: string;
     readonly name: string;
   }): Promise<WorldPlaceVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await renameHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        name: input.name,
+      });
+      const parsed = parseWorldPlaceVm(data);
+      if (!parsed) throw new Error('Umbenennen: ungültige Antwort');
+      return parsed;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('rename_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1386,7 +1499,7 @@ async renameNode(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:147
+### src/infrastructure/world/world-place-service.ts:220
 
 ```ts
 async reparentNode(input: {
@@ -1395,6 +1508,16 @@ async reparentNode(input: {
     readonly newParentPlaceId: string | null;
     readonly confirmRelocate: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await reparentHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        newParentPlaceId: input.newParentPlaceId,
+        confirmRelocate: input.confirmRelocate,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('reparent_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1408,7 +1531,7 @@ async reparentNode(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:165
+### src/infrastructure/world/world-place-service.ts:248
 
 ```ts
 async duplicateNode(input: {
@@ -1416,6 +1539,15 @@ async duplicateNode(input: {
     readonly placeId: string;
     readonly deep?: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await duplicateHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        deep: input.deep === true,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('duplicate_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1428,7 +1560,7 @@ async duplicateNode(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:181
+### src/infrastructure/world/world-place-service.ts:273
 
 ```ts
 async archiveNodeSubtree(input: {
@@ -1436,6 +1568,15 @@ async archiveNodeSubtree(input: {
     readonly placeId: string;
     readonly confirm: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await archiveHostWorldNodeSubtree({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        confirm: input.confirm,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('archive_world_node_subtree', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1448,7 +1589,7 @@ async archiveNodeSubtree(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:197
+### src/infrastructure/world/world-place-service.ts:298
 
 ```ts
 async deleteNode(input: {
@@ -1456,6 +1597,15 @@ async deleteNode(input: {
     readonly placeId: string;
     readonly confirm: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await deleteHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        confirm: input.confirm,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('delete_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -1468,14 +1618,27 @@ async deleteNode(input: {
   }
 ```
 
-### src/infrastructure/world/world-place-service.ts:213
+### src/infrastructure/world/world-place-service.ts:323
 
 ```ts
 async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
-    await assertSupabaseJwtSession();
     if (!isWorldPlaceMapUsage(input.usage)) {
       throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);
     }
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldPlaceMapLink({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        mapId: input.mapId.trim(),
+        usage: input.usage,
+        featureId: input.featureId ?? null,
+        anchor: input.anchor ?? {},
+      });
+      const parsed = parseWorldPlaceMapLinkVm(data);
+      if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');
+      return parsed;
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_place_map_link', {
       p_world_profile_id: input.worldProfileId.trim(),
       p_place_id: input.placeId.trim(),
@@ -1763,6 +1926,7 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/domains/world/places/world-place.types.ts` | `32081a2c16516c68393e879ebc4e888441ca4e5009b20404158c6b25d09f4ef0` |
 | `src/domains/world/worldModuleRegistry.ts` | `9683d27ea65c7a22456245c0e2e706168285f61e229f6ea181e0fb6a65064cc0` |
 | `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
+| `src/infrastructure/host/host-world-http.ts` | `bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348` |
 | `src/infrastructure/media/optimizer/engines/audio/index.ts` | `7585190a705085692bff0896e08b4d78f791895b47e24d57deeaaa10bb669d4e` |
 | `src/infrastructure/media/optimizer/engines/image/image.worker.ts` | `d34793b4de682556d9306194cfbcd05fdafdf215da25393f955d2669c7499276` |
 | `src/infrastructure/media/optimizer/engines/image/index.ts` | `4944001b7e0f7784d487da2e60d06d845aa564e9ddd7516ff50633af1591a322` |
@@ -1779,9 +1943,9 @@ async deleteWorldProfile(ownerUserId: string, id: string): Promise<void> {
 | `src/infrastructure/world/host-world-adapter.ts` | `fa229c2ceb37648d38d91f85699817ae584ae85f9195b45ea0ebe594aba786da` |
 | `src/infrastructure/world/host-world-ports.contract.ts` | `406d77c65527f6869c558a7b4c98c901766134f8e8d7dc6afc5271d6ba1a7f8e` |
 | `src/infrastructure/world/host-world-read.contract.ts` | `271a052d5f621ddf7f3344eaa55e3a58579c5cf629fe76a4827393d0d1c7a05c` |
-| `src/infrastructure/world/world-atlas-service.ts` | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
-| `src/infrastructure/world/world-map-service.ts` | `952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e` |
-| `src/infrastructure/world/world-place-service.ts` | `0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0` |
+| `src/infrastructure/world/world-atlas-service.ts` | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
+| `src/infrastructure/world/world-map-service.ts` | `ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27` |
+| `src/infrastructure/world/world-place-service.ts` | `c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4` |
 | `src/infrastructure/world/world-profile-service.ts` | `a45483722706cf4af91e90e41898f5b9c939dde8c92993868f39dc8269bd5ff0` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `src/lib/hostAuthBridge.ts` | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |

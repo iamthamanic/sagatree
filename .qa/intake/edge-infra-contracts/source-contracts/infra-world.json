@@ -17,15 +17,15 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
+      "sha256": "6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "sha256": "952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e"
+      "sha256": "ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+      "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
@@ -324,6 +324,10 @@
     {
       "path": "src/infrastructure/host/host-library-http.ts",
       "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+    },
+    {
+      "path": "src/infrastructure/host/host-world-http.ts",
+      "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
     },
     {
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
@@ -2065,6 +2069,14 @@
     },
     {
       "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-world-http.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
       "name": "AudioEngineRequest",
       "path": "src/infrastructure/media/optimizer/engines/audio/index.ts",
       "line": 14,
@@ -2229,8 +2241,8 @@
       "kind": "rpc",
       "name": "list_world_atlas_maps",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 46,
-      "endLine": 50,
+      "line": 59,
+      "endLine": 63,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
       "chain": "supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
@@ -2240,17 +2252,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 39,
-        "endLine": 53,
-        "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
+        "line": 48,
+        "endLine": 66,
+        "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldAtlasMaps(id, options);\n      return parseWorldAtlasMapList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "ensure_world_atlas_root",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 59,
-      "endLine": 61,
+      "line": 76,
+      "endLine": 78,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    })",
       "chain": "supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    })",
@@ -2260,17 +2272,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 55,
-        "endLine": 64,
-        "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    });\n    if (error) throw new Error(`Atlas-Root fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
+        "line": 68,
+        "endLine": 81,
+        "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await ensureHostWorldAtlasRoot(id);\n      return parseWorldAtlasMapList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    });\n    if (error) throw new Error(`Atlas-Root fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "get_world_atlas_map",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 74,
-      "endLine": 78,
+      "line": 95,
+      "endLine": 99,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    })",
       "chain": "supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    })",
@@ -2280,17 +2292,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 66,
-        "endLine": 81,
-        "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    await assertSupabaseJwtSession();\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    const { data, error } = await supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);\n    return parseWorldAtlasMapVm(data);\n  }"
+        "line": 83,
+        "endLine": 102,
+        "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);\n      return parseWorldAtlasMapVm(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);\n    return parseWorldAtlasMapVm(data);\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "upsert_world_atlas_map",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 85,
-      "endLine": 98,
+      "line": 123,
+      "endLine": 136,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    })",
       "chain": "supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    })",
@@ -2300,34 +2312,34 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 83,
-        "endLine": 108,
-        "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    });\n    if (error) {\n      if (error.code === '40001' || /revision conflict/i.test(error.message)) {\n        throw new Error(\n          'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n        );\n      }\n      throw new Error(`Atlas speichern fehlgeschlagen: ${error.message}`);\n    }\n    return parseWorldAtlasMapVm(data);\n  }"
+        "line": 104,
+        "endLine": 146,
+        "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldAtlasMap({\n        worldProfileId: input.worldProfileId.trim(),\n        mapId: input.mapId ?? null,\n        parentMapId: input.parentMapId ?? null,\n        kind: input.kind,\n        title: input.title,\n        sortOrder: input.sortOrder ?? 0,\n        bounds: input.bounds,\n        layers: input.layers,\n        basemapStoragePath: input.basemapStoragePath ?? null,\n        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,\n        generatorMeta: input.generatorMeta ?? {},\n        expectedRevision: input.expectedRevision ?? null,\n      });\n      return parseWorldAtlasMapVm(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    });\n    if (error) {\n      if (error.code === '40001' || /revision conflict/i.test(error.message)) {\n        throw new Error(\n          'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n        );\n      }\n      throw new Error(`Atlas speichern fehlgeschlagen: ${error.message}`);\n    }\n    return parseWorldAtlasMapVm(data);\n  }"
       }
     },
     {
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 113,
-      "endLine": 113,
+      "line": 156,
+      "endLine": 156,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 111,
-        "endLine": 125,
-        "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
+        "line": 149,
+        "endLine": 168,
+        "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
       }
     },
     {
       "kind": "storage",
       "name": "world-atlas",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 119,
-      "endLine": 119,
+      "line": 162,
+      "endLine": 162,
       "resolution": "literal-or-constant",
       "expression": "supabase.storage.from(ATLAS_BUCKET)",
       "chain": "supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    })",
@@ -2336,17 +2348,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 111,
-        "endLine": 125,
-        "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
+        "line": 149,
+        "endLine": 168,
+        "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
       }
     },
     {
       "kind": "storage",
       "name": "world-atlas",
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 131,
-      "endLine": 132,
+      "line": 179,
+      "endLine": 180,
       "resolution": "literal-or-constant",
       "expression": "supabase.storage\n      .from(ATLAS_BUCKET)",
       "chain": "supabase.storage\n      .from(ATLAS_BUCKET)\n      .createSignedUrl(path, expiresSec)",
@@ -2355,17 +2367,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "line": 127,
-        "endLine": 138,
-        "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    await assertSupabaseJwtSession();\n    const path = storagePath.trim();\n    if (!path) throw new Error('Storage-Pfad fehlt');\n    const { data, error } = await supabase.storage\n      .from(ATLAS_BUCKET)\n      .createSignedUrl(path, expiresSec);\n    if (error || !data?.signedUrl) {\n      throw new Error(error?.message || 'Download-URL fehlgeschlagen.');\n    }\n    return data.signedUrl;\n  }"
+        "line": 170,
+        "endLine": 186,
+        "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Atlas-Download-URLs über Host-Speicher folgen in einem späteren Cutover.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const path = storagePath.trim();\n    if (!path) throw new Error('Storage-Pfad fehlt');\n    const { data, error } = await supabase.storage\n      .from(ATLAS_BUCKET)\n      .createSignedUrl(path, expiresSec);\n    if (error || !data?.signedUrl) {\n      throw new Error(error?.message || 'Download-URL fehlgeschlagen.');\n    }\n    return data.signedUrl;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "get_world_map",
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 75,
-      "endLine": 78,
+      "line": 88,
+      "endLine": 91,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    })",
       "chain": "supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    })",
@@ -2375,17 +2387,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "line": 72,
-        "endLine": 83,
-        "text": "async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    });\n    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Kartenantwort');\n    return vm;\n  }"
+        "line": 79,
+        "endLine": 96,
+        "text": "async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostWorldMap(id, playerView);\n      const vm = parseWorldMapVm(data);\n      if (!vm) throw new Error('Ungültige Kartenantwort');\n      return vm;\n    }\n    const { data, error } = await supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    });\n    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Kartenantwort');\n    return vm;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "save_world_map",
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 92,
-      "endLine": 96,
+      "line": 111,
+      "endLine": 115,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    })",
       "chain": "supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    })",
@@ -2395,34 +2407,34 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "line": 85,
-        "endLine": 101,
-        "text": "async saveMap(\n    worldProfileId: string,\n    expectedRevision: number,\n    mapData: WorldMapData,\n  ): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    });\n    if (error) throw new Error(`Karte konnte nicht gespeichert werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Speicherantwort');\n    return vm;\n  }"
+        "line": 98,
+        "endLine": 120,
+        "text": "async saveMap(\n    worldProfileId: string,\n    expectedRevision: number,\n    mapData: WorldMapData,\n  ): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await saveHostWorldMap(id, expectedRevision, mapData);\n      const vm = parseWorldMapVm(data);\n      if (!vm) throw new Error('Ungültige Speicherantwort');\n      return vm;\n    }\n    const { data, error } = await supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    });\n    if (error) throw new Error(`Karte konnte nicht gespeichert werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Speicherantwort');\n    return vm;\n  }"
       }
     },
     {
       "kind": "auth",
       "name": null,
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 115,
-      "endLine": 115,
+      "line": 139,
+      "endLine": 139,
       "resolution": "dynamic-expression",
       "expression": "supabase.auth.getUser()",
       "chain": "supabase.auth.getUser()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "line": 107,
-        "endLine": 138,
-        "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
+        "line": 126,
+        "endLine": 162,
+        "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
       }
     },
     {
       "kind": "storage",
       "name": "world-map-pins",
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 132,
-      "endLine": 132,
+      "line": 156,
+      "endLine": 156,
       "resolution": "literal-or-constant",
       "expression": "supabase.storage.from('world-map-pins')",
       "chain": "supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    })",
@@ -2431,17 +2443,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "line": 107,
-        "endLine": 138,
-        "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
+        "line": 126,
+        "endLine": 162,
+        "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "list_world_places",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 41,
-      "endLine": 45,
+      "line": 61,
+      "endLine": 65,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
       "chain": "supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
@@ -2451,17 +2463,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 34,
-        "endLine": 48,
-        "text": "async listPlaces(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceVm[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);\n    return parseWorldPlaceList(data);\n  }"
+        "line": 50,
+        "endLine": 68,
+        "text": "async listPlaces(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceVm[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldPlaces(id, options);\n      return parseWorldPlaceList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);\n    return parseWorldPlaceList(data);\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "list_world_place_map_links",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 57,
-      "endLine": 61,
+      "line": 81,
+      "endLine": 85,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
       "chain": "supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    })",
@@ -2471,17 +2483,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 50,
-        "endLine": 64,
-        "text": "async listMapLinks(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceMapLinkVm[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Kartenverknüpfungen fehlgeschlagen: ${error.message}`);\n    return parseWorldPlaceMapLinkList(data);\n  }"
+        "line": 70,
+        "endLine": 88,
+        "text": "async listMapLinks(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceMapLinkVm[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldPlaceMapLinks(id, options);\n      return parseWorldPlaceMapLinkList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Kartenverknüpfungen fehlgeschlagen: ${error.message}`);\n    return parseWorldPlaceMapLinkList(data);\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "upsert_world_place",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 68,
-      "endLine": 78,
+      "line": 108,
+      "endLine": 118,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    })",
       "chain": "supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    })",
@@ -2491,17 +2503,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 66,
-        "endLine": 83,
-        "text": "async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    });\n    if (error) throw new Error(`Ort speichern fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n    return parsed;\n  }"
+        "line": 90,
+        "endLine": 123,
+        "text": "async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldPlace({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId ?? null,\n        parentPlaceId: input.parentPlaceId ?? null,\n        kind: input.kind,\n        name: input.name,\n        description: input.description ?? null,\n        status: input.status ?? 'draft',\n        seedKey: input.seedKey ?? null,\n        sortOrder: input.sortOrder ?? 0,\n      });\n      const parsed = parseWorldPlaceVm(data);\n      if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    });\n    if (error) throw new Error(`Ort speichern fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n    return parsed;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "create_world_node_with_maps",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 99,
-      "endLine": 107,
+      "line": 154,
+      "endLine": 162,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    })",
       "chain": "supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    })",
@@ -2511,17 +2523,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 89,
-        "endLine": 113,
-        "text": "async createNodeWithMaps(input: {\n    readonly worldProfileId: string;\n    readonly kind: WorldNodeKind;\n    readonly name: string;\n    readonly idempotencyKey: string;\n    readonly subtype?: WorldNodeSubtype | null;\n    readonly parentPlaceId?: string | null;\n    readonly description?: string | null;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    });\n    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') {\n      throw new Error('Weltknoten anlegen: ungültige Antwort');\n    }\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 129,
+        "endLine": 168,
+        "text": "async createNodeWithMaps(input: {\n    readonly worldProfileId: string;\n    readonly kind: WorldNodeKind;\n    readonly name: string;\n    readonly idempotencyKey: string;\n    readonly subtype?: WorldNodeSubtype | null;\n    readonly parentPlaceId?: string | null;\n    readonly description?: string | null;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await createHostWorldNodeWithMaps({\n        worldProfileId: input.worldProfileId.trim(),\n        kind: input.kind,\n        name: input.name,\n        idempotencyKey: input.idempotencyKey.trim(),\n        subtype: input.subtype ?? null,\n        parentPlaceId: input.parentPlaceId ?? null,\n        description: input.description ?? null,\n      });\n      if (!data || typeof data !== 'object') {\n        throw new Error('Weltknoten anlegen: ungültige Antwort');\n      }\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    });\n    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') {\n      throw new Error('Weltknoten anlegen: ungültige Antwort');\n    }\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "preview_world_node_consequences",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 121,
-      "endLine": 124,
+      "line": 184,
+      "endLine": 187,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    })",
       "chain": "supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    })",
@@ -2531,17 +2543,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 116,
-        "endLine": 128,
-        "text": "async previewNodeConsequences(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    });\n    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 171,
+        "endLine": 191,
+        "text": "async previewNodeConsequences(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await previewHostWorldNodeConsequences({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n      });\n      if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    });\n    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "rename_world_node",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 136,
-      "endLine": 140,
+      "line": 209,
+      "endLine": 213,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    })",
       "chain": "supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    })",
@@ -2551,17 +2563,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 130,
-        "endLine": 145,
-        "text": "async renameNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly name: string;\n  }): Promise<WorldPlaceVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    });\n    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n    return parsed;\n  }"
+        "line": 193,
+        "endLine": 218,
+        "text": "async renameNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly name: string;\n  }): Promise<WorldPlaceVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await renameHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        name: input.name,\n      });\n      const parsed = parseWorldPlaceVm(data);\n      if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    });\n    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n    return parsed;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "reparent_world_node",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 154,
-      "endLine": 159,
+      "line": 237,
+      "endLine": 242,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    })",
       "chain": "supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    })",
@@ -2571,17 +2583,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 147,
-        "endLine": 163,
-        "text": "async reparentNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly newParentPlaceId: string | null;\n    readonly confirmRelocate: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    });\n    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 220,
+        "endLine": 246,
+        "text": "async reparentNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly newParentPlaceId: string | null;\n    readonly confirmRelocate: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await reparentHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        newParentPlaceId: input.newParentPlaceId,\n        confirmRelocate: input.confirmRelocate,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    });\n    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "duplicate_world_node",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 171,
-      "endLine": 175,
+      "line": 263,
+      "endLine": 267,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    })",
       "chain": "supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    })",
@@ -2591,17 +2603,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 165,
-        "endLine": 179,
-        "text": "async duplicateNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly deep?: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    });\n    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 248,
+        "endLine": 271,
+        "text": "async duplicateNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly deep?: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await duplicateHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        deep: input.deep === true,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    });\n    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "archive_world_node_subtree",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 187,
-      "endLine": 191,
+      "line": 288,
+      "endLine": 292,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    })",
       "chain": "supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    })",
@@ -2611,17 +2623,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 181,
-        "endLine": 195,
-        "text": "async archiveNodeSubtree(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 273,
+        "endLine": 296,
+        "text": "async archiveNodeSubtree(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await archiveHostWorldNodeSubtree({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        confirm: input.confirm,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "delete_world_node",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 203,
-      "endLine": 207,
+      "line": 313,
+      "endLine": 317,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    })",
       "chain": "supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    })",
@@ -2631,17 +2643,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 197,
-        "endLine": 211,
-        "text": "async deleteNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+        "line": 298,
+        "endLine": 321,
+        "text": "async deleteNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await deleteHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        confirm: input.confirm,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "upsert_world_place_map_link",
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 218,
-      "endLine": 225,
+      "line": 341,
+      "endLine": 348,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    })",
       "chain": "supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    })",
@@ -2651,9 +2663,9 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "line": 213,
-        "endLine": 230,
-        "text": "async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {\n    await assertSupabaseJwtSession();\n    if (!isWorldPlaceMapUsage(input.usage)) {\n      throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);\n    }\n    const { data, error } = await supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    });\n    if (error) throw new Error(`Kartenverknüpfung fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceMapLinkVm(data);\n    if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n    return parsed;\n  }"
+        "line": 323,
+        "endLine": 353,
+        "text": "async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {\n    if (!isWorldPlaceMapUsage(input.usage)) {\n      throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);\n    }\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldPlaceMapLink({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        mapId: input.mapId.trim(),\n        usage: input.usage,\n        featureId: input.featureId ?? null,\n        anchor: input.anchor ?? {},\n      });\n      const parsed = parseWorldPlaceMapLinkVm(data);\n      if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    });\n    if (error) throw new Error(`Kartenverknüpfung fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceMapLinkVm(data);\n    if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n    return parsed;\n  }"
       }
     },
     {
@@ -2836,48 +2848,64 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 5,
-      "endLine": 8,
+      "line": 7,
+      "endLine": 10,
       "module": "../../lib/authenticatedUser",
       "resolvedPath": "src/lib/authenticatedUser.ts",
       "expression": "import {\n  assertSupabaseJwtSession,\n  getAuthenticatedUserId,\n} from '../../lib/authenticatedUser';"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 9,
-      "endLine": 9,
+      "line": 11,
+      "endLine": 11,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 10,
-      "endLine": 18,
+      "line": 12,
+      "endLine": 20,
       "module": "../../domains/world/atlas",
       "resolvedPath": "src/domains/world/atlas/index.ts",
       "expression": "import {\n  parseWorldAtlasMapList,\n  parseWorldAtlasMapVm,\n  type WorldAtlasFeatureCollection,\n  type WorldAtlasMapKind,\n  type WorldAtlasMapSummary,\n  type WorldAtlasMapVm,\n  type WorldAtlasBounds,\n} from '../../domains/world/atlas';"
     },
     {
+      "path": "src/infrastructure/world/world-atlas-service.ts",
+      "line": 21,
+      "endLine": 27,
+      "module": "../host/host-world-http",
+      "resolvedPath": "src/infrastructure/host/host-world-http.ts",
+      "expression": "import {\n  ensureHostWorldAtlasRoot,\n  fetchHostWorldAtlasMap,\n  isHostLibraryEnabled,\n  listHostWorldAtlasMaps,\n  upsertHostWorldAtlasMap,\n} from '../host/host-world-http';"
+    },
+    {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 7,
+      "endLine": 7,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 6,
-      "endLine": 10,
+      "line": 8,
+      "endLine": 12,
       "module": "../../domains/world/map",
       "resolvedPath": "src/domains/world/map/index.ts",
       "expression": "import {\n  parseWorldMapVm,\n  type WorldMapData,\n  type WorldMapVm,\n} from '../../domains/world/map';"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 28,
-      "endLine": 28,
+      "line": 13,
+      "endLine": 17,
+      "module": "../host/host-world-http",
+      "resolvedPath": "src/infrastructure/host/host-world-http.ts",
+      "expression": "import {\n  fetchHostWorldMap,\n  isHostLibraryEnabled,\n  saveHostWorldMap,\n} from '../host/host-world-http';"
+    },
+    {
+      "path": "src/infrastructure/world/world-map-service.ts",
+      "line": 35,
+      "endLine": 35,
       "module": "../media/optimizer",
       "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
       "expression": "import('../media/optimizer')",
@@ -2885,35 +2913,43 @@
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 7,
+      "endLine": 7,
       "module": "../../lib/authenticatedUser",
       "resolvedPath": "src/lib/authenticatedUser.ts",
       "expression": "import { assertSupabaseJwtSession } from '../../lib/authenticatedUser';"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 6,
-      "endLine": 6,
+      "line": 8,
+      "endLine": 8,
       "module": "../../lib/supabase",
       "resolvedPath": "src/lib/supabase.ts",
       "expression": "import { supabase } from '../../lib/supabase';"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 7,
-      "endLine": 17,
+      "line": 9,
+      "endLine": 19,
       "module": "../../domains/world/places",
       "resolvedPath": "src/domains/world/places/index.ts",
       "expression": "import {\n  isWorldPlaceMapUsage,\n  parseWorldPlaceList,\n  parseWorldPlaceMapLinkList,\n  parseWorldPlaceMapLinkVm,\n  parseWorldPlaceVm,\n  type UpsertWorldPlaceInput,\n  type WorldPlaceMapLinkVm,\n  type WorldPlaceMapUsage,\n  type WorldPlaceVm,\n} from '../../domains/world/places';"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 18,
-      "endLine": 18,
+      "line": 20,
+      "endLine": 20,
       "module": "../../domains/world/hierarchy",
       "resolvedPath": "src/domains/world/hierarchy/index.ts",
       "expression": "import type { WorldNodeKind, WorldNodeSubtype } from '../../domains/world/hierarchy';"
+    },
+    {
+      "path": "src/infrastructure/world/world-place-service.ts",
+      "line": 21,
+      "endLine": 34,
+      "module": "../host/host-world-http",
+      "resolvedPath": "src/infrastructure/host/host-world-http.ts",
+      "expression": "import {\n  archiveHostWorldNodeSubtree,\n  createHostWorldNodeWithMaps,\n  deleteHostWorldNode,\n  duplicateHostWorldNode,\n  isHostLibraryEnabled,\n  listHostWorldPlaceMapLinks,\n  listHostWorldPlaces,\n  previewHostWorldNodeConsequences,\n  renameHostWorldNode,\n  reparentHostWorldNode,\n  upsertHostWorldPlace,\n  upsertHostWorldPlaceMapLink,\n} from '../host/host-world-http';"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
@@ -3115,50 +3151,50 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 23,
-      "endLine": 36,
+      "line": 32,
+      "endLine": 45,
       "text": "export type UpsertWorldAtlasMapInput = {\n  readonly worldProfileId: string;\n  readonly mapId?: string | null;\n  readonly parentMapId?: string | null;\n  readonly kind: WorldAtlasMapKind;\n  readonly title: string;\n  readonly sortOrder?: number;\n  readonly bounds: WorldAtlasBounds;\n  readonly layers: WorldAtlasFeatureCollection;\n  readonly basemapStoragePath?: string | null;\n  readonly azgaarMapStoragePath?: string | null;\n  readonly generatorMeta?: Readonly<Record<string, unknown>>;\n  readonly expectedRevision?: number | null;\n};"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 141,
-      "endLine": 141,
+      "line": 189,
+      "endLine": 189,
       "text": "export const worldAtlasService = new WorldAtlasService();"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 15,
-      "endLine": 18,
+      "line": 22,
+      "endLine": 25,
       "text": "export type UploadPinImageOptions = {\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 21,
-      "endLine": 69,
+      "line": 28,
+      "endLine": 76,
       "text": "export async function prepareWorldMapPinFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  if (file.size > MAP_PIN_MAX_BYTES) {\n    throw new Error('Bild ist zu groß. Maximum 5 MB');\n  }\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'map-pin',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'pin';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Pin-Bild-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Pin-Bild-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 141,
-      "endLine": 141,
+      "line": 165,
+      "endLine": 165,
       "text": "export const worldMapService = new WorldMapService();"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 19,
-      "endLine": 22,
+      "line": 35,
+      "endLine": 38,
       "text": "export type ListWorldPlacesOptions = {\n  readonly playerView?: boolean;\n  readonly sagaPublicId?: string | null;\n};"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 24,
-      "endLine": 31,
+      "line": 40,
+      "endLine": 47,
       "text": "export type LinkWorldPlaceMapInput = {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly mapId: string;\n  readonly usage: WorldPlaceMapUsage;\n  readonly featureId?: string | null;\n  readonly anchor?: Readonly<Record<string, unknown>>;\n};"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 233,
-      "endLine": 233,
+      "line": 356,
+      "endLine": 356,
       "text": "export const worldPlaceService = new WorldPlaceService();"
     },
     {
@@ -3339,157 +3375,157 @@
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 39,
-      "endLine": 53,
+      "line": 48,
+      "endLine": 66,
       "name": "listMaps",
-      "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
+      "text": "async listMaps(\n    worldProfileId: string,\n    options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n  ): Promise<WorldAtlasMapSummary[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldAtlasMaps(id, options);\n      return parseWorldAtlasMapList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_atlas_maps', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Liste fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 55,
-      "endLine": 64,
-      "name": "ensureRoot",
-      "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    });\n    if (error) throw new Error(`Atlas-Root fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
-    },
-    {
-      "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 66,
+      "line": 68,
       "endLine": 81,
-      "name": "getMap",
-      "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    await assertSupabaseJwtSession();\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    const { data, error } = await supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);\n    return parseWorldAtlasMapVm(data);\n  }"
+      "name": "ensureRoot",
+      "text": "async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await ensureHostWorldAtlasRoot(id);\n      return parseWorldAtlasMapList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('ensure_world_atlas_root', {\n      p_world_profile_id: id,\n    });\n    if (error) throw new Error(`Atlas-Root fehlgeschlagen: ${error.message}`);\n    return parseWorldAtlasMapList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
       "line": 83,
-      "endLine": 108,
+      "endLine": 102,
+      "name": "getMap",
+      "text": "async getMap(\n    mapId: string,\n    playerView = false,\n    sagaPublicId?: string | null,\n  ): Promise<WorldAtlasMapVm> {\n    const id = mapId.trim();\n    if (!id) throw new Error('Karten-ID fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);\n      return parseWorldAtlasMapVm(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('get_world_atlas_map', {\n      p_map_id: id,\n      p_player_view: playerView,\n      p_saga_public_id: sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Atlas-Karte konnte nicht geladen werden: ${error.message}`);\n    return parseWorldAtlasMapVm(data);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/world-atlas-service.ts",
+      "line": 104,
+      "endLine": 146,
       "name": "upsertMap",
-      "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    });\n    if (error) {\n      if (error.code === '40001' || /revision conflict/i.test(error.message)) {\n        throw new Error(\n          'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n        );\n      }\n      throw new Error(`Atlas speichern fehlgeschlagen: ${error.message}`);\n    }\n    return parseWorldAtlasMapVm(data);\n  }"
+      "text": "async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldAtlasMap({\n        worldProfileId: input.worldProfileId.trim(),\n        mapId: input.mapId ?? null,\n        parentMapId: input.parentMapId ?? null,\n        kind: input.kind,\n        title: input.title,\n        sortOrder: input.sortOrder ?? 0,\n        bounds: input.bounds,\n        layers: input.layers,\n        basemapStoragePath: input.basemapStoragePath ?? null,\n        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,\n        generatorMeta: input.generatorMeta ?? {},\n        expectedRevision: input.expectedRevision ?? null,\n      });\n      return parseWorldAtlasMapVm(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_atlas_map', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_map_id: input.mapId ?? null,\n      p_parent_map_id: input.parentMapId ?? null,\n      p_kind: input.kind,\n      p_title: input.title,\n      p_sort_order: input.sortOrder ?? 0,\n      p_bounds: input.bounds,\n      p_layers: input.layers,\n      p_basemap_storage_path: input.basemapStoragePath ?? null,\n      p_azgaar_map_storage_path: input.azgaarMapStoragePath ?? null,\n      p_generator_meta: input.generatorMeta ?? {},\n      p_expected_revision: input.expectedRevision ?? null,\n    });\n    if (error) {\n      if (error.code === '40001' || /revision conflict/i.test(error.message)) {\n        throw new Error(\n          'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n        );\n      }\n      throw new Error(`Atlas speichern fehlgeschlagen: ${error.message}`);\n    }\n    return parseWorldAtlasMapVm(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 111,
-      "endLine": 125,
+      "line": 149,
+      "endLine": 168,
       "name": "uploadAzgaarMapFile",
-      "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
+      "text": "async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const userId = await getAuthenticatedUserId();\n    if (file.size > AZGAAR_MAX_BYTES) {\n      throw new Error('Azgaar-Datei ist zu groß (max. 40 MB).');\n    }\n    const safeName = file.name.replace(/[^\\w.\\-]+/g, '_').slice(0, 80) || 'world.map';\n    const path = `${userId}/${worldProfileId.trim()}/azgaar/${Date.now()}-${safeName}`;\n    const { error } = await supabase.storage.from(ATLAS_BUCKET).upload(path, file, {\n      upsert: false,\n      contentType: file.type || 'application/octet-stream',\n    });\n    if (error) throw new Error(`Azgaar-Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-atlas-service.ts",
-      "line": 127,
-      "endLine": 138,
+      "line": 170,
+      "endLine": 186,
       "name": "createSignedUrl",
-      "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    await assertSupabaseJwtSession();\n    const path = storagePath.trim();\n    if (!path) throw new Error('Storage-Pfad fehlt');\n    const { data, error } = await supabase.storage\n      .from(ATLAS_BUCKET)\n      .createSignedUrl(path, expiresSec);\n    if (error || !data?.signedUrl) {\n      throw new Error(error?.message || 'Download-URL fehlgeschlagen.');\n    }\n    return data.signedUrl;\n  }"
+      "text": "async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Atlas-Download-URLs über Host-Speicher folgen in einem späteren Cutover.',\n      );\n    }\n    await assertSupabaseJwtSession();\n    const path = storagePath.trim();\n    if (!path) throw new Error('Storage-Pfad fehlt');\n    const { data, error } = await supabase.storage\n      .from(ATLAS_BUCKET)\n      .createSignedUrl(path, expiresSec);\n    if (error || !data?.signedUrl) {\n      throw new Error(error?.message || 'Download-URL fehlgeschlagen.');\n    }\n    return data.signedUrl;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 21,
-      "endLine": 69,
+      "line": 28,
+      "endLine": 76,
       "name": "prepareWorldMapPinFile",
       "text": "export async function prepareWorldMapPinFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  if (file.size > MAP_PIN_MAX_BYTES) {\n    throw new Error('Bild ist zu groß. Maximum 5 MB');\n  }\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'map-pin',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    if (!MAP_PIN_ALLOWED_MIME.has(file.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Pin-Bild-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'pin';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Pin-Bild-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Pin-Bild-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 37,
-      "endLine": 39,
+      "line": 44,
+      "endLine": 46,
       "name": "callback",
       "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 72,
-      "endLine": 83,
+      "line": 79,
+      "endLine": 96,
       "name": "getMap",
-      "text": "async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    });\n    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Kartenantwort');\n    return vm;\n  }"
+      "text": "async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostWorldMap(id, playerView);\n      const vm = parseWorldMapVm(data);\n      if (!vm) throw new Error('Ungültige Kartenantwort');\n      return vm;\n    }\n    const { data, error } = await supabase.rpc('get_world_map', {\n      p_world_profile_id: id,\n      p_player_view: playerView,\n    });\n    if (error) throw new Error(`Karte konnte nicht geladen werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Kartenantwort');\n    return vm;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 85,
-      "endLine": 101,
+      "line": 98,
+      "endLine": 120,
       "name": "saveMap",
-      "text": "async saveMap(\n    worldProfileId: string,\n    expectedRevision: number,\n    mapData: WorldMapData,\n  ): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    });\n    if (error) throw new Error(`Karte konnte nicht gespeichert werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Speicherantwort');\n    return vm;\n  }"
+      "text": "async saveMap(\n    worldProfileId: string,\n    expectedRevision: number,\n    mapData: WorldMapData,\n  ): Promise<WorldMapVm> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await saveHostWorldMap(id, expectedRevision, mapData);\n      const vm = parseWorldMapVm(data);\n      if (!vm) throw new Error('Ungültige Speicherantwort');\n      return vm;\n    }\n    const { data, error } = await supabase.rpc('save_world_map', {\n      p_world_profile_id: id,\n      p_expected_revision: expectedRevision,\n      p_map_data: mapData,\n    });\n    if (error) throw new Error(`Karte konnte nicht gespeichert werden: ${error.message}`);\n    const vm = parseWorldMapVm(data);\n    if (!vm) throw new Error('Ungültige Speicherantwort');\n    return vm;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-map-service.ts",
-      "line": 107,
-      "endLine": 138,
+      "line": 126,
+      "endLine": 162,
       "name": "uploadPinImage",
-      "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
-    },
-    {
-      "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 34,
-      "endLine": 48,
-      "name": "listPlaces",
-      "text": "async listPlaces(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceVm[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);\n    return parseWorldPlaceList(data);\n  }"
+      "text": "async uploadPinImage(\n    worldProfileId: string,\n    file: File,\n    options?: UploadPinImageOptions,\n  ): Promise<string> {\n    if (isHostLibraryEnabled()) {\n      throw new Error(\n        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',\n      );\n    }\n    const {\n      data: { user },\n      error: authError,\n    } = await supabase.auth.getUser();\n    if (authError || !user) throw new Error('Anmeldung erforderlich');\n\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareWorldMapPinFile(file, options?.signal);\n\n    if (prepared.size > MAP_PIN_MAX_BYTES) {\n      throw new Error('Bild ist zu groß. Maximum 5 MB');\n    }\n    if (prepared.type && !MAP_PIN_ALLOWED_MIME.has(prepared.type)) {\n      throw new Error('Nur PNG, JPEG oder WebP erlaubt.');\n    }\n\n    const ext =\n      prepared.type === 'image/png' ? 'png' : prepared.type === 'image/webp' ? 'webp' : 'jpg';\n    const path = `${user.id}/world/${worldProfileId}/pins/${Date.now().toString(36)}.${ext}`;\n    const { error } = await supabase.storage.from('world-map-pins').upload(path, prepared, {\n      upsert: false,\n      contentType: prepared.type || 'image/jpeg',\n    });\n    if (error) throw new Error(`Pin-Bild Upload fehlgeschlagen: ${error.message}`);\n    return path;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
       "line": 50,
-      "endLine": 64,
+      "endLine": 68,
+      "name": "listPlaces",
+      "text": "async listPlaces(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceVm[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldPlaces(id, options);\n      return parseWorldPlaceList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_places', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Orte konnten nicht geladen werden: ${error.message}`);\n    return parseWorldPlaceList(data);\n  }"
+    },
+    {
+      "path": "src/infrastructure/world/world-place-service.ts",
+      "line": 70,
+      "endLine": 88,
       "name": "listMapLinks",
-      "text": "async listMapLinks(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceMapLinkVm[]> {\n    await assertSupabaseJwtSession();\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    const { data, error } = await supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Kartenverknüpfungen fehlgeschlagen: ${error.message}`);\n    return parseWorldPlaceMapLinkList(data);\n  }"
+      "text": "async listMapLinks(\n    worldProfileId: string,\n    options: ListWorldPlacesOptions = {},\n  ): Promise<WorldPlaceMapLinkVm[]> {\n    const id = worldProfileId.trim();\n    if (!id) throw new Error('Weltprofil fehlt');\n    if (isHostLibraryEnabled()) {\n      const data = await listHostWorldPlaceMapLinks(id, options);\n      return parseWorldPlaceMapLinkList(data);\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('list_world_place_map_links', {\n      p_world_profile_id: id,\n      p_player_view: options.playerView === true,\n      p_saga_public_id: options.sagaPublicId?.trim() || null,\n    });\n    if (error) throw new Error(`Kartenverknüpfungen fehlgeschlagen: ${error.message}`);\n    return parseWorldPlaceMapLinkList(data);\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 66,
-      "endLine": 83,
+      "line": 90,
+      "endLine": 123,
       "name": "upsertPlace",
-      "text": "async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    });\n    if (error) throw new Error(`Ort speichern fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n    return parsed;\n  }"
+      "text": "async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldPlace({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId ?? null,\n        parentPlaceId: input.parentPlaceId ?? null,\n        kind: input.kind,\n        name: input.name,\n        description: input.description ?? null,\n        status: input.status ?? 'draft',\n        seedKey: input.seedKey ?? null,\n        sortOrder: input.sortOrder ?? 0,\n      });\n      const parsed = parseWorldPlaceVm(data);\n      if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_kind: input.kind,\n      p_name: input.name,\n      p_description: input.description ?? null,\n      p_status: input.status ?? 'draft',\n      p_seed_key: input.seedKey ?? null,\n      p_sort_order: input.sortOrder ?? 0,\n    });\n    if (error) throw new Error(`Ort speichern fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Ort speichern: ungültige Antwort');\n    return parsed;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 89,
-      "endLine": 113,
+      "line": 129,
+      "endLine": 168,
       "name": "createNodeWithMaps",
-      "text": "async createNodeWithMaps(input: {\n    readonly worldProfileId: string;\n    readonly kind: WorldNodeKind;\n    readonly name: string;\n    readonly idempotencyKey: string;\n    readonly subtype?: WorldNodeSubtype | null;\n    readonly parentPlaceId?: string | null;\n    readonly description?: string | null;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    });\n    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') {\n      throw new Error('Weltknoten anlegen: ungültige Antwort');\n    }\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async createNodeWithMaps(input: {\n    readonly worldProfileId: string;\n    readonly kind: WorldNodeKind;\n    readonly name: string;\n    readonly idempotencyKey: string;\n    readonly subtype?: WorldNodeSubtype | null;\n    readonly parentPlaceId?: string | null;\n    readonly description?: string | null;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await createHostWorldNodeWithMaps({\n        worldProfileId: input.worldProfileId.trim(),\n        kind: input.kind,\n        name: input.name,\n        idempotencyKey: input.idempotencyKey.trim(),\n        subtype: input.subtype ?? null,\n        parentPlaceId: input.parentPlaceId ?? null,\n        description: input.description ?? null,\n      });\n      if (!data || typeof data !== 'object') {\n        throw new Error('Weltknoten anlegen: ungültige Antwort');\n      }\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('create_world_node_with_maps', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_kind: input.kind,\n      p_name: input.name,\n      p_idempotency_key: input.idempotencyKey.trim(),\n      p_subtype: input.subtype ?? null,\n      p_parent_place_id: input.parentPlaceId ?? null,\n      p_description: input.description ?? null,\n    });\n    if (error) throw new Error(`Weltknoten anlegen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') {\n      throw new Error('Weltknoten anlegen: ungültige Antwort');\n    }\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 116,
-      "endLine": 128,
+      "line": 171,
+      "endLine": 191,
       "name": "previewNodeConsequences",
-      "text": "async previewNodeConsequences(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    });\n    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async previewNodeConsequences(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await previewHostWorldNodeConsequences({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n      });\n      if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('preview_world_node_consequences', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n    });\n    if (error) throw new Error(`Folgenabschätzung fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 130,
-      "endLine": 145,
+      "line": 193,
+      "endLine": 218,
       "name": "renameNode",
-      "text": "async renameNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly name: string;\n  }): Promise<WorldPlaceVm> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    });\n    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n    return parsed;\n  }"
+      "text": "async renameNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly name: string;\n  }): Promise<WorldPlaceVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await renameHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        name: input.name,\n      });\n      const parsed = parseWorldPlaceVm(data);\n      if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('rename_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_name: input.name,\n    });\n    if (error) throw new Error(`Umbenennen fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceVm(data);\n    if (!parsed) throw new Error('Umbenennen: ungültige Antwort');\n    return parsed;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 147,
-      "endLine": 163,
+      "line": 220,
+      "endLine": 246,
       "name": "reparentNode",
-      "text": "async reparentNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly newParentPlaceId: string | null;\n    readonly confirmRelocate: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    });\n    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async reparentNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly newParentPlaceId: string | null;\n    readonly confirmRelocate: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await reparentHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        newParentPlaceId: input.newParentPlaceId,\n        confirmRelocate: input.confirmRelocate,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('reparent_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_new_parent_place_id: input.newParentPlaceId,\n      p_confirm_relocate: input.confirmRelocate,\n    });\n    if (error) throw new Error(`Verschieben fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 165,
-      "endLine": 179,
+      "line": 248,
+      "endLine": 271,
       "name": "duplicateNode",
-      "text": "async duplicateNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly deep?: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    });\n    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async duplicateNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly deep?: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await duplicateHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        deep: input.deep === true,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('duplicate_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_deep: input.deep === true,\n    });\n    if (error) throw new Error(`Duplizieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 181,
-      "endLine": 195,
+      "line": 273,
+      "endLine": 296,
       "name": "archiveNodeSubtree",
-      "text": "async archiveNodeSubtree(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async archiveNodeSubtree(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await archiveHostWorldNodeSubtree({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        confirm: input.confirm,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('archive_world_node_subtree', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Archivieren fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 197,
-      "endLine": 211,
+      "line": 298,
+      "endLine": 321,
       "name": "deleteNode",
-      "text": "async deleteNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
+      "text": "async deleteNode(input: {\n    readonly worldProfileId: string;\n    readonly placeId: string;\n    readonly confirm: boolean;\n  }): Promise<Readonly<Record<string, unknown>>> {\n    if (isHostLibraryEnabled()) {\n      const data = await deleteHostWorldNode({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        confirm: input.confirm,\n      });\n      if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n      return data as Readonly<Record<string, unknown>>;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('delete_world_node', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_confirm: input.confirm,\n    });\n    if (error) throw new Error(`Löschen fehlgeschlagen: ${error.message}`);\n    if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');\n    return data as Readonly<Record<string, unknown>>;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-place-service.ts",
-      "line": 213,
-      "endLine": 230,
+      "line": 323,
+      "endLine": 353,
       "name": "linkMap",
-      "text": "async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {\n    await assertSupabaseJwtSession();\n    if (!isWorldPlaceMapUsage(input.usage)) {\n      throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);\n    }\n    const { data, error } = await supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    });\n    if (error) throw new Error(`Kartenverknüpfung fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceMapLinkVm(data);\n    if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n    return parsed;\n  }"
+      "text": "async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {\n    if (!isWorldPlaceMapUsage(input.usage)) {\n      throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);\n    }\n    if (isHostLibraryEnabled()) {\n      const data = await upsertHostWorldPlaceMapLink({\n        worldProfileId: input.worldProfileId.trim(),\n        placeId: input.placeId.trim(),\n        mapId: input.mapId.trim(),\n        usage: input.usage,\n        featureId: input.featureId ?? null,\n        anchor: input.anchor ?? {},\n      });\n      const parsed = parseWorldPlaceMapLinkVm(data);\n      if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n      return parsed;\n    }\n    await assertSupabaseJwtSession();\n    const { data, error } = await supabase.rpc('upsert_world_place_map_link', {\n      p_world_profile_id: input.worldProfileId.trim(),\n      p_place_id: input.placeId.trim(),\n      p_map_id: input.mapId.trim(),\n      p_usage: input.usage,\n      p_feature_id: input.featureId ?? null,\n      p_anchor: input.anchor ?? {},\n    });\n    if (error) throw new Error(`Kartenverknüpfung fehlgeschlagen: ${error.message}`);\n    const parsed = parseWorldPlaceMapLinkVm(data);\n    if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');\n    return parsed;\n  }"
     },
     {
       "path": "src/infrastructure/world/world-profile-service.ts",
