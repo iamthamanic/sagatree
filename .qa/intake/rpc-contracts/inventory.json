@@ -14622,7 +14622,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
+            "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -14729,8 +14729,8 @@
           "rpc": "create_project_session",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 822,
-          "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+          "line": 848,
+          "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
           "requestExpression": "{\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -14778,7 +14778,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 40,
-              "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
             },
             {
@@ -14786,7 +14786,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 122,
-              "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isSessionStatus(value: unknown): value is SessionDto['status'] {\n  return (\n    value === 'scheduled'\n    || value === 'waiting'\n    || value === 'active'\n    || value === 'paused'\n    || value === 'completed'\n    || value === 'cancelled'\n  );\n}"
             },
             {
@@ -14794,7 +14794,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 133,
-              "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isSessionDto(value: unknown): value is SessionDto {\n  if (!isRecord(value)) return false;\n  const durationOk =\n    value.duration_minutes === undefined\n    || typeof value.duration_minutes === 'number'\n    || value.duration_minutes === null;\n  const publicIdOk =\n    typeof value.public_id === 'string'\n    || value.public_id === undefined\n    || value.public_id === null;\n  const lookOk =\n    value.look_profile_id === undefined\n    || value.look_profile_id === null\n    || typeof value.look_profile_id === 'string';\n  const notesOk =\n    value.notes === undefined\n    || typeof value.notes === 'string'\n    || value.notes === null;\n  return (\n    typeof value.id === 'string'\n    && publicIdOk\n    && typeof value.project_id === 'string'\n    && typeof value.session_number === 'number'\n    && (typeof value.name === 'string' || value.name === null)\n    && notesOk\n    && isSessionStatus(value.status)\n    && (typeof value.started_at === 'string' || value.started_at === null)\n    && (typeof value.ended_at === 'string' || value.ended_at === null)\n    && durationOk\n    && lookOk\n    && typeof value.created_at === 'string'\n    && typeof value.updated_at === 'string'\n  );\n}"
             },
             {
@@ -14802,7 +14802,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 168,
-              "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function normalizeSessionDto(value: SessionDto): SessionDto {\n  return {\n    ...value,\n    // #569: notes column not selectable by authenticated — treat missing as null.\n    notes: value.notes ?? null,\n    duration_minutes: value.duration_minutes ?? null,\n  };\n}"
             },
             {
@@ -15903,7 +15903,7 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
+          "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -24199,7 +24199,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
+            "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -24423,7 +24423,7 @@
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-service.ts",
           "line": 402,
-          "sourceSha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188",
+          "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
           "requestExpression": "{\n      p_slug: slug,\n    }",
           "requestKeys": [
             "p_slug"
@@ -27116,7 +27116,7 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
+          "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -29015,7 +29015,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -29123,7 +29123,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -29131,7 +29131,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -29139,7 +29139,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 35,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -29147,7 +29147,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 154,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function fetchHostMySagaPermissions(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/permissions`,\n    'Berechtigungen konnten nicht geladen werden',\n  );\n}"
             },
             {
@@ -30073,7 +30073,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -33175,7 +33175,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -33359,7 +33359,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -33367,7 +33367,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -33375,7 +33375,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 35,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -33383,7 +33383,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 161,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function fetchHostSagaLoreTimeline(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/lore-timeline`,\n    'Lore-Zeitleiste fehlgeschlagen',\n  );\n}"
             },
             {
@@ -34567,7 +34567,7 @@
         },
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -34663,7 +34663,7 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -35101,7 +35101,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -35109,7 +35109,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -35117,7 +35117,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 35,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -35125,7 +35125,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 147,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function fetchHostSagaOverview(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/overview`,\n    'Saga-Übersicht fehlgeschlagen',\n  );\n}"
             },
             {
@@ -36845,7 +36845,7 @@
         },
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -43545,27 +43545,15 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
-          },
-          {
-            "path": "src/lib/authenticatedUser.ts",
-            "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
             "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
-          },
-          {
-            "path": "src/lib/localAdmin.ts",
-            "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
-          },
-          {
-            "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -43690,8 +43678,8 @@
           "rpc": "join_project_by_code",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 61,
-          "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+          "line": 60,
+          "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
           "requestExpression": "{\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    }",
           "requestKeys": [
             "p_code",
@@ -43699,12 +43687,11 @@
           ],
           "callExpression": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
           "enclosingCallable": "joinByCode",
-          "callerContract": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
+          "callerContract": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';",
-            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';",
-            "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -43728,7 +43715,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -43736,7 +43723,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -43744,7 +43731,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 74,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -43752,32 +43739,24 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 123,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
-              "source": "export async function joinHostProjectByCode(\n  code: string,\n  characterId?: string | null,\n): Promise<{ readonly projectId: string }> {\n  return hostMutateJson(\n    '/api/v1/projects/join',\n    'POST',\n    { code, characterId: characterId ?? null },\n    'Beitritt fehlgeschlagen',\n  );\n}"
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function joinHostProjectByCode(\n  code: string,\n  characterId?: string | null,\n): Promise<{ readonly projectId: string; readonly userId: string }> {\n  return hostMutateJson(\n    '/api/v1/projects/join',\n    'POST',\n    { code, characterId: characterId ?? null },\n    'Beitritt fehlgeschlagen',\n  );\n}"
             },
             {
               "name": "UUID_PATTERN",
               "kind": "VariableDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 18,
-              "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+              "line": 17,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
             },
             {
               "name": "requireUuid",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 20,
-              "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+              "line": 19,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
-            },
-            {
-              "name": "getAuthenticatedUserId",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/authenticatedUser.ts",
-              "line": 28,
-              "sourceSha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74",
-              "source": "export async function getAuthenticatedUserId(): Promise<string> {\n  if (isLocalAdminSession()) {\n    const sessionResult = await raceWithTimeoutOrSymbol(\n      supabase.auth.getSession(),\n      AUTH_SESSION_TIMEOUT_MS,\n    );\n    if (!isTimedOut(sessionResult) && sessionResult.data.session?.user) {\n      return sessionResult.data.session.user.id;\n    }\n    return LOCAL_ADMIN_USER_ID;\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.auth.getUser(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Authentication request timed out',\n  );\n  if (error) throw error;\n  if (data.user) return data.user.id;\n  throw new Error('User not authenticated');\n}"
             },
             {
               "name": "EnvLike",
@@ -43802,102 +43781,6 @@
               "line": 40,
               "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
               "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
-            },
-            {
-              "name": "LOCAL_ADMIN_STORAGE_KEY",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 15,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LOCAL_ADMIN_STORAGE_KEY = 'sagatree-local-admin-session'"
-            },
-            {
-              "name": "LEGACY_LOCAL_ADMIN_STORAGE_KEY",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 17,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LEGACY_LOCAL_ADMIN_STORAGE_KEY = 'sagatree-local-admin-session'"
-            },
-            {
-              "name": "LOCAL_ADMIN_USER_ID",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 23,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LOCAL_ADMIN_USER_ID = '00000000-0000-4000-8000-000000000001'"
-            },
-            {
-              "name": "isLocalAdminEnabled",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 31,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "export function isLocalAdminEnabled(): boolean {\n  return import.meta.env.DEV === true;\n}"
-            },
-            {
-              "name": "isLocalAdminSession",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 35,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "export function isLocalAdminSession(): boolean {\n  if (!isLocalAdminEnabled()) return false;\n  if (typeof window === 'undefined') return false;\n  if (window.localStorage.getItem(LOCAL_ADMIN_STORAGE_KEY) === 'true') return true;\n  if (window.localStorage.getItem(LEGACY_LOCAL_ADMIN_STORAGE_KEY) === 'true') {\n    window.localStorage.setItem(LOCAL_ADMIN_STORAGE_KEY, 'true');\n    return true;\n  }\n  return false;\n}"
-            },
-            {
-              "name": "AUTH_SESSION_TIMEOUT_MS",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 7,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "AUTH_SESSION_TIMEOUT_MS = 1_500"
-            },
-            {
-              "name": "SUPABASE_QUERY_TIMEOUT_MS",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 8,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "SUPABASE_QUERY_TIMEOUT_MS = 5_000"
-            },
-            {
-              "name": "TIMED_OUT",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 10,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "TIMED_OUT = Symbol('network-timeout')"
-            },
-            {
-              "name": "TimedOut",
-              "kind": "TypeAliasDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 12,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export type TimedOut = typeof TIMED_OUT;"
-            },
-            {
-              "name": "isTimedOut",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 14,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function isTimedOut<T>(value: T | TimedOut): value is TimedOut {\n  return value === TIMED_OUT;\n}"
-            },
-            {
-              "name": "raceWithTimeoutOrSymbol",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 27,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function raceWithTimeoutOrSymbol<T>(promise: PromiseLike<T>, ms: number): Promise<T | TimedOut> {\n  return Promise.race([\n    Promise.resolve(promise),\n    new Promise<TimedOut>((resolve) => {\n      window.setTimeout(() => resolve(TIMED_OUT), ms);\n    }),\n  ]);\n}"
-            },
-            {
-              "name": "raceWithTimeoutReject",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 36,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function raceWithTimeoutReject<T>(promise: PromiseLike<T>, ms: number, message: string): Promise<T> {\n  return Promise.race([\n    Promise.resolve(promise),\n    new Promise<T>((_, reject) => {\n      window.setTimeout(() => reject(new Error(message)), ms);\n    }),\n  ]);\n}"
             },
             {
               "name": "viteEnv",
@@ -44917,27 +44800,15 @@
         },
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
-        },
-        {
-          "path": "src/lib/authenticatedUser.ts",
-          "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
           "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
-        },
-        {
-          "path": "src/lib/localAdmin.ts",
-          "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
-        },
-        {
-          "path": "src/lib/networkTimeout.ts",
-          "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -48516,7 +48387,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -48639,7 +48510,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -48647,7 +48518,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -48655,7 +48526,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 25,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function qs(params: Record<string, string | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === '') continue;\n    sp.set(key, value);\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -48663,7 +48534,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 35,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -48671,7 +48542,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 168,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function listHostSagaBindings(\n  publicId: string,\n  assetKind?: string | null,\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/bindings${qs({ assetKind })}`,\n    'Bindings fehlgeschlagen',\n  );\n}"
             },
             {
@@ -49561,7 +49432,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -49641,7 +49512,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -49745,7 +49616,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -49753,7 +49624,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -49761,7 +49632,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 35,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -49769,7 +49640,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 178,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function listHostSagaMemberPermissionState(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/members`,\n    'Mitglieder-Berechtigungen fehlgeschlagen',\n  );\n}"
             },
             {
@@ -50627,7 +50498,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -70877,27 +70748,15 @@
           },
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
-          },
-          {
-            "path": "src/lib/authenticatedUser.ts",
-            "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
             "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
-          },
-          {
-            "path": "src/lib/localAdmin.ts",
-            "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
-          },
-          {
-            "path": "src/lib/networkTimeout.ts",
-            "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -71006,8 +70865,8 @@
           "rpc": "set_my_project_character",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 98,
-          "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+          "line": 97,
+          "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
           "requestExpression": "{\n      p_project_id: projectId,\n      p_character_id: characterId,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -71015,12 +70874,11 @@
           ],
           "callExpression": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
           "enclosingCallable": "updateCharacter",
-          "callerContract": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
+          "callerContract": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';",
-            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';",
-            "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
+            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -71036,7 +70894,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -71044,7 +70902,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -71052,7 +70910,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 74,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -71060,32 +70918,24 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 135,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
-              "source": "export async function setHostMyProjectCharacter(\n  projectId: string,\n  characterId?: string | null,\n): Promise<{ readonly memberId: string }> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/my-character`,\n    'POST',\n    { characterId: characterId ?? null },\n    'Charakter konnte nicht aktualisiert werden',\n  );\n}"
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function setHostMyProjectCharacter(\n  projectId: string,\n  characterId?: string | null,\n): Promise<{ readonly memberId: string; readonly userId: string }> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/my-character`,\n    'POST',\n    { characterId: characterId ?? null },\n    'Charakter konnte nicht aktualisiert werden',\n  );\n}"
             },
             {
               "name": "UUID_PATTERN",
               "kind": "VariableDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 18,
-              "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+              "line": 17,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
             },
             {
               "name": "requireUuid",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 20,
-              "sourceSha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9",
+              "line": 19,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
-            },
-            {
-              "name": "getAuthenticatedUserId",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/authenticatedUser.ts",
-              "line": 28,
-              "sourceSha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74",
-              "source": "export async function getAuthenticatedUserId(): Promise<string> {\n  if (isLocalAdminSession()) {\n    const sessionResult = await raceWithTimeoutOrSymbol(\n      supabase.auth.getSession(),\n      AUTH_SESSION_TIMEOUT_MS,\n    );\n    if (!isTimedOut(sessionResult) && sessionResult.data.session?.user) {\n      return sessionResult.data.session.user.id;\n    }\n    return LOCAL_ADMIN_USER_ID;\n  }\n\n  const { data, error } = await raceWithTimeoutReject(\n    supabase.auth.getUser(),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Authentication request timed out',\n  );\n  if (error) throw error;\n  if (data.user) return data.user.id;\n  throw new Error('User not authenticated');\n}"
             },
             {
               "name": "EnvLike",
@@ -71110,102 +70960,6 @@
               "line": 40,
               "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
               "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
-            },
-            {
-              "name": "LOCAL_ADMIN_STORAGE_KEY",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 15,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LOCAL_ADMIN_STORAGE_KEY = 'sagatree-local-admin-session'"
-            },
-            {
-              "name": "LEGACY_LOCAL_ADMIN_STORAGE_KEY",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 17,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LEGACY_LOCAL_ADMIN_STORAGE_KEY = 'sagatree-local-admin-session'"
-            },
-            {
-              "name": "LOCAL_ADMIN_USER_ID",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 23,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "LOCAL_ADMIN_USER_ID = '00000000-0000-4000-8000-000000000001'"
-            },
-            {
-              "name": "isLocalAdminEnabled",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 31,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "export function isLocalAdminEnabled(): boolean {\n  return import.meta.env.DEV === true;\n}"
-            },
-            {
-              "name": "isLocalAdminSession",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/localAdmin.ts",
-              "line": 35,
-              "sourceSha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5",
-              "source": "export function isLocalAdminSession(): boolean {\n  if (!isLocalAdminEnabled()) return false;\n  if (typeof window === 'undefined') return false;\n  if (window.localStorage.getItem(LOCAL_ADMIN_STORAGE_KEY) === 'true') return true;\n  if (window.localStorage.getItem(LEGACY_LOCAL_ADMIN_STORAGE_KEY) === 'true') {\n    window.localStorage.setItem(LOCAL_ADMIN_STORAGE_KEY, 'true');\n    return true;\n  }\n  return false;\n}"
-            },
-            {
-              "name": "AUTH_SESSION_TIMEOUT_MS",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 7,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "AUTH_SESSION_TIMEOUT_MS = 1_500"
-            },
-            {
-              "name": "SUPABASE_QUERY_TIMEOUT_MS",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 8,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "SUPABASE_QUERY_TIMEOUT_MS = 5_000"
-            },
-            {
-              "name": "TIMED_OUT",
-              "kind": "VariableDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 10,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "TIMED_OUT = Symbol('network-timeout')"
-            },
-            {
-              "name": "TimedOut",
-              "kind": "TypeAliasDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 12,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export type TimedOut = typeof TIMED_OUT;"
-            },
-            {
-              "name": "isTimedOut",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 14,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function isTimedOut<T>(value: T | TimedOut): value is TimedOut {\n  return value === TIMED_OUT;\n}"
-            },
-            {
-              "name": "raceWithTimeoutOrSymbol",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 27,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function raceWithTimeoutOrSymbol<T>(promise: PromiseLike<T>, ms: number): Promise<T | TimedOut> {\n  return Promise.race([\n    Promise.resolve(promise),\n    new Promise<TimedOut>((resolve) => {\n      window.setTimeout(() => resolve(TIMED_OUT), ms);\n    }),\n  ]);\n}"
-            },
-            {
-              "name": "raceWithTimeoutReject",
-              "kind": "FunctionDeclaration",
-              "path": "src/lib/networkTimeout.ts",
-              "line": 36,
-              "sourceSha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851",
-              "source": "export function raceWithTimeoutReject<T>(promise: PromiseLike<T>, ms: number, message: string): Promise<T> {\n  return Promise.race([\n    Promise.resolve(promise),\n    new Promise<T>((_, reject) => {\n      window.setTimeout(() => reject(new Error(message)), ms);\n    }),\n  ]);\n}"
             },
             {
               "name": "viteEnv",
@@ -71950,27 +71704,15 @@
         },
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
-        },
-        {
-          "path": "src/lib/authenticatedUser.ts",
-          "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+          "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
           "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
-        },
-        {
-          "path": "src/lib/localAdmin.ts",
-          "sha256": "3a28dec23e85f25ed3e70682bc6e7f8c6b55e81dbbefdd1f6a837f68ac80d6b5"
-        },
-        {
-          "path": "src/lib/networkTimeout.ts",
-          "sha256": "835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -72058,7 +71800,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -72168,7 +71910,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -72176,7 +71918,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -72184,7 +71926,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 74,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -72192,7 +71934,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 185,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function setHostSagaBindingReveal(\n  projectId: string,\n  bindingId: string,\n  reveal: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/bindings/${encodeURIComponent(bindingId)}/reveal`,\n    'POST',\n    { reveal },\n    'Reveal konnte nicht gesetzt werden',\n  );\n}"
             },
             {
@@ -73092,7 +72834,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -73164,7 +72906,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-project-http.ts",
-            "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
           },
           {
             "path": "src/infrastructure/project/saga-permission-service.ts",
@@ -73270,7 +73012,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 12,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -73278,7 +73020,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 17,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -73286,7 +73028,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 74,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
@@ -73294,7 +73036,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-project-http.ts",
               "line": 198,
-              "sourceSha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02",
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
               "source": "export async function setHostSagaMemberBundle(\n  projectId: string,\n  memberId: string,\n  bundleId: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/members/${encodeURIComponent(memberId)}/bundle`,\n    'POST',\n    { bundleId },\n    'Bundle konnte nicht gesetzt werden',\n  );\n}"
             },
             {
@@ -74346,7 +74088,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-project-http.ts",
-          "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
         },
         {
           "path": "src/infrastructure/project/saga-permission-service.ts",

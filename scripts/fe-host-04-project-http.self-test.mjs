@@ -155,6 +155,14 @@ try {
   });
   assert(joinRes.res.status === 200, `join ${joinRes.res.status} ${joinRes.text}`);
   assert(typeof joinRes.json?.projectId === 'string', 'join projectId');
+  assert(typeof joinRes.json?.userId === 'string', 'join userId from host actor');
+  const badChar = await httpJson(baseURL, `/api/v1/projects/${joinRes.json.projectId}/my-character`, {
+    method: 'POST',
+    cookie: strangerCookie,
+    headers: { Origin: baseURL },
+    body: { characterId: 123 },
+  });
+  assert(badChar.res.status === 422, `malformed characterId ${badChar.res.status}`);
 
   const perms = await httpJson(baseURL, '/api/v1/sagas/SA-FEH04/permissions', {
     cookie: strangerCookie,

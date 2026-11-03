@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `d42ffb2f479772d6863de59c75cfc0306b77b3cc7e03b4401acfcfaa0cfb66a9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-project.json](source-contracts/infra-project.json) (SHA-256 `e49c3d9d4b5c1a76cddedf6bc0b57b7bddcb44126d9ae14d606576365172c5c9`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -24,7 +24,7 @@ Storage buckets (0): none.
 
 Edge invokes (0): none.
 
-Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 6.
+Realtime call sites: 0. Direct fetch sites: 0. Explicit auth/helper sites: 4.
 
 ## Complete implementation dependencies
 
@@ -71,7 +71,7 @@ None in the reviewed source.
 
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:32` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:31` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -82,20 +82,10 @@ supabase
       .order('joined_at')
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:31`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/project/project-member-service.ts:50` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:46`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:30`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: join_project_by_code
 
-`src/infrastructure/project/project-member-service.ts:61` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:60` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -105,10 +95,10 @@ supabase.rpc('join_project_by_code', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:46`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:69` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:68` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -119,20 +109,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:46`; complete request/default/result/error logic is in the declarations below and the snapshot.
-### auth-helper: session identity
-
-`src/infrastructure/project/project-member-service.ts:87` — dynamic-expression.
-
-Exact call/query chain:
-```ts
-getAuthenticatedUserId()
-```
-
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:45`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: set_my_project_character
 
-`src/infrastructure/project/project-member-service.ts:98` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:97` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -142,10 +122,10 @@ supabase.rpc('set_my_project_character', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:82`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:106` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:105` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -156,10 +136,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:83`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:82`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:120` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:119` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -170,10 +150,10 @@ supabase
       .eq('user_id', userId)
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:119`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:118`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-member-service.ts:133` — literal-or-constant.
+`src/infrastructure/project/project-member-service.ts:132` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -188,7 +168,7 @@ supabase
       .order('joined_at', { ascending: false })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-member-service.ts:132`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-member-service.ts:131`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
 `src/infrastructure/project/project-service.ts:264` — dynamic-expression.
@@ -365,7 +345,7 @@ supabase
 Enclosing operation: `src/infrastructure/project/project-service.ts:576`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/project/project-service.ts:616` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:642` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -379,7 +359,7 @@ supabase
 Enclosing operation: `src/infrastructure/project/project-service.ts:615`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: project_members
 
-`src/infrastructure/project/project-service.ts:626` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:652` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -392,7 +372,7 @@ supabase
 Enclosing operation: `src/infrastructure/project/project-service.ts:615`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/project/project-service.ts:631` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:657` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -406,7 +386,7 @@ supabase
 Enclosing operation: `src/infrastructure/project/project-service.ts:615`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/project/project-service.ts:654` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:680` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -416,10 +396,10 @@ supabase
       .eq('id', id)
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:653`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:679`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/project/project-service.ts:700` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:726` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -431,10 +411,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:696`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:722`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/project/project-service.ts:735` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:761` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -444,20 +424,20 @@ supabase
       .eq('id', id)
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:734`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:760`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### auth-helper: session identity
 
-`src/infrastructure/project/project-service.ts:749` — dynamic-expression.
+`src/infrastructure/project/project-service.ts:775` — dynamic-expression.
 
 Exact call/query chain:
 ```ts
 getAuthenticatedUserId()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:748`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:774`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: projects
 
-`src/infrastructure/project/project-service.ts:757` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:783` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -468,10 +448,10 @@ supabase
       .single()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:756`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:782`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### table: sessions
 
-`src/infrastructure/project/project-service.ts:782` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:808` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -483,10 +463,10 @@ supabase
         .maybeSingle()
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:773`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:799`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: create_project_session
 
-`src/infrastructure/project/project-service.ts:822` — literal-or-constant.
+`src/infrastructure/project/project-service.ts:848` — literal-or-constant.
 
 Exact call/query chain:
 ```ts
@@ -497,7 +477,7 @@ supabase.rpc('create_project_session', {
     })
 ```
 
-Enclosing operation: `src/infrastructure/project/project-service.ts:817`; complete request/default/result/error logic is in the declarations below and the snapshot.
+Enclosing operation: `src/infrastructure/project/project-service.ts:843`; complete request/default/result/error logic is in the declarations below and the snapshot.
 ### rpc: get_saga_overview
 
 `src/infrastructure/project/saga-overview-service.ts:41` — literal-or-constant.
@@ -805,7 +785,7 @@ export const HOST_PROJECT_OPS = [
 export type HostProjectOp = (typeof HOST_PROJECT_OPS)[number];
 ```
 
-### src/infrastructure/project/project-member-service.ts:27
+### src/infrastructure/project/project-member-service.ts:26
 
 ```ts
 export const projectMemberService = {
@@ -831,7 +811,7 @@ export const projectMemberService = {
     if (isHostLibraryEnabled()) {
       const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);
       const projectId = requireUuid(joined.projectId, 'join_project_by_code');
-      const userId = await getAuthenticatedUserId();
+      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');
       return {
         id: projectId,
         project_id: projectId,
@@ -868,7 +848,7 @@ export const projectMemberService = {
     if (isHostLibraryEnabled()) {
       const updated = await setHostMyProjectCharacter(projectId, characterId);
       const memberId = requireUuid(updated.memberId, 'set_my_project_character');
-      const userId = await getAuthenticatedUserId();
+      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');
       return {
         id: memberId,
         project_id: projectId,
@@ -930,7 +910,7 @@ export const projectMemberService = {
 };
 ```
 
-### src/infrastructure/project/project-service.ts:855
+### src/infrastructure/project/project-service.ts:881
 
 ```ts
 export const projectService = new ProjectService();
@@ -1415,6 +1395,32 @@ async (project) => {
 
 ```ts
 async getProjectById(id: string): Promise<ProjectVm> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryProjects();
+      const row = rows.find((item) => item.id === id);
+      if (!row) throw new Error('Project not found');
+      const summary = this.mapHostProjectSummary(row);
+      const now = new Date().toISOString();
+      return {
+        id: summary.id,
+        publicId: summary.publicId,
+        code: summary.code,
+        name: summary.name,
+        description: summary.description,
+        worldId: summary.worldId,
+        worldProfileId: summary.worldProfileId,
+        defaultLookProfileId: null,
+        allowPlayerCharacterLookOverride: false,
+        gmUserId: summary.gmUserId,
+        status: summary.status,
+        createdAt: now,
+        updatedAt: now,
+        members: [],
+        sessions: [],
+        totalSessions: 0,
+        lastSessionDate: null,
+      } satisfies ProjectVm;
+    }
     const { data: project, error: projectError } = await supabase
       .from(this.tableName)
       .select(PROJECT_SAFE_COLUMNS)
@@ -1450,7 +1456,7 @@ async getProjectById(id: string): Promise<ProjectVm> {
   }
 ```
 
-### src/infrastructure/project/project-service.ts:653
+### src/infrastructure/project/project-service.ts:679
 
 ```ts
 async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {
@@ -1467,7 +1473,7 @@ async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm
   }
 ```
 
-### src/infrastructure/project/project-service.ts:696
+### src/infrastructure/project/project-service.ts:722
 
 ```ts
 async updateSessionLookSettings(
@@ -1506,7 +1512,7 @@ async updateSessionLookSettings(
   }
 ```
 
-### src/infrastructure/project/project-service.ts:734
+### src/infrastructure/project/project-service.ts:760
 
 ```ts
 async deleteProject(id: string): Promise<void> {
@@ -1521,7 +1527,7 @@ async deleteProject(id: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/project/project-service.ts:748
+### src/infrastructure/project/project-service.ts:774
 
 ```ts
 async leaveProject(projectId: string): Promise<void> {
@@ -1530,7 +1536,7 @@ async leaveProject(projectId: string): Promise<void> {
   }
 ```
 
-### src/infrastructure/project/project-service.ts:756
+### src/infrastructure/project/project-service.ts:782
 
 ```ts
 async getProjectByPublicId(publicId: string): Promise<ProjectVm> {
@@ -1548,7 +1554,7 @@ async getProjectByPublicId(publicId: string): Promise<ProjectVm> {
   }
 ```
 
-### src/infrastructure/project/project-service.ts:773
+### src/infrastructure/project/project-service.ts:799
 
 ```ts
 async getSessionByPublicIds(
@@ -1593,7 +1599,7 @@ async getSessionByPublicIds(
   }
 ```
 
-### src/infrastructure/project/project-service.ts:817
+### src/infrastructure/project/project-service.ts:843
 
 ```ts
 async createProjectSession(payload: {
@@ -1689,11 +1695,11 @@ async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {
 | `src/domains/saga/permissions/index.ts` | `27ab6076d9afb89c5dc6d0bf11b9a0e3502efade690cd7dba2973e2acad24bba` |
 | `src/domains/saga/permissions/lore-timeline.ts` | `f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b` |
 | `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
-| `src/infrastructure/host/host-project-http.ts` | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `src/infrastructure/host/host-project-http.ts` | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
 | `src/infrastructure/project/host-project-adapter.ts` | `41d162d05407e6f54f118a60a6aaf5f29bb1a61d28758c7d1c0698cdc3c35a70` |
 | `src/infrastructure/project/host-project-ports.contract.ts` | `4e9023655c95ed3e3ade8837af0c14c53c5541571a1591526aae760ffbbd9902` |
-| `src/infrastructure/project/project-member-service.ts` | `ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9` |
-| `src/infrastructure/project/project-service.ts` | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
+| `src/infrastructure/project/project-member-service.ts` | `e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54` |
+| `src/infrastructure/project/project-service.ts` | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
 | `src/infrastructure/project/saga-overview-service.ts` | `fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa` |
 | `src/infrastructure/project/saga-permission-service.ts` | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
 | `src/lib/authenticatedUser.ts` | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |

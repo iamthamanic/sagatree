@@ -124,10 +124,10 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
-| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
-| `hostGetJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 35 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
-| `listHostSagaMemberPermissionState` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 178 | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| `EnvLike` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 12 | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
+| `defaultEnv` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 17 | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
+| `hostGetJson` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 35 | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
+| `listHostSagaMemberPermissionState` | [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | 178 | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
 | `SagaMemberPermissionStateVm` | [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | 40 | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
 | `asString` | [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | 59 | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
 | `parseMemberState` | [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | 88 | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
@@ -160,7 +160,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02` |
+| [src/infrastructure/host/host-project-http.ts](../../../src/infrastructure/host/host-project-http.ts) | `459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681` |
 | [src/infrastructure/project/saga-permission-service.ts](../../../src/infrastructure/project/saga-permission-service.ts) | `cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |

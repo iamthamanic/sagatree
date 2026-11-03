@@ -13,11 +13,11 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "sha256": "ec6e76761f6f4b33f4be6a0bc40a899ff63dc0562ca9bd63efc44e35a71491a9"
+      "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188"
+      "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
     },
     {
       "path": "src/infrastructure/project/saga-overview-service.ts",
@@ -55,7 +55,7 @@
     },
     {
       "path": "src/infrastructure/host/host-project-http.ts",
-      "sha256": "6a738e0334317212f776e95e10fce6a778b929584cf6224396573f403d648e02"
+      "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
     },
     {
       "path": "src/lib/authenticatedUser.ts",
@@ -381,8 +381,8 @@
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 32,
-      "endLine": 33,
+      "line": 31,
+      "endLine": 32,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('project_members')",
       "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at')",
@@ -391,34 +391,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 31,
-        "endLine": 40,
+        "line": 30,
+        "endLine": 39,
         "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  }"
-      }
-    },
-    {
-      "kind": "auth-helper",
-      "name": null,
-      "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 50,
-      "endLine": 50,
-      "resolution": "dynamic-expression",
-      "expression": "getAuthenticatedUserId()",
-      "chain": "getAuthenticatedUserId()",
-      "arguments": [],
-      "enclosingOperation": {
-        "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 46,
-        "endLine": 77,
-        "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "join_project_by_code",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 61,
-      "endLine": 64,
+      "line": 60,
+      "endLine": 63,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
       "chain": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
@@ -428,17 +411,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 46,
-        "endLine": 77,
-        "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+        "line": 45,
+        "endLine": 76,
+        "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
       }
     },
     {
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 69,
-      "endLine": 70,
+      "line": 68,
+      "endLine": 69,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('project_members')",
       "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single()",
@@ -447,34 +430,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 46,
-        "endLine": 77,
-        "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
-      }
-    },
-    {
-      "kind": "auth-helper",
-      "name": null,
-      "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 87,
-      "endLine": 87,
-      "resolution": "dynamic-expression",
-      "expression": "getAuthenticatedUserId()",
-      "chain": "getAuthenticatedUserId()",
-      "arguments": [],
-      "enclosingOperation": {
-        "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 83,
-        "endLine": 114,
-        "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+        "line": 45,
+        "endLine": 76,
+        "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
       }
     },
     {
       "kind": "rpc",
       "name": "set_my_project_character",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 98,
-      "endLine": 101,
+      "line": 97,
+      "endLine": 100,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
       "chain": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
@@ -484,17 +450,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 83,
-        "endLine": 114,
-        "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+        "line": 82,
+        "endLine": 113,
+        "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
       }
     },
     {
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 106,
-      "endLine": 107,
+      "line": 105,
+      "endLine": 106,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('project_members')",
       "chain": "supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single()",
@@ -503,17 +469,17 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 83,
-        "endLine": 114,
-        "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+        "line": 82,
+        "endLine": 113,
+        "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
       }
     },
     {
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 120,
-      "endLine": 121,
+      "line": 119,
+      "endLine": 120,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('project_members')",
       "chain": "supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId)",
@@ -522,8 +488,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 119,
-        "endLine": 127,
+        "line": 118,
+        "endLine": 126,
         "text": "async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  }"
       }
     },
@@ -531,8 +497,8 @@
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 133,
-      "endLine": 134,
+      "line": 132,
+      "endLine": 133,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from('project_members')",
       "chain": "supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false })",
@@ -541,8 +507,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-member-service.ts",
-        "line": 132,
-        "endLine": 145,
+        "line": 131,
+        "endLine": 144,
         "text": "async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  }"
       }
     },
@@ -811,8 +777,8 @@
       "kind": "table",
       "name": "projects",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 616,
-      "endLine": 617,
+      "line": 642,
+      "endLine": 643,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single()",
@@ -822,16 +788,16 @@
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
         "line": 615,
-        "endLine": 648,
-        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
+        "endLine": 674,
+        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryProjects();\n      const row = rows.find((item) => item.id === id);\n      if (!row) throw new Error('Project not found');\n      const summary = this.mapHostProjectSummary(row);\n      const now = new Date().toISOString();\n      return {\n        id: summary.id,\n        publicId: summary.publicId,\n        code: summary.code,\n        name: summary.name,\n        description: summary.description,\n        worldId: summary.worldId,\n        worldProfileId: summary.worldProfileId,\n        defaultLookProfileId: null,\n        allowPlayerCharacterLookOverride: false,\n        gmUserId: summary.gmUserId,\n        status: summary.status,\n        createdAt: now,\n        updatedAt: now,\n        members: [],\n        sessions: [],\n        totalSessions: 0,\n        lastSessionDate: null,\n      } satisfies ProjectVm;\n    }\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
       }
     },
     {
       "kind": "table",
       "name": "project_members",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 626,
-      "endLine": 627,
+      "line": 652,
+      "endLine": 653,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.membersTableName)",
       "chain": "supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id)",
@@ -841,16 +807,16 @@
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
         "line": 615,
-        "endLine": 648,
-        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
+        "endLine": 674,
+        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryProjects();\n      const row = rows.find((item) => item.id === id);\n      if (!row) throw new Error('Project not found');\n      const summary = this.mapHostProjectSummary(row);\n      const now = new Date().toISOString();\n      return {\n        id: summary.id,\n        publicId: summary.publicId,\n        code: summary.code,\n        name: summary.name,\n        description: summary.description,\n        worldId: summary.worldId,\n        worldProfileId: summary.worldProfileId,\n        defaultLookProfileId: null,\n        allowPlayerCharacterLookOverride: false,\n        gmUserId: summary.gmUserId,\n        status: summary.status,\n        createdAt: now,\n        updatedAt: now,\n        members: [],\n        sessions: [],\n        totalSessions: 0,\n        lastSessionDate: null,\n      } satisfies ProjectVm;\n    }\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
       }
     },
     {
       "kind": "table",
       "name": "sessions",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 631,
-      "endLine": 632,
+      "line": 657,
+      "endLine": 658,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.sessionsTableName)",
       "chain": "supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true })",
@@ -860,16 +826,16 @@
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
         "line": 615,
-        "endLine": 648,
-        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
+        "endLine": 674,
+        "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryProjects();\n      const row = rows.find((item) => item.id === id);\n      if (!row) throw new Error('Project not found');\n      const summary = this.mapHostProjectSummary(row);\n      const now = new Date().toISOString();\n      return {\n        id: summary.id,\n        publicId: summary.publicId,\n        code: summary.code,\n        name: summary.name,\n        description: summary.description,\n        worldId: summary.worldId,\n        worldProfileId: summary.worldProfileId,\n        defaultLookProfileId: null,\n        allowPlayerCharacterLookOverride: false,\n        gmUserId: summary.gmUserId,\n        status: summary.status,\n        createdAt: now,\n        updatedAt: now,\n        members: [],\n        sessions: [],\n        totalSessions: 0,\n        lastSessionDate: null,\n      } satisfies ProjectVm;\n    }\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
       }
     },
     {
       "kind": "table",
       "name": "projects",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 654,
-      "endLine": 655,
+      "line": 680,
+      "endLine": 681,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id)",
@@ -878,8 +844,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 653,
-        "endLine": 664,
+        "line": 679,
+        "endLine": 690,
         "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to update project: ${error.message}`);\n    }\n\n    return this.getProjectById(id);\n  }"
       }
     },
@@ -887,8 +853,8 @@
       "kind": "table",
       "name": "sessions",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 700,
-      "endLine": 701,
+      "line": 726,
+      "endLine": 727,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.sessionsTableName)",
       "chain": "supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single()",
@@ -897,8 +863,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 696,
-        "endLine": 729,
+        "line": 722,
+        "endLine": 755,
         "text": "async updateSessionLookSettings(\n    sessionId: string,\n    settings: { lookProfileId: string | null },\n  ): Promise<SessionVm> {\n    const { data, error } = await supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to update session look: ${error.message}`);\n    }\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to update session look: invalid response');\n    }\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
       }
     },
@@ -906,8 +872,8 @@
       "kind": "table",
       "name": "projects",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 735,
-      "endLine": 736,
+      "line": 761,
+      "endLine": 762,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id)",
@@ -916,8 +882,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 734,
-        "endLine": 743,
+        "line": 760,
+        "endLine": 769,
         "text": "async deleteProject(id: string): Promise<void> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to delete project: ${error.message}`);\n    }\n  }"
       }
     },
@@ -925,16 +891,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 749,
-      "endLine": 749,
+      "line": 775,
+      "endLine": 775,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 748,
-        "endLine": 751,
+        "line": 774,
+        "endLine": 777,
         "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
       }
     },
@@ -942,8 +908,8 @@
       "kind": "table",
       "name": "projects",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 757,
-      "endLine": 758,
+      "line": 783,
+      "endLine": 784,
       "resolution": "literal-or-constant",
       "expression": "supabase\n      .from(this.tableName)",
       "chain": "supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single()",
@@ -952,8 +918,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 756,
-        "endLine": 768,
+        "line": 782,
+        "endLine": 794,
         "text": "async getProjectByPublicId(publicId: string): Promise<ProjectVm> {\n    const { data: project, error } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single();\n\n    if (error || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    return this.getProjectById(project.id);\n  }"
       }
     },
@@ -961,8 +927,8 @@
       "kind": "table",
       "name": "sessions",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 782,
-      "endLine": 783,
+      "line": 808,
+      "endLine": 809,
       "resolution": "literal-or-constant",
       "expression": "supabase\n        .from(this.sessionsTableName)",
       "chain": "supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle()",
@@ -971,8 +937,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 773,
-        "endLine": 812,
+        "line": 799,
+        "endLine": 838,
         "text": "async getSessionByPublicIds(\n    sagaPublicId: string,\n    sessionPublicId: string,\n  ): Promise<{ project: ProjectVm; session: SessionVm }> {\n    const project = await this.getProjectByPublicId(sagaPublicId);\n    const wanted = sessionPublicId.trim().toUpperCase();\n    let session = project.sessions.find((row) => row.publicId === wanted);\n    if (!session) {\n      // Direct lookup — avoids dropping rows when status filters/mapping lag behind create.\n      const { data: row, error } = await supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle();\n      if (error || !row || !isSessionDto(row)) {\n        throw new Error('Session not found in saga');\n      }\n      const normalized = normalizeSessionDto({\n        ...row,\n        notes: row.notes ?? null,\n      });\n      session = {\n        id: normalized.id,\n        publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n        projectId: normalized.project_id,\n        sessionNumber: normalized.session_number,\n        name: normalized.name,\n        notes: normalized.notes,\n        status: normalized.status,\n        startedAt: normalized.started_at,\n        endedAt: normalized.ended_at,\n        durationMinutes: normalized.duration_minutes ?? null,\n        lookProfileId:\n          typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n        createdAt: normalized.created_at,\n      };\n    }\n    return { project, session };\n  }"
       }
     },
@@ -980,8 +946,8 @@
       "kind": "rpc",
       "name": "create_project_session",
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 822,
-      "endLine": 826,
+      "line": 848,
+      "endLine": 852,
       "resolution": "literal-or-constant",
       "expression": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
       "chain": "supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    })",
@@ -991,8 +957,8 @@
       ],
       "enclosingOperation": {
         "path": "src/infrastructure/project/project-service.ts",
-        "line": 817,
-        "endLine": 852,
+        "line": 843,
+        "endLine": 878,
         "text": "async createProjectSession(payload: {\n    projectId: string;\n    name?: string;\n    notes?: string;\n  }): Promise<SessionVm> {\n    const { data, error } = await supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    });\n\n    if (error) {\n      throw new Error(`Failed to create session: ${error.message}`);\n    }\n\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to create session: invalid response');\n    }\n\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
       }
     },
@@ -1177,14 +1143,6 @@
       "module": "../host/host-project-http",
       "resolvedPath": "src/infrastructure/host/host-project-http.ts",
       "expression": "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
-    },
-    {
-      "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 16,
-      "endLine": 16,
-      "module": "../../lib/authenticatedUser",
-      "resolvedPath": "src/lib/authenticatedUser.ts",
-      "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
@@ -1401,14 +1359,14 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 27,
-      "endLine": 146,
-      "text": "export const projectMemberService = {\n  /**\n   * Get all members of a project\n   */\n  async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  /**\n   * Join a project by its secret code.\n   * Membership identity/status is created by a SECURITY DEFINER RPC, never by a client row insert.\n   */\n  async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  /**\n   * Update only the current user's selected character for an active membership.\n   * Protected membership fields (project/user/role/status) stay server/GM controlled.\n   */\n  async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  /**\n   * Leave a project. Kicked memberships remain as denial records and cannot be self-deleted by RLS.\n   */\n  async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  },\n\n  /**\n   * Get active projects where user is a member\n   */\n  async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  },\n};"
+      "line": 26,
+      "endLine": 145,
+      "text": "export const projectMemberService = {\n  /**\n   * Get all members of a project\n   */\n  async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  },\n\n  /**\n   * Join a project by its secret code.\n   * Membership identity/status is created by a SECURITY DEFINER RPC, never by a client row insert.\n   */\n  async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  /**\n   * Update only the current user's selected character for an active membership.\n   * Protected membership fields (project/user/role/status) stay server/GM controlled.\n   */\n  async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  },\n\n  /**\n   * Leave a project. Kicked memberships remain as denial records and cannot be self-deleted by RLS.\n   */\n  async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  },\n\n  /**\n   * Get active projects where user is a member\n   */\n  async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  },\n};"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 855,
-      "endLine": 855,
+      "line": 881,
+      "endLine": 881,
       "text": "export const projectService = new ProjectService();"
     },
     {
@@ -1529,43 +1487,43 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 20,
-      "endLine": 25,
+      "line": 19,
+      "endLine": 24,
       "name": "requireUuid",
       "text": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 31,
-      "endLine": 40,
+      "line": 30,
+      "endLine": 39,
       "name": "getMembers",
       "text": "async getMembers(projectId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', projectId)\n      .order('joined_at');\n\n    if (error) throw error;\n    return data || [];\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 46,
-      "endLine": 77,
+      "line": 45,
+      "endLine": 76,
       "name": "joinByCode",
-      "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+      "text": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 83,
-      "endLine": 114,
+      "line": 82,
+      "endLine": 113,
       "name": "updateCharacter",
-      "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = await getAuthenticatedUserId();\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
+      "text": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 119,
-      "endLine": 127,
+      "line": 118,
+      "endLine": 126,
       "name": "leave",
       "text": "async leave(projectId: string, userId: string): Promise<void> {\n    const { error } = await supabase\n      .from('project_members')\n      .delete()\n      .eq('project_id', projectId)\n      .eq('user_id', userId);\n\n    if (error) throw error;\n  }"
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "line": 132,
-      "endLine": 145,
+      "line": 131,
+      "endLine": 144,
       "name": "getMyProjects",
       "text": "async getMyProjects(userId: string): Promise<ProjectMemberDto[]> {\n    const { data, error } = await supabase\n      .from('project_members')\n      .select(`\n        *,\n        project:projects(*)\n      `)\n      .eq('user_id', userId)\n      .eq('status', 'active')\n      .order('joined_at', { ascending: false });\n\n    if (error) throw error;\n    return data || [];\n  }"
     },
@@ -1719,77 +1677,84 @@
     {
       "path": "src/infrastructure/project/project-service.ts",
       "line": 615,
-      "endLine": 648,
-      "name": "getProjectById",
-      "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
-    },
-    {
-      "path": "src/infrastructure/project/project-service.ts",
-      "line": 653,
-      "endLine": 664,
-      "name": "updateProject",
-      "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to update project: ${error.message}`);\n    }\n\n    return this.getProjectById(id);\n  }"
-    },
-    {
-      "path": "src/infrastructure/project/project-service.ts",
-      "line": 669,
       "endLine": 674,
-      "name": "updateProjectWorldProfile",
-      "text": "async updateProjectWorldProfile(\n    projectId: string,\n    worldProfileId: string | null,\n  ): Promise<ProjectVm> {\n    return this.updateProject(projectId, { world_profile_id: worldProfileId });\n  }"
+      "name": "getProjectById",
+      "text": "async getProjectById(id: string): Promise<ProjectVm> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryProjects();\n      const row = rows.find((item) => item.id === id);\n      if (!row) throw new Error('Project not found');\n      const summary = this.mapHostProjectSummary(row);\n      const now = new Date().toISOString();\n      return {\n        id: summary.id,\n        publicId: summary.publicId,\n        code: summary.code,\n        name: summary.name,\n        description: summary.description,\n        worldId: summary.worldId,\n        worldProfileId: summary.worldProfileId,\n        defaultLookProfileId: null,\n        allowPlayerCharacterLookOverride: false,\n        gmUserId: summary.gmUserId,\n        status: summary.status,\n        createdAt: now,\n        updatedAt: now,\n        members: [],\n        sessions: [],\n        totalSessions: 0,\n        lastSessionDate: null,\n      } satisfies ProjectVm;\n    }\n    const { data: project, error: projectError } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('id', id)\n      .single();\n\n    if (projectError || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    const { data: members } = await supabase\n      .from(this.membersTableName)\n      .select('*')\n      .eq('project_id', id);\n\n    const { data: sessions } = await supabase\n      .from(this.sessionsTableName)\n      .select(SESSION_SAFE_COLUMNS)\n      .eq('project_id', id)\n      .order('session_number', { ascending: true });\n\n    const sessionRows: SessionDto[] = [];\n    for (const row of sessions || []) {\n      if (!isSessionDto(row)) continue;\n      sessionRows.push(\n        normalizeSessionDto({\n          ...row,\n          notes: row.notes ?? null,\n        }),\n      );\n    }\n    return this.mapToViewModel(project, members || [], sessionRows);\n  }"
+    },
+    {
+      "path": "src/infrastructure/project/project-service.ts",
+      "line": 618,
+      "endLine": 618,
+      "name": "callback",
+      "text": "(item) => item.id === id"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
       "line": 679,
       "endLine": 690,
+      "name": "updateProject",
+      "text": "async updateProject(id: string, updates: Partial<ProjectDto>): Promise<ProjectVm> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .update(updates)\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to update project: ${error.message}`);\n    }\n\n    return this.getProjectById(id);\n  }"
+    },
+    {
+      "path": "src/infrastructure/project/project-service.ts",
+      "line": 695,
+      "endLine": 700,
+      "name": "updateProjectWorldProfile",
+      "text": "async updateProjectWorldProfile(\n    projectId: string,\n    worldProfileId: string | null,\n  ): Promise<ProjectVm> {\n    return this.updateProject(projectId, { world_profile_id: worldProfileId });\n  }"
+    },
+    {
+      "path": "src/infrastructure/project/project-service.ts",
+      "line": 705,
+      "endLine": 716,
       "name": "updateProjectLookSettings",
       "text": "async updateProjectLookSettings(\n    projectId: string,\n    settings: {\n      defaultLookProfileId: string | null;\n      allowPlayerCharacterLookOverride: boolean;\n    },\n  ): Promise<ProjectVm> {\n    return this.updateProject(projectId, {\n      default_look_profile_id: settings.defaultLookProfileId,\n      allow_player_character_look_override: settings.allowPlayerCharacterLookOverride,\n    });\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 696,
-      "endLine": 729,
+      "line": 722,
+      "endLine": 755,
       "name": "updateSessionLookSettings",
       "text": "async updateSessionLookSettings(\n    sessionId: string,\n    settings: { lookProfileId: string | null },\n  ): Promise<SessionVm> {\n    const { data, error } = await supabase\n      .from(this.sessionsTableName)\n      .update({ look_profile_id: settings.lookProfileId })\n      .eq('id', sessionId)\n      .select(SESSION_SAFE_COLUMNS)\n      .single();\n\n    if (error) {\n      throw new Error(`Failed to update session look: ${error.message}`);\n    }\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to update session look: invalid response');\n    }\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 734,
-      "endLine": 743,
+      "line": 760,
+      "endLine": 769,
       "name": "deleteProject",
       "text": "async deleteProject(id: string): Promise<void> {\n    const { error } = await supabase\n      .from(this.tableName)\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      throw new Error(`Failed to delete project: ${error.message}`);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 748,
-      "endLine": 751,
+      "line": 774,
+      "endLine": 777,
       "name": "leaveProject",
       "text": "async leaveProject(projectId: string): Promise<void> {\n    const userId = await getAuthenticatedUserId();\n    await projectMemberService.leave(projectId, userId);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 756,
-      "endLine": 768,
+      "line": 782,
+      "endLine": 794,
       "name": "getProjectByPublicId",
       "text": "async getProjectByPublicId(publicId: string): Promise<ProjectVm> {\n    const { data: project, error } = await supabase\n      .from(this.tableName)\n      .select(PROJECT_SAFE_COLUMNS)\n      .eq('public_id', publicId.trim().toUpperCase())\n      .single();\n\n    if (error || !project || !isProjectDto(project)) {\n      throw new Error('Project not found');\n    }\n\n    return this.getProjectById(project.id);\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 773,
-      "endLine": 812,
+      "line": 799,
+      "endLine": 838,
       "name": "getSessionByPublicIds",
       "text": "async getSessionByPublicIds(\n    sagaPublicId: string,\n    sessionPublicId: string,\n  ): Promise<{ project: ProjectVm; session: SessionVm }> {\n    const project = await this.getProjectByPublicId(sagaPublicId);\n    const wanted = sessionPublicId.trim().toUpperCase();\n    let session = project.sessions.find((row) => row.publicId === wanted);\n    if (!session) {\n      // Direct lookup — avoids dropping rows when status filters/mapping lag behind create.\n      const { data: row, error } = await supabase\n        .from(this.sessionsTableName)\n        .select(SESSION_SAFE_COLUMNS)\n        .eq('project_id', project.id)\n        .eq('public_id', wanted)\n        .maybeSingle();\n      if (error || !row || !isSessionDto(row)) {\n        throw new Error('Session not found in saga');\n      }\n      const normalized = normalizeSessionDto({\n        ...row,\n        notes: row.notes ?? null,\n      });\n      session = {\n        id: normalized.id,\n        publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n        projectId: normalized.project_id,\n        sessionNumber: normalized.session_number,\n        name: normalized.name,\n        notes: normalized.notes,\n        status: normalized.status,\n        startedAt: normalized.started_at,\n        endedAt: normalized.ended_at,\n        durationMinutes: normalized.duration_minutes ?? null,\n        lookProfileId:\n          typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n        createdAt: normalized.created_at,\n      };\n    }\n    return { project, session };\n  }"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 779,
-      "endLine": 779,
+      "line": 805,
+      "endLine": 805,
       "name": "callback",
       "text": "(row) => row.publicId === wanted"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "line": 817,
-      "endLine": 852,
+      "line": 843,
+      "endLine": 878,
       "name": "createProjectSession",
       "text": "async createProjectSession(payload: {\n    projectId: string;\n    name?: string;\n    notes?: string;\n  }): Promise<SessionVm> {\n    const { data, error } = await supabase.rpc('create_project_session', {\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    });\n\n    if (error) {\n      throw new Error(`Failed to create session: ${error.message}`);\n    }\n\n    if (!isSessionDto(data)) {\n      throw new Error('Failed to create session: invalid response');\n    }\n\n    const normalized = normalizeSessionDto(data);\n    return {\n      id: normalized.id,\n      publicId: typeof normalized.public_id === 'string' ? normalized.public_id : '',\n      projectId: normalized.project_id,\n      sessionNumber: normalized.session_number,\n      name: normalized.name,\n      notes: normalized.notes,\n      status: normalized.status,\n      startedAt: normalized.started_at,\n      endedAt: normalized.ended_at,\n      durationMinutes: normalized.duration_minutes,\n      lookProfileId:\n        typeof normalized.look_profile_id === 'string' ? normalized.look_profile_id : null,\n      createdAt: normalized.created_at,\n    };\n  }"
     },

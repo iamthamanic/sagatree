@@ -132,9 +132,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-service.ts:822
+### src/infrastructure/project/project-service.ts:848
 
-AST-Auflösung: `string-literal`; SHA-256 `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188`.
+AST-Auflösung: `string-literal`; SHA-256 `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -184,10 +184,10 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `ProjectSessionStatus` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 40 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
 | `SessionDto` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 48 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
 | `SessionVm` | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | 80 | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| `isRecord` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 40 | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
-| `isSessionStatus` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 122 | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
-| `isSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 133 | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
-| `normalizeSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 168 | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
+| `isRecord` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 40 | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
+| `isSessionStatus` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 122 | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
+| `isSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 133 | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
+| `normalizeSessionDto` | [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | 168 | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -215,7 +215,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/project/contracts/project.types.ts](../../../src/domains/project/contracts/project.types.ts) | `1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8` |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/015_inventory_item_definitions.sql](../../../supabase/migrations/015_inventory_item_definitions.sql) | `aeedfd77bb79d7d38f4163a496b373d266027b39adbce82fe14aec768187e9e7` |

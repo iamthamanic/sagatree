@@ -13,7 +13,6 @@ import {
   joinHostProjectByCode,
   setHostMyProjectCharacter,
 } from '../host/host-project-http';
-import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -47,7 +46,7 @@ export const projectMemberService = {
     if (isHostLibraryEnabled()) {
       const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);
       const projectId = requireUuid(joined.projectId, 'join_project_by_code');
-      const userId = await getAuthenticatedUserId();
+      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');
       return {
         id: projectId,
         project_id: projectId,
@@ -84,7 +83,7 @@ export const projectMemberService = {
     if (isHostLibraryEnabled()) {
       const updated = await setHostMyProjectCharacter(projectId, characterId);
       const memberId = requireUuid(updated.memberId, 'set_my_project_character');
-      const userId = await getAuthenticatedUserId();
+      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');
       return {
         id: memberId,
         project_id: projectId,

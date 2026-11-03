@@ -123,7 +123,7 @@ export async function ensureHostNativeStarterProject(slug?: string | null): Prom
 export async function joinHostProjectByCode(
   code: string,
   characterId?: string | null,
-): Promise<{ readonly projectId: string }> {
+): Promise<{ readonly projectId: string; readonly userId: string }> {
   return hostMutateJson(
     '/api/v1/projects/join',
     'POST',
@@ -135,7 +135,7 @@ export async function joinHostProjectByCode(
 export async function setHostMyProjectCharacter(
   projectId: string,
   characterId?: string | null,
-): Promise<{ readonly memberId: string }> {
+): Promise<{ readonly memberId: string; readonly userId: string }> {
   return hostMutateJson(
     `/api/v1/projects/${encodeURIComponent(projectId)}/my-character`,
     'POST',

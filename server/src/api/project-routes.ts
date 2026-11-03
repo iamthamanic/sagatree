@@ -153,10 +153,18 @@ export function mountProjectHttpRoutes(app: Hono, deps: ProjectHttpDeps): void {
     if (typeof body.code !== 'string' || !body.code.trim()) {
       return c.json({ error: '22023' }, 422);
     }
+    const characterRaw = body.characterId;
+    if (
+      characterRaw !== undefined &&
+      characterRaw !== null &&
+      typeof characterRaw !== 'string'
+    ) {
+      return c.json({ error: '22023' }, 422);
+    }
     const result = infra.joinProjectByCode(
       actorResult.actor,
       body.code,
-      optionalString(body.characterId),
+      typeof characterRaw === 'string' ? characterRaw : null,
     );
     if (!result.ok) {
       return c.json(
@@ -164,7 +172,13 @@ export function mountProjectHttpRoutes(app: Hono, deps: ProjectHttpDeps): void {
         infraStatus(result.error),
       );
     }
-    return c.json(result.value, 200);
+    return c.json(
+      {
+        ...result.value,
+        userId: actorResult.actor.actorId,
+      },
+      200,
+    );
   });
 
   app.post('/api/v1/projects/:projectId/sessions', async (c) => {
@@ -193,13 +207,27 @@ export function mountProjectHttpRoutes(app: Hono, deps: ProjectHttpDeps): void {
     if (!actorResult.ok) {
       return c.json({ error: actorResult.error }, actorResult.status);
     }
+    const characterRaw = body.characterId;
+    if (
+      characterRaw !== undefined &&
+      characterRaw !== null &&
+      typeof characterRaw !== 'string'
+    ) {
+      return c.json({ error: '22023' }, 422);
+    }
     const result = infra.setMyProjectCharacter(
       actorResult.actor,
       c.req.param('projectId'),
-      optionalString(body.characterId),
+      typeof characterRaw === 'string' ? characterRaw : null,
     );
     if (!result.ok) return c.json({ error: result.error }, infraStatus(result.error));
-    return c.json(result.value, 200);
+    return c.json(
+      {
+        ...result.value,
+        userId: actorResult.actor.actorId,
+      },
+      200,
+    );
   });
 
   app.get('/api/v1/sagas/:publicId/overview', async (c) => {

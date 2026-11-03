@@ -192,7 +192,7 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ### src/infrastructure/project/project-service.ts:402
 
-AST-Auflösung: `string-literal`; SHA-256 `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188`.
+AST-Auflösung: `string-literal`; SHA-256 `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -254,7 +254,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `d90dd5bb0ae8e8b3c5b959a50ba132bb70ca82af080fd8b7449265d7a44dd188` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |

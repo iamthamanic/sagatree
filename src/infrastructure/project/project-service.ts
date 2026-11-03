@@ -613,6 +613,32 @@ class ProjectService {
    * Get project by ID
    */
   async getProjectById(id: string): Promise<ProjectVm> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryProjects();
+      const row = rows.find((item) => item.id === id);
+      if (!row) throw new Error('Project not found');
+      const summary = this.mapHostProjectSummary(row);
+      const now = new Date().toISOString();
+      return {
+        id: summary.id,
+        publicId: summary.publicId,
+        code: summary.code,
+        name: summary.name,
+        description: summary.description,
+        worldId: summary.worldId,
+        worldProfileId: summary.worldProfileId,
+        defaultLookProfileId: null,
+        allowPlayerCharacterLookOverride: false,
+        gmUserId: summary.gmUserId,
+        status: summary.status,
+        createdAt: now,
+        updatedAt: now,
+        members: [],
+        sessions: [],
+        totalSessions: 0,
+        lastSessionDate: null,
+      } satisfies ProjectVm;
+    }
     const { data: project, error: projectError } = await supabase
       .from(this.tableName)
       .select(PROJECT_SAFE_COLUMNS)
