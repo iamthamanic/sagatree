@@ -37,6 +37,7 @@ import {
   fetchHostLibraryCharacter,
   fetchHostLibraryCharacters,
   isHostLibraryEnabled,
+  publishHostAsset,
   updateHostLibraryCharacter,
   type HostLibraryCharacterDto,
 } from '../host/host-library-http';
@@ -503,13 +504,18 @@ class CharacterService {
   }
 
   /**
-   * Prepare (unless alreadyOptimized) then upload to owner-scoped Storage.
+   * Prepare (unless alreadyOptimized) then upload to owner-scoped Storage / host assets.
    * On failure the previous portrait URL is unchanged (caller keeps local state).
+   * Host path (FE-HOST-06): publish via `/api/v1/assets`, return credentialed display URL.
    */
   async uploadPortrait(file: File, options?: UploadPortraitOptions): Promise<string> {
     const prepared = options?.alreadyOptimized
       ? file
       : await prepareCharacterPortraitFile(file, options?.signal);
+    if (isHostLibraryEnabled()) {
+      const published = await publishHostAsset(prepared);
+      return published.url;
+    }
     return supabaseCharacterRepository.uploadPortrait(prepared);
   }
 

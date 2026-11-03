@@ -14,7 +14,12 @@ import type { NpcCreaturePorts } from '../modules/npc-creature/index.ts';
 import type { LookProfilePorts } from '../modules/look/index.ts';
 import type { InventoryPorts } from '../modules/inventory/index.ts';
 import type { ProjectPorts } from '../modules/project/index.ts';
+import type { AssetPorts } from '../assets/index.ts';
 import { authDenyStatus } from './errors.ts';
+import {
+  expandPortraitDisplayUrl,
+  normalizePortraitStoragePath,
+} from './asset-routes.ts';
 
 export type LibraryHttpDeps = {
   readonly identity: IdentityPorts;
@@ -25,6 +30,8 @@ export type LibraryHttpDeps = {
   readonly look?: LookProfilePorts | null;
   readonly inventory?: InventoryPorts | null;
   readonly project?: ProjectPorts | null;
+  /** FE-HOST-06 — used to verify portrait display URLs before character save. */
+  readonly assets?: AssetPorts | null;
 };
 
 function normalizeHostname(hostname: string): string {
@@ -113,19 +120,22 @@ function sheetClassRace(sheet: Readonly<Record<string, unknown>>): {
   return { classLabel, raceLabel };
 }
 
-function mapCharacterRow(row: {
-  readonly id: string;
-  readonly publicId: string;
-  readonly name: string;
-  readonly description: string;
-  readonly level: number;
-  readonly sheetStatus: string;
-  readonly portraitStoragePath: string | null;
-  readonly sheet: Readonly<Record<string, unknown>>;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly characterType: string;
-}) {
+function mapCharacterRow(
+  row: {
+    readonly id: string;
+    readonly publicId: string;
+    readonly name: string;
+    readonly description: string;
+    readonly level: number;
+    readonly sheetStatus: string;
+    readonly portraitStoragePath: string | null;
+    readonly sheet: Readonly<Record<string, unknown>>;
+    readonly createdAt: string;
+    readonly updatedAt: string;
+    readonly characterType: string;
+  },
+  origin: string,
+) {
   const { classLabel, raceLabel } = sheetClassRace(row.sheet);
   return {
     id: row.id,
@@ -136,7 +146,7 @@ function mapCharacterRow(row: {
     race: raceLabel,
     level: row.level,
     sheetStatus: row.sheetStatus === 'draft' ? 'incomplete' : row.sheetStatus,
-    portraitUrl: row.portraitStoragePath,
+    portraitUrl: expandPortraitDisplayUrl(row.portraitStoragePath, origin),
     sheet: row.sheet,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -159,9 +169,10 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!listed.ok) {
       return c.json({ error: listed.error }, listed.error === 'store-unavailable' ? 503 : 400);
     }
+    const origin = new URL(c.req.url).origin;
     const characters = listed.value
       .filter((row) => row.characterType === 'pc')
-      .map(mapCharacterRow);
+      .map((row) => mapCharacterRow(row, origin));
     return c.json({ characters }, 200);
   });
 
@@ -224,7 +235,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
         created.error === 'store-unavailable' ? 503 : 400,
       );
     }
-    return c.json({ character: mapCharacterRow(created.value) }, 201);
+    return c.json({ character: mapCharacterRow(created.value, new URL(c.req.url).origin) }, 201);
   });
 
   app.get('/api/v1/library/characters/:id', async (c) => {
@@ -243,7 +254,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!got.value) {
       return c.json({ error: 'not-found' }, 404);
     }
-    return c.json({ character: mapCharacterRow(got.value) }, 200);
+    return c.json({ character: mapCharacterRow(got.value, new URL(c.req.url).origin) }, 200);
   });
 
   app.patch('/api/v1/library/characters/:id', async (c) => {
@@ -264,13 +275,27 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
       ? (body as Record<string, unknown>)
       : {};
     const id = c.req.param('id');
+    const portraitRaw =
+      'portrait_url' in record
+        ? record.portrait_url
+        : 'portraitStoragePath' in record
+          ? record.portraitStoragePath
+          : undefined;
+    const portraitNorm = normalizePortraitStoragePath(
+      actorResult.actor,
+      portraitRaw,
+      deps.assets,
+    );
+    if (!portraitNorm.ok) {
+      return c.json({ error: portraitNorm.error }, 400);
+    }
     const updated = deps.character.updateOwnedCharacter(actorResult.actor.actorId, id, {
       name: record.name,
       description: record.description,
       level: record.level,
       sheetStatus: record.sheet_status ?? record.sheetStatus,
       sheet: record.sheet,
-      portraitStoragePath: record.portrait_url ?? record.portraitStoragePath,
+      portraitStoragePath: portraitNorm.value,
       characterType: 'pc',
     });
     if (!updated.ok) {
@@ -285,7 +310,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
               : 400,
       );
     }
-    return c.json({ character: mapCharacterRow(updated.value) }, 200);
+    return c.json({ character: mapCharacterRow(updated.value, new URL(c.req.url).origin) }, 200);
   });
 
   app.delete('/api/v1/library/characters/:id', async (c) => {

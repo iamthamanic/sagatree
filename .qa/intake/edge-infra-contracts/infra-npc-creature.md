@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `3c766f0faf9b5a962c4332db19a9e3cbd2d619d2f6068e0799fc72270d2062e7`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-npc-creature.json](source-contracts/infra-npc-creature.json) (SHA-256 `97d5c45ffb70211ac49f3c6dcc9701d906792eaca9cc1238060d64d9c7dbc8d3`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1561,7 +1561,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/rules/sagatree/npc-creature-power/machtgrad.ts` | `19d4daafb9580b890ed2337feccffed19122a01dfb23c2eeb2dadd2523778f7a` |
 | `src/domains/rules/sagatree/npc-creature-power/profiles.ts` | `aa3d450842ddce7548f6e8e826225cdbdeae6de7660e09798fe43663dc9ce1fa` |
 | `src/domains/rules/sagatree/npc-creature-power/types.ts` | `de25ba46549bab20e0e55a513fb0745e722449d8f1b61bb51887d986653c4eab` |
-| `src/infrastructure/host/host-library-http.ts` | `765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132` |
+| `src/infrastructure/host/host-library-http.ts` | `c452cc3bf830068496fb10f705019cbdcc682586c1672b6a7572cd430b5d5069` |
 | `src/infrastructure/npc-creature/host-npc-creature-adapter.ts` | `c707763455a2e935f607ce3a43e750f1a3b2de42e90e1a5c96be8fb15f22a2bb` |
 | `src/infrastructure/npc-creature/host-npc-creature-ports.contract.ts` | `781e93fe661518ad05e0b2708813fe89aceda69f212cf59a8de157fc9c408a69` |
 | `src/infrastructure/npc-creature/npc-creature-controller.persistence.ts` | `9832d02675fdfc5a7d9520ff68c60a3636e25de2ed497e523218e7c8985fe530` |
