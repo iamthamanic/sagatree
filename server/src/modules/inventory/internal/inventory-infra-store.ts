@@ -17,7 +17,8 @@ import {
 } from './inventory-v2-shape.ts';
 import { generateItemPublicId } from './public-item-id.ts';
 
-export const INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** FE-HOST-05/#1097 — catalog list/create via `/api/v1/library/items`. */
+export const INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 /** Cap catalog responses — unbounded LIKE+sort without LIMIT is unsafe. */
 export const INVENTORY_CATALOG_LIST_LIMIT = 500 as const;

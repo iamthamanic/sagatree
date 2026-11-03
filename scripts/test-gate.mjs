@@ -1342,6 +1342,19 @@ function checkFeHost04ProjectHttp() {
   console.log('OK: fe-host-04-project-http.self-test');
 }
 
+function checkFeHost05InventoryNpcHttp() {
+  console.log('FE-HOST-05 inventory/NPC catalog product HTTP (#1097)...');
+  execFileSync(
+    process.execPath,
+    ['--experimental-strip-types', 'scripts/fe-host-05-inventory-npc-http.self-test.mjs'],
+    {
+      cwd: root,
+      stdio: 'inherit',
+    },
+  );
+  console.log('OK: fe-host-05-inventory-npc-http.self-test');
+}
+
 function checkMig312UserProfileAdapter() {
   console.log('MIG-312 user-profile adapter (#811): user_profiles + user-avatars dual-path...');
   execFileSync(
@@ -3551,6 +3564,7 @@ checkMig311SessionAdapter();
 checkFeHost02SessionHttp();
 checkFeHost03WorldHttp();
 checkFeHost04ProjectHttp();
+checkFeHost05InventoryNpcHttp();
 checkMig312UserProfileAdapter();
 checkMig309Rulesets();
 checkMig313WorldAdapter();

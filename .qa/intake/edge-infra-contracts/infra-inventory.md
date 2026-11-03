@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `42d53dd94a5e8176adbdb79592053db59aa72b638df740c91b271dba1fa4f568`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `7e28611a0aeaf6269cdfa49c4372aec2c4e958e0db4f2a1b21ecc9d0c1787b0b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -619,7 +619,7 @@ export function migrationDefinitionId(fingerprint: string): string {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:86
+### src/infrastructure/inventory/item-catalog-service.ts:90
 
 ```ts
 export interface CharacterItemCatalog {
@@ -633,7 +633,7 @@ export interface CharacterItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:97
+### src/infrastructure/inventory/item-catalog-service.ts:101
 
 ```ts
 export interface LibraryItemCatalog {
@@ -644,7 +644,7 @@ export interface LibraryItemCatalog {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:112
+### src/infrastructure/inventory/item-catalog-service.ts:116
 
 ```ts
 export async function loadCharacterItemCatalog(
@@ -711,7 +711,7 @@ export async function loadCharacterItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:180
+### src/infrastructure/inventory/item-catalog-service.ts:184
 
 ```ts
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
@@ -748,7 +748,7 @@ export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:217
+### src/infrastructure/inventory/item-catalog-service.ts:221
 
 ```ts
 export async function loadWorldProfileItemCatalog(
@@ -761,7 +761,7 @@ export async function loadWorldProfileItemCatalog(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:230
+### src/infrastructure/inventory/item-catalog-service.ts:234
 
 ```ts
 export async function getItemDefinitionById(definitionId: string): Promise<{
@@ -772,59 +772,83 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:237
+### src/infrastructure/inventory/item-catalog-service.ts:259
 
 ```ts
-export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {
+export async function createPersonalDefinition(
+  draft: ItemDefinitionDraft,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    return createHostCatalogDefinition('personal', draft, null);
+  }
   return supabaseItemCatalogRepository.createPersonalDefinition(draft);
-}
-```
-
-### src/infrastructure/inventory/item-catalog-service.ts:241
-
-```ts
-export function createWorldDefinition(
-  worldProfileId: string,
-  draft: ItemDefinitionDraft,
-): Promise<CatalogDefinitionRecord> {
-  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);
-}
-```
-
-### src/infrastructure/inventory/item-catalog-service.ts:248
-
-```ts
-export function updateDefinition(
-  definitionId: string,
-  draft: ItemDefinitionDraft,
-): Promise<CatalogDefinitionRecord> {
-  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
-}
-```
-
-### src/infrastructure/inventory/item-catalog-service.ts:256
-
-```ts
-export function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
-}
-```
-
-### src/infrastructure/inventory/item-catalog-service.ts:260
-
-```ts
-export function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
-  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
 }
 ```
 
 ### src/infrastructure/inventory/item-catalog-service.ts:268
 
 ```ts
-export function forkDefinition(
+export async function createWorldDefinition(
+  worldProfileId: string,
+  draft: ItemDefinitionDraft,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    return createHostCatalogDefinition('world', draft, worldProfileId);
+  }
+  return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:278
+
+```ts
+export async function updateDefinition(
+  definitionId: string,
+  draft: ItemDefinitionDraft,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.');
+  }
+  return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:289
+
+```ts
+export async function archiveDefinition(
+  definitionId: string,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition archivieren ist auf dem Host noch nicht verfügbar.');
+  }
+  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:298
+
+```ts
+export async function restoreDefinition(
+  definitionId: string,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition wiederherstellen ist auf dem Host noch nicht verfügbar.');
+  }
+  return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
+}
+```
+
+### src/infrastructure/inventory/item-catalog-service.ts:311
+
+```ts
+export async function forkDefinition(
   sourceDefinitionId: string,
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition forken ist auf dem Host noch nicht verfügbar.');
+  }
   return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
 }
 ```
@@ -1676,11 +1700,11 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/domains/rules/sagatree/skill-progression/index.ts` | `7b4f5f109d49785497b4639a154b6e3856d58e52421befa7fa0ba0a278967cb7` |
 | `src/domains/rules/sagatree/species-trait-options/index.ts` | `b21687494d66c5e5b3e1b791eadf3aa1ecabb9094695768a7961bba8b36730c4` |
 | `src/infrastructure/character/character.persistence.ts` | `5ed5f363555b9c4a3922507e01a227f74aee706764065641eb27ac9510024bd5` |
-| `src/infrastructure/host/host-library-http.ts` | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
+| `src/infrastructure/host/host-library-http.ts` | `765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132` |
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `1b38bee27c44686cb827ea4ccfbbab2d26ada8f9bdca8ea51b0d0c2116a9e3d6` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `0acc6aba2818624d0cd6b30775ee35a4325e1de73624103a93a5a55a66cb679d` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `907b1f5589d6063b804727b636cd74e53507dbdc4578adde805738fac4be4b78` |

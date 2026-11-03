@@ -478,8 +478,8 @@
       "rpc": "assign_npc_creature_controller",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 343,
-      "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+      "line": 372,
+      "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
       "requestExpression": "{\n      p_project_id: planned.assignment.projectId,\n      p_definition_id: planned.assignment.definitionId,\n      p_controller_user_id: planned.assignment.controllerUserId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -494,7 +494,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { supabase } from '../../lib/supabase';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-        "import {\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';",
+        "import {\n  archiveHostLibraryNpcCreature,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n  updateHostLibraryNpcCreature,\n} from '../host/host-library-http';",
         "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';",
         "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';",
         "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"
@@ -786,8 +786,8 @@
       "rpc": "clear_npc_creature_instance_temp_controllers_for_session",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 527,
-      "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+      "line": 556,
+      "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
       "requestExpression": "{\n      p_session_id: sessionId,\n    }",
       "requestKeys": [
         "p_session_id"
@@ -800,7 +800,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { supabase } from '../../lib/supabase';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-        "import {\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';",
+        "import {\n  archiveHostLibraryNpcCreature,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n  updateHostLibraryNpcCreature,\n} from '../host/host-library-http';",
         "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';",
         "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';",
         "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"
@@ -2405,7 +2405,7 @@
           "kind": "TypeAliasDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 10,
-          "sourceSha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a",
+          "sourceSha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132",
           "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
         },
         {
@@ -2413,7 +2413,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 15,
-          "sourceSha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a",
+          "sourceSha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132",
           "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
         },
         {
@@ -2421,7 +2421,7 @@
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/host/host-library-http.ts",
           "line": 23,
-          "sourceSha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a",
+          "sourceSha256": "765f53b11bdcd11e940e5f0ab0389574510211c1789aa146ceb016ee4fed6132",
           "source": "export function isHostLibraryEnabled(env: EnvLike = defaultEnv()): boolean {\n  const flag = env.VITE_SAGATREE_HOST_LIBRARY?.trim().toLowerCase();\n  if (!(flag === '1' || flag === 'true' || flag === 'yes')) return false;\n  return getHostAuthBaseUrl(env) !== null;\n}"
         },
         {
@@ -6675,8 +6675,8 @@
       "rpc": "remove_npc_creature_instance",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 507,
-      "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+      "line": 536,
+      "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
       "requestExpression": "{\n      p_instance_id: instanceId,\n    }",
       "requestKeys": [
         "p_instance_id"
@@ -6689,7 +6689,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { supabase } from '../../lib/supabase';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-        "import {\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';",
+        "import {\n  archiveHostLibraryNpcCreature,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n  updateHostLibraryNpcCreature,\n} from '../host/host-library-http';",
         "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';",
         "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';",
         "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"
@@ -8819,8 +8819,8 @@
       "rpc": "spawn_npc_creature_instance",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 444,
-      "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+      "line": 473,
+      "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
       "requestExpression": "{\n      p_project_id: planned.instance.projectId,\n      p_definition_id: planned.instance.definitionId,\n      p_instance_kind: planned.instance.instanceKind,\n      p_snapshot: toInstanceSnapshotPayload(planned.instance.snapshot),\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n      p_display_name: planned.instance.displayName,\n      p_sequence_number: planned.instance.sequenceNumber,\n      p_session_id: planned.instance.sessionId,\n    }",
       "requestKeys": [
         "p_project_id",
@@ -8840,7 +8840,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { supabase } from '../../lib/supabase';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-        "import {\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';",
+        "import {\n  archiveHostLibraryNpcCreature,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n  updateHostLibraryNpcCreature,\n} from '../host/host-library-http';",
         "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';",
         "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';",
         "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"
@@ -8906,32 +8906,32 @@
           "name": "INSTANCES_TABLE",
           "kind": "VariableDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 91,
-          "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+          "line": 94,
+          "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
           "source": "INSTANCES_TABLE = 'npc_creature_instances'"
         },
         {
           "name": "resolveDefinitionForInstance",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 360,
-          "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+          "line": 389,
+          "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
           "source": "async function resolveDefinitionForInstance(\n  definitionId: string,\n): Promise<NpcCreatureDefinition | null> {\n  const builtin = getBuiltinNpcCreatureDefinition(definitionId);\n  if (builtin) return builtin;\n  const core = getCoreNpcCreatureDefinition(definitionId);\n  if (core) return core;\n  const record = await supabaseNpcCreatureRepository.getDefinitionById(definitionId);\n  return record?.definition ?? null;\n}"
         },
         {
           "name": "isBuiltinOrCoreDefinitionId",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 371,
-          "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+          "line": 400,
+          "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
           "source": "function isBuiltinOrCoreDefinitionId(definitionId: string): boolean {\n  if (isCoreNpcCreatureDefinitionId(definitionId)) return true;\n  return Boolean(getBuiltinNpcCreatureDefinition(definitionId));\n}"
         },
         {
           "name": "listNpcCreatureInstances",
           "kind": "FunctionDeclaration",
           "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-          "line": 377,
-          "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+          "line": 406,
+          "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
           "source": "export async function listNpcCreatureInstances(\n  projectId: string,\n): Promise<NpcCreatureInstance[]> {\n  await getAuthenticatedUserId();\n  const { data, error } = await raceWithTimeoutReject(\n    supabase\n      .from(INSTANCES_TABLE)\n      .select(\n        'id, project_id, session_id, definition_id, display_name, instance_kind, sequence_number, snapshot, runtime, created_by, created_at, updated_at',\n      )\n      .eq('project_id', projectId)\n      .order('updated_at', { ascending: false }),\n    SUPABASE_QUERY_TIMEOUT_MS,\n    'Instanzen konnten nicht geladen werden (Zeitüberschreitung).',\n  );\n  if (error) {\n    throw new Error(`Instanzen konnten nicht geladen werden: ${error.message}`);\n  }\n  const rows = Array.isArray(data) ? data : [];\n  return rows.map((row) => toNpcCreatureInstance(row as NpcCreatureInstanceRow));\n}"
         },
         {
@@ -9204,8 +9204,8 @@
       "rpc": "update_npc_creature_instance_runtime",
       "resolution": "string-literal",
       "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-      "line": 487,
-      "sourceSha256": "631039896367bfade6d30265a745a25e1f29cd0df6879ceeda77abe9732f45d9",
+      "line": 516,
+      "sourceSha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3",
       "requestExpression": "{\n      p_instance_id: planned.instance.id,\n      p_runtime: toInstanceRuntimePayload(planned.instance.runtime),\n    }",
       "requestKeys": [
         "p_instance_id",
@@ -9219,7 +9219,7 @@
         "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
         "import { supabase } from '../../lib/supabase';",
         "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-        "import {\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n} from '../host/host-library-http';",
+        "import {\n  archiveHostLibraryNpcCreature,\n  createHostLibraryNpcCreature,\n  fetchHostLibraryNpcCreatures,\n  isHostLibraryEnabled,\n  updateHostLibraryNpcCreature,\n} from '../host/host-library-http';",
         "import {\n  toNpcControllerAssignment,\n  type NpcControllerAssignmentRow,\n} from './npc-creature-controller.persistence';",
         "import {\n  toInstanceRuntimePayload,\n  toInstanceSnapshotPayload,\n  toNpcCreatureInstance,\n  type NpcCreatureInstanceRow,\n} from './npc-creature-instance.persistence';",
         "import { supabaseNpcCreatureRepository } from './supabase-npc-creature.repository';"

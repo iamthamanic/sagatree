@@ -75,7 +75,7 @@ const dataDir = join(work, 'data');
 mkdirSync(dataDir, { recursive: true });
 
 try {
-  assert(INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no inventory HTTP');
+  assert(INVENTORY_INFRA_PUBLIC_ACTIVATION_AUTHORIZED === true, 'inventory catalog HTTP authorized (FE-HOST-05)');
   assert(TABLE_OWNERSHIP.inventory_item_definitions === 'inventory', 'ownership');
 
   const boot = bootstrapHostPersistence({
