@@ -1,6 +1,6 @@
 # Composition Gate — browser-host-fe-host-07 (#1099)
 
-- HEAD_SHA: cf9e5809f8135e5a763ff9d407a61dfb207635a6
+- HEAD_SHA: 83bbd43881f819ac03810ffdd884d6e12eb670d0
 - BASE_SHA: adda6c230ac7c5a6c7796a6daf27973b6c198c0e
 - Date: 2026-11-03
 - Verdict: CLEAR
