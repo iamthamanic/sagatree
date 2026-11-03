@@ -390,8 +390,13 @@ class ProjectService {
    */
   async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
     if (isHostLibraryEnabled()) {
-      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).
-      void slug;
+      try {
+        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
+        await ensureHostNativeStarterProject(slug);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.warn('[project-service] ensure_native_starter_project (host):', message);
+      }
       return;
     }
     const { error } = await supabase.rpc('ensure_native_starter_project', {
@@ -608,6 +613,32 @@ class ProjectService {
    * Get project by ID
    */
   async getProjectById(id: string): Promise<ProjectVm> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostLibraryProjects();
+      const row = rows.find((item) => item.id === id);
+      if (!row) throw new Error('Project not found');
+      const summary = this.mapHostProjectSummary(row);
+      const now = new Date().toISOString();
+      return {
+        id: summary.id,
+        publicId: summary.publicId,
+        code: summary.code,
+        name: summary.name,
+        description: summary.description,
+        worldId: summary.worldId,
+        worldProfileId: summary.worldProfileId,
+        defaultLookProfileId: null,
+        allowPlayerCharacterLookOverride: false,
+        gmUserId: summary.gmUserId,
+        status: summary.status,
+        createdAt: now,
+        updatedAt: now,
+        members: [],
+        sessions: [],
+        totalSessions: 0,
+        lastSessionDate: null,
+      } satisfies ProjectVm;
+    }
     const { data: project, error: projectError } = await supabase
       .from(this.tableName)
       .select(PROJECT_SAFE_COLUMNS)

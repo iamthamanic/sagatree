@@ -1010,6 +1010,10 @@
       "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
     },
     {
+      "path": "src/infrastructure/host/host-project-http.ts",
+      "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+    },
+    {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
       "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
     },
@@ -1123,11 +1127,11 @@
     },
     {
       "path": "src/infrastructure/project/project-member-service.ts",
-      "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+      "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+      "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -7394,6 +7398,14 @@
       "line": 122,
       "endLine": 126,
       "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-project-http.ts",
+      "line": 12,
+      "endLine": 15,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
     },
     {
       "kind": "InterfaceDeclaration",

@@ -2,13 +2,17 @@
  * project-member-service — Supabase adapter for project membership RPCs.
  * Location: src/infrastructure/project/project-member-service.ts
  *
- * Dual-path (MIG-308): production remains Supabase RPCs/tables. Host ports are
- * bound via `createHostProjectAdapter` for tests / future cutover (no accidental
- * cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (FE-HOST-04): join / set-character via host HTTP when library flag on.
+ * Direct `project_members` table reads/leave stay Supabase until a later cutover.
  */
 
 import { supabase } from '../../lib/supabase';
 import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';
+import {
+  isHostLibraryEnabled,
+  joinHostProjectByCode,
+  setHostMyProjectCharacter,
+} from '../host/host-project-http';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -39,6 +43,20 @@ export const projectMemberService = {
    * Membership identity/status is created by a SECURITY DEFINER RPC, never by a client row insert.
    */
   async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {
+    if (isHostLibraryEnabled()) {
+      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);
+      const projectId = requireUuid(joined.projectId, 'join_project_by_code');
+      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');
+      return {
+        id: projectId,
+        project_id: projectId,
+        user_id: userId,
+        role: 'player',
+        status: 'active',
+        character_id: dto.character_id || null,
+        joined_at: new Date().toISOString(),
+      } as ProjectMemberDto;
+    }
     const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {
       p_code: dto.code.toUpperCase(),
       p_character_id: dto.character_id || null,
@@ -62,6 +80,20 @@ export const projectMemberService = {
    * Protected membership fields (project/user/role/status) stay server/GM controlled.
    */
   async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {
+    if (isHostLibraryEnabled()) {
+      const updated = await setHostMyProjectCharacter(projectId, characterId);
+      const memberId = requireUuid(updated.memberId, 'set_my_project_character');
+      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');
+      return {
+        id: memberId,
+        project_id: projectId,
+        user_id: userId,
+        role: 'player',
+        status: 'active',
+        character_id: characterId,
+        joined_at: new Date().toISOString(),
+      } as ProjectMemberDto;
+    }
     const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {
       p_project_id: projectId,
       p_character_id: characterId,

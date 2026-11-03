@@ -5,9 +5,7 @@
  * Hides RPC transport; maps JSON → SagaOverviewVm via domain parse.
  * Does not SELECT sensitive project/session columns directly (RPC only).
  *
- * Dual-path (MIG-308): production remains Supabase RPC. Host ports are bound via
- * `createHostProjectAdapter` for tests / future cutover (no accidental cutover —
- * VITE host flags alone do not redirect this facade).
+ * Dual-path (FE-HOST-04): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
@@ -16,6 +14,10 @@ import {
   parseSagaOverview,
   type SagaOverviewVm,
 } from '../../domains/project/contracts/saga-overview';
+import {
+  fetchHostSagaOverview,
+  isHostLibraryEnabled,
+} from '../host/host-project-http';
 
 /** Hub RPC aggregates membership + episodes + world — allow headroom over REST default. */
 const SAGA_OVERVIEW_TIMEOUT_MS = Math.max(SUPABASE_QUERY_TIMEOUT_MS, 12_000);
@@ -25,6 +27,14 @@ class SagaOverviewService {
     const publicId = sagaPublicId.trim().toUpperCase();
     if (!publicId) {
       throw new Error('Saga-ID fehlt');
+    }
+
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSagaOverview(publicId);
+      if (data == null) throw new Error('Saga-Übersicht leer');
+      const vm = parseSagaOverview(data);
+      assertSagaOverviewAudienceSafe(vm);
+      return vm;
     }
 
     const { data, error } = await raceWithTimeoutReject(

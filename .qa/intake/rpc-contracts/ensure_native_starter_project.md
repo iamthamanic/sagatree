@@ -190,17 +190,22 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/project/project-service.ts:397
+### src/infrastructure/project/project-service.ts:402
 
-AST-Auflösung: `string-literal`; SHA-256 `9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783`.
+AST-Auflösung: `string-literal`; SHA-256 `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {
     if (isHostLibraryEnabled()) {
-      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).
-      void slug;
+      try {
+        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');
+        await ensureHostNativeStarterProject(slug);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.warn('[project-service] ensure_native_starter_project (host):', message);
+      }
       return;
     }
     const { error } = await supabase.rpc('ensure_native_starter_project', {
@@ -249,7 +254,7 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/infrastructure/host/host-library-http.ts](../../../src/infrastructure/host/host-library-http.ts) | `5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a` |
-| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783` |
+| [src/infrastructure/project/project-service.ts](../../../src/infrastructure/project/project-service.ts) | `c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a` |
 | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |

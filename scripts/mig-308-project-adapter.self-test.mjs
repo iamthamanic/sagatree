@@ -341,7 +341,7 @@ try {
     rmSync(hostWork, { recursive: true, force: true });
   }
 
-  // Client dual-path wiring + Supabase default remains
+  // Client dual-path seam remains; FE-HOST-04/#1096 flips VITE host library flag onto HTTP.
   const serviceFiles = [
     'project-member-service.ts',
     'project-service.ts',
@@ -350,10 +350,16 @@ try {
   ];
   for (const name of serviceFiles) {
     const src = readFileSync(join(root, 'src/infrastructure/project', name), 'utf8');
-    assert(/Dual-path \(MIG-308\)/.test(src), `dual-path note on ${name}`);
-    assert(/from ['"].*supabase['"]/.test(src) || /supabase\.rpc|supabase\n/.test(src) || /supabase\./.test(src), `${name} uses supabase`);
-    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
-    assert(!/VITE_SAGATREE_HOST/i.test(code), `${name}: flags do not redirect facade`);
+    assert(
+      /Dual-path \(MIG-308\)/.test(src) || /Dual-path \(FE-HOST-04\)/.test(src),
+      `dual-path note on ${name}`,
+    );
+    assert(
+      /from ['"].*supabase['"]/.test(src) ||
+        /supabase\.rpc|supabase\n/.test(src) ||
+        /supabase\./.test(src),
+      `${name} uses supabase`,
+    );
   }
   const adapterSrc = readFileSync(
     join(root, 'src/infrastructure/project/host-project-adapter.ts'),
@@ -363,8 +369,8 @@ try {
 
   const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
   assert(
-    !/mountProjectInfra|project-infra-http|projectInfraHttp/i.test(createApp),
-    'no project-infra HTTP mount yet',
+    /mountProjectHttpRoutes/.test(createApp),
+    'FE-HOST-04 mounts projectInfra HTTP routes',
   );
 
   console.log('PASS mig-308-project-adapter.self-test');

@@ -14622,7 +14622,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+            "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -14729,8 +14729,8 @@
           "rpc": "create_project_session",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 817,
-          "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+          "line": 848,
+          "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
           "requestExpression": "{\n      p_project_id: payload.projectId,\n      p_name: payload.name ?? null,\n      p_notes: payload.notes ?? null,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -14778,7 +14778,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 40,
-              "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}"
             },
             {
@@ -14786,7 +14786,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 122,
-              "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isSessionStatus(value: unknown): value is SessionDto['status'] {\n  return (\n    value === 'scheduled'\n    || value === 'waiting'\n    || value === 'active'\n    || value === 'paused'\n    || value === 'completed'\n    || value === 'cancelled'\n  );\n}"
             },
             {
@@ -14794,7 +14794,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 133,
-              "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function isSessionDto(value: unknown): value is SessionDto {\n  if (!isRecord(value)) return false;\n  const durationOk =\n    value.duration_minutes === undefined\n    || typeof value.duration_minutes === 'number'\n    || value.duration_minutes === null;\n  const publicIdOk =\n    typeof value.public_id === 'string'\n    || value.public_id === undefined\n    || value.public_id === null;\n  const lookOk =\n    value.look_profile_id === undefined\n    || value.look_profile_id === null\n    || typeof value.look_profile_id === 'string';\n  const notesOk =\n    value.notes === undefined\n    || typeof value.notes === 'string'\n    || value.notes === null;\n  return (\n    typeof value.id === 'string'\n    && publicIdOk\n    && typeof value.project_id === 'string'\n    && typeof value.session_number === 'number'\n    && (typeof value.name === 'string' || value.name === null)\n    && notesOk\n    && isSessionStatus(value.status)\n    && (typeof value.started_at === 'string' || value.started_at === null)\n    && (typeof value.ended_at === 'string' || value.ended_at === null)\n    && durationOk\n    && lookOk\n    && typeof value.created_at === 'string'\n    && typeof value.updated_at === 'string'\n  );\n}"
             },
             {
@@ -14802,7 +14802,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-service.ts",
               "line": 168,
-              "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+              "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
               "source": "function normalizeSessionDto(value: SessionDto): SessionDto {\n  return {\n    ...value,\n    // #569: notes column not selectable by authenticated — treat missing as null.\n    notes: value.notes ?? null,\n    duration_minutes: value.duration_minutes ?? null,\n  };\n}"
             },
             {
@@ -15903,7 +15903,7 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+          "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -24199,7 +24199,7 @@
           },
           {
             "path": "src/infrastructure/project/project-service.ts",
-            "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+            "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
           },
           {
             "path": "src/lib/hostAuthBridge.ts",
@@ -24422,15 +24422,15 @@
           "rpc": "ensure_native_starter_project",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-service.ts",
-          "line": 397,
-          "sourceSha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783",
+          "line": 402,
+          "sourceSha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a",
           "requestExpression": "{\n      p_slug: slug,\n    }",
           "requestKeys": [
             "p_slug"
           ],
           "callExpression": "supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    })",
           "enclosingCallable": "ensureNativeStarterProject",
-          "callerContract": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      // Solo host boots seed Dornhain into SQLite (ensureDornhainDefaultCatalog).\n      void slug;\n      return;\n    }\n    const { error } = await supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    });\n    if (error) {\n      console.warn('[project-service] ensure_native_starter_project:', error.message);\n    }\n  }",
+          "callerContract": "async ensureNativeStarterProject(slug = 'dornhain.whisper'): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      try {\n        const { ensureHostNativeStarterProject } = await import('../host/host-project-http');\n        await ensureHostNativeStarterProject(slug);\n      } catch (err) {\n        const message = err instanceof Error ? err.message : String(err);\n        console.warn('[project-service] ensure_native_starter_project (host):', message);\n      }\n      return;\n    }\n    const { error } = await supabase.rpc('ensure_native_starter_project', {\n      p_slug: slug,\n    });\n    if (error) {\n      console.warn('[project-service] ensure_native_starter_project:', error.message);\n    }\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';",
@@ -27116,7 +27116,7 @@
         },
         {
           "path": "src/infrastructure/project/project-service.ts",
-          "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+          "sha256": "c92385b9656039cf348230edf003a7f37b90f519d91ab7bc9eb0c9d2ac0d8a3a"
         },
         {
           "path": "src/lib/hostAuthBridge.ts",
@@ -29014,8 +29014,16 @@
         "isolatedPostgresCatalogueVerified": true,
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -29094,52 +29102,109 @@
           "rpc": "get_my_saga_permissions",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 129,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
-          "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
+          "line": 141,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
+          "requestExpression": "{\n      p_public_id: publicId,\n    }",
           "requestKeys": [
             "p_public_id"
           ],
-          "callExpression": "supabase.rpc('get_my_saga_permissions', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
+          "callExpression": "supabase.rpc('get_my_saga_permissions', {\n      p_public_id: publicId,\n    })",
           "enclosingCallable": "getMyPermissions",
-          "callerContract": "async getMyPermissions(sagaPublicId: string): Promise<SagaMyPermissionsVm> {\n    const { data, error } = await supabase.rpc('get_my_saga_permissions', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Berechtigungen: ${error.message}`);\n    }\n    return parseMyPermissions(data);\n  }",
+          "callerContract": "async getMyPermissions(sagaPublicId: string): Promise<SagaMyPermissionsVm> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostMySagaPermissions(publicId);\n      return parseMyPermissions(data);\n    }\n    const { data, error } = await supabase.rpc('get_my_saga_permissions', {\n      p_public_id: publicId,\n    });\n    if (error) {\n      throw new Error(`Berechtigungen: ${error.message}`);\n    }\n    return parseMyPermissions(data);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostGetJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 35,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "fetchHostMySagaPermissions",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 154,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function fetchHostMySagaPermissions(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/permissions`,\n    'Berechtigungen konnten nicht geladen werden',\n  );\n}"
+            },
             {
               "name": "SagaMyPermissionsVm",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 26,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 33,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "export type SagaMyPermissionsVm = {\n  readonly projectId: string;\n  readonly bundleId: SagaBundleId | null;\n  readonly isGm: boolean;\n  readonly keys: readonly SagaPermissionKey[];\n};"
             },
             {
               "name": "asString",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 52,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 59,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
             },
             {
               "name": "parseKeys",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 56,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 63,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function parseKeys(raw: unknown): SagaPermissionKey[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaPermissionKey[] = [];\n  for (const item of raw) {\n    if (isSagaPermissionKey(item) && !out.includes(item)) out.push(item);\n  }\n  return out;\n}"
             },
             {
               "name": "parseMyPermissions",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 65,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 72,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function parseMyPermissions(raw: unknown): SagaMyPermissionsVm {\n  if (!raw || typeof raw !== 'object') {\n    throw new Error('Berechtigungen konnten nicht geladen werden');\n  }\n  const row = raw as Record<string, unknown>;\n  const projectId = asString(row.projectId);\n  if (!projectId) throw new Error('Berechtigungen ohne projectId');\n  const bundleRaw = row.bundleId;\n  return {\n    projectId,\n    bundleId: isSagaBundleId(bundleRaw) ? bundleRaw : null,\n    isGm: row.isGm === true,\n    keys: parseKeys(row.keys),\n  };\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -30007,8 +30072,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -33101,8 +33174,16 @@
             "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
           },
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -33201,19 +33282,20 @@
           "rpc": "get_saga_lore_timeline",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 200,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
-          "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
+          "line": 255,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
+          "requestExpression": "{\n      p_public_id: publicId,\n    }",
           "requestKeys": [
             "p_public_id"
           ],
-          "callExpression": "supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
+          "callExpression": "supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: publicId,\n    })",
           "enclosingCallable": "getLoreTimeline",
-          "callerContract": "async getLoreTimeline(sagaPublicId: string): Promise<SagaLoreTimelineVm> {\n    const { data, error } = await supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Lore/Verlauf: ${error.message}`);\n    }\n    return parseSagaLoreTimeline(data);\n  }",
+          "callerContract": "async getLoreTimeline(sagaPublicId: string): Promise<SagaLoreTimelineVm> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSagaLoreTimeline(publicId);\n      return parseSagaLoreTimeline(data);\n    }\n    const { data, error } = await supabase.rpc('get_saga_lore_timeline', {\n      p_public_id: publicId,\n    });\n    if (error) {\n      throw new Error(`Lore/Verlauf: ${error.message}`);\n    }\n    return parseSagaLoreTimeline(data);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -33271,6 +33353,62 @@
               "line": 33,
               "sourceSha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b",
               "source": "export function parseSagaLoreTimeline(raw: unknown): SagaLoreTimelineVm {\n  if (!raw || typeof raw !== 'object') {\n    throw new Error('Lore-Timeline Antwort ungültig');\n  }\n  const row = raw as Record<string, unknown>;\n  const projectId = asString(row.projectId);\n  if (!projectId) {\n    throw new Error('Lore-Timeline ohne projectId');\n  }\n  const entriesRaw = Array.isArray(row.entries) ? row.entries : [];\n  const entries: SagaLoreTimelineEntry[] = [];\n  for (const item of entriesRaw) {\n    if (!item || typeof item !== 'object') continue;\n    const e = item as Record<string, unknown>;\n    const kindRaw = asString(e.kind);\n    if (!KINDS.has(kindRaw)) continue;\n    const id = asString(e.id);\n    if (!id) continue;\n    entries.push({\n      id,\n      kind: kindRaw as SagaLoreEntryKind,\n      title: asString(e.title, 'Eintrag'),\n      summary: asString(e.summary),\n      visibility: asString(e.visibility, 'gm_only'),\n      occurredAt: typeof e.occurredAt === 'string' ? e.occurredAt : null,\n    });\n  }\n  return {\n    projectId,\n    canReadHidden: asBool(row.canReadHidden),\n    entries,\n  };\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostGetJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 35,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "fetchHostSagaLoreTimeline",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 161,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function fetchHostSagaLoreTimeline(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/lore-timeline`,\n    'Lore-Zeitleiste fehlgeschlagen',\n  );\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -34428,8 +34566,16 @@
           "sha256": "f245a4b02ce971d772808ddcdb70944992ba7f8cb0fbc1d012e5f6c93e11b48b"
         },
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -34516,8 +34662,16 @@
             "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
           },
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-overview-service.ts",
-            "sha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074"
+            "sha256": "fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/networkTimeout.ts",
@@ -34718,19 +34872,20 @@
           "rpc": "get_saga_overview",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-overview-service.ts",
-          "line": 31,
-          "sourceSha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074",
+          "line": 41,
+          "sourceSha256": "fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa",
           "requestExpression": "{ p_public_id: publicId }",
           "requestKeys": [
             "p_public_id"
           ],
           "callExpression": "supabase.rpc('get_saga_overview', { p_public_id: publicId })",
           "enclosingCallable": "getOverviewByPublicId",
-          "callerContract": "async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (!publicId) {\n      throw new Error('Saga-ID fehlt');\n    }\n\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_overview', { p_public_id: publicId }),\n      SAGA_OVERVIEW_TIMEOUT_MS,\n      'Saga-Übersicht Zeitüberschreitung',\n    );\n\n    if (error) {\n      const message = error.message || 'Saga-Übersicht fehlgeschlagen';\n      if (/not authenticated|forbidden|42501/i.test(message)) {\n        throw new Error('Kein Zugriff auf diese Saga');\n      }\n      if (/not found|P0002/i.test(message)) {\n        throw new Error('Saga nicht gefunden');\n      }\n      throw new Error(message);\n    }\n\n    if (data == null) {\n      throw new Error('Saga-Übersicht leer');\n    }\n\n    const vm = parseSagaOverview(data);\n    assertSagaOverviewAudienceSafe(vm);\n    return vm;\n  }",
+          "callerContract": "async getOverviewByPublicId(sagaPublicId: string): Promise<SagaOverviewVm> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (!publicId) {\n      throw new Error('Saga-ID fehlt');\n    }\n\n    if (isHostLibraryEnabled()) {\n      const data = await fetchHostSagaOverview(publicId);\n      if (data == null) throw new Error('Saga-Übersicht leer');\n      const vm = parseSagaOverview(data);\n      assertSagaOverviewAudienceSafe(vm);\n      return vm;\n    }\n\n    const { data, error } = await raceWithTimeoutReject(\n      supabase.rpc('get_saga_overview', { p_public_id: publicId }),\n      SAGA_OVERVIEW_TIMEOUT_MS,\n      'Saga-Übersicht Zeitüberschreitung',\n    );\n\n    if (error) {\n      const message = error.message || 'Saga-Übersicht fehlgeschlagen';\n      if (/not authenticated|forbidden|42501/i.test(message)) {\n        throw new Error('Kein Zugriff auf diese Saga');\n      }\n      if (/not found|P0002/i.test(message)) {\n        throw new Error('Saga nicht gefunden');\n      }\n      throw new Error(message);\n    }\n\n    if (data == null) {\n      throw new Error('Saga-Übersicht leer');\n    }\n\n    const vm = parseSagaOverview(data);\n    assertSagaOverviewAudienceSafe(vm);\n    return vm;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';",
-            "import {\n  assertSagaOverviewAudienceSafe,\n  parseSagaOverview,\n  type SagaOverviewVm,\n} from '../../domains/project/contracts/saga-overview';"
+            "import {\n  assertSagaOverviewAudienceSafe,\n  parseSagaOverview,\n  type SagaOverviewVm,\n} from '../../domains/project/contracts/saga-overview';",
+            "import {\n  fetchHostSagaOverview,\n  isHostLibraryEnabled,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -34942,12 +35097,68 @@
               "source": "export function assertSagaOverviewAudienceSafe(vm: SagaOverviewVm): void {\n  if (vm.isGm || vm.selfRole === 'gamemaster') return;\n  for (const clock of vm.worldStateSummary.clocks) {\n    if (clock.visibility === 'gm_only') {\n      throw new Error('Player-Übersicht enthält gm_only Uhr');\n    }\n  }\n  for (const cons of vm.worldStateSummary.consequences) {\n    if (cons.visibility === 'gm_only') {\n      throw new Error('Player-Übersicht enthält gm_only Consequence');\n    }\n  }\n  for (const dl of vm.worldStateSummary.openDeadlines) {\n    if (dl.visibility === 'gm_only') {\n      throw new Error('Player-Übersicht enthält gm_only Frist');\n    }\n  }\n}"
             },
             {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostGetJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 35,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "fetchHostSagaOverview",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 147,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function fetchHostSagaOverview(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/overview`,\n    'Saga-Übersicht fehlgeschlagen',\n  );\n}"
+            },
+            {
               "name": "SAGA_OVERVIEW_TIMEOUT_MS",
               "kind": "VariableDeclaration",
               "path": "src/infrastructure/project/saga-overview-service.ts",
-              "line": 21,
-              "sourceSha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074",
+              "line": 23,
+              "sourceSha256": "fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa",
               "source": "SAGA_OVERVIEW_TIMEOUT_MS = Math.max(SUPABASE_QUERY_TIMEOUT_MS, 12_000)"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "SUPABASE_QUERY_TIMEOUT_MS",
@@ -36633,8 +36844,16 @@
           "sha256": "d4ddafbea6f3d8a8678c44d6fd9096ebe1f6985e4c335f5050dac2915918dc94"
         },
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-overview-service.ts",
-          "sha256": "65bf2badf498e31c53757b3d94a766e2ad4282afee6591004e837863ace2e074"
+          "sha256": "fdcfe378e727d5409e430eda4c37b1f8aae6d08dd2636aace8d66a96e19d02aa"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/networkTimeout.ts",
@@ -43325,8 +43544,16 @@
             "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
           },
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -43451,8 +43678,8 @@
           "rpc": "join_project_by_code",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 42,
-          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+          "line": 60,
+          "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
           "requestExpression": "{\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    }",
           "requestKeys": [
             "p_code",
@@ -43460,10 +43687,11 @@
           ],
           "callExpression": "supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    })",
           "enclosingCallable": "joinByCode",
-          "callerContract": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
+          "callerContract": "async joinByCode(dto: JoinProjectDto): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const joined = await joinHostProjectByCode(dto.code.toUpperCase(), dto.character_id || null);\n      const projectId = requireUuid(joined.projectId, 'join_project_by_code');\n      const userId = requireUuid(joined.userId, 'join_project_by_code.userId');\n      return {\n        id: projectId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: dto.character_id || null,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: projectId, error: joinError } = await supabase.rpc('join_project_by_code', {\n      p_code: dto.code.toUpperCase(),\n      p_character_id: dto.character_id || null,\n    });\n\n    if (joinError) throw new Error(`Beitritt fehlgeschlagen: ${joinError.message}`);\n    const joinedProjectId = requireUuid(projectId, 'join_project_by_code');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('project_id', joinedProjectId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
-            "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';"
+            "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';",
+            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -43483,20 +43711,76 @@
               "source": "export interface JoinProjectDto {\n  code: string;\n  character_id?: string;\n}"
             },
             {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostMutateJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 74,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "joinHostProjectByCode",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 123,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function joinHostProjectByCode(\n  code: string,\n  characterId?: string | null,\n): Promise<{ readonly projectId: string; readonly userId: string }> {\n  return hostMutateJson(\n    '/api/v1/projects/join',\n    'POST',\n    { code, characterId: characterId ?? null },\n    'Beitritt fehlgeschlagen',\n  );\n}"
+            },
+            {
               "name": "UUID_PATTERN",
               "kind": "VariableDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 13,
-              "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+              "line": 17,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
             },
             {
               "name": "requireUuid",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 15,
-              "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+              "line": 19,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -44515,8 +44799,16 @@
           "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
         },
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+          "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -48094,8 +48386,16 @@
         "isolatedPostgresCatalogueVerified": true,
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -48188,45 +48488,110 @@
           "rpc": "list_saga_bindings",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 169,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
-          "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    }",
+          "line": 207,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
+          "requestExpression": "{\n      p_public_id: publicId,\n      p_asset_kind: assetKind ?? null,\n    }",
           "requestKeys": [
             "p_public_id",
             "p_asset_kind"
           ],
-          "callExpression": "supabase.rpc('list_saga_bindings', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    })",
+          "callExpression": "supabase.rpc('list_saga_bindings', {\n      p_public_id: publicId,\n      p_asset_kind: assetKind ?? null,\n    })",
           "enclosingCallable": "listBindings",
-          "callerContract": "async listBindings(\n    sagaPublicId: string,\n    assetKind?: SagaAssetKind | null,\n  ): Promise<SagaAssetBindingVm[]> {\n    const { data, error } = await supabase.rpc('list_saga_bindings', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n      p_asset_kind: assetKind ?? null,\n    });\n    if (error) {\n      throw new Error(`Bindings: ${error.message}`);\n    }\n    return parseBindings(data);\n  }",
+          "callerContract": "async listBindings(\n    sagaPublicId: string,\n    assetKind?: SagaAssetKind | null,\n  ): Promise<SagaAssetBindingVm[]> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (isHostLibraryEnabled()) {\n      const data = await listHostSagaBindings(publicId, assetKind ?? null);\n      const bindings =\n        data && typeof data === 'object' && Array.isArray((data as { bindings?: unknown }).bindings)\n          ? (data as { bindings: unknown[] }).bindings\n          : Array.isArray(data)\n            ? data\n            : [];\n      return parseBindings(bindings);\n    }\n    const { data, error } = await supabase.rpc('list_saga_bindings', {\n      p_public_id: publicId,\n      p_asset_kind: assetKind ?? null,\n    });\n    if (error) {\n      throw new Error(`Bindings: ${error.message}`);\n    }\n    return parseBindings(data);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "qs",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 25,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function qs(params: Record<string, string | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === '') continue;\n    sp.set(key, value);\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
+            },
+            {
+              "name": "hostGetJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 35,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "listHostSagaBindings",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 168,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function listHostSagaBindings(\n  publicId: string,\n  assetKind?: string | null,\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/bindings${qs({ assetKind })}`,\n    'Bindings fehlgeschlagen',\n  );\n}"
+            },
             {
               "name": "SagaAssetBindingVm",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 42,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 49,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "export type SagaAssetBindingVm = {\n  readonly id: string;\n  readonly assetKind: SagaAssetKind;\n  readonly assetId: string;\n  readonly reveal: SagaRevealStatus;\n  readonly label: string;\n  /** Linked world_places.id when location is mapped to Donalu place model. */\n  readonly worldPlaceId?: string | null;\n};"
             },
             {
               "name": "asString",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 52,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 59,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
             },
             {
               "name": "parseBindings",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 103,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 110,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function parseBindings(raw: unknown): SagaAssetBindingVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaAssetBindingVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const id = asString(row.id);\n    const assetKind = asString(row.assetKind) as SagaAssetKind;\n    const assetId = asString(row.assetId);\n    const reveal = parseSagaRevealStatus(row.reveal);\n    if (!id || !assetId || !reveal) continue;\n    const worldPlaceRaw = row.worldPlaceId;\n    out.push({\n      id,\n      assetKind,\n      assetId,\n      reveal,\n      label: asString(row.label),\n      worldPlaceId: typeof worldPlaceRaw === 'string' && worldPlaceRaw ? worldPlaceRaw : null,\n    });\n  }\n  return out;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -49066,8 +49431,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -49138,8 +49511,16 @@
         "isolatedPostgresCatalogueVerified": true,
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -49214,44 +49595,101 @@
           "rpc": "list_saga_member_permission_state",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 141,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
-          "requestExpression": "{\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    }",
+          "line": 164,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
+          "requestExpression": "{\n      p_public_id: publicId,\n    }",
           "requestKeys": [
             "p_public_id"
           ],
-          "callExpression": "supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    })",
+          "callExpression": "supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: publicId,\n    })",
           "enclosingCallable": "listMemberPermissionState",
-          "callerContract": "async listMemberPermissionState(\n    sagaPublicId: string,\n  ): Promise<SagaMemberPermissionStateVm[]> {\n    const { data, error } = await supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: sagaPublicId.trim().toUpperCase(),\n    });\n    if (error) {\n      throw new Error(`Mitglieder-Rechte: ${error.message}`);\n    }\n    return parseMemberState(data);\n  }",
+          "callerContract": "async listMemberPermissionState(\n    sagaPublicId: string,\n  ): Promise<SagaMemberPermissionStateVm[]> {\n    const publicId = sagaPublicId.trim().toUpperCase();\n    if (isHostLibraryEnabled()) {\n      const data = await listHostSagaMemberPermissionState(publicId);\n      const members =\n        data && typeof data === 'object' && Array.isArray((data as { members?: unknown }).members)\n          ? (data as { members: unknown[] }).members\n          : Array.isArray(data)\n            ? data\n            : [];\n      return parseMemberState(members);\n    }\n    const { data, error } = await supabase.rpc('list_saga_member_permission_state', {\n      p_public_id: publicId,\n    });\n    if (error) {\n      throw new Error(`Mitglieder-Rechte: ${error.message}`);\n    }\n    return parseMemberState(data);\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostGetJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 35,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /not authenticated|forbidden|42501/i.test(detail)) {\n      throw new Error('Kein Zugriff auf diese Saga');\n    }\n    if (detail && /not found|P0002/i.test(detail)) {\n      throw new Error('Saga nicht gefunden');\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "listHostSagaMemberPermissionState",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 178,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function listHostSagaMemberPermissionState(publicId: string): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/sagas/${encodeURIComponent(publicId)}/members`,\n    'Mitglieder-Berechtigungen fehlgeschlagen',\n  );\n}"
+            },
             {
               "name": "SagaMemberPermissionStateVm",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 33,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 40,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "export type SagaMemberPermissionStateVm = {\n  readonly memberId: string;\n  readonly userId: string;\n  readonly role: string;\n  readonly status: string;\n  readonly bundleId: SagaBundleId | null;\n  readonly canSetBundle: boolean;\n};"
             },
             {
               "name": "asString",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 52,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 59,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
             },
             {
               "name": "parseMemberState",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 81,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 88,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function parseMemberState(raw: unknown): SagaMemberPermissionStateVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaMemberPermissionStateVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const memberId = asString(row.memberId);\n    const userId = asString(row.userId);\n    if (!memberId || !userId) continue;\n    const bundleRaw = row.bundleId;\n    out.push({\n      memberId,\n      userId,\n      role: asString(row.role),\n      status: asString(row.status, 'active'),\n      bundleId: isSagaBundleId(bundleRaw) ? bundleRaw : null,\n      canSetBundle: row.canSetBundle === true,\n    });\n  }\n  return out;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -50059,8 +50497,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -70301,8 +70747,16 @@
             "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
           },
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/project-member-service.ts",
-            "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+            "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -70411,8 +70865,8 @@
           "rpc": "set_my_project_character",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/project-member-service.ts",
-          "line": 65,
-          "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+          "line": 97,
+          "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
           "requestExpression": "{\n      p_project_id: projectId,\n      p_character_id: characterId,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -70420,10 +70874,11 @@
           ],
           "callExpression": "supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    })",
           "enclosingCallable": "updateCharacter",
-          "callerContract": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
+          "callerContract": "async updateCharacter(projectId: string, characterId: string): Promise<ProjectMemberDto> {\n    if (isHostLibraryEnabled()) {\n      const updated = await setHostMyProjectCharacter(projectId, characterId);\n      const memberId = requireUuid(updated.memberId, 'set_my_project_character');\n      const userId = requireUuid(updated.userId, 'set_my_project_character.userId');\n      return {\n        id: memberId,\n        project_id: projectId,\n        user_id: userId,\n        role: 'player',\n        status: 'active',\n        character_id: characterId,\n        joined_at: new Date().toISOString(),\n      } as ProjectMemberDto;\n    }\n    const { data: memberId, error: updateError } = await supabase.rpc('set_my_project_character', {\n      p_project_id: projectId,\n      p_character_id: characterId,\n    });\n\n    if (updateError) throw new Error(`Charakter konnte nicht aktualisiert werden: ${updateError.message}`);\n    const updatedMemberId = requireUuid(memberId, 'set_my_project_character');\n\n    const { data, error } = await supabase\n      .from('project_members')\n      .select('*')\n      .eq('id', updatedMemberId)\n      .single();\n\n    if (error) throw error;\n    return data;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
-            "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';"
+            "import type { ProjectMemberDto, JoinProjectDto } from '../../domains/project/contracts/project.types';",
+            "import {\n  isHostLibraryEnabled,\n  joinHostProjectByCode,\n  setHostMyProjectCharacter,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
             {
@@ -70435,20 +70890,76 @@
               "source": "export interface ProjectMemberDto {\n  id: string;\n  project_id: string;\n  user_id: string;\n  character_id: string | null;\n  role: 'gm' | 'player';\n  joined_at: string;\n  status: 'active' | 'inactive' | 'kicked';\n}"
             },
             {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostMutateJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 74,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "setHostMyProjectCharacter",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 135,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function setHostMyProjectCharacter(\n  projectId: string,\n  characterId?: string | null,\n): Promise<{ readonly memberId: string; readonly userId: string }> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/my-character`,\n    'POST',\n    { characterId: characterId ?? null },\n    'Charakter konnte nicht aktualisiert werden',\n  );\n}"
+            },
+            {
               "name": "UUID_PATTERN",
               "kind": "VariableDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 13,
-              "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+              "line": 17,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"
             },
             {
               "name": "requireUuid",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/project-member-service.ts",
-              "line": 15,
-              "sourceSha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593",
+              "line": 19,
+              "sourceSha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54",
               "source": "function requireUuid(value: unknown, operation: string): string {\n  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {\n    throw new Error(`${operation} returned an invalid identifier`);\n  }\n  return value;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -71192,8 +71703,16 @@
           "sha256": "1777f75b3bd865b09e3fba61324b7331439f5846c98dea1230e27b6f976a0ca8"
         },
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/project-member-service.ts",
-          "sha256": "ee72a706dd82477c61943a4913ecec3de73059dba11ec0c370c81ec7a599a593"
+          "sha256": "e2e4afc1eb144d257d3ef5fda84fde8bac40fce8bd3e049a946fc76255b4dc54"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -71280,8 +71799,16 @@
         "isolatedPostgresCatalogueVerified": true,
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -71360,8 +71887,8 @@
           "rpc": "set_saga_binding_reveal",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 184,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+          "line": 234,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
           "requestExpression": "{\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -71370,36 +71897,93 @@
           ],
           "callExpression": "supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    })",
           "enclosingCallable": "setBindingReveal",
-          "callerContract": "async setBindingReveal(input: {\n    projectId: string;\n    bindingId: string;\n    reveal: SagaRevealStatus;\n  }): Promise<SagaAssetBindingVm> {\n    const { data, error } = await supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    });\n    if (error) {\n      throw new Error(`Sichtbarkeit: ${error.message}`);\n    }\n    const parsed = parseBindings([data]);\n    if (parsed.length === 0) {\n      throw new Error('Sichtbarkeit konnte nicht gelesen werden');\n    }\n    return parsed[0]!;\n  }",
+          "callerContract": "async setBindingReveal(input: {\n    projectId: string;\n    bindingId: string;\n    reveal: SagaRevealStatus;\n  }): Promise<SagaAssetBindingVm> {\n    if (isHostLibraryEnabled()) {\n      const data = await setHostSagaBindingReveal(\n        input.projectId,\n        input.bindingId,\n        input.reveal,\n      );\n      const parsed = parseBindings([data]);\n      if (parsed.length === 0) {\n        throw new Error('Sichtbarkeit konnte nicht gelesen werden');\n      }\n      return parsed[0]!;\n    }\n    const { data, error } = await supabase.rpc('set_saga_binding_reveal', {\n      p_project_id: input.projectId,\n      p_binding_id: input.bindingId,\n      p_reveal: input.reveal,\n    });\n    if (error) {\n      throw new Error(`Sichtbarkeit: ${error.message}`);\n    }\n    const parsed = parseBindings([data]);\n    if (parsed.length === 0) {\n      throw new Error('Sichtbarkeit konnte nicht gelesen werden');\n    }\n    return parsed[0]!;\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostMutateJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 74,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "setHostSagaBindingReveal",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 185,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function setHostSagaBindingReveal(\n  projectId: string,\n  bindingId: string,\n  reveal: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/bindings/${encodeURIComponent(bindingId)}/reveal`,\n    'POST',\n    { reveal },\n    'Reveal konnte nicht gesetzt werden',\n  );\n}"
+            },
             {
               "name": "SagaAssetBindingVm",
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 42,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 49,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "export type SagaAssetBindingVm = {\n  readonly id: string;\n  readonly assetKind: SagaAssetKind;\n  readonly assetId: string;\n  readonly reveal: SagaRevealStatus;\n  readonly label: string;\n  /** Linked world_places.id when location is mapped to Donalu place model. */\n  readonly worldPlaceId?: string | null;\n};"
             },
             {
               "name": "asString",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 52,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 59,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function asString(value: unknown, fallback = ''): string {\n  return typeof value === 'string' ? value : fallback;\n}"
             },
             {
               "name": "parseBindings",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/project/saga-permission-service.ts",
-              "line": 103,
-              "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+              "line": 110,
+              "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
               "source": "function parseBindings(raw: unknown): SagaAssetBindingVm[] {\n  if (!Array.isArray(raw)) return [];\n  const out: SagaAssetBindingVm[] = [];\n  for (const item of raw) {\n    if (!item || typeof item !== 'object') continue;\n    const row = item as Record<string, unknown>;\n    const id = asString(row.id);\n    const assetKind = asString(row.assetKind) as SagaAssetKind;\n    const assetId = asString(row.assetId);\n    const reveal = parseSagaRevealStatus(row.reveal);\n    if (!id || !assetId || !reveal) continue;\n    const worldPlaceRaw = row.worldPlaceId;\n    out.push({\n      id,\n      assetKind,\n      assetId,\n      reveal,\n      label: asString(row.label),\n      worldPlaceId: typeof worldPlaceRaw === 'string' && worldPlaceRaw ? worldPlaceRaw : null,\n    });\n  }\n  return out;\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
             },
             {
               "name": "viteEnv",
@@ -72249,8 +72833,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",
@@ -72313,8 +72905,16 @@
         "isolatedPostgresCatalogueVerified": true,
         "sourceFiles": [
           {
+            "path": "src/infrastructure/host/host-project-http.ts",
+            "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+          },
+          {
             "path": "src/infrastructure/project/saga-permission-service.ts",
-            "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+            "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+          },
+          {
+            "path": "src/lib/hostAuthBridge.ts",
+            "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
           },
           {
             "path": "src/lib/supabase.ts",
@@ -72389,8 +72989,8 @@
           "rpc": "set_saga_member_bundle",
           "resolution": "string-literal",
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "line": 155,
-          "sourceSha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d",
+          "line": 182,
+          "sourceSha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919",
           "requestExpression": "{\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    }",
           "requestKeys": [
             "p_project_id",
@@ -72399,13 +72999,70 @@
           ],
           "callExpression": "supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    })",
           "enclosingCallable": "setMemberBundle",
-          "callerContract": "async setMemberBundle(input: {\n    projectId: string;\n    memberId: string;\n    bundleId: SagaBundleId;\n  }): Promise<void> {\n    const { error } = await supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    });\n    if (error) {\n      throw new Error(`Bundle konnte nicht gesetzt werden: ${error.message}`);\n    }\n  }",
+          "callerContract": "async setMemberBundle(input: {\n    projectId: string;\n    memberId: string;\n    bundleId: SagaBundleId;\n  }): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await setHostSagaMemberBundle(input.projectId, input.memberId, input.bundleId);\n      return;\n    }\n    const { error } = await supabase.rpc('set_saga_member_bundle', {\n      p_project_id: input.projectId,\n      p_member_id: input.memberId,\n      p_bundle_id: input.bundleId,\n    });\n    if (error) {\n      throw new Error(`Bundle konnte nicht gesetzt werden: ${error.message}`);\n    }\n  }",
           "imports": [
             "import { supabase } from '../../lib/supabase';",
             "import {\n  isSagaBundleId,\n  isSagaPermissionKey,\n  parseSagaRevealStatus,\n  type SagaAssetKind,\n  type SagaBundleId,\n  type SagaPermissionKey,\n  type SagaRevealStatus,\n} from '../../domains/saga/permissions';",
-            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';"
+            "import {\n  parseSagaLoreTimeline,\n  type SagaLoreTimelineVm,\n} from '../../domains/saga/permissions/lore-timeline';",
+            "import {\n  fetchHostMySagaPermissions,\n  fetchHostSagaLoreTimeline,\n  isHostLibraryEnabled,\n  listHostSagaBindings,\n  listHostSagaMemberPermissionState,\n  setHostSagaBindingReveal,\n  setHostSagaMemberBundle,\n} from '../host/host-project-http';"
           ],
           "supportingDeclarations": [
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 12,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 17,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "hostMutateJson",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 74,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+            },
+            {
+              "name": "setHostSagaMemberBundle",
+              "kind": "FunctionDeclaration",
+              "path": "src/infrastructure/host/host-project-http.ts",
+              "line": 198,
+              "sourceSha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681",
+              "source": "export async function setHostSagaMemberBundle(\n  projectId: string,\n  memberId: string,\n  bundleId: string,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/projects/${encodeURIComponent(projectId)}/members/${encodeURIComponent(memberId)}/bundle`,\n    'POST',\n    { bundleId },\n    'Bundle konnte nicht gesetzt werden',\n  );\n}"
+            },
+            {
+              "name": "EnvLike",
+              "kind": "TypeAliasDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 25,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
+            },
+            {
+              "name": "defaultEnv",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 27,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
+            },
+            {
+              "name": "getHostAuthBaseUrl",
+              "kind": "FunctionDeclaration",
+              "path": "src/lib/hostAuthBridge.ts",
+              "line": 40,
+              "sourceSha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b",
+              "source": "export function getHostAuthBaseUrl(env: EnvLike = defaultEnv()): string | null {\n  const url = env.VITE_SAGATREE_HOST_AUTH_URL;\n  if (typeof url !== 'string' || !url.trim()) return null;\n  return url.replace(/\\/$/, '');\n}"
+            },
             {
               "name": "viteEnv",
               "kind": "VariableDeclaration",
@@ -73430,8 +74087,16 @@
       "removedOverloads": [],
       "sourceFiles": [
         {
+          "path": "src/infrastructure/host/host-project-http.ts",
+          "sha256": "459614569be5ee3cbd9d60c647d3ddcbb6da5ef1e8fd371dc4e6dfa5f20a9681"
+        },
+        {
           "path": "src/infrastructure/project/saga-permission-service.ts",
-          "sha256": "697d95f82a1e8dfb54a7d578d2d69c1d5abde2f62727ba60000f379d4750cd0d"
+          "sha256": "cb3d8329b86626f710e3f5da8e3f7679fe0d37333a4e9112ad61e9b4975aa919"
+        },
+        {
+          "path": "src/lib/hostAuthBridge.ts",
+          "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
         },
         {
           "path": "src/lib/supabase.ts",

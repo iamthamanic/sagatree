@@ -455,6 +455,7 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       inventory,
       project,
       sessionInfra: sessionInfraPorts,
+      projectInfra,
     });
 
     return {
