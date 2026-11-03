@@ -9488,7 +9488,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3"
+        "sha256": "b16f74a553ceed340429c47214cf615e824fdf3a8103fdc4509cec9f027498a2"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -9595,7 +9595,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3"
+        "sha256": "b16f74a553ceed340429c47214cf615e824fdf3a8103fdc4509cec9f027498a2"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -9729,7 +9729,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3"
+        "sha256": "b16f74a553ceed340429c47214cf615e824fdf3a8103fdc4509cec9f027498a2"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -9818,7 +9818,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3"
+        "sha256": "b16f74a553ceed340429c47214cf615e824fdf3a8103fdc4509cec9f027498a2"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -9908,7 +9908,7 @@
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "d1bcd644e84ec41f9d38390219f9f4847b881d3c5cd547646491ac8e66bc11c3"
+        "sha256": "b16f74a553ceed340429c47214cf615e824fdf3a8103fdc4509cec9f027498a2"
       },
       {
         "path": "src/lib/authenticatedUser.ts",

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `7e28611a0aeaf6269cdfa49c4372aec2c4e958e0db4f2a1b21ecc9d0c1787b0b`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-inventory.json](source-contracts/infra-inventory.json) (SHA-256 `8957486b7b2d8f0db70cc69e30ccdab29b35be078b082cab0ebf19df2217ebfb`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -768,11 +768,23 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
   definition: ItemDefinition;
   record: CatalogDefinitionRecord | null;
 } | null> {
+  if (isHostLibraryEnabled()) {
+    const hostItems = await fetchHostLibraryItems();
+    const record = hostItems
+      .map(mapHostLibraryItemRecord)
+      .find((row): row is CatalogDefinitionRecord => row !== null && row.definition.id === definitionId);
+    if (record) return { definition: record.definition, record };
+    const core = getCoreItemDefinition(definitionId);
+    if (core) return { definition: withCatalogPublicId(core), record: null };
+    const builtin = getBuiltinStandardDefinition(definitionId);
+    if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
+    return null;
+  }
   return supabaseItemCatalogRepository.getDefinitionById(definitionId);
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:259
+### src/infrastructure/inventory/item-catalog-service.ts:271
 
 ```ts
 export async function createPersonalDefinition(
@@ -785,7 +797,7 @@ export async function createPersonalDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:268
+### src/infrastructure/inventory/item-catalog-service.ts:280
 
 ```ts
 export async function createWorldDefinition(
@@ -799,7 +811,7 @@ export async function createWorldDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:278
+### src/infrastructure/inventory/item-catalog-service.ts:290
 
 ```ts
 export async function updateDefinition(
@@ -813,7 +825,7 @@ export async function updateDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:289
+### src/infrastructure/inventory/item-catalog-service.ts:301
 
 ```ts
 export async function archiveDefinition(
@@ -826,7 +838,7 @@ export async function archiveDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:298
+### src/infrastructure/inventory/item-catalog-service.ts:310
 
 ```ts
 export async function restoreDefinition(
@@ -839,7 +851,7 @@ export async function restoreDefinition(
 }
 ```
 
-### src/infrastructure/inventory/item-catalog-service.ts:311
+### src/infrastructure/inventory/item-catalog-service.ts:323
 
 ```ts
 export async function forkDefinition(
@@ -1704,7 +1716,7 @@ async function invoke(body: Record<string, unknown>): Promise<FunctionResponse> 
 | `src/infrastructure/inventory/host-inventory-adapter.ts` | `705ee213e4ffa49ea7b0d89583a01b5ae78bcd6a990464dd5104d88abc83b6b2` |
 | `src/infrastructure/inventory/host-inventory-ports.contract.ts` | `115502542d1d6c8a94292ca0f15a683ebc78cf2997aa3c5a130b682cccc448d2` |
 | `src/infrastructure/inventory/inventory-persistence.ts` | `79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2` |
-| `src/infrastructure/inventory/item-catalog-service.ts` | `0acc6aba2818624d0cd6b30775ee35a4325e1de73624103a93a5a55a66cb679d` |
+| `src/infrastructure/inventory/item-catalog-service.ts` | `bd57f46625d0b162bc107c302429befe2bfc12b843da99c3be65f1e14f980b38` |
 | `src/infrastructure/inventory/item-catalog.persistence.ts` | `a68903ba909af8030e81d28555a65798800c9a32a790a4281e96f52b1550c566` |
 | `src/infrastructure/inventory/item-model3d-service.ts` | `c2ab599cea52e8ba923fc12c71129d38801dc00027064c5fe72aa2ceffafff55` |
 | `src/infrastructure/inventory/item-thumbnail-service.ts` | `907b1f5589d6063b804727b636cd74e53507dbdc4578adde805738fac4be4b78` |
