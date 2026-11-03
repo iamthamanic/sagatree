@@ -3,10 +3,10 @@
   "kind": "migration-acceptance",
   "localId": "MIG-002",
   "result": "PASS",
-  "testedCommit": "78c5a58e88770bfbe490dfaf98daf249a65ce5a2",
+  "testedCommit": "cf5ac46456dc08f4c50cc4f5d5e8090f598e4d94",
   "githubClosed": true,
-  "mergeRef": "PR #860 → main (after #782)",
-  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. RPC inventory sha256 refreshed after MIG-353/#816 marketplace host-successor source-verified.",
+  "mergeRef": "PR #860 \u2192 main (after #782)",
+  "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. Inventories refreshed after FE-HOST-03/#1095 world atlas/map/places dual-path caller drift.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "4152c7ba0a4e26f1be4e8265fdf26d6be39679cb3d909765bbad6550a53eb502"
+      "sha256": "2ca3b805916012cff52dce56e149c9bc0c499e30c9e77de458700ea8df948a8f"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "47dd3ba2a6b9b50d549bf74cd046aa74ce728e59e87137908c9bfd5ec69f49b8"
+      "sha256": "629bd88103540336a6f69f86cc6be673c397832a3b078775ac2fc44a3fc7c390"
     }
   ]
 }

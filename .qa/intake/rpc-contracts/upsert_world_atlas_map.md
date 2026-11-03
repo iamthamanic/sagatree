@@ -115,14 +115,31 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/world/world-atlas-service.ts:85
+### src/infrastructure/world/world-atlas-service.ts:123
 
-AST-Auflösung: `string-literal`; SHA-256 `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1`.
+AST-Auflösung: `string-literal`; SHA-256 `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
 ```typescript
 async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldAtlasMap({
+        worldProfileId: input.worldProfileId.trim(),
+        mapId: input.mapId ?? null,
+        parentMapId: input.parentMapId ?? null,
+        kind: input.kind,
+        title: input.title,
+        sortOrder: input.sortOrder ?? 0,
+        bounds: input.bounds,
+        layers: input.layers,
+        basemapStoragePath: input.basemapStoragePath ?? null,
+        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,
+        generatorMeta: input.generatorMeta ?? {},
+        expectedRevision: input.expectedRevision ?? null,
+      });
+      return parseWorldAtlasMapVm(data);
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_atlas_map', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -154,11 +171,18 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 
 | Symbol | Quelle | Zeile | SHA-256 |
 | --- | --- | --- | --- |
-| `UpsertWorldAtlasMapInput` | [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | 23 | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
+| `EnvLike` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 12 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
+| `defaultEnv` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 17 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
+| `hostMutateJson` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 68 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
+| `upsertHostWorldAtlasMap` | [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | 172 | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
+| `UpsertWorldAtlasMapInput` | [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | 32 | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
 | `API_AUTH_REQUIRED_DE` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 22 | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `JWT_WAIT_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 25 | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `JWT_POLL_MS` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 26 | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
 | `assertSupabaseJwtSession` | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | 55 | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `AUTH_SESSION_TIMEOUT_MS` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 7 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `TIMED_OUT` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 10 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | `TimedOut` | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | 12 | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
@@ -191,8 +215,10 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 
 | Quelle | SHA-256 |
 | --- | --- |
-| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1` |
+| [src/infrastructure/host/host-world-http.ts](../../../src/infrastructure/host/host-world-http.ts) | `6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b` |
+| [src/infrastructure/world/world-atlas-service.ts](../../../src/infrastructure/world/world-atlas-service.ts) | `6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27` |
 | [src/lib/authenticatedUser.ts](../../../src/lib/authenticatedUser.ts) | `c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/networkTimeout.ts](../../../src/lib/networkTimeout.ts) | `835466d4cd28abcdd579116b13a14e23b50f7308cd1e9aedf114d851f6aef851` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |

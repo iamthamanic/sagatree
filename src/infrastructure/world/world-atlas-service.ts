@@ -1,6 +1,8 @@
 /**
  * world-atlas-service — Supabase adapter for world_atlas_maps (#702).
  * Location: src/infrastructure/world/world-atlas-service.ts
+ *
+ * Dual-path (FE-HOST-03): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import {
   assertSupabaseJwtSession,
@@ -16,6 +18,13 @@ import {
   type WorldAtlasMapVm,
   type WorldAtlasBounds,
 } from '../../domains/world/atlas';
+import {
+  ensureHostWorldAtlasRoot,
+  fetchHostWorldAtlasMap,
+  isHostLibraryEnabled,
+  listHostWorldAtlasMaps,
+  upsertHostWorldAtlasMap,
+} from '../host/host-world-http';
 
 const ATLAS_BUCKET = 'world-atlas';
 const AZGAAR_MAX_BYTES = 40 * 1024 * 1024;
@@ -40,9 +49,13 @@ class WorldAtlasService {
     worldProfileId: string,
     options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},
   ): Promise<WorldAtlasMapSummary[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldAtlasMaps(id, options);
+      return parseWorldAtlasMapList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_atlas_maps', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -53,9 +66,13 @@ class WorldAtlasService {
   }
 
   async ensureRoot(worldProfileId: string): Promise<WorldAtlasMapSummary[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await ensureHostWorldAtlasRoot(id);
+      return parseWorldAtlasMapList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('ensure_world_atlas_root', {
       p_world_profile_id: id,
     });
@@ -68,9 +85,13 @@ class WorldAtlasService {
     playerView = false,
     sagaPublicId?: string | null,
   ): Promise<WorldAtlasMapVm> {
-    await assertSupabaseJwtSession();
     const id = mapId.trim();
     if (!id) throw new Error('Karten-ID fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostWorldAtlasMap(id, playerView, sagaPublicId);
+      return parseWorldAtlasMapVm(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('get_world_atlas_map', {
       p_map_id: id,
       p_player_view: playerView,
@@ -81,6 +102,23 @@ class WorldAtlasService {
   }
 
   async upsertMap(input: UpsertWorldAtlasMapInput): Promise<WorldAtlasMapVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldAtlasMap({
+        worldProfileId: input.worldProfileId.trim(),
+        mapId: input.mapId ?? null,
+        parentMapId: input.parentMapId ?? null,
+        kind: input.kind,
+        title: input.title,
+        sortOrder: input.sortOrder ?? 0,
+        bounds: input.bounds,
+        layers: input.layers,
+        basemapStoragePath: input.basemapStoragePath ?? null,
+        azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,
+        generatorMeta: input.generatorMeta ?? {},
+        expectedRevision: input.expectedRevision ?? null,
+      });
+      return parseWorldAtlasMapVm(data);
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_atlas_map', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -109,6 +147,11 @@ class WorldAtlasService {
 
   /** Store native Azgaar `.map` (or zip) — not a full embedded editor. */
   async uploadAzgaarMapFile(worldProfileId: string, file: File): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Azgaar-Upload über Host-Speicher folgt in einem späteren Cutover.',
+      );
+    }
     await assertSupabaseJwtSession();
     const userId = await getAuthenticatedUserId();
     if (file.size > AZGAAR_MAX_BYTES) {
@@ -125,6 +168,11 @@ class WorldAtlasService {
   }
 
   async createSignedUrl(storagePath: string, expiresSec = 3600): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Atlas-Download-URLs über Host-Speicher folgen in einem späteren Cutover.',
+      );
+    }
     await assertSupabaseJwtSession();
     const path = storagePath.trim();
     if (!path) throw new Error('Storage-Pfad fehlt');

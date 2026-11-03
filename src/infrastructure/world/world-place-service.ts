@@ -1,6 +1,8 @@
 /**
  * world-place-service — Supabase adapter for world_places + map links.
  * Location: src/infrastructure/world/world-place-service.ts
+ *
+ * Dual-path (FE-HOST-03): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { assertSupabaseJwtSession } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
@@ -16,6 +18,20 @@ import {
   type WorldPlaceVm,
 } from '../../domains/world/places';
 import type { WorldNodeKind, WorldNodeSubtype } from '../../domains/world/hierarchy';
+import {
+  archiveHostWorldNodeSubtree,
+  createHostWorldNodeWithMaps,
+  deleteHostWorldNode,
+  duplicateHostWorldNode,
+  isHostLibraryEnabled,
+  listHostWorldPlaceMapLinks,
+  listHostWorldPlaces,
+  previewHostWorldNodeConsequences,
+  renameHostWorldNode,
+  reparentHostWorldNode,
+  upsertHostWorldPlace,
+  upsertHostWorldPlaceMapLink,
+} from '../host/host-world-http';
 export type ListWorldPlacesOptions = {
   readonly playerView?: boolean;
   readonly sagaPublicId?: string | null;
@@ -35,9 +51,13 @@ class WorldPlaceService {
     worldProfileId: string,
     options: ListWorldPlacesOptions = {},
   ): Promise<WorldPlaceVm[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldPlaces(id, options);
+      return parseWorldPlaceList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_places', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -51,9 +71,13 @@ class WorldPlaceService {
     worldProfileId: string,
     options: ListWorldPlacesOptions = {},
   ): Promise<WorldPlaceMapLinkVm[]> {
-    await assertSupabaseJwtSession();
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await listHostWorldPlaceMapLinks(id, options);
+      return parseWorldPlaceMapLinkList(data);
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('list_world_place_map_links', {
       p_world_profile_id: id,
       p_player_view: options.playerView === true,
@@ -64,6 +88,22 @@ class WorldPlaceService {
   }
 
   async upsertPlace(input: UpsertWorldPlaceInput): Promise<WorldPlaceVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldPlace({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId ?? null,
+        parentPlaceId: input.parentPlaceId ?? null,
+        kind: input.kind,
+        name: input.name,
+        description: input.description ?? null,
+        status: input.status ?? 'draft',
+        seedKey: input.seedKey ?? null,
+        sortOrder: input.sortOrder ?? 0,
+      });
+      const parsed = parseWorldPlaceVm(data);
+      if (!parsed) throw new Error('Ort speichern: ungültige Antwort');
+      return parsed;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_place', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -95,6 +135,21 @@ class WorldPlaceService {
     readonly parentPlaceId?: string | null;
     readonly description?: string | null;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await createHostWorldNodeWithMaps({
+        worldProfileId: input.worldProfileId.trim(),
+        kind: input.kind,
+        name: input.name,
+        idempotencyKey: input.idempotencyKey.trim(),
+        subtype: input.subtype ?? null,
+        parentPlaceId: input.parentPlaceId ?? null,
+        description: input.description ?? null,
+      });
+      if (!data || typeof data !== 'object') {
+        throw new Error('Weltknoten anlegen: ungültige Antwort');
+      }
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('create_world_node_with_maps', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -117,6 +172,14 @@ class WorldPlaceService {
     readonly worldProfileId: string;
     readonly placeId: string;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await previewHostWorldNodeConsequences({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+      });
+      if (!data || typeof data !== 'object') throw new Error('Folgenabschätzung: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('preview_world_node_consequences', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -132,6 +195,16 @@ class WorldPlaceService {
     readonly placeId: string;
     readonly name: string;
   }): Promise<WorldPlaceVm> {
+    if (isHostLibraryEnabled()) {
+      const data = await renameHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        name: input.name,
+      });
+      const parsed = parseWorldPlaceVm(data);
+      if (!parsed) throw new Error('Umbenennen: ungültige Antwort');
+      return parsed;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('rename_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -150,6 +223,16 @@ class WorldPlaceService {
     readonly newParentPlaceId: string | null;
     readonly confirmRelocate: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await reparentHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        newParentPlaceId: input.newParentPlaceId,
+        confirmRelocate: input.confirmRelocate,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Verschieben: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('reparent_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -167,6 +250,15 @@ class WorldPlaceService {
     readonly placeId: string;
     readonly deep?: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await duplicateHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        deep: input.deep === true,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Duplizieren: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('duplicate_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -183,6 +275,15 @@ class WorldPlaceService {
     readonly placeId: string;
     readonly confirm: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await archiveHostWorldNodeSubtree({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        confirm: input.confirm,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Archivieren: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('archive_world_node_subtree', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -199,6 +300,15 @@ class WorldPlaceService {
     readonly placeId: string;
     readonly confirm: boolean;
   }): Promise<Readonly<Record<string, unknown>>> {
+    if (isHostLibraryEnabled()) {
+      const data = await deleteHostWorldNode({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        confirm: input.confirm,
+      });
+      if (!data || typeof data !== 'object') throw new Error('Löschen: ungültige Antwort');
+      return data as Readonly<Record<string, unknown>>;
+    }
     await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('delete_world_node', {
       p_world_profile_id: input.worldProfileId.trim(),
@@ -211,10 +321,23 @@ class WorldPlaceService {
   }
 
   async linkMap(input: LinkWorldPlaceMapInput): Promise<WorldPlaceMapLinkVm> {
-    await assertSupabaseJwtSession();
     if (!isWorldPlaceMapUsage(input.usage)) {
       throw new Error(`Ungültige Kartenverwendung: ${input.usage}`);
     }
+    if (isHostLibraryEnabled()) {
+      const data = await upsertHostWorldPlaceMapLink({
+        worldProfileId: input.worldProfileId.trim(),
+        placeId: input.placeId.trim(),
+        mapId: input.mapId.trim(),
+        usage: input.usage,
+        featureId: input.featureId ?? null,
+        anchor: input.anchor ?? {},
+      });
+      const parsed = parseWorldPlaceMapLinkVm(data);
+      if (!parsed) throw new Error('Kartenverknüpfung: ungültige Antwort');
+      return parsed;
+    }
+    await assertSupabaseJwtSession();
     const { data, error } = await supabase.rpc('upsert_world_place_map_link', {
       p_world_profile_id: input.worldProfileId.trim(),
       p_place_id: input.placeId.trim(),

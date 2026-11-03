@@ -7492,8 +7492,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "sha256": "952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e"
+        "sha256": "ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7586,8 +7594,16 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-map-service.ts",
-        "sha256": "952e85442ef9cd7ac198ac33ba6703e58b967ab115efad0183cd240dccddee1e"
+        "sha256": "ec49afd5715b21860c05dba3fb92eb1ba90a3a8009277c6ac14b637463ab2a27"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -7644,12 +7660,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
+        "sha256": "6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7818,12 +7842,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
+        "sha256": "6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -7989,12 +8021,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
+        "sha256": "6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8122,12 +8162,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-atlas-service.ts",
-        "sha256": "252141b947176fbc28c1b353e0473eec2d18cef19ec671e8f89ac8998d107de1"
+        "sha256": "6f39628cc7b8448dd100850a7e2fce652cf87bca68d134c2d8cc766b7ee90b27"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8269,12 +8317,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8399,12 +8455,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8514,12 +8578,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8588,12 +8660,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8675,12 +8755,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8757,12 +8845,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8836,12 +8932,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -8923,12 +9027,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9009,12 +9121,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9091,12 +9211,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",
@@ -9185,12 +9313,20 @@
     "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-world-http.ts",
+        "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
+      },
+      {
         "path": "src/infrastructure/world/world-place-service.ts",
-        "sha256": "0a18cae0d8ac1503ffcb7f149e12f757aea44a6f346f75eb4f44742724e8d6c0"
+        "sha256": "c8b48bc3e5ecdf33ecfe6db705115f17b423a7fbf5e504aa89d815cdf27551b4"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
         "sha256": "c822140996ae4d318c19d2ccb5318d77f2ba4d302bdfbcb50a79420a7ef70d74"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/networkTimeout.ts",

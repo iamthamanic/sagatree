@@ -26,6 +26,7 @@ import { authDenyStatus, transportStatus } from './errors.ts';
 import { mountAiHttpRoutes } from './ai-routes.ts';
 import { mountLibraryHttpRoutes } from './library-routes.ts';
 import { mountSessionHttpRoutes } from './session-routes.ts';
+import { mountWorldAtlasHttpRoutes } from './world-atlas-routes.ts';
 
 export type HostApiDeps = {
   readonly health: ReturnType<typeof createHealthUseCase>;
@@ -422,6 +423,12 @@ export function createHostApi(deps: HostApiDeps): Hono {
     identity: deps.identity,
     hostMode: deps.hostMode,
     sessionInfra: deps.sessionInfra,
+  });
+
+  mountWorldAtlasHttpRoutes(app, {
+    identity: deps.identity,
+    hostMode: deps.hostMode,
+    world: deps.world,
   });
 
   app.notFound((c) => c.json({ error: 'not-found' }, 404));

@@ -1,6 +1,8 @@
 /**
  * world-map-service — Supabase adapter for world_maps (#580/#637).
  * Location: src/infrastructure/world/world-map-service.ts
+ *
+ * Dual-path (FE-HOST-03): Host HTTP when `VITE_SAGATREE_HOST_LIBRARY=1`.
  */
 import { supabase } from '../../lib/supabase';
 import {
@@ -8,6 +10,11 @@ import {
   type WorldMapData,
   type WorldMapVm,
 } from '../../domains/world/map';
+import {
+  fetchHostWorldMap,
+  isHostLibraryEnabled,
+  saveHostWorldMap,
+} from '../host/host-world-http';
 
 const MAP_PIN_MAX_BYTES = 5 * 1024 * 1024;
 const MAP_PIN_ALLOWED_MIME = new Set(['image/png', 'image/jpeg', 'image/webp']);
@@ -72,6 +79,12 @@ class WorldMapService {
   async getMap(worldProfileId: string, playerView = false): Promise<WorldMapVm> {
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostWorldMap(id, playerView);
+      const vm = parseWorldMapVm(data);
+      if (!vm) throw new Error('Ungültige Kartenantwort');
+      return vm;
+    }
     const { data, error } = await supabase.rpc('get_world_map', {
       p_world_profile_id: id,
       p_player_view: playerView,
@@ -89,6 +102,12 @@ class WorldMapService {
   ): Promise<WorldMapVm> {
     const id = worldProfileId.trim();
     if (!id) throw new Error('Weltprofil fehlt');
+    if (isHostLibraryEnabled()) {
+      const data = await saveHostWorldMap(id, expectedRevision, mapData);
+      const vm = parseWorldMapVm(data);
+      if (!vm) throw new Error('Ungültige Speicherantwort');
+      return vm;
+    }
     const { data, error } = await supabase.rpc('save_world_map', {
       p_world_profile_id: id,
       p_expected_revision: expectedRevision,
@@ -109,6 +128,11 @@ class WorldMapService {
     file: File,
     options?: UploadPinImageOptions,
   ): Promise<string> {
+    if (isHostLibraryEnabled()) {
+      throw new Error(
+        'Pin-Bild-Upload über Host-Speicher folgt in einem späteren Cutover.',
+      );
+    }
     const {
       data: { user },
       error: authError,
