@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "8178c05647d90ee6f44db88b7958c03eff45359e3a2720de07616f3f1ea7f0fa"
+      "sha256": "219862412688ccfc0619edd7db0778e2996addad65f95dc0db922b8cc01ef188"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "99dfc94077e702bf4881af7493cea98db76b9b7483c4d4de2613cbf369f1d1a3"
+      "sha256": "d96994adf8c08fcc0c5eceb28f604e1e5dc7d2c61b0e5b380eaf6c3be91951bd"
     }
   ]
 }

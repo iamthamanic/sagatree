@@ -101,9 +101,9 @@ Die finalen Datenbank-Constraints der beteiligten Relationen sind pro RPC in inv
 
 ## Caller: Request-Mapping, Response-Decoding und Fehler
 
-### src/infrastructure/session/session-service.ts:352
+### src/infrastructure/session/session-service.ts:442
 
-AST-Auflösung: `string-literal`; SHA-256 `d2f1e89fca1ef75c6b6c633ce8e9169801d3394e52912661c07457511ec4fdac`.
+AST-Auflösung: `string-literal`; SHA-256 `3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a`.
 
 Der vollständige aufrufende Funktionskörper enthält Parameterumformung, RPC-Aufruf, Response-Prüfung, Fehlerumwandlung und gegebenenfalls Fallback:
 
@@ -113,6 +113,14 @@ async resolveSessionInvite(token: string): Promise<SessionInviteResolveResult> {
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
+    }
+    if (isHostLibraryEnabled()) {
+      try {
+        const invite = await resolveHostSessionInvite(normalized);
+        return mapInviteResolvePayload(invite);
+      } catch {
+        return { ok: false, errorCode: 'not_found' };
+      }
     }
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
@@ -134,6 +142,13 @@ Direkt oder transitiv referenzierte lokale/importierte Mapper, Decoder und Vertr
 | `SessionInviteResolveResult` | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | 36 | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
 | `normalizeInviteToken` | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | 64 | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
 | `mapInviteResolvePayload` | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | 70 | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
+| `EnvLike` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 12 | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| `defaultEnv` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 17 | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| `hostMutateJson` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 58 | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| `resolveHostSessionInvite` | [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | 303 | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| `EnvLike` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 25 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `defaultEnv` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 27 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
+| `getHostAuthBaseUrl` | [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | 40 | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | `viteEnv` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 3 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseUrl` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 5 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | `configuredSupabaseAnonKey` | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | 6 | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
@@ -161,7 +176,9 @@ Die folgenden Hashes binden SQL-Kette, transitive Tabellen-/Trigger-/Policyquell
 | Quelle | SHA-256 |
 | --- | --- |
 | [src/domains/session/contracts/session-invite.ts](../../../src/domains/session/contracts/session-invite.ts) | `dac4795822314800fb59ff5e11b56ab8ce808071c43185e99711a92b66c0d4dc` |
-| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `d2f1e89fca1ef75c6b6c633ce8e9169801d3394e52912661c07457511ec4fdac` |
+| [src/infrastructure/host/host-session-http.ts](../../../src/infrastructure/host/host-session-http.ts) | `6c6baf668174dd76e44f1a0a0e7ceb16b6ec1960539b4e038d87d9274ebc804e` |
+| [src/infrastructure/session/session-service.ts](../../../src/infrastructure/session/session-service.ts) | `3eb3c127fb51c82d91bcd4ffd7c04ad363934ad99e69ea6e8991561d34e0b19a` |
+| [src/lib/hostAuthBridge.ts](../../../src/lib/hostAuthBridge.ts) | `6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b` |
 | [src/lib/supabase.ts](../../../src/lib/supabase.ts) | `a3c450dc37e82e1fede9d188520d0d3414aa67ec6d5521c6f124af1a8b04898f` |
 | [supabase/migrations/001_initial.sql](../../../supabase/migrations/001_initial.sql) | `e3325c56d68286a2e293ddff791736ef91346ff90ac018c045843a5d52afb8c8` |
 | [supabase/migrations/002_character_trait_arrays.sql](../../../supabase/migrations/002_character_trait_arrays.sql) | `74a7f112720d2572bbb8b7d8c32e0f5f5abf932c35268a34b45dc4bfedc2a02a` |
