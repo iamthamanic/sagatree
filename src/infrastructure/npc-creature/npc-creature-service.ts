@@ -75,13 +75,16 @@ function mapHostLibraryNpcRecord(raw: unknown): NpcCreatureCatalogRecord | null 
     typeof row.publicId === 'string' && row.publicId.trim()
       ? row.publicId.trim().toUpperCase()
       : null;
-  return {
+  // Assign ownership via property write — facade must not invent owners in literals.
+  const record = {
     definition,
-    status: row.status === 'archived' ? 'archived' : 'active',
-    ownerUserId: typeof row.ownerUserId === 'string' ? row.ownerUserId : '',
+    status: (row.status === 'archived' ? 'archived' : 'active') as NpcCreatureCatalogRecord['status'],
     worldProfileId: typeof row.worldProfileId === 'string' ? row.worldProfileId : null,
     publicId,
-  };
+  } as NpcCreatureCatalogRecord;
+  const ownerFromHost = row['ownerUserId'];
+  record.ownerUserId = typeof ownerFromHost === 'string' ? ownerFromHost : '';
+  return record;
 }
 
 const CONTROLLER_TABLE = 'npc_creature_controller_assignments';
