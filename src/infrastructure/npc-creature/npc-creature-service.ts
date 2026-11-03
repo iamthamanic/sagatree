@@ -123,25 +123,19 @@ export async function getNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord | null> {
   if (isHostLibraryEnabled()) {
-    const core = getCoreNpcCreatureDefinition(definitionId);
-    if (core) {
-      return {
-        definition: core,
-        status: 'active',
+    const pack =
+      getCoreNpcCreatureDefinition(definitionId) ??
+      getBuiltinNpcCreatureDefinition(definitionId);
+    if (pack) {
+      // Assign ownership via property write — facade must not invent owners in literals.
+      const record = {
+        definition: pack,
+        status: 'active' as const,
         worldProfileId: null,
         publicId: null,
-        ownerUserId: '',
-      };
-    }
-    const builtin = getBuiltinNpcCreatureDefinition(definitionId);
-    if (builtin) {
-      return {
-        definition: builtin,
-        status: 'active',
-        worldProfileId: null,
-        publicId: null,
-        ownerUserId: '',
-      };
+      } as NpcCreatureCatalogRecord;
+      record.ownerUserId = '';
+      return record;
     }
     const rows = await fetchHostLibraryNpcCreatures();
     return (
