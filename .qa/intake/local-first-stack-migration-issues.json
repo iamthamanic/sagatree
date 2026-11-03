@@ -12638,7 +12638,6 @@
           "src/infrastructure/ai/host-ai-invoke.ts",
           "src/infrastructure/ai/ollama-settings-service.ts",
           "src/lib/hostAuthBridge.ts",
-          "src/lib/networkTimeout.ts",
           "src/lib/supabase.ts"
         ],
         "baselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
@@ -12707,7 +12706,7 @@
         "approvalRequired": null
       },
       "contractSections": {
-        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/domains/ai-providers/ollama-settings.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/infrastructure/ai/host-ai-invoke.ts, src/infrastructure/ai/ollama-settings-service.ts, src/lib/hostAuthBridge.ts, src/lib/networkTimeout.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.",
+        "vorher": "Baseline 3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248; Quellpfade: src/domains/ai-providers/contracts.ts, src/domains/ai-providers/index.ts, src/domains/ai-providers/ollama-settings.ts, src/infrastructure/ai/ai-provider-credentials-service.ts, src/infrastructure/ai/host-ai-invoke.ts, src/infrastructure/ai/ollama-settings-service.ts, src/lib/hostAuthBridge.ts, src/lib/supabase.ts. Detaillierte Aufruf-/SQL-Nachweise: .qa/intake/edge-infra-contracts/infra-ai.md, .qa/intake/edge-infra-contracts/source-contracts/infra-ai.json.",
         "nachher": "src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten. Zielpfade: .",
         "verhalten": "src/infrastructure/ai: bestehende Aufrufer über den freigegebenen Host transportieren und die vollständige RPC-/Tabellen-/Storage-/Realtime-Abhängigkeit erhalten.",
         "sicherheit": "Der Adapter überträgt einen verifizierbaren Actor-Kontext und übernimmt keine privilegierten Client-Rollen. Serverseitige Policy, Projektion und Asset-Rechte müssen auch bei direkten Requests wirksam bleiben.",

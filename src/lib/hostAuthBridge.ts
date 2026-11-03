@@ -6,7 +6,11 @@
  * This bridge is opt-in via VITE_SAGATREE_HOST_AUTH_URL and never mints JWTs.
  */
 
-import { AUTH_SESSION_TIMEOUT_MS } from './networkTimeout';
+/**
+ * Bound host whoami probes (matches AUTH_SESSION_TIMEOUT_MS). Kept local so
+ * Node self-tests can import this module without browser `networkTimeout`.
+ */
+const HOST_AUTH_PROBE_TIMEOUT_MS = 1_500;
 
 /** Session bearer field names that must never be persisted from host auth JSON. */
 export const HOST_AUTH_SESSION_BEARER_KEYS = [
@@ -76,13 +80,13 @@ export function scrubHostAuthJson<T>(value: T): T {
 export async function probeHostActor(
   fetchImpl: typeof fetch = fetch,
   env: EnvLike = defaultEnv(),
-  timeoutMs: number = AUTH_SESSION_TIMEOUT_MS,
+  timeoutMs: number = HOST_AUTH_PROBE_TIMEOUT_MS,
 ): Promise<HostWhoamiDto | null> {
   const base = getHostAuthBaseUrl(env);
   if (!base) return null;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   let response: Response;
   try {
     response = await fetchImpl(`${base}/api/whoami`, {
