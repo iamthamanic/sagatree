@@ -3,7 +3,7 @@
   "kind": "migration-acceptance",
   "localId": "MIG-002",
   "result": "PASS",
-  "testedCommit": "9221ccc2efe4cbc67deaa02246182a3e19f3485f",
+  "testedCommit": "cf5ac46456dc08f4c50cc4f5d5e8090f598e4d94",
   "githubClosed": true,
   "mergeRef": "PR #860 \u2192 main (after #782)",
   "note": "Completion requires merge SHA + hashed check artifacts; architecture freigabe or source fingerprint alone is insufficient. Inventories refreshed after FE-HOST-03/#1095 world atlas/map/places dual-path caller drift.",
@@ -18,13 +18,13 @@
       "command": "rpc inventory 57",
       "result": "PASS",
       "evidenceFile": ".qa/intake/rpc-contracts/inventory.json",
-      "sha256": "cd381d1dd7e2b14ce05e8075b32e7e9f08703af52f7ea20a8765d144c8ed3ab1"
+      "sha256": "2ca3b805916012cff52dce56e149c9bc0c499e30c9e77de458700ea8df948a8f"
     },
     {
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "d92178cc7ea3a709c556c7aeab77c0127004355fe4b0bef190e8b12f616023a0"
+      "sha256": "629bd88103540336a6f69f86cc6be673c397832a3b078775ac2fc44a3fc7c390"
     }
   ]
 }

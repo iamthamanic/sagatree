@@ -99,7 +99,7 @@ async function hostMutateJson<T>(
     } catch {
       /* ignore */
     }
-    if (detail && /revision conflict/i.test(detail)) {
+    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {
       throw new Error(
         'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',
       );

@@ -7130,7 +7130,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -7241,7 +7241,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -7249,7 +7249,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -7257,15 +7257,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "archiveHostWorldNodeSubtree",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 361,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function archiveHostWorldNodeSubtree(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly confirm: boolean;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/archive`,\n    'POST',\n    { confirm: input.confirm },\n    'Archivieren fehlgeschlagen',\n  );\n}"
             },
             {
@@ -8145,7 +8145,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -17813,7 +17813,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -17928,7 +17928,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -17936,7 +17936,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -17944,15 +17944,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "createHostWorldNodeWithMaps",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 282,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function createHostWorldNodeWithMaps(input: {\n  readonly worldProfileId: string;\n  readonly kind: string;\n  readonly name: string;\n  readonly idempotencyKey: string;\n  readonly subtype?: string | null;\n  readonly parentPlaceId?: string | null;\n  readonly description?: string | null;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes`,\n    'POST',\n    {\n      kind: input.kind,\n      name: input.name,\n      idempotencyKey: input.idempotencyKey,\n      subtype: input.subtype ?? null,\n      parentPlaceId: input.parentPlaceId ?? null,\n      description: input.description ?? null,\n    },\n    'Weltknoten anlegen fehlgeschlagen',\n  );\n}"
             },
             {
@@ -19560,7 +19560,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -19632,7 +19632,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -19753,7 +19753,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -19761,7 +19761,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -19769,15 +19769,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "deleteHostWorldNode",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 374,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function deleteHostWorldNode(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly confirm: boolean;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/delete`,\n    'POST',\n    { confirm: input.confirm },\n    'Löschen fehlgeschlagen',\n  );\n}"
             },
             {
@@ -20951,7 +20951,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -22766,7 +22766,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -22881,7 +22881,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -22889,7 +22889,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -22897,15 +22897,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "duplicateHostWorldNode",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 348,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function duplicateHostWorldNode(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly deep?: boolean;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/duplicate`,\n    'POST',\n    { deep: input.deep === true },\n    'Duplizieren fehlgeschlagen',\n  );\n}"
             },
             {
@@ -24119,7 +24119,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -27312,7 +27312,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -27474,7 +27474,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -27482,7 +27482,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -27490,15 +27490,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "ensureHostWorldAtlasRoot",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 149,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function ensureHostWorldAtlasRoot(worldProfileId: string): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/atlas/ensure-root`,\n    'POST',\n    {},\n    'Atlas-Root fehlgeschlagen',\n  );\n}"
             },
             {
@@ -28895,7 +28895,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -39482,7 +39482,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -39672,7 +39672,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -39680,7 +39680,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -39688,7 +39688,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 25,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function qs(params: Record<string, string | boolean | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === false || value === '') continue;\n    sp.set(key, value === true ? 'true' : String(value));\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -39696,7 +39696,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 35,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -39704,7 +39704,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 158,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function fetchHostWorldAtlasMap(\n  mapId: string,\n  playerView = false,\n  sagaPublicId?: string | null,\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/worlds/atlas/maps/${encodeURIComponent(mapId)}${qs({\n      playerView,\n      sagaPublicId,\n    })}`,\n    'Atlas-Karte konnte nicht geladen werden',\n  );\n}"
             },
             {
@@ -41487,7 +41487,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -41607,7 +41607,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-map-service.ts",
@@ -41735,7 +41735,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -41743,7 +41743,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -41751,7 +41751,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 25,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function qs(params: Record<string, string | boolean | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === false || value === '') continue;\n    sp.set(key, value === true ? 'true' : String(value));\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -41759,7 +41759,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 35,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -41767,7 +41767,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 113,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function fetchHostWorldMap(\n  worldProfileId: string,\n  playerView = false,\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/map${qs({ playerView })}`,\n    'Weltkarte konnte nicht geladen werden',\n  );\n}"
             },
             {
@@ -42741,7 +42741,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
@@ -50120,7 +50120,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -50288,7 +50288,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -50296,7 +50296,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -50304,7 +50304,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 25,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function qs(params: Record<string, string | boolean | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === false || value === '') continue;\n    sp.set(key, value === true ? 'true' : String(value));\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -50312,7 +50312,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 35,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -50320,7 +50320,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 136,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function listHostWorldAtlasMaps(\n  worldProfileId: string,\n  options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/atlas/maps${qs({\n      playerView: options.playerView === true,\n      sagaPublicId: options.sagaPublicId,\n    })}`,\n    'Atlas-Liste fehlgeschlagen',\n  );\n}"
             },
             {
@@ -51937,7 +51937,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -52053,7 +52053,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -52204,7 +52204,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -52212,7 +52212,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -52220,7 +52220,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 25,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function qs(params: Record<string, string | boolean | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === false || value === '') continue;\n    sp.set(key, value === true ? 'true' : String(value));\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -52228,7 +52228,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 35,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -52236,7 +52236,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 219,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function listHostWorldPlaceMapLinks(\n  worldProfileId: string,\n  options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/place-map-links${qs({\n      playerView: options.playerView === true,\n      sagaPublicId: options.sagaPublicId,\n    })}`,\n    'Kartenverknüpfungen fehlgeschlagen',\n  );\n}"
             },
             {
@@ -53410,7 +53410,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -53514,7 +53514,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -53665,7 +53665,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -53673,7 +53673,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -53681,7 +53681,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 25,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function qs(params: Record<string, string | boolean | null | undefined>): string {\n  const sp = new URLSearchParams();\n  for (const [key, value] of Object.entries(params)) {\n    if (value === null || value === undefined || value === false || value === '') continue;\n    sp.set(key, value === true ? 'true' : String(value));\n  }\n  const out = sp.toString();\n  return out ? `?${out}` : '';\n}"
             },
             {
@@ -53689,7 +53689,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 35,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "async function hostGetJson<T>(\n  path: string,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method: 'GET',\n      credentials: 'include',\n      headers: { Accept: 'application/json' },\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const body: unknown = await response.json();\n      if (body && typeof body === 'object' && 'error' in body) {\n        detail = String((body as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  return (await response.json()) as T;\n}"
             },
             {
@@ -53697,7 +53697,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 206,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function listHostWorldPlaces(\n  worldProfileId: string,\n  options: { readonly playerView?: boolean; readonly sagaPublicId?: string | null } = {},\n): Promise<unknown> {\n  return hostGetJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/places${qs({\n      playerView: options.playerView === true,\n      sagaPublicId: options.sagaPublicId,\n    })}`,\n    'Orte konnten nicht geladen werden',\n  );\n}"
             },
             {
@@ -54963,7 +54963,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -55067,7 +55067,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -55177,7 +55177,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -55185,7 +55185,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -55193,15 +55193,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "previewHostWorldNodeConsequences",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 306,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function previewHostWorldNodeConsequences(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/preview-consequences`,\n    'POST',\n    {},\n    'Folgenabschätzung fehlgeschlagen',\n  );\n}"
             },
             {
@@ -56000,7 +56000,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -61648,7 +61648,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -61755,7 +61755,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -61763,7 +61763,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -61771,15 +61771,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "renameHostWorldNode",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 318,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function renameHostWorldNode(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly name: string;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/rename`,\n    'POST',\n    { name: input.name },\n    'Umbenennen fehlgeschlagen',\n  );\n}"
             },
             {
@@ -62546,7 +62546,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -62614,7 +62614,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -62730,7 +62730,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -62738,7 +62738,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -62746,15 +62746,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "reparentHostWorldNode",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 331,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function reparentHostWorldNode(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly newParentPlaceId: string | null;\n  readonly confirmRelocate: boolean;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/nodes/${encodeURIComponent(input.placeId)}/reparent`,\n    'POST',\n    {\n      newParentPlaceId: input.newParentPlaceId,\n      confirmRelocate: input.confirmRelocate,\n    },\n    'Verschieben fehlgeschlagen',\n  );\n}"
             },
             {
@@ -64147,7 +64147,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -69316,7 +69316,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-map-service.ts",
@@ -69401,7 +69401,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -69409,7 +69409,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -69417,15 +69417,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "saveHostWorldMap",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 123,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function saveHostWorldMap(\n  worldProfileId: string,\n  expectedRevision: number,\n  mapData: unknown,\n): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(worldProfileId)}/map`,\n    'PUT',\n    { expectedRevision, mapData },\n    'Weltkarte konnte nicht gespeichert werden',\n  );\n}"
             },
             {
@@ -70250,7 +70250,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-map-service.ts",
@@ -80169,7 +80169,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -80336,7 +80336,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -80344,7 +80344,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -80352,15 +80352,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "upsertHostWorldAtlasMap",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 172,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function upsertHostWorldAtlasMap(input: {\n  readonly worldProfileId: string;\n  readonly mapId?: string | null;\n  readonly parentMapId?: string | null;\n  readonly kind: string;\n  readonly title: string;\n  readonly sortOrder?: number;\n  readonly bounds: unknown;\n  readonly layers: unknown;\n  readonly basemapStoragePath?: string | null;\n  readonly azgaarMapStoragePath?: string | null;\n  readonly generatorMeta?: Readonly<Record<string, unknown>>;\n  readonly expectedRevision?: number | null;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/atlas/maps`,\n    'PUT',\n    {\n      mapId: input.mapId ?? null,\n      parentMapId: input.parentMapId ?? null,\n      kind: input.kind,\n      title: input.title,\n      sortOrder: input.sortOrder ?? 0,\n      bounds: input.bounds,\n      layers: input.layers,\n      basemapStoragePath: input.basemapStoragePath ?? null,\n      azgaarMapStoragePath: input.azgaarMapStoragePath ?? null,\n      generatorMeta: input.generatorMeta ?? {},\n      expectedRevision: input.expectedRevision ?? null,\n    },\n    'Atlas speichern fehlgeschlagen',\n  );\n}"
             },
             {
@@ -82099,7 +82099,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-atlas-service.ts",
@@ -82219,7 +82219,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -82328,7 +82328,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -82336,7 +82336,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -82344,15 +82344,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "upsertHostWorldPlace",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 232,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function upsertHostWorldPlace(input: {\n  readonly worldProfileId: string;\n  readonly placeId?: string | null;\n  readonly parentPlaceId?: string | null;\n  readonly kind: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly status?: string | null;\n  readonly seedKey?: string | null;\n  readonly sortOrder?: number;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/places`,\n    'PUT',\n    {\n      placeId: input.placeId ?? null,\n      parentPlaceId: input.parentPlaceId ?? null,\n      kind: input.kind,\n      name: input.name,\n      description: input.description ?? null,\n      status: input.status ?? 'draft',\n      seedKey: input.seedKey ?? null,\n      sortOrder: input.sortOrder ?? 0,\n    },\n    'Ort speichern fehlgeschlagen',\n  );\n}"
             },
             {
@@ -83246,7 +83246,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",
@@ -83310,7 +83310,7 @@
         "sourceFiles": [
           {
             "path": "src/infrastructure/host/host-world-http.ts",
-            "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+            "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
           },
           {
             "path": "src/infrastructure/world/world-place-service.ts",
@@ -83428,7 +83428,7 @@
               "kind": "TypeAliasDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 12,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
             },
             {
@@ -83436,7 +83436,7 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 17,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "function defaultEnv(): EnvLike {\n  try {\n    return (import.meta as ImportMeta & { env?: EnvLike }).env ?? {};\n  } catch {\n    return {};\n  }\n}"
             },
             {
@@ -83444,15 +83444,15 @@
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 68,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
-              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && /revision conflict/i.test(detail)) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
+              "source": "async function hostMutateJson<T>(\n  path: string,\n  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',\n  body: unknown,\n  unreachableMessage: string,\n  env: EnvLike = defaultEnv(),\n  fetchImpl: typeof fetch = fetch,\n): Promise<T> {\n  const base = getHostAuthBaseUrl(env);\n  if (!base) throw new Error(unreachableMessage);\n  let response: Response;\n  try {\n    response = await fetchImpl(`${base}${path}`, {\n      method,\n      credentials: 'include',\n      headers: {\n        Accept: 'application/json',\n        'Content-Type': 'application/json',\n      },\n      body: body === undefined ? undefined : JSON.stringify(body),\n    });\n  } catch {\n    throw new Error(unreachableMessage);\n  }\n  if (!response.ok) {\n    let detail = '';\n    try {\n      const errBody: unknown = await response.json();\n      if (errBody && typeof errBody === 'object' && 'error' in errBody) {\n        detail = String((errBody as { error: unknown }).error);\n      }\n    } catch {\n      /* ignore */\n    }\n    if (detail && (detail === '40001' || /revision conflict/i.test(detail))) {\n      throw new Error(\n        'Die Karte wurde inzwischen geändert. Bitte neu laden und erneut speichern.',\n      );\n    }\n    throw new Error(detail ? `${unreachableMessage}: ${detail}` : unreachableMessage);\n  }\n  if (response.status === 204) return undefined as T;\n  return (await response.json()) as T;\n}"
             },
             {
               "name": "upsertHostWorldPlaceMapLink",
               "kind": "FunctionDeclaration",
               "path": "src/infrastructure/host/host-world-http.ts",
               "line": 260,
-              "sourceSha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348",
+              "sourceSha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b",
               "source": "export async function upsertHostWorldPlaceMapLink(input: {\n  readonly worldProfileId: string;\n  readonly placeId: string;\n  readonly mapId: string;\n  readonly usage: string;\n  readonly featureId?: string | null;\n  readonly anchor?: Readonly<Record<string, unknown>>;\n}): Promise<unknown> {\n  return hostMutateJson(\n    `/api/v1/worlds/${encodeURIComponent(input.worldProfileId)}/place-map-links`,\n    'PUT',\n    {\n      placeId: input.placeId,\n      mapId: input.mapId,\n      usage: input.usage,\n      featureId: input.featureId ?? null,\n      anchor: input.anchor ?? {},\n    },\n    'Kartenverknüpfung fehlgeschlagen',\n  );\n}"
             },
             {
@@ -84539,7 +84539,7 @@
       "sourceFiles": [
         {
           "path": "src/infrastructure/host/host-world-http.ts",
-          "sha256": "bdefa4be2124a6f226207606b9adf03623f9e62a3b4812a965aeafd071205348"
+          "sha256": "6b27ead78bc969dc83b211c30f9ed5e87bd9b39165014d5fac12f335ad98dd2b"
         },
         {
           "path": "src/infrastructure/world/world-place-service.ts",

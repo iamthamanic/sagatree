@@ -101,7 +101,12 @@ function worldStatus(error: string): number {
   ) {
     return 404;
   }
-  if (error === 'STALE_REVISION' || error === 'revision-conflict' || /revision conflict/i.test(error)) {
+  if (
+    error === 'STALE_REVISION' ||
+    error === 'revision-conflict' ||
+    error === '40001' ||
+    /revision conflict/i.test(error)
+  ) {
     return 409;
   }
   if (error === '22023' || error === 'INVALID_PAYLOAD' || error === 'INVALID_OPERATION') {
