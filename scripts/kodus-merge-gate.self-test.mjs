@@ -18,6 +18,8 @@ import {
   collectKodusIssueCommentFindings,
   collectDismissedIssueCommentIds,
   extractDismissedFindingIds,
+  isKodusCreditsExhaustedFailure,
+  hasTrustedKodusCreditsSkip,
 } from './kodus-merge-gate.mjs';
 import { evaluateMergeGate, findingSeverity } from './ecc-merge-gate-check.mjs';
 
@@ -92,6 +94,75 @@ assert(
     output: { title: 'Code Review Complete' },
   }).reason === 'kodus-failed',
   'neutral conclusion fails',
+);
+
+const creditsFailRun = {
+  name: KODY_CHECK_NAME,
+  app: { slug: 'kody-ai' },
+  status: 'completed',
+  conclusion: 'failure',
+  output: {
+    title: 'Code Review Failed',
+    summary:
+      'The configured API key (openai_compatible) is out of credits or has hit its billing limit. HTTP 429',
+  },
+};
+assert(isKodusCreditsExhaustedFailure(creditsFailRun), 'detect credits exhausted');
+assert(
+  evaluateKodusCheckRun(creditsFailRun).reason === 'kodus-credits-exhausted',
+  'credits failure classified',
+);
+assert(
+  evaluateKodusHeadEvidence(creditsFailRun, { headSha: 'abc' }).ok === false,
+  'credits failure without marker still FAIL',
+);
+assert(
+  !hasTrustedKodusCreditsSkip([
+    { body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->', author_association: 'NONE' },
+  ]),
+  'untrusted author cannot skip credits',
+);
+assert(
+  hasTrustedKodusCreditsSkip([
+    {
+      body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->',
+      author_association: 'OWNER',
+    },
+  ]),
+  'OWNER marker authorizes credits skip',
+);
+assert(
+  evaluateKodusHeadEvidence(creditsFailRun, {
+    headSha: 'abc',
+    issueComments: [
+      {
+        body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->\nSkipped because Ollama credits were exhausted.',
+        author_association: 'OWNER',
+      },
+    ],
+  }).ok === true,
+  'credits exhausted + trusted marker = PASS (kodus-skipped-credits)',
+);
+assert(
+  evaluateKodusHeadEvidence(
+    {
+      name: KODY_CHECK_NAME,
+      app: { slug: 'kody-ai' },
+      status: 'completed',
+      conclusion: 'failure',
+      output: { title: 'Code Review Failed', summary: 'model crashed' },
+    },
+    {
+      headSha: 'abc',
+      issueComments: [
+        {
+          body: '<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->',
+          author_association: 'OWNER',
+        },
+      ],
+    },
+  ).ok === false,
+  'credits skip marker does not waive non-billing failures',
 );
 
 const okRun = {

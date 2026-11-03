@@ -7,14 +7,21 @@ Project-local contract. Do **not** patch global skills unless this file is insuf
 1. Note `headRefOid`.
 2. Wait until check-run `Kody Code Review` for that SHA is `completed` with
    `conclusion=success` and output title containing `Complete` (app slug `kody-ai`).
-3. If missing/pending after a reasonable poll (backoff, capped retries): leave ECC FAIL;
-   do not merge; document blocker.
-4. Enumerate unresolved GraphQL review threads + Kodus issue-comment findings via
+3. If Kody fails because the review provider is out of credits (Ollama
+   `openai_compatible` / HTTP 429 / billing or monthly usage limit): an
+   OWNER/MEMBER/COLLABORATOR may waive Kodus for that PR by posting an issue
+   comment that includes
+   `<!-- ecc-kodus-skipped-credits: ollama credits exhausted -->`
+   (reason text may vary; the HTML marker is mandatory). Then re-run / wait for
+   ECC Merge Gate. Do **not** use this marker for ordinary Kody failures.
+4. If missing/pending after a reasonable poll (backoff, capped retries) and not
+   a documented credits skip: leave ECC FAIL; do not merge; document blocker.
+5. Enumerate unresolved GraphQL review threads + Kodus issue-comment findings via
    `node scripts/ecc-merge-gate-check.mjs <PR>` (or CI ECC Merge Gate log).
-5. Fix confirmed issues; dismiss false positives with
+6. Fix confirmed issues; dismiss false positives with
    `<!-- ecc-finding-dismissed: … -->` on a reply; resolve the thread.
-6. Push → repeat from step 1 on the new HEAD.
-7. Only then run `@pr-merge-safe merge`.
+7. Push → repeat from step 1 on the new HEAD.
+8. Only then run `@pr-merge-safe merge`.
 
 ## Severity mapping (Kodus → gate)
 

@@ -24,6 +24,17 @@ export const KODY_DISMISS_MARKERS = [
   /<!--\s*ecc-finding-resolved:\s*[0-9a-f]{7,40}\s*-->/i,
 ];
 
+/**
+ * Trusted OWNER/MEMBER/COLLABORATOR marker: skip Kodus completion when the
+ * provider (e.g. Ollama openai_compatible) is out of credits / HTTP 429.
+ * Free-text alone is never enough — HTML marker required.
+ */
+export const KODUS_CREDITS_SKIP_MARKER_RE =
+  /<!--\s*ecc-kodus-skipped-credits\s*:\s*.+?\s*-->/i;
+
+const KODUS_CREDITS_EXHAUSTED_RE =
+  /out of credits|billing limit|usage limit|HTTP\s*429|monthly usage limit|openai_compatible/i;
+
 const SEVERITY_MAP = {
   critical: 'Critical',
   high: 'High',
@@ -113,6 +124,30 @@ export function kodyBodiesIndicateDismissed(bodiesJoined) {
   return KODY_DISMISS_MARKERS.some((re) => re.test(bodiesJoined));
 }
 
+/** True when Kody check-run text indicates provider billing / Ollama credits exhausted. */
+export function isKodusCreditsExhaustedFailure(checkRun) {
+  if (!checkRun || checkRun.status !== 'completed') return false;
+  if (checkRun.conclusion === 'success') return false;
+  const blob = [
+    checkRun.output?.title ?? '',
+    checkRun.output?.summary ?? '',
+    checkRun.output?.text ?? '',
+  ].join('\n');
+  return KODUS_CREDITS_EXHAUSTED_RE.test(blob);
+}
+
+/**
+ * Trusted PR issue comments that authorize skipping Kodus for this HEAD because
+ * the review provider ran out of credits (see KODUS_CREDITS_SKIP_MARKER_RE).
+ */
+export function hasTrustedKodusCreditsSkip(comments) {
+  const list = Array.isArray(comments) ? comments : [];
+  return list.some(
+    (c) =>
+      isTrustedDismissAuthor(c) && KODUS_CREDITS_SKIP_MARKER_RE.test(c.body ?? ''),
+  );
+}
+
 /**
  * Classify the Kody Code Review check-run for a commit.
  * @param {object|null} checkRun
@@ -154,8 +189,16 @@ export function evaluateKodusCheckRun(checkRun) {
   if (checkRun.conclusion === 'cancelled') {
     return { ok: false, reason: 'kodus-cancelled', detail: 'Kody check cancelled' };
   }
-  // Only success counts — neutral/skipped/failure are fail-closed.
+  // Only success counts — neutral/skipped/failure are fail-closed
+  // (credits-exhausted may be waived later via trusted PR marker).
   if (checkRun.conclusion !== 'success') {
+    if (isKodusCreditsExhaustedFailure(checkRun)) {
+      return {
+        ok: false,
+        reason: 'kodus-credits-exhausted',
+        detail: `conclusion=${checkRun.conclusion}; provider credits/billing limit`,
+      };
+    }
     return {
       ok: false,
       reason: 'kodus-failed',
@@ -293,14 +336,30 @@ export function findKodusSubmittedReviewForHead(reviews, headSha) {
 
 /**
  * Combine check-run + optional APPROVED review when the check was overwritten to skipped.
+ * Credits exhaustion may PASS only with a trusted `<!-- ecc-kodus-skipped-credits: … -->`
+ * marker on a PR issue comment (OWNER/MEMBER/COLLABORATOR).
  * @param {object|null} checkRun
- * @param {{ reviews?: object[], headSha?: string }} [opts]
+ * @param {{ reviews?: object[], headSha?: string, issueComments?: object[] }} [opts]
  */
-export function evaluateKodusHeadEvidence(checkRun, { reviews = [], headSha = '' } = {}) {
+export function evaluateKodusHeadEvidence(
+  checkRun,
+  { reviews = [], headSha = '', issueComments = [] } = {},
+) {
   const fromCheck = evaluateKodusCheckRun(checkRun);
   if (fromCheck.ok) return fromCheck;
   if (fromCheck.reason === 'kodus-pending' || fromCheck.reason === 'kodus-started-only') {
     return fromCheck;
+  }
+  if (
+    fromCheck.reason === 'kodus-credits-exhausted' &&
+    hasTrustedKodusCreditsSkip(issueComments)
+  ) {
+    return {
+      ok: true,
+      reason: 'kodus-skipped-credits',
+      detail:
+        'Kody skipped: provider (Ollama/openai_compatible) credits exhausted; trusted ecc-kodus-skipped-credits marker present',
+    };
   }
   // Missing check-run: only APPROVED unlocks (COMMENTED alone is not a verdict —
   // Kody may abort before posting a check). Observed PR #1004: APPROVED without check.

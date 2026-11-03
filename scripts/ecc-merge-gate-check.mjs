@@ -450,7 +450,7 @@ export function resolveKodusReviewForHead(
   owner,
   repo,
   headSha,
-  { required = true, reviews = null, pullNumber = null } = {},
+  { required = true, reviews = null, pullNumber = null, issueComments = null } = {},
 ) {
   if (!required) return { ok: true, reason: 'kodus-not-required', detail: 'requireKodusReview=false' };
   const runs = ghJson([
@@ -468,9 +468,19 @@ export function resolveKodusReviewForHead(
     ]);
     reviewList = Array.isArray(fetched) ? fetched : [];
   }
+  let commentList = Array.isArray(issueComments) ? issueComments : null;
+  if (commentList == null && pullNumber != null) {
+    const fetched = ghJson([
+      'api',
+      `repos/${owner}/${repo}/issues/${pullNumber}/comments`,
+      '--paginate',
+    ]);
+    commentList = Array.isArray(fetched) ? fetched : [];
+  }
   return evaluateKodusHeadEvidence(selected, {
     reviews: reviewList ?? [],
     headSha,
+    issueComments: commentList ?? [],
   });
 }
 
