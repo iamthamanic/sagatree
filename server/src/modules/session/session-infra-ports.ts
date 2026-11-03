@@ -12,7 +12,7 @@ import type {
 } from './internal/session-access-store.ts';
 import type { ApplyCommandInput, ApplyCommandResult } from './internal/session-runtime-store.ts';
 
-export const SESSION_INFRA_PORTS_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+export const SESSION_INFRA_PORTS_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export type SessionInfraResult<T> =
   | { readonly ok: true; readonly value: T }
@@ -49,6 +49,13 @@ export type SessionPortsForInfra = {
       sessionId: string,
       status: string,
     ) => NestedOk<Record<string, unknown>>;
+    readonly getPlaySession: (
+      actor: Actor,
+      sessionId: string,
+    ) => NestedOk<Record<string, unknown>>;
+    readonly listAccessiblePlaySessions: (
+      actor: Actor,
+    ) => NestedOk<readonly Record<string, unknown>[]>;
   };
   readonly access: {
     readonly createSessionInvite: (actor: Actor, sessionId: string) => NestedOk<Record<string, unknown>>;
@@ -194,11 +201,18 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       idempotencyKey: string,
       presence: Readonly<Record<string, unknown>>,
     ): SessionInfraResult<Record<string, unknown>> {
+      const payload = {
+        ...presence,
+        userId:
+          typeof presence.userId === 'string' && presence.userId.trim()
+            ? presence.userId
+            : actorId,
+      };
       const r = session.commands.apply(asActor(actorId), {
         sessionId,
         expectedRevision,
         idempotencyKey,
-        op: { kind: 'presence', payload: presence },
+        op: { kind: 'presence', payload },
       });
       return r.ok
         ? { ok: true, value: { committed: r.committed, snapshot: r.snapshot } }
@@ -210,6 +224,19 @@ export function createSessionInfraPorts(session: SessionPortsForInfra) {
       status: string,
     ): SessionInfraResult<Record<string, unknown>> {
       const r = session.lifecycle.setSessionStatus(asActor(actorId), sessionId, status);
+      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
+    },
+    getPlaySession(
+      actorId: string,
+      sessionId: string,
+    ): SessionInfraResult<Record<string, unknown>> {
+      const r = session.lifecycle.getPlaySession(asActor(actorId), sessionId);
+      return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
+    },
+    listAccessiblePlaySessions(
+      actorId: string,
+    ): SessionInfraResult<readonly Record<string, unknown>[]> {
+      const r = session.lifecycle.listAccessiblePlaySessions(asActor(actorId));
       return r.ok ? { ok: true, value: r.value } : { ok: false, error: r.error };
     },
   };

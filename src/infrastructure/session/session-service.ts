@@ -33,10 +33,50 @@ import {
   type SessionInviteCreateResult,
   type SessionInviteResolveResult,
 } from '../../domains/session/contracts/session-invite';
+import {
+  createHostPlaySession,
+  createHostSessionInvite,
+  fetchHostSession,
+  fetchHostSessions,
+  isHostLibraryEnabled,
+  joinHostSessionByCode,
+  leaveHostPlaySession,
+  resolveHostSessionInvite,
+  revokeHostSessionInvite,
+  setHostSessionStatus,
+  type HostPlaySessionDto,
+} from '../host/host-session-http';
 
 /** Safe session columns for authenticated SELECT (#569 — excludes world_state, notes). */
 const SESSION_SAFE_COLUMNS =
   'id, public_id, project_id, session_number, name, description, status, code, started_at, ended_at, look_profile_id, created_at, updated_at';
+
+function mapHostPlaySessionToVm(row: HostPlaySessionDto): SessionVm {
+  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
+  const code = row.joinCode ?? row.code ?? '';
+  return {
+    id: row.sessionId,
+    code: typeof code === 'string' ? code : '',
+    name: row.name ?? '',
+    adventureId: row.projectId,
+    projectId: row.projectId,
+    publicId: row.publicId ?? null,
+    gmUserId: row.gmUserId ?? '',
+    status: normalizePlaySessionStatus(row.status),
+    createdAt,
+    updatedAt: createdAt,
+    startedAt: row.startedAt ? new Date(row.startedAt) : null,
+    endedAt: row.endedAt ? new Date(row.endedAt) : null,
+    players: (row.players ?? []).map((p, index) => ({
+      id: p.id ?? `${row.sessionId}-${p.userId ?? index}`,
+      sessionId: row.sessionId,
+      userId: p.userId ?? '',
+      characterId: p.characterId ?? null,
+      isOnline: p.isOnline === true,
+      joinedAt: p.joinedAt ? new Date(p.joinedAt) : createdAt,
+    })),
+  };
+}
 
 type SessionRow = {
   id: string;
@@ -159,6 +199,12 @@ class SessionService {
       throw new Error('project_id ist erforderlich, um eine Session zu erstellen');
     }
 
+    // Dual-path (MIG-311 / FE-HOST-02): host SQLite when library flag is on.
+    if (isHostLibraryEnabled()) {
+      const row = await createHostPlaySession(projectId, payload.name ?? null);
+      return mapHostPlaySessionToVm(row);
+    }
+
     const { data, error } = await supabase.rpc('create_play_session', {
       p_project_id: projectId,
       p_name: payload.name,
@@ -177,6 +223,11 @@ class SessionService {
 
     const code = normalizeSessionJoinCode(payload.code);
 
+    if (isHostLibraryEnabled()) {
+      const row = await joinHostSessionByCode(code, payload.character_id ?? null);
+      return mapHostPlaySessionToVm(row);
+    }
+
     const { data, error } = await supabase.rpc('join_session_by_code', {
       p_code: code,
       p_character_id: payload.character_id ?? null,
@@ -192,6 +243,11 @@ class SessionService {
   }
 
   async getSessionById(id: string): Promise<SessionVm> {
+    if (isHostLibraryEnabled()) {
+      const row = await fetchHostSession(id);
+      return mapHostPlaySessionToVm(row);
+    }
+
     const { data: session, error: sessionError } = await supabase
       .from(this.tableName)
       .select(SESSION_SAFE_COLUMNS)
@@ -208,6 +264,11 @@ class SessionService {
   }
 
   async getUserSessions(): Promise<SessionVm[]> {
+    if (isHostLibraryEnabled()) {
+      const rows = await fetchHostSessions();
+      return rows.map(mapHostPlaySessionToVm);
+    }
+
     const user = await this.requireAuthUser();
 
     const { data: gmProjects, error: gmProjectsError } = await supabase
@@ -275,6 +336,11 @@ class SessionService {
     const current = await this.getSessionById(id);
     assertPlaySessionStatusTransition(current.status, status);
 
+    if (isHostLibraryEnabled()) {
+      const row = await setHostSessionStatus(id, status);
+      return mapHostPlaySessionToVm(row);
+    }
+
     const { data, error } = await supabase.rpc('set_session_status', {
       p_session_id: id,
       p_status: status,
@@ -291,6 +357,11 @@ class SessionService {
 
   async leaveSession(sessionId: string): Promise<void> {
     await this.requireAuthUser();
+
+    if (isHostLibraryEnabled()) {
+      await leaveHostPlaySession(sessionId);
+      return;
+    }
 
     const { error } = await supabase.rpc('leave_play_session', {
       p_session_id: sessionId,
@@ -310,6 +381,9 @@ class SessionService {
     if (!id) {
       throw new Error('Session-ID fehlt');
     }
+    if (isHostLibraryEnabled()) {
+      throw new Error('Session-Löschen ist im Host-Modus noch nicht verfügbar');
+    }
 
     const { error } = await supabase.from(this.tableName).delete().eq('id', id);
 
@@ -327,6 +401,14 @@ class SessionService {
    */
   async createSessionInvite(sessionId: string): Promise<SessionInviteCreateResult> {
     await this.requireAuthUser();
+    if (isHostLibraryEnabled()) {
+      const invite = await createHostSessionInvite(sessionId);
+      const mapped = mapInviteCreatePayload(invite);
+      if (!mapped) {
+        throw new Error('Einladung konnte nicht erstellt werden: ungültige Server-Antwort');
+      }
+      return mapped;
+    }
     const { data, error } = await supabase.rpc('create_session_invite', {
       p_session_id: sessionId,
     });
@@ -349,6 +431,14 @@ class SessionService {
     if (!normalized) {
       return { ok: false, errorCode: 'missing_token' };
     }
+    if (isHostLibraryEnabled()) {
+      try {
+        const invite = await resolveHostSessionInvite(normalized);
+        return mapInviteResolvePayload(invite);
+      } catch {
+        return { ok: false, errorCode: 'not_found' };
+      }
+    }
     const { data, error } = await supabase.rpc('resolve_session_invite', {
       p_token: normalized,
     });
@@ -363,6 +453,10 @@ class SessionService {
     const normalized = normalizeInviteToken(token);
     if (!normalized) {
       throw new Error('Token fehlt');
+    }
+    if (isHostLibraryEnabled()) {
+      await revokeHostSessionInvite(normalized);
+      return;
     }
     const { error } = await supabase.rpc('revoke_session_invite', {
       p_token: normalized,

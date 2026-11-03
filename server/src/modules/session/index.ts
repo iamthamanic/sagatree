@@ -4,8 +4,8 @@
  * Location: server/src/modules/session/index.ts
  */
 
-/** MIG-311: session infra ports stay isolated-contract until HTTP cutover. */
-export const SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** FE-HOST-02: session product HTTP mounted via mountSessionHttpRoutes. */
+export const SESSION_INFRA_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export {
   SESSION_INFRA_PORTS_PUBLIC_ACTIVATION_AUTHORIZED,
@@ -119,6 +119,12 @@ export type SessionLifecyclePort = {
     sessionId: string,
     status: string,
   ) => LifecycleResult;
+  readonly getPlaySession: (actor: Actor, sessionId: string) => LifecycleResult;
+  readonly listAccessiblePlaySessions: (
+    actor: Actor,
+  ) =>
+    | { readonly ok: true; readonly value: readonly PlaySessionRow[] }
+    | { readonly ok: false; readonly error: string };
 };
 
 export type AccessLeaveResult =
@@ -180,6 +186,8 @@ function unavailableLifecycle(): SessionLifecyclePort {
     createPlaySession: fail,
     createProjectSession: fail,
     setSessionStatus: fail,
+    getPlaySession: fail,
+    listAccessiblePlaySessions: fail,
   };
 }
 
@@ -257,6 +265,16 @@ export function createSessionPorts(deps: {
           const ids = actorIds(actor);
           if (!ids[0]) return { ok: false, error: '42501' };
           return lifecycleStore.setSessionStatus(ids, sessionId, status);
+        },
+        getPlaySession(actor, sessionId) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return lifecycleStore.getPlaySession(ids, sessionId);
+        },
+        listAccessiblePlaySessions(actor) {
+          const ids = actorIds(actor);
+          if (!ids[0]) return { ok: false, error: '42501' };
+          return lifecycleStore.listAccessiblePlaySessions(ids);
         },
       }
     : unavailableLifecycle();

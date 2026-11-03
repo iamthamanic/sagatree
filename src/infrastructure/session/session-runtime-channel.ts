@@ -6,6 +6,7 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
 import type { SessionRuntimeState } from '../../domains/session/contracts/session-runtime';
+import { isHostLibraryEnabled } from '../host/host-session-http';
 import { sessionRuntimeService } from './session-runtime-service';
 
 export type SessionRuntimeListener = (state: SessionRuntimeState) => void;
@@ -18,10 +19,14 @@ export interface SessionRuntimeSubscription {
   unsubscribe: () => Promise<void>;
 }
 
+const HOST_RUNTIME_POLL_MS = 2_500;
+
 /**
  * Load authoritative snapshot, then subscribe to postgres_changes on sessions,
  * session_players, and session_events. On any change, re-fetch snapshot (avoid
  * last-write-wins client merges).
+ *
+ * Host dual-path: poll runtime HTTP (no Supabase Realtime on solo host).
  */
 export async function subscribeSessionRuntime(
   sessionId: string,
@@ -32,6 +37,32 @@ export async function subscribeSessionRuntime(
 
   let channel: RealtimeChannel | null = null;
   let disposed = false;
+  let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+  if (isHostLibraryEnabled()) {
+    const refresh = async (): Promise<SessionRuntimeState> => {
+      const next = await sessionRuntimeService.getSnapshot(sessionId);
+      current = next;
+      if (!disposed) onChange(next);
+      return next;
+    };
+    pollTimer = setInterval(() => {
+      void refresh().catch(() => {
+        /* keep last good snapshot */
+      });
+    }, HOST_RUNTIME_POLL_MS);
+    return {
+      getState: () => current,
+      resync: refresh,
+      unsubscribe: async () => {
+        disposed = true;
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+      },
+    };
+  }
 
   const refresh = async (): Promise<SessionRuntimeState> => {
     const next = await sessionRuntimeService.getSnapshot(sessionId);

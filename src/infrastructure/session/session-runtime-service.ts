@@ -16,6 +16,12 @@ import {
   emptyGameplayState,
   normalizeRuntimeStatus,
 } from '../../domains/session/contracts/session-runtime';
+import {
+  applyHostSessionRuntimeCommand,
+  fetchHostSessionRuntime,
+  isHostLibraryEnabled,
+  setHostSessionPresence,
+} from '../host/host-session-http';
 
 type SnapshotJson = {
   sessionId?: string;
@@ -87,6 +93,10 @@ function isStaleRpcError(message: string): boolean {
 
 class SessionRuntimeService {
   async getSnapshot(sessionId: string): Promise<SessionRuntimeState> {
+    if (isHostLibraryEnabled()) {
+      const data = await fetchHostSessionRuntime(sessionId);
+      return mapSnapshotJson(data as SnapshotJson);
+    }
     const { data, error } = await supabase.rpc('get_session_runtime_snapshot', {
       p_session_id: sessionId,
     });
@@ -104,6 +114,25 @@ class SessionRuntimeService {
     idempotencyKey?: string | null;
   }): Promise<SessionRuntimeState> {
     const kind = assertSessionEventKind(input.kind);
+    if (isHostLibraryEnabled()) {
+      try {
+        const data = await applyHostSessionRuntimeCommand({
+          sessionId: input.sessionId,
+          expectedRevision: input.expectedRevision,
+          kind,
+          payload: input.payload ?? {},
+          idempotencyKey: input.idempotencyKey ?? null,
+        });
+        return mapSnapshotJson(data as SnapshotJson);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
+          const snap = await this.getSnapshot(input.sessionId);
+          throw new StaleRuntimeRevisionError(input.expectedRevision, snap.revision);
+        }
+        throw err instanceof Error ? err : new Error(message);
+      }
+    }
     const { data, error } = await supabase.rpc('apply_session_runtime_command', {
       p_session_id: input.sessionId,
       p_expected_revision: input.expectedRevision,
@@ -130,6 +159,19 @@ class SessionRuntimeService {
     isOnline: boolean,
     expectedRevision?: number | null,
   ): Promise<SessionRuntimeState> {
+    if (isHostLibraryEnabled()) {
+      try {
+        const data = await setHostSessionPresence(sessionId, isOnline, expectedRevision);
+        return mapSnapshotJson(data as SnapshotJson);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (isStaleRpcError(message) || /STALE_REVISION/i.test(message)) {
+          const snap = await this.getSnapshot(sessionId);
+          throw new StaleRuntimeRevisionError(expectedRevision ?? -1, snap.revision);
+        }
+        throw err instanceof Error ? err : new Error(message);
+      }
+    }
     const { data, error } = await supabase.rpc('set_session_player_presence', {
       p_session_id: sessionId,
       p_is_online: isOnline,

@@ -6,6 +6,7 @@
  */
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../../lib/supabase';
+import { isHostLibraryEnabled } from '../host/host-session-http';
 
 export type LobbyReadyPayload = {
   readonly userId: string;
@@ -19,10 +20,28 @@ export type SessionLobbySubscription = {
   unsubscribe: () => Promise<void>;
 };
 
+/**
+ * Lobby ready is non-authoritative (MIG-311). On host dual-path, use a local
+ * echo until a host broadcast room ships — still fail-closed for gameplay ACL.
+ */
 export async function subscribeSessionLobbyReady(
   sessionId: string,
   onReady: LobbyReadyListener,
 ): Promise<SessionLobbySubscription> {
+  if (isHostLibraryEnabled()) {
+    void sessionId;
+    let disposed = false;
+    return {
+      sendReady: async (payload) => {
+        if (disposed) return;
+        onReady({ userId: payload.userId, ready: payload.ready === true });
+      },
+      unsubscribe: async () => {
+        disposed = true;
+      },
+    };
+  }
+
   let channel: RealtimeChannel | null = null;
   let disposed = false;
 
