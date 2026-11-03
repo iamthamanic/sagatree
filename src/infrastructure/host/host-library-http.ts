@@ -371,6 +371,84 @@ export async function fetchHostLibraryItems(
   return Array.isArray(body.items) ? body.items : [];
 }
 
+export async function createHostLibraryItem(
+  draft: {
+    readonly name: string;
+    readonly origin?: 'personal' | 'world';
+    readonly worldProfileId?: string | null;
+    readonly payload?: Readonly<Record<string, unknown>>;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ item?: unknown }>(
+    '/api/v1/library/items',
+    'POST',
+    'Host-Item anlegen fehlgeschlagen',
+    draft,
+    env,
+    fetchImpl,
+  );
+  if (!body.item) throw new Error('Host-Item anlegen: leere Antwort');
+  return body.item;
+}
+
+export async function createHostLibraryNpcCreature(
+  input: {
+    readonly scope: 'personal' | 'world';
+    readonly worldProfileId?: string | null;
+    readonly draft: unknown;
+  },
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ definition?: unknown }>(
+    '/api/v1/library/npc-creatures',
+    'POST',
+    'Host-NPC anlegen fehlgeschlagen',
+    input,
+    env,
+    fetchImpl,
+  );
+  if (!body.definition) throw new Error('Host-NPC anlegen: leere Antwort');
+  return body.definition;
+}
+
+export async function updateHostLibraryNpcCreature(
+  definitionId: string,
+  draft: unknown,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ definition?: unknown }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}`,
+    'PATCH',
+    'Host-NPC speichern fehlgeschlagen',
+    { draft },
+    env,
+    fetchImpl,
+  );
+  if (!body.definition) throw new Error('Host-NPC speichern: leere Antwort');
+  return body.definition;
+}
+
+export async function archiveHostLibraryNpcCreature(
+  definitionId: string,
+  env: EnvLike = defaultEnv(),
+  fetchImpl: typeof fetch = fetch,
+): Promise<unknown> {
+  const body = await hostMutateJson<{ definition?: unknown }>(
+    `/api/v1/library/npc-creatures/${encodeURIComponent(definitionId)}/archive`,
+    'POST',
+    'Host-NPC archivieren fehlgeschlagen',
+    undefined,
+    env,
+    fetchImpl,
+  );
+  if (!body.definition) throw new Error('Host-NPC archivieren: leere Antwort');
+  return body.definition;
+}
+
 export async function fetchHostLibraryLooks(
   env: EnvLike = defaultEnv(),
   fetchImpl: typeof fetch = fetch,

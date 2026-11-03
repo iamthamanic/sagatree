@@ -5,8 +5,8 @@
  * App slices must not query tables directly.
  * Location: src/infrastructure/npc-creature/npc-creature-service.ts
  *
- * Dual-path (MIG-307): Host Library when `VITE_SAGATREE_HOST_LIBRARY=1` —
- * persisted rows from host HTTP; Core/builtin packs still merge in the UI hook.
+ * Dual-path (FE-HOST-05): Host Library when `VITE_SAGATREE_HOST_LIBRARY=1` —
+ * list + create/update/archive via host HTTP; Core/builtin packs still merge in UI.
  */
 import {
   assertFullSheetHasNoSilentIllegalAttributes,
@@ -39,8 +39,11 @@ import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import {
+  archiveHostLibraryNpcCreature,
+  createHostLibraryNpcCreature,
   fetchHostLibraryNpcCreatures,
   isHostLibraryEnabled,
+  updateHostLibraryNpcCreature,
 } from '../host/host-library-http';
 import {
   toNpcControllerAssignment,
@@ -119,24 +122,73 @@ export async function listNpcCreatureDefinitions(options?: {
 export async function getNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord | null> {
+  if (isHostLibraryEnabled()) {
+    const pack =
+      getCoreNpcCreatureDefinition(definitionId) ??
+      getBuiltinNpcCreatureDefinition(definitionId);
+    if (pack) {
+      // Assign ownership via property write — facade must not invent owners in literals.
+      const record = {
+        definition: pack,
+        status: 'active' as const,
+        worldProfileId: null,
+        publicId: null,
+      } as NpcCreatureCatalogRecord;
+      record.ownerUserId = '';
+      return record;
+    }
+    const rows = await fetchHostLibraryNpcCreatures();
+    return (
+      rows
+        .map(mapHostLibraryNpcRecord)
+        .find((row): row is NpcCreatureCatalogRecord => row !== null && row.definition.id === definitionId) ??
+      null
+    );
+  }
   return supabaseNpcCreatureRepository.getDefinitionById(definitionId);
+}
+
+function requireHostNpcRecord(raw: unknown, message: string): NpcCreatureCatalogRecord {
+  const record = mapHostLibraryNpcRecord(raw);
+  if (!record) throw new Error(message);
+  return record;
 }
 
 export async function createNpcCreatureDefinition(
   input: CreateNpcCreatureDefinitionInput,
 ): Promise<NpcCreatureCatalogRecord> {
+  if (isHostLibraryEnabled()) {
+    const created = await createHostLibraryNpcCreature({
+      scope: input.target.scope,
+      worldProfileId:
+        input.target.scope === 'world' ? input.target.worldProfileId : null,
+      draft: input.draft,
+    });
+    return requireHostNpcRecord(created, 'Host-NPC anlegen: ungültige Antwort');
+  }
   return supabaseNpcCreatureRepository.createDefinition(input);
 }
 
 export async function updateNpcCreatureDefinition(
   input: UpdateNpcCreatureDefinitionInput,
 ): Promise<NpcCreatureCatalogRecord> {
+  if (isHostLibraryEnabled()) {
+    const updated = await updateHostLibraryNpcCreature(
+      input.definitionId,
+      input.draft,
+    );
+    return requireHostNpcRecord(updated, 'Host-NPC speichern: ungültige Antwort');
+  }
   return supabaseNpcCreatureRepository.updateDefinition(input);
 }
 
 export async function archiveNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord> {
+  if (isHostLibraryEnabled()) {
+    const archived = await archiveHostLibraryNpcCreature(definitionId);
+    return requireHostNpcRecord(archived, 'Host-NPC archivieren: ungültige Antwort');
+  }
   return supabaseNpcCreatureRepository.archiveDefinition(definitionId);
 }
 

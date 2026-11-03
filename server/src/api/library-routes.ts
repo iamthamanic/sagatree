@@ -60,6 +60,20 @@ function soloLoopbackAllowed(headers: Headers): boolean {
   }
 }
 
+/** Remote actors may own personal rows under linked solo ids (MIG-015). */
+function libraryActorIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds)
+  ) {
+    for (const id of actor.linkedSoloActorIds) {
+      if (typeof id === 'string' && id.length > 0 && !ids.includes(id)) ids.push(id);
+    }
+  }
+  return ids;
+}
+
 async function resolveLibraryActor(
   deps: LibraryHttpDeps,
   headers: Headers,
@@ -394,6 +408,108 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     return c.json({ definitions: listed.value }, 200);
   });
 
+  app.post('/api/v1/library/npc-creatures', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.createDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const scope = record.scope === 'world' ? 'world' : record.scope === 'personal' ? 'personal' : null;
+    if (!scope) return c.json({ error: '22023' }, 422);
+    const worldProfileId =
+      typeof record.worldProfileId === 'string' ? record.worldProfileId : null;
+    const draft = 'draft' in record ? record.draft : record;
+    const created = deps.npcCreature.createDefinition(actorResult.actor, {
+      scope,
+      worldProfileId,
+      draft,
+    });
+    if (!created.ok) {
+      const status =
+        created.error === 'not-authorized'
+          ? 403
+          : created.error === 'missing-world-profile' || created.error === '22023'
+            ? 422
+            : 400;
+      return c.json({ error: created.error }, status);
+    }
+    return c.json({ definition: created.value }, 201);
+  });
+
+  app.patch('/api/v1/library/npc-creatures/:id', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.updateDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const draft = 'draft' in record ? record.draft : record;
+    const updated = deps.npcCreature.updateDefinition(
+      actorResult.actor,
+      c.req.param('id'),
+      draft,
+    );
+    if (!updated.ok) {
+      return c.json(
+        { error: updated.error },
+        updated.error === 'not-authorized'
+          ? 403
+          : updated.error === 'not-found'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ definition: updated.value }, 200);
+  });
+
+  app.post('/api/v1/library/npc-creatures/:id/archive', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.npcCreature?.archiveDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    const archived = deps.npcCreature.archiveDefinition(
+      actorResult.actor,
+      c.req.param('id'),
+    );
+    if (!archived.ok) {
+      return c.json(
+        { error: archived.error },
+        archived.error === 'not-authorized'
+          ? 403
+          : archived.error === 'not-found'
+            ? 404
+            : 400,
+      );
+    }
+    return c.json({ definition: archived.value }, 200);
+  });
+
   app.get('/api/v1/library/looks', async (c) => {
     const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
     if (!actorResult.ok) {
@@ -493,11 +609,53 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!deps.inventory?.listCatalog) {
       return c.json({ items: [] }, 200);
     }
-    const listed = deps.inventory.listCatalog(actorResult.actor.actorId, {});
+    const listed = deps.inventory.listCatalog(libraryActorIds(actorResult.actor), {});
     if (!listed.ok) {
       return c.json({ error: listed.error }, 503);
     }
     return c.json({ items: listed.value }, 200);
+  });
+
+  app.post('/api/v1/library/items', async (c) => {
+    const actorResult = await resolveLibraryActor(deps, c.req.raw.headers);
+    if (!actorResult.ok) {
+      return c.json({ error: actorResult.error }, actorResult.status);
+    }
+    if (!deps.inventory?.createDefinition) {
+      return c.json({ error: 'store-unavailable' }, 503);
+    }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: 'invalid-json' }, 400);
+    }
+    const record =
+      body && typeof body === 'object' && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : {};
+    const draft = 'draft' in record && record.draft && typeof record.draft === 'object'
+      ? (record.draft as Record<string, unknown>)
+      : record;
+    // Owner column is the session actor; linked solo ids are honored on list/read.
+    const created = deps.inventory.createDefinition(actorResult.actor.actorId, {
+      name: draft.name,
+      origin: draft.origin,
+      worldProfileId: draft.worldProfileId,
+      payload: draft.payload,
+    });
+    if (!created.ok) {
+      const status =
+        created.error === 'not-authorized'
+          ? 403
+          : created.error === 'name-required' ||
+              created.error === 'world-profile-required' ||
+              created.error === 'origin-not-allowed'
+            ? 422
+            : 400;
+      return c.json({ error: created.error }, status);
+    }
+    return c.json({ item: created.value }, 201);
   });
 
   app.get('/api/v1/library/projects', async (c) => {

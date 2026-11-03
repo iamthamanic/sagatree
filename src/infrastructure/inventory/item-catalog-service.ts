@@ -5,6 +5,8 @@
  * themselves. Lifecycle ops adapt the `domains/items` write/fork API onto the
  * existing catalog table. Character add-catalog composes via world item-catalog
  * resolver; Library browse stays an independent global catalog.
+ * Dual-path (FE-HOST-05): Host Library creates Personal/World rows via
+ * `/api/v1/library/items` when the host library flag is on.
  * Location: src/infrastructure/inventory/item-catalog-service.ts
  */
 import {
@@ -29,9 +31,11 @@ import {
 } from '../../domains/items';
 import { deriveStablePublicResourceId } from '../../domains/resource-id';
 import {
+  createHostLibraryItem,
   fetchHostLibraryItems,
   isHostLibraryEnabled,
 } from '../host/host-library-http';
+import { toDefinitionPayload } from './item-catalog.persistence';
 import {
   supabaseItemCatalogRepository,
 } from './supabase-item-catalog.repository';
@@ -231,33 +235,84 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
   definition: ItemDefinition;
   record: CatalogDefinitionRecord | null;
 } | null> {
+  if (isHostLibraryEnabled()) {
+    const hostItems = await fetchHostLibraryItems();
+    const record = hostItems
+      .map(mapHostLibraryItemRecord)
+      .find((row): row is CatalogDefinitionRecord => row !== null && row.definition.id === definitionId);
+    if (record) return { definition: record.definition, record };
+    const core = getCoreItemDefinition(definitionId);
+    if (core) return { definition: withCatalogPublicId(core), record: null };
+    const builtin = getBuiltinStandardDefinition(definitionId);
+    if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
+    return null;
+  }
   return supabaseItemCatalogRepository.getDefinitionById(definitionId);
 }
 
-export function createPersonalDefinition(draft: ItemDefinitionDraft): Promise<CatalogDefinitionRecord> {
+async function createHostCatalogDefinition(
+  origin: 'personal' | 'world',
+  draft: ItemDefinitionDraft,
+  worldProfileId: string | null,
+): Promise<CatalogDefinitionRecord> {
+  const tempId = `${origin}:pending`;
+  const payload = toDefinitionPayload({ ...draft, id: tempId, scope: origin });
+  const created = await createHostLibraryItem({
+    name: draft.name,
+    origin,
+    worldProfileId,
+    payload,
+  });
+  const record = mapHostLibraryItemRecord(created);
+  if (!record) throw new Error('Host-Item anlegen: ungültige Antwort');
+  return record;
+}
+
+export async function createPersonalDefinition(
+  draft: ItemDefinitionDraft,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    return createHostCatalogDefinition('personal', draft, null);
+  }
   return supabaseItemCatalogRepository.createPersonalDefinition(draft);
 }
 
-export function createWorldDefinition(
+export async function createWorldDefinition(
   worldProfileId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    return createHostCatalogDefinition('world', draft, worldProfileId);
+  }
   return supabaseItemCatalogRepository.createWorldDefinition(worldProfileId, draft);
 }
 
-export function updateDefinition(
+export async function updateDefinition(
   definitionId: string,
   draft: ItemDefinitionDraft,
 ): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition aktualisieren ist auf dem Host noch nicht verfügbar.');
+  }
   return supabaseItemCatalogRepository.updateDefinition(definitionId, draft);
 }
 
 /** Archiving is the only removal path; owned instances keep resolving afterwards. */
-export function archiveDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+export async function archiveDefinition(
+  definitionId: string,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition archivieren ist auf dem Host noch nicht verfügbar.');
+  }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'archived');
 }
 
-export function restoreDefinition(definitionId: string): Promise<CatalogDefinitionRecord> {
+export async function restoreDefinition(
+  definitionId: string,
+): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition wiederherstellen ist auf dem Host noch nicht verfügbar.');
+  }
   return supabaseItemCatalogRepository.setDefinitionStatus(definitionId, 'active');
 }
 
@@ -265,10 +320,13 @@ export function restoreDefinition(definitionId: string): Promise<CatalogDefiniti
  * Fork Core/World/Personal into a new Personal or World definition.
  * Always a new id with provenance; never overwrites the source.
  */
-export function forkDefinition(
+export async function forkDefinition(
   sourceDefinitionId: string,
   target: ForkDefinitionTarget,
 ): Promise<CatalogDefinitionRecord> {
+  if (isHostLibraryEnabled()) {
+    throw new Error('Item-Definition forken ist auf dem Host noch nicht verfügbar.');
+  }
   return supabaseItemCatalogRepository.forkDefinition(sourceDefinitionId, target);
 }
 

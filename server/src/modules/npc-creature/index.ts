@@ -20,7 +20,8 @@ import {
 export type { NpcSessionLookup, NpcWorldLookup, NpcDefinitionRecord };
 
 /** Host NPC definition/instance ports are transport-free until MIG-600. */
-export const NPC_CREATURE_PORTS_PUBLIC_ACTIVATION_AUTHORIZED = false as const;
+/** FE-HOST-05/#1097 — definition CRUD via `/api/v1/library/npc-creatures`. */
+export const NPC_CREATURE_PORTS_PUBLIC_ACTIVATION_AUTHORIZED = true as const;
 
 export {
   BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED,

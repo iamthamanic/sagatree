@@ -106,7 +106,7 @@ const minimalDraft = {
 };
 
 try {
-  assert(NPC_CREATURE_PORTS_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no NPC ports HTTP mount');
+  assert(NPC_CREATURE_PORTS_PUBLIC_ACTIVATION_AUTHORIZED === true, 'NPC ports HTTP authorized (FE-HOST-05)');
   assert(NPCS_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no npcs quarantine HTTP');
   assert(BESTIARY_PUBLIC_ACTIVATION_AUTHORIZED === false, 'no bestiary HTTP');
   assert(TABLE_OWNERSHIP.npc_creature_definitions === 'npc-creature', 'definitions ownership');
@@ -391,18 +391,19 @@ try {
     'utf8',
   );
   assert(/supabaseNpcCreatureRepository/.test(serviceSrc), 'service default remains Supabase');
-  assert(/Dual-path \(MIG-307\)/.test(serviceSrc), 'dual-path note on service');
-  assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
-  // Strip comments so the dual-path prose cannot mask a real env redirect.
-  const serviceCode = serviceSrc
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/.*$/gm, '');
-  assert(!/VITE_SAGATREE_HOST/i.test(serviceCode), 'flags do not redirect facade');
-
-  const createApp = readFileSync(join(root, 'server/src/api/create-app.ts'), 'utf8');
   assert(
-    !/mountNpc|npc-creature-definitions|npcCreatureHttp/i.test(createApp),
-    'no NpcCreature HTTP mount yet',
+    /Dual-path \(MIG-307\)/.test(serviceSrc) || /Dual-path \(FE-HOST-05\)/.test(serviceSrc),
+    'dual-path note on service',
+  );
+  assert(/transport: 'host'/.test(adapterSrc), 'adapter marks host transport');
+  assert(/isHostLibraryEnabled/.test(serviceSrc), 'FE-HOST-05 host library gate');
+  assert(/createHostLibraryNpcCreature/.test(serviceSrc), 'FE-HOST-05 create via host HTTP');
+
+  const libraryRoutes = readFileSync(join(root, 'server/src/api/library-routes.ts'), 'utf8');
+  assert(
+    /\/api\/v1\/library\/npc-creatures/.test(libraryRoutes) &&
+      /createDefinition/.test(libraryRoutes),
+    'FE-HOST-05 mounts npcCreature library write routes',
   );
 
   console.log('PASS mig-307-npc-adapter.self-test');
