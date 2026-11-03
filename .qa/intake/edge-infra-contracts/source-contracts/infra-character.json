@@ -117,7 +117,7 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "sha256": "e591323439fd26f117035934bda58178488bf1095b722fb99f138abc0755d195"
+      "sha256": "53f08b7c6dfe6e94f97eae3595f67394790dbbdb9dbee7aeccf7e7ea30d4d281"
     },
     {
       "path": "src/infrastructure/character/character.persistence.ts",
@@ -1006,6 +1006,10 @@
       "sha256": "7cba204291a86a1159b961048280899541f95c102abad8e2c8f61e7662ba8c1b"
     },
     {
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+    },
+    {
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
       "sha256": "79aaa09053ecd72a0bec8f8f0610b31ab0c9b34779f4a4c87f19f0d2ef7e4ac2"
     },
@@ -1055,7 +1059,7 @@
     },
     {
       "path": "src/infrastructure/look/look-service.ts",
-      "sha256": "0abf24e1268e8d9fa1651550e81d9fc937fc8f9f74667db3fd1bdb857f8a2d44"
+      "sha256": "5487c8b7cafae4996d793c427a87378c211b89292472350d68804205736d8425"
     },
     {
       "path": "src/infrastructure/look/look.persistence.ts",
@@ -1123,7 +1127,7 @@
     },
     {
       "path": "src/infrastructure/project/project-service.ts",
-      "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
+      "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
     },
     {
       "path": "src/infrastructure/session/media/livekit-media-plane-adapter.ts",
@@ -1156,6 +1160,10 @@
     {
       "path": "src/lib/entityCache.ts",
       "sha256": "02b7a3d41ae651c6562d4523a1c94a395608aa13785f0849cfc9acd834aecd61"
+    },
+    {
+      "path": "src/lib/hostAuthBridge.ts",
+      "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
     },
     {
       "path": "src/lib/localAdmin.ts",
@@ -7356,6 +7364,38 @@
       "text": "export type MediaPlaneStatus = {\n  readonly health: MediaPlaneHealth;\n  readonly reason: MediaPlaneHealthReason;\n  readonly message: string;\n};"
     },
     {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 10,
+      "endLine": 13,
+      "text": "type EnvLike = {\n  readonly VITE_SAGATREE_HOST_AUTH_URL?: string;\n  readonly VITE_SAGATREE_HOST_LIBRARY?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryCharacterDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 62,
+      "endLine": 75,
+      "text": "export type HostLibraryCharacterDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly name: string;\n  readonly description?: string;\n  readonly class?: string;\n  readonly race?: string;\n  readonly level?: number;\n  readonly sheetStatus?: string;\n  readonly portraitUrl?: string | null;\n  readonly sheet?: Readonly<Record<string, unknown>>;\n  readonly createdAt?: string;\n  readonly updatedAt?: string;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryProjectDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 90,
+      "endLine": 107,
+      "text": "export type HostLibraryProjectDto = {\n  readonly id: string;\n  readonly publicId?: string;\n  readonly code?: string;\n  readonly name: string;\n  readonly description?: string | null;\n  readonly worldId?: string | null;\n  readonly worldProfileId?: string | null;\n  readonly sagaId?: string | null;\n  readonly sagaVersionId?: string | null;\n  readonly sagaTitle?: string | null;\n  readonly sagaSlug?: string | null;\n  readonly sagaOrigin?: string | null;\n  readonly gmUserId: string;\n  readonly status?: string;\n  readonly memberCount?: number;\n  readonly sessionCount?: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostLibraryWorldDto",
+      "path": "src/infrastructure/host/host-library-http.ts",
+      "line": 122,
+      "endLine": 126,
+      "text": "export type HostLibraryWorldDto = {\n  readonly id: string;\n  readonly title: string;\n  readonly createdAt: string;\n};"
+    },
+    {
       "kind": "InterfaceDeclaration",
       "name": "CharacterInventoryRead",
       "path": "src/infrastructure/inventory/inventory-persistence.ts",
@@ -7802,6 +7842,22 @@
       "line": 8,
       "endLine": 11,
       "text": "type CacheEntry = {\n  data: unknown;\n  fetchedAt: number;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "HostWhoamiDto",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 18,
+      "endLine": 23,
+      "text": "export type HostWhoamiDto = {\n  readonly ok: true;\n  readonly actorId: string;\n  readonly kind: 'remote-account';\n  readonly email: string | null;\n};"
+    },
+    {
+      "kind": "TypeAliasDeclaration",
+      "name": "EnvLike",
+      "path": "src/lib/hostAuthBridge.ts",
+      "line": 25,
+      "endLine": 25,
+      "text": "type EnvLike = { readonly VITE_SAGATREE_HOST_AUTH_URL?: string };"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -9013,16 +9069,16 @@
       "kind": "auth-helper",
       "name": null,
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 148,
-      "endLine": 148,
+      "line": 331,
+      "endLine": 331,
       "resolution": "dynamic-expression",
       "expression": "getAuthenticatedUserId()",
       "chain": "getAuthenticatedUserId()",
       "arguments": [],
       "enclosingOperation": {
         "path": "src/infrastructure/character/character-service.ts",
-        "line": 144,
-        "endLine": 187,
+        "line": 327,
+        "endLine": 370,
         "text": "private async assertPersonalLookWriteGate(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<void> {\n    const actorUserId = await getAuthenticatedUserId();\n    // Owner-scoped fetch — proves the actor can access this character.\n    await supabaseCharacterRepository.getCharacterById(characterId);\n\n    let sagaAllows = true;\n    try {\n      const arcs = await characterAdventureArcService.listArcsForCharacter(characterId);\n      const activeArcs = arcs.filter((arc) => arc.status === 'active');\n      for (const arc of activeArcs) {\n        const project = await projectService.getProjectById(arc.projectId);\n        if (!project.allowPlayerCharacterLookOverride) {\n          sagaAllows = false;\n          break;\n        }\n      }\n    } catch {\n      sagaAllows = true;\n    }\n\n    let lookOwnerUserId: string | null = null;\n    let lookStatus: string | null = null;\n    if (personalLookProfileId) {\n      const record = await getLookProfile(personalLookProfileId);\n      lookOwnerUserId = record?.profile.ownerId ?? null;\n      lookStatus = record?.status ?? null;\n    }\n\n    const gate = assertPersonalLookOverrideWrite({\n      // getCharacterById is owner-scoped — successful fetch implies actor owns the character.\n      characterOwnerUserId: actorUserId,\n      actorUserId,\n      personalLookProfileId,\n      lookOwnerUserId,\n      lookStatus,\n      sagaAllowsPlayerOverrides: sagaAllows,\n    });\n    if (gate.ok === false) {\n      throw new Error(gate.messageDe);\n    }\n  }"
       }
     },
@@ -10386,104 +10442,136 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 5,
-      "endLine": 5,
+      "line": 9,
+      "endLine": 9,
       "module": "../../domains/character/contracts/character.commands",
       "resolvedPath": "src/domains/character/contracts/character.commands.ts",
       "expression": "import type { CreateCharacterDto, UpdateCharacterDto } from '../../domains/character/contracts/character.commands';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 6,
-      "endLine": 10,
+      "line": 10,
+      "endLine": 15,
       "module": "../../domains/character/contracts/character.views",
       "resolvedPath": "src/domains/character/contracts/character.views.ts",
-      "expression": "import type {\n  CharacterRosterMetaVm,\n  CharacterSummaryVm,\n  CharacterVm,\n} from '../../domains/character/contracts/character.views';"
+      "expression": "import type {\n  CharacterRosterMetaVm,\n  CharacterSheetStatus,\n  CharacterSummaryVm,\n  CharacterVm,\n} from '../../domains/character/contracts/character.views';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 11,
-      "endLine": 11,
+      "line": 16,
+      "endLine": 16,
       "module": "../../domains/character/inventory-v2",
       "resolvedPath": "src/domains/character/inventory-v2/index.ts",
-      "expression": "import { migrateLegacyInventory } from '../../domains/character/inventory-v2';"
+      "expression": "import { createEmptyInventory, migrateLegacyInventory } from '../../domains/character/inventory-v2';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 12,
-      "endLine": 12,
+      "line": 17,
+      "endLine": 17,
       "module": "../../domains/character/inventory-v2",
       "resolvedPath": "src/domains/character/inventory-v2/index.ts",
       "expression": "import type { InventoryState } from '../../domains/character/inventory-v2';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 13,
-      "endLine": 13,
+      "line": 18,
+      "endLine": 18,
       "module": "../../domains/look",
       "resolvedPath": "src/domains/look/index.ts",
       "expression": "import { assertPersonalLookOverrideWrite } from '../../domains/look';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 14,
-      "endLine": 14,
+      "line": 19,
+      "endLine": 19,
+      "module": "../../domains/rules/sagatree/items",
+      "resolvedPath": "src/domains/rules/sagatree/items/index.ts",
+      "expression": "import { createDefaultAbstractResources } from '../../domains/rules/sagatree/items';"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 20,
+      "endLine": 26,
+      "module": "../../domains/character/use-cases/normalize-character",
+      "resolvedPath": "src/domains/character/use-cases/normalize-character.ts",
+      "expression": "import {\n  normalizeAttributes,\n  normalizeInventory,\n  normalizeSagaTreeProfile,\n  normalizeSkills,\n  normalizeTextBlocks,\n} from '../../domains/character/use-cases/normalize-character';"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 27,
+      "endLine": 27,
+      "module": "../../domains/character/use-cases/avatar-presets",
+      "resolvedPath": "src/domains/character/use-cases/avatar-presets.ts",
+      "expression": "import { normalizeCharacterAppearance } from '../../domains/character/use-cases/avatar-presets';"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 28,
+      "endLine": 28,
       "module": "../../lib/entityCache",
       "resolvedPath": "src/lib/entityCache.ts",
       "expression": "import { ENTITY_CACHE_KEYS, entityCache } from '../../lib/entityCache';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 15,
-      "endLine": 15,
+      "line": 29,
+      "endLine": 29,
       "module": "../../lib/authenticatedUser",
       "resolvedPath": "src/lib/authenticatedUser.ts",
       "expression": "import { getAuthenticatedUserId } from '../../lib/authenticatedUser';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 16,
-      "endLine": 16,
+      "line": 30,
+      "endLine": 30,
       "module": "../inventory/inventory-persistence",
       "resolvedPath": "src/infrastructure/inventory/inventory-persistence.ts",
       "expression": "import { persistMigratedInventory } from '../inventory/inventory-persistence';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 17,
-      "endLine": 17,
+      "line": 31,
+      "endLine": 31,
       "module": "../look",
       "resolvedPath": "src/infrastructure/look/index.ts",
       "expression": "import { getLookProfile } from '../look';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 18,
-      "endLine": 18,
+      "line": 32,
+      "endLine": 32,
       "module": "../project/project-service",
       "resolvedPath": "src/infrastructure/project/project-service.ts",
       "expression": "import { projectService } from '../project/project-service';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 19,
-      "endLine": 19,
+      "line": 33,
+      "endLine": 41,
+      "module": "../host/host-library-http",
+      "resolvedPath": "src/infrastructure/host/host-library-http.ts",
+      "expression": "import {\n  createHostLibraryCharacter,\n  deleteHostLibraryCharacter,\n  fetchHostLibraryCharacter,\n  fetchHostLibraryCharacters,\n  isHostLibraryEnabled,\n  updateHostLibraryCharacter,\n  type HostLibraryCharacterDto,\n} from '../host/host-library-http';"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 42,
+      "endLine": 42,
       "module": "./character-adventure-arc-service",
       "resolvedPath": "src/infrastructure/character/character-adventure-arc-service.ts",
       "expression": "import { characterAdventureArcService } from './character-adventure-arc-service';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 20,
-      "endLine": 20,
+      "line": 43,
+      "endLine": 43,
       "module": "./supabase-character.repository",
       "resolvedPath": "src/infrastructure/character/supabase-character.repository.ts",
       "expression": "import { supabaseCharacterRepository } from './supabase-character.repository';"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 44,
-      "endLine": 44,
+      "line": 125,
+      "endLine": 125,
       "module": "../media/optimizer",
       "resolvedPath": "src/infrastructure/media/optimizer/index.ts",
       "expression": "import('../media/optimizer')",
@@ -11843,20 +11931,20 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 26,
-      "endLine": 33,
+      "line": 107,
+      "endLine": 114,
       "text": "export type UploadPortraitOptions = {\n  /**\n   * When true, skip client optimize (caller already ran character-portrait intake).\n   * Storage MIME/magic-byte/owner checks still run in the repository.\n   */\n  readonly alreadyOptimized?: boolean;\n  readonly signal?: AbortSignal;\n};"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 39,
-      "endLine": 82,
+      "line": 120,
+      "endLine": 163,
       "text": "export async function prepareCharacterPortraitFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  // Lazy import keeps the WebP Worker out of the service module graph until prepare runs.\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'character-portrait',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Portrait-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'portrait';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Portrait-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Portrait-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 268,
-      "endLine": 268,
+      "line": 497,
+      "endLine": 497,
       "text": "export const characterService = new CharacterService();"
     },
     {
@@ -14857,127 +14945,169 @@
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 22,
-      "endLine": 24,
+      "line": 45,
+      "endLine": 61,
+      "name": "mapHostCharacterSummary",
+      "text": "function mapHostCharacterSummary(row: HostLibraryCharacterDto): CharacterSummaryVm {\n  const sheetStatus: CharacterSheetStatus =\n    row.sheetStatus === 'incomplete' || row.sheetStatus === 'draft' ? 'incomplete' : 'complete';\n  return {\n    id: row.id,\n    publicId: typeof row.publicId === 'string' ? row.publicId : undefined,\n    name: row.name,\n    class: typeof row.class === 'string' ? row.class : '',\n    race: typeof row.race === 'string' ? row.race : '',\n    level: typeof row.level === 'number' ? row.level : 1,\n    sheetStatus,\n    portraitUrl:\n      typeof row.portraitUrl === 'string' && row.portraitUrl.length > 0\n        ? row.portraitUrl\n        : undefined,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 63,
+      "endLine": 101,
+      "name": "mapHostCharacterVm",
+      "text": "function mapHostCharacterVm(row: HostLibraryCharacterDto): CharacterVm {\n  const sheet = row.sheet ?? {};\n  const summary = mapHostCharacterSummary(row);\n  const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();\n  const updatedAt = row.updatedAt ? new Date(row.updatedAt) : createdAt;\n  return {\n    id: summary.id,\n    publicId: summary.publicId,\n    name: summary.name,\n    description: typeof row.description === 'string' ? row.description : '',\n    class: summary.class,\n    race: summary.race,\n    rulesetKey: 'sagatree-core',\n    level: summary.level,\n    sheetStatus: summary.sheetStatus,\n    notes: typeof sheet.notes === 'string' ? sheet.notes : '',\n    personalityTraits: normalizeTextBlocks(sheet.personalityTraits),\n    ideals: normalizeTextBlocks(sheet.ideals),\n    bonds: normalizeTextBlocks(sheet.bonds),\n    flaws: normalizeTextBlocks(sheet.flaws),\n    appearance: normalizeCharacterAppearance(sheet.appearance),\n    attributes: normalizeAttributes(sheet.attributes),\n    skills: normalizeSkills(sheet.skills),\n    sagaTreeProfile: normalizeSagaTreeProfile(sheet.sagatreeProfile ?? sheet.sagaTreeProfile),\n    abilities: Array.isArray(sheet.abilities) ? (sheet.abilities as CharacterVm['abilities']) : [],\n    inventory: normalizeInventory(\n      Array.isArray(sheet.inventory) ? (sheet.inventory as Parameters<typeof normalizeInventory>[0]) : undefined,\n    ),\n    inventoryV2: createEmptyInventory(),\n    inventorySchemaVersion: 1,\n    abstractResources: createDefaultAbstractResources(),\n    emotionProfiles: Array.isArray(sheet.emotionProfiles)\n      ? (sheet.emotionProfiles as CharacterVm['emotionProfiles'])\n      : [],\n    portraitUrl: summary.portraitUrl,\n    createdAt,\n    updatedAt,\n  };\n}"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 103,
+      "endLine": 105,
       "name": "invalidateCharacterListCaches",
       "text": "function invalidateCharacterListCaches(): void {\n  entityCache.invalidate(ENTITY_CACHE_KEYS.characterSummaries);\n}"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 39,
-      "endLine": 82,
+      "line": 120,
+      "endLine": 163,
       "name": "prepareCharacterPortraitFile",
       "text": "export async function prepareCharacterPortraitFile(\n  file: File,\n  signal?: AbortSignal,\n): Promise<File> {\n  // Lazy import keeps the WebP Worker out of the service module graph until prepare runs.\n  const { optimizeMedia } = await import('../media/optimizer');\n  let optimizedBytes: Uint8Array | undefined;\n  const result = await optimizeMedia({\n    kind: 'image',\n    profileId: 'character-portrait',\n    mimeType: file.type || 'application/octet-stream',\n    byteSize: file.size,\n    bytes: file,\n    signal,\n    onOptimizedBytes: (bytes) => {\n      optimizedBytes = bytes;\n    },\n  });\n\n  if (result.status === 'unchanged') {\n    return file;\n  }\n\n  if (result.status === 'optimized') {\n    if (!optimizedBytes || optimizedBytes.byteLength === 0) {\n      throw new Error('Portrait-Optimierung lieferte keine Bytes (kein stilles Original).');\n    }\n    const copy = new Uint8Array(optimizedBytes.byteLength);\n    copy.set(optimizedBytes);\n    const base = file.name.replace(/\\.[^.]+$/, '') || 'portrait';\n    const ext = result.outputMimeType === 'image/webp' ? 'webp' : 'bin';\n    return new File([copy], `${base}.${ext}`, { type: result.outputMimeType });\n  }\n\n  if (result.status === 'aborted') {\n    throw new Error(result.message || 'Portrait-Optimierung abgebrochen.');\n  }\n\n  const message =\n    'message' in result && typeof result.message === 'string'\n      ? result.message\n      : 'Portrait-Optimierung fehlgeschlagen.';\n  throw new Error(message);\n}"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 53,
-      "endLine": 55,
+      "line": 134,
+      "endLine": 136,
       "name": "callback",
       "text": "(bytes) => {\n      optimizedBytes = bytes;\n    }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 85,
-      "endLine": 87,
+      "line": 166,
+      "endLine": 172,
       "name": "getUserCharacterSummaries",
-      "text": "getUserCharacterSummaries(): Promise<CharacterSummaryVm[]> {\n    return supabaseCharacterRepository.getUserCharacterSummaries();\n  }"
+      "text": "async getUserCharacterSummaries(): Promise<CharacterSummaryVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacters();\n      return rows.map(mapHostCharacterSummary);\n    }\n    return supabaseCharacterRepository.getUserCharacterSummaries();\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 89,
-      "endLine": 91,
+      "line": 174,
+      "endLine": 180,
       "name": "getUserCharacters",
-      "text": "getUserCharacters(): Promise<CharacterVm[]> {\n    return supabaseCharacterRepository.getUserCharacters();\n  }"
+      "text": "async getUserCharacters(): Promise<CharacterVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacters();\n      return rows.map(mapHostCharacterVm);\n    }\n    return supabaseCharacterRepository.getUserCharacters();\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 93,
-      "endLine": 95,
+      "line": 182,
+      "endLine": 188,
       "name": "getCharacterById",
-      "text": "getCharacterById(id: string): Promise<CharacterVm> {\n    return supabaseCharacterRepository.getCharacterById(id);\n  }"
+      "text": "async getCharacterById(id: string): Promise<CharacterVm> {\n    if (isHostLibraryEnabled()) {\n      const row = await fetchHostLibraryCharacter(id);\n      return mapHostCharacterVm(row);\n    }\n    return supabaseCharacterRepository.getCharacterById(id);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 98,
-      "endLine": 100,
+      "line": 191,
+      "endLine": 213,
       "name": "getCharacterRosterMetaByIds",
-      "text": "getCharacterRosterMetaByIds(ids: readonly string[]): Promise<CharacterRosterMetaVm[]> {\n    return supabaseCharacterRepository.getCharacterRosterMetaByIds(ids);\n  }"
+      "text": "async getCharacterRosterMetaByIds(ids: readonly string[]): Promise<CharacterRosterMetaVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacters();\n      const wanted = new Set(ids);\n      return rows\n        .filter((row) => wanted.has(row.id))\n        .map((row) => {\n          const summary = mapHostCharacterSummary(row);\n          return {\n            id: summary.id,\n            publicId: summary.publicId ?? null,\n            name: summary.name,\n            portraitUrl: summary.portraitUrl ?? null,\n            level: summary.level,\n            classLabel: summary.class || null,\n            raceKey: summary.race || null,\n            essenceKey: null,\n            archetypeKey: null,\n          } satisfies CharacterRosterMetaVm;\n        });\n    }\n    return supabaseCharacterRepository.getCharacterRosterMetaByIds(ids);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 102,
-      "endLine": 104,
+      "line": 196,
+      "endLine": 196,
+      "name": "callback",
+      "text": "(row) => wanted.has(row.id)"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 197,
+      "endLine": 210,
+      "name": "callback",
+      "text": "(row) => {\n          const summary = mapHostCharacterSummary(row);\n          return {\n            id: summary.id,\n            publicId: summary.publicId ?? null,\n            name: summary.name,\n            portraitUrl: summary.portraitUrl ?? null,\n            level: summary.level,\n            classLabel: summary.class || null,\n            raceKey: summary.race || null,\n            essenceKey: null,\n            archetypeKey: null,\n          } satisfies CharacterRosterMetaVm;\n        }"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 215,
+      "endLine": 223,
       "name": "getCharacterByPublicId",
-      "text": "getCharacterByPublicId(publicId: string): Promise<CharacterVm> {\n    return supabaseCharacterRepository.getCharacterByPublicId(publicId);\n  }"
+      "text": "async getCharacterByPublicId(publicId: string): Promise<CharacterVm> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacters();\n      const match = rows.find((row) => row.publicId === publicId);\n      if (!match) throw new Error('Charakter nicht gefunden');\n      return mapHostCharacterVm(match);\n    }\n    return supabaseCharacterRepository.getCharacterByPublicId(publicId);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 106,
-      "endLine": 110,
+      "line": 218,
+      "endLine": 218,
+      "name": "callback",
+      "text": "(row) => row.publicId === publicId"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 225,
+      "endLine": 260,
       "name": "createCharacter",
-      "text": "async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {\n    const created = await supabaseCharacterRepository.createCharacter(payload);\n    invalidateCharacterListCaches();\n    return created;\n  }"
+      "text": "async createCharacter(payload: CreateCharacterDto): Promise<CharacterVm> {\n    if (isHostLibraryEnabled()) {\n      const row = await createHostLibraryCharacter({\n        name: payload.name,\n        description: payload.description,\n        class: payload.class,\n        race: payload.race,\n        level: payload.level ?? 1,\n        sheet_status: payload.sheet_status ?? 'draft',\n        notes: payload.notes,\n        attributes: payload.attributes,\n        skills: payload.skills,\n        sagatree_profile: payload.sagatree_profile,\n        appearance: payload.appearance,\n        inventory: payload.inventory,\n        sheet: {\n          class: payload.class,\n          race: payload.race,\n          classLabel: payload.class,\n          raceLabel: payload.race,\n          notes: payload.notes,\n          attributes: payload.attributes,\n          skills: payload.skills,\n          sagatreeProfile: payload.sagatree_profile,\n          appearance: payload.appearance,\n          inventory: payload.inventory,\n          abilities: payload.abilities,\n        },\n      });\n      invalidateCharacterListCaches();\n      return mapHostCharacterVm(row);\n    }\n    const created = await supabaseCharacterRepository.createCharacter(payload);\n    invalidateCharacterListCaches();\n    return created;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 112,
-      "endLine": 122,
+      "line": 262,
+      "endLine": 305,
       "name": "updateCharacter",
-      "text": "async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {\n    if (payload.appearance && 'personal_look_profile_id' in payload.appearance) {\n      await this.assertPersonalLookWriteGate(\n        id,\n        payload.appearance.personal_look_profile_id ?? null,\n      );\n    }\n    const updated = await supabaseCharacterRepository.updateCharacter(id, payload);\n    invalidateCharacterListCaches();\n    return updated;\n  }"
+      "text": "async updateCharacter(id: string, payload: UpdateCharacterDto): Promise<CharacterVm> {\n    if (payload.appearance && 'personal_look_profile_id' in payload.appearance) {\n      await this.assertPersonalLookWriteGate(\n        id,\n        payload.appearance.personal_look_profile_id ?? null,\n      );\n    }\n    if (isHostLibraryEnabled()) {\n      const current = await fetchHostLibraryCharacter(id);\n      const sheet: Record<string, unknown> = {\n        ...(current.sheet ?? {}),\n        ...(payload.class !== undefined ? { class: payload.class, classLabel: payload.class } : {}),\n        ...(payload.race !== undefined ? { race: payload.race, raceLabel: payload.race } : {}),\n        ...(payload.notes !== undefined ? { notes: payload.notes } : {}),\n        ...(payload.appearance !== undefined ? { appearance: payload.appearance } : {}),\n        ...(payload.attributes !== undefined ? { attributes: payload.attributes } : {}),\n        ...(payload.skills !== undefined ? { skills: payload.skills } : {}),\n        ...(payload.sagatree_profile !== undefined\n          ? { sagatreeProfile: payload.sagatree_profile }\n          : {}),\n        ...(payload.abilities !== undefined ? { abilities: payload.abilities } : {}),\n        ...(payload.inventory !== undefined ? { inventory: payload.inventory } : {}),\n        ...(payload.personality_traits !== undefined\n          ? { personalityTraits: payload.personality_traits }\n          : {}),\n        ...(payload.ideals !== undefined ? { ideals: payload.ideals } : {}),\n        ...(payload.bonds !== undefined ? { bonds: payload.bonds } : {}),\n        ...(payload.flaws !== undefined ? { flaws: payload.flaws } : {}),\n      };\n      const updated = await updateHostLibraryCharacter(id, {\n        name: payload.name,\n        description: payload.description,\n        level: payload.level,\n        sheet_status: payload.sheet_status,\n        sheet,\n        portrait_url: payload.portrait_url,\n      });\n      invalidateCharacterListCaches();\n      return mapHostCharacterVm(updated);\n    }\n    const updated = await supabaseCharacterRepository.updateCharacter(id, payload);\n    invalidateCharacterListCaches();\n    return updated;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 128,
-      "endLine": 142,
+      "line": 311,
+      "endLine": 325,
       "name": "updateCharacterPersonalLook",
       "text": "async updateCharacterPersonalLook(\n    characterId: string,\n    personalLookProfileId: string | null,\n  ): Promise<CharacterVm> {\n    await this.assertPersonalLookWriteGate(characterId, personalLookProfileId);\n    const current = await supabaseCharacterRepository.getCharacterById(characterId);\n    const updated = await supabaseCharacterRepository.updateCharacter(characterId, {\n      appearance: {\n        ...current.appearance,\n        personal_look_profile_id: personalLookProfileId,\n      },\n    });\n    invalidateCharacterListCaches();\n    return updated;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 155,
-      "endLine": 155,
+      "line": 338,
+      "endLine": 338,
       "name": "callback",
       "text": "(arc) => arc.status === 'active'"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 194,
-      "endLine": 203,
+      "line": 377,
+      "endLine": 390,
       "name": "migrateCharacterInventoryToV2",
-      "text": "async migrateCharacterInventoryToV2(characterId: string): Promise<InventoryState> {\n    const character = await supabaseCharacterRepository.getCharacterById(characterId);\n    if (character.inventorySchemaVersion === 2) {\n      return character.inventoryV2;\n    }\n    const migration = migrateLegacyInventory(character.inventory);\n    const state = await persistMigratedInventory(characterId, migration);\n    invalidateCharacterListCaches();\n    return state;\n  }"
+      "text": "async migrateCharacterInventoryToV2(characterId: string): Promise<InventoryState> {\n    if (isHostLibraryEnabled()) {\n      const character = await this.getCharacterById(characterId);\n      return character.inventoryV2;\n    }\n    const character = await supabaseCharacterRepository.getCharacterById(characterId);\n    if (character.inventorySchemaVersion === 2) {\n      return character.inventoryV2;\n    }\n    const migration = migrateLegacyInventory(character.inventory);\n    const state = await persistMigratedInventory(characterId, migration);\n    invalidateCharacterListCaches();\n    return state;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 205,
-      "endLine": 208,
+      "line": 392,
+      "endLine": 400,
       "name": "deleteCharacter",
-      "text": "async deleteCharacter(id: string): Promise<void> {\n    await supabaseCharacterRepository.deleteCharacter(id);\n    invalidateCharacterListCaches();\n  }"
+      "text": "async deleteCharacter(id: string): Promise<void> {\n    if (isHostLibraryEnabled()) {\n      await deleteHostLibraryCharacter(id);\n      invalidateCharacterListCaches();\n      return;\n    }\n    await supabaseCharacterRepository.deleteCharacter(id);\n    invalidateCharacterListCaches();\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 211,
-      "endLine": 246,
+      "line": 403,
+      "endLine": 467,
       "name": "duplicateCharacter",
-      "text": "async duplicateCharacter(id: string): Promise<CharacterVm> {\n    const source = await supabaseCharacterRepository.getCharacterById(id);\n    const suffix = ' (Kopie)';\n    const maxBase = Math.max(1, 255 - suffix.length);\n    const name = `${source.name.trim().slice(0, maxBase) || 'Charakter'}${suffix}`;\n    const created = await supabaseCharacterRepository.createCharacter({\n      name,\n      description: source.description,\n      class: source.class,\n      race: source.race,\n      ruleset_key: source.rulesetKey,\n      dnd_background: source.dndBackground ?? null,\n      level: source.level,\n      sheet_status: source.sheetStatus,\n      background_story: source.backgroundStory,\n      notes: source.notes,\n      personality_traits: source.personalityTraits,\n      ideals: source.ideals,\n      bonds: source.bonds,\n      flaws: source.flaws,\n      appearance: source.appearance,\n      attributes: source.attributes,\n      skills: source.skills,\n      sagatree_profile: source.sagaTreeProfile,\n      abilities: source.abilities,\n      inventory: source.inventory,\n      // Only copy v2 when already on schema 2 — avoid re-migrating legacy bags.\n      ...(source.inventorySchemaVersion === 2\n        ? { inventory_v2: source.inventoryV2 }\n        : {}),\n      abstractResources: source.abstractResources,\n      portrait_url: source.portraitUrl,\n    });\n    invalidateCharacterListCaches();\n    return created;\n  }"
+      "text": "async duplicateCharacter(id: string): Promise<CharacterVm> {\n    const source = await this.getCharacterById(id);\n    const suffix = ' (Kopie)';\n    const maxBase = Math.max(1, 255 - suffix.length);\n    const name = `${source.name.trim().slice(0, maxBase) || 'Charakter'}${suffix}`;\n    if (isHostLibraryEnabled()) {\n      const created = await createHostLibraryCharacter({\n        name,\n        description: source.description,\n        class: source.class,\n        race: source.race,\n        level: source.level,\n        sheet_status: source.sheetStatus === 'complete' ? 'draft' : source.sheetStatus,\n        sheet: {\n          class: source.class,\n          race: source.race,\n          classLabel: source.class,\n          raceLabel: source.race,\n          notes: source.notes,\n          appearance: source.appearance,\n          attributes: source.attributes,\n          skills: source.skills,\n          sagatreeProfile: source.sagaTreeProfile,\n          abilities: source.abilities,\n          inventory: source.inventory,\n          personalityTraits: source.personalityTraits,\n          ideals: source.ideals,\n          bonds: source.bonds,\n          flaws: source.flaws,\n        },\n      });\n      invalidateCharacterListCaches();\n      return mapHostCharacterVm(created);\n    }\n    const created = await supabaseCharacterRepository.createCharacter({\n      name,\n      description: source.description,\n      class: source.class,\n      race: source.race,\n      ruleset_key: source.rulesetKey,\n      dnd_background: source.dndBackground ?? null,\n      level: source.level,\n      sheet_status: source.sheetStatus,\n      background_story: source.backgroundStory,\n      notes: source.notes,\n      personality_traits: source.personalityTraits,\n      ideals: source.ideals,\n      bonds: source.bonds,\n      flaws: source.flaws,\n      appearance: source.appearance,\n      attributes: source.attributes,\n      skills: source.skills,\n      sagatree_profile: source.sagaTreeProfile,\n      abilities: source.abilities,\n      inventory: source.inventory,\n      // Only copy v2 when already on schema 2 — avoid re-migrating legacy bags.\n      ...(source.inventorySchemaVersion === 2\n        ? { inventory_v2: source.inventoryV2 }\n        : {}),\n      abstractResources: source.abstractResources,\n      portrait_url: source.portraitUrl,\n    });\n    invalidateCharacterListCaches();\n    return created;\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 248,
-      "endLine": 250,
+      "line": 469,
+      "endLine": 479,
       "name": "searchCharacters",
-      "text": "searchCharacters(query: string): Promise<CharacterVm[]> {\n    return supabaseCharacterRepository.searchCharacters(query);\n  }"
+      "text": "async searchCharacters(query: string): Promise<CharacterVm[]> {\n    if (isHostLibraryEnabled()) {\n      const rows = await fetchHostLibraryCharacters();\n      const q = query.trim().toLowerCase();\n      if (!q) return rows.map(mapHostCharacterVm);\n      return rows\n        .filter((row) => row.name.toLowerCase().includes(q))\n        .map(mapHostCharacterVm);\n    }\n    return supabaseCharacterRepository.searchCharacters(query);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 256,
-      "endLine": 261,
+      "line": 475,
+      "endLine": 475,
+      "name": "callback",
+      "text": "(row) => row.name.toLowerCase().includes(q)"
+    },
+    {
+      "path": "src/infrastructure/character/character-service.ts",
+      "line": 485,
+      "endLine": 490,
       "name": "uploadPortrait",
       "text": "async uploadPortrait(file: File, options?: UploadPortraitOptions): Promise<string> {\n    const prepared = options?.alreadyOptimized\n      ? file\n      : await prepareCharacterPortraitFile(file, options?.signal);\n    return supabaseCharacterRepository.uploadPortrait(prepared);\n  }"
     },
     {
       "path": "src/infrastructure/character/character-service.ts",
-      "line": 263,
-      "endLine": 265,
+      "line": 492,
+      "endLine": 494,
       "name": "preparePortraitFile",
       "text": "preparePortraitFile(file: File, signal?: AbortSignal): Promise<File> {\n    return prepareCharacterPortraitFile(file, signal);\n  }"
     },

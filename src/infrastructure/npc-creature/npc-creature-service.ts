@@ -5,9 +5,8 @@
  * App slices must not query tables directly.
  * Location: src/infrastructure/npc-creature/npc-creature-service.ts
  *
- * Dual-path (MIG-307): production remains Supabase repository/RPCs. Host ports are
- * bound via `createHostNpcCreatureAdapter` for tests / future cutover (no accidental
- * cutover — VITE host flags alone do not redirect this facade).
+ * Dual-path (MIG-307): Host Library when `VITE_SAGATREE_HOST_LIBRARY=1` —
+ * persisted rows from host HTTP; Core/builtin packs still merge in the UI hook.
  */
 import {
   assertFullSheetHasNoSilentIllegalAttributes,
@@ -39,6 +38,10 @@ import { getAuthenticatedUserId } from '../../lib/authenticatedUser';
 import { supabase } from '../../lib/supabase';
 import { raceWithTimeoutReject, SUPABASE_QUERY_TIMEOUT_MS } from '../../lib/networkTimeout';
 import {
+  fetchHostLibraryNpcCreatures,
+  isHostLibraryEnabled,
+} from '../host/host-library-http';
+import {
   toNpcControllerAssignment,
   type NpcControllerAssignmentRow,
 } from './npc-creature-controller.persistence';
@@ -58,6 +61,12 @@ export async function listNpcCreatureDefinitions(options?: {
   worldProfileId?: string | null;
   includeArchived?: boolean;
 }): Promise<NpcCreatureCatalogRecord[]> {
+  if (isHostLibraryEnabled()) {
+    await fetchHostLibraryNpcCreatures();
+    // Host DTOs are not yet mapped 1:1 to FE catalog records — Core/builtin
+    // packs still come from the Library hook merge with an empty persisted set.
+    return [];
+  }
   return supabaseNpcCreatureRepository.listDefinitions(options);
 }
 

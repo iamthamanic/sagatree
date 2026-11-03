@@ -101,6 +101,7 @@ import {
   ensureSoloIdentityFile,
   type HostBetterAuth,
 } from '../auth/index.ts';
+import { ensureDornhainDefaultCatalog } from './ensure-dornhain-default.ts';
 
 export type HostInstance = {
   readonly config: HostConfig;
@@ -173,6 +174,19 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
     }
     let db: HostDatabase | null = persistence.db;
     const schemaVersion = persistence.schemaVersion;
+
+    // Solo product default: Dornhain must exist without Supabase seed migrations.
+    if (db) {
+      try {
+        ensureDornhainDefaultCatalog(db, actorId);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        return {
+          error: `dornhain-default-seed-failed: ${redactLogMessage(message)}`,
+          code: 1,
+        };
+      }
+    }
 
     let ready = false;
     let acceptingMutations = true;
@@ -433,6 +447,12 @@ export function createHost(env: NodeJS.ProcessEnv = process.env): HostInstance |
       tryAuthorizedWorldTouch,
       aiCredentials,
       aiOllama,
+      character,
+      world,
+      npcCreature,
+      look,
+      inventory,
+      project,
     });
 
     return {

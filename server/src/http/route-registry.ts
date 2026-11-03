@@ -31,6 +31,12 @@ import type { createOllamaSettingsUseCases } from '../application/ollama-setting
 import type { OpsPorts } from '../modules/ops/index.ts';
 import type { PermissionsPorts } from '../modules/permissions/index.ts';
 import type { IdentityPorts } from '../modules/identity/index.ts';
+import type { CharacterPorts } from '../modules/character/index.ts';
+import type { WorldPorts } from '../modules/world/index.ts';
+import type { NpcCreaturePorts } from '../modules/npc-creature/index.ts';
+import type { LookProfilePorts } from '../modules/look/index.ts';
+import type { InventoryPorts } from '../modules/inventory/index.ts';
+import type { ProjectPorts } from '../modules/project/index.ts';
 import type { RealtimeSessionRooms } from '../realtime/index.ts';
 import type { NodeAuthHandler } from '../auth/wrap-auth-handler.ts';
 import { createHostApi } from '../api/index.ts';
@@ -76,6 +82,13 @@ export type RouteRegistryDeps = {
   /** MIG-301 AI host HTTP adapters. */
   readonly aiCredentials?: ReturnType<typeof createAiProviderCredentialsUseCases>;
   readonly aiOllama?: ReturnType<typeof createOllamaSettingsUseCases>;
+  /** Browser Library cutover ports. */
+  readonly character?: CharacterPorts | null;
+  readonly world?: WorldPorts | null;
+  readonly npcCreature?: NpcCreaturePorts | null;
+  readonly look?: LookProfilePorts | null;
+  readonly inventory?: InventoryPorts | null;
+  readonly project?: ProjectPorts | null;
 };
 
 export function sendJson(
@@ -122,6 +135,12 @@ export function createRouteHandler(deps: RouteRegistryDeps) {
     tryAuthorizedWorldTouch: deps.tryAuthorizedWorldTouch,
     aiCredentials: deps.aiCredentials,
     aiOllama: deps.aiOllama,
+    character: deps.character,
+    world: deps.world,
+    npcCreature: deps.npcCreature,
+    look: deps.look,
+    inventory: deps.inventory,
+    project: deps.project,
   });
   const honoListener = getRequestListener(app.fetch, { overrideGlobalObjects: false });
 

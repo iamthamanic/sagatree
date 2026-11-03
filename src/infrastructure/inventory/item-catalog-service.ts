@@ -28,6 +28,10 @@ import {
 } from '../../domains/items';
 import { deriveStablePublicResourceId } from '../../domains/resource-id';
 import {
+  fetchHostLibraryItems,
+  isHostLibraryEnabled,
+} from '../host/host-library-http';
+import {
   supabaseItemCatalogRepository,
 } from './supabase-item-catalog.repository';
 import type {
@@ -141,7 +145,14 @@ export async function loadCharacterItemCatalog(
  * server-side (#136). Archived persisted rows are omitted from `definitions`.
  */
 export async function loadLibraryItemCatalog(): Promise<LibraryItemCatalog> {
-  const persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
+  let persistedRecords: Awaited<
+    ReturnType<typeof supabaseItemCatalogRepository.listLibraryPersistedRecords>
+  > = [];
+  if (isHostLibraryEnabled()) {
+    await fetchHostLibraryItems();
+  } else {
+    persistedRecords = await supabaseItemCatalogRepository.listLibraryPersistedRecords();
+  }
   const byId = new Map<string, ItemDefinition>();
 
   for (const definition of listCoreItemDefinitions()) {

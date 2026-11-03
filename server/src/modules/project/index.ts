@@ -97,6 +97,8 @@ export type ProjectPorts = {
     projectId: string,
     memberId: string,
   ) => { id: string; userId: string } | null;
+  /** Owner/GM library list — projects where actor is GM or active member. */
+  readonly listOwnedProjects: (actorId: string) => ProjectResult<readonly ProvisionedProject[]>;
 };
 
 export function createProjectPorts(db?: HostDatabase): ProjectPorts {
@@ -120,6 +122,7 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
       worldHasProjects: () => false,
       listActiveMembers: () => [],
       getActiveMemberById: () => null,
+      listOwnedProjects: () => ({ ok: false, error: 'store-unavailable' }),
     };
   }
   const membership = new SagaMembershipStore(db);
@@ -166,5 +169,35 @@ export function createProjectPorts(db?: HostDatabase): ProjectPorts {
     listActiveMembers: (projectId) => projectMembership.listActiveMembers(projectId),
     getActiveMemberById: (projectId, memberId) =>
       projectMembership.getActiveMemberById(projectId, memberId),
+    listOwnedProjects(actorId) {
+      if (!actorId) return { ok: false, error: '42501' };
+      const rows = db
+        .prepare(
+          `SELECT DISTINCT p.id, p.world_id, p.gm_user_id, p.title, p.created_at, p.saga_id,
+                  p.saga_version_id, p.adventure_runtime, p.public_id, p.status, p.description
+           FROM projects p
+           LEFT JOIN project_members m
+             ON m.project_id = p.id AND m.user_id = ? AND m.active = 1
+           WHERE p.gm_user_id = ? OR m.user_id IS NOT NULL
+           ORDER BY p.created_at DESC`,
+        )
+        .all(actorId, actorId) as Array<{
+        id: string;
+        world_id: string;
+        gm_user_id: string;
+        title: string;
+        created_at: string;
+        saga_id: string | null;
+        saga_version_id: string | null;
+        adventure_runtime: string | null;
+        public_id: string | null;
+        status: string | null;
+        description: string | null;
+      }>;
+      return {
+        ok: true,
+        value: rows.map((row) => provision.toVm(row)),
+      };
+    },
   };
 }

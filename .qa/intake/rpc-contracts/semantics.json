@@ -4105,6 +4105,13 @@
       "Session-Anlage und Nummernvergabe sind eine Transaktion; Wiederholung erzeugt neue Session."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/create_project_session-1.sql",
+        "sha256": "1533db17f221b19e74f244585af22502bc6fd45794e007dcaeaebdd4b4a2b320"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/domains/project/contracts/project.types.ts",
@@ -4112,7 +4119,7 @@
       },
       {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
+        "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -4178,14 +4185,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/create_project_session-1.sql",
-        "sha256": "1533db17f221b19e74f244585af22502bc6fd45794e007dcaeaebdd4b4a2b320"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "join_session_by_code": {
     "summary": "Tritt einer nicht abgeschlossenen Session bei und stellt Projektmitgliedschaft und Roster her.",
@@ -5953,10 +5953,25 @@
       "Mehrtabellen-Provisionierung mit vorhandener-Projekt-Prüfung; konkrete Unique-Constraints/Seed-UPSERTs sind Teil des Helper-Vertrags. Gleichzeitige Erstanlagen separat testen."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/ensure_native_starter_project-1.sql",
+        "sha256": "dff8c9c15774d5634ac0f3445bef84491e8aeaa1a238a8e98d496a72f49314ff"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
+        "path": "src/infrastructure/host/host-library-http.ts",
+        "sha256": "5f736badfbaa6a0f3888c66eb41580a5d85f7f63ebfd30d2a6318f6de72bde3a"
+      },
+      {
         "path": "src/infrastructure/project/project-service.ts",
-        "sha256": "b71cf1fc78c24804f4a1ebda9a001807c3dc70379b2d5cf96769081efc9a2257"
+        "sha256": "9d33a2c3be7ec25aa25529e4f922a38f56c3905153929cd8fe2c879b306ff783"
+      },
+      {
+        "path": "src/lib/hostAuthBridge.ts",
+        "sha256": "6807ead91edd60cf1811c6d96c40f360a4e461845047b9b09aae2a835be1905b"
       },
       {
         "path": "src/lib/supabase.ts",
@@ -6134,14 +6149,7 @@
         "path": "supabase/migrations/103_atlas_worldbuilder_create_with_maps.sql",
         "sha256": "84afa7b42fab766cf5114c65aefd433b856a173e1065f7e34f4fc10875ee784d"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/ensure_native_starter_project-1.sql",
-        "sha256": "dff8c9c15774d5634ac0f3445bef84491e8aeaa1a238a8e98d496a72f49314ff"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "join_project_by_code": {
     "summary": "Erzeugt die eigene aktive Player-Mitgliedschaft anhand eines Projektcodes.",
@@ -9170,6 +9178,13 @@
       "Assignment-UPSERT ist atomar; wiederholte identische Zuordnung aktualisiert Zeitstempel ohne zweite Zeile."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/assign_npc_creature_controller-1.sql",
+        "sha256": "138c3713b11e43a76fb7cab74c814de500d94b93f507ab3f069809f8be2fa72b"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-controller.persistence.ts",
@@ -9177,7 +9192,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+        "sha256": "d16233ccb98f5f566d8101efda2347dcaedc9883f5f94b357999debb5f5be490"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -9247,14 +9262,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/assign_npc_creature_controller-1.sql",
-        "sha256": "138c3713b11e43a76fb7cab74c814de500d94b93f507ab3f069809f8be2fa72b"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "spawn_npc_creature_instance": {
     "summary": "Erzeugt eine projektbezogene generische oder persistente NPC-Instanz mit unveränderlichem Ausgangs-Snapshot.",
@@ -9277,6 +9285,13 @@
       "Validierung und Instanz-Insert sind ein SQL-Aufruf; kein Idempotency-Key, Constraints definieren persistente Eindeutigkeit."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/spawn_npc_creature_instance-1.sql",
+        "sha256": "b961d3842b0440dbcb1d63c834660758dd7733f63f53aae9fd19c05a0e1f56c6"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
@@ -9284,7 +9299,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+        "sha256": "d16233ccb98f5f566d8101efda2347dcaedc9883f5f94b357999debb5f5be490"
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature.persistence.ts",
@@ -9382,14 +9397,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/spawn_npc_creature_instance-1.sql",
-        "sha256": "b961d3842b0440dbcb1d63c834660758dd7733f63f53aae9fd19c05a0e1f56c6"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "update_npc_creature_instance_runtime": {
     "summary": "Ersetzt als aktiver Projekt-GM das gesamte Runtime-Objekt einer NPC-Instanz.",
@@ -9411,6 +9419,13 @@
       "Ein Runtime-UPDATE mit Zeitstempel; kein Patch-/Revision-/Idempotency-Key-Vertrag."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/update_npc_creature_instance_runtime-1.sql",
+        "sha256": "ad4b4327ec690e286a8e686971ef89271d329a8dc3b6dd45f7f5255678f4bd02"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-instance.persistence.ts",
@@ -9418,7 +9433,7 @@
       },
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+        "sha256": "d16233ccb98f5f566d8101efda2347dcaedc9883f5f94b357999debb5f5be490"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -9476,14 +9491,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/update_npc_creature_instance_runtime-1.sql",
-        "sha256": "ad4b4327ec690e286a8e686971ef89271d329a8dc3b6dd45f7f5255678f4bd02"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "remove_npc_creature_instance": {
     "summary": "Löscht als aktiver Projekt-GM eine bestimmte NPC-Instanz.",
@@ -9504,10 +9512,17 @@
       "Ein scoped Delete; FK-/Triggerfolgen gehören zur Transaktion."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/remove_npc_creature_instance-1.sql",
+        "sha256": "32e8525a9c926d62cd0ef0fd0d9e6cf41aca12f045d6ef82198ad5f665770c45"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+        "sha256": "d16233ccb98f5f566d8101efda2347dcaedc9883f5f94b357999debb5f5be490"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -9565,14 +9580,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/remove_npc_creature_instance-1.sql",
-        "sha256": "32e8525a9c926d62cd0ef0fd0d9e6cf41aca12f045d6ef82198ad5f665770c45"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "clear_npc_creature_instance_temp_controllers_for_session": {
     "summary": "Entfernt temporäre NPC-Controller ausschließlich für Instanzen einer Session.",
@@ -9594,10 +9602,17 @@
       "Ein sessionbezogenes UPDATE; sequenzielle Wiederholung ist nach Cleanup No-op mit Rückgabe0."
     ],
     "legacyDefects": [],
+    "reviewedEffectiveSql": [
+      {
+        "path": ".qa/intake/rpc-contracts/effective-sql/clear_npc_creature_instance_temp_controllers_for_session-1.sql",
+        "sha256": "7613795bb30fdf1338307c13a16c07eadaac7fc5ed4187deee8fec2062bc6d6a"
+      }
+    ],
+    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248",
     "reviewedSources": [
       {
         "path": "src/infrastructure/npc-creature/npc-creature-service.ts",
-        "sha256": "6c282de89059d13638306111956d6019d2d86662d1c1688016020fb6ae787015"
+        "sha256": "d16233ccb98f5f566d8101efda2347dcaedc9883f5f94b357999debb5f5be490"
       },
       {
         "path": "src/lib/authenticatedUser.ts",
@@ -9671,14 +9686,7 @@
         "path": "supabase/migrations/092_fix_projects_rls_recursion.sql",
         "sha256": "8e98ae8e52beb6ab57359338e7b30bdc2db322b7cdb44bdbf4059a41ab26e1bd"
       }
-    ],
-    "reviewedEffectiveSql": [
-      {
-        "path": ".qa/intake/rpc-contracts/effective-sql/clear_npc_creature_instance_temp_controllers_for_session-1.sql",
-        "sha256": "7613795bb30fdf1338307c13a16c07eadaac7fc5ed4187deee8fec2062bc6d6a"
-      }
-    ],
-    "reviewedBaselineSha": "3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248"
+    ]
   },
   "increment_marketplace_downloads": {
     "summary": "Host-Nachfolger (#878): atomarer Downloadzähler über SQLite marketplace_items + MarketplaceCountStore; optionale src/supabase SQL-Skripte bleiben Legacy-Installationsquellen ohne Migrationsketten-Autorität.",
