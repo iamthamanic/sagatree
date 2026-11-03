@@ -122,6 +122,35 @@ export async function listNpcCreatureDefinitions(options?: {
 export async function getNpcCreatureDefinition(
   definitionId: string,
 ): Promise<NpcCreatureCatalogRecord | null> {
+  if (isHostLibraryEnabled()) {
+    const core = getCoreNpcCreatureDefinition(definitionId);
+    if (core) {
+      return {
+        definition: core,
+        status: 'active',
+        worldProfileId: null,
+        publicId: null,
+        ownerUserId: '',
+      };
+    }
+    const builtin = getBuiltinNpcCreatureDefinition(definitionId);
+    if (builtin) {
+      return {
+        definition: builtin,
+        status: 'active',
+        worldProfileId: null,
+        publicId: null,
+        ownerUserId: '',
+      };
+    }
+    const rows = await fetchHostLibraryNpcCreatures();
+    return (
+      rows
+        .map(mapHostLibraryNpcRecord)
+        .find((row): row is NpcCreatureCatalogRecord => row !== null && row.definition.id === definitionId) ??
+      null
+    );
+  }
   return supabaseNpcCreatureRepository.getDefinitionById(definitionId);
 }
 

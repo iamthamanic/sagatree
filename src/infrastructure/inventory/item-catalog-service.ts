@@ -235,6 +235,18 @@ export async function getItemDefinitionById(definitionId: string): Promise<{
   definition: ItemDefinition;
   record: CatalogDefinitionRecord | null;
 } | null> {
+  if (isHostLibraryEnabled()) {
+    const hostItems = await fetchHostLibraryItems();
+    const record = hostItems
+      .map(mapHostLibraryItemRecord)
+      .find((row): row is CatalogDefinitionRecord => row !== null && row.definition.id === definitionId);
+    if (record) return { definition: record.definition, record };
+    const core = getCoreItemDefinition(definitionId);
+    if (core) return { definition: withCatalogPublicId(core), record: null };
+    const builtin = getBuiltinStandardDefinition(definitionId);
+    if (builtin) return { definition: withCatalogPublicId(builtin), record: null };
+    return null;
+  }
   return supabaseItemCatalogRepository.getDefinitionById(definitionId);
 }
 

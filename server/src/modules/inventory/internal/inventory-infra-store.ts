@@ -241,14 +241,18 @@ export class InventoryInfraStore {
   }
 
   listCatalog(
-    actorId: string,
+    actorIdOrIds: string | readonly string[],
     options?: { readonly worldProfileId?: string | null; readonly query?: string },
   ): InventoryResult<readonly InventoryDefinitionRecord[]> {
+    const actorIds = (
+      typeof actorIdOrIds === 'string' ? [actorIdOrIds] : [...actorIdOrIds]
+    ).filter((id) => typeof id === 'string' && id.length > 0);
+    if (actorIds.length === 0) return { ok: false, error: 'missing-actor' };
     const worldProfileId =
       typeof options?.worldProfileId === 'string' && options.worldProfileId.trim()
         ? options.worldProfileId.trim()
         : null;
-    if (worldProfileId && !this.#world.canReadWorldProfile([actorId], worldProfileId)) {
+    if (worldProfileId && !this.#world.canReadWorldProfile(actorIds, worldProfileId)) {
       return { ok: false, error: 'not-authorized' };
     }
     const qRaw =
@@ -256,24 +260,49 @@ export class InventoryInfraStore {
         ? options.query.trim().toLowerCase()
         : null;
     const q = qRaw ? `%${escapeLikePattern(qRaw)}%` : null;
+    const ownerPlaceholders = actorIds.map(() => '?').join(', ');
     const rows = this.#db
       .prepare(
-        `SELECT * FROM inventory_item_definitions
+        worldProfileId
+          ? `SELECT * FROM inventory_item_definitions
          WHERE status = 'active'
            AND (
              origin = 'standard'
-             OR (origin = 'personal' AND owner_user_id = ?)
+             OR (origin = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
              OR (origin = 'world' AND world_profile_id IS NOT NULL AND world_profile_id = ?)
+           )
+           AND (? IS NULL OR lower(name) LIKE ? ESCAPE '\\')
+         ORDER BY name ASC
+         LIMIT ?`
+          : `SELECT * FROM inventory_item_definitions
+         WHERE status = 'active'
+           AND (
+             origin = 'standard'
+             OR (origin = 'personal' AND owner_user_id IN (${ownerPlaceholders}))
+             OR (origin = 'world' AND world_profile_id IS NOT NULL)
            )
            AND (? IS NULL OR lower(name) LIKE ? ESCAPE '\\')
          ORDER BY name ASC
          LIMIT ?`,
       )
-      .all(actorId, worldProfileId, q, q, INVENTORY_CATALOG_LIST_LIMIT) as DefinitionRow[];
+      .all(
+        ...(worldProfileId
+          ? [...actorIds, worldProfileId, q, q, INVENTORY_CATALOG_LIST_LIMIT]
+          : [...actorIds, q, q, INVENTORY_CATALOG_LIST_LIMIT]),
+      ) as DefinitionRow[];
     const mapped: InventoryDefinitionRecord[] = [];
     for (const row of rows) {
       const def = mapDefinition(row);
-      if (def && def.status === 'active') mapped.push(def);
+      if (!def || def.status !== 'active') continue;
+      if (
+        def.origin === 'world' &&
+        def.worldProfileId &&
+        !worldProfileId &&
+        !this.#world.canReadWorldProfile(actorIds, def.worldProfileId)
+      ) {
+        continue;
+      }
+      mapped.push(def);
     }
     return { ok: true, value: mapped };
   }

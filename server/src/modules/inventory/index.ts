@@ -75,7 +75,7 @@ export type InventoryPorts = {
     inventory: unknown,
   ) => InventoryResult<InventoryStateRecord>;
   readonly listCatalog: (
-    actorId: string,
+    actorIdOrIds: string | readonly string[],
     options?: { readonly worldProfileId?: string | null; readonly query?: string },
   ) => InventoryResult<readonly InventoryDefinitionRecord[]>;
   readonly createDefinition: (
@@ -117,7 +117,7 @@ export function createInventoryPorts(input?: CreateInventoryPortsInput): Invento
     getOwnedInventory: (actorId, characterId) => store.getOwnedInventory(actorId, characterId),
     putOwnedInventory: (actorId, characterId, inventory) =>
       store.putOwnedInventory(actorId, characterId, inventory),
-    listCatalog: (actorId, options) => store.listCatalog(actorId, options),
+    listCatalog: (actorIdOrIds, options) => store.listCatalog(actorIdOrIds, options),
     createDefinition: (actorId, draft) => store.createDefinition(actorId, draft),
     seedStandardDefinitionForTests: (seedInput) => store.seedStandardDefinition(seedInput),
   };

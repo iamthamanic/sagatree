@@ -60,6 +60,20 @@ function soloLoopbackAllowed(headers: Headers): boolean {
   }
 }
 
+/** Remote actors may own personal rows under linked solo ids (MIG-015). */
+function libraryActorIds(actor: Actor): readonly string[] {
+  const ids = [actor.actorId];
+  if (
+    actor.kind === 'remote-account' &&
+    Array.isArray(actor.linkedSoloActorIds)
+  ) {
+    for (const id of actor.linkedSoloActorIds) {
+      if (typeof id === 'string' && id.length > 0 && !ids.includes(id)) ids.push(id);
+    }
+  }
+  return ids;
+}
+
 async function resolveLibraryActor(
   deps: LibraryHttpDeps,
   headers: Headers,
@@ -595,7 +609,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     if (!deps.inventory?.listCatalog) {
       return c.json({ items: [] }, 200);
     }
-    const listed = deps.inventory.listCatalog(actorResult.actor.actorId, {});
+    const listed = deps.inventory.listCatalog(libraryActorIds(actorResult.actor), {});
     if (!listed.ok) {
       return c.json({ error: listed.error }, 503);
     }
@@ -623,6 +637,7 @@ export function mountLibraryHttpRoutes(app: Hono, deps: LibraryHttpDeps): void {
     const draft = 'draft' in record && record.draft && typeof record.draft === 'object'
       ? (record.draft as Record<string, unknown>)
       : record;
+    // Owner column is the session actor; linked solo ids are honored on list/read.
     const created = deps.inventory.createDefinition(actorResult.actor.actorId, {
       name: draft.name,
       origin: draft.origin,
